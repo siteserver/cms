@@ -42,14 +42,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
                 var permissions = new Permissions
                 {
-                    IsAdd = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentAdd),
-                    IsDelete = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentDelete),
-                    IsEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentEdit),
-                    IsArrange = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentArrange),
-                    IsTranslate = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentTranslate),
-                    IsCheck = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ContentCheckLevel1),
-                    IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, Constants.SitePermissions.CreateContents) || await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.CreatePage),
-                    IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.ChannelEdit)
+                    IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Add),
+                    IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Delete),
+                    IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Edit),
+                    IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Arrange),
+                    IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Translate),
+                    IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.CheckLevel1),
+                    IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, Constants.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Create),
+                    IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.Edit)
                 };
 
                 return new TreeResult

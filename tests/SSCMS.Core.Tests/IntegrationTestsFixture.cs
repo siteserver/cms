@@ -43,7 +43,7 @@ namespace SSCMS.Core.Tests
             var settingsManager = Provider.GetService<ISettingsManager>();
             if (settingsManager.Database.DatabaseType == DatabaseType.SQLite)
             {
-                var filePath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.ConfigDirectoryName, Constants.DefaultLocalDbFileName);
+                var filePath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
                 if (!FileUtils.IsFileExists(filePath))
                 {
                     FileUtils.WriteText(filePath, string.Empty);

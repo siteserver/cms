@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 using NSwag.Annotations;
@@ -24,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteActionsDownload = "index/actions/download";
 
         private readonly IStringLocalizer<IndexController> _local;
-        private readonly ICacheManager<object> _cacheManager;
+        private readonly IOptionsMonitor<MenusOptions> _menusAccessor;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -37,10 +37,10 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(IStringLocalizer<IndexController> local, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(IStringLocalizer<IndexController> local, IOptionsMonitor<MenusOptions> menusAccessor, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
             _local = local;
-            _cacheManager = cacheManager;
+            _menusAccessor = menusAccessor;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
@@ -86,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin
             var site = await _siteRepository.GetAsync(request.SiteId);
             var adminInfo = admin;
             var isSuperAdmin = await _authManager.IsSuperAdminAsync();
-            var siteIdListWithPermissions = await _authManager.GetSiteIdListAsync();
+            var siteIdListWithPermissions = await _authManager.GetSiteIdsAsync();
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
             {
@@ -136,35 +136,75 @@ namespace SSCMS.Web.Controllers.Admin
                 });
             }
 
-            var siteIdListLatestAccessed = await _administratorRepository.UpdateSiteIdAsync(adminInfo, site.Id);
-
-            var permissionList = await _authManager.GetPermissionListAsync();
+            var menus = new List<Menu>();
             if (await _authManager.HasSitePermissionsAsync(site.Id))
             {
-                var websitePermissionList = await _authManager.GetSitePermissionsAsync(site.Id);
-                if (websitePermissionList != null)
+                var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
+                var siteMenu = new Menu
                 {
-                    permissionList.AddRange(websitePermissionList);
+                    Id = IdSite,
+                    Text = site.SiteName,
+                    Children = _menusAccessor.CurrentValue.Site
+                };
+                siteMenu.Children = GetChildren(siteMenu, sitePermissions, x =>
+                {
+                    x.Link = PageUtils.AddQueryString(x.Link, $"siteId={site.Id}");
+                    return x;
+                });
+                menus.Add(siteMenu);
+
+                if (siteIdListWithPermissions.Count > 1)
+                {
+                    var switchMenus = new List<Menu>();
+                    var allSiteMenus = new List<Menu>();
+                    var siteIdListLatestAccessed = await _administratorRepository.UpdateSiteIdAsync(adminInfo, site.Id);
+                    var siteIdList = await _siteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    foreach (var siteId in siteIdList)
+                    {
+                        var theSite = await _siteRepository.GetAsync(siteId);
+                        if (theSite == null) continue;
+
+                        allSiteMenus.Add(new Menu
+                        {
+                            Link = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}",
+                            Target = "_top",
+                            Text = theSite.SiteName
+                        });
+                    }
+
+                    switchMenus.Add(new Menu
+                    {
+                        IconClass = "el-icon-refresh",
+                        Link = _pathManager.GetAdminUrl(SitesLayerSelectController.Route),
+                        Target = "_layer",
+                        Text = _local["Select site"]
+                    });
+                    switchMenus.Add(new Menu
+                    {
+                        IconClass = "ion-earth",
+                        Text = _local["Recently site"],
+                        Selected = true,
+                        Children = allSiteMenus.ToArray()
+                    });
+
+                    menus.Add(new Menu
+                    {
+                        Text = _local["Switch site"],
+                        Children = switchMenus.ToArray()
+                    });
                 }
             }
-            var channelPermissions = await _authManager.GetChannelPermissionsAsync(site.Id);
-            if (channelPermissions.Count > 0)
+
+            var appPermissions = await _authManager.GetAppPermissionsAsync();
+            var appMenus = _menusAccessor.CurrentValue.App.Where(x => IsValid(x, appPermissions)).ToList();
+            foreach (var appMenu in appMenus)
             {
-                permissionList.AddRange(channelPermissions);
+                appMenu.Children = GetChildren(appMenu, appPermissions);
             }
-
-            var tabManager = new TabManager(_cacheManager, _pathManager, _pluginManager);
-
-            var siteMenus =
-                await GetLeftMenusAsync(tabManager, site, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
-            var pluginMenus = await GetLeftMenusAsync(tabManager, site, string.Empty, isSuperAdmin, permissionList);
-            siteMenus.AddRange(pluginMenus);
-            var menus = await GetTopMenusAsync(tabManager, site, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions, permissionList, siteMenus);
+            menus.AddRange(appMenus);
 
             var config = await _configRepository.GetAsync();
-
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, false);
-
             var previewUrl = _pathManager.GetLocalSiteUrl(site.Id);
 
             return new GetResult

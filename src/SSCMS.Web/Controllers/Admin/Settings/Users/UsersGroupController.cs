@@ -34,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -49,7 +49,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<GetResult>> Delete([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody] UserGroup request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsersGroup))
             {
                 return Unauthorized();
             }

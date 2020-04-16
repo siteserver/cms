@@ -120,4 +120,13 @@
   <data name="You do not have a site to manage, please contact the super administrator for assistance" xml:space="preserve">
     <value>您没有可以管理的站点，请联系超级管理员协助解决</value>
   </data>
+  <data name="Select site" xml:space="preserve">
+    <value>选择站点</value>
+  </data>
+  <data name="Recently site" xml:space="preserve">
+    <value>最近访问</value>
+  </data>
+  <data name="Switch site" xml:space="preserve">
+    <value>切换站点</value>
+  </data>
 </root>

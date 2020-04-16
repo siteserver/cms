@@ -24,13 +24,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
             {
                 return Unauthorized();
             }
 
             var siteAddPermission =
-                await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
 
             return new GetResult
             {

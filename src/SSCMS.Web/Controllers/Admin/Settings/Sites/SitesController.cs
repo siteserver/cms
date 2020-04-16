@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -86,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<SitesResult>> Delete([FromBody]DeleteRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -128,7 +128,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(Route)]
         public async Task<ActionResult<SitesResult>> Edit([FromBody]EditRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }

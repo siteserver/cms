@@ -99,10 +99,5 @@ namespace SSCMS.Core.Services
             await using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
         }
-
-        public string GetConfigPath(params string[] paths)
-        {
-            return PathUtils.Combine(_settingsManager.ContentRootPath, "config", PathUtils.Combine(paths));
-        }
     }
 }

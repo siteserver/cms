@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ContentTranslate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -70,7 +70,7 @@ namespace SSCMS.Web.Controllers.Home
             var sites = new List<object>();
             var channels = new List<object>();
 
-            var siteIdList = await _authManager.GetSiteIdListAsync();
+            var siteIdList = await _authManager.GetSiteIdsAsync();
             foreach (var permissionSiteId in siteIdList)
             {
                 var permissionSite = await _siteRepository.GetAsync(permissionSiteId);
@@ -81,8 +81,8 @@ namespace SSCMS.Web.Controllers.Home
                 });
             }
 
-            var channelIdList = await _authManager.GetChannelIdListAsync(site.Id,
-                Constants.ChannelPermissions.ContentAdd);
+            var channelIdList = await _authManager.GetChannelIdsAsync(site.Id,
+                Constants.ContentPermissions.Add);
             foreach (var permissionChannelId in channelIdList)
             {
                 var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
@@ -106,7 +106,7 @@ namespace SSCMS.Web.Controllers.Home
         public async Task<ActionResult<GetChannelsResult>> GetChannels([FromQuery]SiteRequest request)
         {
             var channels = new List<object>();
-            var channelIdList = await _authManager.GetChannelIdListAsync(request.SiteId, Constants.ChannelPermissions.ContentAdd);
+            var channelIdList = await _authManager.GetChannelIdsAsync(request.SiteId, Constants.ContentPermissions.Add);
             foreach (var permissionChannelId in channelIdList)
             {
                 var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
@@ -126,8 +126,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,
-                    Constants.ChannelPermissions.ContentTranslate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }

@@ -77,7 +77,7 @@ namespace SSCMS.Repositories
 
         Task<bool> IsAncestorOrSelfAsync(int siteId, int parentId, int childId);
 
-        Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IPermissions permissionsImpl, params string[] channelPermissions);
+        Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IPermissions permissions, params string[] contentPermissions);
 
         bool IsCreatable(Site site, Channel channel, int count);
     }

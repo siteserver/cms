@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPut, Route(Route)]
         public async Task<ActionResult<List<int>>> Edit([FromBody] PutRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, Constants.ChannelPermissions.ChannelEdit))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, Constants.ChannelPermissions.Edit))
             {
                 return Unauthorized();
             }

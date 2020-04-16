@@ -24,11 +24,6 @@ namespace SSCMS.Core.Plugins
             return $"{plugin.Publisher ?? plugin.FolderName}.{plugin.Name ?? plugin.FolderName}".ToLower();
         }
 
-        public static string GetPluginId(string publisher, string name)
-        {
-            return $"{publisher}.{name}".ToLower();
-        }
-
         public static Assembly LoadAssembly(string assemblyPath)
         {
             var loadContext = new PluginLoadContext(assemblyPath);

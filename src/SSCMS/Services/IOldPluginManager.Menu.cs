@@ -17,10 +17,10 @@ namespace SSCMS.Services
 
         Task<List<Menu>> GetContentMenusAsync(List<string> pluginIds, Content content);
 
-        Tab GetPluginTab(string pluginId, string prefix, Menu menu);
+        Menu GetPluginTab(string pluginId, string prefix, Menu menu);
 
-        Task<List<PermissionConfig>> GetTopPermissionsAsync();
+        Task<List<MenuPermission>> GetTopPermissionsAsync();
 
-        Task<List<PermissionConfig>> GetSitePermissionsAsync(int siteId);
+        Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId);
     }
 }

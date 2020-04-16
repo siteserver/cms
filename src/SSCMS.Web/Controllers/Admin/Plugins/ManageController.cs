@@ -38,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpDelete, Route(RoutePluginId)]
         public async Task<ActionResult<BoolResult>> Delete(string pluginId)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
@@ -86,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsReload)]
         public async Task<ActionResult<BoolResult>> Reload()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
@@ -102,7 +102,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RoutePluginIdEnable)]
         public async Task<ActionResult<BoolResult>> Enable(string pluginId)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }

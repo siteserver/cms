@@ -6,11 +6,11 @@ var $url = '/admin/index';
 var $urlCreate = '/admin/index/actions/create';
 var $urlDownload = '/admin/index/actions/download';
 var $packageIdApp = 'SS.CMS.App';
+var $idSite = 'site';
 
 var data = utils.initData({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
-  pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
   version: null,
@@ -72,6 +72,7 @@ var methods = {
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
         $this.menus = res.menus;
+        $this.siteName = res.siteName;
         $this.siteUrl = res.siteUrl;
         $this.previewUrl = res.previewUrl;
         $this.local = res.local;
@@ -223,8 +224,8 @@ var methods = {
   },
 
   getHref: function (menu) {
-    var href = menu.target != '_layer' ? menu.href : '';
-    return href || "javascript:;";
+    var link = menu.target != '_layer' ? menu.link : '';
+    return link || "javascript:;";
   },
 
   getTarget: function (menu) {
@@ -232,10 +233,10 @@ var methods = {
   },
 
   btnTopMenuClick: function (menu) {
-    if (menu.hasChildren) {
+    if (menu.children) {
       for(var i = 0; i < menu.children.length; i++) {
         var child = menu.children[i];
-        if (child.hasChildren) {
+        if (child.children) {
           this.activeParentMenu = child;
           break;
         }
@@ -245,7 +246,7 @@ var methods = {
   },
 
   btnLeftMenuClick: function (menu, e) {
-    if (menu.hasChildren) {
+    if (menu.children) {
       this.activeParentMenu = this.activeParentMenu === menu ? null : menu;
     } else {
       this.activeChildMenu = menu;
@@ -255,7 +256,7 @@ var methods = {
         e.preventDefault();
         utils.openLayer({
           title: menu.text,
-          url: menu.href,
+          url: menu.link,
           full: true
         });
       }
@@ -268,7 +269,7 @@ var methods = {
 };
 
 var $vue = new Vue({
-  el: "#wrapper",
+  el: "#main",
   data: data,
   methods: methods,
   created: function () {

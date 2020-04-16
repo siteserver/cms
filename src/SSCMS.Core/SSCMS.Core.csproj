@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <Compile Remove="StlParser\StlElement\StlTags.cs" />
+    <Compile Remove="TabManager.cs" />
+    <Compile Remove="Utils\PermissionConfigManager.cs" />
   </ItemGroup>
 
   <ItemGroup>

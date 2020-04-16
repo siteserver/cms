@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         [HttpPost, Route(Route)]
         public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAnalysisAdminWork))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAnalysisAdminWork))
             {
                 return Unauthorized();
             }

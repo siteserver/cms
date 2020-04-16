@@ -57,7 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -117,7 +117,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(RoutePermissions)]
         public async Task<ActionResult<GetPermissionsResult>> GetPermissions(int adminId)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -170,7 +170,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RoutePermissions)]
         public async Task<ActionResult<SavePermissionsResult>> SavePermissions([FromRoute]int adminId, [FromBody]SavePermissionsRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -215,7 +215,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -235,7 +235,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -258,7 +258,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteUnLock)]
         public async Task<ActionResult<BoolResult>> UnLock([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -281,7 +281,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -359,7 +359,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

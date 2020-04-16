@@ -651,11 +651,11 @@ namespace SSCMS.Core.Utils
 
             var isChecked = false;
             var checkedLevel = 0;
-			if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel5))
+			if (await permissionsImpl.HasContentPermissionsAsync(site.Id, channelId, Constants.ContentPermissions.CheckLevel5))
 			{
 				isChecked = true;
 			}
-			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel4))
+			else if (await permissionsImpl.HasContentPermissionsAsync(site.Id, channelId, Constants.ContentPermissions.CheckLevel4))
 			{
 				if (site.CheckContentLevel <= 4)
 				{
@@ -666,7 +666,7 @@ namespace SSCMS.Core.Utils
 					checkedLevel = 4;
 				}
 			}
-			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel3))
+			else if (await permissionsImpl.HasContentPermissionsAsync(site.Id, channelId, Constants.ContentPermissions.CheckLevel3))
 			{
 				if (site.CheckContentLevel <= 3)
 				{
@@ -677,7 +677,7 @@ namespace SSCMS.Core.Utils
 					checkedLevel = 3;
 				}
 			}
-			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel2))
+			else if (await permissionsImpl.HasContentPermissionsAsync(site.Id, channelId, Constants.ContentPermissions.CheckLevel2))
 			{
 				if (site.CheckContentLevel <= 2)
 				{
@@ -688,7 +688,7 @@ namespace SSCMS.Core.Utils
 					checkedLevel = 2;
 				}
 			}
-			else if (await permissionsImpl.HasChannelPermissionsAsync(site.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
+			else if (await permissionsImpl.HasContentPermissionsAsync(site.Id, channelId, Constants.ContentPermissions.CheckLevel1))
 			{
 				if (site.CheckContentLevel <= 1)
 				{

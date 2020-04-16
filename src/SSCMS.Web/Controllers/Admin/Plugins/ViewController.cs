@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] string pluginId)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -185,8 +184,7 @@ namespace SSCMS.Core.Services
                 Text = metadataMenu.Text,
                 Link = metadataMenu.Link,
                 Target = metadataMenu.Target,
-                IconClass = metadataMenu.IconClass,
-                PluginId = pluginId
+                IconClass = metadataMenu.IconClass
             };
 
             if (string.IsNullOrEmpty(menu.Id))
@@ -218,23 +216,22 @@ namespace SSCMS.Core.Services
             return menu;
         }
 
-        public Tab GetPluginTab(string pluginId, string prefix, Menu menu)
+        public Menu GetPluginTab(string pluginId, string prefix, Menu menu)
         {
-            var tab = new Tab
+            var tab = new Menu
             {
                 Id = menu.Id,
                 Text = menu.Text,
                 IconClass = menu.IconClass,
                 Selected = false,
-                Href = menu.Link,
-                Target = menu.Target,
-                Permissions = string.Empty
+                Link = menu.Link,
+                Target = menu.Target
             };
 
             var permissions = new List<string>();
             if (menu.Children != null && menu.Children.Count > 0)
             {
-                tab.Children = new Tab[menu.Children.Count];
+                tab.Children = new List<Menu>();
                 for (var i = 0; i < menu.Children.Count; i++)
                 {
                     var child = menu.Children[i];
@@ -249,14 +246,14 @@ namespace SSCMS.Core.Services
                 var permission = GetMenuPermission(pluginId, prefix, menu);
                 permissions.Add(permission);
             }
-            tab.Permissions = Utilities.ToString(permissions);
+            tab.Permissions = permissions;
 
             return tab;
         }
 
-        public async Task<List<PermissionConfig>> GetTopPermissionsAsync()
+        public async Task<List<MenuPermission>> GetTopPermissionsAsync()
         {
-            var permissions = new List<PermissionConfig>();
+            var permissions = new List<MenuPermission>();
 
             foreach (var plugin in GetPlugins())
             {
@@ -265,7 +262,11 @@ namespace SSCMS.Core.Services
                     var systemMenus = plugin.GetSystemMenus() ?? await plugin.GetSystemMenusAsync();
                     if (systemMenus == null) continue;
 
-                    permissions.Add(new PermissionConfig(plugin.PluginId, $"系统管理 -> {plugin.Name}（插件）"));
+                    permissions.Add(new MenuPermission
+                    {
+                        Id = plugin.PluginId,
+                        Text = $"系统管理 -> {plugin.Name}（插件）"
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -281,9 +282,9 @@ namespace SSCMS.Core.Services
             return string.IsNullOrEmpty(prefix) ? $"{pluginId}:{menu.Text}" : $"{pluginId}:{prefix}:{menu.Text}";
         }
 
-        public async Task<List<PermissionConfig>> GetSitePermissionsAsync(int siteId)
+        public async Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId)
         {
-            var permissions = new List<PermissionConfig>();
+            var permissions = new List<MenuPermission>();
 
             foreach (var plugin in GetPlugins())
             {
@@ -301,13 +302,21 @@ namespace SSCMS.Core.Services
                             foreach (var menu in siteMenu.Children)
                             {
                                 var permission = GetMenuPermission(plugin.PluginId, siteMenu.Text, menu);
-                                permissions.Add(new PermissionConfig(permission, $"{plugin.Name} -> {menu.Text}"));
+                                permissions.Add(new MenuPermission
+                                {
+                                    Id = permission,
+                                    Text = $"{plugin.Name} -> {menu.Text}"
+                                });
                             }
                         }
                         else
                         {
                             var permission = GetMenuPermission(plugin.PluginId, string.Empty, siteMenu);
-                            permissions.Add(new PermissionConfig(permission, $"{plugin.Name} -> {siteMenu.Text}"));
+                            permissions.Add(new MenuPermission
+                            {
+                                Id = permission,
+                                Text = $"{plugin.Name} -> {siteMenu.Text}"
+                            });
                         }
                     }
                 }

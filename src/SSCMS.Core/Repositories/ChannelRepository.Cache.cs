@@ -569,14 +569,14 @@ namespace SSCMS.Core.Repositories
             return false;
         }
 
-        public async Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IPermissions permissionsImpl, params string[] channelPermissions)
+        public async Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IPermissions permissions, params string[] contentPermissions)
         {
             var options = new List<KeyValuePair<int, string>>();
 
             var list = await GetChannelIdListAsync(siteId);
             foreach (var channelId in list)
             {
-                var enabled = await permissionsImpl.HasChannelPermissionsAsync(siteId, channelId, channelPermissions);
+                var enabled = await permissions.HasChannelPermissionsAsync(siteId, channelId, contentPermissions);
 
                 if (enabled)
                 {

@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesCache))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesCache))
             {
                 return Unauthorized();
             }
@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> ClearCache()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesCache))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesCache))
             {
                 return Unauthorized();
             }

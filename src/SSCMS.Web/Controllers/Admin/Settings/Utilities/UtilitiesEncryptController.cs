@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesEncrypt))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesEncrypt))
             {
                 return Unauthorized();
             }

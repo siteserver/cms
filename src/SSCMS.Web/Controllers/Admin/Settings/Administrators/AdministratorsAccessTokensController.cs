@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -76,7 +76,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<TokensResult>> Delete([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -93,7 +93,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<TokensResult>> Submit([FromBody] AccessToken itemObj)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }

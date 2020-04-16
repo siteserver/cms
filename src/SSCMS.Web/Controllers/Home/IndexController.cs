@@ -174,7 +174,7 @@ namespace SSCMS.Web.Controllers.Home
             {
                 Site site = null;
                 Channel channelInfo = null;
-                var siteIdList = await _authManager.GetSiteIdListAsync();
+                var siteIdList = await _authManager.GetSiteIdsAsync();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSite = await _siteRepository.GetAsync(siteId);
@@ -196,8 +196,8 @@ namespace SSCMS.Web.Controllers.Home
 
                 if (site != null)
                 {
-                    var channelIdList = await _authManager.GetChannelIdListAsync(site.Id,
-                        Constants.ChannelPermissions.ContentAdd);
+                    var channelIdList = await _authManager.GetChannelIdsAsync(site.Id,
+                        Constants.ContentPermissions.Add);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
@@ -261,7 +261,7 @@ namespace SSCMS.Web.Controllers.Home
             {
                 Site siteInfo = null;
                 Channel channelInfo = null;
-                var siteIdList = await _authManager.GetSiteIdListAsync();
+                var siteIdList = await _authManager.GetSiteIdsAsync();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSiteInfo = await _siteRepository.GetAsync(siteId);
@@ -283,8 +283,8 @@ namespace SSCMS.Web.Controllers.Home
 
                 if (siteInfo != null)
                 {
-                    var channelIdList = await _authManager.GetChannelIdListAsync(siteInfo.Id,
-                        Constants.ChannelPermissions.ContentAdd);
+                    var channelIdList = await _authManager.GetChannelIdsAsync(siteInfo.Id,
+                        Constants.ContentPermissions.Add);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);

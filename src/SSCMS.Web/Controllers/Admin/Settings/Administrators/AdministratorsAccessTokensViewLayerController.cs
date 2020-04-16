@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int id)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -49,7 +49,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteRegenerate)]
         public async Task<ActionResult<RegenerateResult>> Regenerate([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }

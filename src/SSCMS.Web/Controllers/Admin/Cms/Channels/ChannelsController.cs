@@ -111,7 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -198,7 +198,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<List<int>>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelDelete))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.Delete))
             {
                 return Unauthorized();
             }
@@ -242,7 +242,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -274,7 +274,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<List<int>>> Import([FromBody] ImportRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.ChannelAdd))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }

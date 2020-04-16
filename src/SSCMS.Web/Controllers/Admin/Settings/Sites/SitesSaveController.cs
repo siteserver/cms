@@ -46,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteSettings)]
         public async Task<ActionResult<SaveSettingsResult>> SaveSettings([FromBody] SaveRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -141,7 +141,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteFiles)]
         public async Task<ActionResult<SaveFilesResult>> SaveFiles([FromBody]SaveRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -164,7 +164,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteActionsData)]
         public async Task<ActionResult<BoolResult>> SaveData([FromBody]SaveRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }

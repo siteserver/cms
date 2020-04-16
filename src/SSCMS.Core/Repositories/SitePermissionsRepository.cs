@@ -40,7 +40,7 @@ namespace SSCMS.Core.Repositories
             return permissionsList.ToList();
         }
 
-        public async Task<SitePermissions> GetSystemPermissionsAsync(string roleName, int siteId)
+        public async Task<SitePermissions> GetSitePermissionsAsync(string roleName, int siteId)
         {
             return await _repository.GetAsync(Q
                 .Where(nameof(SitePermissions.RoleName), roleName)
@@ -48,7 +48,7 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<Dictionary<int, List<string>>> GetWebsitePermissionSortedListAsync(IEnumerable<string> roles)
+        public async Task<Dictionary<int, List<string>>> GetSitePermissionSortedListAsync(IEnumerable<string> roles)
         {
             var sortedList = new Dictionary<int, List<string>>();
             if (roles == null) return sortedList;
@@ -58,10 +58,10 @@ namespace SSCMS.Core.Repositories
                 var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
-                    if (systemPermissions.WebsitePermissions == null) continue;
+                    if (systemPermissions.Permissions == null) continue;
 
                     var list = new List<string>();
-                    foreach (var websitePermission in systemPermissions.WebsitePermissions)
+                    foreach (var websitePermission in systemPermissions.Permissions)
                     {
                         if (!list.Contains(websitePermission)) list.Add(websitePermission);
                     }
@@ -86,7 +86,7 @@ namespace SSCMS.Core.Repositories
                     {
                         foreach (var channelId in systemPermissions.ChannelIds)
                         {
-                            var key = AuthManager.GetChannelPermissionDictKey(systemPermissions.SiteId, channelId);
+                            var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
 
                             if (!dict.TryGetValue(key, out var list))
                             {
@@ -99,6 +99,43 @@ namespace SSCMS.Core.Repositories
                                 foreach (var channelPermission in systemPermissions.ChannelPermissions)
                                 {
                                     if (!list.Contains(channelPermission)) list.Add(channelPermission);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return dict;
+        }
+
+        public async Task<Dictionary<string, List<string>>> GetContentPermissionSortedListAsync(IList<string> roles)
+        {
+            var dict = new Dictionary<string, List<string>>();
+            if (roles == null) return dict;
+
+            foreach (var roleName in roles)
+            {
+                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                foreach (var systemPermissions in systemPermissionsList)
+                {
+                    if (systemPermissions.ChannelIds != null)
+                    {
+                        foreach (var channelId in systemPermissions.ChannelIds)
+                        {
+                            var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
+
+                            if (!dict.TryGetValue(key, out var list))
+                            {
+                                list = new List<string>();
+                                dict[key] = list;
+                            }
+
+                            if (systemPermissions.ContentPermissions != null)
+                            {
+                                foreach (var contentPermission in systemPermissions.ContentPermissions)
+                                {
+                                    if (!list.Contains(contentPermission)) list.Add(contentPermission);
                                 }
                             }
                         }

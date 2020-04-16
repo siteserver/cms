@@ -17,9 +17,12 @@ namespace SSCMS.Models
         public List<int> ChannelIds { get; set; }
 
         [DataColumn(Text = true)]
+        public List<string> Permissions { get; set; }
+
+        [DataColumn(Text = true)]
         public List<string> ChannelPermissions { get; set; }
 
         [DataColumn(Text = true)]
-        public List<string> WebsitePermissions { get; set; }
+        public List<string> ContentPermissions { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(RouteTable)]
         public async Task<ActionResult<GetColumnsResult>> GetColumns(string tableName)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteTableActionsRemoveCache)]
         public async Task<ActionResult<GetColumnsResult>> RemoveCache(string tableName)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }

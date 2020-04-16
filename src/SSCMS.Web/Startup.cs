@@ -42,6 +42,10 @@ namespace SSCMS.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<PermissionsOptions>(_config.GetSection("permissions"));
+            services.Configure<MenusOptions>(_config.GetSection("menus"));
+
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 

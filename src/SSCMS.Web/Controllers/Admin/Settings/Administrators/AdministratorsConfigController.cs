@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsConfig))
             {
                 return Unauthorized();
             }
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsConfig))
             {
                 return Unauthorized();
             }

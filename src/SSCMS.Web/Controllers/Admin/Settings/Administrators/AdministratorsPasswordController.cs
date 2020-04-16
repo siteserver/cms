@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             var administrator = await _administratorRepository.GetByUserIdAsync(userId);
             if (administrator == null) return NotFound();
             if (adminId != userId &&
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -57,7 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             var adminInfo = await _administratorRepository.GetByUserIdAsync(userId);
             if (adminInfo == null) return NotFound();
             if (adminId != userId &&
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

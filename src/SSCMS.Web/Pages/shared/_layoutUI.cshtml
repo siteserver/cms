@@ -13,9 +13,10 @@
   <link href="/sitefiles/assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
   <link href="/sitefiles/assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
   <link href="/sitefiles/assets/lib/elementui/themechalk/index.css" rel="stylesheet" type="text/css" />
+  @RenderSection("Styles", required: false)
 </head>
 
-<body>
+<body class="fixed-left widescreen">
   <div id="main" class="m-t-15 m-b-15 m-l-15 m-r-15">
 
     <div v-if="this.pageLoad" style="display: none" :style="{display: ''}">

@@ -9,28 +9,38 @@ namespace SSCMS
 
         Task<bool> IsSiteAdminAsync();
 
+        Task<bool> IsSiteAdminAsync(int siteId);
+
         Task<string> GetAdminLevelAsync();
 
-        Task<List<int>> GetSiteIdListAsync();
+        Task<List<int>> GetSiteIdsAsync();
 
-        Task<List<int>> GetChannelIdListAsync(int siteId, params string[] permissions);
+        Task<List<int>> GetChannelIdsAsync(int siteId, params string[] permissions);
 
-        Task<bool> HasSystemPermissionsAsync(params string[] permissions);
+        Task<bool> HasAppPermissionsAsync(params string[] permissions);
 
-        Task<bool> HasSitePermissionsAsync(int siteId, params string[] permissions);
-
-        Task<bool> HasChannelPermissionsAsync(int siteId, int channelId, params string[] permissions);
-
-        Task<List<string>> GetPermissionListAsync();
+        Task<List<string>> GetAppPermissionsAsync();
 
         Task<bool> HasSitePermissionsAsync(int siteId);
 
+        Task<bool> HasSitePermissionsAsync(int siteId, params string[] permissions);
+
         Task<List<string>> GetSitePermissionsAsync(int siteId);
+
+        Task<bool> HasChannelPermissionsAsync(int siteId, int channelId, params string[] permissions);
 
         Task<bool> HasChannelPermissionsAsync(int siteId, int channelId);
 
         Task<List<string>> GetChannelPermissionsAsync(int siteId, int channelId);
 
         Task<List<string>> GetChannelPermissionsAsync(int siteId);
+
+        Task<bool> HasContentPermissionsAsync(int siteId, int channelId, params string[] permissions);
+
+        Task<bool> HasContentPermissionsAsync(int siteId, int channelId);
+
+        Task<List<string>> GetContentPermissionsAsync(int siteId, int channelId);
+
+        Task<List<string>> GetContentPermissionsAsync(int siteId);
     }
 }

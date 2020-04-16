@@ -5,6 +5,7 @@ using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 using SSCMS.Core.Services;
 using SSCMS.Models;
@@ -22,22 +23,20 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         private const string Route = "shared/adminLayerView";
 
         private readonly IHttpContextAccessor _context;
+        private readonly IOptionsMonitor<PermissionsOptions> _permissionsAccessor;
         private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
-        private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdminLayerViewController(IHttpContextAccessor context, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdminLayerViewController(IHttpContextAccessor context, IOptionsMonitor<PermissionsOptions> permissionsAccessor, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
             _context = context;
+            _permissionsAccessor = permissionsAccessor;
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
-            _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _administratorRepository = administratorRepository;
             _siteRepository = siteRepository;
         }
@@ -57,14 +56,14 @@ namespace SSCMS.Web.Controllers.Admin.Shared
 
             if (admin == null) return NotFound();
 
-            var permissions = new AuthManager(_context, _cacheManager, _settingsManager, _pathManager, _databaseManager, _pluginManager);
+            var permissions = new AuthManager(_context, _permissionsAccessor, _cacheManager, _settingsManager, _databaseManager);
             permissions.Init(admin);
             var level = await permissions.GetAdminLevelAsync();
             var isSuperAdmin = await permissions.IsSuperAdminAsync();
             var siteNames = new List<string>();
             if (!isSuperAdmin)
             {
-                var siteIdListWithPermissions = await permissions.GetSiteIdListAsync();
+                var siteIdListWithPermissions = await permissions.GetSiteIdsAsync();
                 foreach (var siteId in siteIdListWithPermissions)
                 {
                     var site = await _siteRepository.GetAsync(siteId);

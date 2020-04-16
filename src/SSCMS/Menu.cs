@@ -34,11 +34,9 @@ namespace SSCMS
         /// </summary>
         public string Target { get; set; }
 
-        public string PluginId { get; set; }
+        public IList<string> Permissions { get; set; }
 
         public bool Selected { get; set; }
-
-        public IList<string> Permissions { get; set; }
 
         /// <summary>
         /// 获取或设置菜单的下级菜单列表。

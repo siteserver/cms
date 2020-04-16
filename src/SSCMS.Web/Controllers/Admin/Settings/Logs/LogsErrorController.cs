@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SearchResult>> List([FromBody] SearchRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
             {
                 return Unauthorized();
             }
@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsError))
             {
                 return Unauthorized();
             }

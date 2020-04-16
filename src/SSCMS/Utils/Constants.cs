@@ -5,7 +5,6 @@ namespace SSCMS.Utils
 {
     public static class Constants
     {
-        public const string ConfigDirectoryName = "config";
         public const string ConfigFileName = "sscms.json";
         public const string PluginPackageFileName = "package.json";
         public const string PluginConfigFileName = "config.json";
@@ -56,14 +55,6 @@ namespace SSCMS.Utils
             ScopeUsers,
             ScopeStl
         };
-
-        public static class TopMenu
-        {
-            public const string SiteCurrent = "SiteCurrent";
-            public const string SiteAll = "SiteAll";
-            public const string IdSite = "Site";
-            public const string IdPlugins = "Plugins";
-        }
 
         public static class AppPermissions
         {
@@ -136,22 +127,27 @@ namespace SSCMS.Utils
 
         public static class ChannelPermissions
         {
-            public const string ContentView = "cms_contentView";
-            public const string ContentAdd = "cms_contentAdd";
-            public const string ContentEdit = "cms_contentEdit";
-            public const string ContentDelete = "cms_contentDelete";
-            public const string ContentTranslate = "cms_contentTranslate";
-            public const string ContentArrange = "cms_contentArrange";
-            public const string ChannelAdd = "cms_channelAdd";
-            public const string ChannelEdit = "cms_channelEdit";
-            public const string ChannelDelete = "cms_channelDelete";
-            public const string ChannelTranslate = "cms_channelTranslate";
-            public const string CreatePage = "cms_createPage";
-            public const string ContentCheckLevel1 = "cms_contentCheckLevel1";
-            public const string ContentCheckLevel2 = "cms_contentCheckLevel2";
-            public const string ContentCheckLevel3 = "cms_contentCheckLevel3";
-            public const string ContentCheckLevel4 = "cms_contentCheckLevel4";
-            public const string ContentCheckLevel5 = "cms_contentCheckLevel5";
+            public const string Add = "channel_add";
+            public const string Edit = "channel_edit";
+            public const string Delete = "channel_delete";
+            public const string Translate = "channel_translate";
+            public const string Create = "channel_create";
+        }
+
+        public static class ContentPermissions
+        {
+            public const string View = "content_view";
+            public const string Add = "content_add";
+            public const string Edit = "content_edit";
+            public const string Delete = "content_delete";
+            public const string Translate = "content_translate";
+            public const string Arrange = "content_arrange";
+            public const string CheckLevel1 = "content_checkLevel1";
+            public const string CheckLevel2 = "content_checkLevel2";
+            public const string CheckLevel3 = "content_checkLevel3";
+            public const string CheckLevel4 = "content_checkLevel4";
+            public const string CheckLevel5 = "content_checkLevel5";
+            public const string Create = "content_create";
         }
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);

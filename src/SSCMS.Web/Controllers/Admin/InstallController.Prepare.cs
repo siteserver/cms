@@ -24,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             if (request.DatabaseType == DatabaseType.SQLite)
             {
-                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigDirectoryName, Constants.DefaultLocalDbFileName);
+                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
                 if (!FileUtils.IsFileExists(filePath))
                 {
                     await FileUtils.WriteTextAsync(filePath, string.Empty);

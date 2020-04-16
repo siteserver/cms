@@ -24,7 +24,5 @@ namespace SSCMS.Services
         string MapPath(string virtualPath);
 
         Task UploadAsync(IFormFile file, string filePath);
-
-        string GetConfigPath(params string[] paths);
     }
 }

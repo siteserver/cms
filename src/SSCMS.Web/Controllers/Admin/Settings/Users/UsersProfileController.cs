@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int userId)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -81,7 +81,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }

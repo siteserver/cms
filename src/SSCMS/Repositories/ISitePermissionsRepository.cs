@@ -13,11 +13,13 @@ namespace SSCMS.Repositories
 
         Task<List<SitePermissions>> GetSystemPermissionsListAsync(string roleName);
 
-        Task<SitePermissions> GetSystemPermissionsAsync(string roleName, int siteId);
+        Task<SitePermissions> GetSitePermissionsAsync(string roleName, int siteId);
 
-        Task<Dictionary<int, List<string>>> GetWebsitePermissionSortedListAsync(IEnumerable<string> roles);
+        Task<Dictionary<int, List<string>>> GetSitePermissionSortedListAsync(IEnumerable<string> roles);
 
         Task<Dictionary<string, List<string>>> GetChannelPermissionSortedListAsync(IList<string> roles);
+
+        Task<Dictionary<string, List<string>>> GetContentPermissionSortedListAsync(IList<string> roles);
 
         Task<List<string>> GetChannelPermissionListIgnoreChannelIdAsync(IList<string> roles);
     }

@@ -34,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpGet, Route(Route)]
         public async Task<ActionResult<List<KeyValuePair<string, string>>>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesParameters))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesParameters))
             {
                 return Unauthorized();
             }

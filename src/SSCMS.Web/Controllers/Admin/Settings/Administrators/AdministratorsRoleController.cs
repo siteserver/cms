@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListRequest>> GetList()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -53,7 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<ListRequest>> Delete([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }

@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Configuration;
-using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
@@ -70,8 +68,8 @@ namespace SSCMS.Core.Services
         public string RedisConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Redis:ConnectionString")) : _config.GetValue<string>("Redis:ConnectionString");
         public IRedis Redis => new Redis(RedisConnectionString);
 
-        //public IList<Menu> Menus { get; }
-        //public PermissionsSettings Permissions { get; }
+        //public IList<Menu> Menus => _config.GetSection<
+        //public PermissionsOptions Permissions => _permissionsAccessor.CurrentValue;
 
         public string Encrypt(string inputString, string securityKey = null)
         {

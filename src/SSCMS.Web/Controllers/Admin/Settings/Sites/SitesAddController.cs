@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -83,7 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -155,7 +155,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             if (await _authManager.IsSiteAdminAsync() && !await _authManager.IsSuperAdminAsync())
             {
-                var siteIdList = await _authManager.GetSiteIdListAsync() ?? new List<int>();
+                var siteIdList = await _authManager.GetSiteIdsAsync() ?? new List<int>();
                 siteIdList.Add(siteId);
                 var adminInfo = await _administratorRepository.GetByUserIdAsync(adminId);
                 await _administratorRepository.UpdateSiteIdsAsync(adminInfo, siteIdList);
@@ -214,7 +214,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteProcess)]
         public async Task<ActionResult<CacheUtils.Process>> Process([FromBody] ProcessRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

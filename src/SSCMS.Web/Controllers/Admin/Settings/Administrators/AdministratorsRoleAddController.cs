@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -23,22 +23,20 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteSiteId = "settings/administratorsRoleAdd/{siteId:int}";
         private const string RouteRoleId = "settings/administratorsRoleAdd/{roleId:int}";
 
+        private readonly IOptionsMonitor<PermissionsOptions> _permissionsAccessor;
         private readonly ICacheManager<object> _cacheManager;
         private readonly IAuthManager _authManager;
-        private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleAddController(ICacheManager<object> cacheManager, IAuthManager authManager, IPathManager pathManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
+        public AdministratorsRoleAddController(IOptionsMonitor<PermissionsOptions> permissionsAccessor, ICacheManager<object> cacheManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
+            _permissionsAccessor = permissionsAccessor;
             _cacheManager = cacheManager;
             _authManager = authManager;
-            _pathManager = pathManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _roleRepository = roleRepository;
@@ -49,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -68,21 +66,21 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             var permissions = new List<Permission>();
-            var generalPermissionList = await _authManager.GetPermissionListAsync();
-            var instance = await PermissionConfigManager.GetInstanceAsync(_cacheManager, _pathManager, _pluginManager);
-            var generalPermissions = instance.GeneralPermissions;
+            var appPermissions = await _authManager.GetAppPermissionsAsync();
+    
+            var generalPermissions = _permissionsAccessor.CurrentValue.App;
 
             if (generalPermissions.Count > 0)
             {
                 foreach (var permission in generalPermissions)
                 {
-                    if (generalPermissionList.Contains(permission.Name))
+                    if (appPermissions.Contains(permission.Id))
                     {
                         permissions.Add(new Permission
                         {
-                            Name = permission.Name,
+                            Name = permission.Id,
                             Text = permission.Text,
-                            Selected = StringUtils.ContainsIgnoreCase(permissionList, permission.Name)
+                            Selected = StringUtils.ContainsIgnoreCase(permissionList, permission.Id)
                         });
                     }
                 }
@@ -90,7 +88,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var siteList = new List<Site>();
             var checkedSiteIdList = new List<int>();
-            foreach (var permissionSiteId in await _authManager.GetSiteIdListAsync())
+            foreach (var permissionSiteId in await _authManager.GetSiteIdsAsync())
             {
                 if (await _authManager.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) &&
                     await _authManager.HasSitePermissionsAsync(permissionSiteId))
@@ -129,7 +127,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(RouteSiteId)]
         public async Task<ActionResult<SitePermissionsResult>> GetSitePermissions([FromRoute]int siteId, [FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -140,7 +138,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> InsertRole([FromBody]RoleRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -194,7 +192,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPut, Route(RouteRoleId)]
         public async Task<ActionResult<BoolResult>> UpdateRole([FromRoute]int roleId, [FromBody]RoleRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }

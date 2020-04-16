@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResults>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -68,7 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -86,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -164,7 +164,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(RouteExport)]
         public async Task<ActionResult> Export()
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -181,7 +181,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteCheck)]
         public async Task<ActionResult<BoolResult>> Check([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -202,7 +202,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -225,7 +225,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteUnLock)]
         public async Task<ActionResult<BoolResult>> UnLock([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }

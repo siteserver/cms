@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         {
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -92,7 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
-                !await _authManager.HasSystemPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
