@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,19 +22,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
         private readonly IHttpContextAccessor _context;
         private readonly IOptionsMonitor<PermissionsOptions> _permissionsAccessor;
-        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdministratorsViewController(IHttpContextAccessor context, IOptionsMonitor<PermissionsOptions> permissionsAccessor, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdministratorsViewController(IHttpContextAccessor context, IOptionsMonitor<PermissionsOptions> permissionsAccessor, ISettingsManager settingsManager, IPluginManager pluginManager, IAuthManager authManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
             _context = context;
             _permissionsAccessor = permissionsAccessor;
-            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
             _authManager = authManager;
             _databaseManager = databaseManager;
             _administratorRepository = administratorRepository;
@@ -67,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var permissions = new AuthManager(_context, _permissionsAccessor, _cacheManager, _settingsManager, _databaseManager);
+            var permissions = new AuthManager(_context, _permissionsAccessor, _settingsManager, _pluginManager, _databaseManager);
             permissions.Init(admin);
             var level = await permissions.GetAdminLevelAsync();
             var isSuperAdmin = await permissions.IsSuperAdminAsync();

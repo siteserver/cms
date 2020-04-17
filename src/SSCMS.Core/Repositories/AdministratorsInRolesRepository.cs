@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -29,7 +31,14 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(AdministratorsInRoles.UserName), userName)
                 .OrderBy(nameof(AdministratorsInRoles.RoleName))
             );
-            return roleNames.ToList();
+            var defaultRole = PredefinedRole.Administrator.GetValue();
+            var list = new List<string> { defaultRole };
+            if (roleNames != null)
+            {
+                list.AddRange(roleNames.Where(roleName => !StringUtils.EqualsIgnoreCase(roleName, defaultRole)));
+            }
+
+            return list;
         }
 
         public async Task<IList<string>> GetUsersInRoleAsync(string roleName)

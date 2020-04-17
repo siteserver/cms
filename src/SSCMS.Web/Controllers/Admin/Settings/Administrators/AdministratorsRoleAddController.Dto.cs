@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         {
             public string RoleName { get; set; }
             public string Description { get; set; }
-            public List<string> GeneralPermissions { get; set; }
+            public List<string> AppPermissions { get; set; }
             public List<SitePermissions> SitePermissions { get; set; }
         }
 
@@ -54,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (roleId > 0)
             {
                 var roleInfo = await _roleRepository.GetRoleAsync(roleId);
-                sitePermissionsInfo = await _sitePermissionsRepository.GetSitePermissionsAsync(roleInfo.RoleName, siteId);
+                sitePermissionsInfo = await _sitePermissionsRepository.GetAsync(roleInfo.RoleName, siteId);
             }
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 

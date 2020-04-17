@@ -7,6 +7,7 @@ using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
@@ -569,14 +570,14 @@ namespace SSCMS.Core.Repositories
             return false;
         }
 
-        public async Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IPermissions permissions, params string[] contentPermissions)
+        public async Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IAuthManager authManager, params string[] contentPermissions)
         {
             var options = new List<KeyValuePair<int, string>>();
 
             var list = await GetChannelIdListAsync(siteId);
             foreach (var channelId in list)
             {
-                var enabled = await permissions.HasChannelPermissionsAsync(siteId, channelId, contentPermissions);
+                var enabled = await authManager.HasChannelPermissionsAsync(siteId, channelId, contentPermissions);
 
                 if (enabled)
                 {

@@ -55,6 +55,10 @@ namespace SSCMS.Core.Plugins
         public string Homepage => Configuration[nameof(Homepage)];
         public string Main => Configuration[nameof(Main)] ?? $"{FolderName}.dll";
 
+        public PermissionsOptions Permissions =>
+            Configuration.GetSection("extensions:permissions").Get<PermissionsOptions>();
+        public MenusOptions Menus => Configuration.GetSection("extensions:menus").Get<MenusOptions>();
+
         // config.json
 
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));

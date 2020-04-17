@@ -26,15 +26,15 @@ namespace SSCMS.Core.Plugins
 
         public static Assembly LoadAssembly(string assemblyPath)
         {
-            var loadContext = new PluginLoadContext(assemblyPath);
-            var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath)));
+            //var loadContext = new PluginLoadContext(assemblyPath);
+            //var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath)));
 
             var dllPath = Path.GetDirectoryName(assemblyPath);
 
             var assemblyFiles = Directory.GetFiles(dllPath, "*.dll", SearchOption.AllDirectories);
             foreach (var assemblyFile in assemblyFiles)
             {
-                Assembly.LoadFile(assemblyFile);
+                //Assembly.LoadFile(assemblyFile);
                 if (AssemblyLoadContext.Default.Assemblies.All(a => !StringUtils.EqualsIgnoreCase(Path.GetFileName(a.Location), Path.GetFileName(assemblyFile))))
                 {
                     AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);

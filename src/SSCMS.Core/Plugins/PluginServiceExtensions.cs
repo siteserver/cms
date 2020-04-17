@@ -34,27 +34,27 @@ namespace SSCMS.Core.Plugins
         {
             if (assembly == null) return;
 
-            var baseType = typeof(IOldPlugin);
-            var types = assembly.GetTypes()
-                .Where(x => x != baseType && baseType.IsAssignableFrom(x)).ToArray();
-            var implementTypes = types.Where(x => !x.IsAbstract && x.IsClass).ToArray();
-            var interfaceTypes = types.Where(x => x.IsInterface).ToArray();
-            foreach (var implementType in implementTypes)
-            {
-                services.AddScoped(baseType, implementType);
-                var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
-                if (interfaceType != null && interfaceType != baseType)
-                {
-                    services.AddScoped(interfaceType, implementType);
-                }
-            }
+            //var baseType = typeof(IPlugin);
+            //var types = assembly.GetTypes()
+            //    .Where(x => x != baseType && baseType.IsAssignableFrom(x)).ToArray();
+            //var implementTypes = types.Where(x => !x.IsAbstract && x.IsClass).ToArray();
+            //var interfaceTypes = types.Where(x => x.IsInterface).ToArray();
+            //foreach (var implementType in implementTypes)
+            //{
+            //    services.AddScoped(baseType, implementType);
+            //    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
+            //    if (interfaceType != null && interfaceType != baseType)
+            //    {
+            //        services.AddScoped(interfaceType, implementType);
+            //    }
+            //}
 
             foreach (var type in assembly.GetTypes())
             {
                 if (!typeof(IPluginConfigureServices).IsAssignableFrom(type)) continue;
-                if (!(Activator.CreateInstance(type) is IPluginConfigureServices pluginStartup)) continue;
+                if (!(Activator.CreateInstance(type) is IPluginConfigureServices plugin)) continue;
 
-                pluginStartup.ConfigureServices(services);
+                plugin.ConfigureServices(services);
             }
         }
 

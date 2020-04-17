@@ -1,6 +1,6 @@
 namespace SSCMS
 {
-    public class MenuPermission
+    public class Permission
     {
         /// <summary>
         /// 获取或设置菜单Id。

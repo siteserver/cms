@@ -7,6 +7,7 @@ using System.Runtime.Loader;
 namespace SSCMS.Core.Plugins
 {
     //https://docs.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
+    //https://github.com/epic2001/AspNetCorePlugins
     internal class PluginLoadContext : AssemblyLoadContext
     {
 

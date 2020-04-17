@@ -284,7 +284,7 @@
     ],
     "site": [
       {
-        "id": "content-manage",
+        "id": "site_data",
         "text": "信息管理",
         "permissions": [
           "site_contents",
@@ -340,7 +340,7 @@
         ]
       },
       {
-        "id": "Template",
+        "id": "site_template",
         "text": "显示管理",
         "permissions": [
           "site_templates",
@@ -387,7 +387,7 @@
         ]
       },
       {
-        "id": "Configuration",
+        "id": "site_config",
         "text": "设置管理",
         "permissions": [
           "site_configSite",
@@ -444,7 +444,7 @@
         ]
       },
       {
-        "id": "Create",
+        "id": "site_create",
         "text": "生成管理",
         "permissions": [
           "site_createIndex",

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CacheManager.Core;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using SSCMS.Models;
@@ -14,16 +14,16 @@ namespace SSCMS.Core.Services
     {
         private readonly ClaimsPrincipal _principal;
         private readonly IOptionsMonitor<PermissionsOptions> _permissionsAccessor;
-        private readonly ICacheManager<object> _cacheManager;
         private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
 
-        public AuthManager(IHttpContextAccessor context, IOptionsMonitor<PermissionsOptions> permissionsAccessor, ICacheManager<object> cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public AuthManager(IHttpContextAccessor context, IOptionsMonitor<PermissionsOptions> permissionsAccessor, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager)
         {
             _principal = context.HttpContext.User;
             _permissionsAccessor = permissionsAccessor;
-            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
         }
 
@@ -45,12 +45,6 @@ namespace SSCMS.Core.Services
             if (administrator != null && !administrator.Locked)
             {
                 _admin = administrator;
-
-                _rolesKey = GetRolesCacheKey(_admin.UserName);
-                _appPermissionsKey = GetAppPermissionsCacheKey(_admin.UserName);
-                _sitePermissionDictKey = GetSitePermissionDictCacheKey(_admin.UserName);
-                _channelPermissionDictKey = GetChannelPermissionDictCacheKey(_admin.UserName);
-                _contentPermissionDictKey = GetContentPermissionDictCacheKey(_admin.UserName);
             }
         }
 

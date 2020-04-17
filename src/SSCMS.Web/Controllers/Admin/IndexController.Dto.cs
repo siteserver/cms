@@ -53,19 +53,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string Version { get; set; }
         }
 
-        private static bool IsValid(Menu menu, IList<string> permissions)
-        {
-            if (menu.Permissions == null || menu.Permissions.Count <= 0) return true;
-
-            if (permissions != null && permissions.Count > 0)
-            {
-                return menu.Permissions.Any(permissions.Contains);
-            }
-
-            return false;
-        }
-
-        private static IList<Menu> GetChildren(Menu menu, IList<string> permissions, Func<Menu, Menu> op = null)
+        private IList<Menu> GetChildren(Menu menu, IList<string> permissions, Func<Menu, Menu> op = null)
         {
             if (menu.Children == null || menu.Children.Count == 0) return null;
 
@@ -73,13 +61,27 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 child.Children = GetChildren(child, permissions, op);
             }
-            var children = menu.Children.Where(x => IsValid(x, permissions)).ToList();
+
+            var children = new List<Menu>();
+            foreach (var child in menu.Children)
+            {
+                var exist = children.FirstOrDefault(x => !string.IsNullOrEmpty(x.Id) && x.Id == child.Id);
+                if (exist != null)
+                {
+                    children[children.IndexOf(exist)] = child;
+                }
+                else
+                {
+                    children.Add(child);
+                }
+            }
+            
             if (op != null)
             {
                 children = children.Select(op).ToList();
             }
 
-            return children;
+            return children.Where(x => _authManager.IsMenuValid(x, permissions)).ToList();
         }
 
         //private async Task<IList<Menu>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList)

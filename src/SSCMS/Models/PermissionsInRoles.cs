@@ -11,6 +11,6 @@ namespace SSCMS.Models
         public string RoleName { get; set; }
 
         [DataColumn(Text = true)]
-        public List<string> GeneralPermissions { get; set; }
+        public List<string> AppPermissions { get; set; }
     }
 }

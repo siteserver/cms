@@ -9,6 +9,7 @@ using SSCMS.Core.Extensions;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 using NSwag.Annotations;
+using NuGet.Packaging;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -29,7 +30,8 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IOldPluginManager _oldPluginManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
@@ -37,7 +39,7 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(IStringLocalizer<IndexController> local, IOptionsMonitor<MenusOptions> menusAccessor, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(IStringLocalizer<IndexController> local, IOptionsMonitor<MenusOptions> menusAccessor, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
             _local = local;
             _menusAccessor = menusAccessor;
@@ -45,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin
             _authManager = authManager;
             _createManager = createManager;
             _pathManager = pathManager;
+            _oldPluginManager = oldPluginManager;
             _pluginManager = pluginManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
@@ -125,7 +128,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Constants.PackageId
             };
             var packageList = new List<object>();
-            var plugins = _pluginManager.GetPlugins();
+            var plugins = _oldPluginManager.GetPlugins();
             foreach (var plugin in plugins)
             {
                 packageIds.Add(plugin.PluginId);
@@ -144,8 +147,14 @@ namespace SSCMS.Web.Controllers.Admin
                 {
                     Id = IdSite,
                     Text = site.SiteName,
-                    Children = _menusAccessor.CurrentValue.Site
+                    Children = new List<Menu>(_menusAccessor.CurrentValue.Site)
                 };
+
+                foreach (var plugin in _pluginManager.Plugins.Where(x => x.Menus?.Site != null))
+                {
+                    siteMenu.Children.AddRange(plugin.Menus.Site);
+                }
+
                 siteMenu.Children = GetChildren(siteMenu, sitePermissions, x =>
                 {
                     x.Link = PageUtils.AddQueryString(x.Link, $"siteId={site.Id}");
@@ -196,7 +205,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var appPermissions = await _authManager.GetAppPermissionsAsync();
-            var appMenus = _menusAccessor.CurrentValue.App.Where(x => IsValid(x, appPermissions)).ToList();
+            var appMenus = _menusAccessor.CurrentValue.App.Where(x => _authManager.IsMenuValid(x, appPermissions)).ToList();
             foreach (var appMenu in appMenus)
             {
                 appMenu.Children = GetChildren(appMenu, appPermissions);
@@ -210,7 +219,7 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 Value = true,
-                DefaultPageUrl = await _pluginManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
+                DefaultPageUrl = await _oldPluginManager.GetSystemDefaultPageUrlAsync(request.SiteId) ?? _pathManager.GetAdminUrl(DashboardController.Route),
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 Version = _settingsManager.Version,
                 TargetFramework = _settingsManager.TargetFramework,

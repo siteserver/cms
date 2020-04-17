@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -12,18 +11,6 @@ namespace SSCMS.Core.Services
 {
     public partial class AuthManager
     {
-        private string _rolesKey;
-        private string _appPermissionsKey;
-        private string _sitePermissionDictKey;
-        private string _channelPermissionDictKey;
-        private string _contentPermissionDictKey;
-
-        private IList<string> _roles;
-        private List<string> _appPermissions;
-        private Dictionary<int, List<string>> _sitePermissionDict;
-        private Dictionary<string, List<string>> _channelPermissionDict;
-        private Dictionary<string, List<string>> _contentPermissionDict;
-
         public async Task<bool> IsSuperAdminAsync()
         {
             return _databaseManager.RoleRepository.IsConsoleAdministrator(await GetRolesAsync());
@@ -130,41 +117,28 @@ namespace SSCMS.Core.Services
 
         public async Task<List<string>> GetAppPermissionsAsync()
         {
-            if (_appPermissions != null) return _appPermissions;
-
             var administrator = await GetAdminAsync();
             if (administrator == null || administrator.Locked) return new List<string>();
+            var appPermissions = new List<string>();
 
-            _appPermissions = _cacheManager.Get<List<string>>(_appPermissionsKey);
-
-            if (_appPermissions == null)
+            var roles = await GetRolesAsync();
+            if (_databaseManager.RoleRepository.IsConsoleAdministrator(roles))
             {
-                var roles = await GetRolesAsync();
-                if (_databaseManager.RoleRepository.IsConsoleAdministrator(roles))
-                {
-                    _appPermissions = new List<string>();
-
-                    foreach (var permission in _permissionsAccessor.CurrentValue.App)
-                    {
-                        _appPermissions.Add(permission.Id);
-                    }
-                }
-                else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
-                {
-                    _appPermissions = new List<string>
-                    {
-                        Constants.AppPermissions.SettingsAdministrators
-                    };
-                }
-                else
-                {
-                    _appPermissions = await _databaseManager.PermissionsInRolesRepository.GetGeneralPermissionListAsync(roles);
-                }
-
-                var cacheItem = new CacheItem<object>(_appPermissionsKey, _appPermissions, ExpirationMode.Sliding, TimeSpan.FromMinutes(30));
-                _cacheManager.AddOrUpdate(cacheItem, _ => _appPermissions);
+                appPermissions.AddRange(_permissionsAccessor.CurrentValue.App.Select(permission => permission.Id));
             }
-            return _appPermissions ??= new List<string>();
+            else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
+            {
+                appPermissions = new List<string>
+                {
+                    Constants.AppPermissions.SettingsAdministrators
+                };
+            }
+            else
+            {
+                appPermissions = await _databaseManager.PermissionsInRolesRepository.GetAppPermissionListAsync(roles);
+            }
+
+            return appPermissions;
         }
 
         public async Task<bool> HasSitePermissionsAsync(int siteId)
@@ -256,7 +230,6 @@ namespace SSCMS.Core.Services
             return list;
         }
 
-        //
         public async Task<bool> HasContentPermissionsAsync(int siteId, int channelId, params string[] permissions)
         {
             while (true)
@@ -318,153 +291,105 @@ namespace SSCMS.Core.Services
 
             return list;
         }
-        //
 
         private async Task<IList<string>> GetRolesAsync()
         {
-            if (_roles != null) return _roles;
-
             var administrator = await GetAdminAsync();
             if (administrator == null || administrator.Locked)
                 return new List<string> { PredefinedRole.Administrator.GetValue() };
 
-            _roles = _cacheManager.Get<List<string>>(_rolesKey);
-            if (_roles == null)
-            {
-                _roles = await _databaseManager.AdministratorsInRolesRepository.GetRolesForUserAsync(administrator.UserName);
-
-                var cacheItem = new CacheItem<object>(_rolesKey, _roles, ExpirationMode.Sliding, TimeSpan.FromMinutes(30));
-                _cacheManager.AddOrUpdate(cacheItem, _ => _roles);
-            }
-
-            return _roles ?? new List<string> { PredefinedRole.Administrator.GetValue() };
+            return await _databaseManager.AdministratorsInRolesRepository.GetRolesForUserAsync(administrator.UserName);
         }
 
         private async Task<Dictionary<int, List<string>>> GetSitePermissionDictAsync()
         {
             var administrator = await GetAdminAsync();
 
-            if (_sitePermissionDict != null) return _sitePermissionDict;
             if (administrator == null || administrator.Locked) return new Dictionary<int, List<string>>();
 
-            _sitePermissionDict = _cacheManager.Get<Dictionary<int, List<string>>>(_sitePermissionDictKey);
+            var sitePermissionDict = new Dictionary<int, List<string>>();
 
-            if (_sitePermissionDict == null)
+            if (await IsSiteAdminAsync())
             {
-                if (await IsSiteAdminAsync())
+                var sitePermissions = _permissionsAccessor.CurrentValue.Site.Select(permission => permission.Id).ToList();
+
+                foreach (var plugin in _pluginManager.Plugins.Where(x => x.Permissions?.Site != null))
                 {
-                    var allWebsitePermissionList = new List<string>();
-
-                    foreach (var permission in _permissionsAccessor.CurrentValue.Site)
-                    {
-                        allWebsitePermissionList.Add(permission.Id);
-                    }
-
-                    var siteIdList = await GetSiteIdsAsync();
-
-                    _sitePermissionDict = new Dictionary<int, List<string>>();
-                    foreach (var siteId in siteIdList)
-                    {
-                        _sitePermissionDict[siteId] = allWebsitePermissionList;
-                    }
-                }
-                else
-                {
-                    var roles = await GetRolesAsync();
-                    _sitePermissionDict = await _databaseManager.SitePermissionsRepository.GetSitePermissionSortedListAsync(roles);
+                    sitePermissions.AddRange(plugin.Permissions.Site.Select(x => x.Id));
                 }
 
-                var cacheItem = new CacheItem<object>(_sitePermissionDictKey, _sitePermissionDict, ExpirationMode.Sliding, TimeSpan.FromMinutes(30));
-                _cacheManager.AddOrUpdate(cacheItem, _ => _sitePermissionDict);
+                var siteIdList = await GetSiteIdsAsync();
+                foreach (var siteId in siteIdList)
+                {
+                    sitePermissionDict[siteId] = sitePermissions;
+                }
             }
-            return _sitePermissionDict ??= new Dictionary<int, List<string>>();
+            else
+            {
+                var roles = await GetRolesAsync();
+                sitePermissionDict = await _databaseManager.SitePermissionsRepository.GetSitePermissionSortedListAsync(roles);
+            }
+
+            return sitePermissionDict;
         }
 
         private async Task<Dictionary<string, List<string>>> GetChannelPermissionDictAsync()
         {
             var administrator = await GetAdminAsync();
 
-            if (_channelPermissionDict != null) return _channelPermissionDict;
             if (administrator == null || administrator.Locked) return new Dictionary<string, List<string>>();
 
-            _channelPermissionDict = _cacheManager.Get<Dictionary<string, List<string>>>(_channelPermissionDictKey);
+            var channelPermissionDict = new Dictionary<string, List<string>>();
 
-            if (_channelPermissionDict == null)
+            var roles = await GetRolesAsync();
+            if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
-                var roles = await GetRolesAsync();
-                if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
+                var allContentPermissionList = _permissionsAccessor.CurrentValue.Channel.Select(permission => permission.Id).ToList();
+
+                var siteIdList = await GetSiteIdsAsync();
+
+                foreach (var siteId in siteIdList)
                 {
-                    var allContentPermissionList = new List<string>();
-
-                    foreach (var permission in _permissionsAccessor.CurrentValue.Channel)
-                    {
-                        allContentPermissionList.Add(permission.Id);
-                    }
-
-                    _channelPermissionDict = new Dictionary<string, List<string>>();
-
-                    var siteIdList = await GetSiteIdsAsync();
-
-                    foreach (var siteId in siteIdList)
-                    {
-                        _channelPermissionDict[GetPermissionDictKey(siteId, siteId)] = allContentPermissionList;
-                    }
+                    channelPermissionDict[GetPermissionDictKey(siteId, siteId)] = allContentPermissionList;
                 }
-                else
-                {
-                    _channelPermissionDict = await _databaseManager.SitePermissionsRepository.GetChannelPermissionSortedListAsync(roles);
-                }
-
-                var cacheItem = new CacheItem<object>(_channelPermissionDictKey, _channelPermissionDict, ExpirationMode.Sliding, TimeSpan.FromMinutes(30));
-                _cacheManager.AddOrUpdate(cacheItem, _ => _channelPermissionDict);
+            }
+            else
+            {
+                channelPermissionDict = await _databaseManager.SitePermissionsRepository.GetChannelPermissionSortedListAsync(roles);
             }
 
-            return _channelPermissionDict ??= new Dictionary<string, List<string>>();
+            return channelPermissionDict;
         }
 
         private async Task<Dictionary<string, List<string>>> GetContentPermissionDictAsync()
         {
             var administrator = await GetAdminAsync();
 
-            if (_contentPermissionDict != null) return _contentPermissionDict;
             if (administrator == null || administrator.Locked) return new Dictionary<string, List<string>>();
 
-            _contentPermissionDict = _cacheManager.Get<Dictionary<string, List<string>>>(_contentPermissionDictKey);
+            var contentPermissionDict = new Dictionary<string, List<string>>();
 
-            if (_contentPermissionDict == null)
+            var roles = await GetRolesAsync();
+            if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
-                var roles = await GetRolesAsync();
-                if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
+                var allContentPermissionList = _permissionsAccessor.CurrentValue.Channel.Select(permission => permission.Id).ToList();
+
+                var siteIdList = await GetSiteIdsAsync();
+
+                foreach (var siteId in siteIdList)
                 {
-                    var allContentPermissionList = new List<string>();
-
-                    foreach (var permission in _permissionsAccessor.CurrentValue.Channel)
-                    {
-                        allContentPermissionList.Add(permission.Id);
-                    }
-
-                    _contentPermissionDict = new Dictionary<string, List<string>>();
-
-                    var siteIdList = await GetSiteIdsAsync();
-
-                    foreach (var siteId in siteIdList)
-                    {
-                        _contentPermissionDict[GetPermissionDictKey(siteId, siteId)] = allContentPermissionList;
-                    }
+                    contentPermissionDict[GetPermissionDictKey(siteId, siteId)] = allContentPermissionList;
                 }
-                else
-                {
-                    _contentPermissionDict = await _databaseManager.SitePermissionsRepository.GetContentPermissionSortedListAsync(roles);
-                }
-
-                var cacheItem = new CacheItem<object>(_contentPermissionDictKey, _contentPermissionDict, ExpirationMode.Sliding, TimeSpan.FromMinutes(30));
-                _cacheManager.AddOrUpdate(cacheItem, _ => _contentPermissionDict);
+            }
+            else
+            {
+                contentPermissionDict = await _databaseManager.SitePermissionsRepository.GetContentPermissionSortedListAsync(roles);
             }
 
-            return _contentPermissionDict ??= new Dictionary<string, List<string>>();
+            return contentPermissionDict;
         }
 
-        private async Task<bool> HasPermissionsAsync(List<string> permissionList, params string[] permissions)
+        private async Task<bool> HasPermissionsAsync(IList<string> permissionList, params string[] permissions)
         {
             if (await IsSiteAdminAsync())
             {
@@ -490,31 +415,6 @@ namespace SSCMS.Core.Services
             if (string.IsNullOrEmpty(dictKey) || dictKey.IndexOf("_", StringComparison.Ordinal) == -1) return new KeyValuePair<int, int>(0, 0);
 
             return new KeyValuePair<int, int>(TranslateUtils.ToInt(dictKey.Split('_')[0]), TranslateUtils.ToInt(dictKey.Split('_')[1]));
-        }
-
-        private static string GetRolesCacheKey(string userName)
-        {
-            return CacheUtils.GetClassKey(typeof(AuthManager), nameof(GetRolesCacheKey), userName);
-        }
-
-        private static string GetAppPermissionsCacheKey(string userName)
-        {
-            return CacheUtils.GetClassKey(typeof(AuthManager), nameof(GetAppPermissionsCacheKey), userName);
-        }
-
-        private static string GetSitePermissionDictCacheKey(string userName)
-        {
-            return CacheUtils.GetClassKey(typeof(AuthManager), nameof(GetSitePermissionDictCacheKey), userName);
-        }
-
-        private static string GetChannelPermissionDictCacheKey(string userName)
-        {
-            return CacheUtils.GetClassKey(typeof(AuthManager), nameof(GetChannelPermissionDictCacheKey), userName);
-        }
-
-        private static string GetContentPermissionDictCacheKey(string userName)
-        {
-            return CacheUtils.GetClassKey(typeof(AuthManager), nameof(GetContentPermissionDictCacheKey), userName);
         }
     }
 }

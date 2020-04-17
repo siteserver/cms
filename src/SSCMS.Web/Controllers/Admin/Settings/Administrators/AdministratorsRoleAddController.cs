@@ -52,27 +52,27 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            var systemPermissionsInfoList = new List<SitePermissions>();
+            var sitePermissionsList = new List<SitePermissions>();
             var permissionList = new List<string>();
             Role role = null;
 
             if (request.RoleId > 0)
             {
                 role = await _roleRepository.GetRoleAsync(request.RoleId);
-                systemPermissionsInfoList =
-                    await _sitePermissionsRepository.GetSystemPermissionsListAsync(role.RoleName);
+                sitePermissionsList =
+                    await _sitePermissionsRepository.GetListAsync(role.RoleName);
                 permissionList =
-                    await _permissionsInRolesRepository.GetGeneralPermissionListAsync(new[] { role.RoleName });
+                    await _permissionsInRolesRepository.GetAppPermissionListAsync(new[] { role.RoleName });
             }
 
             var permissions = new List<Permission>();
             var appPermissions = await _authManager.GetAppPermissionsAsync();
     
-            var generalPermissions = _permissionsAccessor.CurrentValue.App;
+            var allAppPermissions = _permissionsAccessor.CurrentValue.App;
 
-            if (generalPermissions.Count > 0)
+            if (allAppPermissions.Count > 0)
             {
-                foreach (var permission in generalPermissions)
+                foreach (var permission in allAppPermissions)
                 {
                     if (appPermissions.Contains(permission.Id))
                     {
@@ -90,28 +90,27 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             var checkedSiteIdList = new List<int>();
             foreach (var permissionSiteId in await _authManager.GetSiteIdsAsync())
             {
-                if (await _authManager.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) &&
-                    await _authManager.HasSitePermissionsAsync(permissionSiteId))
+                if (!await _authManager.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) ||
+                    !await _authManager.HasSitePermissionsAsync(permissionSiteId)) continue;
+
+                var listOne =
+                    await _authManager.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
+                var listTwo = await _authManager.GetSitePermissionsAsync(permissionSiteId);
+                if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                 {
-                    var listOne =
-                        await _authManager.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
-                    var listTwo = await _authManager.GetSitePermissionsAsync(permissionSiteId);
-                    if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
-                    {
-                        siteList.Add(await _siteRepository.GetAsync(permissionSiteId));
-                    }
+                    siteList.Add(await _siteRepository.GetAsync(permissionSiteId));
                 }
             }
 
-            foreach (var systemPermissionsInfo in systemPermissionsInfoList)
+            foreach (var sitePermissions in sitePermissionsList)
             {
-                checkedSiteIdList.Add(systemPermissionsInfo.SiteId);
+                checkedSiteIdList.Add(sitePermissions.SiteId);
             }
 
-            var sitePermissionsList = new List<object>();
+            var list = new List<object>();
             foreach (var siteId in checkedSiteIdList)
             {
-                sitePermissionsList.Add(await GetSitePermissionsObjectAsync(request.RoleId, siteId));
+                list.Add(await GetSitePermissionsObjectAsync(request.RoleId, siteId));
             }
 
             return new GetResult
@@ -120,7 +119,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 Permissions = permissions,
                 Sites = siteList,
                 CheckedSiteIds = checkedSiteIdList,
-                SitePermissionsList = sitePermissionsList
+                SitePermissionsList = list
             };
         }
 
@@ -159,13 +158,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 Description = request.Description
             });
 
-            if (request.GeneralPermissions != null && request.GeneralPermissions.Count > 0)
+            if (request.AppPermissions != null && request.AppPermissions.Count > 0)
             {
                 var permissionsInRolesInfo = new PermissionsInRoles
                 {
                     Id = 0,
                     RoleName = request.RoleName,
-                    GeneralPermissions = request.GeneralPermissions
+                    AppPermissions = request.AppPermissions
                 };
                 await _permissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
             }
@@ -213,13 +212,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             await _permissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
             await _sitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
 
-            if (request.GeneralPermissions != null && request.GeneralPermissions.Count > 0)
+            if (request.AppPermissions != null && request.AppPermissions.Count > 0)
             {
                 var permissionsInRolesInfo = new PermissionsInRoles
                 {
                     Id = 0,
                     RoleName = request.RoleName,
-                    GeneralPermissions = request.GeneralPermissions
+                    AppPermissions = request.AppPermissions
                 };
                 await _permissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
             }

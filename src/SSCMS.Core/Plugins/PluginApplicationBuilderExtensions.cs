@@ -29,15 +29,15 @@ namespace SSCMS.Core.Plugins
             {
                 logger.LogInformation("Using Plugin '{0}'", plugin.PluginId);
 
-                var requestPath = $"/{plugin.PluginId}";
-                var directoryPath = PathUtils.Combine(pluginManager.DirectoryPath, plugin.PluginId, "wwwroot");
+                //var requestPath = "/";
+                var directoryPath = PathUtils.Combine(pluginManager.DirectoryPath, plugin.FolderName, "wwwroot");
                 DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
                 var fileProvider = new PhysicalFileProvider(directoryPath);
                 app.UseStaticFiles(
                     new StaticFileOptions
                     {
-                        RequestPath = requestPath,
+                        //RequestPath = requestPath,
                         FileProvider = fileProvider
                     });
             }

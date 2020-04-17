@@ -33,14 +33,14 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(Q.Where(nameof(SitePermissions.RoleName), roleName));
         }
 
-        public async Task<List<SitePermissions>> GetSystemPermissionsListAsync(string roleName)
+        public async Task<List<SitePermissions>> GetListAsync(string roleName)
         {
             var permissionsList = await _repository.GetAllAsync(Q.Where(nameof(SitePermissions.RoleName), roleName));
 
             return permissionsList.ToList();
         }
 
-        public async Task<SitePermissions> GetSitePermissionsAsync(string roleName, int siteId)
+        public async Task<SitePermissions> GetAsync(string roleName, int siteId)
         {
             return await _repository.GetAsync(Q
                 .Where(nameof(SitePermissions.RoleName), roleName)
@@ -55,7 +55,7 @@ namespace SSCMS.Core.Repositories
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                var systemPermissionsList = await GetListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
                     if (systemPermissions.Permissions == null) continue;
@@ -79,27 +79,26 @@ namespace SSCMS.Core.Repositories
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                var systemPermissionsList = await GetListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
-                    if (systemPermissions.ChannelIds != null)
+                    if (systemPermissions.ChannelIds == null) continue;
+
+                    foreach (var channelId in systemPermissions.ChannelIds)
                     {
-                        foreach (var channelId in systemPermissions.ChannelIds)
+                        var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
+
+                        if (!dict.TryGetValue(key, out var list))
                         {
-                            var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
+                            list = new List<string>();
+                            dict[key] = list;
+                        }
 
-                            if (!dict.TryGetValue(key, out var list))
+                        if (systemPermissions.ChannelPermissions != null)
+                        {
+                            foreach (var channelPermission in systemPermissions.ChannelPermissions)
                             {
-                                list = new List<string>();
-                                dict[key] = list;
-                            }
-
-                            if (systemPermissions.ChannelPermissions != null)
-                            {
-                                foreach (var channelPermission in systemPermissions.ChannelPermissions)
-                                {
-                                    if (!list.Contains(channelPermission)) list.Add(channelPermission);
-                                }
+                                if (!list.Contains(channelPermission)) list.Add(channelPermission);
                             }
                         }
                     }
@@ -116,27 +115,26 @@ namespace SSCMS.Core.Repositories
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                var systemPermissionsList = await GetListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
-                    if (systemPermissions.ChannelIds != null)
+                    if (systemPermissions.ChannelIds == null) continue;
+
+                    foreach (var channelId in systemPermissions.ChannelIds)
                     {
-                        foreach (var channelId in systemPermissions.ChannelIds)
+                        var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
+
+                        if (!dict.TryGetValue(key, out var list))
                         {
-                            var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
+                            list = new List<string>();
+                            dict[key] = list;
+                        }
 
-                            if (!dict.TryGetValue(key, out var list))
+                        if (systemPermissions.ContentPermissions != null)
+                        {
+                            foreach (var contentPermission in systemPermissions.ContentPermissions)
                             {
-                                list = new List<string>();
-                                dict[key] = list;
-                            }
-
-                            if (systemPermissions.ContentPermissions != null)
-                            {
-                                foreach (var contentPermission in systemPermissions.ContentPermissions)
-                                {
-                                    if (!list.Contains(contentPermission)) list.Add(contentPermission);
-                                }
+                                if (!list.Contains(contentPermission)) list.Add(contentPermission);
                             }
                         }
                     }
@@ -153,7 +151,7 @@ namespace SSCMS.Core.Repositories
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetSystemPermissionsListAsync(roleName);
+                var systemPermissionsList = await GetListAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
                     if (systemPermissions.ChannelPermissions != null)

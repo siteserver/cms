@@ -36,7 +36,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAsync(Q.Where(nameof(PermissionsInRoles.RoleName), roleName));
         }
 
-		public async Task<List<string>> GetGeneralPermissionListAsync(IEnumerable<string> roles)
+		public async Task<List<string>> GetAppPermissionListAsync(IEnumerable<string> roles)
 		{
             var list = new List<string>();
 		    if (roles == null) return list;
@@ -44,9 +44,9 @@ namespace SSCMS.Core.Repositories
             foreach (var roleName in roles)
 			{
                 var pr = await GetPermissionsInRolesAsync(roleName);
-                if (pr?.GeneralPermissions == null) continue;
+                if (pr?.AppPermissions == null) continue;
 
-                foreach (var permission in pr.GeneralPermissions)
+                foreach (var permission in pr.AppPermissions)
                 {
                     if (!list.Contains(permission)) list.Add(permission);
                 }

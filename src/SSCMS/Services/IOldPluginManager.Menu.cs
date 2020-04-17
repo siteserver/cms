@@ -19,8 +19,8 @@ namespace SSCMS.Services
 
         Menu GetPluginTab(string pluginId, string prefix, Menu menu);
 
-        Task<List<MenuPermission>> GetTopPermissionsAsync();
+        Task<List<Permission>> GetTopPermissionsAsync();
 
-        Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId);
+        Task<List<Permission>> GetSitePermissionsAsync(int siteId);
     }
 }

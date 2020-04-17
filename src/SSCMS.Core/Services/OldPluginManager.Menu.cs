@@ -251,9 +251,9 @@ namespace SSCMS.Core.Services
             return tab;
         }
 
-        public async Task<List<MenuPermission>> GetTopPermissionsAsync()
+        public async Task<List<Permission>> GetTopPermissionsAsync()
         {
-            var permissions = new List<MenuPermission>();
+            var permissions = new List<Permission>();
 
             foreach (var plugin in GetPlugins())
             {
@@ -262,7 +262,7 @@ namespace SSCMS.Core.Services
                     var systemMenus = plugin.GetSystemMenus() ?? await plugin.GetSystemMenusAsync();
                     if (systemMenus == null) continue;
 
-                    permissions.Add(new MenuPermission
+                    permissions.Add(new Permission
                     {
                         Id = plugin.PluginId,
                         Text = $"系统管理 -> {plugin.Name}（插件）"
@@ -282,9 +282,9 @@ namespace SSCMS.Core.Services
             return string.IsNullOrEmpty(prefix) ? $"{pluginId}:{menu.Text}" : $"{pluginId}:{prefix}:{menu.Text}";
         }
 
-        public async Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId)
+        public async Task<List<Permission>> GetSitePermissionsAsync(int siteId)
         {
-            var permissions = new List<MenuPermission>();
+            var permissions = new List<Permission>();
 
             foreach (var plugin in GetPlugins())
             {
@@ -302,7 +302,7 @@ namespace SSCMS.Core.Services
                             foreach (var menu in siteMenu.Children)
                             {
                                 var permission = GetMenuPermission(plugin.PluginId, siteMenu.Text, menu);
-                                permissions.Add(new MenuPermission
+                                permissions.Add(new Permission
                                 {
                                     Id = permission,
                                     Text = $"{plugin.Name} -> {menu.Text}"
@@ -312,7 +312,7 @@ namespace SSCMS.Core.Services
                         else
                         {
                             var permission = GetMenuPermission(plugin.PluginId, string.Empty, siteMenu);
-                            permissions.Add(new MenuPermission
+                            permissions.Add(new Permission
                             {
                                 Id = permission,
                                 Text = $"{plugin.Name} -> {siteMenu.Text}"

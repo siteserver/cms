@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SSCMS
+namespace SSCMS.Services
 {
-    public interface IPermissions
+    public partial interface IAuthManager
     {
         Task<bool> IsSuperAdminAsync();
 

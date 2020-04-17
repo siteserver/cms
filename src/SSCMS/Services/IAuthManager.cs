@@ -3,7 +3,7 @@ using SSCMS.Models;
 
 namespace SSCMS.Services
 {
-    public partial interface IAuthManager : IPermissions
+    public partial interface IAuthManager
     {
         Task<User> GetUserAsync();
 
