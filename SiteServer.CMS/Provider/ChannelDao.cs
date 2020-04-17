@@ -311,9 +311,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(trans, sqlUpdateIsLastNode);
 
             //OwningIdCache.IsChanged = true;
-
-            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
-            PermissionsImpl.ClearAllCache();
         }
 
         /// <summary>
@@ -631,6 +628,9 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
+            PermissionsImpl.ClearAllCache();
+
             return channelInfo.Id;
 
         }
@@ -659,6 +659,9 @@ namespace SiteServer.CMS.Provider
                     }
                 }
             }
+
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
+            PermissionsImpl.ClearAllCache();
 
             return channelInfo.Id;
         }
@@ -699,6 +702,10 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
 
             DataProvider.TemplateDao.CreateDefaultTemplateInfo(channelInfo.Id, administratorName);
+
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
+            PermissionsImpl.ClearAllCache();
+
             return channelInfo.Id;
         }
 
