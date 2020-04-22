@@ -78,6 +78,11 @@ jobs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm run build
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: './build/build.sln'
+      feedsToUse: 'select'
   - script: dotnet build ./build/build.sln --configuration $(buildConfiguration)
   - script: dotnet publish ./build/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 --configuration $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true
   - script: npm run copy-win-x64
