@@ -31,17 +31,6 @@ namespace SSCMS.Core.Services
                 }
             }
 
-            if (string.IsNullOrEmpty(SecurityKey))
-            {
-                var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) +
-                                  StringUtils.GetShortGuid(false);
-                var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
-                var json = FileUtils.ReadText(filePath);
-                json = json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"",");
-                FileUtils.WriteText(filePath, json);
-            }
-
-
             //var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
             //if (FileUtils.IsFileExists(menusPath))
             //{

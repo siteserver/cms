@@ -13,6 +13,15 @@ namespace SSCMS.Web
         public static void Main(string[] args)
         {
             Console.Title = "SS CMS";
+
+            var filePath = PathUtils.Combine(Directory.GetCurrentDirectory(), Constants.ConfigFileName);
+            var json = FileUtils.ReadText(filePath);
+            if (json.Contains(@"""SecurityKey"": """","))
+            {
+                var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
+                FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
+            }
+
             CreateHostBuilder(args).Build().Run();
         }
 

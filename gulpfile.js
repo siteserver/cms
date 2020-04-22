@@ -1,4 +1,5 @@
-const fs = require('fs-extra')
+const fs = require('fs-extra');
+const del = require("del");
 const gulp = require("gulp");
 const through2 = require('through2');
 const minifier = require("gulp-minifier");
@@ -110,13 +111,18 @@ gulp.task("build-home", function () {
     .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/home"));
 });
 
+gulp.task('build-clean', function(){
+  return del(['./build/src/SSCMS.Web/Pages/ss-admin/**', './build/src/SSCMS.Web/Pages/home/**'], {force:true});
+});
+
 gulp.task("build", async function () {
     console.log("build version: " + version);
     return runSequence(
         "build-src",
         "build-sln",
         "build-ss-admin",
-        "build-home"
+        "build-home",
+        "build-clean"
     );
 });
 
