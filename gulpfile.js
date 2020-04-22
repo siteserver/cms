@@ -62,6 +62,22 @@ gulp.task("build-ss-admin", function () {
     .pipe(through2.obj((file, enc, cb) => {
       cb(null, transform(file, html))
     }))
+    .pipe(rename(function (path) {
+      if (path.basename != 'index'){
+        path.dirname += "/" + path.basename;
+        path.basename = "index";
+      }
+      path.extname = ".html";
+    }))
+    .pipe(
+      minifier({
+        minify: true,
+        minifyHTML: {
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+        },
+      })
+    )
     .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/ss-admin"));
 });
 
@@ -75,6 +91,22 @@ gulp.task("build-home", function () {
     .pipe(through2.obj((file, enc, cb) => {
       cb(null, transform(file, html))
     }))
+    .pipe(rename(function (path) {
+      if (path.basename != 'index'){
+        path.dirname += "/" + path.basename;
+        path.basename = "index";
+      }
+      path.extname = ".html";
+    }))
+    .pipe(
+      minifier({
+        minify: true,
+        minifyHTML: {
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+        },
+      })
+    )
     .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/home"));
 });
 
@@ -138,7 +170,7 @@ gulp.task("copy-js", function () {
     .pipe(rename(function (path) {
       path.basename = path.basename.substring(0, path.basename.length - 4);
     }))
-      .pipe(gulp.dest(publishDir + "/wwwroot/sitefiles/assets"));
+    .pipe(gulp.dest(publishDir + "/wwwroot/sitefiles/assets"));
 });
 
 gulp.task("copy-osx-x64", async function (callback) {
