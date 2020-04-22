@@ -299,11 +299,6 @@ namespace SSCMS.Cli.Updater
                 var table = new TableUser(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(TableUserLog.OldTableName, oldTableName))
-            {
-                var table = new TableUserLog(_databaseManager);
-                converter = table.Converter;
-            }
             else if (StringUtils.EqualsIgnoreCase(TableGovInteractChannel.OldTableName, oldTableName))
             {
                 var table = new TableGovInteractChannel();

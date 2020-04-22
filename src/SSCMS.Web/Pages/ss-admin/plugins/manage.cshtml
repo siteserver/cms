@@ -1,14 +1,13 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-@section Styles{
-  <style>
-    .el-badge__content.is-fixed {
-      top: 16px;
-      right: 4px;
-      border: 0;
-    }
-  </style>
-}
+
+<style>
+  .el-badge__content.is-fixed {
+    top: 16px;
+    right: 4px;
+    border: 0;
+  }
+</style>
 
 <el-menu :default-active="pageType" mode="horizontal"
   background-color="#545c64"
@@ -54,7 +53,7 @@
   <el-table v-if="pageType == '1'" :data="enabledPlugins" style="width: 100%">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
       </template>
     </el-table-column>
     <el-table-column label="插件Id">
@@ -64,7 +63,7 @@
     </el-table-column>
     <el-table-column label="插件名称">
       <template slot-scope="scope">
-        {{ scope.row.name }}
+        {{ scope.row.displayName }}
       </template>
     </el-table-column>
     <el-table-column label="版本号">
@@ -103,7 +102,7 @@
   <el-table v-else-if="pageType == '2'" :data="disabledPlugins" style="width: 100%">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="scope.row.metadata.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
       </template>
     </el-table-column>
     <el-table-column label="插件Id">
@@ -113,7 +112,7 @@
     </el-table-column>
     <el-table-column label="插件名称">
       <template slot-scope="scope">
-        {{ scope.row.metadata.title }}
+        {{ scope.row.metadata.displayName }}
       </template>
     </el-table-column>
     <el-table-column label="版本号">
@@ -171,7 +170,7 @@
   <el-table v-else-if="pageType == '4'" :data="updatePlugins" style="width: 100%">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.metadata.iconUrl || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="scope.row.metadata.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
       </template>
     </el-table-column>
     <el-table-column label="插件Id">
@@ -181,7 +180,7 @@
     </el-table-column>
     <el-table-column label="插件名称">
       <template slot-scope="scope">
-        {{ scope.row.metadata.title }}
+        {{ scope.row.metadata.displayName }}
       </template>
     </el-table-column>
     <el-table-column label="已安装版本">
@@ -232,5 +231,5 @@
 </el-card>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/plugins/manage.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/js/admin/plugins/manage.js" type="text/javascript"></script>
 }

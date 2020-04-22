@@ -26,8 +26,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         {
             public int SiteId { get; set; }
             public string SiteName { get; set; }
-            public int PageSize { get; set; }
-            public bool IsCreateDoubleClick { get; set; }
+            public string ImageUrl { get; set; }
+            public string Keywords { get; set; }
+            public string Description { get; set; }
         }
     }
 }

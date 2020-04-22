@@ -85,7 +85,7 @@ namespace SSCMS.Models
 
         public string AdminLogoUrl { get; set; }
 
-        public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SS CMS 管理后台";
+        public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SSCMS 管理后台";
 
         public bool IsHomeClosed { get; set; }
 
@@ -100,5 +100,7 @@ namespace SSCMS.Models
         public bool IsHomeAgreement { get; set; }
 
         public string HomeAgreementHtml { get; set; } = @"阅读并接受<a href=""/agreement.html"" target=""_blank"">《用户协议》</a>";
+
+        public string HomeWelcomeHtml { get; set; } = @"欢迎使用用户中心";
     }
 }

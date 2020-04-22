@@ -16,6 +16,15 @@ namespace SSCMS.Models
         public string SiteName { get; set; }
 
         [DataColumn]
+        public string ImageUrl { get; set; }
+
+        [DataColumn]
+        public string Keywords { get; set; }
+
+        [DataColumn]
+        public string Description { get; set; }
+
+        [DataColumn]
         public string TableName { get; set; }
 
         [DataColumn]
@@ -51,8 +60,6 @@ namespace SSCMS.Models
 
         public int PhotoMiddleWidth { get; set; } = 400;
 
-        /****************ͼƬˮӡ����********************/
-
         public bool IsWaterMark { get; set; }
 
         public bool IsImageWaterMark { get; set; }
@@ -72,8 +79,6 @@ namespace SSCMS.Models
         public int WaterMarkFontSize { get; set; } = 12;
 
         public string WaterMarkImagePath { get; set; }
-
-        /****************����ҳ������********************/
 
         public bool IsSeparatedWeb { get; set; }
 
@@ -115,19 +120,13 @@ namespace SSCMS.Models
 
         public DateTime CreateStaticContentAddDate { get; set; } = DateTime.MinValue;
 
-        /****************��վת������********************/
-
         public bool IsCrossSiteTransChecked { get; set; }
-
-        /****************�����ֶ�����********************/
 
         public List<string> SearchListColumns { get; set; }
 
         public List<string> CheckListColumns { get; set; }
 
         public List<string> RecycleListColumns { get; set; }
-
-        /****************��¼ϵͳ��������********************/
 
         public bool ConfigUEditorVideoIsImageUrl { get; set; }
 
@@ -191,8 +190,6 @@ namespace SSCMS.Models
 
         public bool ConfigImageEditorIsLinkToOriginal { get; set; }
 
-        /****************�ϴ�����*************************/
-
         public string ImageUploadDirectoryName { get; set; } = "upload/images";
 
         public DateFormatType ImageUploadDateFormatString { get; set; } = DateFormatType.Month;
@@ -227,8 +224,6 @@ namespace SSCMS.Models
         public string FileUploadTypeCollection { get; set; } = "zip,rar,7z,js,css,txt,doc,docx,ppt,pptx,xls,xlsx,pdf";
 
         public int FileUploadTypeMaxSize { get; set; } = 307200;
-
-        /****************ģ����Դ�ļ�������*************************/
 
         public string TemplatesAssetsIncludeDir { get; set; } = "include";
 

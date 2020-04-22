@@ -18,13 +18,11 @@ namespace SSCMS.Core.Repositories
     {
         private readonly Repository<User> _repository;
         private readonly IConfigRepository _configRepository;
-        private readonly IUserLogRepository _userLogRepository;
 
-        public UserRepository(ISettingsManager settingsManager, IConfigRepository configRepository, IUserLogRepository userLogRepository)
+        public UserRepository(ISettingsManager settingsManager, IConfigRepository configRepository)
         {
             _repository = new Repository<User>(settingsManager.Database, settingsManager.Redis);
             _configRepository = configRepository;
-            _userLogRepository = userLogRepository;
         }
 
         public IDatabase Database => _repository.Database;
@@ -265,6 +263,19 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task UpdateLastActivityDateAsync(User user)
+        {
+            if (user == null) return;
+
+            user.LastActivityDate = DateTime.Now;
+
+            await _repository.UpdateAsync(Q
+                .Set(nameof(User.LastActivityDate), user.LastActivityDate)
+                .Where(nameof(User.Id), user.Id)
+                .CachingRemove(GetCacheKeysToRemove(user))
+            );
+        }
+
         private static string EncodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)
         {
             var retVal = string.Empty;
@@ -365,8 +376,6 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(User.Id), user.Id)
                 .CachingRemove(GetCacheKeysToRemove(user))
             );
-
-            await _userLogRepository.AddUserLogAsync(userId, "修改密码", string.Empty);
         }
 
         public async Task CheckAsync(IList<int> idList)
@@ -528,7 +537,6 @@ namespace SSCMS.Core.Repositories
             if (!CheckPassword(password, isPasswordMd5, userEntity.Password, userEntity.PasswordFormat, userEntity.PasswordSalt))
             {
                 await UpdateLastActivityDateAndCountOfFailedLoginAsync(user);
-                await _userLogRepository.AddUserLogAsync(userEntity.Id, "用户登录失败", "帐号或密码错误");
                 return (null, user.UserName, "帐号或密码错误");
             }
 

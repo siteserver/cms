@@ -318,7 +318,7 @@
         :limit="1"
         :action="uploadUrl"
         :auto-upload="true"
-        :with-credentials="true"
+        :headers="{Authorization: 'Bearer ' + $token}"
         :file-list="importUploadList"
         :before-upload="uploadBefore"
         :on-progress="uploadProgress"
@@ -725,4 +725,4 @@
 
 @section Scripts{
 <script src="/sitefiles/assets/lib/wangEditor/wangEditor.min.js" type="text/javascript"></script>
-<script src="/sitefiles/assets/js/cms/channels.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/channels.js" type="text/javascript"></script> }

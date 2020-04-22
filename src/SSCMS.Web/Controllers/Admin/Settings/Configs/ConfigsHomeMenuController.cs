@@ -39,7 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 
             return new GetResult
             {
-                UserMenus = await _userMenuRepository.GetUserMenuListAsync(),
+                UserMenus = await _userMenuRepository.GetUserMenusAsync(),
                 Groups = await _userGroupRepository.GetUserGroupListAsync()
             };
         }
@@ -56,7 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 
             return new UserMenusResult
             {
-                UserMenus = await _userMenuRepository.GetUserMenuListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenusAsync()
             };
         }
 
@@ -79,7 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
                     Taxis = request.Taxis,
                     Text = request.Text,
                     IconClass = request.IconClass,
-                    Href = request.Href,
+                    Link = request.Link,
                     Target = request.Target
                 });
 
@@ -95,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
                 userMenu.Taxis = request.Taxis;
                 userMenu.Text = request.Text;
                 userMenu.IconClass = request.IconClass;
-                userMenu.Href = request.Href;
+                userMenu.Link = request.Link;
                 userMenu.Target = request.Target;
                 await _userMenuRepository.UpdateAsync(userMenu);
 
@@ -104,7 +104,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 
             return new UserMenusResult
             {
-                UserMenus = await _userMenuRepository.GetUserMenuListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenusAsync()
             };
         }
 
@@ -116,16 +116,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            foreach (var userMenuInfo in await _userMenuRepository.GetUserMenuListAsync())
-            {
-                await _userMenuRepository.DeleteAsync(userMenuInfo.Id);
-            }
-
+            await _userMenuRepository.ResetAsync();
             await _authManager.AddAdminLogAsync("重置用户菜单");
 
             return new UserMenusResult
             {
-                UserMenus = await _userMenuRepository.GetUserMenuListAsync()
+                UserMenus = await _userMenuRepository.GetUserMenusAsync()
             };
         }
     }

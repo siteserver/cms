@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>用户中心</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="/sitefiles/assets/images/favicon.png" rel="icon" type="image/png">
+  <link href="/sitefiles/assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/lib/elementui/themechalk/index.css" rel="stylesheet" type="text/css" />
+  <script src="/sitefiles/assets/lib/modernizr.min.js"></script>
+  <style>
+    .nav-tabs .nav-link.active{
+      background-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="main" class="wrapper-page">
+
+    <template v-if="pageLoad">
+      <div class="text-center">
+        <div class="logo-lg"> <span>{{ homeTitle }}</span> </div>
+      </div>
+
+      <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20">
+
+        <ul class="nav nav-tabs tabs-bordered nav-justified mb-3">
+          <li class="nav-item"><a href="javascript:;" class="nav-link active">用户登录</a></li>
+        </ul>
+
+        <div class="form-group row">
+          <div class="col-12">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-user-circle-o"></i></span>
+              </div>
+              <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control"
+                type="text" v-focus placeholder="请输入用户名/手机号/邮箱">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-12">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-key"></i></span>
+              </div>
+              <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
+                type="password" placeholder="请输入密码">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-12">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-picture-o"></i></span>
+              </div>
+              <input v-model="captchaValue" :class="{ 'is-invalid': pageSubmit && !captchaValue }" class="form-control" type="text"
+                            placeholder="请输入验证码">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-6">
+            <div class="checkbox checkbox-primary" style="margin-top: 25px">
+              <input id="isPersistent" type="checkbox" v-model="isPersistent">
+              <label for="isPersistent">
+                下次自动登录
+              </label>
+            </div>
+          </div>
+          <div class="col-6">
+            <a href="javascript:;" v-on:click="reload">
+                <img v-show="captchaUrl" style="display: none" class="float-right rounded" :src="captchaUrl" align="absmiddle">
+            </a>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-12">
+            <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md"
+              type="submit">登
+              录</button>
+          </div>
+        </div>
+
+        <div class="form-group row m-t-30">
+          <!-- <div class="col-sm-6">
+            <a href="recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> 忘记密码？</a>
+          </div> -->
+          <div class="col-12 text-right" v-if="isUserRegistrationAllowed">
+            <a @click="btnRegisterClick" href="javascript:;" class="text-danger">新用户注册</a>
+          </div>
+        </div>
+
+      </form>
+    </template>
+    <template v-else>
+      <div class="text-center" style="margin-top: 100px">
+        <img class="mt-3" src="/sitefiles/assets/images/loading.gif" />
+        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+      </div>
+    </template>
+
+  </div>
+
+</body>
+
+</html>
+
+<script src="/sitefiles/assets/lib/es6-promise.auto.min.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/axios-0.17.1.min.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/layer/layer-3.1.1.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/elementui/index.js"></script>
+<script src="/sitefiles/assets/lib/utils.js" type="text/javascript" data-type="user"></script>
+
+<script src="/sitefiles/assets/lib/md5-2.10.0.min.js" type="text/javascript"></script>
+<script src="login.js" type="text/javascript"></script>

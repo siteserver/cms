@@ -92,7 +92,7 @@ namespace SSCMS
         /// <param name="elementName">STL元素名称。</param>
         /// <param name="parse">STL元素解析方法，可以根据第一个参数IParseContext（STL解析上下文）计算并返回解析后的Html。</param>
         /// <returns>返回插件服务注册实例。</returns>
-        IOldPlugin AddStlElementParser(string elementName, Func<IParseContext, string> parse);
+        IOldPlugin AddStlElementParser(string elementName, Func<IStlParseContext, string> parse);
 
         /// <summary>
         /// 添加REST Api插件授权。
@@ -113,7 +113,7 @@ namespace SSCMS
         string SystemDefaultPageUrl { get; }
         string HomeDefaultPageUrl { get; }
 
-        Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; }
+        Dictionary<string, Func<IStlParseContext, string>> StlElementsToParse { get; }
 
         Dictionary<string, Func<IJobContext, Task>> Jobs { get; }
 

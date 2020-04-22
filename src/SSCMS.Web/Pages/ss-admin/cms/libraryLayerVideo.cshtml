@@ -2,14 +2,15 @@
 @{ Layout = "_Layout"; }
 @section Styles{
   <link rel="stylesheet" href="/sitefiles/assets/lib/videojs/video.7.5.5.min.css">
-  <style>
-    .el-upload, .el-upload-dragger {width: 100%;}
-    .videojs {
-      width: 100% !important;
-      min-height: 300px;
-    }
-  </style>
 }
+
+<style>
+  .el-upload, .el-upload-dragger {width: 100%;}
+  .videojs {
+    width: 100% !important;
+    min-height: 300px;
+  }
+</style>
 
 <el-form ref="form" :model="form" size="small">
 
@@ -26,7 +27,7 @@
           drag
           :action="$urlUploadVideo"
           :auto-upload="true"
-          :with-credentials="true"
+          :headers="{Authorization: 'Bearer ' + $token}"
           :show-file-list="false"
           :before-upload="uploadVideoBefore"
           :on-progress="uploadProgress"
@@ -63,7 +64,7 @@
           drag
           :action="$urlUploadImage"
           :auto-upload="true"
-          :with-credentials="true"
+          :headers="{Authorization: 'Bearer ' + $token}"
           :show-file-list="false"
           :before-upload="uploadImageBefore"
           :on-progress="uploadProgress"
@@ -116,5 +117,5 @@
 
 @section Scripts{
   <script src="/sitefiles/assets/lib/videojs/video.7.5.5.min.js" type="text/javascript"></script>
-  <script src="/sitefiles/assets/js/cms/libraryLayerVideo.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/cms/libraryLayerVideo.js" type="text/javascript"></script>
 }

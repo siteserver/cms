@@ -52,6 +52,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
+            site.IsCreateDoubleClick = request.IsCreateDoubleClick;
             site.IsCreateContentIfContentChanged = request.IsCreateContentIfContentChanged;
             site.IsCreateChannelIfChannelChanged = request.IsCreateChannelIfChannelChanged;
             site.IsCreateShowPageInfo = request.IsCreateShowPageInfo;
@@ -59,7 +60,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.IsCreateBrowserNoCache = request.IsCreateBrowserNoCache;
             site.IsCreateJsIgnoreError = request.IsCreateJsIgnoreError;
             site.IsCreateWithJQuery = request.IsCreateWithJQuery;
-            site.IsCreateDoubleClick = request.IsCreateDoubleClick;
             site.CreateStaticMaxPage = request.CreateStaticMaxPage;
             site.IsCreateUseDefaultFileName = request.IsCreateUseDefaultFileName;
             site.CreateDefaultFileName = request.CreateDefaultFileName;

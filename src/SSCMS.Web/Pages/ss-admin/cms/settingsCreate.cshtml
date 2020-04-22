@@ -18,6 +18,13 @@
 
   <el-form size="small" ref="form" :model="form" label-width="280px">
 
+    <el-form-item label="启用双击生成页面">
+      <el-radio-group v-model="form.isCreateDoubleClick">
+        <el-radio :label="true">启用</el-radio>
+        <el-radio :label="false">不启用</el-radio>
+      </el-radio-group>
+      <div class="tips">此功能通常用于制作调试期间，网站正式上线后不建议启用</div>
+    </el-form-item>
     <el-form-item label="当内容变动时是否生成本页">
       <el-radio-group v-model="form.isCreateContentIfContentChanged">
         <el-radio :label="true">生成</el-radio>
@@ -60,13 +67,6 @@
         <el-radio :label="false">不包含</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="启用双击生成页面">
-      <el-radio-group v-model="form.isCreateDoubleClick">
-        <el-radio :label="false">不启用</el-radio>
-        <el-radio :label="true">启用</el-radio>
-      </el-radio-group>
-      <div class="tips">此功能通常用于制作调试期间，网站正式上线后不建议启用</div>
-    </el-form-item>
     <el-form-item label="翻页中生成的静态页面最大数（页）" prop="createStaticMaxPage" :rules="{ required: true, message: '请输入翻页中生成的静态页面最大数' }">
       <el-input v-model.number="form.createStaticMaxPage" placeholder="请输入翻页中生成的静态页面最大数"></el-input>
       <div class="tips">设置翻页中生成的静态页面最大数，剩余页面将动态获取；设置为0代表将静态页面全部生成</div>
@@ -102,4 +102,4 @@
 </el-card>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/cms/settingsCreate.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/settingsCreate.js" type="text/javascript"></script> }

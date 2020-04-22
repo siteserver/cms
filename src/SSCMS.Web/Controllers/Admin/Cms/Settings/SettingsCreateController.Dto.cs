@@ -7,6 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     {
         public class SubmitRequest : SiteRequest
         {
+            public bool IsCreateDoubleClick { get; set; }
             public bool IsCreateContentIfContentChanged { get; set; }
             public bool IsCreateChannelIfChannelChanged { get; set; }
             public bool IsCreateShowPageInfo { get; set; }
@@ -14,7 +15,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public bool IsCreateBrowserNoCache { get; set; }
             public bool IsCreateJsIgnoreError { get; set; }
             public bool IsCreateWithJQuery { get; set; }
-            public bool IsCreateDoubleClick { get; set; }
             public int CreateStaticMaxPage { get; set; }
             public bool IsCreateUseDefaultFileName { get; set; }
             public string CreateDefaultFileName { get; set; }

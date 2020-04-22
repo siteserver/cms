@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils.PluginImpls;
@@ -140,7 +141,7 @@ namespace SSCMS.Core.Services
                 }
                 else
                 {
-                    var parsers = PluginManager.GetParses();
+                    var parsers = OldPluginManager.GetParses();
                     if (parsers.ContainsKey(elementName))
                     {
                         if (stlElementInfo.IsDynamic)
@@ -153,9 +154,8 @@ namespace SSCMS.Core.Services
                             {
                                 if (parsers.TryGetValue(elementName, out var func))
                                 {
-                                    var context = new ParseContextImpl();
-                                    context.Load(DatabaseManager.ContentRepository, stlElementInfo.OuterHtml, stlElementInfo.InnerHtml,
-                                        stlElementInfo.Attributes, PageInfo, ContextInfo);
+                                    var context = new PluginStlParseContext();
+                                    context.Load(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, PageInfo, ContextInfo);
                                     parsedContent = func(context);
                                 }
                             }

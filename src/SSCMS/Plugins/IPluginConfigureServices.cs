@@ -2,7 +2,7 @@
 
 namespace SSCMS.Plugins
 {
-    public interface IPluginConfigureServices
+    public interface IPluginConfigureServices : IPluginExtension
     {
         void ConfigureServices(IServiceCollection services);
     }

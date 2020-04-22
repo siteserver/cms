@@ -2,14 +2,15 @@
 @{ Layout = "_Layout"; }
 @section Styles{
   <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
-  <style>
-    .el-upload, .el-upload-dragger {width: 100%;}
-    .videojs {
-      width: 100% !important;
-      min-height: 300px;
-    }
-  </style>
 }
+
+<style>
+  .el-upload, .el-upload-dragger {width: 100%;}
+  .videojs {
+    width: 100% !important;
+    min-height: 300px;
+  }
+</style>
 
 <el-card>
   <div slot="header" class="clearfix">
@@ -21,16 +22,25 @@
     <el-form-item label="站点名称" prop="siteName" :rules="{ required: true, message: '请输入站点名称' }">
       <el-input v-model="form.siteName" placeholder="请输入站点名称"></el-input>
     </el-form-item>
-    <el-form-item label="默认每页显示项目数" prop="pageSize" :rules="{ required: true, message: '请输入默认每页显示项目数' }">
-      <el-input v-model.number="form.pageSize" placeholder="请输入默认每页显示项目数"></el-input>
-      <div class="tips">设置管理默认每页显示项目数</div>
+    <el-form-item label="站点图片">
+      <el-button-group>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'imageLayerUpload', attributeName: 'imageUrl', no: 0})">
+          上传
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'imageLayerSelect', attributeName: 'imageUrl', no: 0, full: true})">
+          选择
+        </el-button>
+        <el-button size="mini" type="info" plain v-if="form.imageUrl" v-on:click="btnPreviewClick('imageUrl')">
+          预览
+        </el-button>
+      </el-button-group>
+      <el-input v-model="form.imageUrl" placeholder="站点图片地址"></el-input>
     </el-form-item>
-    <el-form-item label="启用双击生成页面" prop="isCreateDoubleClick" :rules="{ required: true, message: '请输入是否启用双击生成页面' }">
-      <el-radio-group v-model="form.isCreateDoubleClick">
-        <el-radio :label="false">不启用</el-radio>
-        <el-radio :label="true">启用</el-radio>
-      </el-radio-group>
-      <div class="tips">此功能通常用于制作调试期间，网站正式上线后不建议启用</div>
+    <el-form-item label="站点关键字">
+      <el-input v-model="form.keywords"></el-input>
+    </el-form-item>
+    <el-form-item label="站点描述">
+      <el-input type="textarea" v-model="form.description"></el-input>
     </el-form-item>
 
     <template v-for="style in styles" :key="style.attributeName">
@@ -286,4 +296,4 @@
 <script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
 <script src="/sitefiles/assets/lib/ueditor/ueditor_all_min.js" type="text/javascript" ></script>
 <script src="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript" ></script>
-<script src="/sitefiles/assets/js/cms/settingsSite.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/settingsSite.js" type="text/javascript"></script> }

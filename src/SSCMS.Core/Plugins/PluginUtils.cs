@@ -71,7 +71,7 @@ namespace SSCMS.Core.Plugins
         /// when the same type(s) is requested.
         /// </param>
         /// <returns>Found implementations of the given type.</returns>
-        public static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
+        private static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
         {
             var type = typeof(T);
 
@@ -161,7 +161,7 @@ namespace SSCMS.Core.Plugins
         /// </param>
         /// <param name="args">The arguments to be passed to the constructors.</param>
         /// <returns>The instances of the found implementations of the given type.</returns>
-        public static IEnumerable<T> GetInstances<T>(IEnumerable<Assembly> assemblies, bool useCaching = false,
+        private static IEnumerable<T> GetInstances<T>(IEnumerable<Assembly> assemblies, bool useCaching = false,
             params object[] args)
         {
             var instances = new List<T>();

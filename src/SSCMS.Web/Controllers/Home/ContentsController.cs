@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -21,6 +22,7 @@ namespace SSCMS.Web.Controllers.Home
         private const string Route = "contents";
 
         private readonly IAuthManager _authManager;
+        private readonly IConfigRepository _configRepository;
         private readonly IOldPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPathManager _pathManager;
@@ -28,9 +30,10 @@ namespace SSCMS.Web.Controllers.Home
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsController(IAuthManager authManager, IOldPluginManager pluginManager, IDatabaseManager databaseManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsController(IAuthManager authManager, IConfigRepository configRepository, IOldPluginManager pluginManager, IDatabaseManager databaseManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _configRepository = configRepository;
             _pluginManager = pluginManager;
             _databaseManager = databaseManager;
             _pathManager = pathManager;
@@ -40,6 +43,90 @@ namespace SSCMS.Web.Controllers.Home
         }
 
         [HttpGet, Route(Route)]
+        public async Task<ActionResult<GetResult>> Get([FromQuery]ChannelRequest request)
+        {
+            var sites = new List<SiteResult>();
+            var channels = new List<ChannelResult>();
+            SiteResult siteResult = null;
+            ChannelResult channelResult = null;
+
+            if (_authManager.IsUser)
+            {
+                Site site = null;
+                Channel channelInfo = null;
+                var siteIdList = await _authManager.GetSiteIdsAsync();
+                foreach (var siteId in siteIdList)
+                {
+                    var permissionSite = await _siteRepository.GetAsync(siteId);
+                    if (request.SiteId == siteId)
+                    {
+                        site = permissionSite;
+                    }
+                    sites.Add(new SiteResult
+                    {
+                        Id = permissionSite.Id,
+                        SiteName = permissionSite.SiteName
+                    });
+                }
+
+                if (site == null && siteIdList.Count > 0)
+                {
+                    site = await _siteRepository.GetAsync(siteIdList[0]);
+                }
+
+                if (site != null)
+                {
+                    var channelIdList = await _authManager.GetChannelIdsAsync(site.Id,
+                        Constants.ContentPermissions.Add);
+                    foreach (var permissionChannelId in channelIdList)
+                    {
+                        var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
+                        if (channelInfo == null || request.ChannelId == permissionChannelId)
+                        {
+                            channelInfo = permissionChannelInfo;
+                        }
+
+                        channels.Add(new ChannelResult
+                        {
+                            Id = permissionChannelInfo.Id,
+                            ChannelName =
+                                await _channelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
+                        });
+                    }
+
+                    siteResult = new SiteResult
+                    {
+                        Id = site.Id,
+                        SiteName = site.SiteName,
+                        SiteUrl = await _pathManager.GetSiteUrlAsync(site, false)
+                    };
+                }
+
+                if (channelInfo != null)
+                {
+                    channelResult = new ChannelResult
+                    {
+                        Id = channelInfo.Id,
+                        ChannelName = await _channelRepository.GetChannelNameNavigationAsync(site.Id, channelInfo.Id)
+                    };
+                }
+            }
+
+            var config = await _configRepository.GetAsync();
+            var user = await _authManager.GetUserAsync();
+
+            return new GetResult
+            {
+                User = user,
+                Config = config,
+                Sites = sites,
+                Channels = channels,
+                Site = siteResult,
+                Channel = channelResult
+            };
+        }
+
+        [HttpPost, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
         {
             if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.View))

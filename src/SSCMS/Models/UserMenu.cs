@@ -32,7 +32,7 @@ namespace SSCMS.Models
         public string IconClass { get; set; }
 
         [DataColumn]
-        public string Href { get; set; }
+        public string Link { get; set; }
 
         [DataColumn]
         public string Target { get; set; }

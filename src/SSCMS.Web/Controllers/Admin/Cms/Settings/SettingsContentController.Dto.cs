@@ -7,6 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public class SubmitRequest : SiteRequest
         {
             public bool IsSaveImageInTextEditor { get; set; }
+            public int PageSize { get; set; }
             public bool IsAutoPageInTextEditor { get; set; }
             public int AutoPageWordNum { get; set; }
             public bool IsContentTitleBreakLine { get; set; }

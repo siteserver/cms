@@ -19,17 +19,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 
         private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;
-        private readonly IUserLogRepository _userLogRepository;
+        private readonly ILogRepository _logRepository;
 
-        public LogsUserController(IAuthManager authManager, IUserRepository userRepository, IUserLogRepository userLogRepository)
+        public LogsUserController(IAuthManager authManager, IUserRepository userRepository, ILogRepository logRepository)
         {
             _authManager = authManager;
             _userRepository = userRepository;
-            _userLogRepository = userLogRepository;
+            _logRepository = logRepository;
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<PageResult<UserLog>>> List([FromBody] SearchRequest request)
+        public async Task<ActionResult<PageResult<Log>>> List([FromBody] SearchRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsUser))
             {
@@ -39,8 +39,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             var user = await _userRepository.GetByUserNameAsync(request.UserName);
             var userId = user?.Id ?? 0;
 
-            var count = await _userLogRepository.GetCountAsync(userId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await _userLogRepository.GetAllAsync(userId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var count = await _logRepository.GetUserLogsCountAsync(userId, request.Keyword, request.DateFrom, request.DateTo);
+            var logs = await _logRepository.GetUserLogsAsync(userId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
 
             foreach (var log in logs)
             {
@@ -48,7 +48,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 log.Set("userName", userName);
             }
 
-            return new PageResult<UserLog>
+            return new PageResult<Log>
             {
                 Items = logs,
                 Count = count
@@ -63,7 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            await _userLogRepository.DeleteAllAsync();
+            await _logRepository.DeleteAllUserLogsAsync();
 
             await _authManager.AddAdminLogAsync("清空用户日志");
 

@@ -1,0 +1,15 @@
+@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <link href="/sitefiles/assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+}
+
+<div style="margin: 0 10px;">
+
+  <h4 class="page-title mt-4 mb-4" v-html="homeWelcomeHtml"></h4>
+
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/dashboard.js" type="text/javascript"></script> }

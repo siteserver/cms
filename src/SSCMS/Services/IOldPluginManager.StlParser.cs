@@ -5,6 +5,6 @@ namespace SSCMS.Services
 {
     public partial interface IOldPluginManager
     {
-        Dictionary<string, Func<IParseContext, string>> GetParses();
+        Dictionary<string, Func<IStlParseContext, string>> GetParses();
     }
 }

@@ -22,7 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -240,110 +240,5 @@ namespace SSCMS.Web
                 options.DocumentPath = "/swagger/v1/swagger.json";
             });
         }
-
-        //public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager)
-        //{
-        //    if (env.IsDevelopment())
-        //    {
-        //        app.UseDeveloperExceptionPage();
-        //    }
-
-        //    app.UseExceptionHandler(a => a.Run(async context =>
-        //    {
-        //        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-        //        var exception = exceptionHandlerPathFeature.Error;
-
-        //        var result = TranslateUtils.JsonSerialize(new
-        //        {
-        //            exception.Message,
-        //            exception.StackTrace,
-        //            AddDate = DateTime.Now
-        //        });
-        //        context.Response.ContentType = "application/json";
-        //        await context.Response.WriteAsync(result);
-        //    }));
-
-        //    app.UseCors(CorsPolicy);
-
-        //    app.UseForwardedHeaders(new ForwardedHeadersOptions
-        //    {
-        //        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-        //    });
-
-        //    //app.UseHttpsRedirection();
-
-        //    app.UseDefaultFiles(new DefaultFilesOptions
-        //    {
-        //        DefaultFileNames = new List<string>
-        //        {
-        //            "index.html"
-        //        }
-        //    });
-        //    app.UseStaticFiles();
-
-        //    app.Map("/admin/assets", assets =>
-        //    {
-        //        assets.UseStaticFiles(new StaticFileOptions
-        //        {
-        //            FileProvider = new PhysicalFileProvider(
-        //                Path.Combine(Directory.GetCurrentDirectory(), "assets"))
-        //        });
-        //    });
-
-        //    var supportedCultures = new[]
-        //    {
-        //        new CultureInfo("en-US"),
-        //        new CultureInfo("zh-CN")
-        //    };
-
-        //    app.Map("/" + settingsManager.AdminDirectory, admin =>
-        //    {
-        //        admin.UseRequestLocalization(new RequestLocalizationOptions
-        //        {
-        //            DefaultRequestCulture = new RequestCulture("zh-CN"),
-        //            // Formatting numbers, dates, etc.
-        //            SupportedCultures = supportedCultures,
-        //            // UI strings that we have localized.
-        //            SupportedUICultures = supportedCultures
-        //        });
-
-        //        admin.UseRouting();
-        //        admin.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
-
-        //        admin.UseRequestLocalization();
-        //    });
-
-        //    app.Map(Constants.ApiPrefix, api =>
-        //    {
-        //        api.UseRequestLocalization(new RequestLocalizationOptions
-        //        {
-        //            DefaultRequestCulture = new RequestCulture("zh-CN"),
-        //            // Formatting numbers, dates, etc.
-        //            SupportedCultures = supportedCultures,
-        //            // UI strings that we have localized.
-        //            SupportedUICultures = supportedCultures
-        //        });
-
-        //        api.UseRouting();
-
-        //        api.UseAuthentication();
-        //        api.UseAuthorization();
-
-        //        api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        //        //api.UseEndpoints(endpoints => { endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}"); });
-
-        //        api.UseRequestLocalization();
-
-        //        api.UseOpenApi();
-        //        api.UseSwaggerUi3();
-        //        api.UseReDoc(options =>
-        //        {
-        //            options.Path = "/docs";
-        //            options.DocumentPath = "/swagger/v1/swagger.json";
-        //        });
-        //    });
-
-        //    app.UsePlugins();
-        //}
     }
 }

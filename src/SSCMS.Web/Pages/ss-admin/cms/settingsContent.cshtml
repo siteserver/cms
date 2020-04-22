@@ -14,6 +14,13 @@
       </el-radio-group>
       <div class="tips">自动保存外部图片功能将把编辑器内的外部图片保存为站点图片</div>
     </el-form-item>
+    <el-form-item label="默认每页显示内容数" prop="pageSize" :rules="[
+      { required: true, message: '请输入默认每页显示内容数' },
+      { type: 'number', message: '默认每页显示内容数必须为数字值'}
+    ]">
+      <el-input v-model.number="form.pageSize" placeholder="请输入默认每页显示内容数"></el-input>
+      <div class="tips">设置管理默认每页显示内容数</div>
+    </el-form-item>
     <el-form-item label="内容编辑器分页方式">
       <el-radio-group v-model="form.isAutoPageInTextEditor">
         <el-radio :label="true">按指定字数自动分页</el-radio>
@@ -108,4 +115,4 @@
 </el-card>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/cms/settingsContent.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/settingsContent.js" type="text/javascript"></script> }

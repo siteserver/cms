@@ -96,7 +96,7 @@
           :drag="true"
           :action="uploadUrl"
           :auto-upload="true"
-          :with-credentials="true"
+          :headers="{Authorization: 'Bearer ' + $token}"
           :file-list="uploadList"
           :before-upload="uploadBefore"
           :on-progress="uploadProgress"
@@ -119,4 +119,4 @@
 </el-drawer>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/cms/templatesSpecial.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/templatesSpecial.js" type="text/javascript"></script> }

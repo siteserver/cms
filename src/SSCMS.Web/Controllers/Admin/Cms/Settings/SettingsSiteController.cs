@@ -137,8 +137,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             site.SiteName = request.SiteName;
-            site.PageSize = request.PageSize;
-            site.IsCreateDoubleClick = request.IsCreateDoubleClick;
+            site.ImageUrl = request.ImageUrl;
+            site.Keywords = request.Keywords;
+            site.Description = request.Description;
+            
             await _siteRepository.UpdateAsync(site);
 
             await _authManager.AddSiteLogAsync(request.SiteId, "修改站点设置");

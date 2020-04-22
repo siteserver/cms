@@ -17,6 +17,8 @@ namespace SSCMS.Repositories
 
         Task UpdateLastActivityDateAndCountOfLoginAsync(User user);
 
+        Task UpdateLastActivityDateAsync(User user);
+
         Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(int userId, string password);
 
         Task<(bool Valid, string ErrorMessage)> IsPasswordCorrectAsync(string password);

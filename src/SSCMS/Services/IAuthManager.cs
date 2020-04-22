@@ -24,17 +24,5 @@ namespace SSCMS.Services
         bool IsApi { get; }
 
         string ApiToken { get; }
-
-        Task AddSiteLogAsync(int siteId, string action);
-
-        Task AddSiteLogAsync(int siteId, string action, string summary);
-
-        Task AddSiteLogAsync(int siteId, int channelId, string action, string summary);
-
-        Task AddSiteLogAsync(int siteId, int channelId, int contentId, string action, string summary);
-
-        Task AddAdminLogAsync(string action, string summary);
-
-        Task AddAdminLogAsync(string action);
     }
 }

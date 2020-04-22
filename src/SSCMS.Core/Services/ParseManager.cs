@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Parse;
+using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -17,14 +19,16 @@ namespace SSCMS.Core.Services
         public ISettingsManager SettingsManager { get; }
         public IPathManager PathManager { get; }
         public IDatabaseManager DatabaseManager { get; }
-        public IOldPluginManager PluginManager { get; }
+        public IOldPluginManager OldPluginManager { get; }
+        private readonly IPluginManager _pluginManager;
 
-        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager)
+        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager)
         {
             SettingsManager = settingsManager;
             PathManager = pathManager;
             DatabaseManager = databaseManager;
-            PluginManager = pluginManager;
+            OldPluginManager = oldPluginManager;
+            _pluginManager = pluginManager;
         }
 
         public ParsePage PageInfo { get; set; }
@@ -39,29 +43,37 @@ namespace SSCMS.Core.Services
 
         public async Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
-            foreach (var plugin in PluginManager.GetPlugins())
+            var context = new PluginStlParseContext();
+            context.Load(string.Empty, string.Empty, null, PageInfo, ContextInfo);
+
+            var beforeStlParses = _pluginManager.GetExtensions<IPluginBeforeStlParse>();
+            if (beforeStlParses != null)
             {
-                try
+                foreach (var extension in beforeStlParses)
                 {
-                    plugin.OnBeforeStlParse(new ParseEventArgs
-                    (
-                        PageInfo.SiteId,
-                        PageInfo.PageChannelId,
-                        PageInfo.PageContentId,
-                        await GetContentAsync(),
-                        PageInfo.Template.TemplateType,
-                        PageInfo.Template.Id,
-                        filePath,
-                        PageInfo.HeadCodes,
-                        PageInfo.BodyCodes,
-                        PageInfo.FootCodes,
-                        contentBuilder
-                    ));
-                }
-                catch (Exception ex)
-                {
-                    await AddStlErrorLogAsync(plugin.PluginId, nameof(plugin.OnBeforeStlParse),
-                        ex);
+                    try
+                    {
+                        extension.BeforeStlParse(context);
+                        //plugin.OnBeforeStlParse(new ParseEventArgs
+                        //(
+                        //    PageInfo.SiteId,
+                        //    PageInfo.PageChannelId,
+                        //    PageInfo.PageContentId,
+                        //    await GetContentAsync(),
+                        //    PageInfo.Template.TemplateType,
+                        //    PageInfo.Template.Id,
+                        //    filePath,
+                        //    PageInfo.HeadCodes,
+                        //    PageInfo.BodyCodes,
+                        //    PageInfo.FootCodes,
+                        //    contentBuilder
+                        //));
+                    }
+                    catch (Exception ex)
+                    {
+                        await AddStlErrorLogAsync(nameof(IPluginBeforeStlParse), string.Empty,
+                            ex);
+                    }
                 }
             }
 
@@ -70,18 +82,24 @@ namespace SSCMS.Core.Services
                 await ParseTemplateContentAsync(contentBuilder);
             }
 
-            foreach (var plugin in PluginManager.GetPlugins())
+            var afterStlParses = _pluginManager.GetExtensions<IPluginAfterStlParse>();
+            if (afterStlParses != null)
             {
-                try
+                foreach (var extension in afterStlParses)
                 {
-                    plugin.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
-                        PageInfo.PageContentId, await GetContentAsync(),
-                        PageInfo.Template.TemplateType, PageInfo.Template.Id, filePath, PageInfo.HeadCodes,
-                        PageInfo.BodyCodes, PageInfo.FootCodes, contentBuilder));
-                }
-                catch (Exception ex)
-                {
-                    await AddStlErrorLogAsync(plugin.PluginId, nameof(plugin.OnAfterStlParse), ex);
+                    try
+                    {
+                        extension.AfterStlParse(context);
+                        //plugin.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
+                        //    PageInfo.PageContentId, await GetContentAsync(),
+                        //    PageInfo.Template.TemplateType, PageInfo.Template.Id, filePath, PageInfo.HeadCodes,
+                        //    PageInfo.BodyCodes, PageInfo.FootCodes, contentBuilder));
+                    }
+                    catch (Exception ex)
+                    {
+                        await AddStlErrorLogAsync(nameof(IPluginAfterStlParse), string.Empty,
+                            ex);
+                    }
                 }
             }
 

@@ -68,6 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
             config.IsUserRegistrationGroup = request.IsUserRegistrationGroup;
             config.IsHomeAgreement = request.IsHomeAgreement;
             config.HomeAgreementHtml = request.HomeAgreementHtml;
+            config.HomeWelcomeHtml = request.HomeWelcomeHtml;
 
             await _configRepository.UpdateAsync(config);
 

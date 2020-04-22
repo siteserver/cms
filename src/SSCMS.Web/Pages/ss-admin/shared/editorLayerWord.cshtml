@@ -1,16 +1,15 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-@section Styles{
-  <style>
-    .el-upload, .el-upload-dragger {width: 100%;}
-  </style>
-}
+
+<style>
+  .el-upload, .el-upload-dragger {width: 100%;}
+</style>
 
 <el-upload
   drag
   :action="uploadUrl"
   :auto-upload="true"
-  :with-credentials="true"
+  :headers="{Authorization: 'Bearer ' + $token}"
   :file-list="uploadList"
   :before-upload="uploadBefore"
   :on-progress="uploadProgress"
@@ -43,5 +42,5 @@
 </el-row>
 
 @section Scripts{
-  <script src="/sitefiles/assets/js/shared/editorLayerWord.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/shared/editorLayerWord.js" type="text/javascript"></script>
 }

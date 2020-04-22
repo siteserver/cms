@@ -1,22 +1,21 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-@section Styles{
-  <style>
-    .el-upload, .el-upload-dragger {width:auto;}
-    .el-dropdown-link {
-      cursor: pointer;
-      color: #409EFF;
-    }
-    .el-icon-arrow-down {
-      font-size: 12px;
-    }
-    .el-icon-picture-outline {
-      font-size: 22px;
-      margin: 80px 0;
-      color: #c0c4cc;
-    }
-  </style>
-}
+
+<style>
+  .el-upload, .el-upload-dragger {width:auto;}
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #409EFF;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
+  .el-icon-picture-outline {
+    font-size: 22px;
+    margin: 80px 0;
+    color: #c0c4cc;
+  }
+</style>
 
 <el-menu default-active="2" mode="horizontal"
   background-color="#545c64"
@@ -93,7 +92,7 @@
       <div style="height: 15px"></div>
       <el-upload
         :action="getUploadUrl()"
-        :with-credentials="true"
+        :headers="{Authorization: 'Bearer ' + $token}"
         :before-upload="uploadBefore"
         :on-progress="uploadProgress"
         :on-success="uploadSuccess"
@@ -242,4 +241,4 @@
 </el-dialog>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/cms/libraryImage.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/libraryImage.js" type="text/javascript"></script> }

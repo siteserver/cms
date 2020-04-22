@@ -2,7 +2,7 @@
 
 namespace SSCMS.Plugins
 {
-    public interface IPluginConfigure
+    public interface IPluginConfigure : IPluginExtension
     {
         void Configure(IApplicationBuilder app);
     }

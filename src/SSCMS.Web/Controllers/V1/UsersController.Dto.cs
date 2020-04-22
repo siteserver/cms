@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.V1
             /// <summary>
             /// 下次自动登录
             /// </summary>
-            public bool IsAutoLogin { get; set; }
+            public bool IsPersistent { get; set; }
         }
 
         public class LoginResult
@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.V1
         public class GetLogsResult
         {
             public int Count { get; set; }
-            public List<UserLog> Logs { get; set; }
+            public List<Log> Logs { get; set; }
         }
 
         public class ResetPasswordRequest

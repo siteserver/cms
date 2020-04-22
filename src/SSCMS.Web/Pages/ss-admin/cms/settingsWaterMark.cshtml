@@ -1,32 +1,31 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-@section Styles{
-  <style>
-    .avatar-uploader .el-upload {
-      width: 180px;
-      border-radius: 6px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .avatar-uploader .el-upload:hover {
-      border-color: #409EFF;
-    }
-    .avatar-uploader-icon {
-      font-size: 28px;
-      color: #8c939d;
-      width: 178px;
-      height: 178px;
-      line-height: 178px;
-      text-align: center;
-    }
-    .avatar {
-      width: 178px;
-      height: 178px;
-      display: block;
-    }
-  </style>
-}
+
+<style>
+  .avatar-uploader .el-upload {
+    width: 180px;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+</style>
 
 <el-card>
   <div slot="header" class="clearfix">
@@ -143,4 +142,4 @@
 </el-card>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/cms/settingsWaterMark.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/settingsWaterMark.js" type="text/javascript"></script> }

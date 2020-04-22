@@ -5,7 +5,7 @@ using SSCMS.Models;
 
 namespace SSCMS.Repositories
 {
-    public partial interface IUserMenuRepository : IRepository
+    public interface IUserMenuRepository : IRepository
     {
         Task<int> InsertAsync(UserMenu userMenu);
 
@@ -13,8 +13,10 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int menuId);
 
-        Task<List<UserMenu>> GetUserMenuListAsync();
+        Task<List<UserMenu>> GetUserMenusAsync();
 
         Task<UserMenu> GetAsync(int id);
+
+        Task ResetAsync();
     }
 }

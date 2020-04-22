@@ -22,6 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
             public bool IsUserRegistrationGroup { get; set; }
             public bool IsHomeAgreement { get; set; }
             public string HomeAgreementHtml { get; set; }
+            public string HomeWelcomeHtml { get; set; }
         }
     }
 }

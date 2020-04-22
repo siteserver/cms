@@ -5,9 +5,9 @@ namespace SSCMS.Core.Services
 {
     public partial class OldPluginManager
     {
-        public Dictionary<string, Func<IParseContext, string>> GetParses()
+        public Dictionary<string, Func<IStlParseContext, string>> GetParses()
         {
-            var elementsToParse = new Dictionary<string, Func<IParseContext, string>>();
+            var elementsToParse = new Dictionary<string, Func<IStlParseContext, string>>();
 
             foreach (var plugin in GetPlugins())
             {

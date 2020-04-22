@@ -1,12 +1,11 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-@section Styles{
-  <style>
-    .el-upload, .el-upload-dragger {
-        width: 150px;
-    }
-  </style>
-}
+
+<style>
+  .el-upload, .el-upload-dragger {
+      width: 150px;
+  }
+</style>
 
 <el-card class="box-card">
   <div slot="header" class="clearfix">
@@ -33,7 +32,7 @@
         <el-upload
           :action="uploadUrl"
           :file-list="uploadFileListHomeLogoUrl"
-          :with-credentials="true"
+          :headers="{Authorization: 'Bearer ' + $token}"
           list-type="picture-card"
           :before-upload="uploadBeforeHomeLogoUrl"
           :on-progress="uploadProgress"
@@ -48,7 +47,7 @@
         <el-upload
           :action="uploadUrl"
           :file-list="uploadFileListHomeDefaultAvatarUrl"
-          :with-credentials="true"
+          :headers="{Authorization: 'Bearer ' + $token}"
           list-type="picture-card"
           :before-upload="uploadBeforeHomeDefaultAvatarUrl"
           :on-progress="uploadProgress"
@@ -83,6 +82,10 @@
         <el-input v-model="form.homeAgreementHtml" type="textarea" rows="8"></el-input>
         <small class="tips">请在用户协议中填写显示在勾选框后面的文字，支持HTML格式</small>
       </el-form-item>
+      <el-form-item label="用户中心欢迎语">
+        <el-input v-model="form.homeWelcomeHtml" type="textarea"></el-input>
+        <small class="tips">请填写进入用户中心后显示的欢迎文字，支持HTML格式。</small>
+      </el-form-item>
       
     </template>
   </el-form>
@@ -99,4 +102,4 @@
 </el-card>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/settings/configsHome.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/settings/configsHome.js" type="text/javascript"></script> }

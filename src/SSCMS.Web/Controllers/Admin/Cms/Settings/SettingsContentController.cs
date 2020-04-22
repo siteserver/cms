@@ -68,6 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 }
             }
 
+            site.PageSize = request.PageSize;
             site.IsAutoPageInTextEditor = request.IsAutoPageInTextEditor;
             site.AutoPageWordNum = request.AutoPageWordNum;
             site.IsContentTitleBreakLine = request.IsContentTitleBreakLine;

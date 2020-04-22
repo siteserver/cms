@@ -58,5 +58,10 @@ namespace SSCMS.Core.Services
                 await FileUtils.WriteTextAsync(configPath, configValue);
             }
         }
+
+        public IEnumerable<T> GetExtensions<T>(bool useCaching = false) where T : IPluginExtension
+        {
+            return PluginUtils.GetInstances<T>(Assemblies, useCaching);
+        }
     }
 }

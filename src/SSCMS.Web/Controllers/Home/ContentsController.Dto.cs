@@ -22,6 +22,29 @@ namespace SSCMS.Web.Controllers.Home
             public bool IsChannelEdit { get; set; }
         }
 
+        public class SiteResult
+        {
+            public int Id { get; set; }
+            public string SiteName { get; set; }
+            public string SiteUrl { get; set; }
+        }
+
+        public class ChannelResult
+        {
+            public int Id { get; set; }
+            public string ChannelName { get; set; }
+        }
+
+        public class GetResult
+        {
+            public User User { get; set; }
+            public Config Config { get; set; }
+            public List<SiteResult> Sites { get; set; }
+            public List<ChannelResult> Channels { get; set; }
+            public SiteResult Site { get; set; }
+            public ChannelResult Channel { get; set; }
+        }
+
         public class ListResult
         {
             public List<Content> Contents { get; set; }

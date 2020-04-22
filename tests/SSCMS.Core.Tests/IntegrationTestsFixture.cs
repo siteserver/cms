@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins;
+using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Services;
 using SSCMS.Utils;
 

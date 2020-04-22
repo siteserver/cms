@@ -6,21 +6,33 @@ using SSCMS.Models;
 
 namespace SSCMS.Repositories
 {
-    public partial interface ILogRepository : IRepository
+    public interface ILogRepository : IRepository
     {
-        Task InsertAsync(Log log);
+        Task AddAdminLogAsync(Administrator admin, string action, string summary = "");
+
+        Task AddUserLogAsync(User user, string action, string summary = "");
 
         Task DeleteIfThresholdAsync();
 
-        Task DeleteAllAsync();
+        Task DeleteAllAdminLogsAsync();
 
-        Task<int> GetCountAsync(int adminId, string keyword, string dateFrom, string dateTo);
+        Task DeleteAllUserLogsAsync();
 
-        Task<List<Log>> GetAllAsync(int adminId, string keyword, string dateFrom, string dateTo, int offset, int limit);
+        Task<int> GetAdminLogsCountAsync(int adminId, string keyword, string dateFrom, string dateTo);
+
+        Task<List<Log>> GetAdminLogsAsync(int adminId, string keyword, string dateFrom, string dateTo, int offset, int limit);
+
+        Task<int> GetUserLogsCountAsync(int userId, string keyword, string dateFrom, string dateTo);
+
+        Task<List<Log>> GetUserLogsAsync(int userId, string keyword, string dateFrom, string dateTo, int offset, int limit);
 
         Dictionary<DateTime, int> GetAdminLoginDictionaryByDate(DateTime dateFrom, DateTime dateTo, string xType, string actionType);
 
         Task<Dictionary<string, int>> GetAdminLoginDictionaryByNameAsync(DateTime dateFrom, DateTime dateTo,
             string actionType);
+
+        Task<List<Log>> GetUserLogsAsync(int userId, int offset, int limit);
+
+        Task<List<Log>> GetAdminLogsAsync(int adminId, int offset, int limit);
     }
 }

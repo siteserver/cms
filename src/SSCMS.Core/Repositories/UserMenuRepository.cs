@@ -8,7 +8,7 @@ using SSCMS.Repositories;
 
 namespace SSCMS.Core.Repositories
 {
-    public partial class UserMenuRepository : IUserMenuRepository
+    public class UserMenuRepository : IUserMenuRepository
     {
         private readonly Repository<UserMenu> _repository;
 
@@ -40,40 +40,10 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(menuId, Q.CachingRemove(CacheKey));
         }
 
-        public async Task<List<UserMenu>> GetUserMenuListAsync()
+        public async Task<List<UserMenu>> GetUserMenusAsync()
         {
             var infoList = await _repository.GetAllAsync(Q.CachingGet(CacheKey));
             var list = infoList.ToList();
-
-            var systemMenus = SystemMenus.Value;
-            foreach (var kvp in systemMenus)
-            {
-                var parent = kvp.Key;
-                var children = kvp.Value;
-
-                if (list.All(x => x.SystemId != parent.SystemId))
-                {
-                    parent.Id = await InsertAsync(parent);
-                    list.Add(parent);
-                }
-                else
-                {
-                    parent = list.First(x => x.SystemId == parent.SystemId);
-                }
-
-                if (children != null)
-                {
-                    foreach (var child in children)
-                    {
-                        if (list.All(x => x.SystemId != child.SystemId))
-                        {
-                            child.ParentId = parent.Id;
-                            child.Id = await InsertAsync(child);
-                            list.Add(child);
-                        }
-                    }
-                }
-            }
 
             return list.OrderBy(userMenu => userMenu.Taxis == 0 ? int.MaxValue : userMenu.Taxis).ToList();
         }
@@ -82,6 +52,58 @@ namespace SSCMS.Core.Repositories
         {
             var infoList = await _repository.GetAllAsync(Q.CachingGet(CacheKey));
             return infoList.FirstOrDefault(x => x.Id == id);
+        }
+
+        public async Task ResetAsync()
+        {
+            await _repository.DeleteAsync();
+
+            var parentId = await InsertAsync(new UserMenu
+            {
+                Text = "用户中心"
+            });
+
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "修改资料",
+                IconClass = "fa fa-home",
+                Link = "/home/profile/"
+            });
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "更改密码",
+                IconClass = "fa fa-home",
+                Link = "/home/password/"
+            });
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "退出系统",
+                IconClass = "fa fa-home",
+                Link = "/home/logout/"
+            });
+
+            parentId = await InsertAsync(new UserMenu
+            {
+                Text = "投稿中心"
+            });
+
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "新增稿件",
+                IconClass = "fa fa-plus",
+                Link = "/home/contentAdd/"
+            });
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "稿件管理",
+                IconClass = "fa fa-list",
+                Link = "/home/contents/"
+            });
         }
     }
 }

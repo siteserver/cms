@@ -28,16 +28,16 @@ namespace SSCMS.Web.Controllers.V1
         private readonly IConfigRepository _configRepository;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IUserLogRepository _userLogRepository;
+        private readonly ILogRepository _logRepository;
 
-        public UsersController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, IUserLogRepository userLogRepository)
+        public UsersController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, ILogRepository logRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _configRepository = configRepository;
             _accessTokenRepository = accessTokenRepository;
             _userRepository = userRepository;
-            _userLogRepository = userLogRepository;
+            _logRepository = logRepository;
         }
 
         [HttpPost, Route(Route)]
@@ -198,26 +198,26 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogin)]
         public async Task<ActionResult<LoginResult>> Login([FromBody]LoginRequest request)
         {
-            var valid = await _userRepository.ValidateAsync(request.Account, request.Password, true);
-            if (valid.User == null)
+            var (user, userName, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
+            if (user == null)
             {
-                return this.Error(valid.ErrorMessage);
+                return this.Error(errorMessage);
             }
 
-            var accessToken = _authManager.AuthenticateUser(valid.User, request.IsAutoLogin);
+            var accessToken = _authManager.AuthenticateUser(user, request.IsPersistent);
 
-            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(valid.User);
-            await _userLogRepository.AddUserLoginLogAsync(valid.User.Id);
+            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
+            await _logRepository.AddUserLogAsync(user, "用户登录", string.Empty);
 
             return new LoginResult
             {
-                User = valid.User,
+                User = user,
                 AccessToken = accessToken
             };
         }
 
         [HttpPost, Route(RouteUserLogs)]
-        public async Task<ActionResult<UserLog>> CreateLog(int id, [FromBody] UserLog log)
+        public async Task<ActionResult<Log>> CreateLog(int id, [FromBody] Log log)
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
                          _authManager.IsUser &&
@@ -229,9 +229,10 @@ namespace SSCMS.Web.Controllers.V1
             var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();
 
-            var userLog = await _userLogRepository.InsertAsync(user.Id, log);
+            log.UserId = user.Id;
+            await _logRepository.AddUserLogAsync(user, log.Action, log.Summary);
 
-            return userLog;
+            return log;
         }
 
         [HttpGet, Route(RouteUserLogs)]
@@ -254,7 +255,7 @@ namespace SSCMS.Web.Controllers.V1
             }
             var skip = request.Skip;
 
-            var logs = await _userLogRepository.GetLogsAsync(user.Id, skip, top);
+            var logs = await _logRepository.GetUserLogsAsync(user.Id, skip, top);
 
             return new GetLogsResult
             {
@@ -286,6 +287,8 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return this.Error(valid.ErrorMessage);
             }
+
+            await _logRepository.AddUserLogAsync(user, "修改密码", string.Empty);
 
             return user;
         }

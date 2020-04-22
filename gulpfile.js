@@ -1,5 +1,6 @@
 const fs = require('fs-extra')
 const gulp = require("gulp");
+const through2 = require('through2');
 const minifier = require("gulp-minifier");
 const minify = require("gulp-minify");
 const rename = require("gulp-rename");
@@ -7,8 +8,38 @@ const replace = require('gulp-string-replace');
 const filter = require("gulp-filter");
 const runSequence = require("gulp4-run-sequence");
 
-const version = process.env.PRODUCTVERSION || (new Date().toISOString());
+const version = process.env.PRODUCTVERSION;
+const timestamp = (new Date()).getTime();
 let publishDir = '';
+
+function transform(file, html) {
+  let content = new String(file.contents);
+  let result = html;
+
+  let styles = '';
+  let matches = [...content.matchAll(/@section Styles{([\s\S]+?)}/gi)];
+  if (matches && matches[0]){
+    content = content.replace(matches[0][0], '');
+    styles = matches[0][1];
+  }
+  let scripts = '';
+  matches = [...content.matchAll(/@section Scripts{([\s\S]+?)}/gi)];
+  if (matches && matches[0]){
+    content = content.replace(matches[0][0], '');
+    scripts = matches[0][1];
+  }
+  
+  result = result.replace('@RenderSection("Styles", required: false)', styles);
+  result = result.replace('@RenderBody()', content);
+  result = result.replace('@RenderSection("Scripts", required: false)', scripts);
+  result = result.replace('@page', '');
+  result = result.replace('@{ Layout = "_Layout"; }', '');
+  result = result.replace(/\.css"/g, ".css?v=" + timestamp + '"');
+  result = result.replace(/\.js"/g, ".js?v=" + timestamp + '"');
+
+  file.contents = Buffer.from(result, 'utf8');
+  return file;
+}
 
 // build tasks
 
@@ -20,12 +51,31 @@ gulp.task("build-sln", function () {
   return gulp.src("./build.sln").pipe(gulp.dest("./build"));
 });
 
-gulp.task("build-cshtml", function () {
+
+gulp.task("build-ss-admin", function () {
+  let html = fs.readFileSync("./src/SSCMS.Web/Pages/Shared/_Layout.cshtml", {
+    encoding: "utf8",
+  });
+
   return gulp
-      .src("./src/SSCMS.Web/Pages/**/*.cshtml")
-      .pipe(replace(/\.css"/g, '.css?v=' + version + '"'))
-      .pipe(replace(/\.js"/g, '.js?v=' + version + '"'))
-      .pipe(gulp.dest("./build/src/SSCMS.Web/Pages"));
+    .src("./src/SSCMS.Web/Pages/ss-admin/**/*.cshtml")
+    .pipe(through2.obj((file, enc, cb) => {
+      cb(null, transform(file, html))
+    }))
+    .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/ss-admin"));
+});
+
+gulp.task("build-home", function () {
+  let html = fs.readFileSync("./src/SSCMS.Web/Pages/Shared/_LayoutHome.cshtml", {
+    encoding: "utf8",
+  });
+
+  return gulp
+    .src("./src/SSCMS.Web/Pages/home/**/*.cshtml")
+    .pipe(through2.obj((file, enc, cb) => {
+      cb(null, transform(file, html))
+    }))
+    .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/home"));
 });
 
 gulp.task("build", async function () {
@@ -33,7 +83,8 @@ gulp.task("build", async function () {
     return runSequence(
         "build-src",
         "build-sln",
-        "build-cshtml"
+        "build-ss-admin",
+        "build-home"
     );
 });
 

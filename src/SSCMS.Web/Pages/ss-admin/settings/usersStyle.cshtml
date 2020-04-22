@@ -96,7 +96,7 @@
         :limit="1"
         :action="urlUpload"
         :auto-upload="true"
-        :with-credentials="true"
+        :headers="{Authorization: 'Bearer ' + $token}"
         :file-list="uploadList"
         :before-upload="uploadBefore"
         :on-progress="uploadProgress"
@@ -111,4 +111,4 @@
 </el-drawer>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/settings/usersStyle.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/settings/usersStyle.js" type="text/javascript"></script> }

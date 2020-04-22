@@ -37,7 +37,6 @@ namespace SSCMS.Services
         ITemplateLogRepository TemplateLogRepository { get; }
         ITemplateRepository TemplateRepository { get; }
         IUserGroupRepository UserGroupRepository { get; }
-        IUserLogRepository UserLogRepository { get; }
         IUserMenuRepository UserMenuRepository { get; }
         IUserRepository UserRepository { get; }
 

@@ -1,12 +1,11 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-@section Styles{
-  <style>
-    .el-upload, .el-upload-dragger {
-        width: 150px;
-    }
-  </style>
-}
+
+<style>
+  .el-upload, .el-upload-dragger {
+      width: 150px;
+  }
+</style>
 
 <el-card class="box-card">
   <div slot="header" class="clearfix">
@@ -22,7 +21,7 @@
       <el-upload
         :action="uploadUrl"
         :file-list="uploadFileList"
-        :with-credentials="true"
+        :headers="{Authorization: 'Bearer ' + $token}"
         list-type="picture-card"
         :before-upload="uploadBefore"
         :on-progress="uploadProgress"
@@ -35,7 +34,7 @@
     </el-form-item>
     <el-form-item label="管理后台欢迎语">
       <el-input v-model="form.adminWelcomeHtml" type="textarea"></el-input>
-      <small class="tips">请在管理后台欢迎语中填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
+      <small class="tips">请填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
     </el-form-item>
   </el-form>
 
@@ -51,4 +50,4 @@
 </el-card>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/settings/configsAdmin.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/settings/configsAdmin.js" type="text/javascript"></script> }

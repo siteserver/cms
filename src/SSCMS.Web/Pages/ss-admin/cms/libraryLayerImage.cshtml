@@ -3,7 +3,7 @@
 
 <el-upload
   :action="$urlUpload"
-  :with-credentials="true"
+  :headers="{Authorization: 'Bearer ' + $token}"
   list-type="picture-card"
   :before-upload="uploadBefore"
   :on-preview="uploadPictureCardPreview"
@@ -44,5 +44,5 @@
 </div>
 
 @section Scripts{
-  <script src="/sitefiles/assets/js/cms/libraryLayerImage.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/cms/libraryLayerImage.js" type="text/javascript"></script>
 }
