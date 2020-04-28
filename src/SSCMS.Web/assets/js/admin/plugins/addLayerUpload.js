@@ -1,7 +1,7 @@
 ﻿var $url = '/plugins/addLayerUpload';
 var $urlUpload = $apiUrl + '/plugins/addLayerUpload/actions/upload';
 
-var data = utils.initData({
+var data = utils.init({
   importType: 'nupkg',
   file: null,
   files: []

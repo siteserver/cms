@@ -12,6 +12,8 @@ namespace SSCMS.Enums
     {
         [DataEnum(DisplayName = "文本输入框")]
         Text,
+        [DataEnum(DisplayName = "数字输入框")]
+        Number,
         [DataEnum(DisplayName = "多行文本输入框")]
         TextArea,
         [DataEnum(DisplayName = "富文本编辑器")]

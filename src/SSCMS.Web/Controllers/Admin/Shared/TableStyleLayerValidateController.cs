@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TableStyleLayerValidateController : ControllerBase
     {
@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             return new GetResult
             {
                 Options = options,
-                Rules = TranslateUtils.JsonDeserialize<IEnumerable<TableStyleRule>>(style.RuleValues)
+                Rules = TranslateUtils.JsonDeserialize<IEnumerable<InputStyleRule>>(style.RuleValues)
             };
         }
 

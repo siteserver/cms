@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/channels/channelsLayerGroup';
 
-var data = utils.initData({
+var data = utils.init({
   page: utils.getQueryInt('page'),
   groupNames: null,
   isAddForm: false,

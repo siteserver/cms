@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/settings/settingsCrossSiteTrans';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: null,
   form: null,

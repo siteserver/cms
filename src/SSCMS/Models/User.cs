@@ -25,9 +25,6 @@ namespace SSCMS.Models
         public string PasswordSalt { get; set; }
 
         [DataColumn]
-        public DateTime? CreateDate { get; set; }
-
-        [DataColumn]
         public DateTime? LastResetPasswordDate { get; set; }
 
         [DataColumn]
@@ -65,15 +62,6 @@ namespace SSCMS.Models
 
         [DataColumn]
         public string Birthday { get; set; }
-
-        [DataColumn]
-        public string WeiXin { get; set; }
-
-        [DataColumn]
-        public string Qq { get; set; }
-
-        [DataColumn]
-        public string WeiBo { get; set; }
 
         [DataColumn(Text = true)]
         public string Bio { get; set; }

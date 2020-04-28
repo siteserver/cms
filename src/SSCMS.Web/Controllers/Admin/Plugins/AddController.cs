@@ -10,7 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AddController : ControllerBase
     {
@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

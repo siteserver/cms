@@ -9,19 +9,17 @@ namespace SSCMS.Repositories
 {
     public partial interface IUserRepository : IRepository
     {
-        Task<(int UserId, string ErrorMessage)> InsertAsync(User user, string password, string ipAddress);
+        Task<(User user, string errorMessage)> InsertAsync(User user, string password, string ipAddress);
 
-        Task<(User User, string ErrorMessage)> UpdateAsync(User user, IDictionary<string, object> body);
-
-        Task UpdateAsync(User user);
+        Task<(bool success, string errorMessage)> UpdateAsync(User user);
 
         Task UpdateLastActivityDateAndCountOfLoginAsync(User user);
 
         Task UpdateLastActivityDateAsync(User user);
 
-        Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(int userId, string password);
+        Task<(bool success, string errorMessage)> ChangePasswordAsync(int userId, string password);
 
-        Task<(bool Valid, string ErrorMessage)> IsPasswordCorrectAsync(string password);
+        Task<(bool success, string errorMessage)> IsPasswordCorrectAsync(string password);
 
         Task CheckAsync(IList<int> idList);
 
@@ -40,7 +38,7 @@ namespace SSCMS.Repositories
         bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat,
             string passwordSalt);
 
-        Task<(User User, string UserName, string ErrorMessage)> ValidateAsync(string account, string password,
+        Task<(User user, string userName, string errorMessage)> ValidateAsync(string account, string password,
             bool isPasswordMd5);
 
         Dictionary<DateTime, int> GetTrackingDictionary(DateTime dateFrom, DateTime dateTo, string xType);

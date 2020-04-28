@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/templates/templatesSpecial';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   specials: null,
   siteUrl: null,

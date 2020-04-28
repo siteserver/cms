@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Core.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -10,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class IndexController : ControllerBase
     {
@@ -32,9 +33,11 @@ namespace SSCMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
+            var config = await _configRepository.GetAsync();
+            if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
+
             var menus = new List<Menu>();
             var user = await _authManager.GetUserAsync();
-            var config = await _configRepository.GetAsync();
             var userMenus = await _userMenuRepository.GetUserMenusAsync();
 
             foreach (var menuInfo1 in userMenus)

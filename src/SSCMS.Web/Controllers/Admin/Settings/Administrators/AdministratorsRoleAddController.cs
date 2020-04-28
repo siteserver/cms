@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Dto;
@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsRoleAddController : ControllerBase
     {
@@ -23,8 +23,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteSiteId = "settings/administratorsRoleAdd/{siteId:int}";
         private const string RouteRoleId = "settings/administratorsRoleAdd/{roleId:int}";
 
-        private readonly IOptionsMonitor<PermissionsOptions> _permissionsAccessor;
         private readonly ICacheManager<object> _cacheManager;
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
@@ -32,10 +32,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleAddController(IOptionsMonitor<PermissionsOptions> permissionsAccessor, ICacheManager<object> cacheManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
+        public AdministratorsRoleAddController(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
-            _permissionsAccessor = permissionsAccessor;
             _cacheManager = cacheManager;
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -65,24 +65,21 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     await _permissionsInRolesRepository.GetAppPermissionListAsync(new[] { role.RoleName });
             }
 
-            var permissions = new List<Permission>();
+            var permissions = new List<Option>();
             var appPermissions = await _authManager.GetAppPermissionsAsync();
     
-            var allAppPermissions = _permissionsAccessor.CurrentValue.App;
+            var allAppPermissions = _settingsManager.GetPermissions().Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.App));
 
-            if (allAppPermissions.Count > 0)
+            foreach (var permission in allAppPermissions)
             {
-                foreach (var permission in allAppPermissions)
+                if (appPermissions.Contains(permission.Id))
                 {
-                    if (appPermissions.Contains(permission.Id))
+                    permissions.Add(new Option
                     {
-                        permissions.Add(new Permission
-                        {
-                            Name = permission.Id,
-                            Text = permission.Text,
-                            Selected = StringUtils.ContainsIgnoreCase(permissionList, permission.Id)
-                        });
-                    }
+                        Name = permission.Id,
+                        Text = permission.Text,
+                        Selected = StringUtils.ContainsIgnoreCase(permissionList, permission.Id)
+                    });
                 }
             }
 
@@ -107,10 +104,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 checkedSiteIdList.Add(sitePermissions.SiteId);
             }
 
-            var list = new List<object>();
+            var allPermissions = _settingsManager.GetPermissions();
+            var list = new List<SitePermissionsResult>();
             foreach (var siteId in checkedSiteIdList)
             {
-                list.Add(await GetSitePermissionsObjectAsync(request.RoleId, siteId));
+                var result = await GetSitePermissionsObjectAsync(allPermissions, request.RoleId, siteId);
+                if (result != null)
+                {
+                    list.Add(result);
+                }
             }
 
             return new GetResult
@@ -126,18 +128,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(RouteSiteId)]
         public async Task<ActionResult<SitePermissionsResult>> GetSitePermissions([FromRoute]int siteId, [FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
 
-            return await GetSitePermissionsObjectAsync(request.RoleId, siteId);
+            var allPermissions = _settingsManager.GetPermissions();
+            return await GetSitePermissionsObjectAsync(allPermissions, request.RoleId, siteId);
         }
 
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> InsertRole([FromBody]RoleRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -191,7 +194,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPut, Route(RouteRoleId)]
         public async Task<ActionResult<BoolResult>> UpdateRole([FromRoute]int roleId, [FromBody]RoleRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }

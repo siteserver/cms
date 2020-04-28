@@ -14,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LibraryLayerVideoController : ControllerBase
     {
@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<UploadResult>> UploadVideo([FromQuery]SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }
@@ -74,7 +74,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<UploadResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }

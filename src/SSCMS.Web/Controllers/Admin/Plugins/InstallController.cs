@@ -14,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class InstallController : ControllerBase
     {
@@ -43,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(RouteConfig)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -59,7 +59,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody]DownloadRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -85,7 +85,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<BoolResult>> Update([FromBody]UploadRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -109,7 +109,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteCache)]
         public async Task<ActionResult<BoolResult>> Cache()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

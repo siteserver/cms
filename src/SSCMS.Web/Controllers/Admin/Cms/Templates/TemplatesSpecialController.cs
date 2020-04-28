@@ -16,7 +16,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesSpecialController : ControllerBase
     {
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<ListResult>> List([FromQuery]SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Specials))
+                    AuthTypes.SitePermissions.Specials))
             {
                 return Unauthorized();
             }
@@ -63,7 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<DeleteResult>> Delete([FromBody]SpecialIdRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Specials))
+                    AuthTypes.SitePermissions.Specials))
             {
                 return Unauthorized();
             }
@@ -87,7 +87,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<StringResult>> Download([FromBody]SpecialIdRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Specials))
+                    AuthTypes.SitePermissions.Specials))
             {
                 return Unauthorized();
             }
@@ -113,7 +113,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<GetSpecialResult>> GetSpecial(int siteId, int specialId)
         {
             if (!await _authManager.HasSitePermissionsAsync(siteId,
-                    Constants.SitePermissions.Specials))
+                    AuthTypes.SitePermissions.Specials))
             {
                 return Unauthorized();
             }
@@ -135,7 +135,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<StringResult>> SpecialUpload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Specials))
+                    AuthTypes.SitePermissions.Specials))
             {
                 return Unauthorized();
             }
@@ -160,7 +160,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<ObjectResult<IEnumerable<Special>>>> SpecialSubmit([FromBody]SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Specials))
+                    AuthTypes.SitePermissions.Specials))
             {
                 return Unauthorized();
             }

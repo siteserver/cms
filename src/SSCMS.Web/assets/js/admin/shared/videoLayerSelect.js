@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/videoLayerSelect';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),

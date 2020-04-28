@@ -9,7 +9,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LogsConfigController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsLogsConfig))
             {
                 return Unauthorized();
             }
@@ -43,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsLogsConfig))
             {
                 return Unauthorized();
             }

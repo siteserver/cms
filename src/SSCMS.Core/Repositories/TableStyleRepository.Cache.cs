@@ -49,9 +49,6 @@ namespace SSCMS.Core.Repositories
                         nameof(User.Email),
                         nameof(User.Gender),
                         nameof(User.Birthday),
-                        nameof(User.WeiXin),
-                        nameof(User.Qq),
-                        nameof(User.WeiBo),
                         nameof(User.Bio)
                     };
 
@@ -275,7 +272,14 @@ namespace SSCMS.Core.Repositories
             {
                 style.AttributeName = nameof(Content.Title);
                 style.DisplayName = "标题";
-                style.VeeValidate = "required";
+                style.RuleValues = TranslateUtils.JsonSerialize(new List<InputStyleRule>
+                {
+                    new InputStyleRule
+                    {
+                        Type = ValidateType.Required,
+                        Message = "标题为必填项"
+                    }
+                });
                 style.Taxis = 1;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.SubTitle)))
@@ -309,7 +313,14 @@ namespace SSCMS.Core.Repositories
             {
                 style.AttributeName = nameof(Content.Body);
                 style.DisplayName = "内容";
-                style.VeeValidate = "required";
+                style.RuleValues = TranslateUtils.JsonSerialize(new List<InputStyleRule>
+                {
+                    new InputStyleRule
+                    {
+                        Type = ValidateType.Required,
+                        Message = "内容为必填项"
+                    }
+                });
                 style.InputType = InputType.TextEditor;
                 style.Taxis = 6;
             }
@@ -357,9 +368,9 @@ namespace SSCMS.Core.Repositories
             {
                 style.AttributeName = nameof(User.DisplayName);
                 style.DisplayName = "姓名";
-                style.RuleValues = TranslateUtils.JsonSerialize(new List<TableStyleRule>
+                style.RuleValues = TranslateUtils.JsonSerialize(new List<InputStyleRule>
                 {
-                    new TableStyleRule
+                    new InputStyleRule
                     {
                         Type = ValidateType.Required,
                         Message = ValidateType.Required.GetDisplayName()
@@ -371,9 +382,11 @@ namespace SSCMS.Core.Repositories
             {
                 style.AttributeName = nameof(User.Mobile);
                 style.DisplayName = "手机号";
-                style.RuleValues = TranslateUtils.JsonSerialize(new List<TableStyleRule>
+                style.HelpText = "可用于登录、找回密码等功能";
+                style.InputType = InputType.Number;
+                style.RuleValues = TranslateUtils.JsonSerialize(new List<InputStyleRule>
                 {
-                    new TableStyleRule
+                    new InputStyleRule
                     {
                         Type = ValidateType.Mobile,
                         Message = ValidateType.Mobile.GetDisplayName()
@@ -385,9 +398,10 @@ namespace SSCMS.Core.Repositories
             {
                 style.AttributeName = nameof(User.Email);
                 style.DisplayName = "邮箱";
-                style.RuleValues = TranslateUtils.JsonSerialize(new List<TableStyleRule>
+                style.HelpText = "可用于登录、找回密码等功能";
+                style.RuleValues = TranslateUtils.JsonSerialize(new List<InputStyleRule>
                 {
-                    new TableStyleRule
+                    new InputStyleRule
                     {
                         Type = ValidateType.Email,
                         Message = ValidateType.Email.GetDisplayName()
@@ -400,14 +414,14 @@ namespace SSCMS.Core.Repositories
                 style.AttributeName = nameof(User.Gender);
                 style.DisplayName = "性别";
                 style.InputType = InputType.Radio;
-                style.Items = new List<TableStyleItem>
+                style.Items = new List<InputStyleItem>
                     {
-                        new TableStyleItem
+                        new InputStyleItem
                         {
                             Label = "男",
                             Value = "男"
                         },
-                        new TableStyleItem
+                        new InputStyleItem
                         {
                             Label = "女",
                             Value = "女"
@@ -421,24 +435,6 @@ namespace SSCMS.Core.Repositories
                 style.DisplayName = "出生日期";
                 style.InputType = InputType.Date;
                 style.Taxis = 5;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.WeiXin)))
-            {
-                style.AttributeName = nameof(User.WeiXin);
-                style.DisplayName = "微博";
-                style.Taxis = 6;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Qq)))
-            {
-                style.AttributeName = nameof(User.Qq);
-                style.DisplayName = "QQ";
-                style.Taxis = 7;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.WeiBo)))
-            {
-                style.AttributeName = nameof(User.WeiBo);
-                style.DisplayName = "微信";
-                style.Taxis = 8;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Bio)))
             {

@@ -1,7 +1,7 @@
 ﻿var $url = "/cms/contents/contentsCheck";
 var $defaultWidth = 160;
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   root: null,
   siteUrl: null,

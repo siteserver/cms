@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Authorize(Roles = AuthTypes.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class CaptchaController : ControllerBase
     {

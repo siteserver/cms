@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/tableStyleLayerAddMultiple';
 
-var data = utils.initData({
+var data = utils.init({
   tableName: utils.getQueryString('tableName'),
   relatedIdentities: utils.getQueryIntList('relatedIdentities'),
   inputTypes: null,

@@ -1,6 +1,6 @@
 var $url = "/error";
 
-var data = utils.initData({
+var data = utils.init({
   logId: utils.getQueryInt('logId'),
   uuid: utils.getQueryString('uuid'),
   message: utils.getQueryString('message'),
@@ -39,10 +39,7 @@ var $vue = new Vue({
     if (this.logId > 0) {
       this.apiGet();
     } else if (this.uuid) {
-      var error = JSON.parse(sessionStorage.getItem(this.uuid));
-      this.message = error.message;
-      this.stackTrace = error.stackTrace;
-      this.addDate = error.addDate;
+      this.message = sessionStorage.getItem(this.uuid);
       utils.loading(this, false);
     }
   },

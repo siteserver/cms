@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ContentsRecycle))
+                    AuthTypes.SitePermissions.ContentsRecycle))
             {
                 return Unauthorized();
             }

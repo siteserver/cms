@@ -32,9 +32,9 @@ namespace SSCMS.Core.StlParser.StlEntity
                 {
                     parsedContent = pageInfo.User.UserName;
                 }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.CreateDate), attributeName))
+                else if (StringUtils.EqualsIgnoreCase(nameof(User.CreatedDate), attributeName))
                 {
-                    parsedContent = DateUtils.Format(pageInfo.User.CreateDate, string.Empty);
+                    parsedContent = DateUtils.Format(pageInfo.User.CreatedDate, string.Empty);
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.LastActivityDate), attributeName))
                 {
@@ -67,18 +67,6 @@ namespace SSCMS.Core.StlParser.StlEntity
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.Birthday), attributeName))
                 {
                     parsedContent = pageInfo.User.Birthday;
-                }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.WeiXin), attributeName))
-                {
-                    parsedContent = pageInfo.User.WeiXin;
-                }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.Qq), attributeName))
-                {
-                    parsedContent = pageInfo.User.Qq;
-                }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.WeiBo), attributeName))
-                {
-                    parsedContent = pageInfo.User.WeiBo;
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.Bio), attributeName))
                 {

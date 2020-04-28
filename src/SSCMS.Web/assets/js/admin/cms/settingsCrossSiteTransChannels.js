@@ -1,6 +1,6 @@
 ﻿var $url = "/cms/settings/settingsCrossSiteTransChannels"
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channels: [],
   transTypes: null,

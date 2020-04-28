@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/userLayerView';
 
-var data = utils.initData({
+var data = utils.init({
   userId: utils.getQueryInt('userId'),
   userName: utils.getQueryString('userName'),
   user: null,

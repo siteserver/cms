@@ -1,7 +1,7 @@
 ﻿var $url = '/cms/settings/settingsStyleRelatedField';
 var $urlImport = '/cms/settings/settingsStyleRelatedField/actions/import';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   urlUpload: null,
   relatedFields: null,

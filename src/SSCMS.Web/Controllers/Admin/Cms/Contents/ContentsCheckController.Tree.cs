@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<TreeResult>> Tree([FromBody]SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ContentsCheck))
+                    AuthTypes.SitePermissions.ContentsCheck))
             {
                 return Unauthorized();
             }

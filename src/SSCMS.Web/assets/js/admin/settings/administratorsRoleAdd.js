@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/administratorsRoleAdd';
 
-var data = utils.initData({
+var data = utils.init({
   roleId: utils.getQueryInt('roleId'),
   pageType: null,
   form: {
@@ -93,33 +93,43 @@ var methods = {
   },
 
   getPermissionInfo: function(res) {
-    var sitePermissions = res.sitePermissions;
+    var sitePermissions = res.sitePermissions || [];
     var checkedSitePermissions = [];
     var allSitePermissions = [];
-    for (var i = 0; i < res.sitePermissions.length; i++){
-      allSitePermissions.push(res.sitePermissions[i].name)
-      if (res.sitePermissions[i].selected){
-        checkedSitePermissions.push(res.sitePermissions[i].name)
+    for (var i = 0; i < sitePermissions.length; i++){
+      allSitePermissions.push(sitePermissions[i].name)
+      if (sitePermissions[i].selected){
+        checkedSitePermissions.push(sitePermissions[i].name)
       }
     }
 
-    var pluginPermissions = res.pluginPermissions;
+    var pluginPermissions = res.pluginPermissions || [];
     var checkedPluginPermissions = [];
     var allPluginPermissions = [];
-    for (var i = 0; i < res.pluginPermissions.length; i++){
-      allPluginPermissions.push(res.pluginPermissions[i].name)
-      if (res.pluginPermissions[i].selected){
-        checkedPluginPermissions.push(res.pluginPermissions[i].name)
+    for (var i = 0; i < pluginPermissions.length; i++){
+      allPluginPermissions.push(pluginPermissions[i].name)
+      if (pluginPermissions[i].selected){
+        checkedPluginPermissions.push(pluginPermissions[i].name)
       }
     }
 
-    var channelPermissions = res.channelPermissions;
+    var channelPermissions = res.channelPermissions || [];
     var checkedChannelPermissions = [];
     var allChannelPermissions = [];
-    for (var i = 0; i < res.channelPermissions.length; i++){
-      allChannelPermissions.push(res.channelPermissions[i].name)
-      if (res.channelPermissions[i].selected){
-        checkedChannelPermissions.push(res.channelPermissions[i].name)
+    for (var i = 0; i < channelPermissions.length; i++){
+      allChannelPermissions.push(channelPermissions[i].name)
+      if (channelPermissions[i].selected){
+        checkedChannelPermissions.push(channelPermissions[i].name)
+      }
+    }
+
+    var contentPermissions = res.contentPermissions || [];
+    var checkedContentPermissions = [];
+    var allContentPermissions = [];
+    for (var i = 0; i < contentPermissions.length; i++){
+      allContentPermissions.push(contentPermissions[i].name)
+      if (contentPermissions[i].selected){
+        checkedContentPermissions.push(contentPermissions[i].name)
       }
     }
 
@@ -145,6 +155,12 @@ var methods = {
       isChannelIndeterminate: true,
       allChannelPermissions: allChannelPermissions,
       checkedChannelPermissions: checkedChannelPermissions,
+
+      contentPermissions: contentPermissions,
+      contentCheckAll: false,
+      isContentIndeterminate: true,
+      allContentPermissions: allContentPermissions,
+      checkedContentPermissions: checkedContentPermissions,
   
       channel: channel,
       checkedChannelIds: checkedChannelIds
@@ -241,6 +257,16 @@ var methods = {
     this.permissionInfo.isChannelIndeterminate = false;
   },
 
+  handleContentCheckAllChange: function(val) {
+    this.permissionInfo.checkedContentPermissions = [];
+    if (val) {
+      for (var i = 0; i < this.permissionInfo.contentPermissions.length; i++){
+        this.permissionInfo.checkedContentPermissions.push(this.permissionInfo.contentPermissions[i].name)
+      }
+    }
+    this.permissionInfo.isContentIndeterminate = false;
+  },
+
   handleTreeChanged: function() {
     this.permissionInfo.checkedChannelIds = this.$refs.tree.getCheckedKeys();
   },
@@ -251,10 +277,25 @@ var methods = {
     this.permissionInfo.isChannelIndeterminate = checkedCount > 0 && checkedCount < this.permissionInfo.channelPermissions.length;
   },
 
+  handleCheckedContentPermissionsChange: function(value) {
+    var checkedCount = value.length;
+    this.permissionInfo.contentCheckAll = checkedCount === this.permissionInfo.contentPermissions.length;
+    this.permissionInfo.isContentIndeterminate = checkedCount > 0 && checkedCount < this.permissionInfo.contentPermissions.length;
+  },
+
   getChannelPermissionText: function(name) {
     for (var i = 0; i < this.permissionInfo.channelPermissions.length; i++){
       if (this.permissionInfo.channelPermissions[i].name === name) {
         return this.permissionInfo.channelPermissions[i].text;
+      }
+    }
+    return '';
+  },
+
+  getContentPermissionText: function(name) {
+    for (var i = 0; i < this.permissionInfo.contentPermissions.length; i++){
+      if (this.permissionInfo.contentPermissions[i].name === name) {
+        return this.permissionInfo.contentPermissions[i].text;
       }
     }
     return '';
@@ -288,7 +329,7 @@ var methods = {
         var res = response.data;
   
         setTimeout(function() {
-          location.href = utils.getSettingsUrl('administratorsRole');
+          utils.removeTab();
         }, 1000);
         $this.$message.success('角色保存成功！');
       }).catch(function (error) {
@@ -307,7 +348,7 @@ var methods = {
         var res = response.data;
   
         setTimeout(function() {
-          location.href = utils.getSettingsUrl('administratorsRole');
+          utils.removeTab();
         }, 1000);
         $this.$message.success('角色保存成功！');
       }).catch(function (error) {
@@ -328,8 +369,8 @@ var methods = {
     });
   },
 
-  btnReturnClick: function () {
-    location.href = utils.getSettingsUrl('administratorsRole');
+  btnCloseClick: function () {
+    utils.removeTab();
   },
 
   btnSubmitClick: function () {

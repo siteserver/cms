@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/channels/channelsTranslate';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   returnUrl: utils.getQueryString('returnUrl'),
   checkedChannelIds: utils.getQueryIntList("channelIds"),

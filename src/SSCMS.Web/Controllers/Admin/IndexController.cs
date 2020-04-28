@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using SSCMS.Core.Extensions;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
@@ -25,7 +25,6 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteActionsDownload = "index/actions/download";
 
         private readonly IStringLocalizer<IndexController> _local;
-        private readonly IOptionsMonitor<MenusOptions> _menusAccessor;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -39,10 +38,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(IStringLocalizer<IndexController> local, IOptionsMonitor<MenusOptions> menusAccessor, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(IStringLocalizer<IndexController> local, ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
             _local = local;
-            _menusAccessor = menusAccessor;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
@@ -87,18 +85,17 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var adminInfo = admin;
             var isSuperAdmin = await _authManager.IsSuperAdminAsync();
             var siteIdListWithPermissions = await _authManager.GetSiteIdsAsync();
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
             {
-                if (siteIdListWithPermissions.Contains(adminInfo.SiteId))
+                if (siteIdListWithPermissions.Contains(admin.SiteId))
                 {
                     return new GetResult
                     {
                         Value = false,
-                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={adminInfo.SiteId}"
+                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={admin.SiteId}"
                     };
                 }
 
@@ -139,6 +136,9 @@ namespace SSCMS.Web.Controllers.Admin
                 });
             }
 
+            var allMenus = _settingsManager.GetMenus();
+
+            var siteType = _settingsManager.GetSiteType(site.SiteType);
             var menus = new List<Menu>();
             if (await _authManager.HasSitePermissionsAsync(site.Id))
             {
@@ -147,17 +147,21 @@ namespace SSCMS.Web.Controllers.Admin
                 {
                     Id = IdSite,
                     Text = site.SiteName,
-                    Children = new List<Menu>(_menusAccessor.CurrentValue.Site)
+                    Type = siteType.Id,
+                    Children = new List<Menu>(allMenus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType.Id)))
                 };
 
-                foreach (var plugin in _pluginManager.Plugins.Where(x => x.Menus?.Site != null))
+                foreach (var plugin in _pluginManager.Plugins.Where(x => x.Menus != null))
                 {
-                    siteMenu.Children.AddRange(plugin.Menus.Site);
+                    var pluginMenus = plugin.Menus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType.Id));
+                    siteMenu.Children.AddRange(pluginMenus);
                 }
+
+                var query = new NameValueCollection {{"siteId", site.Id.ToString()}};
 
                 siteMenu.Children = GetChildren(siteMenu, sitePermissions, x =>
                 {
-                    x.Link = PageUtils.AddQueryString(x.Link, $"siteId={site.Id}");
+                    x.Link = PageUtils.AddQueryStringIfNotExists(x.Link, query);
                     return x;
                 });
                 menus.Add(siteMenu);
@@ -166,7 +170,7 @@ namespace SSCMS.Web.Controllers.Admin
                 {
                     var switchMenus = new List<Menu>();
                     var allSiteMenus = new List<Menu>();
-                    var siteIdListLatestAccessed = await _administratorRepository.UpdateSiteIdAsync(adminInfo, site.Id);
+                    var siteIdListLatestAccessed = await _administratorRepository.UpdateSiteIdAsync(admin, site.Id);
                     var siteIdList = await _siteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
@@ -183,7 +187,7 @@ namespace SSCMS.Web.Controllers.Admin
 
                     switchMenus.Add(new Menu
                     {
-                        IconClass = "el-icon-refresh",
+                        IconClass = "ion-edit",
                         Link = _pathManager.GetAdminUrl(SitesLayerSelectController.Route),
                         Target = "_layer",
                         Text = _local["Select site"]
@@ -205,7 +209,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var appPermissions = await _authManager.GetAppPermissionsAsync();
-            var appMenus = _menusAccessor.CurrentValue.App.Where(x => _authManager.IsMenuValid(x, appPermissions)).ToList();
+            var appMenus = allMenus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
             foreach (var appMenu in appMenus)
             {
                 appMenu.Children = GetChildren(appMenu, appPermissions);
@@ -229,13 +233,14 @@ namespace SSCMS.Web.Controllers.Admin
                 PackageList = packageList,
                 PackageIds = packageIds,
                 Menus = menus,
+                SiteType = siteType.Id,
                 SiteUrl = siteUrl,
                 PreviewUrl = previewUrl,
                 Local = new Local
                 {
-                    UserId = adminInfo.Id,
-                    UserName = adminInfo.UserName,
-                    AvatarUrl = adminInfo.AvatarUrl,
+                    UserId = admin.Id,
+                    UserName = admin.UserName,
+                    AvatarUrl = admin.AvatarUrl,
                     Level = await _authManager.GetAdminLevelAsync()
                 }
             };

@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/contents/contentsLayerWord';
 
-var data = utils.initData({
+var data = utils.init({
   checkedLevels: null,
   form: {
     siteId: utils.getQueryInt('siteId'),

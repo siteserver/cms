@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/logsUser';
 
-var data = utils.initData({
+var data = utils.init({
   items: null,
   count: null,
   formInline: {

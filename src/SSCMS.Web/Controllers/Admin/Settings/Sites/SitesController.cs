@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
@@ -13,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesController : ControllerBase
     {
@@ -40,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -68,6 +70,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             //    }
             //}
 
+            var siteTypes = _settingsManager.GetSiteTypes();
+
             var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
             {
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
@@ -77,6 +81,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             return new GetResult
             {
+                SiteTypes = siteTypes,
                 Sites = sites,
                 RootSiteId = rootSiteId,
                 TableNames = tableNames
@@ -86,7 +91,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<SitesResult>> Delete([FromBody]DeleteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -128,7 +133,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(Route)]
         public async Task<ActionResult<SitesResult>> Edit([FromBody]EditRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }

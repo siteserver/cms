@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using ExcelDataReader.Log;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -38,6 +37,7 @@ namespace SSCMS.Web.Controllers.Home
         public async Task<ActionResult<GetResult>> Get()
         {
             var config = await _configRepository.GetAsync();
+            if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
 
             return new GetResult
             {

@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/editorLayerAudio';
 
-var data = utils.initData({
+var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   form: {
     siteId: utils.getQueryInt('siteId'),

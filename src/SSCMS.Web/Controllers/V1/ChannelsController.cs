@@ -13,7 +13,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Authorize(Roles = AuthTypes.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class ChannelsController : ControllerBase
     {
@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.Add);
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.SiteChannelPermissions.Add);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -153,7 +153,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.Edit);
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Edit);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -314,7 +314,7 @@ namespace SSCMS.Web.Controllers.V1
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
                          await _authManager.HasChannelPermissionsAsync(siteId, channelId,
-                             Constants.ChannelPermissions.Delete);
+                             AuthTypes.SiteChannelPermissions.Delete);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);

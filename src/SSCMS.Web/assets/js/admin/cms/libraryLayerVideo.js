@@ -1,7 +1,7 @@
 ﻿var $urlUploadVideo = $apiUrl + '/cms/library/libraryLayerVideo/actions/uploadVideo?siteId=' + utils.getQueryInt('siteId');
 var $urlUploadImage = $apiUrl + '/cms/library/libraryLayerVideo/actions/uploadImage?siteId=' + utils.getQueryInt('siteId');
 
-var data = utils.initData({
+var data = utils.init({
   activeName: 'first',
   form: {
     siteId: utils.getQueryInt('siteId'),

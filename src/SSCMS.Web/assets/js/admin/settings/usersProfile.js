@@ -1,18 +1,11 @@
 ﻿var $url = '/settings/usersProfile';
 
-var data = utils.initData({
+var data = utils.init({
   userId: utils.getQueryInt('userId'),
   uploadUrl: null,
   uploadFileList: [],
-  form: {
-    userName: null,
-    displayName: null,
-    password: null,
-    confirmPassword: null,
-    avatarUrl: null,
-    mobile: null,
-    email: null
-  }
+  form: null,
+  styles: null
 });
 
 var methods = {
@@ -26,16 +19,18 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.form.userName = res.userName;
-      $this.form.displayName = res.displayName;
-      $this.form.avatarUrl = res.avatarUrl;
-      $this.form.mobile = res.mobile;
-      $this.form.email = res.email;
+      $this.form = _.assign({}, res.user);
+      $this.styles = res.styles;
+      if (this.userId === 0) {
+        for (var i = 0; i < res.styles.length; i++) {
+          var style = res.styles[i];
+          $this.form[_.lowerFirst(style.attributeName)] = style.defaultValue;
+        }
+      }
 
       if ($this.form.avatarUrl) {
         $this.uploadFileList.push({name: 'avatar', url: $this.form.avatarUrl});
       }
-
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -47,19 +42,11 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, {
-      userId: this.userId,
-      userName: this.form.userName,
-      displayName: this.form.displayName,
-      password: this.form.password,
-      avatarUrl: this.form.avatarUrl,
-      mobile: this.form.mobile,
-      email: this.form.email
-    }).then(function (response) {
-      $this.$message.success('用户资料保存成功！');
+    $api.post($url, this.form).then(function (response) {
+      $this.$message.success($this.form.id > 0 ? '用户编辑成功！' : '用户添加成功！');
 
       setTimeout(function () {
-        utils.getSettingsUrl('users');
+        location.href = utils.getSettingsUrl('users');
       }, 3000);
     }).catch(function (error) {
       utils.error($this, error);
@@ -135,10 +122,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.uploadUrl = $apiUrl + $url + '/actions/upload?userId=' + this.userId;
-    if (this.userId > 0) {
-      this.apiGet();
-    } else {
-      utils.loading(this, false);
-    }
+    this.apiGet();
   }
 });

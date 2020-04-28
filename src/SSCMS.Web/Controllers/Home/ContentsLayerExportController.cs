@@ -18,7 +18,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerExportController : ControllerBase
     {
@@ -48,7 +48,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -76,7 +76,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.View))
             {
                 return Unauthorized();
             }

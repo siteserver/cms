@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UsersProfileController : ControllerBase
     {
@@ -24,38 +24,39 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IUserRepository _userRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public UsersProfileController(IAuthManager authManager, IPathManager pathManager, IUserRepository userRepository)
+        public UsersProfileController(IAuthManager authManager, IPathManager pathManager, IUserRepository userRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _userRepository = userRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int userId)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
 
             var user = await _userRepository.GetByUserIdAsync(userId);
+            var userStyles = await _tableStyleRepository.GetUserStyleListAsync();
+            var styles = userStyles.Select(x => new InputStyle(x));
 
             return new GetResult
             {
-                UserName = user.UserName,
-                DisplayName = user.DisplayName,
-                AvatarUrl = user.AvatarUrl,
-                Mobile = user.Mobile,
-                Email = user.Email
+                User = user,
+                Styles = styles
             };
         }
 
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -79,60 +80,32 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody]User request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
 
-            User user;
-            if (request.UserId > 0)
+            if (request.Id == 0)
             {
-                user = await _userRepository.GetByUserIdAsync(request.UserId);
-                if (user == null) return NotFound();
+                var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, string.Empty);
+                if (user == null)
+                {
+                    return this.Error($"用户添加失败：{errorMessage}");
+                }
+
+                await _authManager.AddAdminLogAsync("添加用户", $"用户:{request.UserName}");
             }
             else
             {
-                user = new User();
-            }
-
-            if (user.Id == 0)
-            {
-                user.UserName = request.UserName;
-                user.CreateDate = DateTime.Now;
-            }
-            else
-            {
-                if (user.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await _userRepository.IsMobileExistsAsync(request.Mobile))
+                var(success, errorMessage) = await _userRepository.UpdateAsync(request);
+                if (!success)
                 {
-                    return this.Error("资料修改失败，手机号码已存在");
+                    return this.Error($"用户修改失败：{errorMessage}");
                 }
 
-                if (user.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await _userRepository.IsEmailExistsAsync(request.Email))
-                {
-                    return this.Error("资料修改失败，邮箱地址已存在");
-                }
-            }
-
-            user.DisplayName = request.DisplayName;
-            user.AvatarUrl = request.AvatarUrl;
-            user.Mobile = request.Mobile;
-            user.Email = request.Email;
-
-            if (user.Id == 0)
-            {
-                var valid = await _userRepository.InsertAsync(user, request.Password, string.Empty);
-                if (valid.UserId == 0)
-                {
-                    return this.Error($"用户添加失败：{valid.ErrorMessage}");
-                }
-                await _authManager.AddAdminLogAsync("添加用户", $"用户:{user.UserName}");
-            }
-            else
-            {
-                await _userRepository.UpdateAsync(user);
-                await _authManager.AddAdminLogAsync("修改用户属性", $"用户:{user.UserName}");
+                await _authManager.AddAdminLogAsync("修改用户", $"用户:{request.UserName}");
             }
 
             return new BoolResult

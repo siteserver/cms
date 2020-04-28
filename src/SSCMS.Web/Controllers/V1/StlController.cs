@@ -7,7 +7,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Authorize(Roles = AuthTypes.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class StlController : ControllerBase
     {

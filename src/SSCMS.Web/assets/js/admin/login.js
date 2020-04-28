@@ -6,7 +6,7 @@ if (window.top != self) {
   window.top.location = self.location;
 }
 
-var data = utils.initData({
+var data = utils.init({
   pageSubmit: false,
   pageAlert: null,
   account: null,

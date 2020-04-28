@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/sitesUrl';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: null,
   sites: null,
   isSeparatedApi: null,

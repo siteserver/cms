@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/administratorsConfig';
 
-var data = utils.initData({
+var data = utils.init({
   form: {
     adminUserNameMinLength: null,
     adminPasswordMinLength: null,

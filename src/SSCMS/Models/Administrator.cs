@@ -26,9 +26,6 @@ namespace SSCMS.Models
         public string PasswordSalt { get; set; }
 
         [DataColumn]
-        public DateTime? CreationDate { get; set; }
-
-        [DataColumn]
         public DateTime? LastActivityDate { get; set; }
 
         [DataColumn]

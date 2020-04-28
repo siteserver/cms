@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/contents/contentsLayerArrange';
 
-var data = utils.initData({
+var data = utils.init({
   page: utils.getQueryInt('page'),
   form: {
     siteId: utils.getQueryInt('siteId'),

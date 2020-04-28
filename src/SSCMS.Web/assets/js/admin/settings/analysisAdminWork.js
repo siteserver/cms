@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/analysisAdminWork';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: 'chart',
   siteOptions: null,
   newX: null,

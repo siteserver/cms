@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/utilitiesParameters';
 
-var data = utils.initData({
+var data = utils.init({
   parameters: null
 });
 

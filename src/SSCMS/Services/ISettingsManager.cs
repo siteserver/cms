@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Datory;
-using SSCMS.Models;
 
-// ReSharper disable CheckNamespace
-namespace SSCMS
+namespace SSCMS.Services
 {
-    public interface ISettingsManager
+    public partial interface ISettingsManager
     {
         string ContentRootPath { get; }
         string WebRootPath { get; }

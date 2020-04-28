@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/settings/settingsContent';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   form: {
     isSaveImageInTextEditor: null,

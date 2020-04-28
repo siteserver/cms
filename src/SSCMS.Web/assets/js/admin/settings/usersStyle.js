@@ -1,6 +1,7 @@
 ﻿var $url = '/settings/usersStyle';
 
-var data = utils.initData({
+var data = utils.init({
+  returnUrl: decodeURIComponent(utils.getQueryString('returnUrl')),
   urlUpload: null,
   styles: null,
   tableName: null,
@@ -187,6 +188,10 @@ var methods = {
   btnExportClick: function() {
     window.open($apiUrl + $url + '/actions/export');
   },
+
+  btnReturnClick: function() {
+    location.href = this.returnUrl;
+  }
 };
 
 var $vue = new Vue({

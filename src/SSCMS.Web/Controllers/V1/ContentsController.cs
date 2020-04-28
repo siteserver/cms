@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.V1
     /// <summary>
     /// 内容操作API
     /// </summary>
-    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Authorize(Roles = AuthTypes.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class ContentsController : ControllerBase
     {
@@ -55,15 +55,15 @@ namespace SSCMS.Web.Controllers.V1
             bool isAuth;
             if (request.SourceId == SourceManager.User)
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Add);
+                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add);
             }
             else
             {
                 isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                          _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Add) ||
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Add);
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add);
             }
             if (!isAuth) return Unauthorized();
 
@@ -80,11 +80,11 @@ namespace SSCMS.Web.Controllers.V1
             {
                 if (request.SourceId == SourceManager.User || _authManager.IsUser)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.CheckLevel1);
                 }
                 else if (_authManager.IsAdmin)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.CheckLevel1);
                 }
             }
 
@@ -137,15 +137,15 @@ namespace SSCMS.Web.Controllers.V1
             bool isAuth;
             if (request.SourceId == SourceManager.User)
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Edit);
+                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit);
             }
             else
             {
                 isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                          _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Edit) ||
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Edit);
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit);
             }
             if (!isAuth) return Unauthorized();
 
@@ -202,12 +202,12 @@ namespace SSCMS.Web.Controllers.V1
         [HttpDelete, Route(RouteContent)]
         public async Task<ActionResult<Content>> Delete(int siteId, int channelId, int id)
         {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.Delete);
+            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete);
             var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                             _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.Delete) ||
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete) ||
                             _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.Delete);
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);
@@ -216,7 +216,7 @@ namespace SSCMS.Web.Controllers.V1
             var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.Delete)) return Unauthorized();
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete)) return Unauthorized();
 
             var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return NotFound();
@@ -230,12 +230,12 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteContent)]
         public async Task<ActionResult<Content>> Get(int siteId, int channelId, int id)
         {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.View);
+            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View);
             var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                             _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.View) ||
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View) ||
                             _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.View);
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);
@@ -244,7 +244,7 @@ namespace SSCMS.Web.Controllers.V1
             var channelInfo = await _channelRepository.GetAsync(channelId);
             if (channelInfo == null) return NotFound();
 
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, Constants.ContentPermissions.View)) return Unauthorized();
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View)) return Unauthorized();
 
             var content = await _contentRepository.GetAsync(site, channelInfo, id);
             if (content == null) return NotFound();
@@ -258,12 +258,12 @@ namespace SSCMS.Web.Controllers.V1
         {
             var channelId = request.ChannelId ?? request.SiteId;
 
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Constants.ContentPermissions.View);
+            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.SiteContentPermissions.View);
             var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                             _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Constants.ContentPermissions.View) ||
+                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.SiteContentPermissions.View) ||
                             _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Constants.ContentPermissions.View);
+                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.SiteContentPermissions.View);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -363,7 +363,7 @@ namespace SSCMS.Web.Controllers.V1
         //        bool isAuth;
         //        if (sourceId == SourceManager.User)
         //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ContentView);
+        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.ChannelPermissions.ContentView);
         //        }
         //        else
         //        {
@@ -371,10 +371,10 @@ namespace SSCMS.Web.Controllers.V1
         //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
         //                     request.IsUserLoggin &&
         //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         Constants.ChannelPermissions.ContentView) ||
+        //                         AuthTypes.ChannelPermissions.ContentView) ||
         //                     request.IsAdminLoggin &&
         //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         Constants.ChannelPermissions.ContentView);
+        //                         AuthTypes.ChannelPermissions.ContentView);
         //        }
         //        if (!isAuth) return Unauthorized();
 
@@ -382,7 +382,7 @@ namespace SSCMS.Web.Controllers.V1
         //        if (site == null) return this.Error("无法确定内容对应的站点");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //            Constants.ChannelPermissions.ContentView)) return Unauthorized();
+        //            AuthTypes.ChannelPermissions.ContentView)) return Unauthorized();
 
         //        var tableName = site.TableName;
 
@@ -419,7 +419,7 @@ namespace SSCMS.Web.Controllers.V1
         //        bool isAuth;
         //        if (sourceId == SourceManager.User)
         //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, Constants.ChannelPermissions.ContentView);
+        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, AuthTypes.ChannelPermissions.ContentView);
         //        }
         //        else
         //        {
@@ -427,10 +427,10 @@ namespace SSCMS.Web.Controllers.V1
         //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
         //                     request.IsUserLoggin &&
         //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         Constants.ChannelPermissions.ContentView) ||
+        //                         AuthTypes.ChannelPermissions.ContentView) ||
         //                     request.IsAdminLoggin &&
         //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         Constants.ChannelPermissions.ContentView);
+        //                         AuthTypes.ChannelPermissions.ContentView);
         //        }
         //        if (!isAuth) return Unauthorized();
 
@@ -441,7 +441,7 @@ namespace SSCMS.Web.Controllers.V1
         //        if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-        //            Constants.ChannelPermissions.ContentView)) return Unauthorized();
+        //            AuthTypes.ChannelPermissions.ContentView)) return Unauthorized();
 
         //        var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
 
@@ -479,7 +479,7 @@ namespace SSCMS.Web.Controllers.V1
         //    bool isAuth;
         //    if (sourceId == SourceManager.User)
         //    {
-        //        isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.ContentView);
+        //        isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.ChannelPermissions.ContentView);
         //    }
         //    else
         //    {
@@ -487,10 +487,10 @@ namespace SSCMS.Web.Controllers.V1
         //                     DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents) ||
         //                 req.IsUserLoggin &&
         //                 await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     Constants.ChannelPermissions.ContentView) ||
+        //                     AuthTypes.ChannelPermissions.ContentView) ||
         //                 req.IsAdminLoggin &&
         //                 await req.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     Constants.ChannelPermissions.ContentView);
+        //                     AuthTypes.ChannelPermissions.ContentView);
         //    }
         //    if (!isAuth) return Request.Unauthorized<QueryResult>();
 
@@ -498,7 +498,7 @@ namespace SSCMS.Web.Controllers.V1
         //    if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
 
         //    if (!await req.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //        Constants.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
+        //        AuthTypes.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
 
         //    var tableName = site.TableName;
         //    var query = GetQuery(siteId, null, request);

@@ -8,6 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     {
         public class GetResult
         {
+            public IEnumerable<SiteType> SiteTypes { get; set; }
             public List<SiteTemplateInfo> SiteTemplates { get; set; }
             public bool RootExists { get; set; }
             public List<Cascade<int>> Sites { get; set; }
@@ -21,6 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public string CreateType { get; set; }
             public string CreateTemplateId { get; set; }
             public string SiteName { get; set; }
+            public string SiteType { get; set; }
             public bool Root { get; set; }
             public int ParentId { get; set; }
             public string SiteDir { get; set; }

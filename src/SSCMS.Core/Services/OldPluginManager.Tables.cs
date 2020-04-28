@@ -118,35 +118,35 @@ namespace SSCMS.Core.Services
                         styleInfo.Taxis = columnTaxis;
                     }
 
-                    if (styleInfo.IsRequired != inputStyle.IsRequired)
-                    {
-                        isEquals = false;
-                        styleInfo.IsRequired = inputStyle.IsRequired;
-                    }
+                    //if (styleInfo.IsRequired != inputStyle.IsRequired)
+                    //{
+                    //    isEquals = false;
+                    //    styleInfo.IsRequired = inputStyle.IsRequired;
+                    //}
 
-                    if (styleInfo.ValidateType != inputStyle.ValidateType)
-                    {
-                        isEquals = false;
-                        styleInfo.ValidateType = inputStyle.ValidateType;
-                    }
+                    //if (styleInfo.ValidateType != inputStyle.ValidateType)
+                    //{
+                    //    isEquals = false;
+                    //    styleInfo.ValidateType = inputStyle.ValidateType;
+                    //}
 
-                    if (styleInfo.MinNum != inputStyle.MinNum)
-                    {
-                        isEquals = false;
-                        styleInfo.MinNum = inputStyle.MinNum;
-                    }
+                    //if (styleInfo.MinNum != inputStyle.MinNum)
+                    //{
+                    //    isEquals = false;
+                    //    styleInfo.MinNum = inputStyle.MinNum;
+                    //}
 
-                    if (styleInfo.MaxNum != inputStyle.MaxNum)
-                    {
-                        isEquals = false;
-                        styleInfo.MaxNum = inputStyle.MaxNum;
-                    }
+                    //if (styleInfo.MaxNum != inputStyle.MaxNum)
+                    //{
+                    //    isEquals = false;
+                    //    styleInfo.MaxNum = inputStyle.MaxNum;
+                    //}
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.RegExp, inputStyle.RegExp))
-                    {
-                        isEquals = false;
-                        styleInfo.RegExp = inputStyle.RegExp;
-                    }
+                    //if (!StringUtils.EqualsIgnoreNull(styleInfo.RegExp, inputStyle.RegExp))
+                    //{
+                    //    isEquals = false;
+                    //    styleInfo.RegExp = inputStyle.RegExp;
+                    //}
 
                     if (!StringUtils.EqualsIgnoreNull(styleInfo.Width, inputStyle.Width))
                     {
@@ -160,10 +160,10 @@ namespace SSCMS.Core.Services
                         styleInfo.Height = TranslateUtils.ToInt(inputStyle.Height);
                     }
 
-                    if (!(styleInfo.Items == null && inputStyle.ListItems == null))
+                    if (!(styleInfo.Items == null && inputStyle.Items == null))
                     {
-                        var styleItems = styleInfo.Items ?? new List<TableStyleItem>();
-                        var listItems = inputStyle.ListItems ?? new List<InputListItem>();
+                        var styleItems = styleInfo.Items ?? new List<InputStyleItem>();
+                        var listItems = inputStyle.Items ?? new List<InputStyleItem>();
 
                         if (styleItems.Count > listItems.Count)
                         {
@@ -177,9 +177,9 @@ namespace SSCMS.Core.Services
                             if (styleItems.Count < i + 1)
                             {
                                 isEquals = false;
-                                styleItems.Add(new TableStyleItem
+                                styleItems.Add(new InputStyleItem
                                 {
-                                    Label = listItem.Text,
+                                    Label = listItem.Label,
                                     Value = listItem.Value,
                                     Selected = listItem.Selected
                                 });
@@ -188,10 +188,10 @@ namespace SSCMS.Core.Services
                             {
                                 var styleItem = styleItems[i];
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.Label, listItem.Text))
+                                if (!StringUtils.EqualsIgnoreNull(styleItem.Label, listItem.Label))
                                 {
                                     isEquals = false;
-                                    styleItem.Label = listItem.Text;
+                                    styleItem.Label = listItem.Label;
                                 }
 
                                 if (!StringUtils.EqualsIgnoreNull(styleItem.Value, listItem.Value))
@@ -212,7 +212,6 @@ namespace SSCMS.Core.Services
                     if (isEquals) continue;
 
                     styleInfo.List = false;
-                    styleInfo.IsValidate = true;
                     styleInfoList.Add(styleInfo);
                 }
             }

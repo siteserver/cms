@@ -1,28 +1,29 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-
-<style>
-  .el-main {
-    padding: 5px 5px 20px 5px;
-    overflow: hidden;
-  }
-  #commands .el-button {
-    margin-bottom: 5px;
-  }
-  #commands .el-button+.el-button {
-    margin-left: 0;
-  }
-
-  .table-expand-form .el-form-item__label {
-    width: 120px;
-    color: #909399;
-  }
-  .table-expand-form .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
-</style>
+@section Styles{
+  <style>
+    .el-main {
+      padding: 5px 5px 20px 5px;
+      overflow: hidden;
+    }
+    #commands .el-button {
+      margin-bottom: 5px;
+    }
+    #commands .el-button+.el-button {
+      margin-left: 0;
+    }
+  
+    .table-expand-form .el-form-item__label {
+      width: 120px;
+      color: #909399;
+    }
+    .table-expand-form .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
+  </style>
+}
 
 <el-card>
   <div slot="header" class="clearfix">

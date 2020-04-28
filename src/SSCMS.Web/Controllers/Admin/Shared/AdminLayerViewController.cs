@@ -4,7 +4,6 @@ using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 using SSCMS.Core.Services;
 using SSCMS.Models;
@@ -15,24 +14,22 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdminLayerViewController : ControllerBase
     {
         private const string Route = "shared/adminLayerView";
 
         private readonly IHttpContextAccessor _context;
-        private readonly IOptionsMonitor<PermissionsOptions> _permissionsAccessor;
         private readonly ISettingsManager _settingsManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdminLayerViewController(IHttpContextAccessor context, IOptionsMonitor<PermissionsOptions> permissionsAccessor, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdminLayerViewController(IHttpContextAccessor context, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
             _context = context;
-            _permissionsAccessor = permissionsAccessor;
             _settingsManager = settingsManager;
             _pluginManager = pluginManager;
             _databaseManager = databaseManager;
@@ -55,7 +52,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
 
             if (admin == null) return NotFound();
 
-            var permissions = new AuthManager(_context, _permissionsAccessor, _settingsManager, _pluginManager, _databaseManager);
+            var permissions = new AuthManager(_context, _settingsManager, _pluginManager, _databaseManager);
             permissions.Init(admin);
             var level = await permissions.GetAdminLevelAsync();
             var isSuperAdmin = await permissions.IsSuperAdminAsync();

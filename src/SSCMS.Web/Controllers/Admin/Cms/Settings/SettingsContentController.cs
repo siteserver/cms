@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsContentController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<Site>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigContents))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsContent))
             {
                 return Unauthorized();
             }
@@ -46,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ConfigContents))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsContent))
             {
                 return Unauthorized();
             }

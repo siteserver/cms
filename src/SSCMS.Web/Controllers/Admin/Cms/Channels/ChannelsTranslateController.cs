@@ -13,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsTranslateController : ControllerBase
     {
@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }
@@ -79,7 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigCrossSiteTrans))
+                    AuthTypes.SitePermissions.SettingsCrossSiteTrans))
             {
                 return Unauthorized();
             }
@@ -110,7 +110,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [Route(Route)]
         public async Task<ActionResult<BoolResult>> Translate([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.ChannelsTranslate))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }

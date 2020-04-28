@@ -1,7 +1,7 @@
 ﻿var $url = '/settings/users';
 var $urlUpload = $apiUrl + '/settings/users/actions/import';
 
-var data = utils.initData({
+var data = utils.init({
   items: null,
   count: null,
   groups: null,

@@ -9,6 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     {
         public class GetResult
         {
+            public IEnumerable<SiteType> SiteTypes { get; set; }
             public List<Site> Sites { get; set; }
             public int RootSiteId { get; set; }
             public List<string> TableNames { get; set; }

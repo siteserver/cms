@@ -2,72 +2,120 @@
 {
     public static class AuthTypes
     {
-        public static class ClaimTypes
+        public static class Claims
         {
             public const string UserId = System.Security.Claims.ClaimTypes.NameIdentifier;
             public const string UserName = System.Security.Claims.ClaimTypes.Name;
             public const string Role = System.Security.Claims.ClaimTypes.Role;
+            public const string IsPersistent = System.Security.Claims.ClaimTypes.IsPersistent;
         }
 
         public static class Roles
         {
             public const string Administrator = nameof(Administrator);
-
-            public const string SiteAdministrator = nameof(SiteAdministrator);
-
-            public const string SuperAdministrator = nameof(SuperAdministrator);
+            public const string User = nameof(User);
+            public const string Api = nameof(Api);
         }
 
-        public static class Menus
+        public static class Resources
         {
-            public const string Sites = nameof(Sites);
+            public const string App = "app";
+            public const string Site = "site";
+            public const string SiteChannel = "site:channel";
+            public const string SiteContent = "site:content";
         }
 
         public static class AppPermissions
         {
-            public const string PluginsAdd = "plugins_add";
-            public const string PluginsManagement = "plugins_management";
-            public const string SettingsSiteAdd = "settings_siteAdd";
-            public const string SettingsSite = "settings_site";
-            public const string SettingsAdmin = "settings_admin";
-            public const string SettingsUser = "settings_user";
-            public const string SettingsChart = "settings_chart";
-            public const string SettingsLog = "settings_log";
-            public const string SettingsUtility = "settings_utility";
+            public const string PluginsAdd = "app_plugins_add";
+            public const string PluginsManagement = "app_plugins_management";
+
+            public const string SettingsSitesAdd = "app_settings_sitesAdd";
+            public const string SettingsSites = "app_settings_sites";
+            public const string SettingsSitesUrl = "app_settings_sitesUrl";
+            public const string SettingsSitesTables = "app_settings_sitesTables";
+            public const string SettingsSitesTemplates = "app_settings_sitesTemplates";
+            public const string SettingsSitesTemplatesOnline = "app_settings_sitesTemplatesOnline";
+
+            public const string SettingsAdministrators = "app_settings_administrators";
+            public const string SettingsAdministratorsRole = "app_settings_administratorsRole";
+            public const string SettingsAdministratorsConfig = "app_settings_administratorsConfig";
+            public const string SettingsAdministratorsAccessTokens = "app_settings_administratorsAccessTokens";
+            public const string SettingsUsers = "app_settings_users";
+            public const string SettingsUsersGroup = "app_settings_usersGroup";
+            public const string SettingsUsersStyle = "app_settings_usersStyle";
+            public const string SettingsUsersConfig = "app_settings_usersConfig";
+            public const string SettingsAnalysisAdminLogin = "app_settings_analysisAdminLogin";
+            public const string SettingsAnalysisAdminWork = "app_settings_analysisAdminWork";
+            public const string SettingsAnalysisUser = "app_settings_analysisUser";
+            public const string SettingsLogsSite = "app_settings_logsSite";
+            public const string SettingsLogsAdmin = "app_settings_logsAdmin";
+            public const string SettingsLogsUser = "app_settings_logsUser";
+            public const string SettingsLogsError = "app_settings_logsError";
+            public const string SettingsLogsConfig = "app_settings_logsConfig";
+            public const string SettingsConfigsAdmin = "app_settings_configsAdmin";
+            public const string SettingsConfigsHome = "app_settings_configsHome";
+            public const string SettingsConfigsHomeMenu = "app_settings_configsHomeMenu";
+            public const string SettingsUtilitiesCache = "app_settings_utilitiesCache";
+            public const string SettingsUtilitiesParameters = "app_settings_utilitiesParameters";
+            public const string SettingsUtilitiesEncrypt = "app_settings_utilitiesEncrypt";
         }
 
         public static class SitePermissions
         {
-            public const string Content = "cms_content";
-            public const string Template = "cms_template";
-            public const string Configuration = "cms_configuration";
-            public const string Create = "cms_create";
+            public const string Contents = "site_contents";
+            public const string Channels = "site_channels";
+            public const string ContentsSearch = "site_contentsSearch";
+            public const string ChannelsTranslate = "site_channelsTranslate";
+            public const string ContentsCheck = "site_contentsCheck";
+            public const string Library = "site_library";
+            public const string ContentsRecycle = "site_contentsRecycle";
+            public const string Templates = "site_templates";
+            public const string Specials = "site_specials";
+            public const string TemplatesMatch = "site_templatesMatch";
+            public const string TemplatesAssets = "site_templatesAssets";
+            public const string TemplatesPreview = "site_templatesPreview";
+            public const string TemplatesReference = "site_templatesReference";
+            public const string SettingsSite = "site_settingsSite";
+            public const string SettingsContent = "site_settingsContent";
+            public const string SettingsGroups = "site_settingsGroups";
+            public const string SettingsTableStyles = "site_settingsTableStyles";
+            public const string SettingsUpload = "site_settingsUpload";
+            public const string SettingsWaterMark = "site_settingsWaterMark";
+            public const string SettingsCrossSiteTrans = "site_settingsCrossSiteTrans";
+            public const string SettingsCreateRule = "site_settingsCreateRule";
+            public const string CreateIndex = "site_createIndex";
+            public const string CreateChannels = "site_createChannels";
+            public const string CreateContents = "site_createContents";
+            public const string CreateFiles = "site_createFiles";
+            public const string CreateSpecials = "site_createSpecials";
+            public const string CreateAll = "site_createAll";
+            public const string CreateStatus = "site_createStatus";
         }
 
-        public static string GetSiteAdministratorRoleName(int siteId)
+        public static class SiteChannelPermissions
         {
-            return $"{siteId}:{Roles.SiteAdministrator}";
+            public const string Add = "site_channel_add";
+            public const string Edit = "site_channel_edit";
+            public const string Delete = "site_channel_delete";
+            public const string Translate = "site_channel_translate";
+            public const string Create = "site_channel_create";
         }
 
-        public static class ChannelPermissions
+        public static class SiteContentPermissions
         {
-            public const string ContentView = "cms_contentView";
-            public const string ContentAdd = "cms_contentAdd";
-            public const string ContentEdit = "cms_contentEdit";
-            public const string ContentDelete = "cms_contentDelete";
-            public const string ContentTranslate = "cms_contentTranslate";
-            public const string ContentOrder = "cms_contentOrder";
-            public const string ChannelAdd = "cms_channelAdd";
-            public const string ChannelEdit = "cms_channelEdit";
-            public const string ChannelDelete = "cms_channelDelete";
-            public const string ChannelTranslate = "cms_channelTranslate";
-            public const string CreatePage = "cms_createPage";
-            public const string ContentCheck = "cms_contentCheck";
-            public const string ContentCheckLevel1 = "cms_contentCheckLevel1";
-            public const string ContentCheckLevel2 = "cms_contentCheckLevel2";
-            public const string ContentCheckLevel3 = "cms_contentCheckLevel3";
-            public const string ContentCheckLevel4 = "cms_contentCheckLevel4";
-            public const string ContentCheckLevel5 = "cms_contentCheckLevel5";
+            public const string View = "site_content_view";
+            public const string Add = "site_content_add";
+            public const string Edit = "site_content_edit";
+            public const string Delete = "site_content_delete";
+            public const string Translate = "site_content_translate";
+            public const string Arrange = "site_content_arrange";
+            public const string CheckLevel1 = "site_content_checkLevel1";
+            public const string CheckLevel2 = "site_content_checkLevel2";
+            public const string CheckLevel3 = "site_content_checkLevel3";
+            public const string CheckLevel4 = "site_content_checkLevel4";
+            public const string CheckLevel5 = "site_content_checkLevel5";
+            public const string Create = "site_content_create";
         }
     }
 }

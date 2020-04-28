@@ -1,58 +1,50 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-card class="box-card">
-  <div slot="header" class="clearfix">
-    <span>API密钥管理</span>
-    <el-link style="float: right" :underline="false" type="primary" href="https://www.siteserver.cn/docs/api/" target="_blank">
-      SiteServer REST API
+<el-table
+:data="tokens"
+style="width: 100%">
+<el-table-column prop="title" label="名称" width="150"></el-table-column>
+<el-table-column label="关联管理员">
+  <template slot-scope="scope">
+    {{ adminName }}
+  </template>
+</el-table-column>
+<el-table-column label="授权范围">
+  <template slot-scope="scope">
+    {{ getItemScopes(scope.row) }}
+  </template>
+</el-table-column>
+<el-table-column
+  fixed="right"
+  width="190"
+  align="center"
+  show-overflow-tooltip
+  label="操作">
+  <template slot-scope="scope">
+    <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnViewClick(scope.row)">
+      获取密钥
     </el-link>
-  </div>
+    <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
+      编 辑
+    </el-link>
+    <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnDeleteClick(scope.row)">
+      删 除
+    </el-link>
+  </template>
+</el-table-column>
+</el-table>
 
-  <el-table
-    :data="tokens"
-    size="small"
-    style="width: 100%">
-    <el-table-column prop="title" label="名称" width="150"></el-table-column>
-    <el-table-column label="关联管理员">
-      <template slot-scope="scope">
-        {{ adminName }}
-      </template>
-    </el-table-column>
-    <el-table-column label="授权范围">
-      <template slot-scope="scope">
-        {{ getItemScopes(scope.row) }}
-      </template>
-    </el-table-column>
-    <el-table-column
-      fixed="right"
-      width="190"
-      align="center"
-      show-overflow-tooltip
-      label="操作">
-      <template slot-scope="scope">
-        <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnViewClick(scope.row)">
-          获取密钥
-        </el-link>
-        <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
-          编 辑
-        </el-link>
-        <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnDeleteClick(scope.row)">
-          删 除
-        </el-link>
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <el-row>
-    <el-divider></el-divider>
-    <div style="height: 10px"></div>
-    <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
-      添加新密钥
-    </el-button>
-  </el-row>
-
-</el-card>
+<el-row>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+  <el-button size="mini" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
+    添加新密钥
+  </el-button>
+  <el-link style="float: right" :underline="false" type="primary" href="https://www.siteserver.cn/docs/api/" target="_blank">
+    SiteServer REST API
+  </el-link>
+</el-row>
 
 <el-drawer
   id="form"

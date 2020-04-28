@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/settings/settingsContentGroup';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   groups: null
 });

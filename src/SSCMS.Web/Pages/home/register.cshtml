@@ -1,0 +1,73 @@
+@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    a {
+      color: rgb(51, 193, 177);
+      text-decoration: none;
+    }
+  </style>
+}
+
+<el-row :gutter="10">
+  <el-col :xs="0" :sm="1" :md="3" :lg="3" :xl="3">&nbsp;</el-col>
+  <el-col :xs="24" :sm="22" :md="18" :lg="18" :xl="18">
+    
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>用户注册</span>
+      </div>
+    
+      <el-form ref="form" :model="form" size="medium" label-width="100px" status-icon>
+        <el-form-item label="用户名" prop="userName" :rules="[{ required: true, message: '请输入用户名' }]">
+          <el-input v-model="form.userName"></el-input>
+          <small class="tips">用户名是用户的唯一标识，注册后无法更改</small>
+        </el-form-item>
+        <el-form-item label="密码" prop="password" :rules="[{ required: true, message: '请输入密码' }]">
+          <el-input v-model="form.password" type="password" name="password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword" :rules="[{ required: true, message: '请输入确认密码' }, { validator: validatePass }]">
+          <el-input v-model="form.confirmPassword" type="password" name="confirmPassword" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item v-if="isUserRegistrationGroup" label="用户组" prop="groupId" :rules="[{ required: true, message: '请选择用户组' }]">
+          <el-select v-model="form.groupId" placeholder="请选择">
+            <el-option
+              v-for="group in groups"
+              :key="group.id"
+              :label="group.groupName"
+              :value="group.id"></el-option>
+          </el-select>
+        </el-form-item>
+
+        @await Html.PartialAsync("_PartialForm")
+
+        <el-form-item label="验证码" prop="captchaValue" :rules="[{ required: true, message: '请输入验证码' }]">
+          <el-input v-model="form.captchaValue" placeholder="请输入验证码"></el-input>
+          <div style="margin-top: 5px;">
+            <a href="javascript:;" v-on:click="apiCaptchaReload">
+              <img v-show="captchaUrl" style="display: none" class="float-right rounded" :src="captchaUrl" align="absmiddle">
+            </a>
+          </div>
+        </el-form-item>
+        <el-divider></el-divider>
+        <div style="height: 10px"></div>
+        <el-form-item>
+          <div v-if="isHomeAgreement">
+            <el-checkbox v-model="isAgreement" style="margin-right: 10px; margin-bottom: 5px;">
+              <span v-html="homeAgreementHtml"></span>
+            </el-checkbox>
+          </div>
+          <el-button type="primary" :disabled="isHomeAgreement && !isAgreement" v-on:click="btnRegisterClick">注册</el-button>
+          <el-link :href="utils.getRootUrl('login')" icon="el-icon-user" type="primary" :underline="false" style="margin-left: 10px">已有账号，请登录</el-link>
+        </el-form-item>
+
+      </el-form>
+    
+    </el-card>
+
+  </el-col>
+  <el-col :xs="0" :sm="1" :md="3" :lg="3" :xl="3">&nbsp;</el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/register.js" type="text/javascript"></script> }

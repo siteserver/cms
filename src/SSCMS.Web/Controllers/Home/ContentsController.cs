@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsController : ControllerBase
     {
@@ -77,7 +77,7 @@ namespace SSCMS.Web.Controllers.Home
                 if (site != null)
                 {
                     var channelIdList = await _authManager.GetChannelIdsAsync(site.Id,
-                        Constants.ContentPermissions.Add);
+                        AuthTypes.SiteContentPermissions.Add);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
@@ -129,7 +129,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -170,13 +170,13 @@ namespace SSCMS.Web.Controllers.Home
 
             var userPermissions = new Permissions
             {
-                IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Add),
-                IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Delete),
-                IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Edit),
-                IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Translate),
-                IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.CheckLevel1),
-                IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, Constants.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Constants.ContentPermissions.Create),
-                IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Constants.ChannelPermissions.Edit)
+                IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteContentPermissions.Add),
+                IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteContentPermissions.Delete),
+                IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteContentPermissions.Edit),
+                IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteContentPermissions.Translate),
+                IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteContentPermissions.CheckLevel1),
+                IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, AuthTypes.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteContentPermissions.Create),
+                IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, AuthTypes.SiteChannelPermissions.Edit)
             };
 
             return new ListResult

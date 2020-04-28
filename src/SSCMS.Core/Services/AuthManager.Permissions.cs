@@ -124,13 +124,15 @@ namespace SSCMS.Core.Services
             var roles = await GetRolesAsync();
             if (_databaseManager.RoleRepository.IsConsoleAdministrator(roles))
             {
-                appPermissions.AddRange(_permissionsAccessor.CurrentValue.App.Select(permission => permission.Id));
+                appPermissions.AddRange(_permissions
+                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.App))
+                    .Select(permission => permission.Id));
             }
             else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
                 appPermissions = new List<string>
                 {
-                    Constants.AppPermissions.SettingsAdministrators
+                    AuthTypes.AppPermissions.SettingsAdministrators
                 };
             }
             else
@@ -311,16 +313,20 @@ namespace SSCMS.Core.Services
 
             if (await IsSiteAdminAsync())
             {
-                var sitePermissions = _permissionsAccessor.CurrentValue.Site.Select(permission => permission.Id).ToList();
-
-                foreach (var plugin in _pluginManager.Plugins.Where(x => x.Permissions?.Site != null))
-                {
-                    sitePermissions.AddRange(plugin.Permissions.Site.Select(x => x.Id));
-                }
-
                 var siteIdList = await GetSiteIdsAsync();
                 foreach (var siteId in siteIdList)
                 {
+                    var site = await _databaseManager.SiteRepository.GetAsync(siteId);
+                    var sitePermissions = _permissions
+                        .Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType))
+                        .Select(permission => permission.Id).ToList();
+
+                    foreach (var plugin in _pluginManager.Plugins.Where(x => x.Permissions != null))
+                    {
+                        var permissions = plugin.Permissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType)).Select(x => x.Id);
+                        sitePermissions.AddRange(permissions);
+                    }
+
                     sitePermissionDict[siteId] = sitePermissions;
                 }
             }
@@ -344,7 +350,9 @@ namespace SSCMS.Core.Services
             var roles = await GetRolesAsync();
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
-                var allContentPermissionList = _permissionsAccessor.CurrentValue.Channel.Select(permission => permission.Id).ToList();
+                var allContentPermissionList = _permissions
+                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel))
+                    .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();
 
@@ -372,7 +380,9 @@ namespace SSCMS.Core.Services
             var roles = await GetRolesAsync();
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
-                var allContentPermissionList = _permissionsAccessor.CurrentValue.Channel.Select(permission => permission.Id).ToList();
+                var allContentPermissionList = _permissions
+                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel))
+                    .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();
 

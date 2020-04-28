@@ -7,9 +7,17 @@ namespace SSCMS.Web.Controllers.Home
     {
         public class GetResult
         {
-            public Config Config { get; set; }
-            public List<TableStyle> Styles { get; set; }
-            public List<UserGroup> Groups { get; set; }
+            public bool IsUserRegistrationGroup { get; set; }
+            public bool IsHomeAgreement { get; set; }
+            public string HomeAgreementHtml { get; set; }
+            public IEnumerable<InputStyle> Styles { get; set; }
+            public IEnumerable<UserGroup> Groups { get; set; }
+        }
+
+        public class CheckRequest
+        {
+            public string Token { get; set; }
+            public string Value { get; set; }
         }
     }
 }

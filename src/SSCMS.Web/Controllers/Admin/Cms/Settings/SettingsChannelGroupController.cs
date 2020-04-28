@@ -10,7 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsChannelGroupController : ControllerBase
     {
@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigGroups))
+                    AuthTypes.SitePermissions.SettingsGroups))
             {
                 return Unauthorized();
             }
@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Delete([FromBody]DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigGroups))
+                    AuthTypes.SitePermissions.SettingsGroups))
             {
                 return Unauthorized();
             }
@@ -66,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Order([FromBody] OrderRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigGroups))
+                    AuthTypes.SitePermissions.SettingsGroups))
             {
                 return Unauthorized();
             }

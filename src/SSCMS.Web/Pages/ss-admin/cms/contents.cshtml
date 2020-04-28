@@ -1,42 +1,43 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-
-<style>
-  body {
-    height: 100%;
-    overflow: hidden;
-    margin: 0;
-  }
-  .el-main {
-    padding: 5px 5px 20px 5px;
-    overflow: hidden;
-  }
-  #commands .el-button {
-    margin-bottom: 5px;
-  }
-  #commands .el-button+.el-button {
-    margin-left: 0;
-  }
-  #search .el-select .el-input {
-    width: 100px;
-  }
-  .table-expand-form .el-form-item__label {
-    width: 120px;
-    color: #909399;
-  }
-  .table-expand-form .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
-
-  .input-with-select .el-input-group__prepend {
-    background-color: #fff;
-  }
-  .el-input-group {
-    width: 350px;
-  }
-</style>
+@section Styles{
+  <style>
+    body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+    .el-main {
+      padding: 5px 5px 20px 5px;
+      overflow: hidden;
+    }
+    #commands .el-button {
+      margin-bottom: 5px;
+    }
+    #commands .el-button+.el-button {
+      margin-left: 0;
+    }
+    #search .el-select .el-input {
+      width: 100px;
+    }
+    .table-expand-form .el-form-item__label {
+      width: 120px;
+      color: #909399;
+    }
+    .table-expand-form .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
+  
+    .input-with-select .el-input-group__prepend {
+      background-color: #fff;
+    }
+    .el-input-group {
+      width: 350px;
+    }
+  </style>
+}
 
 <el-container>
   <el-scrollbar class="scrollbar" style="padding-top: 5px; padding-left: 5px; width: 200px; min-width: 200px;" :style="{height: asideHeight + 'px'}">

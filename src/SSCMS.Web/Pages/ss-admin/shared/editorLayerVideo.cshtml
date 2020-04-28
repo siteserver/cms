@@ -1,13 +1,14 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-
-<style>
-  .el-upload, .el-upload-dragger {width: 100%;}
-  .videojs {
-    width: 100% !important;
-    min-height: 300px;
-  }
-</style>
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .videojs {
+      width: 100% !important;
+      min-height: 300px;
+    }
+  </style>
+}
 
 <el-form ref="form" :model="form" size="small">
 

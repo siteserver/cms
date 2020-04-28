@@ -1,6 +1,6 @@
 ﻿var $url = '/plugins/manage';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: utils.getQueryString("pageType", "1"),
   isNightly: null,
   version: null,

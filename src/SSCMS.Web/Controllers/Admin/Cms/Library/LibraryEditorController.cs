@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LibraryEditorController : ControllerBase
     {
@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Get([FromBody]GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }
@@ -52,7 +52,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Create([FromBody] CreateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }
@@ -84,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }
@@ -103,7 +103,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<StringResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }

@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/usersView';
 
-var data = utils.initData({
+var data = utils.init({
   userId: utils.getQueryInt('userId'),
   userName: utils.getQueryString('userName'),
   returnUrl: utils.getQueryString('returnUrl') || utils.getSettingsUrl('users'),

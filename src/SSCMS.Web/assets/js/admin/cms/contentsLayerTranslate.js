@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/contents/contentsLayerTranslate';
 
-var data = utils.initData({
+var data = utils.init({
   page: utils.getQueryInt('page'),
   siteId: utils.getQueryInt('siteId'),
   channelId: utils.getQueryInt('channelId'),

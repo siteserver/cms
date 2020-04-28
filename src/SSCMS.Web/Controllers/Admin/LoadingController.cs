@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Dto;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LoadingController : ControllerBase
     {

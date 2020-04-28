@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/sitesChangeRoot';
 
-var data = utils.initData({
+var data = utils.init({
   pageTitle: null,
   root: false,
   directories: null,

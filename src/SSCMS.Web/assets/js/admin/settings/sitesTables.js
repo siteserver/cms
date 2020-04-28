@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/sitesTables';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: null,
   tableNames: null,
   nameDict: null,

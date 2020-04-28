@@ -2,133 +2,192 @@
 @{ Layout = "_Layout"; }
 @section Styles{
   <link href="/sitefiles/assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
-  <link href="/sitefiles/assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
-  <link href="/sitefiles/assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
   <link href="/sitefiles/assets/css/menu.css" rel="stylesheet" type="text/css" />
 }
 
-<header id="topnav">
-  <div class="topbar-main">
-    <div class="logo">
-      <a href="https://www.siteserver.cn" target="_blank" class="logo">
-        <img :src="adminLogoUrl" style="max-width: 160px;height: 22px;" />
-      </a>
-    </div>
-    <a v-if="!isDesktop" href="javascript:;" class="position-fixed" v-on:click="btnMobileMenuClick" style="right: 20px;top: 1px;">
-      <i :class="{'ion-navicon': !isMobileMenu, 'ion-android-close': isMobileMenu}" style="font-size: 28px;color: #fff;"></i>
+<header id="header">
+  
+  <div class="logo">
+    <a href="https://www.siteserver.cn" target="_blank">
+      <img :src="adminLogoUrl" />
     </a>
-    <ul v-if="isDesktop" class="navigation-menu float-left">
-      <li v-for="topMenu in menus" class="has-submenu">
-        <a href="javascript:;" v-on:click="btnTopMenuClick(topMenu, $event)" :style="{fontWeight: (topMenu == menu ? 'bold' : 'normal')}" v-html="topMenu.text"></a>
-      </li>
-    </ul>
-    <ul v-if="isDesktop" class="navigation-menu float-right">
-      <li v-if="newVersion" class="has-submenu dropdown">
-        <a href="javascript:;">
-          <i class="ion-email-unread text-warning"></i>
-          <a v-if="updatePackages > 0" :href="utils.getPluginsUrl('manage', {pageType: 4})" class="badge badge-warning" target="right">{{updatePackages}}</a>
-        </a>
-        <div class="submenu card bg-light text-dark" style="width: 19rem; z-index: 11; position: absolute;">
-          <div class="card-body" style="padding-bottom: 0;">
-            <h5 class="card-title text-success">发现 CMS 新版本</h5>
-            <p class="card-text"> 当前版本：{{ version }} <br /> 最新版本： {{ newVersion.version }} <br /> 发布日期：
-              {{ newVersion.published }} <br />
-              <hr /> {{ newVersion.releaseNotes }} <br />
-              <a class="text-primary" :href="newVersion.updatesUrl" target="_blank">查看发行说明</a>
-              <hr />
-              <div class="text-center">
-                <button href="javascript:;" onclick="location.href = utils.getRootUrl('updateSystem');" class="btn btn-warning btn-block">立即升级</button>
-              </div>
-            </p>
+  </div>
+
+  <template v-if="isDesktop">
+
+    <el-link v-for="topMenu in menus" class="nav" :key="topMenu.id" :underline="false" :icon="topMenu.iconClass"  v-on:click="btnTopMenuClick(topMenu)" :style="{backgroundColor: (topMenu == menu ? '#2e9c90' : '')}">
+      {{ topMenu.text }}
+    </el-link>
+
+    <div class="right">
+
+      <el-popover
+        v-if="newVersion"
+        placement="bottom"
+        width="400"
+        trigger="hover">
+
+        <div style="padding-bottom: 20px;">
+          <h3>
+            <span>发现 CMS 新版本</span>
+          </h3>
+          <el-row style="padding: 5px">
+            当前版本：{{ version }}
+          </el-row>
+          <el-row style="padding: 5px">
+            最新版本： {{ newVersion.version }}
+          </el-row>
+          <el-row style="padding: 5px">
+            发布日期：
+            {{ newVersion.published }}
+          </el-row>
+          <el-row style="padding: 5px">
+            发行说明：
+            <el-link :underline="false" type="primary" :href="newVersion.updatesUrl" target="_blank">
+              {{ newVersion.releaseNotes }}
+            </el-link>
+          </el-row>
+          <div style="height: 20px"></div>
+          
+          <el-divider />
+          <div class="text-center">
+            <el-button size="small" type="primary" v-on:click="location.href = utils.getRootUrl('updateSystem');">立即升级</el-button>
           </div>
         </div>
-      </li>
-      <li v-if="siteId > 0" class="dropdown">
-        <a href="javascript:;" v-on:click="openPageCreateStatus">
-          <i class="ion-wand"></i>
-          <span v-if="pendingCount > 0" class="badge badge-xs badge-warning" style="right: 0;">{{pendingCount}}</span>
-        </a>
-      </li>
-      <li class="dropdown has-submenu">
-        <a href="javascript:;">
-          <img style="height: 25px;width: 25px;" :src="local.avatarUrl ? local.avatarUrl : '/sitefiles/assets/images/default_avatar.png'"
-            class="rounded-circle">
-        </a>
-        <ul class="submenu">
-          <li><a :href="utils.getSettingsUrl('administratorsView', {pageType: 'user', userId: local.userId})" target="right">{{local.level}}：{{local.userName}}</a></li>
-          <li><a :href="utils.getSettingsUrl('administratorsProfile', {pageType: 'user', userId: local.userId})" target="right">修改资料</a></li>
-          <li><a :href="utils.getSettingsUrl('administratorsPassword', {pageType: 'user', userId: local.userId})" target="right">更改密码</a></li>
-          <li><a href="~/ss-admin/logout/">退出系统</a></li>
-        </ul>
-      </li>
-      <li>
-        <form v-if="siteId > 0" id="search" class="navbar-left app-search" :action="utils.getCmsUrl('contentsSearch')"
-          target="right" method="get">
-          <input name="siteId" type="hidden" :value="siteId">
-          <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">
-          <a href="javascript:;" onclick="$('#search').submit();">
-            <i class="ion-search"></i>
-          </a>
-        </form>
-      </li>
-    </ul>
-  </div>
-</header>
-<div v-if="isDesktop || isMobileMenu" class="left side-menu" :style="{width: leftMenuWidth}">
-  <div id="sidebar" class="sidebar-inner">
-    <div id="sidebar-menu">
-      <ul v-if="menu">
-        <template v-if="isDesktop && !isMobileMenu">
-          <li v-if="menu.id === $idSite" style="text-align: center; margin: 0 !important; padding: 0 !important;">
-            <el-link :underline="false" :href="siteUrl" target="_blank">
-              访问站点
-              <i class="fa fa-external-link"></i>
-            </el-link>
-          </li>
 
-          <li v-for="level1Menu in menu.children" class="has_sub" :class="{'active': level1Menu === activeChildMenu}">
-            <a :href="getHref(level1Menu)" v-on:click="btnLeftMenuClick(level1Menu, $event)" :target="getTarget(level1Menu)" :class="{'subdrop': level1Menu === activeParentMenu}">
-              <i :class="(level1Menu.iconClass ? level1Menu.iconClass : 'ion-star')"></i>
-              <span v-html="level1Menu.text"></span>
-              <span v-if="level1Menu.children" class="menu-arrow"></span>
-            </a>
-            <ul v-if="level1Menu.children" class="list-unstyled" v-show="level1Menu === activeParentMenu">
-              <li v-for="level2Menu in level1Menu.children" :class="{'active': level2Menu === activeChildMenu}">
-                <a :href="getHref(level2Menu)" :target="getTarget(level2Menu)" v-on:click="btnLeftMenuClick(level2Menu, $event)">
-                  <i :class="level2Menu.iconClass"></i> <span v-html="level2Menu.text"></span> </a>
-              </li>
-            </ul>
-          </li>
-        </template>
+        <el-link style="padding: 0 10px;" slot="reference" :underline="false" type="warning">
+          <i class="ion-email-unread" style="font-size: 22px"></i>
+        </el-link>
+      </el-popover>
 
-        <template v-if="!isDesktop && isMobileMenu" v-for="topMenu in menus">
-          <li class="text-muted menu-title" v-html="topMenu.text"></li>
-          <li v-for="parentMenu in topMenu.children" class="has_sub">
-            <a :href="getHref(parentMenu)" v-on:click="btnLeftMenuClick(parentMenu, $event)" :target="getTarget(parentMenu)"
-              :class="{'subdrop': parentMenu === activeParentMenu}">
-              <i :class="(parentMenu.iconClass ? parentMenu.iconClass : 'ion-star')"></i>
-              <span v-html="parentMenu.text"></span>
-              <span v-if="parentMenu.children" class="menu-arrow"></span>
-            </a>
-            <ul v-if="parentMenu.children" class="list-unstyled" v-show="parentMenu === activeParentMenu">
-              <li v-for="childMenu in parentMenu.children" :class="{'active': childMenu === activeChildMenu}">
-                <a :href="getHref(childMenu)" :target="getTarget(childMenu)" v-on:click="btnLeftMenuClick(childMenu, $event)">
-                  <i :class="childMenu.iconClass"></i> <span v-html="childMenu.text"></span>
-                </a>
-              </li>
-            </ul>
-          </li>
-        </template>
-        <li class="text-muted menu-title"></li>
-        <li class="text-muted menu-title"></li>
-      </ul>
-      <div class="clearfix"></div>
+      <el-badge v-if="siteId > 0 && pendingCount > 0" :value="pendingCount">
+        <el-link icon="ion-wand" class="el-dropdown" :underline="false" v-on:click="openPageCreateStatus"></el-link>
+      </el-badge>
+      <el-link v-if="siteId > 0 && pendingCount === 0" icon="ion-wand" class="el-dropdown" :underline="false" v-on:click="openPageCreateStatus"></el-link>
+
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          <i class="fa fa-language" style="font-size: 16px;"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item disabled>中文</el-dropdown-item>
+          <el-dropdown-item>English</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <form v-if="siteId > 0" id="search" class="search" :action="utils.getCmsUrl('contentsSearch')" target="right" method="get">
+        <input name="siteId" type="hidden" :value="siteId">
+        <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">
+        <a href="javascript:;" onclick="$('#search').submit();">
+          <i class="ion-search"></i>
+        </a>
+      </form>
+
+      <el-dropdown v-on:command="btnUserMenuClick">
+        <span class="el-dropdown-link" style="top: 7px;position: inherit;">
+          <el-avatar size="small" :src="local.avatarUrl || '/sitefiles/assets/images/default_avatar.png'"></el-avatar>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="view">{{local.level}}：{{local.userName}}</el-dropdown-item>
+          <el-dropdown-item command="profile">修改资料</el-dropdown-item>
+          <el-dropdown-item command="password">更改密码</el-dropdown-item>
+          <el-dropdown-item command="logout">退出系统</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
     </div>
-    <div class="clearfix"></div>
+
+  </template>
+  <template v-else>
+    <a href="javascript:;" v-on:click="btnMobileMenuClick" style="margin-right: 20px; float: right;">
+      <i :class="{'ion-navicon': !isMobileMenu, 'ion-android-close': isMobileMenu}" style="font-size: 28px;color: #fff;"></i>
+    </a>
+  </template>
+
+  <div style="clear:both"></div>
+
+</header>
+
+<div>
+  <div v-if="isDesktop || isMobileMenu" id="sidebar" :style="{width: leftWidth + 'px'}">
+
+    <div class="title">
+
+      <div v-if="!isCollapse">
+        <div v-if="menu.id === $idSite">
+          <el-link :underline="false" :href="siteUrl" target="_blank">
+            <span v-if="!isCollapse">访问站点</span>
+            <i class="fa fa-external-link"></i>
+          </el-link>
+        </div>
+        <div v-else>
+          <el-link :underline="false">
+            {{ menu.text }}
+            <i v-if="menu.iconClass" :class="menu.iconClass"></i>
+          </el-link>
+        </div>
+
+        <el-link v-if="!isMobileMenu" style="float: right" :underline="false" v-on:click="isCollapse = true;">
+          <i class="el-icon-s-fold" style="font-size: 18px; position: absolute; top: -17px; right: 6px;"></i>
+        </el-link>
+      </div>
+      <div v-else>
+        <el-link v-if="!isMobileMenu" :underline="false" v-on:click="isCollapse = false;">
+          <i class="el-icon-s-unfold" style="font-size: 18px;"></i>
+        </el-link>
+      </div>
+    </div>
+
+    <el-menu
+      :default-openeds="defaultOpenedId"
+      :unique-opened="true"
+      :collapse="isCollapse"
+      :collapse-transition="false"
+      v-on:select="btnMenuClick">
+
+      <template v-for="level1 in menu.children">
+        <template v-if="level1.children && level1.children.length > 0">
+
+          <el-submenu :index="level1.id">
+            <template slot="title">
+              <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+              <span>{{ level1.text }}</span>
+            </template>
+  
+            <template v-for="level2 in level1.children">
+              <el-menu-item :index="JSON.stringify(level2)">
+                <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                <span>{{ level2.text }}</span>
+              </el-menu-item>
+            </template>
+  
+          </el-submenu>
+
+        </template>
+        <template v-else>
+          <el-menu-item :index="JSON.stringify(level1)">
+            <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+            <span>{{ level1.text }}</span>
+          </el-menu-item>
+        </template>
+      </template>
+    </el-menu>
+
+    <div style="height: 45px"></div>
+    
   </div>
-</div>
-<div class="content-page" id="content" :style="{marginLeft: (isDesktop ? 200 : 0) + 'px'}">
-  <iframe id="frmMain" frameborder="0" id="right" name="right" :src="defaultPageUrl" :style="{width: (winWidth - (isDesktop ? 200 : 0)) + 'px', height: (winHeight - 45) + 'px'}"></iframe>
+
+  <div id="tabs" :style="{width: (winWidth - leftWidth) + 'px', marginLeft: leftWidth + 'px'}">
+    <el-tabs v-model="tabsValue" type="border-card" :closable="true" v-on:tab-remove="utils.removeTab">
+      <el-tab-pane
+        :key="item.name"
+        v-for="(item, index) in tabs"
+        :label="item.title"
+        :name="item.name">
+        <iframe id="frmMain" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </div>
 
 @section Scripts{

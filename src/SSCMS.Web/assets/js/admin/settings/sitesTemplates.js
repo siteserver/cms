@@ -1,7 +1,7 @@
 ﻿var $url = '/settings/sitesTemplates';
 var $urlUpload = $apiUrl + '/settings/sitesTemplates/actions/upload';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: null,
   siteTemplateInfoList: null,
   fileNameList: null,

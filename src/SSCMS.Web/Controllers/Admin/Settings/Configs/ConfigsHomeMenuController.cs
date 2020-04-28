@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ConfigsHomeMenuController : ControllerBase
     {
@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }
@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<UserMenusResult>> Delete([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }
@@ -63,7 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<UserMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }
@@ -111,7 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(RouteReset)]
         public async Task<ActionResult<UserMenusResult>> Reset()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }

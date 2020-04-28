@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/tableStyleLayerEditor';
 
-var data = utils.initData({
+var data = utils.init({
   tableName: utils.getQueryString('tableName'),
   attributeName: utils.getQueryString('attributeName'),
   relatedIdentities: utils.getQueryIntList('relatedIdentities'),

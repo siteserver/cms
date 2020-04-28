@@ -2,7 +2,7 @@ var $url = "/install";
 var $routeUnCheckedList = "unCheckedList";
 var $sqlite = 'SQLite';
 
-var data = utils.initData({
+var data = utils.init({
   forbidden: false,
   version: null,
   targetFramework: null,

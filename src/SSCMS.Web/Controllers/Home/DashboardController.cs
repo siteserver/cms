@@ -10,7 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class DashboardController : ControllerBase
     {

@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/adminLayerView';
 
-var data = utils.initData({
+var data = utils.init({
   adminId: utils.getQueryInt('adminId'),
   userName: utils.getQueryString('userName'),
   administrator: null,

@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/editorLayerWord';
 
-var data = utils.initData({
+var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   uploadList: [],
   form: {

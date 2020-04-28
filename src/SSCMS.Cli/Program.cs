@@ -6,8 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS;
-using SSCMS.Plugins;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Services;
 using SSCMS.Cli.Updater;

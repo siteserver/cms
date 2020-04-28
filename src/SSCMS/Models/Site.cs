@@ -16,6 +16,9 @@ namespace SSCMS.Models
         public string SiteName { get; set; }
 
         [DataColumn]
+        public string SiteType { get; set; }
+
+        [DataColumn]
         public string ImageUrl { get; set; }
 
         [DataColumn]

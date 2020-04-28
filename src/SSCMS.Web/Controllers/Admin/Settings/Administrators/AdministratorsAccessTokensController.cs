@@ -13,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsAccessTokensController : ControllerBase
     {
@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -52,7 +52,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 adminNames.Add(adminName);
             }
 
-            var scopes = new List<string>(Constants.ScopeList);
+            var scopes = new List<string>
+            {
+                Constants.ScopeChannels,
+                Constants.ScopeContents,
+                Constants.ScopeAdministrators,
+                Constants.ScopeUsers,
+                Constants.ScopeStl
+            };
 
             foreach (var plugin in _pluginManager.GetPlugins())
             {
@@ -76,7 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<TokensResult>> Delete([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -93,7 +100,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<TokensResult>> Submit([FromBody] AccessToken itemObj)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }

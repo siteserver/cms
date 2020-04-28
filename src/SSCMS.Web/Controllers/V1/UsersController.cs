@@ -12,7 +12,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Authorize(Roles = AuthTypes.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class UsersController : ControllerBase
     {
@@ -43,47 +43,41 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(Route)]
         public async Task<ActionResult<User>> Create([FromBody]User request)
         {
-            var user = new User();
-            user.LoadDict(request.ToDictionary());
-
             var config = await _configRepository.GetAsync();
 
             if (!config.IsUserRegistrationGroup)
             {
-                user.GroupId = 0;
+                request.GroupId = 0;
             }
             var password = request.Password;
 
-            var valid = await _userRepository.InsertAsync(user, password, string.Empty);
-            if (valid.UserId == 0)
+            var (user, errorMessage) = await _userRepository.InsertAsync(request, password, string.Empty);
+            if (user == null)
             {
-                return this.Error(valid.ErrorMessage);
+                return this.Error(errorMessage);
             }
 
-            return await _userRepository.GetByUserIdAsync(valid.UserId);
+            return user;
         }
 
         [HttpPut, Route(RouteUser)]
-        public async Task<ActionResult<User>> Update(int id, [FromBody]User request)
+        public async Task<ActionResult<User>> Update([FromRoute]int id, [FromBody]User request)
         {
             var isAuth = await
                              _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
-            var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
-
-            var valid = await _userRepository.UpdateAsync(user, request.ToDictionary());
-            if (valid.User == null)
+            var (success, errorMessage) = await _userRepository.UpdateAsync(request);
+            if (!success)
             {
-                return this.Error(valid.ErrorMessage);
+                return this.Error(errorMessage);
             }
 
-            return valid.User;
+            return request;
         }
 
         [HttpDelete, Route(RouteUser)]
@@ -93,7 +87,7 @@ namespace SSCMS.Web.Controllers.V1
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             var user = await _userRepository.DeleteAsync(id);
@@ -108,7 +102,7 @@ namespace SSCMS.Web.Controllers.V1
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             if (!await _userRepository.IsExistsAsync(id)) return NotFound();
@@ -139,7 +133,7 @@ namespace SSCMS.Web.Controllers.V1
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             var user = await _userRepository.GetByUserIdAsync(id);
@@ -174,7 +168,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             var top = request.Top;
@@ -198,7 +192,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsLogin)]
         public async Task<ActionResult<LoginResult>> Login([FromBody]LoginRequest request)
         {
-            var (user, userName, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
+            var (user, _, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
             if (user == null)
             {
                 return this.Error(errorMessage);
@@ -223,7 +217,7 @@ namespace SSCMS.Web.Controllers.V1
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             var user = await _userRepository.GetByUserIdAsync(id);
@@ -242,7 +236,7 @@ namespace SSCMS.Web.Controllers.V1
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             var user = await _userRepository.GetByUserIdAsync(id);
@@ -271,7 +265,7 @@ namespace SSCMS.Web.Controllers.V1
                          _authManager.IsUser &&
                          _authManager.UserId == id ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUsers);
+                         await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers);
             if (!isAuth) return Unauthorized();
 
             var user = await _userRepository.GetByUserIdAsync(id);
@@ -282,10 +276,10 @@ namespace SSCMS.Web.Controllers.V1
                 return this.Error("原密码不正确，请重新输入");
             }
 
-            var valid = await _userRepository.ChangePasswordAsync(user.Id, request.NewPassword);
-            if (!valid.IsValid)
+            var (success, errorMessage) = await _userRepository.ChangePasswordAsync(user.Id, request.NewPassword);
+            if (!success)
             {
-                return this.Error(valid.ErrorMessage);
+                return this.Error(errorMessage);
             }
 
             await _logRepository.AddUserLogAsync(user, "修改密码", string.Empty);

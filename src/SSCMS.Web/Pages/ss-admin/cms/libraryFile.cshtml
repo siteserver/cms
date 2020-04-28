@@ -1,17 +1,19 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width:auto;}
+    .el-icon-arrow-down {
+      font-size: 12px;
+    }
+    .el-icon-picture-outline {
+      font-size: 22px;
+      margin: 80px 0;
+      color: #c0c4cc;
+    }
+  </style>
+}
 
-<style>
-  .el-upload, .el-upload-dragger {width:auto;}
-  .el-icon-arrow-down {
-    font-size: 12px;
-  }
-  .el-icon-picture-outline {
-    font-size: 22px;
-    margin: 80px 0;
-    color: #c0c4cc;
-  }
-</style>
 <el-menu default-active="4" mode="horizontal"
   background-color="#545c64"
   text-color="#fff"

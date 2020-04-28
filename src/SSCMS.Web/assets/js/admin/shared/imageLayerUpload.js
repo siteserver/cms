@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/imageLayerUpload';
 
-var data = utils.initData({
+var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
   editorAttributeName: utils.getQueryString('editorAttributeName'),

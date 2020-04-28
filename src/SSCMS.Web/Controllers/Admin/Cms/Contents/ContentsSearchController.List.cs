@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<ListResult>> List([FromBody] ListRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ContentsSearch))
+                    AuthTypes.SitePermissions.ContentsSearch))
             {
                 return Unauthorized();
             }

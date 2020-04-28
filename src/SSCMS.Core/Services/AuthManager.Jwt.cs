@@ -16,10 +16,10 @@ namespace SSCMS.Core.Services
         {
             return new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, administrator.Id.ToString()),
-                new Claim(ClaimTypes.Name, administrator.UserName),
-                new Claim(ClaimTypes.Role, Constants.RoleTypeAdministrator),
-                new Claim(ClaimTypes.IsPersistent, isPersistent.ToString())
+                new Claim(AuthTypes.Claims.UserId, administrator.Id.ToString()),
+                new Claim(AuthTypes.Claims.UserName, administrator.UserName),
+                new Claim(AuthTypes.Claims.Role, AuthTypes.Roles.Administrator),
+                new Claim(AuthTypes.Claims.IsPersistent, isPersistent.ToString())
             });
         }
 
@@ -76,7 +76,7 @@ namespace SSCMS.Core.Services
                 throw new SecurityTokenException("Invalid token passed!");
             }
 
-            var isPersistent = TranslateUtils.ToBool(_principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsPersistent)?.Value);
+            var isPersistent = TranslateUtils.ToBool(_principal.Claims.SingleOrDefault(c => c.Type == AuthTypes.Claims.IsPersistent)?.Value);
 
             var administrator = await _databaseManager.AdministratorRepository.GetByUserNameAsync(principal.Identity.Name);
             return AuthenticateAdministrator(administrator, isPersistent);
@@ -86,10 +86,10 @@ namespace SSCMS.Core.Services
         {
             return new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, Constants.RoleTypeUser),
-                new Claim(ClaimTypes.IsPersistent, isPersistent.ToString())
+                new Claim(AuthTypes.Claims.UserId, user.Id.ToString()),
+                new Claim(AuthTypes.Claims.UserName, user.UserName),
+                new Claim(AuthTypes.Claims.Role, AuthTypes.Roles.User),
+                new Claim(AuthTypes.Claims.IsPersistent, isPersistent.ToString())
             });
         }
 
@@ -146,7 +146,7 @@ namespace SSCMS.Core.Services
                 throw new SecurityTokenException("Invalid token passed!");
             }
 
-            var isPersistent = TranslateUtils.ToBool(_principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsPersistent)?.Value);
+            var isPersistent = TranslateUtils.ToBool(_principal.Claims.SingleOrDefault(c => c.Type == AuthTypes.Claims.IsPersistent)?.Value);
 
             var user = await _databaseManager.UserRepository.GetByUserNameAsync(principal.Identity.Name);
             return AuthenticateUser(user, isPersistent);
@@ -156,10 +156,10 @@ namespace SSCMS.Core.Services
         {
             return new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, accessToken.Id.ToString()),
-                new Claim(ClaimTypes.Name, accessToken.Token),
-                new Claim(ClaimTypes.Role, Constants.RoleTypeApi),
-                new Claim(ClaimTypes.IsPersistent, isPersistent.ToString())
+                new Claim(AuthTypes.Claims.UserId, accessToken.Id.ToString()),
+                new Claim(AuthTypes.Claims.UserName, accessToken.Token),
+                new Claim(AuthTypes.Claims.Role, AuthTypes.Roles.Api),
+                new Claim(AuthTypes.Claims.IsPersistent, isPersistent.ToString())
             });
         }
 
@@ -216,7 +216,7 @@ namespace SSCMS.Core.Services
                 throw new SecurityTokenException("Invalid token passed!");
             }
 
-            var isPersistent = TranslateUtils.ToBool(_principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.IsPersistent)?.Value);
+            var isPersistent = TranslateUtils.ToBool(_principal.Claims.SingleOrDefault(c => c.Type == AuthTypes.Claims.IsPersistent)?.Value);
 
             var entity = await _databaseManager.AccessTokenRepository.GetByTokenAsync(principal.Identity.Name);
             return AuthenticateApi(entity, isPersistent);

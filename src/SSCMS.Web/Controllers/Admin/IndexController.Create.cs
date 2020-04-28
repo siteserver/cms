@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
-        [Authorize(Roles = Constants.RoleTypeAdministrator)]
+        [Authorize(Roles = AuthTypes.Roles.Administrator)]
         [HttpPost, Route(RouteActionsCreate)]
         public async Task<ActionResult<IntResult>> Create([FromBody] CreateRequest request)
         {

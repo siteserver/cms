@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/contents/contentsLayerTag';
 
-var data = utils.initData({
+var data = utils.init({
   page: utils.getQueryInt('page'),
   tagNames: null,
   isAddForm: false,

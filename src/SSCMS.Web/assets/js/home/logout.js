@@ -1,6 +1,6 @@
 var $url = '/logout';
 
-var data = utils.initData({});
+var data = utils.init({});
 
 var methods = {
   logout: function () {

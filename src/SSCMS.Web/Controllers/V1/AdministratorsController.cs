@@ -12,7 +12,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.V1
 {
     [ApiController]
-    [Authorize(Roles = Constants.RoleTypeApi)]
+    [Authorize(Roles = AuthTypes.Roles.Api)]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route(Constants.ApiV1Prefix)]
     public partial class AdministratorsController : ControllerBase

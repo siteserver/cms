@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerTaxisController : ControllerBase
     {
@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Home
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Edit))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit))
             {
                 return Unauthorized();
             }

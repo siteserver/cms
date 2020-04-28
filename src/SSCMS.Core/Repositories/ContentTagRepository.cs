@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Datory;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Services;
 
 namespace SSCMS.Core.Repositories
 {

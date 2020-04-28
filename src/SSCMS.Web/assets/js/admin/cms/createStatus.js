@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/create/createStatus';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   pageType: null,
   tasks: null,

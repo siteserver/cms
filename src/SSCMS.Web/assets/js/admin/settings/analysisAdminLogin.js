@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/analysisAdminLogin';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: 'date',
   dateX: null,
   dateY: null,

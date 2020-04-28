@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsLayerCreateController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(Route)]
         public async Task<ActionResult<List<int>>> Create([FromBody] CreateRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

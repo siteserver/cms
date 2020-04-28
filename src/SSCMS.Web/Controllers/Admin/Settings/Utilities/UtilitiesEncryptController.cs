@@ -10,7 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UtilitiesEncryptController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpPost, Route(Route)]
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesEncrypt))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUtilitiesEncrypt))
             {
                 return Unauthorized();
             }

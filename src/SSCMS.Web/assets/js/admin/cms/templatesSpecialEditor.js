@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/templates/templatesSpecialEditor';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   specialId: utils.getQueryInt('specialId'),
   items: null,

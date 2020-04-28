@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/create/createPage';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   type: utils.getQueryString('type'),
   isAllChecked: false,

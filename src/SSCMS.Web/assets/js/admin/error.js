@@ -1,6 +1,6 @@
 var $url = "/error";
 
-var data = utils.initData({
+var data = utils.init({
   logId: utils.getQueryInt('logId'),
   uuid: utils.getQueryString('uuid'),
   message: utils.getQueryString('message'),

@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<BoolResult>> All([FromBody] AllRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Contents))
+                    AuthTypes.SitePermissions.Contents))
             {
                 return Unauthorized();
             }

@@ -39,7 +39,7 @@ namespace SSCMS.Models
         public bool Horizontal { get; set; }
 
         [DataIgnore]
-        public List<TableStyleItem> Items { get; set; }
+        public List<InputStyleItem> Items { get; set; }
 
         public string ItemValues { get; set; }
 
@@ -51,28 +51,8 @@ namespace SSCMS.Models
 
         public bool IsFormatString { get; set; }
 
-        public int RelatedFieldId { get; set; }
-
-        public string RelatedFieldStyle { get; set; }
-
         public string CustomizeLeft { get; set; }
 
         public string CustomizeRight { get; set; }
-
-        public bool IsValidate { get; set; }
-
-        public bool IsRequired { get; set; }
-
-        public int MinNum { get; set; }
-
-        public int MaxNum { get; set; }
-
-        public ValidateType ValidateType { get; set; }
-
-        public string RegExp { get; set; }
-
-        public string ErrorMessage { get; set; }
-
-        public string VeeValidate { get; set; }
     }
 }

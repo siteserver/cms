@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/settings/settingsCreateRuleLayerSet';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   isChannel: utils.getQueryBoolean("isChannel"),
   channelId: utils.getQueryInt("channelId"),

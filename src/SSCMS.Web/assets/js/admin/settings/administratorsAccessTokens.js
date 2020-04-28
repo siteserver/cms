@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/administratorsAccessTokens';
 
-var data = utils.initData({
+var data = utils.init({
   tokens: null,
   adminNames: null,
   scopes: null,
@@ -91,7 +91,7 @@ var methods = {
   btnViewClick: function (item) {
     utils.openLayer({
       title: '获取密钥',
-      url: utils.getSettingsUrl('administratorsAccessTokensViewLayer', {id: item.id}),
+      url: utils.getSettingsUrl('administratorsAccessTokensLayerView', {id: item.id}),
       width: 550,
       height: 410
     });

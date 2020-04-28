@@ -1,6 +1,6 @@
 ﻿var $url = '/password';
 
-var data = utils.initData({
+var data = utils.init({
   user: null,
   form: {
     password: null,

@@ -7,8 +7,10 @@ var $urlCreate = '/index/actions/create';
 var $urlDownload = '/index/actions/download';
 var $packageIdApp = 'SS.CMS.App';
 var $idSite = 'site';
+var $sidebarWidth = 200;
+var $collapseWidth = 60;
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
   defaultPageUrl: null,
@@ -21,28 +23,31 @@ var data = utils.initData({
   packageList: null,
   packageIds: null,
   menus: [],
+  siteType: null,
   siteUrl: null,
   previewUrl: null,
   local: null,
-
   menu: null,
-  activeParentMenu: null,
-  activeChildMenu: null,
-
+  searchWord: null,
+  version: null,
   newVersion: null,
   updatePackages: 0,
   pendingCount: 0,
   lastExecuteTime: new Date(),
   timeoutId: null,
 
+  defaultOpenedId: null,
+  tabsValue: null,
+  tabs: [],
   winHeight: 0,
   winWidth: 0,
+  isCollapse: false,
   isDesktop: true,
   isMobileMenu: false
 });
 
 var methods = {
-  openPageCreateStatus() {
+  openPageCreateStatus: function() {
     utils.openLayer({
       title: '生成进度查看',
       url: utils.getCmsUrl('createStatus', {siteId: this.siteId}),
@@ -63,6 +68,9 @@ var methods = {
       var res = response.data;
       if (res.value) {
         $this.defaultPageUrl = res.defaultPageUrl;
+
+        utils.addTab('首页', res.defaultPageUrl);
+
         $this.isNightly = res.isNightly;
         $this.version = res.version;
         $this.targetFramework = res.targetFramework;
@@ -72,15 +80,15 @@ var methods = {
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
         $this.menus = res.menus;
-        $this.siteName = res.siteName;
+        $this.siteType = res.siteType;
         $this.siteUrl = res.siteUrl;
         $this.previewUrl = res.previewUrl;
         $this.local = res.local;
         $this.menu = $this.menus[0];
-        $this.activeParentMenu = $this.menus[0].children[0];
+
+        $this.btnTopMenuClick($this.menus[0]);
 
         document.title = $this.adminTitle;
-
         setTimeout($this.ready, 100);
       } else {
         location.href = res.redirectUrl;
@@ -237,7 +245,7 @@ var methods = {
       for(var i = 0; i < menu.children.length; i++) {
         var child = menu.children[i];
         if (child.children) {
-          this.activeParentMenu = child;
+          this.defaultOpenedId = [child.id];
           break;
         }
       }
@@ -245,30 +253,51 @@ var methods = {
     this.menu = menu;
   },
 
-  btnLeftMenuClick: function (menu, e) {
-    if (menu.children) {
-      this.activeParentMenu = this.activeParentMenu === menu ? null : menu;
-    } else {
-      this.activeChildMenu = menu;
-      this.isMobileMenu = false;
-      if (menu.target == '_layer') {
-        e.stopPropagation();
-        e.preventDefault();
-        utils.openLayer({
-          title: menu.text,
-          url: menu.link,
-          full: true
-        });
-      }
+  btnMenuClick: function(key) {
+    var menu = JSON.parse(key);
+    this.isMobileMenu = false;
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: menu.link,
+        full: true
+      });
+    } else if (menu.target == 'right' || !menu.target) {
+      utils.addTab(menu.text, menu.link);
     }
   },
 
   btnMobileMenuClick: function () {
+    this.isCollapse = false;
     this.isMobileMenu = !this.isMobileMenu;
+  },
+
+  btnUserMenuClick: function (command) {
+    if (command === 'view') {
+      utils.openLayer({
+        title: '查看资料',
+        url: utils.getSettingsUrl('administratorsLayerView', {pageType: 'user', userId: this.local.userId}),
+        full: true
+      });
+    } else if (command === 'profile') {
+      utils.openLayer({
+        title: '修改资料',
+        url: utils.getSettingsUrl('administratorsLayerProfile', {pageType: 'user', userId: this.local.userId}),
+        full: true
+      });
+    } else if (command === 'password') {
+      utils.openLayer({
+        title: '更改密码',
+        url: utils.getSettingsUrl('administratorsLayerPassword', {pageType: 'user', userId: this.local.userId}),
+        full: true
+      });
+    } else if (command === 'logout') {
+      location.href = utils.getRootUrl('logout')
+    }
   }
 };
 
-var $vue = new Vue({
+var $root = new Vue({
   el: "#main",
   data: data,
   methods: methods,
@@ -276,9 +305,11 @@ var $vue = new Vue({
     this.apiGet();
   },
   computed: {
-    leftMenuWidth: function () {
-      if (this.isDesktop) return '200px';
-      return this.isMobileMenu ? '100%' : '200px'
+    leftWidth: function () {
+      if (this.isDesktop) {
+        return this.isCollapse ? $collapseWidth : $sidebarWidth;
+      }
+      return this.isMobileMenu ? this.winWidth : 0;
     }
   }
 });

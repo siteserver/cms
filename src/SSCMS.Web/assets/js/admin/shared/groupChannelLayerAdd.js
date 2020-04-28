@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/groupChannelLayerAdd';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   groupId: utils.getQueryInt('groupId'),
   form: {

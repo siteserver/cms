@@ -1,7 +1,7 @@
 var $url = '/redirect';
 var $redirectUrl = utils.getQueryString('redirectUrl');
 
-var data = utils.initData({});
+var data = utils.init({});
 
 var methods = {
   load: function () {

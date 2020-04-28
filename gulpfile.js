@@ -1,27 +1,48 @@
 const fs = require('fs-extra');
-const del = require("del");
-const gulp = require("gulp");
+const del = require('del');
+const gulp = require('gulp');
 const through2 = require('through2');
-const minifier = require("gulp-minifier");
-const minify = require("gulp-minify");
-const rename = require("gulp-rename");
+const minifier = require('gulp-minifier');
+const minify = require('gulp-minify');
+const rename = require('gulp-rename');
 const replace = require('gulp-string-replace');
-const filter = require("gulp-filter");
-const runSequence = require("gulp4-run-sequence");
+const filter = require('gulp-filter');
+const runSequence = require('gulp4-run-sequence');
 
 const version = process.env.PRODUCTVERSION;
 const timestamp = (new Date()).getTime();
 let publishDir = '';
+let htmlDict = {};
+fs.readdirSync('./src/SSCMS.Web/Pages/Shared/').forEach(fileName => {
+  let html = fs.readFileSync('./src/SSCMS.Web/Pages/Shared/' + fileName, {
+    encoding: "utf8",
+  });
+  htmlDict[fileName] = html;
+  htmlDict[fileName.replace('.cshtml', '')] = html;
+});
 
 function transform(file, html) {
   let content = new String(file.contents);
   let result = html;
 
+  let matches = [...content.matchAll(/@await Html.PartialAsync\("([\s\S]+?)"\)/gi)];
+  if (matches) {
+    for (let i = 0; i < matches.length; i++) {
+      var match = matches[i];
+      content = content.replace(match[0], htmlDict[match[1]]);
+    }
+  }
+
   let styles = '';
-  let matches = [...content.matchAll(/@section Styles{([\s\S]+?)}/gi)];
+  matches = [...content.matchAll(/<style>([\s\S]+?)<\/style>/gi)];
   if (matches && matches[0]){
     content = content.replace(matches[0][0], '');
-    styles = matches[0][1];
+    styles = matches[0][0];
+  }
+  matches = [...content.matchAll(/@section Styles{([\s\S]+?)}/gi)];
+  if (matches && matches[0]){
+    content = content.replace(matches[0][0], '');
+    styles = matches[0][1] + styles;
   }
   let scripts = '';
   matches = [...content.matchAll(/@section Scripts{([\s\S]+?)}/gi)];
@@ -54,14 +75,10 @@ gulp.task("build-sln", function () {
 
 
 gulp.task("build-ss-admin", function () {
-  let html = fs.readFileSync("./src/SSCMS.Web/Pages/Shared/_Layout.cshtml", {
-    encoding: "utf8",
-  });
-
   return gulp
     .src("./src/SSCMS.Web/Pages/ss-admin/**/*.cshtml")
     .pipe(through2.obj((file, enc, cb) => {
-      cb(null, transform(file, html))
+      cb(null, transform(file, htmlDict['_Layout']))
     }))
     .pipe(rename(function (path) {
       if (path.basename != 'index'){
@@ -83,14 +100,10 @@ gulp.task("build-ss-admin", function () {
 });
 
 gulp.task("build-home", function () {
-  let html = fs.readFileSync("./src/SSCMS.Web/Pages/Shared/_LayoutHome.cshtml", {
-    encoding: "utf8",
-  });
-
   return gulp
     .src("./src/SSCMS.Web/Pages/home/**/*.cshtml")
     .pipe(through2.obj((file, enc, cb) => {
-      cb(null, transform(file, html))
+      cb(null, transform(file, htmlDict['_LayoutHome']))
     }))
     .pipe(rename(function (path) {
       if (path.basename != 'index'){

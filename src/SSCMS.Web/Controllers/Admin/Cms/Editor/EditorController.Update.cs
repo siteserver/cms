@@ -14,8 +14,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         public async Task<ActionResult<BoolResult>> Update([FromBody] SaveRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Edit))
+                    AuthTypes.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit))
             {
                 return Unauthorized();
             }

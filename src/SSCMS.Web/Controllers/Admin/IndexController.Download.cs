@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
-        [Authorize(Roles = Constants.RoleTypeAdministrator)]
+        [Authorize(Roles = AuthTypes.Roles.Administrator)]
         [HttpPost, Route(RouteActionsDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody] DownloadRequest request)
         {

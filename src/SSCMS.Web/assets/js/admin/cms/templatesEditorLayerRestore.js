@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/templates/templatesEditorLayerRestore';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   templateId: utils.getQueryInt("templateId"),
   logs: null,

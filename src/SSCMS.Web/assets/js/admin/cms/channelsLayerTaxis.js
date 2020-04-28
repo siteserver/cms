@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/channels/channelsLayerTaxis';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   channelIds: utils.getQueryIntList('channelIds'),
   form: {

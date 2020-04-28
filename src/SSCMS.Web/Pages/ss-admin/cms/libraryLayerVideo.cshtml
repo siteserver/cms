@@ -2,15 +2,14 @@
 @{ Layout = "_Layout"; }
 @section Styles{
   <link rel="stylesheet" href="/sitefiles/assets/lib/videojs/video.7.5.5.min.css">
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .videojs {
+      width: 100% !important;
+      min-height: 300px;
+    }
+  </style>
 }
-
-<style>
-  .el-upload, .el-upload-dragger {width: 100%;}
-  .videojs {
-    width: 100% !important;
-    min-height: 300px;
-  }
-</style>
 
 <el-form ref="form" :model="form" size="small">
 

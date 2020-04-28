@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/configsAdmin';
 
-var data = utils.initData({
+var data = utils.init({
   uploadUrl: null,
   uploadFileList: [],
   form: {

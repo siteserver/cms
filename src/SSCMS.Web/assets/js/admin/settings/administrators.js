@@ -1,7 +1,7 @@
 ﻿var $url = '/settings/administrators';
 var $urlUpload = $apiUrl + '/settings/administrators/actions/import';
 
-var data = utils.initData({
+var data = utils.init({
   drawer: false,
   administrators: null,
   count: null,
@@ -97,12 +97,28 @@ var methods = {
     });
   },
 
+  btnViewClick: function(row) {
+    utils.openLayer({
+      title: '查看资料',
+      url: utils.getSettingsUrl('administratorsLayerView', {pageType: 'admin', userId: row.id}),
+      full: true
+    });
+  },
+
   btnEditClick: function(row) {
-    location.href = utils.getSettingsUrl('administratorsProfile', {pageType: 'admin', userId: row.id});
+    utils.openLayer({
+      title: '编辑资料',
+      url: utils.getSettingsUrl('administratorsLayerProfile', {pageType: 'admin', userId: row.id}),
+      full: true
+    });
   },
 
   btnPasswordClick: function(row) {
-    location.href = utils.getSettingsUrl('administratorsPassword', {pageType: 'admin', userId: row.id});
+    utils.openLayer({
+      title: '更改密码',
+      url: utils.getSettingsUrl('administratorsLayerPassword', {pageType: 'admin', userId: row.id}),
+      full: true
+    });
   },
 
   btnPermissionsClick: function(row) {

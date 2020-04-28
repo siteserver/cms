@@ -1,11 +1,12 @@
 ﻿@page
 @{ Layout = "_Layout"; }
-
-<style>
-  .el-upload, .el-upload-dragger {
-      width: 150px;
-  }
-</style>
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {
+        width: 150px;
+    }
+  </style>
+}
 
 <el-card class="box-card">
   <div slot="header" class="clearfix">
@@ -62,10 +63,10 @@
         <el-checkbox label="用户名" checked disabled></el-checkbox>
         <el-checkbox label="密码" checked disabled></el-checkbox>
         <el-checkbox-group v-model="form.userRegistrationAttributes">
-          <el-checkbox v-for="style in styles" :key="style.attributeName" :label="style.displayName" :value="style.attributeName" name="userRegistrationAttributes"></el-checkbox>
+          <el-checkbox v-for="style in styles" :key="style.attributeName" :label="style.attributeName">{{style.displayName}}</el-checkbox>
         </el-checkbox-group>
         <small class="tips">
-          字段名称及验证方式请进入 <a style="color: #00B19D; text-decoration: none;" :href="utils.getSettingsUrl('usersStyle')">用户字段</a> 界面进行设置。
+          字段名称及验证方式请进入 <a style="color: #00B19D; text-decoration: none;" :href="utils.getSettingsUrl('usersStyle', {returnUrl: encodeURIComponent(location.href)})">用户字段</a> 界面进行设置。
         </small>
       </el-form-item>
       <el-form-item label="用户注册是否选择用户组">

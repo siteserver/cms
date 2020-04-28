@@ -1,6 +1,6 @@
 ﻿var $url = '/plugins/view';
 
-var data = utils.initData({
+var data = utils.init({
   pluginId: utils.getQueryString('pluginId'),
   returnUrl: utils.getQueryString('returnUrl'),
   isNightly: null,

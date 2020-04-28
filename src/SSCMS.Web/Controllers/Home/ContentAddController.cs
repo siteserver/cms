@@ -13,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentAddController : ControllerBase
     {
@@ -81,7 +81,7 @@ namespace SSCMS.Web.Controllers.Home
                 if (siteInfo != null)
                 {
                     var channelIdList = await _authManager.GetChannelIdsAsync(siteInfo.Id,
-                        Constants.ContentPermissions.Add);
+                        AuthTypes.SiteContentPermissions.Add);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);

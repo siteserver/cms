@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/usersPassword';
 
-var data = utils.initData({
+var data = utils.init({
   userId: utils.getQueryInt('userId'),
   user: null,
   form: {

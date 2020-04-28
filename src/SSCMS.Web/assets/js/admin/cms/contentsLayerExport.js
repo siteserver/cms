@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/contents/contentsLayerExport';
 
-var data = utils.initData({
+var data = utils.init({
   columns: null,
   checkedLevels: null,
   checkedLevel: null,

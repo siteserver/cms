@@ -8,7 +8,7 @@ var validateRelatedFileName = function(rule, value, callback) {
   }
 };
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   templateId: utils.getQueryInt("templateId"),
   templateType: utils.getQueryString("templateType"),

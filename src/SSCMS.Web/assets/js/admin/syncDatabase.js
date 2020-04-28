@@ -1,6 +1,6 @@
 var $url = '/syncDatabase';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: 'prepare',
   databaseVersion: null,
   version: null

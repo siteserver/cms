@@ -1,6 +1,6 @@
 ﻿var $url = '/shared/editorLayerText';
 
-var data = utils.initData({
+var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   siteId: utils.getQueryInt("siteId"),
   pageType: 'card',

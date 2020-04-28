@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/utilitiesEncrypt';
 
-var data = utils.initData({
+var data = utils.init({
   form: {
     isEncrypt: true,
     value: null,

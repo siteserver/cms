@@ -12,7 +12,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class CreatePageController : ControllerBase
     {
@@ -42,19 +42,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             var permission = string.Empty;
             if (request.Type == CreateType.Index)
             {
-                permission = Constants.SitePermissions.CreateIndex;
+                permission = AuthTypes.SitePermissions.CreateIndex;
             }
             else if (request.Type == CreateType.Channel)
             {
-                permission = Constants.SitePermissions.CreateChannels;
+                permission = AuthTypes.SitePermissions.CreateChannels;
             }
             else if (request.Type == CreateType.Content)
             {
-                permission = Constants.SitePermissions.CreateContents;
+                permission = AuthTypes.SitePermissions.CreateContents;
             }
             else if (request.Type == CreateType.All)
             {
-                permission = Constants.SitePermissions.CreateAll;
+                permission = AuthTypes.SitePermissions.CreateAll;
             }
 
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, permission))
@@ -99,19 +99,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             var permission = string.Empty;
             if (request.Type == CreateType.Index)
             {
-                permission = Constants.SitePermissions.CreateIndex;
+                permission = AuthTypes.SitePermissions.CreateIndex;
             }
             else if (request.Type == CreateType.Channel)
             {
-                permission = Constants.SitePermissions.CreateChannels;
+                permission = AuthTypes.SitePermissions.CreateChannels;
             }
             else if (request.Type == CreateType.Content)
             {
-                permission = Constants.SitePermissions.CreateContents;
+                permission = AuthTypes.SitePermissions.CreateContents;
             }
             else if (request.Type == CreateType.All)
             {
-                permission = Constants.SitePermissions.CreateAll;
+                permission = AuthTypes.SitePermissions.CreateAll;
             }
 
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, permission))
@@ -215,7 +215,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(RouteAll)]
         public async Task<ActionResult<BoolResult>> CreateAll([FromBody] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateAll))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateAll))
             {
                 return Unauthorized();
             }

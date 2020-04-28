@@ -9,7 +9,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesAssetsEditorController : ControllerBase
     {
@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] FileRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesAssets))
             {
                 return Unauthorized();
             }
@@ -73,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ContentResult>> Add([FromBody] ContentRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesAssets))
             {
                 return Unauthorized();
             }
@@ -87,7 +87,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ContentResult>> Edit([FromBody] ContentRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.TemplateAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesAssets))
             {
                 return Unauthorized();
             }

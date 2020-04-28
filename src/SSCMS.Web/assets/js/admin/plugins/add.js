@@ -1,6 +1,6 @@
 ﻿var $url = '/plugins/add';
 
-var data = utils.initData({
+var data = utils.init({
   isNightly: null,
   version: null,
   packageIds: null,

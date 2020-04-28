@@ -1,7 +1,7 @@
 ﻿var $url = '/cms/settings/settingsStyleSite';
 var $urlImport = '/cms/settings/settingsStyleSite/actions/import';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   returnUrl: utils.getQueryString('returnUrl'),
   urlUpload: null,

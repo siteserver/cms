@@ -29,7 +29,7 @@
             class="rounded-circle">
         </a>
         <ul class="submenu" style="left: -155px;">
-          <li><a href="javascript:;" target="right">{{user.displayName || user.userName}}</a></li>
+          <li><a href="dashboard/" target="right">{{user.displayName || user.userName}}</a></li>
           <li><a href="profile/" target="right">修改资料</a></li>
           <li><a href="password/" target="right">更改密码</a></li>
           <li><a href="logout/">退出系统</a></li>
@@ -44,7 +44,7 @@
       <ul v-if="menu">
         <template v-if="isDesktop && !isMobileMenu">
           <li v-for="level1Menu in menu.children" class="has_sub" :class="{'active': level1Menu === activeChildMenu}">
-            <a :href="getHref(level1Menu)" v-on:click="btnLeftMenuClick(level1Menu, $event)" :target="getTarget(level1Menu)" :class="{'subdrop': level1Menu === activeParentMenu}">
+            <a :href="getHref(level1Menu)" v-on:click="btnLeftMenuClick(level1Menu, $event)" :target="getTarget(level1Menu)" :class="{'subdrop': level1Menu === activeParentMenu && level1Menu.children}">
               <i :class="(level1Menu.iconClass ? level1Menu.iconClass : 'ion-star')"></i>
               <span v-html="level1Menu.text"></span>
               <span v-if="level1Menu.children" class="menu-arrow"></span>

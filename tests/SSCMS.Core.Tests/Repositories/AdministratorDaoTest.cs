@@ -33,32 +33,32 @@ namespace SSCMS.Core.Tests.Repositories
 
             var userInfo = new User();
             string errorMessage;
-            var (userId, _) = await _userRepository.InsertAsync(userInfo, "admin888", string.Empty);
+            var (entity, _) = await _userRepository.InsertAsync(userInfo, "admin888", string.Empty);
 
-            Assert.True(userId == 0);
+            Assert.Null(entity);
 
             userInfo = new User
             {
                 UserName = TestUserName
             };
 
-            (userId, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest", string.Empty);
+            (entity, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest", string.Empty);
             _output.WriteLine(errorMessage);
 
-            Assert.True(userId == 0);
+            Assert.Null(entity);
 
             userInfo = new User
             {
                 UserName = TestUserName
             };
 
-            (userId, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest@2", string.Empty);
-            if (userId == 0)
+            (entity, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest@2", string.Empty);
+            if (entity == null)
             {
                 _output.WriteLine(errorMessage);
             }
 
-            Assert.True(userId > 0);
+            Assert.NotNull(entity);
             Assert.True(!string.IsNullOrWhiteSpace(userInfo.Password));
             Assert.True(userInfo.PasswordFormat == PasswordFormat.Encrypted);
             Assert.True(!string.IsNullOrWhiteSpace(userInfo.PasswordSalt));

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
 using SSCMS;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Core

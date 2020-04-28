@@ -13,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AddLayerUploadController : ControllerBase
     {
@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<BoolResult>> GetConfig()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -46,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm]IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
@@ -91,7 +91,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

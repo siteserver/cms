@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Plugins;
@@ -54,10 +53,11 @@ namespace SSCMS.Core.Plugins
         public IEnumerable<string> Keywords => Configuration.GetSection(nameof(Keywords)).Get<string[]>();
         public string Homepage => Configuration[nameof(Homepage)];
         public string Main => Configuration[nameof(Main)] ?? $"{FolderName}.dll";
-
-        public PermissionsOptions Permissions =>
-            Configuration.GetSection("extensions:permissions").Get<PermissionsOptions>();
-        public MenusOptions Menus => Configuration.GetSection("extensions:menus").Get<MenusOptions>();
+        public List<SiteType> SiteTypes =>
+            Configuration.GetSection("extensions:siteTypes").Get<List<SiteType>>();
+        public List<Permission> Permissions =>
+            Configuration.GetSection("extensions:permissions").Get<List<Permission>>();
+        public List<Menu> Menus => Configuration.GetSection("extensions:menus").Get<List<Menu>>();
 
         // config.json
 

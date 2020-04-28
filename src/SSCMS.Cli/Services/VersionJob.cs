@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS;
 using SSCMS.Cli.Core;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services

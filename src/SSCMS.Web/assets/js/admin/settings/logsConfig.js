@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/logsConfig';
 
-var data = utils.initData({
+var data = utils.init({
   config: null,
   form: {
     isTimeThreshold: null,

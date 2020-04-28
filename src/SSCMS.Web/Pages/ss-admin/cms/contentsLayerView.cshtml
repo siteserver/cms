@@ -1,11 +1,13 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
+      margin-bottom: 10px;
+    }
+  </style>
+}
 
-<style>
-  .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
-    margin-bottom: 10px;
-  }
-</style>
 <el-tabs v-model="activeName">
   <el-tab-pane label="属性" name="attributes">
     <el-form label-width="120px" size="mini">

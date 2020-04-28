@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/templates/templatesReference';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   elements: null,
   elementPanel: false,

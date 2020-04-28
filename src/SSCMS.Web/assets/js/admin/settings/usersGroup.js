@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/usersGroup';
 
-var data = utils.initData({
+var data = utils.init({
   groups: null,
   adminNames: null,
 

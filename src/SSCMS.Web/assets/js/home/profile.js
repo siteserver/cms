@@ -1,15 +1,10 @@
 ﻿var $url = '/profile';
 
-var data = utils.initData({
+var data = utils.init({
   uploadUrl: null,
   uploadFileList: [],
-  form: {
-    userName: null,
-    displayName: null,
-    avatarUrl: null,
-    mobile: null,
-    email: null
-  }
+  form: null,
+  styles: null
 });
 
 var methods = {
@@ -19,16 +14,12 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.form.userName = res.userName;
-      $this.form.displayName = res.displayName;
-      $this.form.avatarUrl = res.avatarUrl;
-      $this.form.mobile = res.mobile;
-      $this.form.email = res.email;
+      $this.form = _.assign({}, res.user);
+      $this.styles = res.styles;
 
       if ($this.form.avatarUrl) {
         $this.uploadFileList.push({name: 'avatar', url: $this.form.avatarUrl});
       }
-
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -40,15 +31,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, {
-      userId: this.userId,
-      userName: this.form.userName,
-      displayName: this.form.displayName,
-      avatarUrl: this.form.avatarUrl,
-      mobile: this.form.mobile,
-      email: this.form.email
-    }).then(function (response) {
-      $this.$message.success('资料保存成功！');
+    $api.post($url, this.form).then(function (response) {
+      $this.$message.success('资料修改成功！');
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -64,10 +48,6 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  },
-
-  btnReturnClick: function () {
-    location.href = utils.getSettingsUrl('administrators');
   },
 
   uploadBefore(file) {
@@ -112,7 +92,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.uploadUrl = $apiUrl + $url + '/actions/upload?userId=' + this.userId;
+    this.uploadUrl = $apiUrl + $url + '/actions/upload';
     this.apiGet();
   }
 });

@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/utilitiesCache';
 
-var data = utils.initData({
+var data = utils.init({
   configuration: null,
   parameters: null
 });

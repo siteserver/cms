@@ -1,11 +1,13 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
+      margin-bottom: 10px;
+    }
+  </style>
+}
 
-<style>
-  .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
-    margin-bottom: 10px;
-  }
-</style>
 <el-form label-width="120px" size="mini">
   <el-form-item label="内容标题">
     <el-link type="primary" :underline="false" style="top: -2px" :href="getContentUrl(content)" v-html="content.title" target="_blank" v-on:click.stop.native></el-link>

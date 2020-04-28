@@ -4,11 +4,12 @@ using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Configuration;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
-    public class SettingsManager : ISettingsManager
+    public partial class SettingsManager : ISettingsManager
     {
         private readonly IConfiguration _config;
 
@@ -30,26 +31,14 @@ namespace SSCMS.Core.Services
                     TargetFramework = targetFrameworkAttribute.FrameworkName;
                 }
             }
-
-            //var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
-            //if (FileUtils.IsFileExists(menusPath))
-            //{
-            //    Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
-            //}
-
-            //var permissionsPath = PathUtils.GetLangPath(contentRootPath, "en", "permissions.yml");
-            //if (FileUtils.IsFileExists(permissionsPath))
-            //{
-            //    Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
-            //}
         }
 
         public string ContentRootPath { get; }
         public string WebRootPath { get; }
         public string Version { get; }
         public string TargetFramework { get; }
-        public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
-        public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));
+        public bool IsNightlyUpdate => _config.GetValue(nameof(IsNightlyUpdate), false);
+        public bool IsProtectData => _config.GetValue(nameof(IsProtectData), false);
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
         public DatabaseType DatabaseType => TranslateUtils.ToEnum(IsProtectData ? Decrypt(_config.GetValue<string>("Database:Type")) : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
         public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");

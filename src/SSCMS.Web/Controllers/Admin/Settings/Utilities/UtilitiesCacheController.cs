@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UtilitiesCacheController : ControllerBase
     {
@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesCache))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUtilitiesCache))
             {
                 return Unauthorized();
             }
@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> ClearCache()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsUtilitiesCache))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUtilitiesCache))
             {
                 return Unauthorized();
             }

@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/usersConfig';
 
-var data = utils.initData({
+var data = utils.init({
   form: {
     isUserRegistrationAllowed: null,
     isUserRegistrationChecked: null,

@@ -11,8 +11,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         public async Task<ActionResult<PreviewResult>> Preview([FromBody] PreviewRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Constants.ContentPermissions.Add))
+                    AuthTypes.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
             {
                 return Unauthorized();
             }

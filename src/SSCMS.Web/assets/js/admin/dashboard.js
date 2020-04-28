@@ -1,6 +1,6 @@
 var $url = "/dashboard";
 
-var data = utils.initData({
+var data = utils.init({
   version: null,
   lastActivityDate: null,
   updateDate: null,

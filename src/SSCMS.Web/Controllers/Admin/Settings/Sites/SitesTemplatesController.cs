@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTemplatesController : ControllerBase
     {
@@ -69,7 +69,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var siteTemplateUrl = StringUtils.TrimSlash(_pathManager.GetSiteTemplatesUrl(string.Empty));
             var siteAddPermission =
-                await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd);
 
             return new ListResult
             {
@@ -83,7 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -94,7 +94,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteZip)]
         public async Task<ActionResult<StringResult>> Zip([FromBody]ZipRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -117,7 +117,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUnZip)]
         public async Task<ActionResult<ListResult>> UnZip([FromBody]UnZipRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -135,7 +135,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -163,7 +163,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<ListResult>> Upload([FromForm]IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }

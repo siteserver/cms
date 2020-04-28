@@ -16,7 +16,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LibraryLayerImageController : ControllerBase
     {
@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<UploadResult>> Upload([FromQuery]SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }
@@ -76,7 +76,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<List<SubmitResult>>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Library))
+                    AuthTypes.SitePermissions.Library))
             {
                 return Unauthorized();
             }

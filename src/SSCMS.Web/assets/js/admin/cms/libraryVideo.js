@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/library/libraryVideo';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   drawer: false,
   isGroupForm: false,

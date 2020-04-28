@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/settings/settingsChannelGroup';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   groups: null
 });

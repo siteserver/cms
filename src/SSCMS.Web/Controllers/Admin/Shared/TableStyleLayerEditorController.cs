@@ -16,7 +16,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TableStyleLayerEditorController : ControllerBase
     {
@@ -42,14 +42,14 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             };
             if (style.Items == null)
             {
-                style.Items = new List<TableStyleItem>();
+                style.Items = new List<InputStyleItem>();
             }
 
             var isRapid = true;
             var rapidValues = string.Empty;
             if (style.Items.Count == 0)
             {
-                style.Items.Add(new TableStyleItem
+                style.Items.Add(new InputStyleItem
                 {
                     Label = string.Empty,
                     Value = string.Empty,

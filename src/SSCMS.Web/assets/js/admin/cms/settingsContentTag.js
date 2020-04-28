@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/settings/settingsContentTag';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   page: 1,
   perPage: PER_PAGE,

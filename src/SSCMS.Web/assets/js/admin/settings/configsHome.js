@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/configsHome';
 
-var data = utils.initData({
+var data = utils.init({
   config: null,
   uploadUrl: null,
   uploadFileListHomeLogoUrl: [],
@@ -86,20 +86,6 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
-  },
-
-  getUserRegistrationAttributes: function () {
-    var str = '用户名, 密码';
-    for (var i = 0; i < this.userRegistrationAttributes.length; i++) {
-      var attributeName = this.userRegistrationAttributes[i];
-      var style = _.find(this.styles, function (x) {
-        return x.attributeName === attributeName
-      });
-      if (style) {
-        str += ", " + style.displayName;
-      }
-    }
-    return str;
   },
 
   getUserRegistrationAttribute: function (val) {

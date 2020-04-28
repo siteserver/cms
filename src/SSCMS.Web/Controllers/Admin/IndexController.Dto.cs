@@ -37,6 +37,7 @@ namespace SSCMS.Web.Controllers.Admin
             public List<object> PackageList { get; set; }
             public List<string> PackageIds { get; set; }
             public IList<Menu> Menus { get; set; }
+            public string SiteType { get; set; }
             public string SiteUrl { get; set; }
             public string PreviewUrl { get; set; }
             public Local Local { get; set; }
@@ -62,20 +63,8 @@ namespace SSCMS.Web.Controllers.Admin
                 child.Children = GetChildren(child, permissions, op);
             }
 
-            var children = new List<Menu>();
-            foreach (var child in menu.Children)
-            {
-                var exist = children.FirstOrDefault(x => !string.IsNullOrEmpty(x.Id) && x.Id == child.Id);
-                if (exist != null)
-                {
-                    children[children.IndexOf(exist)] = child;
-                }
-                else
-                {
-                    children.Add(child);
-                }
-            }
-            
+            var children = new List<Menu>(menu.Children);
+
             if (op != null)
             {
                 children = children.Select(op).ToList();

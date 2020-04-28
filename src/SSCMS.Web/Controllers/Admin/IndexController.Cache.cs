@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
-        [Authorize(Roles = Constants.RoleTypeAdministrator)]
+        [Authorize(Roles = AuthTypes.Roles.Administrator)]
         [HttpPost, Route(RouteActionsCache)]
         public async Task<ActionResult<IntResult>> Cache([FromBody] SiteRequest request)
         {

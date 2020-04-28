@@ -16,7 +16,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsCrossSiteTransChannelsController : ControllerBase
     {
@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigCrossSiteTrans))
+                    AuthTypes.SitePermissions.SettingsCrossSiteTrans))
             {
                 return Unauthorized();
             }
@@ -95,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigCrossSiteTrans))
+                    AuthTypes.SitePermissions.SettingsCrossSiteTrans))
             {
                 return Unauthorized();
             }
@@ -215,7 +215,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ConfigCrossSiteTrans))
+                    AuthTypes.SitePermissions.SettingsCrossSiteTrans))
             {
                 return Unauthorized();
             }

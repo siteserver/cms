@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/sitesLayerSelect';
 
-var data = utils.initData({
+var data = utils.init({
   sites: null,
   rootSiteId: null,
   tableNames: null,

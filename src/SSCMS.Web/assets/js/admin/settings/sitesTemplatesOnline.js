@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/sitesTemplatesOnline';
 
-var data = utils.initData({
+var data = utils.init({
   siteAddPermission: false,
   page: utils.getQueryInt('page', 1),
   word: utils.getQueryString('word'),

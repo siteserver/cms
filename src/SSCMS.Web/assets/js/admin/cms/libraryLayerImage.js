@@ -1,7 +1,7 @@
 ﻿var $url = '/cms/library/libraryLayerImage';
 var $urlUpload = $apiUrl + '/cms/library/libraryLayerImage/actions/upload?siteId=' + utils.getQueryInt('siteId');
 
-var data = utils.initData({
+var data = utils.init({
   uploadList: [],
   dialogImageUrl: '',
   dialogVisible: false,

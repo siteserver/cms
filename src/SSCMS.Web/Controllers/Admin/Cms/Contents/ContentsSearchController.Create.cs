@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<BoolResult>> Create([FromBody] CreateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.ContentsSearch))
+                    AuthTypes.SitePermissions.ContentsSearch))
             {
                 return Unauthorized();
             }

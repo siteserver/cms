@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/create/createSpecial';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   isAllChecked: false,
   allSpecials: null,

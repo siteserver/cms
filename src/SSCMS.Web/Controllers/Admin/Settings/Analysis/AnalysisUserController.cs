@@ -12,7 +12,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AnalysisUserController : ControllerBase
     {
@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         [HttpPost, Route(Route)]
         public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsAnalysisUser))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAnalysisUser))
             {
                 return Unauthorized();
             }

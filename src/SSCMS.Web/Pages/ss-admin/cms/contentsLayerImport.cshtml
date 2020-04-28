@@ -1,9 +1,11 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+  </style>
+}
 
-<style>
-  .el-upload, .el-upload-dragger {width: 100%;}
-</style>
 <el-upload
   drag
   :action="uploadUrl"

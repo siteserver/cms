@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesAddController : ControllerBase
     {
@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -70,8 +70,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 Label = "<无上级站点>"
             });
 
+            var siteTypes = _settingsManager.GetSiteTypes();
+
             return new GetResult
             {
+                SiteTypes = siteTypes,
                 SiteTemplates = siteTemplates,
                 RootExists = rootExists,
                 Sites = sites,
@@ -83,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -118,21 +121,24 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             channelInfo.ContentModelPluginId = string.Empty;
 
             var tableName = string.Empty;
-            if (request.TableRule == TableRule.Choose)
+            if (request.SiteType == AuthTypes.Resources.Site)
             {
-                tableName = request.TableChoose;
-            }
-            else if (request.TableRule == TableRule.HandWrite)
-            {
-                tableName = request.TableHandWrite;
-
-                if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
+                if (request.TableRule == TableRule.Choose)
                 {
-                    await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                    tableName = request.TableChoose;
                 }
-                else
+                else if (request.TableRule == TableRule.HandWrite)
                 {
-                    await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                    tableName = request.TableHandWrite;
+
+                    if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
+                    {
+                        await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                    }
+                    else
+                    {
+                        await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                    }
                 }
             }
 
@@ -141,6 +147,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var siteId = await _siteRepository.InsertSiteAsync(_pathManager, channelInfo, new Site
             {
                 SiteName = request.SiteName,
+                SiteType = request.SiteType,
                 SiteDir = request.SiteDir,
                 TableName = tableName,
                 ParentId = request.ParentId,
@@ -214,7 +221,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteProcess)]
         public async Task<ActionResult<CacheUtils.Process>> Process([FromBody] ProcessRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

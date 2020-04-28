@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/create/createFile';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   isAllChecked: false,
   allTemplates: null,

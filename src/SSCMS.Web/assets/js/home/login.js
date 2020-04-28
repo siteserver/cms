@@ -2,9 +2,8 @@ var $url = '/login';
 var $urlCaptcha = '/login/captcha';
 var $urlCaptchaCheck = '/login/captcha/actions/check';
 
-var data = utils.initData({
+var data = utils.init({
   pageSubmit: false,
-  pageAlert: null,
   account: null,
   password: null,
   isPersistent: false,
@@ -110,9 +109,13 @@ var methods = {
     e.preventDefault();
 
     this.pageSubmit = true;
-    this.pageAlert = null;
     if (!this.account || !this.password || !this.captchaValue) return;
     this.checkCaptcha();
+  },
+
+  btnRegisterClick: function(e) {
+    e.preventDefault();
+    location.href = utils.getRootUrl('register');
   }
 };
 

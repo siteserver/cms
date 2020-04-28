@@ -20,7 +20,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ChannelsController : ControllerBase
     {
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<ChannelsResult>> List([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Channels))
+                    AuthTypes.SitePermissions.Channels))
             {
                 return Unauthorized();
             }
@@ -111,7 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Constants.ChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.SiteChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -198,7 +198,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<List<int>>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.Delete))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Delete))
             {
                 return Unauthorized();
             }
@@ -242,7 +242,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, Constants.ChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.SiteChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -274,7 +274,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<List<int>>> Import([FromBody] ImportRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Constants.ChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -307,7 +307,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export([FromBody] ChannelIdsRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.Channels))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Channels))
             {
                 return Unauthorized();
             }
@@ -331,7 +331,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<List<int>>> Order([FromBody] OrderRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Constants.SitePermissions.Channels))
+                    AuthTypes.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/configsHomeMenu';
 
-var data = utils.initData({
+var data = utils.init({
   userMenus: null,
   groups: null,
   expandRowKeys: [],

@@ -10,7 +10,7 @@ function insertHtml(html)
     }
 }
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   textId: utils.getQueryInt("textId"),
   mainHeight: '',

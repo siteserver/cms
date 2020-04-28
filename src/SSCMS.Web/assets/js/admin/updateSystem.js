@@ -1,6 +1,6 @@
 var $url = '/updateSystem';
 
-var data = utils.initData({
+var data = utils.init({
   packageId: null,
   installedVersion: null,
   isNightly: null,

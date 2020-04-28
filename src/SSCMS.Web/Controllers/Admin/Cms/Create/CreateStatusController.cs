@@ -9,7 +9,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public class CreateStatusController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ObjectResult<CreateTaskSummary>>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateStatus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateStatus))
             {
                 return Unauthorized();
             }
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(RouteActionsCancel)]
         public async Task<ActionResult<BoolResult>> Cancel([FromBody] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateStatus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateStatus))
             {
                 return Unauthorized();
             }

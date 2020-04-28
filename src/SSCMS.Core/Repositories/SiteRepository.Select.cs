@@ -23,9 +23,18 @@ namespace SSCMS.Core.Repositories
         {
             if (siteId <= 0) return null;
 
-            return await _repository.GetAsync(siteId, Q
+            var site = await _repository.GetAsync(siteId, Q
                 .CachingGet(GetEntityKey(siteId))
             );
+            if (site != null)
+            {
+                if (string.IsNullOrEmpty(site.SiteType))
+                {
+                    site.SiteType = AuthTypes.Resources.Site;
+                }
+            }
+
+            return site;
         }
 
         private async Task<List<SiteSummary>> GetSummariesAsync(int parentId)

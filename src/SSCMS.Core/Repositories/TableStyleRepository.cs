@@ -4,6 +4,7 @@ using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
@@ -99,7 +100,7 @@ namespace SSCMS.Core.Repositories
             );
             foreach (var style in styles)
             {
-                style.Items = TranslateUtils.JsonDeserialize<List<TableStyleItem>>(style.ItemValues);
+                style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(style.ItemValues);
             }
 
             return styles;

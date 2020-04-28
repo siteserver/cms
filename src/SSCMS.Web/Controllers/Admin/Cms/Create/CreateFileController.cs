@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class CreateFileController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateFiles))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateFiles))
             {
                 return Unauthorized();
             }
@@ -54,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Create([FromBody] CreateRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Constants.SitePermissions.CreateFiles))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateFiles))
             {
                 return Unauthorized();
             }

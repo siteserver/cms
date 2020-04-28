@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/library/libraryImage';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: 'card',
   drawer: false,

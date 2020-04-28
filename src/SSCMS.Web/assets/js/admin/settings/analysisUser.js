@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/analysisUser';
 
-var data = utils.initData({
+var data = utils.init({
   dateX: null,
   dateY: null,
   formInline: {

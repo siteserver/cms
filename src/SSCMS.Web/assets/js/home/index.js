@@ -1,6 +1,6 @@
 var $url = '/index';
 
-var data = utils.initData({
+var data = utils.init({
   defaultPageUrl: null,
   homeLogoUrl: null,
   homeTitle: null,

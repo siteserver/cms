@@ -6,6 +6,7 @@ using Mono.Options;
 using Quartz;
 using Quartz.Impl;
 using SSCMS.Cli.Core;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli

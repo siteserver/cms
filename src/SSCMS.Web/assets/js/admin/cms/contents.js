@@ -1,7 +1,7 @@
 ﻿var $url = "/cms/contents/contents";
 var $defaultWidth = 160;
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channelId: utils.getQueryInt("channelId") || utils.getQueryInt("siteId"),
   root: null,

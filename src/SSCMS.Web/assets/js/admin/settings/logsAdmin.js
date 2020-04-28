@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/logsAdmin';
 
-var data = utils.initData({
+var data = utils.init({
   items: null,
   count: null,
   formInline: {

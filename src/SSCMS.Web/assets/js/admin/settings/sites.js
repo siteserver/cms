@@ -1,6 +1,7 @@
 ﻿var $url = '/settings/sites';
 
-var data = utils.initData({
+var data = utils.init({
+  siteTypes: null,
   sites: null,
   rootSiteId: null,
   tableNames: null,
@@ -27,12 +28,20 @@ var data = utils.initData({
 });
 
 var methods = {
+  getSiteType: function(siteType) {
+    var siteType = this.siteTypes.find(function(x) {
+      return x.id === siteType;
+    });
+    return siteType ? siteType.text : '默认';
+  },
+
   apiGet: function () {
     var $this = this;
 
     $api.get($url).then(function (response) {
       var res = response.data;
 
+      $this.siteTypes = res.siteTypes;
       $this.sites = res.sites;
       $this.rootSiteId = res.rootSiteId;
       $this.tableNames = res.tableNames;

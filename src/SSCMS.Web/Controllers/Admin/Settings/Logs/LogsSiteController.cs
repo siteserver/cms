@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LogsSiteController : ControllerBase
     {
@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         //public async Task<SiteLogPageResult> List([FromBody] PageRequest request)
         //{
         //    
-        //    await _authManager.CheckPermissionAsync(Request, Constants.AppPermissions.SettingsLog);
+        //    await _authManager.CheckPermissionAsync(Request, AuthTypes.AppPermissions.SettingsLog);
 
         //    var count = await _siteLogRepository.GetCountAsync(null, null, null, null, null, null);
         //    var siteLogs = await _siteLogRepository.GetAllAsync(null, null, null, null, null, null, request.Offset, request.Limit);
@@ -75,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SiteLogPageResult>> List([FromBody] SearchRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }
@@ -120,7 +120,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsLogsSite))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }

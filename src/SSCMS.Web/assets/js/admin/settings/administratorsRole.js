@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/administratorsRole';
 
-var data = utils.initData({
+var data = utils.init({
   roles: null
 });
 
@@ -40,11 +40,11 @@ var methods = {
   },
 
   btnAddClick: function() {
-    location.href = utils.getSettingsUrl('administratorsRoleAdd');
+    utils.addTab('添加角色', utils.getSettingsUrl('administratorsRoleAdd'));
   },
 
   btnEditClick: function(row) {
-    location.href = utils.getSettingsUrl('administratorsRoleAdd', {roleId: row.id});
+    utils.addTab('编辑角色', utils.getSettingsUrl('administratorsRoleAdd', {roleId: row.id}));
   },
 
   btnDeleteClick: function (item) {

@@ -3,7 +3,7 @@
 var $pluginIds = utils.getQueryString('pluginIds').split(',');
 var $pageType = utils.getQueryString('isUpdate') === 'true' ? '升级' : '安装';
 
-var data = utils.initData({
+var data = utils.init({
   pluginIds: $pluginIds,
   pageType: $pageType,
   pageStep: 1,

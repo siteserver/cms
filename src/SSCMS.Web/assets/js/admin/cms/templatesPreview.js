@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/templates/templatesPreview';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   activeName: 'first',
   channels: null,

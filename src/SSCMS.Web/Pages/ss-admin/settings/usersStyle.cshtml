@@ -78,6 +78,9 @@
   <el-button v-on:click="btnResetClick" size="small" plain type="primary" style="margin-left: 0px;">
     重 置
   </el-button>
+  <el-button v-if="returnUrl" v-on:click="btnReturnClick" size="small" plain style="margin-left: 0px;">
+    返 回
+  </el-button>
 
 </el-card>
 

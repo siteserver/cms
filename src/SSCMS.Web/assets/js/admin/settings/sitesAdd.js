@@ -1,8 +1,9 @@
 ﻿var $url = '/settings/sitesAdd';
 
-var data = utils.initData({
+var data = utils.init({
   pageType: utils.getQueryString('type') || 'selectType',
 
+  siteTypes: null,
   siteTemplates: null,
   rootExists: null,
   sites: null,
@@ -21,6 +22,7 @@ var data = utils.initData({
   parentIds: [0],
   form: {
     guid: null,
+    siteType: 'site',
     createType: utils.getQueryString('createType'),
     createTemplateId: utils.getQueryString('createTemplateId'),
     siteName: '',
@@ -47,6 +49,7 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
+      $this.siteTypes = res.siteTypes;
       $this.siteTemplates = res.siteTemplates;
       $this.rootExists = res.rootExists;
       $this.sites = res.sites;

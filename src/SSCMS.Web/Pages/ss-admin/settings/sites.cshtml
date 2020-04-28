@@ -1,59 +1,57 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-card>
-  <div slot="header" class="clearfix">
-    <span>站点管理</span>
-    <el-button style="float: right; padding: 3px" type="text" icon="el-icon-plus" v-on:click="btnAddClick">新 增</el-button>
-  </div>
+<el-table
+  :data="sites"
+  style="width: 100%;margin-bottom: 20px;"
+  row-key="id"
+  default-expand-all
+  :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+  <el-table-column prop="siteName" label="站点名称" :sortable="true">
+    <template slot-scope="scope">
+      <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="主站">
+        <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
+      </el-badge>
+      <el-link :underline="false" type="primary" v-else :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column prop="siteType" label="站点类型" :sortable="true" align="center" width="120">
+    <template slot-scope="scope">
+      {{getSiteType(scope.row.siteType)}}
+    </template>
+  </el-table-column>
+  <el-table-column prop="id" label="站点Id" :sortable="true" align="center" width="90"></el-table-column>
+  <el-table-column prop="taxis" label="排序" :sortable="true" align="center" width="90"></el-table-column>
+  <el-table-column prop="siteDir" label="站点文件夹" :sortable="true"></el-table-column>
+  <el-table-column prop="siteUrl" label="站点地址" :sortable="true">
+    <template slot-scope="scope">
+      <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteUrl}}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column align="center" label="操作" width="290">
+    <template slot-scope="scope">
+      <el-button-group>
+        <el-button
+          size="mini"
+          v-on:click="btnSaveClick(scope.row)">保存</el-button>
+        <el-button
+          size="mini"
+          v-on:click="btnEditClick(scope.row)">修改</el-button>
+        <el-button
+          v-if="scope.row.parentId === 0 && (rootSiteId === 0 || scope.row.id === rootSiteId)"
+          size="mini"
+          v-on:click="btnChangeClick(scope.row)">{{ scope.row.root ? "转移到子目录" : "转移到根目录" }}</el-button>
+        <el-button
+          v-if="!scope.row.root"
+          size="mini"
+          type="danger"
+          v-on:click="btnDeleteClick(scope.row)">删除</el-button>
+      </el-button-group>
+    </template>
+  </el-table-column>
+</el-table>
 
-  <el-table
-    :data="sites"
-    style="width: 100%;margin-bottom: 20px;"
-    row-key="id"
-    default-expand-all
-    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-    <el-table-column prop="siteName" label="站点名称" :sortable="true">
-      <template slot-scope="scope">
-        <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="主站">
-          <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
-        </el-badge>
-        <el-link :underline="false" type="primary" v-else :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
-      </template>
-    </el-table-column>
-    <el-table-column prop="id" label="站点Id" :sortable="true" align="center" width="90"></el-table-column>
-    <el-table-column prop="taxis" label="排序" :sortable="true" align="center" width="90"></el-table-column>
-    <el-table-column prop="siteDir" label="站点文件夹" :sortable="true"></el-table-column>
-    <el-table-column prop="siteUrl" label="站点地址" :sortable="true">
-      <template slot-scope="scope">
-        <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteUrl}}</el-link>
-      </template>
-    </el-table-column>
-    <el-table-column align="center" label="操作" width="290">
-      <template slot-scope="scope">
-        <el-button-group>
-          <el-button
-            size="mini"
-            v-on:click="btnSaveClick(scope.row)">保存</el-button>
-          <el-button
-            size="mini"
-            v-on:click="btnEditClick(scope.row)">修改</el-button>
-          <el-button
-            v-if="scope.row.parentId === 0 && (rootSiteId === 0 || scope.row.id === rootSiteId)"
-            size="mini"
-            v-on:click="btnChangeClick(scope.row)">{{ scope.row.root ? "转移到子目录" : "转移到根目录" }}</el-button>
-          <el-button
-            v-if="!scope.row.root"
-            size="mini"
-            type="danger"
-            v-on:click="btnDeleteClick(scope.row)">删除</el-button>
-        </el-button-group>
-      </template>
-    </el-table-column>
-  </el-table>
-
-</el-card>
-
+<el-button size="mini" type="primary" plain icon="el-icon-plus" v-on:click="btnAddClick">新 增</el-button>
 
 <el-drawer
   v-if="editForm"

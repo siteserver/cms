@@ -1,6 +1,6 @@
 ﻿var $url = '/cms/channels/channels';
 
-var data = utils.initData({
+var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   root: null,
   expandedChannelIds: [],
@@ -25,7 +25,7 @@ var data = utils.initData({
   editLinkTypes: [],
   editTaxisTypes: [],
   editEditor: null,
-  editStyles: [],
+  styles: [],
 
   deletePanel: false,
   deleteForm: null,
@@ -100,7 +100,7 @@ var methods = {
       }
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
-      $this.editStyles = res.styles;
+      $this.styles = res.styles;
       $this.editPanel = true;
       setTimeout(function () {
         $this.loadEditor();

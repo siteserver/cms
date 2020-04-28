@@ -1,6 +1,6 @@
 ﻿var $url = '/settings/sitesSave';
 
-var data = utils.initData({
+var data = utils.init({
   active: 0,
   site: null,
   directories: null,

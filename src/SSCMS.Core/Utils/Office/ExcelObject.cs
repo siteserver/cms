@@ -149,7 +149,7 @@ namespace SSCMS.Core.Utils.Office
                     userInfo.DisplayName,
                     userInfo.Email,
                     userInfo.Mobile,
-                    DateUtils.GetDateAndTimeString(userInfo.CreateDate),
+                    DateUtils.GetDateAndTimeString(userInfo.CreatedDate),
                     DateUtils.GetDateAndTimeString(userInfo.LastActivityDate)
                 });
             }
@@ -168,7 +168,7 @@ namespace SSCMS.Core.Utils.Office
                 "姓名",
                 "邮箱",
                 "手机",
-                "注册时间",
+                "添加时间",
                 "最后一次活动时间"
             };
             var rows = new List<List<string>>();
@@ -185,7 +185,7 @@ namespace SSCMS.Core.Utils.Office
                     administrator.DisplayName,
                     administrator.Email,
                     administrator.Mobile,
-                    DateUtils.GetDateAndTimeString(administrator.CreationDate),
+                    DateUtils.GetDateAndTimeString(administrator.CreatedDate),
                     DateUtils.GetDateAndTimeString(administrator.LastActivityDate)
                 });
             }

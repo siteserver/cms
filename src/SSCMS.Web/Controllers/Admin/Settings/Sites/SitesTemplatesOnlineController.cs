@@ -8,7 +8,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeAdministrator)]
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTemplatesOnlineController : ControllerBase
     {
@@ -24,13 +24,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesTemplatesOnline))
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplatesOnline))
             {
                 return Unauthorized();
             }
 
             var siteAddPermission =
-                await _authManager.HasAppPermissionsAsync(Constants.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd);
 
             return new GetResult
             {

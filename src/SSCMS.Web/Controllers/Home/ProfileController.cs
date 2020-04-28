@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -12,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Constants.RoleTypeUser)]
+    [Authorize(Roles = AuthTypes.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ProfileController : ControllerBase
     {
@@ -39,17 +41,16 @@ namespace SSCMS.Web.Controllers.Home
         public async Task<ActionResult<GetResult>> Get()
         {
             var config = await _configRepository.GetAsync();
+            if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
+
             var user = await _authManager.GetUserAsync();
+            var userStyles = await _tableStyleRepository.GetUserStyleListAsync();
+            var styles = userStyles.Select(x => new InputStyle(x));
 
             return new GetResult
             {
-                UserName = user.UserName,
-                DisplayName = user.DisplayName,
-                AvatarUrl = user.AvatarUrl,
-                Mobile = user.Mobile,
-                Email = user.Email,
-                Config = config,
-                Styles = await _tableStyleRepository.GetUserStyleListAsync()
+                User = user,
+                Styles = styles
             };
         }
 
@@ -75,26 +76,16 @@ namespace SSCMS.Web.Controllers.Home
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody]User request)
         {
-            var user = await _authManager.GetUserAsync();
+            if (request.Id != _authManager.UserId) return Unauthorized();
 
-            if (user.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await _userRepository.IsMobileExistsAsync(request.Mobile))
+            var (success, errorMessage) = await _userRepository.UpdateAsync(request);
+            if (!success)
             {
-                return this.Error("资料修改失败，手机号码已存在");
+                return this.Error($"修改资料失败：{errorMessage}");
             }
 
-            if (user.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await _userRepository.IsEmailExistsAsync(request.Email))
-            {
-                return this.Error("资料修改失败，邮箱地址已存在");
-            }
-
-            user.DisplayName = request.DisplayName;
-            user.AvatarUrl = request.AvatarUrl;
-            user.Mobile = request.Mobile;
-            user.Email = request.Email;
-
-            await _userRepository.UpdateAsync(user);
             await _authManager.AddUserLogAsync("修改资料");
 
             return new BoolResult

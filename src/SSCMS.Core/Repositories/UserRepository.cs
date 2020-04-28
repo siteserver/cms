@@ -10,6 +10,7 @@ using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
@@ -30,7 +31,7 @@ namespace SSCMS.Core.Repositories
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private async Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
+        private async Task<(bool success, string errorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
             var config = await _configRepository.GetAsync();
             if (!await IsIpAddressCachedAsync(ipAddress))
@@ -74,100 +75,66 @@ namespace SSCMS.Core.Repositories
             return (true, string.Empty);
         }
 
-        private async Task<(bool IsValid, string ErrorMessage)> UpdateValidateAsync(IDictionary<string, object> body, string userName, string email, string mobile)
+        private async Task<(User user, string errorMessage)> UpdateValidateAsync(User user)
         {
-            var bodyUserName = string.Empty;
-            if (body.ContainsKey("userName"))
+            if (user == null || user.Id <= 0)
             {
-                bodyUserName = (string) body["userName"];
+                return (null, "用户不存在");
             }
 
-            if (!string.IsNullOrEmpty(bodyUserName) && bodyUserName != userName)
+            var entity = await GetByUserIdAsync(user.Id);
+            user.UserName = entity.UserName;
+            user.Password = entity.Password;
+            user.PasswordFormat = entity.PasswordFormat;
+            user.PasswordSalt = entity.PasswordSalt;
+
+            if (entity.Mobile != user.Mobile && !string.IsNullOrEmpty(user.Mobile) && await IsMobileExistsAsync(user.Mobile))
             {
-                if (!IsUserNameCompliant(bodyUserName.Replace("@", string.Empty).Replace(".", string.Empty)))
-                {
-                    return (false, "用户名包含不规则字符，请更换用户名");
-                }
-                if (!string.IsNullOrEmpty(bodyUserName) && await IsUserNameExistsAsync(bodyUserName))
-                {
-                    return (false, "用户名已被注册，请更换用户名");
-                }
+                return (null, "手机号码已存在");
             }
 
-            var bodyEmail = string.Empty;
-            if (body.ContainsKey("email"))
+            if (entity.Email != user.Email && !string.IsNullOrEmpty(user.Email) && await IsEmailExistsAsync(user.Email))
             {
-                bodyEmail = (string)body["email"];
+                return (null, "邮箱地址已存在");
             }
 
-            if (bodyEmail != null && bodyEmail != email)
-            {
-                if (!string.IsNullOrEmpty(bodyEmail) && await IsEmailExistsAsync(bodyEmail))
-                {
-                    return (false, "电子邮件地址已被注册，请更换邮箱");
-                }
-            }
-
-            var bodyMobile = string.Empty;
-            if (body.ContainsKey("mobile"))
-            {
-                bodyMobile = (string)body["mobile"];
-            }
-
-            if (bodyMobile != null && bodyMobile != mobile)
-            {
-                if (!string.IsNullOrEmpty(bodyMobile) && await IsMobileExistsAsync(bodyMobile))
-                {
-                    return (false, "手机号码已被注册，请更换手机号码");
-                }
-            }
-
-            return (true, string.Empty);
+            return (entity, string.Empty);
         }
 
-        public async Task<(int UserId, string ErrorMessage)> InsertAsync(User user, string password, string ipAddress)
+        public async Task<(User user, string errorMessage)> InsertAsync(User user, string password, string ipAddress)
         {
             var config = await _configRepository.GetAsync();
             if (!config.IsUserRegistrationAllowed)
             {
-                return (0, "对不起，系统已禁止新用户注册！");
+                return (null, "对不起，系统已禁止新用户注册！");
             }
 
-            try
+            user.Checked = config.IsUserRegistrationChecked;
+            if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
             {
-                user.Checked = config.IsUserRegistrationChecked;
-                if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
-                {
-                    user.Mobile = user.UserName;
-                }
-
-                var valid = await InsertValidateAsync(user.UserName, user.Email, user.Mobile, password, ipAddress);
-                if (!valid.IsValid)
-                {
-                    return (0, valid.ErrorMessage);
-                }
-
-                var passwordSalt = GenerateSalt();
-                password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
-                user.CreateDate = DateTime.Now;
-                user.LastActivityDate = DateTime.Now;
-                user.LastResetPasswordDate = DateTime.Now;
-
-                user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.Encrypted, passwordSalt);
-
-                await CacheIpAddressAsync(ipAddress);
-
-                return (user.Id, string.Empty);
+                user.Mobile = user.UserName;
             }
-            catch (Exception ex)
+
+            var (success, errorMessage) = await InsertValidateAsync(user.UserName, user.Email, user.Mobile, password, ipAddress);
+            if (!success)
             {
-                return (0, ex.Message);
+                return (null, errorMessage);
             }
+
+            var passwordSalt = GenerateSalt();
+            password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
+            user.LastActivityDate = DateTime.Now;
+            user.LastResetPasswordDate = DateTime.Now;
+
+            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.Encrypted, passwordSalt);
+
+            await CacheIpAddressAsync(ipAddress);
+
+            return (user, string.Empty);
         }
 
         private async Task<int> InsertWithoutValidationAsync(User user, string password, PasswordFormat passwordFormat, string passwordSalt)
         {
-            user.CreateDate = DateTime.Now;
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
@@ -180,7 +147,7 @@ namespace SSCMS.Core.Repositories
             return user.Id;
         }
 
-        public async Task<(bool Valid, string ErrorMessage)> IsPasswordCorrectAsync(string password)
+        public async Task<(bool success, string errorMessage)> IsPasswordCorrectAsync(string password)
         {
             var config = await _configRepository.GetAsync();
             if (string.IsNullOrEmpty(password))
@@ -198,37 +165,16 @@ namespace SSCMS.Core.Repositories
             return (true, string.Empty);
         }
 
-        public async Task<(User User, string ErrorMessage)> UpdateAsync(User user, IDictionary<string, object> body)
+        public async Task<(bool success, string errorMessage)> UpdateAsync(User user)
         {
-            var valid = await UpdateValidateAsync(body, user.UserName, user.Email, user.Mobile);
-            if (!valid.IsValid)
+            var (entity, errorMessage) = await UpdateValidateAsync(user);
+            if (entity == null)
             {
-                return (null, valid.ErrorMessage);
+                return (false, errorMessage);
             }
 
-            foreach (var o in body)
-            {
-                user.Set(o.Key, o.Value);
-            }
-
-            await UpdateAsync(user);
-
-            return (user, string.Empty);
-        }
-
-        public async Task UpdateAsync(User user)
-        {
-            if (user == null) return;
-
-            var cacheKey = GetCacheKeyByUserId(user.Id);
-
-            var userEntityDb = await _repository.GetAsync(user.Id, Q.CachingGet(cacheKey));
-
-            user.Password = userEntityDb.Password;
-            user.PasswordFormat = userEntityDb.PasswordFormat;
-            user.PasswordSalt = userEntityDb.PasswordSalt;
-
-            await _repository.UpdateAsync(user, Q.CachingRemove(GetCacheKeysToRemove(userEntityDb)));
+            await _repository.UpdateAsync(user, Q.CachingRemove(GetCacheKeysToRemove(entity)));
+            return (true, string.Empty);
         }
 
         private async Task UpdateLastActivityDateAndCountOfFailedLoginAsync(User user)
@@ -343,7 +289,7 @@ namespace SSCMS.Core.Repositories
             return Convert.ToBase64String(data);
         }
 
-        public async Task<(bool IsValid, string ErrorMessage)> ChangePasswordAsync(int userId, string password)
+        public async Task<(bool success, string errorMessage)> ChangePasswordAsync(int userId, string password)
         {
             var config = await _configRepository.GetAsync();
             if (password.Length < config.UserPasswordMinLength)
@@ -481,7 +427,7 @@ namespace SSCMS.Core.Repositories
             return password == decodePassword;
         }
 
-        public async Task<(User User, string UserName, string ErrorMessage)> ValidateAsync(string account, string password, bool isPasswordMd5)
+        public async Task<(User user, string userName, string errorMessage)> ValidateAsync(string account, string password, bool isPasswordMd5)
         {
             if (string.IsNullOrEmpty(account))
             {

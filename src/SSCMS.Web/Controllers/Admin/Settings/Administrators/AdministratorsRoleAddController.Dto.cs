@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -7,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsRoleAddController
     {
-        public class Permission
+        public class Option
         {
             public string Name { get; set; }
 
@@ -24,18 +25,18 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public class GetResult
         {
             public Role Role { get; set; }
-            public List<Permission> Permissions { get; set; }
+            public List<Option> Permissions { get; set; }
             public List<Site> Sites { get; set; }
             public List<int> CheckedSiteIds { get; set; }
-            public List<object> SitePermissionsList { get; set; }
+            public List<SitePermissionsResult> SitePermissionsList { get; set; }
         }
 
         public class SitePermissionsResult
         {
             public int SiteId { get; set; }
-            public List<Permission> SitePermissions { get; set; }
-            public List<Permission> ChannelPermissions { get; set; }
-            public List<Permission> ContentPermissions { get; set; }
+            public List<Option> SitePermissions { get; set; }
+            public List<Option> ChannelPermissions { get; set; }
+            public List<Option> ContentPermissions { get; set; }
             public Channel Channel { get; set; }
             public List<int> CheckedChannelIds { get; set; }
         }
@@ -48,7 +49,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             public List<SitePermissions> SitePermissions { get; set; }
         }
 
-        private async Task<SitePermissionsResult> GetSitePermissionsObjectAsync(int roleId, int siteId)
+        private async Task<SitePermissionsResult> GetSitePermissionsObjectAsync(List<Permission> allPermissions, int roleId, int siteId)
         {
             SitePermissions sitePermissionsInfo = null;
             if (roleId > 0)
@@ -59,17 +60,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
             var site = await _siteRepository.GetAsync(siteId);
-            var sitePermissions = new List<Permission>();
-            var channelPermissions = new List<Permission>();
-            var contentPermissions = new List<Permission>();
+            if (site == null) return null;
 
-            var permissions = _permissionsAccessor.CurrentValue;
+            var sitePermissions = new List<Option>();
+            var channelPermissions = new List<Option>();
+            var contentPermissions = new List<Option>();
 
             if (await _authManager.IsSuperAdminAsync())
             {
-                foreach (var permission in permissions.Site)
+                foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType)))
                 {
-                    sitePermissions.Add(new Permission
+                    sitePermissions.Add(new Option
                     {
                         Name = permission.Id,
                         Text = permission.Text,
@@ -87,10 +88,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 //    });
                 //}
 
-                var channelPermissionList = permissions.Channel;
+                var channelPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel));
                 foreach (var permission in channelPermissionList)
                 {
-                    channelPermissions.Add(new Permission
+                    channelPermissions.Add(new Option
                     {
                         Name = permission.Id,
                         Text = permission.Text,
@@ -98,38 +99,38 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     });
                 }
 
-                var contentPermissionList = permissions.Content;
+                var contentPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteContent));
                 foreach (var permission in contentPermissionList)
                 {
-                    if (permission.Id == Constants.ContentPermissions.CheckLevel1)
+                    if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel1)
                     {
                         if (site.CheckContentLevel < 1)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Constants.ContentPermissions.CheckLevel2)
+                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel2)
                     {
                         if (site.CheckContentLevel < 2)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Constants.ContentPermissions.CheckLevel3)
+                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel3)
                     {
                         if (site.CheckContentLevel < 3)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Constants.ContentPermissions.CheckLevel4)
+                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel4)
                     {
                         if (site.CheckContentLevel < 4)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Constants.ContentPermissions.CheckLevel5)
+                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel5)
                     {
                         if (site.CheckContentLevel < 5)
                         {
@@ -137,7 +138,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                         }
                     }
 
-                    contentPermissions.Add(new Permission
+                    contentPermissions.Add(new Option
                     {
                         Name = permission.Id,
                         Text = permission.Text,
@@ -152,11 +153,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     var websitePermissionList = await _authManager.GetSitePermissionsAsync(siteId);
                     foreach (var websitePermission in websitePermissionList)
                     {
-                        foreach (var permission in permissions.Site)
+                        foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType)))
                         {
                             if (permission.Id == websitePermission)
                             {
-                                sitePermissions.Add(new Permission
+                                sitePermissions.Add(new Option
                                 {
                                     Name = permission.Id,
                                     Text = permission.Text,
@@ -183,11 +184,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var channelPermissionList = await _authManager.GetChannelPermissionsAsync(siteId);
                 foreach (var channelPermission in channelPermissionList)
                 {
-                    foreach (var permission in permissions.Channel)
+                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel)))
                     {
                         if (permission.Id == channelPermission)
                         {
-                            channelPermissions.Add(new Permission
+                            channelPermissions.Add(new Option
                             {
                                 Name = permission.Id,
                                 Text = permission.Text,
@@ -200,32 +201,32 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var contentPermissionList = await _authManager.GetContentPermissionsAsync(siteId);
                 foreach (var contentPermission in contentPermissionList)
                 {
-                    foreach (var permission in permissions.Content)
+                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteContent)))
                     {
                         if (permission.Id == contentPermission)
                         {
-                            if (contentPermission == Constants.ContentPermissions.CheckLevel1)
+                            if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel1)
                             {
                                 if (site.CheckContentLevel < 1) continue;
                             }
-                            else if (contentPermission == Constants.ContentPermissions.CheckLevel2)
+                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel2)
                             {
                                 if (site.CheckContentLevel < 2) continue;
                             }
-                            else if (contentPermission == Constants.ContentPermissions.CheckLevel3)
+                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel3)
                             {
                                 if (site.CheckContentLevel < 3) continue;
                             }
-                            else if (contentPermission == Constants.ContentPermissions.CheckLevel4)
+                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel4)
                             {
                                 if (site.CheckContentLevel < 4) continue;
                             }
-                            else if (contentPermission == Constants.ContentPermissions.CheckLevel5)
+                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel5)
                             {
                                 if (site.CheckContentLevel < 5) continue;
                             }
 
-                            contentPermissions.Add(new Permission
+                            contentPermissions.Add(new Option
                             {
                                 Name = permission.Id,
                                 Text = permission.Text,

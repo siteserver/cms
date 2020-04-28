@@ -1,7 +1,7 @@
 ﻿var $url = '/cms/library/libraryLayerWord';
 var $urlUpload = $apiUrl + '/cms/library/libraryLayerWord/actions/upload?siteId=' + utils.getQueryInt('siteId');
 
-var data = utils.initData({
+var data = utils.init({
   uploadList: [],
   form: {
     siteId: utils.getQueryInt('siteId'),

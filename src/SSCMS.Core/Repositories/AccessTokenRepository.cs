@@ -4,6 +4,7 @@ using Datory;
 using Datory.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
