@@ -7,7 +7,6 @@ using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SSCMS.Core.Extensions;
-using SSCMS.Core.Plugins;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -65,7 +64,7 @@ namespace SSCMS.Core.Tests
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
             var settingsManager = services.AddSettingsManager(Configuration, ContentRootPath, WebRootPath, entryAssembly);
-            services.AddPlugins(settingsManager);
+            services.AddPlugins(Configuration, settingsManager);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
 

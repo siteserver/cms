@@ -25,9 +25,6 @@ namespace SSCMS.Plugins
         public IEnumerable<string> Keywords { get; }
         public string Homepage { get; }
         public string Main { get; }
-        public List<SiteType> SiteTypes { get; }
-        public List<Permission> Permissions { get; }
-        public List<Menu> Menus { get; }
         public bool Disabled { get; }
         public int Taxis { get; }
     }

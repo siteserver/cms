@@ -15,6 +15,6 @@ namespace SSCMS
         /// <summary>
         /// 获取或设置类型的排序。
         /// </summary>
-        public int Order { get; set; }
+        public int? Order { get; set; }
     }
 }

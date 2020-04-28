@@ -262,9 +262,17 @@ var methods = {
         url: menu.link,
         full: true
       });
-    } else if (menu.target == 'right' || !menu.target) {
+    } else if (menu.target == '_self') {
+      location.href = menu.link;
+    } else if (menu.target == '_parent') {
+      parent.location.href = menu.link;
+    }  else if (menu.target == '_top') {
+      top.location.href = menu.link;
+    } else if (menu.target == '_blank') {
+      window.open(menu.link);
+    } else {
       utils.addTab(menu.text, menu.link);
-    }
+    } 
   },
 
   btnMobileMenuClick: function () {

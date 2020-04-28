@@ -20,6 +20,6 @@ namespace SSCMS
         /// <summary>
         /// 获取或设置权限的排序。
         /// </summary>
-        public int Order { get; set; }
+        public int? Order { get; set; }
     }
 }

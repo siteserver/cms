@@ -31,9 +31,7 @@ namespace SSCMS.Web
                 {
                     config.SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddJsonFile(Constants.ConfigSiteTypesName, optional: true, reloadOnChange: true)
-                        .AddJsonFile(Constants.ConfigPermissionsName, optional: true, reloadOnChange: true)
-                        .AddJsonFile(Constants.ConfigMenusName, optional: true, reloadOnChange: true)
+                        .AddJsonFile(Constants.PackageFileName, optional: true, reloadOnChange: true)
                         .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables("SSCMS_")
                         .AddCommandLine(args);

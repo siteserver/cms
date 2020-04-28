@@ -9,7 +9,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
-    public partial class SettingsManager : ISettingsManager
+    public class SettingsManager : ISettingsManager
     {
         private readonly IConfiguration _config;
 
@@ -45,9 +45,6 @@ namespace SSCMS.Core.Services
         public IDatabase Database => new Database(DatabaseType, DatabaseConnectionString);
         public string RedisConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Redis:ConnectionString")) : _config.GetValue<string>("Redis:ConnectionString");
         public IRedis Redis => new Redis(RedisConnectionString);
-
-        //public IList<Menu> Menus => _config.GetSection<
-        //public PermissionsOptions Permissions => _permissionsAccessor.CurrentValue;
 
         public string Encrypt(string inputString, string securityKey = null)
         {

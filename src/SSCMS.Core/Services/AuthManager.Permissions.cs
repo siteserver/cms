@@ -321,12 +321,6 @@ namespace SSCMS.Core.Services
                         .Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType))
                         .Select(permission => permission.Id).ToList();
 
-                    foreach (var plugin in _pluginManager.Plugins.Where(x => x.Permissions != null))
-                    {
-                        var permissions = plugin.Permissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType)).Select(x => x.Id);
-                        sitePermissions.AddRange(permissions);
-                    }
-
                     sitePermissionDict[siteId] = sitePermissions;
                 }
             }

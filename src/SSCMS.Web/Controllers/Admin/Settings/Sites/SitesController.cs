@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NSwag.Annotations;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
@@ -22,19 +20,21 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string Route = "settings/sites";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IOldPluginManager _oldPluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IOldPluginManager pluginManager, ISiteRepository siteRepository,
+        public SitesController(ISettingsManager settingsManager, IPluginManager pluginManager, IAuthManager authManager, IPathManager pathManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository,
             IContentRepository contentRepository)
         {
             _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
             _authManager = authManager;
             _pathManager = pathManager;
-            _pluginManager = pluginManager;
+            _oldPluginManager = oldPluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
         }
@@ -70,14 +70,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             //    }
             //}
 
-            var siteTypes = _settingsManager.GetSiteTypes();
+            var siteTypes = _pluginManager.GetSiteTypes();
 
             var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
             {
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
-            var tableNames = await _siteRepository.GetSiteTableNamesAsync(_pluginManager);
+            var tableNames = await _siteRepository.GetSiteTableNamesAsync(_oldPluginManager);
 
             return new GetResult
             {

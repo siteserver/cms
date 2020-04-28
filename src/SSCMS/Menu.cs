@@ -41,14 +41,9 @@ namespace SSCMS
         public IList<string> Permissions { get; set; }
 
         /// <summary>
-        /// 获取或设置是否默认选择。
-        /// </summary>
-        public bool Selected { get; set; }
-
-        /// <summary>
         /// 获取或设置菜单的排序。
         /// </summary>
-        public int Order { get; set; }
+        public int? Order { get; set; }
 
         /// <summary>
         /// 获取或设置菜单的下级菜单列表。

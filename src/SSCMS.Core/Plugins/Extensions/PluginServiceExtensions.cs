@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SSCMS.Core.Services;
@@ -10,9 +9,9 @@ namespace SSCMS.Core.Plugins.Extensions
 {
     public static class PluginServiceExtensions
     {
-        public static IPluginManager AddPlugins(this IServiceCollection services, ISettingsManager settingsManager)
+        public static IPluginManager AddPlugins(this IServiceCollection services, IConfiguration configuration, ISettingsManager settingsManager)
         {
-            var pluginManager = new PluginManager(settingsManager);
+            var pluginManager = new PluginManager(configuration, settingsManager);
             services.TryAdd(ServiceDescriptor.Singleton<IPluginManager>(pluginManager));
 
             //foreach (var plugin in pluginManager.Plugins)

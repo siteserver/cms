@@ -136,9 +136,9 @@ namespace SSCMS.Web.Controllers.Admin
                 });
             }
 
-            var allMenus = _settingsManager.GetMenus();
+            var allMenus = _pluginManager.GetMenus();
 
-            var siteType = _settingsManager.GetSiteType(site.SiteType);
+            var siteType = _pluginManager.GetSiteType(site.SiteType);
             var menus = new List<Menu>();
             if (await _authManager.HasSitePermissionsAsync(site.Id))
             {
@@ -150,12 +150,6 @@ namespace SSCMS.Web.Controllers.Admin
                     Type = siteType.Id,
                     Children = new List<Menu>(allMenus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType.Id)))
                 };
-
-                foreach (var plugin in _pluginManager.Plugins.Where(x => x.Menus != null))
-                {
-                    var pluginMenus = plugin.Menus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType.Id));
-                    siteMenu.Children.AddRange(pluginMenus);
-                }
 
                 var query = new NameValueCollection {{"siteId", site.Id.ToString()}};
 
@@ -196,7 +190,6 @@ namespace SSCMS.Web.Controllers.Admin
                     {
                         IconClass = "ion-earth",
                         Text = _local["Recently site"],
-                        Selected = true,
                         Children = allSiteMenus.ToArray()
                     });
 

@@ -29,7 +29,6 @@ namespace SSCMS.Core.Plugins.Extensions
             {
                 logger.LogInformation("Using Plugin '{0}'", plugin.PluginId);
 
-                //var requestPath = "/";
                 var directoryPath = PathUtils.Combine(pluginManager.DirectoryPath, plugin.FolderName, "wwwroot");
                 DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
@@ -37,7 +36,6 @@ namespace SSCMS.Core.Plugins.Extensions
                 app.UseStaticFiles(
                     new StaticFileOptions
                     {
-                        //RequestPath = requestPath,
                         FileProvider = fileProvider
                     });
             }

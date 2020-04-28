@@ -14,8 +14,7 @@ namespace SSCMS.Core.Plugins
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(pluginPath)
-                .AddJsonFile(Constants.PluginPackageFileName, optional: false, reloadOnChange: true)
-                .AddJsonFile("config.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: true)
                 .Build();
 
             var assemblyPath = PathUtils.Combine(pluginPath, Main);
@@ -53,13 +52,6 @@ namespace SSCMS.Core.Plugins
         public IEnumerable<string> Keywords => Configuration.GetSection(nameof(Keywords)).Get<string[]>();
         public string Homepage => Configuration[nameof(Homepage)];
         public string Main => Configuration[nameof(Main)] ?? $"{FolderName}.dll";
-        public List<SiteType> SiteTypes =>
-            Configuration.GetSection("extensions:siteTypes").Get<List<SiteType>>();
-        public List<Permission> Permissions =>
-            Configuration.GetSection("extensions:permissions").Get<List<Permission>>();
-        public List<Menu> Menus => Configuration.GetSection("extensions:menus").Get<List<Menu>>();
-
-        // config.json
 
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
 

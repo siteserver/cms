@@ -5,10 +5,7 @@ namespace SSCMS.Utils
     public static class Constants
     {
         public const string ConfigFileName = "sscms.json";
-        public const string ConfigSiteTypesName = "config/siteTypes.json";
-        public const string ConfigMenusName = "config/menus.json";
-        public const string ConfigPermissionsName = "config/permissions.json";
-        public const string PluginPackageFileName = "package.json";
+        public const string PackageFileName = "package.json";
         public const string PluginConfigFileName = "config.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";

@@ -27,7 +27,7 @@
         width="400"
         trigger="hover">
 
-        <div style="padding-bottom: 20px;">
+        <div>
           <h3>
             <span>发现 CMS 新版本</span>
           </h3>
@@ -53,6 +53,8 @@
           <div class="text-center">
             <el-button size="small" type="primary" v-on:click="location.href = utils.getRootUrl('updateSystem');">立即升级</el-button>
           </div>
+
+          <div style="height: 20px"></div>
         </div>
 
         <el-link style="padding: 0 10px;" slot="reference" :underline="false" type="warning">
@@ -108,86 +110,84 @@
 
 </header>
 
-<div>
-  <div v-if="isDesktop || isMobileMenu" id="sidebar" :style="{width: leftWidth + 'px'}">
+<div v-if="isDesktop || isMobileMenu" id="sidebar" :style="{width: leftWidth + 'px'}">
 
-    <div class="title">
+  <div class="title">
 
-      <div v-if="!isCollapse">
-        <div v-if="menu.id === $idSite">
-          <el-link :underline="false" :href="siteUrl" target="_blank">
-            <span v-if="!isCollapse">访问站点</span>
-            <i class="fa fa-external-link"></i>
-          </el-link>
-        </div>
-        <div v-else>
-          <el-link :underline="false">
-            {{ menu.text }}
-            <i v-if="menu.iconClass" :class="menu.iconClass"></i>
-          </el-link>
-        </div>
-
-        <el-link v-if="!isMobileMenu" style="float: right" :underline="false" v-on:click="isCollapse = true;">
-          <i class="el-icon-s-fold" style="font-size: 18px; position: absolute; top: -17px; right: 6px;"></i>
+    <div v-if="!isCollapse">
+      <div v-if="menu.id === $idSite">
+        <el-link :underline="false" :href="siteUrl" target="_blank" style="margin-left: -15px;">
+          <span v-if="!isCollapse">访问站点</span>
+          <i class="fa fa-external-link"></i>
         </el-link>
       </div>
       <div v-else>
-        <el-link v-if="!isMobileMenu" :underline="false" v-on:click="isCollapse = false;">
-          <i class="el-icon-s-unfold" style="font-size: 18px;"></i>
+        <el-link :underline="false" style="margin-left: -15px;">
+          {{ menu.text }}
+          <i v-if="menu.iconClass" :class="menu.iconClass"></i>
         </el-link>
       </div>
+
+      <el-link v-if="!isMobileMenu" style="float: right" :underline="false" v-on:click="isCollapse = true;">
+        <i class="el-icon-s-fold" style="font-size: 18px; position: absolute; top: -17px; right: 6px;"></i>
+      </el-link>
     </div>
+    <div v-else>
+      <el-link v-if="!isMobileMenu" :underline="false" v-on:click="isCollapse = false;">
+        <i class="el-icon-s-unfold" style="font-size: 18px;"></i>
+      </el-link>
+    </div>
+  </div>
 
-    <el-menu
-      :default-openeds="defaultOpenedId"
-      :unique-opened="true"
-      :collapse="isCollapse"
-      :collapse-transition="false"
-      v-on:select="btnMenuClick">
+  <el-menu
+    :default-openeds="defaultOpenedId"
+    :unique-opened="true"
+    :collapse="isCollapse"
+    :collapse-transition="false"
+    v-on:select="btnMenuClick">
 
-      <template v-for="level1 in menu.children">
-        <template v-if="level1.children && level1.children.length > 0">
+    <template v-for="level1 in menu.children">
+      <template v-if="level1.children && level1.children.length > 0">
 
-          <el-submenu :index="level1.id">
-            <template slot="title">
-              <i v-if="level1.iconClass" :class="level1.iconClass"></i>
-              <span>{{ level1.text }}</span>
-            </template>
-  
-            <template v-for="level2 in level1.children">
-              <el-menu-item :index="JSON.stringify(level2)">
-                <i v-if="level2.iconClass" :class="level2.iconClass"></i>
-                <span>{{ level2.text }}</span>
-              </el-menu-item>
-            </template>
-  
-          </el-submenu>
-
-        </template>
-        <template v-else>
-          <el-menu-item :index="JSON.stringify(level1)">
+        <el-submenu :index="level1.id">
+          <template slot="title">
             <i v-if="level1.iconClass" :class="level1.iconClass"></i>
             <span>{{ level1.text }}</span>
-          </el-menu-item>
-        </template>
+          </template>
+
+          <template v-for="level2 in level1.children">
+            <el-menu-item :index="JSON.stringify(level2)">
+              <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+              <span>{{ level2.text }}</span>
+            </el-menu-item>
+          </template>
+
+        </el-submenu>
+
       </template>
-    </el-menu>
+      <template v-else>
+        <el-menu-item :index="JSON.stringify(level1)">
+          <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+          <span>{{ level1.text }}</span>
+        </el-menu-item>
+      </template>
+    </template>
+  </el-menu>
 
-    <div style="height: 45px"></div>
-    
-  </div>
+  <div style="height: 45px"></div>
+  
+</div>
 
-  <div id="tabs" :style="{width: (winWidth - leftWidth) + 'px', marginLeft: leftWidth + 'px'}">
-    <el-tabs v-model="tabsValue" type="border-card" :closable="true" v-on:tab-remove="utils.removeTab">
-      <el-tab-pane
-        :key="item.name"
-        v-for="(item, index) in tabs"
-        :label="item.title"
-        :name="item.name">
-        <iframe id="frmMain" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
-      </el-tab-pane>
-    </el-tabs>
-  </div>
+<div id="tabs" :style="{width: (winWidth - leftWidth) + 'px', marginLeft: leftWidth + 'px'}">
+  <el-tabs v-model="tabsValue" type="border-card" :closable="true" v-on:tab-remove="utils.removeTab">
+    <el-tab-pane
+      :key="item.name"
+      v-for="(item, index) in tabs"
+      :label="item.title"
+      :name="item.name">
+      <iframe id="frmMain" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
+    </el-tab-pane>
+  </el-tabs>
 </div>
 
 @section Scripts{

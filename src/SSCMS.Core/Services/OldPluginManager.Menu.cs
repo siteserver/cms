@@ -223,7 +223,6 @@ namespace SSCMS.Core.Services
                 Id = menu.Id,
                 Text = menu.Text,
                 IconClass = menu.IconClass,
-                Selected = false,
                 Link = menu.Link,
                 Target = menu.Target
             };

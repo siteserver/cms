@@ -24,24 +24,26 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IOldPluginManager _oldPluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IPluginManager pluginManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
+            _oldPluginManager = oldPluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
             _administratorRepository = administratorRepository;
@@ -56,10 +58,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             }
 
             var caching = new CacheUtils(_cacheManager);
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
+            var manager = new SiteTemplateManager(_pathManager, _oldPluginManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
 
-            var tableNameList = await _siteRepository.GetSiteTableNamesAsync(_pluginManager);
+            var tableNameList = await _siteRepository.GetSiteTableNamesAsync(_oldPluginManager);
 
             var rootExists = await _siteRepository.GetSiteByIsRootAsync() != null;
 
@@ -70,7 +72,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 Label = "<无上级站点>"
             });
 
-            var siteTypes = _settingsManager.GetSiteTypes();
+            var siteTypes = _pluginManager.GetSiteTypes();
 
             return new GetResult
             {
@@ -175,7 +177,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             if (request.CreateType == "local")
             {
-                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
+                var manager = new SiteTemplateManager(_pathManager, _oldPluginManager, _databaseManager, caching);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 caching.SetProcess(request.Guid, "生成站点页面...");
@@ -202,7 +204,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
                 caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
 
-                var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
+                var manager = new SiteTemplateManager(_pathManager, _oldPluginManager, _databaseManager, caching);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 caching.SetProcess(request.Guid, "生成站点页面...");
