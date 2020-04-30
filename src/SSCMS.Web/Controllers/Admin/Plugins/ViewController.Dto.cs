@@ -1,4 +1,5 @@
 ﻿using SSCMS.Core.Packaging;
+using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             public string Version { get; set; }
             public bool Installed { get; set; }
             public string InstalledVersion { get; set; }
-            public PackageMetadata Plugin { get; set; }
+            public IPlugin Plugin { get; set; }
         }
     }
 }

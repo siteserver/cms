@@ -17,9 +17,9 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IPluginManager _pluginManager;
 
-        public ViewController(ISettingsManager settingsManager, IAuthManager authManager, IOldPluginManager pluginManager)
+        public ViewController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -35,7 +35,6 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             }
 
             var plugin = _pluginManager.GetPlugin(pluginId);
-            var metadata = new PackageMetadata(plugin);
 
             return new GetResult
             {
@@ -43,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 Version = _settingsManager.Version,
                 Installed = plugin != null,
                 InstalledVersion = plugin != null ? plugin.Version : string.Empty,
-                Plugin = metadata
+                Plugin = plugin
             };
         }
     }

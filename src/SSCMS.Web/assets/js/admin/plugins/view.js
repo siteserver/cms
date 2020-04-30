@@ -2,14 +2,12 @@
 
 var data = utils.init({
   pluginId: utils.getQueryString('pluginId'),
-  returnUrl: utils.getQueryString('returnUrl'),
   isNightly: null,
   version: null,
   installed: null,
   installedVersion: null,
-  package: null,
+  plugin: null,
   isShouldUpdate: false,
-  plugin: {},
   release: {},
   user: {}
 });
@@ -29,7 +27,7 @@ var methods = {
       $this.version = res.version;
       $this.installed = res.installed;
       $this.installedVersion = res.installedVersion;
-      $this.package = res.package || {};
+      $this.plugin = res.plugin || {};
 
       $apiCloud.get('plugins/' + this.pluginId, {
         params: {
@@ -39,7 +37,9 @@ var methods = {
       }).then(function (response) {
         var res = response.data;
 
-        $this.plugin = res.value.plugin;
+        if (res.value.plugin) {
+          $this.plugin = _.assign({}, $this.plugin, res.value.plugin);
+        }
         $this.release = res.value.release;
         $this.user = res.value.user;
 
@@ -66,10 +66,6 @@ var methods = {
       tagNames = plugin.tags.split(',');
     }
     return tagNames;
-  },
-
-  btnReturn: function () {
-    location.href = this.returnUrl;
   }
 };
 

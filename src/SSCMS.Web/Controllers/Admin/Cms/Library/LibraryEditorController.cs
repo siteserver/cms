@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Get([FromBody]GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -52,7 +52,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Create([FromBody] CreateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -84,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -103,7 +103,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<StringResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }

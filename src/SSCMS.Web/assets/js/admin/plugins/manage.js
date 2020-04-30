@@ -88,7 +88,7 @@ var methods = {
     });
   },
 
-  enablePlugin: function (pkg) {
+  btnEnablePlugin: function (pkg) {
     var $this = this;
     
     var text = pkg.isDisabled ? '启用' : '禁用';
@@ -121,7 +121,7 @@ var methods = {
     });
   },
 
-  deletePlugin: function (pkg) {
+  btnDeletePlugin: function (pkg) {
     var $this = this;
 
     var isReference = this.referencePluginIds.indexOf(pkg.pluginId) !== -1;
@@ -155,11 +155,24 @@ var methods = {
       });
   },
 
-  handleSelect: function(key, keyPath) {
+  btnNavSelect: function(key) {
     this.pageType = key;
   },
 
-  btnReload: function () {
+  getPageTitle: function() {
+    if (this.pageType == '1') {
+      return '已启用';
+    } else if (this.pageType == '2') {
+      return '已禁用';
+    } else if (this.pageType == '3') {
+      return '运行错误';
+    } else if (this.pageType == '4') {
+      return '发现新版本';
+    }
+    return '';
+  },
+
+  btnReloadClick: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -174,6 +187,10 @@ var methods = {
         window.top.location.reload(true);
       });
     });
+  },
+
+  btnViewClick: function(plugin) {
+    utils.addTab('插件：' + plugin.pluginId, utils.getPluginsUrl('view', {pluginId: plugin.pluginId}));
   }
 };
 

@@ -156,10 +156,31 @@
           </template>
 
           <template v-for="level2 in level1.children">
-            <el-menu-item :index="JSON.stringify(level2)">
-              <i v-if="level2.iconClass" :class="level2.iconClass"></i>
-              <span>{{ level2.text }}</span>
-            </el-menu-item>
+
+            <template v-if="level2.children && level2.children.length > 0">
+
+              <el-submenu :index="level2.id">
+                <template slot="title">
+                  <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                  <span>{{ level2.text }}</span>
+                </template>
+      
+                <template v-for="level3 in level2.children">
+                  <el-menu-item :index="JSON.stringify(level3)">
+                    <i v-if="level3.iconClass" :class="level3.iconClass"></i>
+                    <span>{{ level3.text }}</span>
+                  </el-menu-item>
+                </template>
+      
+              </el-submenu>
+      
+            </template>
+            <template v-else>
+              <el-menu-item :index="JSON.stringify(level2)">
+                <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                <span>{{ level2.text }}</span>
+              </el-menu-item>
+            </template>
           </template>
 
         </el-submenu>

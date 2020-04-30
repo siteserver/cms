@@ -123,8 +123,6 @@ var methods = {
   setEditorContent: function(val) {
     var $this = this;
 
-    
-
     if (this.contentEditor) {
       this.contentEditor.getModel().setValue(val);
       this.contentEditor.focus();

@@ -128,7 +128,11 @@ body, #main {
   margin-right: 5px;
   color: #55565d;
 }
-#sidebar .el-submenu .el-menu-item {
+#sidebar .el-submenu__title i.el-submenu__icon-arrow, #sidebar .el-menu-item i.el-submenu__icon-arrow {
+  font-size: 12px;
+  color: #909399;
+}
+#sidebar .el-submenu .el-menu-item, #sidebar > ul > li.el-submenu.is-opened > ul > li.el-submenu {
   background-color: #f9f9f9;
 }
 #sidebar .el-submenu .el-menu-item:hover {

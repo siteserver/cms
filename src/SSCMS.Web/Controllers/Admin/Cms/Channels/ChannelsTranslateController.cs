@@ -79,7 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsCrossSiteTrans))
+                AuthTypes.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }

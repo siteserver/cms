@@ -45,4 +45,12 @@
     <ProjectReference Include="..\SSCMS.Core\SSCMS.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Watch Include="plugins\**\*.cshtml;plugins\**\*.cs" Exclude="plugins\*\obj\**\*;plugins\bin\**\*" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet build plugins\SSCMS.Document" />
+  </Target>
+
 </Project>

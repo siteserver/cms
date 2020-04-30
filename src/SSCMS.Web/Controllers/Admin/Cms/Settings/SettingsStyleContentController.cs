@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleContent))
             {
                 return Unauthorized();
             }
@@ -100,7 +100,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ObjectResult<List<Style>>>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleContent))
             {
                 return Unauthorized();
             }
@@ -138,7 +138,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<BoolResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleContent))
             {
                 return Unauthorized();
             }
@@ -183,7 +183,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<StringResult>> Export([FromBody] ChannelRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleContent))
             {
                 return Unauthorized();
             }

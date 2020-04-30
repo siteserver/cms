@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Plugins;
@@ -8,26 +10,27 @@ namespace SSCMS.Core.Plugins
 {
     public class Plugin : IPlugin
     {
-        public Plugin(string pluginPath, string folderName)
+        public Plugin(string folderPath, string folderName)
         {
             FolderName = folderName;
 
             Configuration = new ConfigurationBuilder()
-                .SetBasePath(pluginPath)
+                .SetBasePath(folderPath)
                 .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: true)
                 .Build();
 
-            var assemblyPath = PathUtils.Combine(pluginPath, Main);
-            if (FileUtils.IsFileExists(assemblyPath))
+            if (string.IsNullOrEmpty(Main) || !Main.EndsWith(".dll")) return;
+
+            var assemblyPath = Directory.GetFiles(folderPath, Main, SearchOption.AllDirectories).FirstOrDefault();
+            if (string.IsNullOrEmpty(assemblyPath)) return;
+
+            try
             {
-                try
-                {
-                    Assembly = PluginUtils.LoadAssembly(assemblyPath);
-                }
-                catch
-                {
-                    // ignored
-                }
+                Assembly = PluginUtils.LoadAssembly(assemblyPath);
+            }
+            catch
+            {
+                // ignored
             }
         }
 

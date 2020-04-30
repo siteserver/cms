@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsGroups))
+                    AuthTypes.SitePermissions.SettingsChannelGroup))
             {
                 return Unauthorized();
             }
@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Delete([FromBody]DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsGroups))
+                    AuthTypes.SitePermissions.SettingsChannelGroup))
             {
                 return Unauthorized();
             }
@@ -66,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Order([FromBody] OrderRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsGroups))
+                    AuthTypes.SitePermissions.SettingsChannelGroup))
             {
                 return Unauthorized();
             }

@@ -1,120 +1,102 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-menu default-active="1" mode="horizontal"
-  background-color="#545c64"
-  text-color="#fff"
-  active-text-color="#ffd04b"
+<el-form :inline="true">
+  <el-form-item label="关键字">
+    <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
+  </el-form-item>
+</el-form>
+
+<div class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
+  <div class="hidden-columns">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="el-table__header-wrapper">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__header" style="width: 100%;">
+      <colgroup>
+        <col name="el-table_1_column_1">
+        <col name="el-table_1_column_2" width="240">
+        <col name="el-table_1_column_3" width="400">
+        <col name="el-table_1_column_4" width="80">
+      </colgroup>
+      <thead class="has-gutter">
+        <tr class="">
+          <th colspan="1" rowspan="1" class="el-table_1_column_1 is-leaf">
+            <div class="cell">栏目</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_2 is-leaf">
+            <div class="cell">栏目页面路径</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_3 is-leaf">
+            <div class="cell">内容页面路径规则</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_4 is-leaf">
+            <div class="cell">操作</div>
+          </th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="el-table__column-resize-proxy" style="display: none;"></div>
+</div>
+
+<el-tree
+  ref="tree"
+  :data="channels"
+  :default-expanded-keys="[siteId]"
+  node-key="value"
+  check-on-click-node
+  check-strictly
+  highlight-current
+  class="tree"
+  :filter-node-method="filterNode"
 >
-  <el-menu-item index="1"><el-link :underline="false" :href="utils.getCmsUrl('settingsCreateRule', {siteId: siteId})">页面命名规则</el-link></el-menu-item>
-  <el-menu-item index="2"><el-link :underline="false" :href="utils.getCmsUrl('settingsCreate', {siteId: siteId})">页面生成设置</el-link></el-menu-item>
-  <el-menu-item index="3"><el-link :underline="false" :href="utils.getCmsUrl('settingsCreateTrigger', {siteId: siteId})">页面生成触发器</el-link></el-menu-item>
-</el-menu>
-
-<el-card class="box-card">
-
-  <div slot="header" class="clearfix">
-    <span>页面命名规则</span>
-  </div>
-
-  <el-form :inline="true">
-    <el-form-item label="关键字">
-      <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
-    </el-form-item>
-  </el-form>
-
-  <div class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
-    <div class="hidden-columns">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-    <div class="el-table__header-wrapper">
-      <table cellspacing="0" cellpadding="0" border="0" class="el-table__header" style="width: 100%;">
-        <colgroup>
-          <col name="el-table_1_column_1">
-          <col name="el-table_1_column_2" width="240">
-          <col name="el-table_1_column_3" width="400">
-          <col name="el-table_1_column_4" width="80">
-        </colgroup>
-        <thead class="has-gutter">
-          <tr class="">
-            <th colspan="1" rowspan="1" class="el-table_1_column_1 is-leaf">
-              <div class="cell">栏目</div>
-            </th>
-            <th colspan="1" rowspan="1" class="el-table_1_column_2 is-leaf">
-              <div class="cell">栏目页面路径</div>
-            </th>
-            <th colspan="1" rowspan="1" class="el-table_1_column_3 is-leaf">
-              <div class="cell">内容页面路径规则</div>
-            </th>
-            <th colspan="1" rowspan="1" class="el-table_1_column_4 is-leaf">
-              <div class="cell">操作</div>
-            </th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-    <div class="el-table__column-resize-proxy" style="display: none;"></div>
-  </div>
-
-  <el-tree
-    ref="tree"
-    :data="channels"
-    :default-expanded-keys="[siteId]"
-    node-key="value"
-    check-on-click-node
-    check-strictly
-    highlight-current
-    class="tree"
-    :filter-node-method="filterNode"
-  >
-    <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
-      <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-        <colgroup>
-          <col name="el-table_1_column_1">
-          <col name="el-table_1_column_2" width="240">
-          <col name="el-table_1_column_3" width="400">
-          <col name="el-table_1_column_4" width="80">
-        </colgroup>
-        <tbody>
-          <tr class="el-table__row">
-            <td rowspan="1" colspan="1" class="el-table_1_column_1">
-            <div class="cell">
-            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
-              <i class="el-icon-link"></i>
-            </a>
-            {{ data.label }} ({{ data.count }})
-            <el-tag size="mini" v-if="data.indexName">
-              {{ data.indexName }}
-            </el-tag>
+  <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+      <colgroup>
+        <col name="el-table_1_column_1">
+        <col name="el-table_1_column_2" width="240">
+        <col name="el-table_1_column_3" width="400">
+        <col name="el-table_1_column_4" width="80">
+      </colgroup>
+      <tbody>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1" class="el-table_1_column_1">
+          <div class="cell">
+          <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+            <i class="el-icon-link"></i>
+          </a>
+          {{ data.label }} ({{ data.count }})
+          <el-tag size="mini" v-if="data.indexName">
+            {{ data.indexName }}
+          </el-tag>
+        </div>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_2">
+          <div class="cell">
+            {{ data.filePath }}
           </div>
-          </td>
-          <td rowspan="1" colspan="1" class="el-table_1_column_2">
-            <div class="cell">
-              {{ data.filePath }}
-            </div>
-          </td>
-          <td rowspan="1" colspan="1" class="el-table_1_column_3">
-            <div class="cell">
-              {{ data.contentFilePathRule }}
-            </div>
-          </td>
-          <td rowspan="1" colspan="1" class="el-table_1_column_4">
-            <div class="cell">
-              <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop="btnEditClick(data)">
-                设置页面路径
-              </el-button>
-            </div>
-          </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </el-tree>
-
-</el-card>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_3">
+          <div class="cell">
+            {{ data.contentFilePathRule }}
+          </div>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_4">
+          <div class="cell">
+            <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop="btnEditClick(data)">
+              设置页面路径
+            </el-button>
+          </div>
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</el-tree>
 
 <el-drawer
   id="editForm"

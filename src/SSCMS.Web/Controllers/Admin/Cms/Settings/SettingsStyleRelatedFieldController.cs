@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<IEnumerable<RelatedField>>> Get([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -57,7 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<IEnumerable<RelatedField>>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -73,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<IEnumerable<RelatedField>>> Add([FromBody]RelatedField request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -89,7 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<IEnumerable<RelatedField>>> Edit([FromBody]RelatedField request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -105,7 +105,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<BoolResult>> Import([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -145,7 +145,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<StringResult>> Export([FromBody] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsTableStyles))
+                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }

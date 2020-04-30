@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
         {
             if (!await _authManager.HasSitePermissionsAsync(req.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -71,7 +71,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryText>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -117,7 +117,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -134,7 +134,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryGroup>> CreateGroup([FromBody] GroupRequest group)
         {
             if (!await _authManager.HasSitePermissionsAsync(group.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -153,7 +153,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<LibraryGroup>> RenameGroup([FromQuery]int id, [FromBody] GroupRequest group)
         {
             if (!await _authManager.HasSitePermissionsAsync(group.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
@@ -169,7 +169,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody]DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Library))
+                    AuthTypes.SitePermissions.LibraryText))
             {
                 return Unauthorized();
             }
