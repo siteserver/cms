@@ -34,7 +34,7 @@ namespace SSCMS.Utils
         public const string RouteActionsSearch = "sys/stl/actions/search";
         public const string RouteActionsTrigger = "sys/stl/actions/trigger";
 
-        public const string OperatingSystem = "win";
+        public const string OperatingSystem = "win-x64";
 
         public const string ScopeChannels = "Channels";
         public const string ScopeContents = "Contents";

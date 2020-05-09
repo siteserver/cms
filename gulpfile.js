@@ -72,11 +72,9 @@ gulp.task("build-src", function () {
 });
 
 gulp.task("build-os", function () {
-  let content = fs.readFileSync(`./build-${os}/src/SSCMS/Utils/Constants.cs`, {
-    encoding: "utf8",
-  });
-  content = content.replace('OperatingSystem = "win-x64";', `OperatingSystem = "${os}";`);
-  fs.writeFileSync(`./build-${os}/src/SSCMS/Utils/Constants.cs`, content, 'utf8');
+  return gulp.src("./src/SSCMS/Utils/Constants.cs")
+    .pipe(replace('OperatingSystem = "win-x64";', `OperatingSystem = "${os}";`))
+    .pipe(gulp.dest(`./build-${os}/src/SSCMS/Utils`));
 });
 
 gulp.task("build-sln", function () {
@@ -139,8 +137,8 @@ gulp.task('build-clean', function(){
 });
 
 gulp.task("build-osx-x64", async function () {
-  os = 'osx-x64'
-  console.log("build version: " + version);
+  os = 'osx-x64';
+  console.log("build version: " + version + "-" + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -152,8 +150,8 @@ gulp.task("build-osx-x64", async function () {
 });
 
 gulp.task("build-linux-x64", async function () {
-  os = 'linux-x64'
-  console.log("build version: " + version);
+  os = 'linux-x64';
+  console.log("build version: " + version + "-" + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -165,8 +163,8 @@ gulp.task("build-linux-x64", async function () {
 });
 
 gulp.task("build-win-x64", async function () {
-  os = 'win-x64'
-  console.log("build version: " + version);
+  os = 'win-x64';
+  console.log("build version: " + version + "-" + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -178,8 +176,8 @@ gulp.task("build-win-x64", async function () {
 });
 
 gulp.task("build-win-x32", async function () {
-  os = 'win-x32'
-  console.log("build version: " + version);
+  os = 'win-x32';
+  console.log("build version: " + version + "-" + os);
   return runSequence(
       "build-src",
       "build-os",
