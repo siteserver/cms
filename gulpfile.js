@@ -25,7 +25,7 @@ fs.readdirSync('./src/SSCMS.Web/Pages/shared/').forEach(fileName => {
 
 function transform(file, html) {
   let content = new String(file.contents);
-  let result = html;
+  let result = html || '';
 
   let matches = [...content.matchAll(/@await Html.PartialAsync\("([\s\S]+?)"\)/gi)];
   if (matches) {
@@ -175,8 +175,8 @@ gulp.task("build-win-x64", async function () {
   );
 });
 
-gulp.task("build-win-x32", async function () {
-  os = 'win-x32';
+gulp.task("build-win-x86", async function () {
+  os = 'win-x86';
   console.log("build version: " + version + "-" + os);
   return runSequence(
       "build-src",
