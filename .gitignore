@@ -1,5 +1,9 @@
 .vs/
 .vscode/
+build-osx-x64/
+build-linux-x64/
+build-win-x64/
+build-win-x32/
 build/
 dist/
 packages/

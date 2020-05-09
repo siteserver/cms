@@ -11,15 +11,11 @@ namespace SSCMS.Web.Controllers.Admin
     {
         [Authorize(Roles = AuthTypes.Roles.Administrator)]
         [HttpPost, Route(RouteActionsDownload)]
-        public async Task<ActionResult<BoolResult>> Download([FromBody] DownloadRequest request)
+        public ActionResult<BoolResult> Download([FromBody] DownloadRequest request)
         {
-            PackageUtils.DownloadPackage(_pathManager, Constants.PackageIdSsCms, request.Version);
+            CloudUtils.DownloadCms(_pathManager, request.Version);
 
-            var isDownload = PackageUtils.IsPackageDownload(_pathManager, Constants.PackageIdSsCms, request.Version);
-            if (isDownload)
-            {
-                await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
-            }
+            var isDownload = CloudUtils.IsCmsDownload(_pathManager, request.Version);
 
             return new BoolResult
             {

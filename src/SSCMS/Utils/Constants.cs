@@ -34,7 +34,7 @@ namespace SSCMS.Utils
         public const string RouteActionsSearch = "sys/stl/actions/search";
         public const string RouteActionsTrigger = "sys/stl/actions/trigger";
 
-        public const string PackageIdSsCms = "SS.CMS";
+        public const string OperatingSystem = "win";
 
         public const string ScopeChannels = "Channels";
         public const string ScopeContents = "Contents";
@@ -44,10 +44,6 @@ namespace SSCMS.Utils
 
         public const string OsUserProfileTypeConfig = "config.json";
         public const string OsUserProfileTypePlugins = "plugins";
-
-        public const string UrlResources = "http://sscms-public.oss-accelerate.aliyuncs.com";
-        public const string UrlTypeCms = "cms";
-        public const string UrlTypePlugins = "plugins";
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
 

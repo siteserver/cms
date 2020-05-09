@@ -15,7 +15,7 @@ namespace SSCMS.Core.Services
 
                 string nuspecPath;
                 string dllDirectoryPath;
-                var metadata = PackageUtils.GetPackageMetadataFromPackages(_pathManager, idWithVersion, out nuspecPath, out dllDirectoryPath, out errorMessage);
+                var metadata = PackageMetadata.GetPackageMetadataFromPackages(_pathManager, idWithVersion, out nuspecPath, out dllDirectoryPath, out errorMessage);
                 if (metadata == null)
                 {
                     return false;

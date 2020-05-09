@@ -9,6 +9,8 @@ const replace = require('gulp-string-replace');
 const filter = require('gulp-filter');
 const runSequence = require('gulp4-run-sequence');
 
+var os = '';
+
 const version = process.env.PRODUCTVERSION;
 const timestamp = (new Date()).getTime();
 let publishDir = '';
@@ -66,11 +68,19 @@ function transform(file, html) {
 // build tasks
 
 gulp.task("build-src", function () {
-  return gulp.src("./src/**/*").pipe(gulp.dest("./build/src"));
+  return gulp.src("./src/**/*").pipe(gulp.dest(`./build-${os}/src`));
+});
+
+gulp.task("build-os", function () {
+  let content = fs.readFileSync(`./build-${os}/src/SSCMS/Utils/Constants.cs`, {
+    encoding: "utf8",
+  });
+  content = content.replace('OperatingSystem = "win-x64";', `OperatingSystem = "${os}";`);
+  fs.writeFileSync(`./build-${os}/src/SSCMS/Utils/Constants.cs`, content, 'utf8');
 });
 
 gulp.task("build-sln", function () {
-  return gulp.src("./build.sln").pipe(gulp.dest("./build"));
+  return gulp.src("./build.sln").pipe(gulp.dest(`./build-${os}`));
 });
 
 
@@ -96,7 +106,7 @@ gulp.task("build-ss-admin", function () {
         },
       })
     )
-    .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/ss-admin"));
+    .pipe(gulp.dest(`./build-${os}/src/SSCMS.Web/wwwroot/ss-admin`));
 });
 
 gulp.task("build-home", function () {
@@ -121,22 +131,63 @@ gulp.task("build-home", function () {
         },
       })
     )
-    .pipe(gulp.dest("./build/src/SSCMS.Web/wwwroot/home"));
+    .pipe(gulp.dest(`./build-${os}/src/SSCMS.Web/wwwroot/home`));
 });
 
 gulp.task('build-clean', function(){
-  return del(['./build/src/SSCMS.Web/Pages/ss-admin/**', './build/src/SSCMS.Web/Pages/home/**'], {force:true});
+  return del([`./build-${os}/src/SSCMS.Web/Pages/ss-admin/**`, `./build-${os}/src/SSCMS.Web/Pages/home/**`], {force:true});
 });
 
-gulp.task("build", async function () {
-    console.log("build version: " + version);
-    return runSequence(
-        "build-src",
-        "build-sln",
-        "build-ss-admin",
-        "build-home",
-        "build-clean"
-    );
+gulp.task("build-osx-x64", async function () {
+  os = 'osx-x64'
+  console.log("build version: " + version);
+  return runSequence(
+      "build-src",
+      "build-os",
+      "build-sln",
+      "build-ss-admin",
+      "build-home",
+      "build-clean"
+  );
+});
+
+gulp.task("build-linux-x64", async function () {
+  os = 'linux-x64'
+  console.log("build version: " + version);
+  return runSequence(
+      "build-src",
+      "build-os",
+      "build-sln",
+      "build-ss-admin",
+      "build-home",
+      "build-clean"
+  );
+});
+
+gulp.task("build-win-x64", async function () {
+  os = 'win-x64'
+  console.log("build version: " + version);
+  return runSequence(
+      "build-src",
+      "build-os",
+      "build-sln",
+      "build-ss-admin",
+      "build-home",
+      "build-clean"
+  );
+});
+
+gulp.task("build-win-x32", async function () {
+  os = 'win-x32'
+  console.log("build version: " + version);
+  return runSequence(
+      "build-src",
+      "build-os",
+      "build-sln",
+      "build-ss-admin",
+      "build-home",
+      "build-clean"
+  );
 });
 
 // copy tasks

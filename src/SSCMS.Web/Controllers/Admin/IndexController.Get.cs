@@ -177,6 +177,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Value = true,
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 Version = _settingsManager.Version,
+                OperatingSystem = Constants.OperatingSystem,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminTitle = config.AdminTitle,
                 IsSuperAdmin = isSuperAdmin,

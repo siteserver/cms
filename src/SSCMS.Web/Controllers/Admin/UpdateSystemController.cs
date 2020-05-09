@@ -54,14 +54,14 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(Route)]
         public ActionResult<BoolResult> UpdateSsCms([FromBody] UpdateRequest request)
         {
-            var idWithVersion = $"{Constants.PackageIdSsCms}.{request.Version}";
-            var packagePath = _pathManager.GetPackagesPath(idWithVersion);
-            var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
-
-            if (!PackageUtils.IsPackageDownload(_pathManager, Constants.PackageIdSsCms, request.Version))
+            if (!CloudUtils.IsCmsDownload(_pathManager, request.Version))
             {
-                return this.Error($"升级包 {idWithVersion} 不存在");
+                return this.Error($"升级包 {request.Version} 不存在");
             }
+
+            var name = CloudUtils.GetCmsDownloadName(request.Version);
+            var packagePath = _pathManager.GetPackagesPath(name);
+            var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
 
             //WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
             //    WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,

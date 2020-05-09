@@ -20,7 +20,10 @@
     "del": "^5.1.0"
   },
   "scripts": {
-    "build": "node ./node_modules/gulp/bin/gulp.js build",
+    "build-osx-x64": "node ./node_modules/gulp/bin/gulp.js build-osx-x64",
+    "build-linux-x64": "node ./node_modules/gulp/bin/gulp.js build-linux-x64",
+    "build-win-x64": "node ./node_modules/gulp/bin/gulp.js build-win-x64",
+    "build-win-x32": "node ./node_modules/gulp/bin/gulp.js build-win-x32",
     "copy-osx-x64": "node ./node_modules/gulp/bin/gulp.js copy-osx-x64",
     "copy-linux-x64": "node ./node_modules/gulp/bin/gulp.js copy-linux-x64",
     "copy-win-x64": "node ./node_modules/gulp/bin/gulp.js copy-win-x64",

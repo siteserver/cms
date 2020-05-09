@@ -64,17 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSsCms))
-            {
-                try
-                {
-                    PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
-                }
-                catch
-                {
-                    PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
-                }
-            }
+            CloudUtils.DownloadPlugin(_pathManager, request.PackageId, request.Version);
 
             return new BoolResult
             {
@@ -90,13 +80,10 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSsCms))
+            var idWithVersion = $"{request.PackageId}.{request.Version}";
+            if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
             {
-                var idWithVersion = $"{request.PackageId}.{request.Version}";
-                if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
-                {
-                    return this.Error(errorMessage);
-                }
+                return this.Error(errorMessage);
             }
 
             return new BoolResult
