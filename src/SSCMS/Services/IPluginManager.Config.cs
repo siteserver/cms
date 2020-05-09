@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Configuration;
 
 namespace SSCMS.Services
 {
@@ -8,5 +9,6 @@ namespace SSCMS.Services
         List<SiteType> GetSiteTypes();
         List<Permission> GetPermissions();
         List<Menu> GetMenus();
+        List<Table> GetTables();
     }
 }

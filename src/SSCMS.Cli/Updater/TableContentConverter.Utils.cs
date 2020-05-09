@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -43,19 +42,19 @@ namespace SSCMS.Cli.Updater
                 {
                     if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Models.Content.ChannelId);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.ChannelId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Models.Content.SiteId);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.SiteId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Models.Content.GroupNames);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(Models.Content.GroupNames);
+                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
                     }
 
                     if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -71,10 +70,10 @@ namespace SSCMS.Cli.Updater
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Models.Content.ChannelId), nameof(NodeId)},
-                {nameof(Models.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Models.Content.GroupNames), nameof(ContentGroupNameCollection)},
-                {nameof(Models.Content.GroupNames), nameof(GroupNameCollection)}
+                {nameof(SSCMS.Models.Content.ChannelId), nameof(NodeId)},
+                {nameof(SSCMS.Models.Content.SiteId), nameof(PublishmentSystemId)},
+                {nameof(SSCMS.Models.Content.GroupNames), nameof(ContentGroupNameCollection)},
+                {nameof(SSCMS.Models.Content.GroupNames), nameof(GroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
@@ -85,7 +84,7 @@ namespace SSCMS.Cli.Updater
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[nameof(Models.Content.Body)] = content;
+                row[nameof(SSCMS.Models.Content.Body)] = content;
             }
             if (row.TryGetValue(nameof(SettingsXml), out contentObj))
             {

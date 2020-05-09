@@ -46,8 +46,6 @@ namespace SSCMS.Web.Controllers.Admin
 
             return new GetResult
             {
-                Value = true,
-                PackageId = Constants.PackageId,
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 Version = _settingsManager.Version
             };
@@ -56,11 +54,11 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(Route)]
         public ActionResult<BoolResult> UpdateSsCms([FromBody] UpdateRequest request)
         {
-            var idWithVersion = $"{Constants.PackageId}.{request.Version}";
+            var idWithVersion = $"{Constants.PackageIdSsCms}.{request.Version}";
             var packagePath = _pathManager.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
 
-            if (!PackageUtils.IsPackageDownload(_pathManager, Constants.PackageId, request.Version))
+            if (!PackageUtils.IsPackageDownload(_pathManager, Constants.PackageIdSsCms, request.Version))
             {
                 return this.Error($"升级包 {idWithVersion} 不存在");
             }

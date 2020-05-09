@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SSCMS
+namespace SSCMS.Configuration
 {
     /// <summary>
     /// 插件菜单。

@@ -13,22 +13,12 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteActionsDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody] DownloadRequest request)
         {
-            try
-            {
-                PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
-            }
-            catch
-            {
-                PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
-            }
+            PackageUtils.DownloadPackage(_pathManager, Constants.PackageIdSsCms, request.Version);
 
-            var isDownload = PackageUtils.IsPackageDownload(_pathManager, request.PackageId, request.Version);
+            var isDownload = PackageUtils.IsPackageDownload(_pathManager, Constants.PackageIdSsCms, request.Version);
             if (isDownload)
             {
-                if (StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageId))
-                {
-                    await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
-                }
+                await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
             }
 
             return new BoolResult
@@ -36,5 +26,26 @@ namespace SSCMS.Web.Controllers.Admin
                 Value = isDownload
             };
         }
+
+        //[Authorize(Roles = AuthTypes.Roles.Administrator)]
+        //[HttpPost, Route(RouteActionsDownload)]
+        //public async Task<ActionResult<BoolResult>> Download([FromBody] DownloadRequest request)
+        //{
+        //    PackageUtils.DownloadPackage(_pathManager, request.PackageId, request.Version);
+
+        //    var isDownload = PackageUtils.IsPackageDownload(_pathManager, request.PackageId, request.Version);
+        //    if (isDownload)
+        //    {
+        //        if (StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSsCms))
+        //        {
+        //            await _dbCacheRepository.RemoveAndInsertAsync(PackageUtils.CacheKeySsCmsIsDownload, true.ToString());
+        //        }
+        //    }
+
+        //    return new BoolResult
+        //    {
+        //        Value = isDownload
+        //    };
+        //}
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Utils;
 

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SSCMS;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Cli.Updater;
 using SSCMS.Cli.Updater.Tables;
 using SSCMS.Cli.Updater.Tables.GovInteract;
 using SSCMS.Cli.Updater.Tables.GovPublic;
@@ -15,14 +16,14 @@ using SSCMS.Services;
 using SSCMS.Utils;
 using TableInfo = SSCMS.Cli.Core.TableInfo;
 
-namespace SSCMS.Cli.Updater
+namespace SSCMS.Cli.Services
 {
-    public class UpdaterManager
+    public class UpdateService : IUpdateService
     {
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
 
-        public UpdaterManager(ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public UpdateService(ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;

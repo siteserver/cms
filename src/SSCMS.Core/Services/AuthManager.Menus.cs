@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SSCMS.Configuration;
 
 namespace SSCMS.Core.Services
 {

@@ -3,7 +3,7 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
 
-namespace SSCMS
+namespace SSCMS.Configuration
 {
     /// <summary>
     /// 表示表单的输入样式。

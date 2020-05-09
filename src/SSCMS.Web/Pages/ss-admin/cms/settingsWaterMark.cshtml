@@ -120,6 +120,7 @@
       <el-upload
         class="avatar-uploader"
         :action="urlUpload"
+        :headers="{Authorization: 'Bearer ' + $token}"
         :show-file-list="false"
         :drag="true"
         :limit="1"
@@ -132,8 +133,6 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
     </el-form-item>
-    
-    
 
     <el-form-item>
       <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>

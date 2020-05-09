@@ -10,27 +10,30 @@ namespace SSCMS.Core.Plugins
 {
     public class Plugin : IPlugin
     {
-        public Plugin(string folderPath, string folderName)
+        public Plugin(string folderPath, bool loadAssembly)
         {
-            FolderName = folderName;
+            FolderName = Path.GetFileName(folderPath);
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(folderPath)
-                .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: true)
+                .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: loadAssembly)
                 .Build();
 
-            if (string.IsNullOrEmpty(Main) || !Main.EndsWith(".dll")) return;
-
-            var assemblyPath = Directory.GetFiles(folderPath, Main, SearchOption.AllDirectories).FirstOrDefault();
-            if (string.IsNullOrEmpty(assemblyPath)) return;
-
-            try
+            if (loadAssembly)
             {
-                Assembly = PluginUtils.LoadAssembly(assemblyPath);
-            }
-            catch
-            {
-                // ignored
+                if (string.IsNullOrEmpty(Main) || !Main.EndsWith(".dll")) return;
+
+                var assemblyPath = Directory.GetFiles(folderPath, Main, SearchOption.AllDirectories).FirstOrDefault();
+                if (string.IsNullOrEmpty(assemblyPath)) return;
+
+                try
+                {
+                    Assembly = PluginUtils.LoadAssembly(assemblyPath);
+                }
+                catch
+                {
+                    // ignored
+                }
             }
         }
 
@@ -50,6 +53,8 @@ namespace SSCMS.Core.Plugins
         public string Description => Configuration[nameof(Description)];
         public string License => Configuration[nameof(License)];
         public string Icon => Configuration[nameof(Icon)];
+
+        public Dictionary<string, string> Engines => Configuration.GetSection(nameof(Engines)).Get<Dictionary<string, string>>();
 
         public IEnumerable<string> Categories => Configuration.GetSection(nameof(Categories)).Get<string[]>();
         public IEnumerable<string> Keywords => Configuration.GetSection(nameof(Keywords)).Get<string[]>();

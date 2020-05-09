@@ -25,6 +25,7 @@
     <PackageReference Include="NuGet.Packaging" Version="5.4.0" />
     <PackageReference Include="NuGet.Versioning" Version="5.4.0" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
+    <PackageReference Include="Semver" Version="2.0.6" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0009" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0007" />

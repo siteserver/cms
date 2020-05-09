@@ -22,39 +22,57 @@
     <div class="right">
 
       <el-popover
-        v-if="newVersion"
+        v-if="newCms || newPlugins.length > 0"
         placement="bottom"
-        width="400"
+        width="420"
         trigger="hover">
 
-        <div>
-          <h3>
-            <span>发现 CMS 新版本</span>
-          </h3>
-          <el-row style="padding: 5px">
-            当前版本：{{ version }}
-          </el-row>
-          <el-row style="padding: 5px">
-            最新版本： {{ newVersion.version }}
-          </el-row>
-          <el-row style="padding: 5px">
-            发布日期：
-            {{ newVersion.published }}
-          </el-row>
-          <el-row style="padding: 5px">
-            发行说明：
-            <el-link :underline="false" type="primary" :href="newVersion.updatesUrl" target="_blank">
-              {{ newVersion.releaseNotes }}
-            </el-link>
-          </el-row>
-          <div style="height: 20px"></div>
-          
-          <el-divider />
-          <div class="text-center">
-            <el-button size="small" type="primary" v-on:click="location.href = utils.getRootUrl('updateSystem');">立即升级</el-button>
-          </div>
+        <div v-if="newCms">
+          <h4 style="margin: 5px;">发现 CMS 新版本</h4>
 
-          <div style="height: 20px"></div>
+          <el-table :data="[newCms]" style="width: 100%">
+            <el-table-column label="当前版本">
+              <template slot-scope="scope">
+                <el-tag type="primary">{{ scope.row.current }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="最新版本">
+              <template slot-scope="scope">
+                <el-tag type="success">{{ scope.row.version }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="published" label="发布日期"></el-table-column>
+          </el-table>
+
+          <el-row style="text-align: center; padding: 10px 0;">
+            <el-button size="medium" type="warning" v-on:click="location.href = utils.getRootUrl('updateSystem');">立即升级</el-button>
+          </el-row>
+        </div>
+        <div v-if="newPlugins.length > 0">
+          <h4 style="margin: 5px;">发现插件新版本</h4>
+
+          <el-table :data="newPlugins" style="width: 100%">
+            <el-table-column label="插件">
+              <template slot-scope="scope">
+                {{ scope.row.displayName }}
+              </template>
+            </el-table-column>
+            <el-table-column label="当前版本" width="80">
+              <template slot-scope="scope">
+                <el-tag type="primary">{{ scope.row.current }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="最新版本" width="80">
+              <template slot-scope="scope">
+                <el-tag type="success">{{ scope.row.version }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="published" label="发布日期" width="100"></el-table-column>
+          </el-table>
+
+          <el-row style="text-align: center; padding: 10px 0;">
+            <el-button size="medium" type="warning" v-on:click="utils.addTab('管理插件', utils.getPluginsUrl('manage', {pageType: 'update'}));">立即升级</el-button>
+          </el-row>
         </div>
 
         <el-link style="padding: 0 10px;" slot="reference" :underline="false" type="warning">
@@ -67,13 +85,13 @@
       </el-badge>
       <el-link v-if="siteId > 0 && pendingCount === 0" icon="ion-wand" class="el-dropdown" :underline="false" v-on:click="openPageCreateStatus"></el-link>
 
-      <el-dropdown>
+      <el-dropdown v-on:command="btnCultureClick">
         <span class="el-dropdown-link">
           <i class="fa fa-language" style="font-size: 16px;"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item disabled>中文</el-dropdown-item>
-          <el-dropdown-item>English</el-dropdown-item>
+          <el-dropdown-item command="en-US" :disabled="culture === 'en-US'">English</el-dropdown-item>
+          <el-dropdown-item command="zh-CN" :disabled="culture === 'zh-CN'">中文</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
 
@@ -200,17 +218,19 @@
 </div>
 
 <div id="tabs" :style="{width: (winWidth - leftWidth) + 'px', marginLeft: leftWidth + 'px'}">
-  <el-tabs v-model="tabsValue" type="border-card" :closable="true" v-on:tab-remove="utils.removeTab">
+  <el-tabs v-model="tabName" type="border-card" :closable="true" v-on:tab-remove="utils.removeTab">
     <el-tab-pane
       :key="item.name"
       v-for="(item, index) in tabs"
       :label="item.title"
       :name="item.name">
-      <iframe id="frmMain" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
+      <iframe :id="'frm-' + item.name" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
     </el-tab-pane>
   </el-tabs>
 </div>
 
-@section Scripts{
-  <script src="/sitefiles/assets/js/admin/index.js" type="text/javascript"></script> }
+@section Scripts {
+  <script src="/sitefiles/assets/js/cloud.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/index.js" type="text/javascript"></script>
+}
 

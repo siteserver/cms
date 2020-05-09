@@ -1,14 +1,12 @@
 ﻿var $url = '/plugins/manage';
 
 var data = utils.init({
-  pageType: utils.getQueryString("pageType", "1"),
+  pageType: utils.getQueryString("pageType", "enabled"),
   isNightly: null,
   version: null,
   allPlugins: null,
-  pluginIds: null,
   enabledPlugins: [],
   disabledPlugins: [],
-  errorPlugins: [],
   updatePlugins: [],
   updatePluginIds: [],
   referencePluginIds: []
@@ -28,59 +26,42 @@ var methods = {
 
       $this.isNightly = res.isNightly;
       $this.version = res.version;
-      $this.enabledPlugins = res.enabledPlugins;
-      $this.pluginIds = res.pluginIds;
+      $this.allPlugins = res.allPlugins;
 
-      // for (var i = 0; i < $this.allPlugins.length; i++) {
-      //   var pkg = $this.allPlugins[i];
-      //   if (pkg.isRunnable && pkg.metadata) {
-      //     if (pkg.isDisabled) {
-      //       $this.disabledPlugins.push(pkg);
-      //     } else {
-      //       $this.enabledPlugins.push(pkg);
-      //     }
-      //   } else {
-      //     $this.errorPlugins.push(pkg);
-      //   }
-      // }
-
-      $apiCloud.get('updates', {
-        params: {
-          isNightly: $this.isNightly,
-          version: $this.version,
-          pluginIds: $this.pluginIds
+      for (var i = 0; i < $this.allPlugins.length; i++) {
+        var plugin = $this.allPlugins[i];
+        if (plugin.disabled) {
+          $this.disabledPlugins.push(plugin);
+        } else {
+          $this.enabledPlugins.push(plugin);
         }
-      }).then(function (response) {
-        var res = response.data;
+      }
 
-        for (var i = 0; i < res.value.length; i++) {
-          var releaseInfo = res.value[i];
+      var pluginIds = $this.enabledPlugins.map(function(x) { return x.pluginId });
 
-          var installedPlugins = $.grep($this.allPlugins, function (e) {
-            return e.id == releaseInfo.pluginId;
+      $cloud.getReleases($this.isNightly, $this.version, pluginIds, function(cms, plugins) {
+        for (var i = 0; i < plugins.length; i++) {
+          var releaseInfo = plugins[i];
+
+          var installedPlugins = $.grep($this.enabledPlugins, function (e) {
+            return e.pluginId == releaseInfo.pluginId;
           });
           if (installedPlugins.length == 1) {
             var installedPlugin = installedPlugins[0];
             installedPlugin.updatePlugin = releaseInfo;
 
-            if (installedPlugin.metadata && installedPlugin.metadata.version) {
-              if (utils.compareVersion(installedPlugin.metadata.version, releaseInfo.version) == -1) {
+            if (installedPlugin && installedPlugin.version) {
+              if (utils.compareVersion(installedPlugin.version, releaseInfo.version) == -1) {
                 $this.updatePlugins.push(installedPlugin);
-                $this.updatePluginIds.push(installedPlugin.id);
+                $this.updatePluginIds.push(installedPlugin.pluginId);
               }
             } else {
               $this.updatePlugins.push(installedPlugin);
-              $this.updatePluginIds.push(installedPlugin.id);
+              $this.updatePluginIds.push(installedPlugin.pluginId);
             }
           }
         }
-
-      }).catch(function (error) {
-        //utils.error($this, error);
-      }).then(function () {
-        utils.loading($this, false);
       });
-
     }).catch(function (error) {
       utils.error($this, error);
     }).then(function () {
@@ -160,13 +141,11 @@ var methods = {
   },
 
   getPageTitle: function() {
-    if (this.pageType == '1') {
+    if (this.pageType == 'enabled') {
       return '已启用';
-    } else if (this.pageType == '2') {
+    } else if (this.pageType == 'disabled') {
       return '已禁用';
-    } else if (this.pageType == '3') {
-      return '运行错误';
-    } else if (this.pageType == '4') {
+    } else if (this.pageType == 'update') {
       return '发现新版本';
     }
     return '';

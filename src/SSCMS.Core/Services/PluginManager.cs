@@ -13,18 +13,19 @@ namespace SSCMS.Core.Services
 {
     public partial class PluginManager : IPluginManager
     {
-        private List<IPlugin> _plugins;
+        private readonly ISettingsManager _settingsManager;
         private readonly IConfiguration _config;
+        private List<IPlugin> _plugins;
 
         public PluginManager(IConfiguration config, ISettingsManager settingsManager)
         {
+            _settingsManager = settingsManager;
             _config = config;
             DirectoryPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryPath);
-            Reload();   
         }
 
-        public void Reload()
+        public async Task ReloadAsync()
         {
             _plugins = new List<IPlugin>();
             var configurations = new List<IConfiguration>
@@ -34,31 +35,48 @@ namespace SSCMS.Core.Services
             foreach (var folderPath in Directory.GetDirectories(DirectoryPath))
             {
                 if (string.IsNullOrEmpty(folderPath)) continue;
-                var folderName = Path.GetFileName(folderPath);
-                if (string.IsNullOrEmpty(folderName)) continue;
                 var configPath = PathUtils.Combine(folderPath, Constants.PackageFileName);
                 if (!FileUtils.IsFileExists(configPath)) continue;
 
-                var plugin = new Plugin(folderPath, folderName);
+                var plugin = new Plugin(folderPath, true);
                 _plugins.Add(plugin);
                 configurations.Add(plugin.Configuration);
             }
 
             var builder = new ConfigurationBuilder();
-
             foreach (var configuration in configurations)
             {
                 builder.AddConfiguration(configuration);
             }
-
             Configuration = builder.Build();
+
+            var tables = GetTables();
+            foreach (var table in tables.Where(table => !string.IsNullOrEmpty(table.Id) && table.Columns != null && table.Columns.Count > 0))
+            {
+                try
+                {
+                    if (!await _settingsManager.Database.IsTableExistsAsync(table.Id))
+                    {
+                        await _settingsManager.Database.CreateTableAsync(table.Id, table.Columns);
+                    }
+                    else
+                    {
+                        await _settingsManager.Database.AlterTableAsync(table.Id,
+                            table.Columns);
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
 
         public IConfiguration Configuration { get; private set; }
 
         public string DirectoryPath { get; }
 
-        public IEnumerable<IPlugin> Plugins => _plugins;
+        public List<IPlugin> Plugins => _plugins;
 
         public IPlugin GetPlugin(string pluginId)
         {

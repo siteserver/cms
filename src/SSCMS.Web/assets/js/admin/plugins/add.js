@@ -6,12 +6,15 @@ var data = utils.init({
   packageIds: null,
   q: utils.getQueryString('q'),
   keyword: utils.getQueryString('q') || '',
-  packages: null
+  plugins: null
 });
 
 var methods = {
-  getIconUrl: function (url) {
-    return 'https://www.siteserver.cn/plugins/' + url;
+  getIconUrl: function (relatedUrl) {
+    if (_.startsWith(relatedUrl, 'plugins/')) {
+      return 'http://sscms-public.oss-accelerate.aliyuncs.com/' + relatedUrl;
+    }
+    return "https://www.siteserver.cn/plugins/" + relatedUrl;
   },
 
   getTagNames: function (pluginInfo) {
@@ -32,26 +35,12 @@ var methods = {
       $this.version = res.version;
       $this.packageIds = res.packageIds;
 
-      $apiCloud.get('plugins', {
-        params: {
-          isNightly: $this.isNightly,
-          version: $this.version,
-          keyword: $this.keyword
-        }
-      }).then(function (response) {
-        var res = response.data;
-
-        $this.packages = res.value;
-      }).catch(function (error) {
-        utils.error($this, error);
-      }).then(function () {
+      $cloud.getPlugins($this.keyword, function(plugins) {
+        $this.plugins = plugins;
         utils.loading($this, false);
       });
-
     }).catch(function (error) {
       utils.error($this, error);
-    }).then(function () {
-      utils.loading($this, false);
     });
   },
 

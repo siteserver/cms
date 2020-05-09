@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>7.0.0-preview6</Version>
+    <Version>7.0.0-preview7</Version>
     <UserSecretsId>be371ebf-a970-4d7c-8db5-77392513935f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
@@ -13,9 +13,13 @@
     <NoWarn>$(NoWarn);1591</NoWarn>  </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="packages\**" />
     <Compile Remove="plugins\**" />
+    <Content Remove="packages\**" />
     <Content Remove="plugins\**" />
+    <EmbeddedResource Remove="packages\**" />
     <EmbeddedResource Remove="plugins\**" />
+    <None Remove="packages\**" />
     <None Remove="plugins\**" />
   </ItemGroup>
 
@@ -49,8 +53,8 @@
     <Watch Include="plugins\**\*.cshtml;plugins\**\*.cs" Exclude="plugins\*\obj\**\*;plugins\bin\**\*" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet build plugins\SSCMS.Document" />
-  </Target>
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet build plugins\SSCMS.Advertisement" />
+  </Target>-->
 
 </Project>

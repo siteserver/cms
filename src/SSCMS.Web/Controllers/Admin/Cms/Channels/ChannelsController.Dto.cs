@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;

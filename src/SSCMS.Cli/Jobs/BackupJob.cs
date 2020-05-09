@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using Mono.Options;
-using SSCMS;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Services
+namespace SSCMS.Cli.Jobs
 {
     public class BackupJob : IJobService
     {
@@ -49,7 +49,9 @@ namespace SSCMS.Cli.Services
 
         public void PrintUsage()
         {
-            Console.WriteLine("数据库备份: siteserver backup");
+            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine("Summary: backup database to dist");
+            Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -157,9 +159,9 @@ namespace SSCMS.Cli.Services
                 if (tableInfo.TotalCount > 0)
                 {
                     var current = 1;
-                    if (tableInfo.TotalCount > CliUtils.PageSize)
+                    if (tableInfo.TotalCount > CliConstants.PageSize)
                     {
-                        var pageCount = (int) Math.Ceiling((double) tableInfo.TotalCount / CliUtils.PageSize);
+                        var pageCount = (int) Math.Ceiling((double) tableInfo.TotalCount / CliConstants.PageSize);
 
                         using (var progress = new ProgressBar())
                         {
@@ -169,10 +171,10 @@ namespace SSCMS.Cli.Services
 
                                 var fileName = $"{current}.json";
                                 tableInfo.RowFiles.Add(fileName);
-                                var offset = (current - 1) * CliUtils.PageSize;
-                                var limit = tableInfo.TotalCount - offset < CliUtils.PageSize
+                                var offset = (current - 1) * CliConstants.PageSize;
+                                var limit = tableInfo.TotalCount - offset < CliConstants.PageSize
                                     ? tableInfo.TotalCount - offset
-                                    : CliUtils.PageSize;
+                                    : CliConstants.PageSize;
 
                                 var rows = databaseManager.GetPageObjects(tableName, identityColumnName, offset,
                                     limit);

@@ -15,22 +15,17 @@
   text-color="#fff"
   active-text-color="#ffd04b"
   v-on:select="btnNavSelect">
-  <el-menu-item index="1">
+  <el-menu-item index="enabled">
       <el-link :underline="false">
         <el-badge type="primary" :value="enabledPlugins.length">已启用</el-badge>
       </el-link>
   </el-menu-item>
-  <el-menu-item index="2">
+  <el-menu-item index="disabled">
     <el-link :underline="false">
       <el-badge type="warning" :value="disabledPlugins.length">已禁用</el-badge>
     </el-link>
   </el-menu-item>
-  <el-menu-item index="3" v-if="errorPlugins.length > 0">
-    <el-link :underline="false">
-      <el-badge :value="errorPlugins.length">运行错误</el-badge>
-    </el-link>
-  </el-menu-item>
-  <el-menu-item index="4" v-if="updatePlugins.length > 0">
+  <el-menu-item index="update" v-if="pageType == 'update' || updatePlugins.length > 0">
     <el-link :underline="false">
       <el-badge type="warning" :value="updatePlugins.length">发现新版本</el-badge>
     </el-link>
@@ -44,13 +39,7 @@
     <el-button style="float: right; padding: 10px; margin-top: -8px;" type="warning" icon="el-icon-refresh" v-on:click="btnReloadClick">重新加载所有插件</el-button>
   </div>
 
-  <div v-if="pageType === '4'" style="margin-bottom: 10px;">
-    <el-alert type="warning">
-      发现以下插件发布了新版本，请点击升级插件按钮开始升级
-    </el-alert>
-  </div>
-
-  <el-table v-if="pageType == '1'" :data="enabledPlugins">
+  <el-table v-if="pageType == 'enabled'" :data="enabledPlugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
         <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
@@ -94,10 +83,10 @@
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == '2'" :data="disabledPlugins">
+  <el-table v-else-if="pageType == 'disabled'" :data="disabledPlugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.metadata.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
       </template>
     </el-table-column>
     <el-table-column label="插件Id">
@@ -107,17 +96,17 @@
     </el-table-column>
     <el-table-column label="插件名称">
       <template slot-scope="scope">
-        {{ scope.row.metadata.displayName }}
+        {{ scope.row.displayName }}
       </template>
     </el-table-column>
     <el-table-column label="版本号">
       <template slot-scope="scope">
-        {{ scope.row.metadata.version }}
+        {{ scope.row.version }}
       </template>
     </el-table-column>
     <el-table-column label="插件介绍">
       <template slot-scope="scope">
-        {{ scope.row.metadata.description }}
+        {{ scope.row.description }}
       </template>
     </el-table-column>
     <el-table-column label="操作" width="100">
@@ -138,29 +127,10 @@
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == '3'" :data="errorPlugins">
-    <el-table-column label="插件Id" width="200">
-      <template slot-scope="scope">
-        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{ scope.row.id }}</el-link>
-      </template>
-    </el-table-column>
-    <el-table-column prop="errorMessage" label="错误详情"></el-table-column>
-    <el-table-column label="操作" width="100">
-      <template slot-scope="scope">
-        <el-link
-          :underline="false"
-          type="danger"
-          v-on:click="btnDeletePlugin(scope.row)">
-          删除插件
-        </el-link>
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <el-table v-else-if="pageType == '4'" :data="updatePlugins">
+  <el-table v-else-if="pageType == 'update'" :data="updatePlugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.metadata.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
       </template>
     </el-table-column>
     <el-table-column label="插件Id">
@@ -170,22 +140,17 @@
     </el-table-column>
     <el-table-column label="插件名称">
       <template slot-scope="scope">
-        {{ scope.row.metadata.displayName }}
+        {{ scope.row.displayName }}
       </template>
     </el-table-column>
     <el-table-column label="已安装版本">
       <template slot-scope="scope">
-        {{ scope.row.metadata ? scope.row.metadata.version : '' }}
+        {{ scope.row ? scope.row.version : '' }}
       </template>
     </el-table-column>
     <el-table-column label="新版本">
       <template slot-scope="scope">
         {{ scope.row.updatePlugin.version }}
-      </template>
-    </el-table-column>
-    <el-table-column label="更新说明">
-      <template slot-scope="scope">
-        {{ scope.row.updatePlugin.releaseNotes }}
       </template>
     </el-table-column>
     <el-table-column label="发布时间">
@@ -198,14 +163,14 @@
         <el-link
           :underline="false"
           type="warning"
-          :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: plugin.id})">
-          插件升级
+          :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: scope.row.pluginId})">
+          升级
         </el-link>
       </template>
     </el-table-column>
   </el-table>
   
-  <div v-if="pageType === '4'">
+  <div v-if="pageType === 'update'">
     <div style="height: 10px"></div>
     <el-divider></el-divider>
     <div style="height: 10px"></div>
@@ -220,6 +185,7 @@
 
 </el-card>
 
-@section Scripts{
-<script src="/sitefiles/assets/js/admin/plugins/manage.js" type="text/javascript"></script>
+@section Scripts {
+  <script src="/sitefiles/assets/js/cloud.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/plugins/manage.js" type="text/javascript"></script>
 }

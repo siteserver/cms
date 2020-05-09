@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -6,10 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SSCMS.Cli.Core;
-using SSCMS.Cli.Services;
-using SSCMS.Cli.Updater;
+using SSCMS.Cli.Extensions;
 using SSCMS.Core.Extensions;
+using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli
@@ -34,61 +36,48 @@ namespace SSCMS.Cli
                 }
             }
 
-            try
-            {
-                var contentRootPath = Directory.GetCurrentDirectory();
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(contentRootPath)
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                IConfigurationRoot configuration = builder.Build();
+            var contentRootPath = Directory.GetCurrentDirectory();
 
-                var services = new ServiceCollection();
-                var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null);
-                
-                var application = new Application(settingsManager);
-                services.AddSingleton(application);
-                services.AddCache(settingsManager.Redis.ConnectionString);
+            var profilePath = PathUtils.GetOsUserProfileDirectoryPath(Constants.OsUserProfileTypeConfig);
+            var sscmsPath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
 
-                var executingAssembly = Assembly.GetExecutingAssembly();
-                var assemblies = executingAssembly.GetReferencedAssemblies().Select(Assembly.Load).ToList();
-                var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
-                var fileAssemblies = Directory.GetFiles(path, $"{nameof(SSCMS)}*.dll").Select(Assembly.LoadFrom).ToArray();
-                foreach (var referencedAssembly in fileAssemblies)
-                {
-                    if (!assemblies.Contains(referencedAssembly))
-                    {
-                        assemblies.Add(referencedAssembly);
-                    }
-                }
-                if (!assemblies.Contains(executingAssembly))
-                {
-                    assemblies.Add(executingAssembly);
-                }
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(contentRootPath)
+                .AddJsonFile(profilePath, optional: true, reloadOnChange: true)
+                .AddJsonFile(sscmsPath, optional: true, reloadOnChange: true);
+            var configuration = builder.Build();
+            var services = new ServiceCollection().AddLogging(logging => logging.AddConsole());
 
-                services.AddRepositories(assemblies);
-                services.AddServices();
-                services.AddScoped<UpdaterManager>();
+            var entryAssembly = Assembly.GetExecutingAssembly();
+            var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
-                services.AddScoped<IJobService, BackupJob>();
-                services.AddScoped<IJobService, InstallJob>();
-                services.AddScoped<IJobService, RestoreJob>();
-                services.AddScoped<IJobService, SyncJob>();
-                services.AddScoped<IJobService, TestJob>();
-                services.AddScoped<IJobService, UpdateJob>();
-                services.AddScoped<IJobService, VersionJob>();
+            var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), entryAssembly);
+            await services.AddPluginsAsync(configuration, settingsManager);
 
-                var provider = services.BuildServiceProvider();
-                CliUtils.SetProvider(provider);
+            var application = new Application(settingsManager);
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton(application);
+            services.AddCache(settingsManager.Redis.ConnectionString);
 
-                await application.RunAsync(args);
-            }
-            finally
-            {
-                Console.WriteLine("\r\nPress any key to exit...");
-                Console.ReadKey();
-            }
+            services.AddRepositories(assemblies);
+            services.AddServices();
+            services.AddCliServices();
+            services.AddCliJobs();
+
+            var provider = services.BuildServiceProvider();
+            CliUtils.SetProvider(provider);
+
+            await application.RunAsync(args);
+
+            //try
+            //{
+
+            //}
+            //finally
+            //{
+            //    Console.WriteLine("\r\nPress any key to exit...");
+            //    Console.ReadKey();
+            //}
         }
-
-
     }
 }

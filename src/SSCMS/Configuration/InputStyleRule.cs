@@ -1,6 +1,6 @@
 using SSCMS.Enums;
 
-namespace SSCMS
+namespace SSCMS.Configuration
 {
     public class InputStyleRule
     {

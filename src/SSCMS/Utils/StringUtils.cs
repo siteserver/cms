@@ -67,9 +67,14 @@ namespace SSCMS.Utils
             return string.IsNullOrEmpty(text) ? string.Empty : text.Trim();
         }
 
+        public static string Trim(string text, char trimChar)
+        {
+            return string.IsNullOrEmpty(text) ? string.Empty : text.Trim().Trim(trimChar);
+        }
+
         public static string TrimSlash(string text)
         {
-            return string.IsNullOrEmpty(text) ? string.Empty : text.Trim().Trim('/');
+            return Trim(text, '/');
         }
 
         public static string TrimEnd(string text, string end)

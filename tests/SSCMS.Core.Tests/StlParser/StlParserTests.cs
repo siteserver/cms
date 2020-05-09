@@ -20,7 +20,7 @@ namespace SSCMS.Core.Tests.StlParser
         [Fact]
         public async Task HtmlElementTest1()
         {
-            var context = BrowsingContext.New(Configuration.Default);
+            var context = BrowsingContext.New(AngleSharp.Configuration.Default);
 
             //Create a new document
             var document = await context.OpenAsync(req => req.Content("<b><i>This is some <em> bold <u>and</u> italic </em> text!</i></b>"));
@@ -35,7 +35,7 @@ namespace SSCMS.Core.Tests.StlParser
         [Fact]
         public void HtmlElementTest2()
         {
-            var context = BrowsingContext.New(Configuration.Default);
+            var context = BrowsingContext.New(AngleSharp.Configuration.Default);
             var parser = context.GetService<IHtmlParser>();
             var document = parser.ParseDocument(string.Empty);
 

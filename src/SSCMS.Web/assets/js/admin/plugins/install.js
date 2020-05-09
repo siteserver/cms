@@ -43,17 +43,9 @@ var methods = {
   getPackages: function () {
     var $this = this;
 
-    $apiCloud.get('updates', {
-      params: {
-        isNightly: $this.isNightly,
-        version: $this.version,
-        packageIds: $this.pluginIds.join(",")
-      }
-    }).then(function (response) {
-      var res = response.data;
-
-      for (var i = 0; i < res.value.length; i++) {
-        var releaseInfo = res.value[i];
+    $cloud.getReleases($this.isNightly, $this.version, $this.pluginIds, function (cms, plugins){
+      for (var i = 0; i < plugins.length; i++) {
+        var releaseInfo = plugins[i];
 
         for (var j = 0; j < releaseInfo.pluginReferences.length; j++) {
           var reference = releaseInfo.pluginReferences[j];
@@ -90,9 +82,6 @@ var methods = {
         }
       }
       $this.installListPackage();
-    }).catch(function (error) {
-      utils.error($this, error);
-    }).then(function () {
       utils.loading($this, false);
     });
   },

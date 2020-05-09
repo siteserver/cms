@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageId))
+            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSsCms))
             {
                 try
                 {
@@ -90,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageId))
+            if (!StringUtils.EqualsIgnoreCase(request.PackageId, Constants.PackageIdSsCms))
             {
                 var idWithVersion = $"{request.PackageId}.{request.Version}";
                 if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))

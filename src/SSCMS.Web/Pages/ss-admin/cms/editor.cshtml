@@ -24,7 +24,6 @@
   <el-col align="right" :span="12">
     <el-button size="small" v-on:click="btnSaveClick" type="primary">保 存</el-button>
     <el-button size="small" v-on:click="btnPreviewClick" type="info">预 览</el-button>
-    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
     <el-button size="small" icon="el-icon-setting" circle :type="isSettings ? 'info' : ''" v-on:click="isSettings = !isSettings"></el-button>
   </el-col>
 </el-row>
@@ -35,10 +34,10 @@
   <el-main style="padding: 0; margin: 0">
     <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
       
-      <el-form style="margin: 10px 20px 20px 10px" size="small" label-position="left" label-width="80px">
-        
+      <!-- <el-form style="margin: 10px 20px 20px 10px" size="small" label-position="left" label-width="80px"> -->
+      
+      <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="80px">
         @await Html.PartialAsync("_PartialForm")
-
       </el-form>
 
     </el-scrollbar>

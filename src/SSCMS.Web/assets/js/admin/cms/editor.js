@@ -1,10 +1,11 @@
 ﻿var $url = '/cms/editor/editor';
 
 var data = utils.init({
-  page: utils.getQueryInt('page'),
   siteId: utils.getQueryInt('siteId'),
   channelId: utils.getQueryInt('channelId'),
   contentId: utils.getQueryInt('contentId'),
+  page: utils.getQueryInt('page'),
+  tabName: utils.getQueryString('tabName'),
   mainHeight: '',
   isSettings: true,
   sideType: 'first',
@@ -96,8 +97,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！', true);
-      utils.closeLayer();
+      $this.closeAndRedirect();
     })
     .catch(function(error) {
       utils.error($this, error);
@@ -120,8 +120,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.channelId, $this.page, '内容保存成功！');
-      utils.closeLayer();
+      $this.closeAndRedirect();
     })
     .catch(function(error) {
       utils.error($this, error);
@@ -129,6 +128,19 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
+  },
+
+  closeAndRedirect: function(isEdit) {
+    var tabVue = utils.getTabVue(this.tabName);
+    if (tabVue) {
+      if (isEdit) {
+        tabVue.apiList(this.channelId, this.page, '内容保存成功！');
+      } else {
+        tabVue.apiList(this.channelId, this.page, '内容保存成功！', true);
+      }
+    }
+    utils.removeTab();
+    utils.openTab(this.tabName);
   },
 
   loadEditor: function(res) {
@@ -242,10 +254,6 @@ var methods = {
     this.translations = _.remove(this.translations, function(n) {
       return name !== n.name;
     });
-  },
-
-  btnCancelClick: function() {
-    utils.closeLayer();
   },
 
   btnSaveClick: function() {

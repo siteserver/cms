@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
-using SSCMS;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -10,7 +10,7 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Services
+namespace SSCMS.Cli.Jobs
 {
     public class InstallJob : IJobService
     {
@@ -47,7 +47,9 @@ namespace SSCMS.Cli.Services
 
         public void PrintUsage()
         {
-            Console.WriteLine("系统安装: siteserver install");
+            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine("Summary: install sscms");
+            Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }

@@ -190,12 +190,7 @@ var methods = {
     } else if (command === 'Import') {
       this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
     } else {
-      utils.openLayer({
-        title: "添加内容",
-        url: this.getAddUrl(),
-        full: true,
-        max: true
-      });
+      utils.addTab('添加内容', this.getAddUrl());
     }
   },
 
@@ -213,12 +208,13 @@ var methods = {
 
   btnEditClick: function(content) {
     // location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId + '&contentId=' + this.contentId;
-    utils.openLayer({
-      title: "编辑内容",
-      url: this.getEditUrl(content),
-      full: true,
-      max: true
-    });
+    // utils.openLayer({
+    //   title: "编辑内容",
+    //   url: this.getEditUrl(content),
+    //   full: true,
+    //   max: true
+    // });
+    utils.addTab('编辑内容', this.getEditUrl(content));
   },
 
   btnAdminClick: function(adminId) {
@@ -234,7 +230,8 @@ var methods = {
     return utils.getCmsUrl('editor', {
       siteId: this.siteId,
       channelId: this.channelId,
-      page: this.page
+      page: this.page,
+      tabName: utils.getRootVue().tabName
     });
   },
 
@@ -243,7 +240,8 @@ var methods = {
       siteId: this.siteId,
       channelId: content.channelId,
       contentId: content.id,
-      page: this.page
+      page: this.page,
+      tabName: utils.getRootVue().tabName
     });
   },
 

@@ -4,13 +4,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
-using SSCMS;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Services
+namespace SSCMS.Cli.Jobs
 {
     public class UpdateJob : IJobService
     {
@@ -22,15 +22,16 @@ namespace SSCMS.Cli.Services
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
-        private readonly UpdaterManager _updaterManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IUpdateService _updateService;
         private readonly OptionSet _options;
 
-        public UpdateJob(ISettingsManager settingsManager, UpdaterManager updaterManager, IDatabaseManager databaseManager)
+        public UpdateJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IUpdateService updateService)
         {
             _settingsManager = settingsManager;
-            _updaterManager = updaterManager;
             _databaseManager = databaseManager;
+            _updateService = updateService;
+
             _options = new OptionSet {
                 { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
                     v => _directory = v },
@@ -43,7 +44,9 @@ namespace SSCMS.Cli.Services
 
         public void PrintUsage()
         {
-            Console.WriteLine("系统升级: siteserver update");
+            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine("Summary: update database to latest schema");
+            Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -74,7 +77,7 @@ namespace SSCMS.Cli.Services
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
-            _updaterManager.Load(oldTreeInfo, newTreeInfo);
+            _updateService.Load(oldTreeInfo, newTreeInfo);
 
             var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
@@ -126,13 +129,13 @@ namespace SSCMS.Cli.Services
                     {
                         var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
 
-                        await _updaterManager.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
+                        await _updateService.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
                             oldTableInfo, converter);
                     }
                     else
                     {
                         var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
-                        var tuple = await _updaterManager.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
+                        var tuple = await _updateService.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
                         if (tuple != null)
                         {
                             newTableNames.Add(tuple.Item1);
@@ -143,7 +146,7 @@ namespace SSCMS.Cli.Services
                 }
                 else
                 {
-                    var tuple = await _updaterManager.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+                    var tuple = await _updateService.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
                     if (tuple != null)
                     {
                         newTableNames.Add(tuple.Item1);

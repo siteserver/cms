@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;

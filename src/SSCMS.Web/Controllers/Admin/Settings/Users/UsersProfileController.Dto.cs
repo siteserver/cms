@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using SSCMS.Configuration;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users

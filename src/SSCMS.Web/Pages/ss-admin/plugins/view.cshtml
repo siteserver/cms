@@ -1,15 +1,18 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-row>
+<el-row style="background-color: #eff1f3">
   <el-col :span="4" align="center">
-    <img :src="plugin.icon" style="height: 100px; width: 100px;">
+    <img :src="plugin.icon || utils.getAssetsUrl('images/favicon.png')" style="height: 100px; width: 100px;">
   </el-col>
   <el-col :span="20">
-    <p>
-      {{ plugin.pluginId }}.{{ release.version || plugin.version }}
-    </p>
-    <h4>{{ plugin.title }}</h4>
+    <h4>{{ plugin.displayName }}</h4>
+    <div>
+      {{ plugin.publisher }}
+    </div>
+    <div>
+      {{ plugin.description }}
+    </div>
 
     <el-divider></el-divider>
 
@@ -36,24 +39,24 @@
       系统检测到插件新版本，当前版本：{{ installedVersion }}，新版本：{{ release.version }}
     </span>
     <div>
-      <a v-if="installed && isShouldUpdate" href="javascript:;" v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: plugin.pluginId});return false;"
+      <el-button size="small" v-if="installed && isShouldUpdate" v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: plugin.pluginId});return false;"
         class="btn btn-warning">
         升级插件
-      </a>
-      <a v-else-if="installed" href="javascript:;" class="btn disabled ml-2">
+      </el-button>
+      <el-button size="small" v-else-if="installed">
         插件已安装
-      </a>
+      </el-button>
       <template v-else>
-        <a v-if="plugin.price" href="javascript:;" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: plugin.pluginId});return false;"
+        <el-button size="small" v-if="plugin.price" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: plugin.pluginId});return false;"
           class="btn btn-primary">
           购买并安装插件
-        </a>
-        <a v-else href="javascript:;" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: plugin.pluginId});return false;"
+        </el-button>
+        <el-button size="small" v-else v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: plugin.pluginId});return false;"
           class="btn btn-primary">
           安装插件
-        </a>
+        </el-button>
       </template>
-      <a class="btn btn-success ml-2" target="_blank" :href="'https://www.siteserver.cn/plugins/plugin.html?id=' + plugin.pluginId">插件主页</a>
+      <el-link size="small" class="btn btn-success ml-2" target="_blank" :href="'https://www.siteserver.cn/plugins/plugin.html?id=' + plugin.pluginId">插件主页</el-link>
     </div>
   </el-col>
 </el-row>

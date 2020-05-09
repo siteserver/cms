@@ -6,11 +6,16 @@ namespace SSCMS.Utils
 	{
         public static void CreateZip(string zipFilePath, string directoryPath)
         {
-            var fz = new FastZip {CreateEmptyDirectories = true};
+            CreateZip(zipFilePath, directoryPath, string.Empty);
+        }
+
+        public static void CreateZip(string zipFilePath, string directoryPath, string fileFilter)
+        {
+            var fz = new FastZip { CreateEmptyDirectories = true };
             fz.CreateZip(zipFilePath, directoryPath, true, string.Empty);
         }
 
-        public static void ExtractZip(string zipFilePath, string directoryPath)
+		public static void ExtractZip(string zipFilePath, string directoryPath)
         {
             var fz = new FastZip();
             fz.ExtractZip(zipFilePath, directoryPath, null);

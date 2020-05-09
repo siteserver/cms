@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NuGet.Packaging;
@@ -52,17 +51,14 @@ namespace SSCMS.Core.Packaging
 
         public static void DownloadPackage(IPathManager pathManager, string packageId, string version)
         {
+            if (IsPackageDownload(pathManager, packageId, version))
+            {
+                return;
+            }
+
             var packagesPath = pathManager.GetPackagesPath();
             var idWithVersion = $"{packageId}.{version}";
             var directoryPath = PathUtils.Combine(packagesPath, idWithVersion);
-
-            if (DirectoryUtils.IsDirectoryExists(directoryPath))
-            {
-                if (FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{idWithVersion}.nupkg")) && FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{packageId}.nuspec")))
-                {
-                    return;
-                }
-            }
 
             var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
             foreach (var directoryName in directoryNames)
@@ -73,16 +69,16 @@ namespace SSCMS.Core.Packaging
                 }
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageId))
+            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdSsCms))
             {
                 if (!Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
 
-                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
+                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".zip");
                 WebClientUtils.SaveRemoteFileToLocal(
-                    $"https://api.siteserver.cn/downloads/update/{version}", localFilePath);
+                    $"{Constants.UrlResources}/{Constants.UrlTypeCms}/{idWithVersion}.zip", localFilePath);
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
             }
@@ -93,10 +89,10 @@ namespace SSCMS.Core.Packaging
                     Directory.CreateDirectory(directoryPath);
                 }
 
-                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
+                var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".zip");
 
                 WebClientUtils.SaveRemoteFileToLocal(
-                    $"https://api.siteserver.cn/downloads/package/{packageId}/{version}", localFilePath);
+                    $"{Constants.UrlResources}/{Constants.UrlTypePlugins}/{packageId}.{version}.zip", localFilePath);
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
 
@@ -125,67 +121,14 @@ namespace SSCMS.Core.Packaging
                 return false;
             }
 
-            if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{idWithVersion}.nupkg")) || !FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{packageId}.nuspec")))
+            if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{idWithVersion}.zip")))
             {
                 return false;
             }
 
-            if (StringUtils.EqualsIgnoreCase(packageId, Constants.PackageId))
-            {
-                var packageWebConfigPath = PathUtils.Combine(directoryPath, Constants.ConfigFileName);
-                if (!FileUtils.IsFileExists(packageWebConfigPath))
-                {
-                    return false;
-                }
-            }
+            var fileNames = DirectoryUtils.GetFileNames(directoryPath);
 
-            return true;
-        }
-
-        public static Dictionary<string, string> GetDependencyPackages(PackageMetadata metadata)
-        {
-            var dict = new Dictionary<string, string>();
-
-            if (metadata != null)
-            {
-                var dependencyGroups = metadata.GetDependencyGroups();
-                foreach (var dependencyGroup in dependencyGroups)
-                {
-                    foreach (var package in dependencyGroup.Packages)
-                    {
-                        dict[package.Id] = package.VersionRange.OriginalString;
-                    }
-                }
-            }
-
-            return dict;
-        }
-
-        public static PackageMetadata GetPackageMetadataFromPluginDirectory(IPathManager pathManager, string directoryName, out string errorMessage)
-        {
-            PackageMetadata metadata = null;
-
-            var nuspecPath = pathManager.GetPluginNuspecPath(directoryName);
-            if (FileUtils.IsFileExists(nuspecPath))
-            {
-                try
-                {
-                    metadata = GetPackageMetadata(nuspecPath);
-                }
-                catch (Exception ex)
-                {
-                    errorMessage = ex.Message;
-                    return null;
-                }
-            }
-
-            if (string.IsNullOrEmpty(metadata?.PluginId))
-            {
-                metadata = new PackageMetadata(directoryName);
-            }
-
-            errorMessage = string.Empty;
-            return metadata;
+            return fileNames.Count > 1;
         }
 
         public static PackageMetadata GetPackageMetadataFromPackages(IPathManager pathManager, string directoryName, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
@@ -198,7 +141,7 @@ namespace SSCMS.Core.Packaging
 
             foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
             {
-                if (StringUtils.EqualsIgnoreCase(Path.GetExtension(filePath), ".nuspec"))
+                if (StringUtils.EqualsIgnoreCase(Path.GetExtension(filePath), ".zip"))
                 {
                     nuspecPath = filePath;
                     break;
@@ -230,7 +173,7 @@ namespace SSCMS.Core.Packaging
                 return null;
             }
 
-            if (!StringUtils.EqualsIgnoreCase(packageId, Constants.PackageId))
+            if (!StringUtils.EqualsIgnoreCase(packageId, Constants.PackageIdSsCms))
             {
                 dllDirectoryPath = FindDllDirectoryPath(directoryPath);
 

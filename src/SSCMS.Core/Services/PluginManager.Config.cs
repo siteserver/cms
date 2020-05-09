@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using SSCMS.Configuration;
+using Menu = SSCMS.Configuration.Menu;
 
 namespace SSCMS.Core.Services
 {
@@ -140,6 +142,23 @@ namespace SSCMS.Core.Services
             }
 
             return menus.OrderByDescending(x => x.Order.HasValue).ThenBy(x => x.Order).ToList();
+        }
+
+        public List<Table> GetTables()
+        {
+            var tables = new List<Table>();
+            var section = Configuration.GetSection("extensions:tables");
+            if (!section.Exists()) return tables;
+
+            var list = section.Get<Dictionary<string, Table>>();
+            foreach (var (key, value) in list)
+            {
+                var table = value;
+                table.Id = key;
+                tables.Add(table);
+            }
+
+            return tables;
         }
     }
 }

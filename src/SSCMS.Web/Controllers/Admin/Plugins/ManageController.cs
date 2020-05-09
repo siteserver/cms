@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
@@ -47,15 +46,11 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             //var list = dict.Keys.ToList();
             //var packageIds = Utilities.ToString(list);
 
-            var pluginIds = _pluginManager.Plugins.Select(x => x.PluginId);
-            var enabledPlugins = _pluginManager.Plugins.Where(x => x.Disabled == false);
-
             return new GetResult
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
                 Version = _settingsManager.Version,
-                EnabledPlugins = enabledPlugins,
-                PluginIds = pluginIds
+                AllPlugins = _pluginManager.Plugins
             };
         }
 
@@ -71,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var pluginPath = PathUtils.Combine(_pluginManager.DirectoryPath, plugin.FolderName);
             DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
 
-            _pluginManager.Reload();
+            await _pluginManager.ReloadAsync();
 
             await _authManager.AddAdminLogAsync("删除插件", $"插件:{pluginId}");
 
@@ -91,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            _pluginManager.Reload();
+            await _pluginManager.ReloadAsync();
 
             return new BoolResult
             {

@@ -48,7 +48,7 @@ namespace SSCMS.Web
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
             var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly);
-            var pluginManager = services.AddPlugins(_config, settingsManager);
+            var pluginManager = services.AddPluginsAsync(_config, settingsManager).GetAwaiter().GetResult();
 
             services.AddCors(options =>
             {
@@ -100,7 +100,9 @@ namespace SSCMS.Web
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services
                 .AddControllers()
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddViewLocalization(
+                    LanguageViewLocationExpanderFormat.Suffix,
+                    opts => { opts.ResourcesPath = "Resources"; })
                 .AddDataAnnotationsLocalization()
                 .AddNewtonsoftJson(options =>
                 {
@@ -111,13 +113,13 @@ namespace SSCMS.Web
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var supportedCultures = new List<CultureInfo>
+                var supportedCultures = new[]
                 {
                     new CultureInfo("en-US"),
                     new CultureInfo("zh-CN")
                 };
 
-                options.DefaultRequestCulture = new RequestCulture("zh-CN");
+                options.DefaultRequestCulture = new RequestCulture(culture: "zh-CN", uiCulture: "zh-CN");
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });

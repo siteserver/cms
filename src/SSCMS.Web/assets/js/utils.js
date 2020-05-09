@@ -45,14 +45,7 @@ var $api = axios.create({
   },
 });
 
-// var $urlCloud = 'https://api.siteserver.cn';
-var $urlCloud = "https://localhost:6001";
-var $apiCloud = axios.create({
-  baseURL: $urlCloud + "/v1.3",
-  headers: {
-    Authorization: "Bearer " + localStorage.getItem("sscms_com_access_token"),
-  },
-});
+var $urlPortal = 'https://www.siteserver.cn';
 
 var utils = {
   init: function (data) {
@@ -137,7 +130,7 @@ var utils = {
       _.forOwn(query, function (value, key) {
         url += key + "=" + encodeURIComponent(value) + "&";
       });
-      url += "_r=" + Math.random();
+      url = url.substr(0, url.length - 1);
     }
     return url;
   },
@@ -178,7 +171,7 @@ var utils = {
       _.forOwn(query, function (value, key) {
         url += key + "=" + encodeURIComponent(value) + "&";
       });
-      url += "_r=" + Math.random();
+      url = url.substr(0, url.length - 1);
     }
     return url;
   },
@@ -192,43 +185,66 @@ var utils = {
   },
 
   getRootVue: function() {
-    return window.$root ? window.$root : parent.$root;
+    return top.$vue;
+  },
+
+  getTabVue: function(name) {
+    var $this = utils.getRootVue();
+    var tab = $this.tabs.find(function(tab) {
+      return tab.name == name;
+    });
+    if (tab) {
+      var iframe = top.document.getElementById('frm-' + tab.name).contentWindow;
+      return iframe.$vue;
+    }
+    return null;
+  },
+
+  openTab: function(name) {
+    var $this = utils.getRootVue();
+    $this.tabName = name;
   },
 
   addTab: function(title, url) {
     var $this = utils.getRootVue();
     var index = $this.tabs.findIndex(function(tab) {
-      return tab.name === url;
+      return tab.url == url;
     });
     
+    var tab = null;
     if (index === -1) {
-      $this.tabs.push({
+      tab = {
         title: title,
-        name: url,
-        url: url
-      });
+        name: utils.uuid(),
+        url: url,
+      };
+      $this.tabs.push(tab);
+    } else {
+      tab = $this.tabs[index];
     }
-    $this.tabsValue = url;
+    $this.tabName = tab.name;
   },
 
-  removeTab: function(url) {
+  removeTab: function(name) {
     var $this = utils.getRootVue();
-    if (!url) url = $this.tabsValue;
+    if (!name) {
+      name = $this.tabName;
+    }
     
-    if ($this.tabsValue === url) {
+    if ($this.tabName === name) {
       $this.activeChildMenu = null;
       $this.tabs.forEach(function(tab, index) {
-        if (tab.name === url) {
+        if (tab.name === name) {
           var nextTab = $this.tabs[index + 1] || $this.tabs[index - 1];
           if (nextTab) {
-            $this.tabsValue = nextTab.name;
+            $this.tabName = nextTab.name;
           }
         }
       });
     }
     
     $this.tabs = $this.tabs.filter(function(tab) {
-      return tab.name !== url;
+      return tab.name !== name;
     });
   },
 
@@ -239,48 +255,6 @@ var utils = {
       url += key + "=" + encodeURIComponent(value) + "&";
     });
     return url.substr(0, url.length - 1);
-  },
-
-  handleTabsEdit: function(targetName, action) {
-    var $this = this;
-    if (action === 'default') {
-      this.tabs.push({
-        title: targetName,
-        name: this.defaultPageUrl,
-        url: this.defaultPageUrl
-      });
-      this.tabsValue = this.defaultPageUrl;
-    } else if (action === 'add') {
-      var index = this.tabs.findIndex(function(tab) {
-        return tab.name === targetName.link;
-      });
-      
-      if (index === -1) {
-        this.tabs.push({
-          title: targetName.text,
-          name: targetName.link,
-          url: targetName.link
-        });
-      }
-      this.activeChildMenu = targetName;
-      this.tabsValue = targetName.link;
-    } else if (action === 'remove') {
-      if (this.tabsValue === targetName) {
-        this.activeChildMenu = null;
-        this.tabs.forEach(function(tab, index) {
-          if (tab.name === targetName) {
-            var nextTab = $this.tabs[index + 1] || $this.tabs[index - 1];
-            if (nextTab) {
-              $this.tabsValue = nextTab.name;
-            }
-          }
-        });
-      }
-      
-      this.tabs = this.tabs.filter(function(tab) {
-        return tab.name !== targetName;
-      });
-    }
   },
 
   alertDelete: function (config) {
@@ -361,18 +335,22 @@ var utils = {
     return message;
   },
 
+  uuid: function() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        var r = (Math.random() * 16) | 0,
+          v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  },
+
   error: function (app, error, options) {
     var message = utils.getErrorMessage(error);
 
     if (error.response && error.response.status === 500 || options && options.redirect) {
-      var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-        /[xy]/g,
-        function (c) {
-          var r = (Math.random() * 16) | 0,
-            v = c == "x" ? r : (r & 0x3) | 0x8;
-          return v.toString(16);
-        }
-      );
+      var uuid = utils.uuid();
       sessionStorage.setItem(uuid, message);
 
       if (options && options.redirect) {
@@ -600,8 +578,10 @@ var utils = {
   },
 
   compareVersion: function (currentVersion, newVersion, options) {
-    var v1 = (currentVersion || "").split("-")[0];
-    var v2 = (newVersion || "").split("-")[0];
+    // var v1 = (currentVersion || "").split("-")[0];
+    // var v2 = (newVersion || "").split("-")[0];
+    var v1 = (currentVersion || '').replace(/[^0-9\.]+/g, ".");
+    var v2 = (newVersion || '').replace(/[^0-9\.]+/g, ".");
 
     var lexicographical = options && options.lexicographical,
       zeroExtend = options && options.zeroExtend,
@@ -644,6 +624,7 @@ var utils = {
       return -1;
     }
 
+    //1 >, -1 <, 0 ==
     return 0;
   },
 };

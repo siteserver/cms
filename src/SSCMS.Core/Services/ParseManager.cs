@@ -46,6 +46,23 @@ namespace SSCMS.Core.Services
             var context = new PluginStlParseContext();
             context.Load(string.Empty, string.Empty, null, PageInfo, ContextInfo);
 
+            var beforeStlParsesAsync = _pluginManager.GetExtensions<IPluginBeforeStlParseAsync>();
+            if (beforeStlParsesAsync != null)
+            {
+                foreach (var extension in beforeStlParsesAsync)
+                {
+                    try
+                    {
+                        await extension.BeforeStlParseAsync(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        await AddStlErrorLogAsync(nameof(IPluginBeforeStlParseAsync), string.Empty,
+                            ex);
+                    }
+                }
+            }
+
             var beforeStlParses = _pluginManager.GetExtensions<IPluginBeforeStlParse>();
             if (beforeStlParses != null)
             {
@@ -54,24 +71,10 @@ namespace SSCMS.Core.Services
                     try
                     {
                         extension.BeforeStlParse(context);
-                        //plugin.OnBeforeStlParse(new ParseEventArgs
-                        //(
-                        //    PageInfo.SiteId,
-                        //    PageInfo.PageChannelId,
-                        //    PageInfo.PageContentId,
-                        //    await GetContentAsync(),
-                        //    PageInfo.Template.TemplateType,
-                        //    PageInfo.Template.Id,
-                        //    filePath,
-                        //    PageInfo.HeadCodes,
-                        //    PageInfo.BodyCodes,
-                        //    PageInfo.FootCodes,
-                        //    contentBuilder
-                        //));
                     }
                     catch (Exception ex)
                     {
-                        await AddStlErrorLogAsync(nameof(IPluginBeforeStlParse), string.Empty,
+                        await AddStlErrorLogAsync(nameof(IPluginBeforeStlParseAsync), string.Empty,
                             ex);
                     }
                 }

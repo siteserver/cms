@@ -1,15 +1,15 @@
 ﻿using System;
 using Quartz;
-using SSCMS;
 
 namespace SSCMS.Cli.Core
 {
-    public class JobContextImpl : IJobContext
+    public class JobContext : IJobContext
     {
-        public JobContextImpl(string command, string[] args, IJobExecutionContext context)
+        public JobContext(string command, string[] args, string[] extras, IJobExecutionContext context)
         {
             Command = command;
             Args = args;
+            Extras = extras;
             if (context != null)
             {
                 FireTime = context.FireTimeUtc.LocalDateTime;
@@ -28,6 +28,7 @@ namespace SSCMS.Cli.Core
 
         public string Command { get; }
         public string[] Args { get; }
+        public string[] Extras { get; }
         public DateTime FireTime { get; }
         public DateTime? ScheduledFireTime { get; }
         public DateTime? PreviousFireTime { get; }

@@ -5,7 +5,6 @@ if (window.top != self) {
 var $url = '/index';
 var $urlCreate = '/index/actions/create';
 var $urlDownload = '/index/actions/download';
-var $packageIdApp = 'SS.CMS.App';
 var $idSite = 'site';
 var $sidebarWidth = 200;
 var $collapseWidth = 60;
@@ -13,15 +12,13 @@ var $collapseWidth = 60;
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
-  defaultPageUrl: null,
   isNightly: null,
   version: null,
-  targetFramework: null,
   adminLogoUrl: null,
   adminTitle: null,
   isSuperAdmin: null,
-  packageList: null,
-  packageIds: null,
+  culture: null,
+  plugins: null,
   menus: [],
   siteType: null,
   siteUrl: null,
@@ -29,15 +26,14 @@ var data = utils.init({
   local: null,
   menu: null,
   searchWord: null,
-  version: null,
-  newVersion: null,
-  updatePackages: 0,
+  newCms: null,
+  newPlugins: [],
   pendingCount: 0,
   lastExecuteTime: new Date(),
   timeoutId: null,
 
   defaultOpenedId: null,
-  tabsValue: null,
+  tabName: null,
   tabs: [],
   winHeight: 0,
   winWidth: 0,
@@ -67,18 +63,15 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
       if (res.value) {
-        $this.defaultPageUrl = res.defaultPageUrl;
-
-        utils.addTab('首页', res.defaultPageUrl);
+        utils.addTab('首页', utils.getRootUrl('dashboard'));
 
         $this.isNightly = res.isNightly;
         $this.version = res.version;
-        $this.targetFramework = res.targetFramework;
         $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
         $this.adminTitle = res.adminTitle || 'SS CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
-        $this.packageList = res.packageList;
-        $this.packageIds = res.packageIds;
+        $this.culture = res.culture;
+        $this.plugins = res.plugins;
         $this.menus = res.menus;
         $this.siteType = res.siteType;
         $this.siteUrl = res.siteUrl;
@@ -145,57 +138,59 @@ var methods = {
   getUpdates: function () {
     var $this = this;
 
-    $apiCloud.get('updates', {
-      params: {
-        isNightly: $this.isNightly,
-        version: $this.version,
-        targetFramework: $this.targetFramework,
-        packageIds: $this.packageIds.join(',')
+    var pluginIds = this.plugins.map(function (x){ return x.pluginId});
+    $cloud.getReleases($this.isNightly, $this.version, pluginIds, function (cms, plugins) {
+      if (cms) {
+        $this.downloadSsCms(cms);
       }
-    }).then(function (response) {
-      var releases = response.data;
-      for (var i = 0; i < releases.length; i++) {
-        var release = releases[i];
-        if (!release || !release.version) continue;
-        if (release.pluginId == $packageIdApp) {
-          $this.downloadSsCms(release);
-        } else {
-          var installedPackages = $.grep($this.packageList, function (e) {
-            return e.id == release.pluginId;
-          });
-          if (installedPackages.length == 1) {
-            var installedPackage = installedPackages[0];
-            if (installedPackage.version) {
-              if (utils.compareVersion(installedPackage.version, release.version) == -1) {
-                $this.updatePackages++;
-              }
-            } else {
-              $this.updatePackages++;
+
+      for (var i = 0; i < plugins.length; i++) {
+        var plugin = plugins[i];
+        if (!plugin || !plugin.version) continue;
+        
+        var installedPlugins = $.grep($this.plugins, function (e) {
+          return e.pluginId == plugin.pluginId;
+        });
+        if (installedPlugins.length == 1) {
+          var installed = installedPlugins[0];
+          if (installed.version) {
+            if (utils.compareVersion(installed.version, plugin.version) == -1) {
+              $this.newPlugins.push({
+                pluginId: plugin.pluginId,
+                displayName: installed.displayName,
+                current: installed.version,
+                version: plugin.version,
+                published: plugin.published
+              });
             }
+          } else {
+            $this.newPlugins.push({
+              pluginId: plugin.pluginId,
+              displayName: installed.displayName,
+              current: '0.0',
+              version: plugin.version,
+              published: plugin.published
+            });
           }
         }
       }
     });
   },
 
-  downloadSsCms: function (release) {
+  downloadSsCms: function (cms) {
     var $this = this;
-    if (utils.compareVersion($this.version, release.version) != -1) return;
-    var major = release.version.split('.')[0];
-    var minor = release.version.split('.')[1];
+    if (utils.compareVersion($this.version, cms.version) != -1) return;
 
     $api.post($urlDownload, {
-      packageId: $packageIdApp,
-      version: release.version
+      version: cms.version
     }).then(function (response) {
       var res = response.data;
 
       if (res.value) {
-        $this.newVersion = {
-          updatesUrl: 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
-          version: release.version,
-          published: release.published,
-          releaseNotes: release.releaseNotes
+        $this.newCms = {
+          current: $this.version,
+          version: cms.version,
+          published: cms.published
         };
       }
     });
@@ -280,6 +275,22 @@ var methods = {
     this.isMobileMenu = !this.isMobileMenu;
   },
 
+  btnCultureClick: function(command) {
+    var $this = this;
+
+    $api.post($url + '/actions/setLanguage', {
+      culture: command
+    }).then(function (response) {
+      var res = response.data;
+      location.reload();
+
+    }).catch(function (error) {
+      utils.error($this, error);
+    }).then(function () {
+      $this.create();
+    });
+  },
+
   btnUserMenuClick: function (command) {
     if (command === 'view') {
       utils.openLayer({
@@ -305,7 +316,7 @@ var methods = {
   }
 };
 
-var $root = new Vue({
+var $vue = new Vue({
   el: "#main",
   data: data,
   methods: methods,

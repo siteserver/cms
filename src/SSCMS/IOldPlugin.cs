@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Models;
 
 namespace SSCMS
@@ -68,7 +69,7 @@ namespace SSCMS
         /// <param name="tableColumns">内容表字段列表。</param>
         /// /// <param name="inputStyles">内容表单样式。</param>
         /// <returns>返回插件服务注册实例。</returns>
-        IOldPlugin AddContentModel(string tableName, List<TableColumn> tableColumns, List<InputStyle> inputStyles);
+        IOldPlugin AddContentModel(string tableName, List<Datory.TableColumn> tableColumns, List<InputStyle> inputStyles);
         /// <summary>
         /// 添加插件的数据库表，包含表名称以及表字段列表。
         /// 此方法可以多次调用，系统将为此插件创建指定的数据库表结构。
@@ -76,7 +77,7 @@ namespace SSCMS
         /// <param name="tableName">表名称。</param>
         /// <param name="tableColumns">表字段列表。</param>
         /// <returns>返回插件服务注册实例。</returns>
-        IOldPlugin AddDatabaseTable(string tableName, List<TableColumn> tableColumns);
+        IOldPlugin AddDatabaseTable(string tableName, List<Datory.TableColumn> tableColumns);
 
         /// <summary>
         /// 添加插件的内容列表显示项。
@@ -246,11 +247,11 @@ namespace SSCMS
         string ContentTableName { get; }
         bool IsApiAuthorization { get; }
 
-        List<TableColumn> ContentTableColumns { get; }
+        List<Datory.TableColumn> ContentTableColumns { get; }
 
         List<InputStyle> ContentInputStyles { get; }
 
-        Dictionary<string, List<TableColumn>> DatabaseTables { get; }
+        Dictionary<string, List<Datory.TableColumn>> DatabaseTables { get; }
 
         void OnContentAddCompleted(ContentEventArgs e);
 

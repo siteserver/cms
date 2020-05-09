@@ -1,4 +1,4 @@
-namespace SSCMS
+namespace SSCMS.Configuration
 {
     public class SiteType
     {

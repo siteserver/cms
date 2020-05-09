@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -23,19 +24,24 @@ namespace SSCMS.Web.Controllers.Admin
             public string SessionId { get; set; }
         }
 
+        public class GetPlugin
+        {
+            public string PluginId { get; set; }
+            public string DisplayName { get; set; }
+            public string Version { get; set; }
+        }
+
         public class GetResult
         {
             public bool Value { get; set; }
             public string RedirectUrl { get; set; }
-            public string DefaultPageUrl { get; set; }
             public bool IsNightly { get; set; }
             public string Version { get; set; }
-            public string TargetFramework { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminTitle { get; set; }
             public bool IsSuperAdmin { get; set; }
-            public List<object> PackageList { get; set; }
-            public List<string> PackageIds { get; set; }
+            public string Culture { get; set; }
+            public List<GetPlugin> Plugins { get; set; }
             public IList<Menu> Menus { get; set; }
             public string SiteType { get; set; }
             public string SiteUrl { get; set; }
@@ -50,8 +56,12 @@ namespace SSCMS.Web.Controllers.Admin
 
         public class DownloadRequest
         {
-            public string PackageId { get; set; }
             public string Version { get; set; }
+        }
+
+        public class SetLanguageRequest
+        {
+            public string Culture { get; set; }
         }
 
         private IList<Menu> GetChildren(Menu menu, IList<string> permissions, Func<Menu, Menu> op = null)

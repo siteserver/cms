@@ -139,7 +139,7 @@ namespace SSCMS.Utils
 
         public static bool IsReadOnly(FileAttributes fileAttributes)
         {
-            return ((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly);
+            return (fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
         }
 
         public static bool IsHidden(FileAttributes fileAttributes)
@@ -309,7 +309,7 @@ namespace SSCMS.Utils
                 //int.TryParse(fs.Length.ToString(), out i);
                 var i = TranslateUtils.ToInt(fs.Length.ToString());
                 var ss = r.ReadBytes(i);
-                if (IsUtf8Bytes(ss) || (ss[0] == 0xEF && ss[1] == 0xBB && ss[2] == 0xBF))
+                if (IsUtf8Bytes(ss) || ss[0] == 0xEF && ss[1] == 0xBB && ss[2] == 0xBF)
                 {
                     reVal = Encoding.UTF8;
                 }
@@ -375,27 +375,22 @@ namespace SSCMS.Utils
 
         public static string GetFileSizeByFilePath(string filePath)
         {
-            if (!string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(filePath)) return string.Empty;
+
+            var theFile = new FileInfo(filePath);
+            var fileSize = theFile.Length;
+            if (fileSize < 1024)
             {
-                var theFile = new FileInfo(filePath);
-                var fileSize = theFile.Length;
-                if (fileSize < 1024)
-                {
-                    return fileSize.ToString() + "B";
-                }
-                else if (fileSize >= 1024 && fileSize < 1048576)
-                {
-                    return (fileSize / 1024).ToString() + "KB";
-                }
-                else
-                {
-                    return (fileSize / 1048576).ToString() + "MB";
-                }
+                return fileSize + "B";
             }
-            else
+
+            if (fileSize >= 1024 && fileSize < 1048576)
             {
-                return string.Empty;
+                return fileSize / 1024 + "KB";
             }
+
+            return fileSize / 1048576 + "MB";
+
         }
 
         public static bool IsTextEditable(FileType type)

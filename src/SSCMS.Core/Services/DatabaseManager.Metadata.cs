@@ -55,26 +55,7 @@ namespace SSCMS.Core.Services
 
         public async Task SyncDatabaseAsync(IOldPluginManager pluginManager)
         {
-            //CacheUtils.ClearAll();
-
-            //await CreateSiteServerTablesAsync();
-
-            //await SyncContentTablesAsync();
-
-            //await UpdateConfigVersionAsync();
-
-            _cacheManager.Clear();
-
-            await SyncSystemTablesAsync(GetAllRepositories());
-
-            await SyncContentTablesAsync(pluginManager);
-
-            await UpdateConfigVersionAsync();
-        }
-
-        private async Task SyncSystemTablesAsync(IList<IRepository> repositories)
-        {
-            _cacheManager.Clear();
+            var repositories = GetAllRepositories();
 
             foreach (var repository in repositories)
             {
@@ -90,20 +71,15 @@ namespace SSCMS.Core.Services
                 }
             }
 
-            //if (!await _settingsManager.Database.IsTableExistsAsync(ConfigRepository.TableName))
-            //{
-            //    await CreateTableAsync(ConfigRepository.TableName, ConfigRepository.TableColumns, string.Empty, false);
-            //}
-            //else
-            //{
-            //    await AlterTableAsync(ConfigRepository.TableName, ConfigRepository.TableColumns, string.Empty);
-            //}
-
             var config = await ConfigRepository.GetAsync();
             if (config.Id == 0)
             {
                 await ConfigRepository.InsertAsync(config);
             }
+
+            await SyncContentTablesAsync(pluginManager);
+
+            await UpdateConfigVersionAsync();
         }
 
         public async Task SyncContentTablesAsync(IOldPluginManager pluginManager)
@@ -152,12 +128,6 @@ namespace SSCMS.Core.Services
                 try
                 {
                     await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{nameof(Content.Top)} DESC", $"{nameof(Content.Taxis)} DESC", $"{nameof(Content.Id)} DESC");
-
-
-                    //sqlString =
-                    //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_General")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.IsTop)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Id)} DESC)";
-
-                    //ExecuteNonQuery(ConnectionString, sqlString);
                 }
                 catch (Exception ex)
                 {
@@ -168,11 +138,6 @@ namespace SSCMS.Core.Services
                 try
                 {
                     await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{nameof(Content.Taxis)} DESC");
-
-                    //sqlString =
-                    //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
-
-                    //ExecuteNonQuery(ConnectionString, sqlString);
                 }
                 catch (Exception ex)
                 {

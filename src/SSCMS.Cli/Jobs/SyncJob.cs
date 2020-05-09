@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory.Utils;
 using Mono.Options;
-using SSCMS;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Services
+namespace SSCMS.Cli.Jobs
 {
     public class SyncJob : IJobService
     {
@@ -24,14 +24,14 @@ namespace SSCMS.Cli.Services
 
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly RestoreJob _restoreJob;
+        private readonly IRestoreService _restoreService;
         private readonly OptionSet _options;
 
-        public SyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, RestoreJob restoreJob)
+        public SyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IRestoreService restoreService)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
-            _restoreJob = restoreJob;
+            _restoreService = restoreService;
 
             _options = new OptionSet
             {
@@ -54,7 +54,9 @@ namespace SSCMS.Cli.Services
 
         public void PrintUsage()
         {
-            Console.WriteLine("数据库同步: siteserver sync");
+            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine("Summary: sync backup files to database");
+            Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -137,7 +139,7 @@ namespace SSCMS.Cli.Services
                 return;
             }
 
-            await _restoreJob.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
+            await _restoreService.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
 
             await CliUtils.PrintRowLineAsync();
             await Console.Out.WriteLineAsync("恭喜，成功同步数据！");

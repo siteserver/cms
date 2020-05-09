@@ -9,8 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         {
             public bool IsNightly { get; set; }
             public string Version { get; set; }
-            public IEnumerable<IPlugin> EnabledPlugins { get; set; }
-            public IEnumerable<string> PluginIds { get; set; }
+            public IEnumerable<IPlugin> AllPlugins { get; set; }
         }
     }
 }

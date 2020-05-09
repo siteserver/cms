@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -18,9 +17,9 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IPluginManager _pluginManager;
 
-        public AddController(ISettingsManager settingsManager, IAuthManager authManager, IOldPluginManager pluginManager)
+        public AddController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -35,8 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var plugins = _pluginManager.GetPlugins();
-            var packageIds = Utilities.ToString(plugins.Select(x => x.PluginId));
+            var packageIds = _pluginManager.Plugins.Select(x => x.PluginId);
 
             return new GetResult
             {

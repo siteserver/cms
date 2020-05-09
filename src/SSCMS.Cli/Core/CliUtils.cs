@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
-using SSCMS;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -13,10 +15,9 @@ namespace SSCMS.Cli.Core
 {
     public static class CliUtils
     {
-        public const int PageSize = 500;
         private static ServiceProvider Provider { get; set; }
 
-        private const int ConsoleTableWidth = 77;
+        
 
         public static void SetProvider(ServiceProvider provider)
         {
@@ -34,10 +35,10 @@ namespace SSCMS.Cli.Core
             return services.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.CommandName, commandName));
         }
 
-        public static IEnumerable<string> GetJobServiceCommandNames()
+        public static List<string> GetJobServiceCommandNames()
         {
             var services = Provider.GetServices<IJobService>();
-            return services.Select(x => x.CommandName);
+            return services.Select(x => x.CommandName).ToList();
         }
 
         public static IEnumerable<IJobService> GetJobServices()
@@ -70,12 +71,12 @@ namespace SSCMS.Cli.Core
 
         public static async Task PrintRowLineAsync()
         {
-            await Console.Out.WriteLineAsync(new string('-', ConsoleTableWidth));
+            await Console.Out.WriteLineAsync(new string('-', CliConstants.ConsoleTableWidth));
         }
 
         public static async Task PrintRowAsync(params string[] columns)
         {
-            int width = (ConsoleTableWidth - columns.Length) / columns.Length;
+            int width = (CliConstants.ConsoleTableWidth - columns.Length) / columns.Length;
             string row = "|";
 
             foreach (string column in columns)
@@ -84,22 +85,16 @@ namespace SSCMS.Cli.Core
             }
 
             await Console.Out.WriteLineAsync(row);
-        }
-
-        public static async Task PrintErrorAsync(string errorMessage)
-        {
-            await Console.Out.WriteLineAsync();
-            await Console.Out.WriteLineAsync(errorMessage);
         }
 
         public static async Task PrintRowLine()
         {
-            await Console.Out.WriteLineAsync(new string('-', ConsoleTableWidth));
+            await Console.Out.WriteLineAsync(new string('-', CliConstants.ConsoleTableWidth));
         }
 
         public static async Task PrintRow(params string[] columns)
         {
-            int width = (ConsoleTableWidth - columns.Length) / columns.Length;
+            int width = (CliConstants.ConsoleTableWidth - columns.Length) / columns.Length;
             string row = "|";
 
             foreach (string column in columns)
@@ -110,10 +105,46 @@ namespace SSCMS.Cli.Core
             await Console.Out.WriteLineAsync(row);
         }
 
-        public static async Task PrintError(string errorMessage)
+        public static async Task PrintInfoAsync(ISettingsManager settingsManager)
         {
-            await Console.Out.WriteLineAsync();
-            await Console.Out.WriteLineAsync(errorMessage);
+            await Console.Out.WriteLineAsync($"Cli version: {settingsManager.Version}");
+            var entryAssembly = Assembly.GetExecutingAssembly();
+            await Console.Out.WriteLineAsync($"Cli location: {entryAssembly.Location}");
+            await Console.Out.WriteLineAsync($"Work location: {settingsManager.ContentRootPath}");
+
+            var configPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.ConfigFileName);
+
+            if (FileUtils.IsFileExists(configPath))
+            {
+                await Console.Out.WriteLineAsync($"Database type: {settingsManager.Database.DatabaseType.GetDisplayName()}");
+                await Console.Out.WriteLineAsync($"Database connection string: {settingsManager.DatabaseConnectionString}");
+            }
+        }
+
+        public static async Task PrintErrorAsync(string errorMessage)
+        {
+            var backgroundColor = Console.BackgroundColor;
+            //var foregroundColor = Console.ForegroundColor;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            //Console.ForegroundColor = ConsoleColor.Black;
+            await Console.Out.WriteAsync(" ERROR ");
+            Console.BackgroundColor = backgroundColor;
+            //Console.ForegroundColor = foregroundColor;
+
+            await Console.Out.WriteAsync($" {errorMessage}");
+        }
+
+        public static async Task PrintSuccessAsync(string successMessage)
+        {
+            var backgroundColor = Console.BackgroundColor;
+            //var foregroundColor = Console.ForegroundColor;
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            //Console.ForegroundColor = ConsoleColor.Black;
+            await Console.Out.WriteAsync(" SUCCESS ");
+            Console.BackgroundColor = backgroundColor;
+            //Console.ForegroundColor = foregroundColor;
+
+            await Console.Out.WriteAsync($" {successMessage}");
         }
 
         public static string CreateErrorLogFile(string commandName, ISettingsManager settingsManager)

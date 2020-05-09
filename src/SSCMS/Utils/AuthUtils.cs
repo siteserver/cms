@@ -24,11 +24,9 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(str)) return string.Empty;
 
             var bytes = Encoding.UTF8.GetBytes(str);
-            using (var md5 = MD5.Create())
-            {
-                var hash = md5.ComputeHash(bytes);
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            using var md5 = MD5.Create();
+            var hash = md5.ComputeHash(bytes);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
     }
 }
