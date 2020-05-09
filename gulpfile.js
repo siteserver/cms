@@ -13,8 +13,8 @@ const version = process.env.PRODUCTVERSION;
 const timestamp = (new Date()).getTime();
 let publishDir = '';
 let htmlDict = {};
-fs.readdirSync('./src/SSCMS.Web/Pages/Shared/').forEach(fileName => {
-  let html = fs.readFileSync('./src/SSCMS.Web/Pages/Shared/' + fileName, {
+fs.readdirSync('./src/SSCMS.Web/Pages/shared/').forEach(fileName => {
+  let html = fs.readFileSync('./src/SSCMS.Web/Pages/shared/' + fileName, {
     encoding: "utf8",
   });
   htmlDict[fileName] = html;
