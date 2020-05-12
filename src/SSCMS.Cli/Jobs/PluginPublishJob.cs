@@ -11,7 +11,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class PluginPublishJob : IJobService
     {
-        public string CommandName => "plugin-publish";
+        public string CommandName => "plugin publish";
 
         private bool _isHelp;
 

@@ -19,6 +19,6 @@ namespace SSCMS.Services
         IRedis Redis { get; }
         string Encrypt(string inputString, string securityKey = null);
         string Decrypt(string inputString, string securityKey = null);
-        Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString);
+        void SaveSettings(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString);
     }
 }

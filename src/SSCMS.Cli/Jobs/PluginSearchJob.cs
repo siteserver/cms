@@ -9,7 +9,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class PluginSearchJob : IJobService
     {
-        public string CommandName => "plugin-search";
+        public string CommandName => "plugin search";
 
         private bool _isHelp;
 

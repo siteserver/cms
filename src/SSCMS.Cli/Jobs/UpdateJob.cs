@@ -78,10 +78,12 @@ namespace SSCMS.Cli.Jobs
             var proceed = ReadUtils.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
             if (!proceed) return;
 
-            CloudUtils.DownloadCms(_pathManager, result.Cms.Version, false);
+            CloudUtils.DownloadCms(_pathManager, result.Cms.Version);
             var name = CloudUtils.GetCmsDownloadName(result.Cms.Version);
             var packagePath = _pathManager.GetPackagesPath(name);
+            var packageZipPath = PathUtils.Combine(packagePath, $"{name}.zip");
             var packageConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
+            FileUtils.DeleteFileIfExists(packageZipPath);
             FileUtils.DeleteFileIfExists(packageConfigPath);
 
             DirectoryUtils.Copy(packagePath, contentRootPath, true);

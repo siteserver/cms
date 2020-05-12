@@ -1,18 +1,51 @@
-﻿using Datory;
+﻿using System.Threading.Tasks;
+using Datory;
+using SSCMS.Core.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
     public static class InstallUtils
     {
+        public static void SaveSettings(string contentRootPath, bool isNightlyUpdate, bool isProtectData, string securityKey, string databaseType, string databaseConnectionString, string redisConnectionString)
+        {
+            var path = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
+
+            var json = $@"
+{{
+  ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
+  ""IsProtectData"": {isProtectData.ToString().ToLower()},
+  ""SecurityKey"": ""{securityKey}"",
+  ""Database"": {{
+    ""Type"": ""{databaseType}"",
+    ""ConnectionString"": ""{databaseConnectionString}""
+  }},
+  ""Redis"": {{
+    ""ConnectionString"": ""{redisConnectionString}""
+  }}
+}}";
+
+            FileUtils.WriteText(path, json.Trim());
+        }
+
         public static void Init(string contentRootPath)
         {
             var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
-            var json = FileUtils.ReadText(filePath);
-            if (json.Contains(@"""SecurityKey"": """","))
+            if (FileUtils.IsFileExists(filePath))
+            {
+                var json = FileUtils.ReadText(filePath);
+                if (json.Contains(@"""SecurityKey"": """","))
+                {
+                    var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
+                    FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
+                }
+            }
+            else
             {
                 var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
-                FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
+
+                SaveSettings(contentRootPath, false, false, securityKey, DatabaseType.MySql.GetValue(),
+                    string.Empty, string.Empty);
             }
         }
 

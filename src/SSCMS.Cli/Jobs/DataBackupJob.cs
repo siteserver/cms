@@ -13,7 +13,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class DataBackupJob : IJobService
     {
-        public string CommandName => "data-backup";
+        public string CommandName => "data backup";
 
         private string _directory;
         private string _configFile;

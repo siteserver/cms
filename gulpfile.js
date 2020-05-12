@@ -58,6 +58,7 @@ function transform(file, html) {
   result = result.replace('@RenderSection("Scripts", required: false)', scripts);
   result = result.replace('@page', '');
   result = result.replace('@{ Layout = "_Layout"; }', '');
+  result = result.replace('@{ Layout = "_LayoutHome"; }', '');
   result = result.replace(/\.css"/g, ".css?v=" + timestamp + '"');
   result = result.replace(/\.js"/g, ".js?v=" + timestamp + '"');
 

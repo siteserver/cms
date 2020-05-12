@@ -4,6 +4,7 @@ using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -56,10 +57,9 @@ namespace SSCMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
+        public void SaveSettings(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType,
+            string databaseConnectionString, string redisConnectionString)
         {
-            var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
-
             var type = databaseType.GetValue();
             var databaseConnectionStringValue = databaseConnectionString;
             var redisConnectionStringValue = redisConnectionString;
@@ -70,21 +70,24 @@ namespace SSCMS.Core.Services
                 redisConnectionStringValue = Encrypt(redisConnectionString, SecurityKey);
             }
 
-            var json = $@"
-{{
-  ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
-  ""IsProtectData"": {isProtectData.ToString().ToLower()},
-  ""SecurityKey"": ""{SecurityKey}"",
-  ""Database"": {{
-    ""Type"": ""{type}"",
-    ""ConnectionString"": ""{databaseConnectionStringValue}""
-  }},
-  ""Redis"": {{
-    ""ConnectionString"": ""{redisConnectionStringValue}""
-  }}
-}}";
+//            var json = $@"
+//{{
+//  ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
+//  ""IsProtectData"": {isProtectData.ToString().ToLower()},
+//  ""SecurityKey"": ""{SecurityKey}"",
+//  ""Database"": {{
+//    ""Type"": ""{type}"",
+//    ""ConnectionString"": ""{databaseConnectionStringValue}""
+//  }},
+//  ""Redis"": {{
+//    ""ConnectionString"": ""{redisConnectionStringValue}""
+//  }}
+//}}";
 
-            await FileUtils.WriteTextAsync(path, json.Trim());
+//            await FileUtils.WriteTextAsync(path, json.Trim());
+
+            InstallUtils.SaveSettings(ContentRootPath, isNightlyUpdate, isProtectData, SecurityKey, type,
+                databaseConnectionStringValue, redisConnectionStringValue);
         }
     }
 }

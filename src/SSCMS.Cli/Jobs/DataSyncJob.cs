@@ -12,7 +12,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class DataSyncJob : IJobService
     {
-        public string CommandName => "data-sync";
+        public string CommandName => "data sync";
 
         private string _directory;
         private string _from;

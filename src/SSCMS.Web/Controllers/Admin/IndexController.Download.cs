@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteActionsDownload)]
         public ActionResult<BoolResult> Download([FromBody] DownloadRequest request)
         {
-            CloudUtils.DownloadCms(_pathManager, request.Version, false);
+            CloudUtils.DownloadCms(_pathManager, request.Version);
 
             var isDownload = CloudUtils.IsCmsDownload(_pathManager, request.Version);
 

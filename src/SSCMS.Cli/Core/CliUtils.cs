@@ -110,7 +110,7 @@ namespace SSCMS.Cli.Core
 
         public static bool IsSsCmsExists(string directoryPath)
         {
-            return FileUtils.IsFileExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName));
+            return FileUtils.IsFileExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName)) && FileUtils.IsFileExists(PathUtils.Combine(directoryPath, "appsettings.json")) && DirectoryUtils.IsDirectoryExists("wwwroot");
         }
     }
 }

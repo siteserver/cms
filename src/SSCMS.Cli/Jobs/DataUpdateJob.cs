@@ -14,7 +14,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class DataUpdateJob : IJobService
     {
-        public string CommandName => "data-update";
+        public string CommandName => "data update";
         private const string Folder = "update";
 
         private string _directory;

@@ -44,7 +44,9 @@ namespace SSCMS.Cli
             var builder = new ConfigurationBuilder()
                 .SetBasePath(contentRootPath)
                 .AddJsonFile(profilePath, optional: true, reloadOnChange: true)
-                .AddJsonFile(sscmsPath, optional: true, reloadOnChange: true);
+                .AddJsonFile(sscmsPath, optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
             var configuration = builder.Build();
             var services = new ServiceCollection().AddLogging(logging => logging.AddConsole());
 

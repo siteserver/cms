@@ -13,32 +13,29 @@ using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
-    public class InstallJob : IJobService
+    public class InstallPrepareJob : IJobService
     {
-        public string CommandName => "install";
+        public string CommandName => "install prepare";
 
+        private bool _isNightly;
         private bool _isHelp;
 
         private readonly IApiService _apiService;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
-        private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
-        private readonly IAdministratorRepository _administratorRepository;
         private readonly OptionSet _options;
 
-        public InstallJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public InstallPrepareJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
         {
             _apiService = apiService;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
-            _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _configRepository = configRepository;
-            _administratorRepository = administratorRepository;
 
             _options = new OptionSet {
+                { "nightly",  "Install nightly version",
+                    v => _isNightly = v != null },
                 { "h|help",  "命令说明",
                     v => _isHelp = v != null }
             };
@@ -47,7 +44,7 @@ namespace SSCMS.Cli.Jobs
         public void PrintUsage()
         {
             Console.WriteLine($"Usage: sscms-cli {CommandName}");
-            Console.WriteLine("Summary: install sscms");
+            Console.WriteLine("Summary: download sscms and save settings");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
@@ -65,27 +62,37 @@ namespace SSCMS.Cli.Jobs
 
             var contentRootPath = _settingsManager.ContentRootPath;
 
-            InstallUtils.Init(contentRootPath);
-
-            if (!await _configRepository.IsNeedInstallAsync())
-            {
-                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {contentRootPath}");
-                return;
-            }
-
             var proceed = ReadUtils.GetYesNo($"Do you want to install SS CMS in {contentRootPath}?");
             if (!proceed) return;
 
+            InstallUtils.Init(contentRootPath);
+
             if (!CliUtils.IsSsCmsExists(contentRootPath))
             {
-                var (success, result, errorMessage) = _apiService.GetReleases(false, string.Empty, null);
+                var (success, result, errorMessage) = _apiService.GetReleases(_isNightly, string.Empty, null);
                 if (!success)
                 {
                     await WriteUtils.PrintErrorAsync(errorMessage);
                     return;
                 }
 
-                CloudUtils.DownloadCms(_pathManager, result.Cms.Version, true);
+                Console.WriteLine($"Downloading {result.Cms.Version}...");
+                CloudUtils.DownloadCms(_pathManager, result.Cms.Version);
+
+                var name = CloudUtils.GetCmsDownloadName(result.Cms.Version);
+                var packagePath = _pathManager.GetPackagesPath(name);
+                var packageZipPath = PathUtils.Combine(packagePath, $"{name}.zip");
+                var packageConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
+                FileUtils.DeleteFileIfExists(packageZipPath);
+                FileUtils.DeleteFileIfExists(packageConfigPath);
+
+                DirectoryUtils.Copy(packagePath, contentRootPath, true);
+            }
+
+            if (!await _configRepository.IsNeedInstallAsync())
+            {
+                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {contentRootPath}");
+                return;
             }
 
             var databaseTypeInput = ReadUtils.GetSelect("Database type", new List<string>
@@ -131,41 +138,12 @@ namespace SSCMS.Cli.Jobs
                 databaseName = ReadUtils.GetSelect("Database name", databaseNames);
             }
 
-            var userName = ReadUtils.GetString("Super administrator username:");
-            var password = ReadUtils.GetPassword("Super administrator password:");
-
-            var (valid, message) =
-                await _administratorRepository.InsertValidateAsync(userName, password, string.Empty, string.Empty);
-            if (!valid)
-            {
-                await WriteUtils.PrintErrorAsync(message);
-                return;
-            }
-
-            if (databaseType == DatabaseType.SQLite)
-            {
-                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
-                if (!FileUtils.IsFileExists(filePath))
-                {
-                    await FileUtils.WriteTextAsync(filePath, string.Empty);
-                }
-            }
-
             var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
 
-            var isProtectData = ReadUtils.GetYesNo("Protect settings?");
-            await _settingsManager.SaveSettingsAsync(false, isProtectData, databaseType, databaseConnectionString, string.Empty);
+            var isProtectData = ReadUtils.GetYesNo("Protect settings in sscms.json?");
+            _settingsManager.SaveSettings(_isNightly, isProtectData, databaseType, databaseConnectionString, string.Empty);
 
-            (valid, message) = await _databaseManager.InstallAsync(_pluginManager, userName, password, string.Empty, string.Empty);
-            if (!valid)
-            {
-                await WriteUtils.PrintErrorAsync(message);
-                return;
-            }
-
-            await FileUtils.WriteTextAsync(_pathManager.GetWebRootPath("index.html"), Constants.Html5Empty);
-
-            await WriteUtils.PrintSuccessAsync("Congratulations, SS CMS was installed successfully!");
+            await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run sscms-cli install sscms");
         }
     }
 }

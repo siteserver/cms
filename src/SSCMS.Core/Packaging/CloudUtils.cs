@@ -30,7 +30,7 @@ namespace SSCMS.Core.Packaging
             return $"{UrlResources}/plugins/{GetPluginsDownloadName(pluginId, version)}.zip";
         }
 
-        public static void DownloadCms(IPathManager pathManager, string version, bool toRoot)
+        public static void DownloadCms(IPathManager pathManager, string version)
         {
             if (IsCmsDownload(pathManager, version))
             {
@@ -65,14 +65,7 @@ namespace SSCMS.Core.Packaging
                 client.DownloadData(request);
             }
 
-            if (toRoot)
-            {
-                ZipUtils.ExtractZip(filePath, pathManager.ContentRootPath);
-            }
-            else
-            {
-                ZipUtils.ExtractZip(filePath, directoryPath);
-            }
+            ZipUtils.ExtractZip(filePath, directoryPath);
         }
 
         public static bool IsCmsDownload(IPathManager pathManager, string version)

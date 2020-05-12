@@ -13,7 +13,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class DataRestoreJob : IJobService
     {
-        public string CommandName => "data-restore";
+        public string CommandName => "data restore";
 
         private string _directory;
         private string _configFile;

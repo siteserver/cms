@@ -8,7 +8,7 @@ namespace SSCMS.Cli.Jobs
 {
     public class PluginUnPublishJob : IJobService
     {
-        public string CommandName => "plugin-unpublish";
+        public string CommandName => "plugin unpublish";
 
         private bool _isHelp;
 
