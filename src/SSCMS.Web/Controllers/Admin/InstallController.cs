@@ -5,7 +5,6 @@ using Datory;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -91,17 +90,14 @@ namespace SSCMS.Web.Controllers.Admin
                 RootWritable = rootWritable,
                 SiteFilesWritable = siteFilesWritable,
                 DatabaseTypes = new List<Select<string>>(),
-                AdminUrl = _pathManager.GetAdminUrl(LoginController.Route),
-                OraclePrivileges = new List<Select<string>>()
+                AdminUrl = _pathManager.GetAdminUrl(LoginController.Route)
             };
 
             foreach (var databaseType in TranslateUtils.GetEnums<DatabaseType>())
             {
+                if (databaseType == DatabaseType.Oracle) continue;
+
                 result.DatabaseTypes.Add(new Select<string>(databaseType));
-            }
-            foreach (var oraclePrivilege in TranslateUtils.GetEnums<OraclePrivilege>())
-            {
-                result.OraclePrivileges.Add(new Select<string>(oraclePrivilege));
             }
 
             return result;

@@ -2,6 +2,7 @@
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Extensions;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -13,9 +14,13 @@ namespace SSCMS.Web.Controllers.Admin
         {
             if (!await _configRepository.IsNeedInstallAsync()) return Unauthorized();
 
-            var connectionString = GetRedisConnectionString(request);
+            var redisConnectionString = string.Empty;
+            if (request.IsRedis)
+            {
+                redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+            }
 
-            var db = new Redis(connectionString);
+            var db = new Redis(redisConnectionString);
 
             var (isConnectionWorks, message) = await db.IsConnectionWorksAsync();
             if (!isConnectionWorks)

@@ -54,14 +54,14 @@ namespace SSCMS.Cli.Jobs
             var (success, _, failureMessage) = _apiService.GetStatus();
             if (!success)
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
                 return;
             }
 
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(_settingsManager.ContentRootPath);
             if (plugin == null)
             {
-                await CliUtils.PrintErrorAsync(errorMessage);
+                await WriteUtils.PrintErrorAsync(errorMessage);
                 return;
             }
 
@@ -79,11 +79,11 @@ namespace SSCMS.Cli.Jobs
             (success, failureMessage) = _apiService.PluginsPublish(packageId, zipPath);
             if (success)
             {
-                await CliUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at https://www.sscms.com/plugins/{packageId} (might take a few minutes for it to show up).");
+                await WriteUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at https://www.sscms.com/plugins/{packageId} (might take a few minutes for it to show up).");
             }
             else
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
             }
         }
     }

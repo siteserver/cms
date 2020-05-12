@@ -19,5 +19,7 @@ namespace SSCMS.Cli.Abstractions
         (bool success, List<ApiService.PluginAndUser> results, string failureMessage) PluginsSearch(string word);
 
         (bool success, ApiService.PluginAndUser result, string failureMessage) PluginsShow(string pluginId);
+
+        (bool success, ApiService.GetReleasesResult result, string failureMessage) GetReleases(bool isNightly, string version, List<string> pluginIds);
     }
 }

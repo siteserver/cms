@@ -48,25 +48,25 @@ namespace SSCMS.Cli.Jobs
 
             if (context.Extras == null || context.Extras.Length == 0)
             {
-                await CliUtils.PrintErrorAsync("missing required pluginId");
+                await WriteUtils.PrintErrorAsync("missing required pluginId");
                 return;
             }
 
             var (success, _, failureMessage) = _apiService.GetStatus();
             if (!success)
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
                 return;
             }
 
             (success, failureMessage) = _apiService.UnPluginsPublish(context.Extras[0]);
             if (success)
             {
-                await CliUtils.PrintSuccessAsync($"Unpublished {context.Extras[0]}.");
+                await WriteUtils.PrintSuccessAsync($"Unpublished {context.Extras[0]}.");
             }
             else
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
             }
         }
     }

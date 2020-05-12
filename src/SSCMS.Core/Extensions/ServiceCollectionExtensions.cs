@@ -94,6 +94,12 @@ namespace SSCMS.Core.Extensions
             }
         }
 
+        public static void AddTaskQueue(this IServiceCollection services)
+        {
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<ITaskManager, TaskManager>();
+        }
+
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthManager, AuthManager>();

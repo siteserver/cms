@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Packaging;
 using SSCMS.Dto;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -13,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpPost, Route(RouteActionsDownload)]
         public ActionResult<BoolResult> Download([FromBody] DownloadRequest request)
         {
-            CloudUtils.DownloadCms(_pathManager, request.Version);
+            CloudUtils.DownloadCms(_pathManager, request.Version, false);
 
             var isDownload = CloudUtils.IsCmsDownload(_pathManager, request.Version);
 

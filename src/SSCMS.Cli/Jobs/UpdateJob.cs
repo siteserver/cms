@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
+using Semver;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Cli.Updater;
+using SSCMS.Core.Packaging;
+using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -15,28 +14,23 @@ namespace SSCMS.Cli.Jobs
     public class UpdateJob : IJobService
     {
         public string CommandName => "update";
-        private const string Folder = "update";
 
-        private string _directory;
-        private bool _contentSplit;
         private bool _isHelp;
 
+        private readonly IApiService _apiService;
         private readonly ISettingsManager _settingsManager;
-        private readonly IDatabaseManager _databaseManager;
-        private readonly IUpdateService _updateService;
+        private readonly IConfigRepository _configRepository;
+        private readonly IPathManager _pathManager;
         private readonly OptionSet _options;
 
-        public UpdateJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IUpdateService updateService)
+        public UpdateJob(IApiService apiService, ISettingsManager settingsManager, IConfigRepository configRepository, IPathManager pathManager)
         {
+            _apiService = apiService;
             _settingsManager = settingsManager;
-            _databaseManager = databaseManager;
-            _updateService = updateService;
+            _configRepository = configRepository;
+            _pathManager = pathManager;
 
             _options = new OptionSet {
-                { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
-                    v => _directory = v },
-                { "content-split",  "拆分内容表",
-                    v => _contentSplit = v != null },
                 { "h|help",  "命令说明",
                     v => _isHelp = v != null }
             };
@@ -45,7 +39,7 @@ namespace SSCMS.Cli.Jobs
         public void PrintUsage()
         {
             Console.WriteLine($"Usage: sscms-cli {CommandName}");
-            Console.WriteLine("Summary: update database to latest schema");
+            Console.WriteLine("Summary: update sscms");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
@@ -61,119 +55,38 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            if (string.IsNullOrEmpty(_directory))
+            var contentRootPath = _settingsManager.ContentRootPath;
+            if (!CliUtils.IsSsCmsExists(contentRootPath) || await _configRepository.IsNeedInstallAsync())
             {
-                await CliUtils.PrintErrorAsync("未指定需要转换至最新版本的备份数据文件夹：directory");
+                await WriteUtils.PrintErrorAsync($"SS CMS has not been installed in {contentRootPath}");
                 return;
             }
 
-            var oldTreeInfo = new TreeInfo(_settingsManager, _directory);
-            var newTreeInfo = new TreeInfo(_settingsManager, Folder);
-
-            if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
+            var (success, result, failureMessage) = _apiService.GetReleases(_settingsManager.IsNightlyUpdate, _settingsManager.Version, null);
+            if (!success)
             {
-                await CliUtils.PrintErrorAsync($"备份数据的文件夹 {oldTreeInfo.DirectoryPath} 不存在");
+                await WriteUtils.PrintErrorAsync(failureMessage);
                 return;
             }
-            DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
-            _updateService.Load(oldTreeInfo, newTreeInfo);
-
-            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
-
-            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
-            var newTableNames = new List<string>();
-
-            await CliUtils.PrintRowLineAsync();
-            await CliUtils.PrintRowAsync("备份表名称", "升级表名称", "总条数");
-            await CliUtils.PrintRowLineAsync();
-
-            var siteIdList = new List<int>();
-            var tableNameListForContent = new List<string>();
-            var tableNameListForGovPublic = new List<string>();
-            var tableNameListForGovInteract = new List<string>();
-            var tableNameListForJob = new List<string>();
-
-            UpdateUtils.LoadSites(oldTreeInfo, siteIdList,
-                tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
-
-            var table = new TableContentConverter(_settingsManager);
-
-            var splitSiteTableDict = new Dictionary<int, TableInfo>();
-            if (_contentSplit)
+            if (!SemVersion.TryParse(result.Cms.Version, out var version) || version <= _settingsManager.Version)
             {
-                var converter = table.GetSplitConverter();
-                foreach (var siteId in siteIdList)
-                {
-                    splitSiteTableDict.Add(siteId, new TableInfo
-                    {
-                        Columns = converter.NewColumns,
-                        TotalCount = 0,
-                        RowFiles = new List<string>()
-                    });
-                }
+                await WriteUtils.PrintErrorAsync("SS CMS is the latest version and no update is required");
+                return;
             }
 
-            foreach (var oldTableName in oldTableNames)
-            {
-                var oldMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldTableName);
+            var proceed = ReadUtils.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
+            if (!proceed) return;
 
-                if (!FileUtils.IsFileExists(oldMetadataFilePath)) continue;
+            CloudUtils.DownloadCms(_pathManager, result.Cms.Version, false);
+            var name = CloudUtils.GetCmsDownloadName(result.Cms.Version);
+            var packagePath = _pathManager.GetPackagesPath(name);
+            var packageConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
+            FileUtils.DeleteFileIfExists(packageConfigPath);
 
-                var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
+            DirectoryUtils.Copy(packagePath, contentRootPath, true);
 
-                if (StringUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
-                {
-                    if (_contentSplit)
-                    {
-                        var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
-
-                        await _updateService.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
-                            oldTableInfo, converter);
-                    }
-                    else
-                    {
-                        var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
-                        var tuple = await _updateService.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
-                        if (tuple != null)
-                        {
-                            newTableNames.Add(tuple.Item1);
-
-                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
-                        }
-                    }
-                }
-                else
-                {
-                    var tuple = await _updateService.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
-                    if (tuple != null)
-                    {
-                        newTableNames.Add(tuple.Item1);
-
-                        await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
-                    }
-                }
-            }
-
-            if (_contentSplit)
-            {
-                foreach (var siteId in siteIdList)
-                {
-                    var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = await _databaseManager.ContentRepository.GetNewContentTableNameAsync();
-                    newTableNames.Add(siteTableName);
-
-                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));
-                }
-
-                await UpdateUtils.UpdateSitesSplitTableNameAsync(_databaseManager, newTreeInfo, splitSiteTableDict);
-            }
-
-            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));
-
-            await CliUtils.PrintRowLineAsync();
-            await Console.Out.WriteLineAsync($"恭喜，成功从备份文件夹：{oldTreeInfo.DirectoryPath} 升级至新版本：{newTreeInfo.DirectoryPath} ！");
+            await WriteUtils.PrintSuccessAsync($"Congratulations, SS CMS was updated to {result.Cms.Version} successfully!");
         }
     }
 }

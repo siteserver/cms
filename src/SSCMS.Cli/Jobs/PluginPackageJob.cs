@@ -52,7 +52,7 @@ namespace SSCMS.Cli.Jobs
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(_settingsManager.ContentRootPath);
             if (plugin == null)
             {
-                await CliUtils.PrintErrorAsync(errorMessage);
+                await WriteUtils.PrintErrorAsync(errorMessage);
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace SSCMS.Cli.Jobs
             var zipPath = PathUtils.Combine(_settingsManager.ContentRootPath, $"{packageId}.zip");
             var fileSize = FileUtils.GetFileSizeByFilePath(zipPath);
 
-            await CliUtils.PrintSuccessAsync($"Packaged: {zipPath} ({fileSize})");
+            await WriteUtils.PrintSuccessAsync($"Packaged: {zipPath} ({fileSize})");
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Core.Packaging;
 using SSCMS.Core.Utils;
-using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -16,30 +17,28 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "install";
 
-        private string _configFile;
-        private string _userName;
-        private string _password;
         private bool _isHelp;
 
+        private readonly IApiService _apiService;
         private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
+        private readonly IAdministratorRepository _administratorRepository;
         private readonly OptionSet _options;
 
-        public InstallJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IConfigRepository configRepository)
+        public InstallJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
+            _apiService = apiService;
             _settingsManager = settingsManager;
+            _pathManager = pathManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
             _configRepository = configRepository;
+            _administratorRepository = administratorRepository;
+
             _options = new OptionSet {
-                { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                    v => _configFile = v },
-                { "u|userName=", "超级管理员用户名",
-                    v => _userName = v },
-                { "p|password=", "超级管理员密码",
-                    v => _password = v },
                 { "h|help",  "命令说明",
                     v => _isHelp = v != null }
             };
@@ -64,67 +63,109 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
-            if (!FileUtils.IsFileExists(webConfigPath))
-            {
-                await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
-                return;
-            }
+            var contentRootPath = _settingsManager.ContentRootPath;
 
-            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
-            {
-                await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(_userName))
-            {
-                await CliUtils.PrintErrorAsync("未设置参数管理员用户名：{userName} ！");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(_password))
-            {
-                await CliUtils.PrintErrorAsync("未设置参数管理员密码：{password} ！");
-                return;
-            }
-
-            if (_password.Length < 6)
-            {
-                await CliUtils.PrintErrorAsync("管理员密码必须大于6位 ！");
-                return;
-            }
-
-            if (!PasswordRestrictionUtils.IsValid(_password, PasswordRestriction.LetterAndDigit.GetValue()))
-            {
-                await CliUtils.PrintErrorAsync($"管理员密码不符合规则，请包含{PasswordRestriction.LetterAndDigit.GetDisplayName()}");
-                return;
-            }
-
-            //WebConfigUtils.Load(_settingsManager.ContentRootPath, webConfigPath);
-
-            //await Console.Out.WriteLineAsync($"数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
-            //await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
-            //await Console.Out.WriteLineAsync($"系统文件夹: {_settingsManager.ContentRootPath}");
-
-            //var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
-            //if (!isConnectionWorks)
-            //{
-            //    await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
-            //    return;
-            //}
+            InstallUtils.Init(contentRootPath);
 
             if (!await _configRepository.IsNeedInstallAsync())
             {
-                await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
+                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {contentRootPath}");
                 return;
             }
 
-            //WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, _settingsManager.Database.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.RedisConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
+            var proceed = ReadUtils.GetYesNo($"Do you want to install SS CMS in {contentRootPath}?");
+            if (!proceed) return;
 
-            await _databaseManager.InstallAsync(_pluginManager, _userName, _password, string.Empty, string.Empty);
+            if (!CliUtils.IsSsCmsExists(contentRootPath))
+            {
+                var (success, result, errorMessage) = _apiService.GetReleases(false, string.Empty, null);
+                if (!success)
+                {
+                    await WriteUtils.PrintErrorAsync(errorMessage);
+                    return;
+                }
 
-            await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
+                CloudUtils.DownloadCms(_pathManager, result.Cms.Version, true);
+            }
+
+            var databaseTypeInput = ReadUtils.GetSelect("Database type", new List<string>
+            {
+                DatabaseType.MySql.GetValue().ToLower(),
+                DatabaseType.SqlServer.GetValue().ToLower(),
+                DatabaseType.PostgreSql.GetValue().ToLower(),
+                DatabaseType.SQLite.GetValue().ToLower()
+            });
+
+            var databaseType = TranslateUtils.ToEnum(databaseTypeInput, DatabaseType.MySql);
+            var databaseName = string.Empty;
+            var databaseHost = string.Empty;
+            var isDatabaseDefaultPort = true;
+            var databasePort = 0;
+            var databaseUserName = string.Empty;
+            var databasePassword = string.Empty;
+
+            if (databaseType != DatabaseType.SQLite)
+            {
+                databaseHost = ReadUtils.GetString("Database hostname / IP:");
+                isDatabaseDefaultPort = ReadUtils.GetYesNo("Use default port?");
+                
+                if (!isDatabaseDefaultPort)
+                {
+                    databasePort = ReadUtils.GetInt("Database port:");
+                }
+                databaseUserName = ReadUtils.GetString("Database userName:");
+                databasePassword = ReadUtils.GetPassword("Database password:");
+
+                var connectionStringWithoutDatabaseName = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, string.Empty);
+
+                var db = new Database(databaseType, connectionStringWithoutDatabaseName);
+
+                var (success, errorMessage) = await db.IsConnectionWorksAsync();
+                if (!success)
+                {
+                    await WriteUtils.PrintErrorAsync(errorMessage);
+                    return;
+                }
+
+                var databaseNames = await db.GetDatabaseNamesAsync();
+                databaseName = ReadUtils.GetSelect("Database name", databaseNames);
+            }
+
+            var userName = ReadUtils.GetString("Super administrator username:");
+            var password = ReadUtils.GetPassword("Super administrator password:");
+
+            var (valid, message) =
+                await _administratorRepository.InsertValidateAsync(userName, password, string.Empty, string.Empty);
+            if (!valid)
+            {
+                await WriteUtils.PrintErrorAsync(message);
+                return;
+            }
+
+            if (databaseType == DatabaseType.SQLite)
+            {
+                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
+                if (!FileUtils.IsFileExists(filePath))
+                {
+                    await FileUtils.WriteTextAsync(filePath, string.Empty);
+                }
+            }
+
+            var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
+
+            var isProtectData = ReadUtils.GetYesNo("Protect settings?");
+            await _settingsManager.SaveSettingsAsync(false, isProtectData, databaseType, databaseConnectionString, string.Empty);
+
+            (valid, message) = await _databaseManager.InstallAsync(_pluginManager, userName, password, string.Empty, string.Empty);
+            if (!valid)
+            {
+                await WriteUtils.PrintErrorAsync(message);
+                return;
+            }
+
+            await FileUtils.WriteTextAsync(_pathManager.GetWebRootPath("index.html"), Constants.Html5Empty);
+
+            await WriteUtils.PrintSuccessAsync("Congratulations, SS CMS was installed successfully!");
         }
     }
 }

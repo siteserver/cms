@@ -10,9 +10,9 @@ using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
-    public class SyncJob : IJobService
+    public class DataSyncJob : IJobService
     {
-        public string CommandName => "sync";
+        public string CommandName => "data-sync";
 
         private string _directory;
         private string _from;
@@ -24,10 +24,10 @@ namespace SSCMS.Cli.Jobs
 
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IRestoreService _restoreService;
+        private readonly IDataRestoreService _restoreService;
         private readonly OptionSet _options;
 
-        public SyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IRestoreService restoreService)
+        public DataSyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IDataRestoreService restoreService)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
@@ -83,7 +83,7 @@ namespace SSCMS.Cli.Jobs
             var backupWebConfigPath = CliUtils.GetWebConfigPath(_from, _settingsManager);
             if (!FileUtils.IsFileExists(backupWebConfigPath))
             {
-                await CliUtils.PrintErrorAsync($"系统配置文件不存在：{backupWebConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{backupWebConfigPath}！");
                 return;
             }
             //WebConfigUtils.Load(_settingsManager.ContentRootPath, backupWebConfigPath);
@@ -100,7 +100,7 @@ namespace SSCMS.Cli.Jobs
             var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await WriteUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
                 return;
             }
 
@@ -116,12 +116,12 @@ namespace SSCMS.Cli.Jobs
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
 
-            await BackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
+            await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
             var restoreWebConfigPath = CliUtils.GetWebConfigPath(_to, _settingsManager);
             if (!FileUtils.IsFileExists(restoreWebConfigPath))
             {
-                await CliUtils.PrintErrorAsync($"系统配置文件不存在：{restoreWebConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{restoreWebConfigPath}！");
                 return;
             }
             //WebConfigUtils.Load(_settingsManager.ContentRootPath, restoreWebConfigPath);
@@ -135,14 +135,14 @@ namespace SSCMS.Cli.Jobs
             (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await CliUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await WriteUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
                 return;
             }
 
             await _restoreService.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
 
-            await CliUtils.PrintRowLineAsync();
-            await Console.Out.WriteLineAsync("恭喜，成功同步数据！");
+            await WriteUtils.PrintRowLineAsync();
+            await WriteUtils.PrintSuccessAsync("恭喜，成功同步数据！");
         }
     }
 }

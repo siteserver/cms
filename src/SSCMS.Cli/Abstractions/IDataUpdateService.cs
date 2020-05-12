@@ -7,7 +7,7 @@ using TableInfo = SSCMS.Cli.Core.TableInfo;
 
 namespace SSCMS.Cli.Abstractions
 {
-    public interface IUpdateService
+    public interface IDataUpdateService
     {
         void Load(TreeInfo oldTreeInfo, TreeInfo newTreeInfo);
 

@@ -93,6 +93,7 @@ namespace SSCMS.Web
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
+            services.AddTaskQueue();
 
             services.AddRepositories(assemblies);
             services.AddServices();

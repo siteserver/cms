@@ -60,24 +60,24 @@ namespace SSCMS.Cli.Jobs
 
             if (string.IsNullOrEmpty(_userName))
             {
-                await CliUtils.PrintErrorAsync("missing required options '--username'");
+                await WriteUtils.PrintErrorAsync("missing required options '--username'");
                 return;
             }
 
             if (string.IsNullOrEmpty(_password))
             {
-                await CliUtils.PrintErrorAsync("missing required options '--password'");
+                await WriteUtils.PrintErrorAsync("missing required options '--password'");
                 return;
             }
 
             var (success, failureMessage) = _apiService.Register(_userName, _mobile, _email, _password);
             if (success)
             {
-                await CliUtils.PrintSuccessAsync("you have registered successfully, run sscms-cli login to log in.");
+                await WriteUtils.PrintSuccessAsync("you have registered successfully, run sscms-cli login to log in.");
             }
             else
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
             }
         }
     }

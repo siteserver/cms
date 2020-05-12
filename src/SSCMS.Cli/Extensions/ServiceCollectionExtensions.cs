@@ -11,13 +11,16 @@ namespace SSCMS.Cli.Extensions
         {
             services.AddScoped<IApiService, ApiService>();
             services.AddScoped<IConfigService, ConfigService>();
-            services.AddScoped<IUpdateService, UpdateService>();
-            services.AddScoped<IRestoreService, RestoreService>();
+            services.AddScoped<IDataUpdateService, DataUpdateService>();
+            services.AddScoped<IDataRestoreService, DataRestoreService>();
         }
 
         public static void AddCliJobs(this IServiceCollection services)
         {
-            services.AddScoped<IJobService, BackupJob>();
+            services.AddScoped<IJobService, DataBackupJob>();
+            services.AddScoped<IJobService, DataRestoreJob>();
+            services.AddScoped<IJobService, DataSyncJob>();
+            services.AddScoped<IJobService, DataUpdateJob>();
             services.AddScoped<IJobService, InstallJob>();
             services.AddScoped<IJobService, LoginJob>();
             services.AddScoped<IJobService, LogoutJob>();
@@ -27,9 +30,7 @@ namespace SSCMS.Cli.Extensions
             services.AddScoped<IJobService, PluginShowJob>();
             services.AddScoped<IJobService, PluginUnPublishJob>();
             services.AddScoped<IJobService, RegisterJob>();
-            services.AddScoped<IJobService, RestoreJob>();
             services.AddScoped<IJobService, StatusJob>();
-            services.AddScoped<IJobService, SyncJob>();
             services.AddScoped<IJobService, UpdateJob>();
         }
     }

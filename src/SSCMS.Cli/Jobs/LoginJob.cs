@@ -58,24 +58,24 @@ namespace SSCMS.Cli.Jobs
 
             if (string.IsNullOrEmpty(_account))
             {
-                await CliUtils.PrintErrorAsync("missing required options '--username' or '--mobile' or 'email'");
+                await WriteUtils.PrintErrorAsync("missing required options '--username' or '--mobile' or 'email'");
                 return;
             }
 
             if (string.IsNullOrEmpty(_password))
             {
-                await CliUtils.PrintErrorAsync("missing required options '--password'");
+                await WriteUtils.PrintErrorAsync("missing required options '--password'");
                 return;
             }
 
             var (success, failureMessage) = await _apiService.LoginAsync(_account, _password);
             if (success)
             {
-                await CliUtils.PrintSuccessAsync("you have successful logged in");
+                await WriteUtils.PrintSuccessAsync("you have successful logged in");
             }
             else
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
             }
         }
     }

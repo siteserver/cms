@@ -13,14 +13,14 @@ using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
 {
-    public class RestoreService : IRestoreService
+    public class DataRestoreService : IDataRestoreService
     {
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IDatabaseManager _databaseManager;
         private readonly IOldPluginManager _pluginManager;
 
-        public RestoreService(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager, IOldPluginManager pluginManager)
+        public DataRestoreService(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager, IOldPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
             _configRepository = configRepository;
@@ -55,7 +55,7 @@ namespace SSCMS.Cli.Services
                         TranslateUtils.JsonDeserialize<TableInfo>(
                             await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
 
-                    await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
+                    await WriteUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
                     if (await _settingsManager.Database.IsTableExistsAsync(tableName))
                     {
@@ -105,7 +105,7 @@ namespace SSCMS.Cli.Services
                 }
             }
 
-            await CliUtils.PrintRowLineAsync();
+            await WriteUtils.PrintRowLineAsync();
 
             if (_settingsManager.Database.DatabaseType == DatabaseType.Oracle)
             {

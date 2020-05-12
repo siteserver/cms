@@ -68,5 +68,31 @@ namespace SSCMS.Cli.Services
             public Dictionary<string, object> Plugin { get; set; }
             public Dictionary<string, object> User { get; set; }
         }
+
+        public class GetReleasesRequest
+        {
+            public bool IsNightly { get; set; }
+            public string Version { get; set; }
+            public List<string> PluginIds { get; set; }
+        }
+
+        public class GetReleasesCms
+        {
+            public string Version { get; set; }
+            public string Published { get; set; }
+        }
+
+        public class GetReleasesPlugin
+        {
+            public string PluginId { get; set; }
+            public string Version { get; set; }
+            public string Published { get; set; }
+        }
+
+        public class GetReleasesResult
+        {
+            public GetReleasesCms Cms { get; set; }
+            public List<GetReleasesPlugin> Plugins { get; set; }
+        }
     }
 }

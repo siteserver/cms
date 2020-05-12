@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Datory;
 using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
@@ -16,9 +13,6 @@ namespace SSCMS.Cli.Core
     public static class CliUtils
     {
         private static ServiceProvider Provider { get; set; }
-
-        
-
         public static void SetProvider(ServiceProvider provider)
         {
             Provider = provider;
@@ -46,15 +40,6 @@ namespace SSCMS.Cli.Core
             return Provider.GetServices<IJobService>();
         }
 
-        private static string AlignCentre(string text, int width)
-        {
-            text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;
-
-            return string.IsNullOrEmpty(text)
-                ? new string(' ', width)
-                : text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
-        }
-
         // https://stackoverflow.com/questions/491595/best-way-to-parse-command-line-arguments-in-c
         public static bool ParseArgs(OptionSet options, string[] args)
         {
@@ -67,84 +52,6 @@ namespace SSCMS.Cli.Core
             {
                 return false;
             }
-        }
-
-        public static async Task PrintRowLineAsync()
-        {
-            await Console.Out.WriteLineAsync(new string('-', CliConstants.ConsoleTableWidth));
-        }
-
-        public static async Task PrintRowAsync(params string[] columns)
-        {
-            int width = (CliConstants.ConsoleTableWidth - columns.Length) / columns.Length;
-            string row = "|";
-
-            foreach (string column in columns)
-            {
-                row += AlignCentre(column, width) + "|";
-            }
-
-            await Console.Out.WriteLineAsync(row);
-        }
-
-        public static async Task PrintRowLine()
-        {
-            await Console.Out.WriteLineAsync(new string('-', CliConstants.ConsoleTableWidth));
-        }
-
-        public static async Task PrintRow(params string[] columns)
-        {
-            int width = (CliConstants.ConsoleTableWidth - columns.Length) / columns.Length;
-            string row = "|";
-
-            foreach (string column in columns)
-            {
-                row += AlignCentre(column, width) + "|";
-            }
-
-            await Console.Out.WriteLineAsync(row);
-        }
-
-        public static async Task PrintInfoAsync(ISettingsManager settingsManager)
-        {
-            await Console.Out.WriteLineAsync($"Cli version: {settingsManager.Version}");
-            var entryAssembly = Assembly.GetExecutingAssembly();
-            await Console.Out.WriteLineAsync($"Cli location: {entryAssembly.Location}");
-            await Console.Out.WriteLineAsync($"Work location: {settingsManager.ContentRootPath}");
-
-            var configPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.ConfigFileName);
-
-            if (FileUtils.IsFileExists(configPath))
-            {
-                await Console.Out.WriteLineAsync($"Database type: {settingsManager.Database.DatabaseType.GetDisplayName()}");
-                await Console.Out.WriteLineAsync($"Database connection string: {settingsManager.DatabaseConnectionString}");
-            }
-        }
-
-        public static async Task PrintErrorAsync(string errorMessage)
-        {
-            var backgroundColor = Console.BackgroundColor;
-            //var foregroundColor = Console.ForegroundColor;
-            Console.BackgroundColor = ConsoleColor.DarkRed;
-            //Console.ForegroundColor = ConsoleColor.Black;
-            await Console.Out.WriteAsync(" ERROR ");
-            Console.BackgroundColor = backgroundColor;
-            //Console.ForegroundColor = foregroundColor;
-
-            await Console.Out.WriteAsync($" {errorMessage}");
-        }
-
-        public static async Task PrintSuccessAsync(string successMessage)
-        {
-            var backgroundColor = Console.BackgroundColor;
-            //var foregroundColor = Console.ForegroundColor;
-            Console.BackgroundColor = ConsoleColor.DarkGreen;
-            //Console.ForegroundColor = ConsoleColor.Black;
-            await Console.Out.WriteAsync(" SUCCESS ");
-            Console.BackgroundColor = backgroundColor;
-            //Console.ForegroundColor = foregroundColor;
-
-            await Console.Out.WriteAsync($" {successMessage}");
         }
 
         public static string CreateErrorLogFile(string commandName, ISettingsManager settingsManager)
@@ -199,6 +106,11 @@ namespace SSCMS.Cli.Core
                 ? configFile
                 : PathUtils.Combine(settingsManager.ContentRootPath,
                     !string.IsNullOrEmpty(configFile) ? configFile : Constants.ConfigFileName);
+        }
+
+        public static bool IsSsCmsExists(string directoryPath)
+        {
+            return FileUtils.IsFileExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName));
         }
     }
 }

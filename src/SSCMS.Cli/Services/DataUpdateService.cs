@@ -18,12 +18,12 @@ using TableInfo = SSCMS.Cli.Core.TableInfo;
 
 namespace SSCMS.Cli.Services
 {
-    public class UpdateService : IUpdateService
+    public class DataUpdateService : IDataUpdateService
     {
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
 
-        public UpdateService(ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public DataUpdateService(ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
@@ -48,7 +48,7 @@ namespace SSCMS.Cli.Services
 
             if (converter.IsAbandon)
             {
-                await CliUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                await WriteUtils.PrintRowAsync(oldTableName, "Abandon", "--");
                 return null;
             }
 
@@ -68,7 +68,7 @@ namespace SSCMS.Cli.Services
                 RowFiles = oldTableInfo.RowFiles
             };
 
-            await CliUtils.PrintRowAsync(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
+            await WriteUtils.PrintRowAsync(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
 
             if (oldTableInfo.RowFiles.Count > 0)
             {
@@ -111,7 +111,7 @@ namespace SSCMS.Cli.Services
 
             if (converter.IsAbandon)
             {
-                await CliUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                await WriteUtils.PrintRowAsync(oldTableName, "Abandon", "--");
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace SSCMS.Cli.Services
                 converter.NewColumns = oldTableInfo.Columns;
             }
 
-            await CliUtils.PrintRowAsync(oldTableName, "#split-content#", oldTableInfo.TotalCount.ToString("#,0"));
+            await WriteUtils.PrintRowAsync(oldTableName, "#split-content#", oldTableInfo.TotalCount.ToString("#,0"));
 
             if (oldTableInfo.RowFiles.Count > 0)
             {

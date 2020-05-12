@@ -25,8 +25,6 @@ namespace SSCMS.Web.Controllers.Admin
             public List<Select<string>> DatabaseTypes { get; set; }
 
             public string AdminUrl { get; set; }
-
-            public List<Select<string>> OraclePrivileges { get; set; }
         }
 
         public class DatabaseConnectRequest
@@ -37,9 +35,6 @@ namespace SSCMS.Web.Controllers.Admin
             public string DatabasePort { get; set; }
             public string DatabaseUserName { get; set; }
             public string DatabasePassword { get; set; }
-            public OraclePrivilege OraclePrivilege { get; set; }
-            public bool OracleIsSid { get; set; }
-            public string OracleDatabase { get; set; }
         }
 
         public class DatabaseConnectResult
@@ -65,9 +60,6 @@ namespace SSCMS.Web.Controllers.Admin
             public string DatabasePort { get; set; }
             public string DatabaseUserName { get; set; }
             public string DatabasePassword { get; set; }
-            public OraclePrivilege OraclePrivilege { get; set; }
-            public bool OracleIsSid { get; set; }
-            public string OracleDatabase { get; set; }
             public string DatabaseName { get; set; }
             public string UserName { get; set; }
             public string Email { get; set; }
@@ -79,106 +71,6 @@ namespace SSCMS.Web.Controllers.Admin
         public class InstallRequest : PrepareRequest
         {
             public string SecurityKey { get; set; }
-        }
-
-        private string GetDatabaseConnectionString(bool isDatabaseName, DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string selectedDatabaseName, string oracleDatabase, bool oracleIsSid, OraclePrivilege oraclePrivilege)
-        {
-            var databaseName = string.Empty;
-            if (isDatabaseName)
-            {
-                databaseName = databaseType == DatabaseType.Oracle ? oracleDatabase : selectedDatabaseName;
-            }
-
-            var connectionString = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(databaseName))
-                {
-                    connectionString += $"Database={databaseName};";
-                }
-                connectionString += "SslMode=Preferred;CharSet=utf8;";
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                connectionString = $"Server={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString = $"Server={server},{port};";
-                }
-                connectionString += $"Uid={userName};Pwd={password};";
-                if (!string.IsNullOrEmpty(databaseName))
-                {
-                    connectionString += $"Database={databaseName};";
-                }
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                connectionString = $"Host={server};";
-                if (!isDefaultPort && port > 0)
-                {
-                    connectionString += $"Port={port};";
-                }
-                connectionString += $"Username={userName};Password={password};";
-                if (!string.IsNullOrEmpty(databaseName))
-                {
-                    connectionString += $"Database={databaseName};";
-                }
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                databaseName = oracleIsSid ? $"SID={databaseName}" : $"SERVICE_NAME={databaseName}";
-                port = !isDefaultPort && port > 0 ? port : 1521;
-                var privilegeString = string.Empty;
-                if (oraclePrivilege == OraclePrivilege.SYSDBA)
-                {
-                    privilegeString = "DBA Privilege=SYSDBA;";
-                }
-                else if (oraclePrivilege == OraclePrivilege.SYSDBA)
-                {
-                    privilegeString = "DBA Privilege=SYSOPER;";
-                }
-                databaseName = string.IsNullOrEmpty(databaseName)
-                    ? string.Empty
-                    : $"(CONNECT_DATA=({databaseName}))";
-                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){databaseName});User ID={userName};Password={password};{privilegeString}";
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                connectionString = $"Data Source=~/{Constants.DefaultLocalDbFileName};Version=3;";
-            }
-
-            return connectionString;
-        }
-
-        private string GetRedisConnectionString(RedisConnectRequest request)
-        {
-            var connectionString = string.Empty;
-            if (request.IsRedis && !string.IsNullOrEmpty(request.RedisHost))
-            {
-                var port = 6379;
-                if (!request.IsRedisDefaultPort && request.RedisPort > 0)
-                {
-                    port = request.RedisPort;
-                }
-                connectionString = $"{request.RedisHost}:{port},allowAdmin=true";
-                if (request.IsSsl)
-                {
-                    connectionString += ",ssl=true";
-                }
-                if (!string.IsNullOrEmpty(request.RedisPassword))
-                {
-                    connectionString += $",password={request.RedisPassword}";
-                }
-            }
-
-            return connectionString;
         }
     }
 }

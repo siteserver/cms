@@ -17,6 +17,7 @@ namespace SSCMS.Cli.Services
         private const string RestUrlPluginUnPublish = "/plugin-unpublish";
         private const string RestUrlPluginSearch = "/plugin-search";
         private const string RestUrlPluginShow = "/plugin-show";
+        private const string RestUrlReleases = "/releases";
 
         private readonly IConfigService _configService;
 
@@ -165,6 +166,26 @@ namespace SSCMS.Cli.Services
                 PluginId = pluginId
             }), ParameterType.RequestBody);
             var response = client.Execute<PluginAndUser>(request);
+            if (!response.IsSuccessful)
+            {
+                return (false, null, response.ErrorMessage);
+            }
+
+            return (true, response.Data, null);
+        }
+
+        public (bool success, GetReleasesResult result, string failureMessage) GetReleases(bool isNightly, string version, List<string> pluginIds)
+        {
+            var client = new RestClient(RestHost + RestUrlReleases) { Timeout = -1 };
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new GetReleasesRequest
+            {
+                IsNightly = isNightly,
+                Version = version,
+                PluginIds = pluginIds
+            }), ParameterType.RequestBody);
+            var response = client.Execute<GetReleasesResult>(request);
             if (!response.IsSuccessful)
             {
                 return (false, null, response.ErrorMessage);

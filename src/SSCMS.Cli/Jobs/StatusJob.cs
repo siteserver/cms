@@ -49,16 +49,16 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            await CliUtils.PrintInfoAsync(_settingsManager);
+            await WriteUtils.PrintInfoAsync(_settingsManager);
 
             var (success, successContent, failureContent) = _apiService.GetStatus();
             if (success)
             {
-                await CliUtils.PrintSuccessAsync(successContent);
+                await WriteUtils.PrintSuccessAsync(successContent);
             }
             else
             {
-                await CliUtils.PrintErrorAsync(failureContent);
+                await WriteUtils.PrintErrorAsync(failureContent);
             }
         }
     }

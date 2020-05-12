@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Web
@@ -14,13 +15,7 @@ namespace SSCMS.Web
         {
             Console.Title = "SS CMS";
 
-            var filePath = PathUtils.Combine(Directory.GetCurrentDirectory(), Constants.ConfigFileName);
-            var json = FileUtils.ReadText(filePath);
-            if (json.Contains(@"""SecurityKey"": """","))
-            {
-                var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
-                FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
-            }
+            InstallUtils.Init(Directory.GetCurrentDirectory());
 
             CreateHostBuilder(args).Build().Run();
         }

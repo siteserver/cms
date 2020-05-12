@@ -2,6 +2,7 @@
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Extensions;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Utils;
 
@@ -31,8 +32,12 @@ namespace SSCMS.Web.Controllers.Admin
                 }
             }
 
-            var databaseConnectionString = GetDatabaseConnectionString(true, request.DatabaseType, request.DatabaseHost, request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName, request.DatabasePassword, request.DatabaseName, request.OracleDatabase, request.OracleIsSid, request.OraclePrivilege);
-            var redisConnectionString = GetRedisConnectionString(request);
+            var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(request.DatabaseType, request.DatabaseHost, request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName, request.DatabasePassword, request.DatabaseName);
+            var redisConnectionString = string.Empty;
+            if (request.IsRedis)
+            {
+                redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+            }
 
             await _settingsManager.SaveSettingsAsync(false, request.IsProtectData, request.DatabaseType, databaseConnectionString,
                 redisConnectionString);

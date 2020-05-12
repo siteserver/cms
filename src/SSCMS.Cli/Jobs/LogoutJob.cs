@@ -50,7 +50,7 @@ namespace SSCMS.Cli.Jobs
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
             {
-                await CliUtils.PrintErrorAsync("you have not logged in");
+                await WriteUtils.PrintErrorAsync("you have not logged in");
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace SSCMS.Cli.Jobs
 
             await _configService.SaveStatusAsync(status);
 
-            await CliUtils.PrintSuccessAsync("you have successful logged out");
+            await WriteUtils.PrintSuccessAsync("you have successful logged out");
         }
     }
 }

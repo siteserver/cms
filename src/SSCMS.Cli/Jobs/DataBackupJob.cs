@@ -11,9 +11,9 @@ using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
-    public class BackupJob : IJobService
+    public class DataBackupJob : IJobService
     {
-        public string CommandName => "backup";
+        public string CommandName => "data-backup";
 
         private string _directory;
         private string _configFile;
@@ -26,7 +26,7 @@ namespace SSCMS.Cli.Jobs
         private readonly IDatabaseManager _databaseManager;
         private readonly OptionSet _options;
 
-        public BackupJob(ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public DataBackupJob(ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
@@ -78,7 +78,7 @@ namespace SSCMS.Cli.Jobs
             var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
             if (!FileUtils.IsFileExists(webConfigPath))
             {
-                await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
@@ -113,8 +113,8 @@ namespace SSCMS.Cli.Jobs
 
             await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
-            await CliUtils.PrintRowLineAsync();
-            await Console.Out.WriteLineAsync($"恭喜，成功备份数据库至文件夹：{treeInfo.DirectoryPath}！");
+            await WriteUtils.PrintRowLineAsync();
+            await WriteUtils.PrintSuccessAsync($"恭喜，成功备份数据库至文件夹：{treeInfo.DirectoryPath}！");
         }
 
         public static async Task Backup(ISettingsManager settingsManager, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo)
@@ -133,9 +133,9 @@ namespace SSCMS.Cli.Jobs
 
             await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, TranslateUtils.JsonSerialize(tableNames));
 
-            await CliUtils.PrintRowLineAsync();
-            await CliUtils.PrintRowAsync("备份表名称", "总条数");
-            await CliUtils.PrintRowLineAsync();
+            await WriteUtils.PrintRowLineAsync();
+            await WriteUtils.PrintRowAsync("备份表名称", "总条数");
+            await WriteUtils.PrintRowLineAsync();
 
             foreach (var tableName in tableNames)
             {
@@ -152,7 +152,7 @@ namespace SSCMS.Cli.Jobs
                     tableInfo.TotalCount = maxRows;
                 }
 
-                await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
+                await WriteUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
                 var identityColumnName = await settingsManager.Database.AddIdentityColumnIdIfNotExistsAsync(tableName, tableInfo.Columns);
 

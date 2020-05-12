@@ -115,15 +115,15 @@ namespace SSCMS.Cli
         {
             if (_isHelp || string.IsNullOrEmpty(commandName))
             {
-                await CliUtils.PrintInfoAsync(_settingsManager);
+                await WriteUtils.PrintInfoAsync(_settingsManager);
                 await Console.Out.WriteLineAsync();
 
                 var services = CliUtils.GetJobServices();
                 foreach (var service in services)
                 {
-                    await CliUtils.PrintRowLine();
-                    await CliUtils.PrintRow(service.CommandName);
-                    await CliUtils.PrintRowLine();
+                    await WriteUtils.PrintRowLine();
+                    await WriteUtils.PrintRow(service.CommandName);
+                    await WriteUtils.PrintRowLine();
 
                     service.PrintUsage();
                 }
@@ -163,7 +163,7 @@ namespace SSCMS.Cli
             }
             catch (Exception ex)
             {
-                await CliUtils.PrintErrorAsync(ex.Message);
+                await WriteUtils.PrintErrorAsync(ex.Message);
             }
         }
 
@@ -180,7 +180,7 @@ namespace SSCMS.Cli
             }
             catch (Exception ex)
             {
-                await CliUtils.PrintErrorAsync(ex.Message);
+                await WriteUtils.PrintErrorAsync(ex.Message);
 
                 //var errorLogFilePath = CliUtils.CreateErrorLogFile("siteserver", _settingsManager);
 

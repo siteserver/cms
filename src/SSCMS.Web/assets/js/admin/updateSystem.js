@@ -5,8 +5,7 @@ var data = utils.init({
   version: null,
   
   pageIndex: 1,
-  package: {},
-  isCheck: false,
+  newCms: {},
   isShouldUpdate: false,
   updatesUrl: '',
   errorMessage: null
@@ -35,11 +34,9 @@ var methods = {
     var $this = this;
     
     $cloud.getReleases(this.isNightly, this.version, null, function (cms) {
-      $this.package = cms;
-      $this.isShouldUpdate = utils.compareVersion($this.version, $this.package.version) == -1;
-      var major = $this.package.version.split('.')[0];
-      var minor = $this.package.version.split('.')[1];
-      $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+      $this.newCms = cms;
+      $this.newCms.current = $this.version;
+      $this.isShouldUpdate = utils.compareVersion($this.version, $this.newCms.version) == -1;
       utils.loading($this, false);
     });
 
@@ -49,25 +46,21 @@ var methods = {
     // }, function (err, res) {
     //   if (err || !res || !res.value) return;
 
-    //   $this.package = res.value;
-    //   $this.isShouldUpdate = utils.compareVersion($this.version, $this.package.version) == -1;
-    //   var major = $this.package.version.split('.')[0];
-    //   var minor = $this.package.version.split('.')[1];
+    //   $this.newCms = res.value;
+    //   $this.isShouldUpdate = utils.compareVersion($this.version, $this.newCms.version) == -1;
+    //   var major = $this.newCms.version.split('.')[0];
+    //   var minor = $this.newCms.version.split('.')[1];
     //   $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
-    // }, 'packages', packageId);
-  },
-
-  check: function () {
-    this.isCheck = !this.isCheck;
+    // }, 'newCmss', newCmsId);
   },
 
   updateSsCms: function () {
-    if (!this.package) return;
+    if (!this.newCms) return;
     this.pageIndex = 2;
     var $this = this;
 
     $api.post($url, {
-      version: $this.package.version
+      version: $this.newCms.version
     }, function (err, res) {
       if (err) {
         $this.errorMessage = err.message;

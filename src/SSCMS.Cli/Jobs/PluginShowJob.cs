@@ -51,11 +51,11 @@ namespace SSCMS.Cli.Jobs
 
             if (success)
             {
-                await CliUtils.PrintSuccessAsync(TranslateUtils.JsonSerialize(result));
+                await WriteUtils.PrintSuccessAsync(TranslateUtils.JsonSerialize(result));
             }
             else
             {
-                await CliUtils.PrintErrorAsync(failureMessage);
+                await WriteUtils.PrintErrorAsync(failureMessage);
             }
         }
     }

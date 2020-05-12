@@ -14,11 +14,11 @@ namespace SSCMS.Cli.Core
             if (context.NextFireTimeUtc != null)
             {
                 await Console.Out.WriteLineAsync();
-                await CliUtils.PrintRowLineAsync();
-                await CliUtils.PrintRowAsync("Fire Time", "Next Fire Time");
-                await CliUtils.PrintRowLineAsync();
-                await CliUtils.PrintRowAsync($"{context.FireTimeUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}", $"{context.NextFireTimeUtc.Value.ToLocalTime():yyyy-MM-dd HH:mm:ss}");
-                await CliUtils.PrintRowLineAsync();
+                await WriteUtils.PrintRowLineAsync();
+                await WriteUtils.PrintRowAsync("Fire Time", "Next Fire Time");
+                await WriteUtils.PrintRowLineAsync();
+                await WriteUtils.PrintRowAsync($"{context.FireTimeUtc.ToLocalTime():yyyy-MM-dd HH:mm:ss}", $"{context.NextFireTimeUtc.Value.ToLocalTime():yyyy-MM-dd HH:mm:ss}");
+                await WriteUtils.PrintRowLineAsync();
                 await Console.Out.WriteLineAsync();
             }
         }
