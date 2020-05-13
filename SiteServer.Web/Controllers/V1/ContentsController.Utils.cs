@@ -96,11 +96,11 @@ namespace SiteServer.API.Controllers.V1
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpLike))
                     {
-                        query.WhereLike(where.Column, where.Value);
+                        query.WhereLike(where.Column, $"%{where.Value}%");
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpNotLike))
                     {
-                        query.WhereNotLike(where.Column, where.Value);
+                        query.WhereNotLike(where.Column, $"%{where.Value}%");
                     }
                     else
                     {
