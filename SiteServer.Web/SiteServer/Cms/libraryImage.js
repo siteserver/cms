@@ -144,15 +144,6 @@ var methods = {
     return apiUrl + $url + '?siteId=' + this.siteId + '&groupId=' + this.form.groupId
   },
 
-  getPreviewSrcList: function(url) {
-    var list = _.map(this.items, function (item) {
-      return item.url;
-    });
-    list.splice(list.indexOf(url), 1);
-    list.splice(0, 0, url);
-    return list;
-  },
-
   btnTitleClick: function(library) {
     var $this = this;
     this.renameId = library.id;

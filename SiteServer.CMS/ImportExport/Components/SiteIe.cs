@@ -140,7 +140,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     //ContentUtility.PutImagePaths(siteInfo, contentInfo as BackgroundContentInfo, collection);
                     var entry = _contentIe.ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);

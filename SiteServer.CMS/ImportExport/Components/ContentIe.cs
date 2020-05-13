@@ -315,7 +315,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 try
                 {
                     ContentUtility.PutImagePaths(siteInfo, contentInfo, collection);

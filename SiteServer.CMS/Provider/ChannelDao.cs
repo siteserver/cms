@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Threading.Tasks;
 using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -17,7 +16,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
-    public partial class ChannelDao : DataProviderBase
+    public class ChannelDao : DataProviderBase
     {
         private string SqlColumns => $"{ChannelAttribute.Id}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
 
@@ -311,6 +310,8 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(trans, sqlUpdateIsLastNode);
 
             //OwningIdCache.IsChanged = true;
+            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
+            PermissionsImpl.ClearAllCache();
         }
 
         /// <summary>
@@ -628,9 +629,6 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
-            PermissionsImpl.ClearAllCache();
-
             return channelInfo.Id;
 
         }
@@ -659,9 +657,6 @@ namespace SiteServer.CMS.Provider
                     }
                 }
             }
-
-            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
-            PermissionsImpl.ClearAllCache();
 
             return channelInfo.Id;
         }
@@ -702,10 +697,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
 
             DataProvider.TemplateDao.CreateDefaultTemplateInfo(channelInfo.Id, administratorName);
-
-            ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
-            PermissionsImpl.ClearAllCache();
-
             return channelInfo.Id;
         }
 
@@ -794,7 +785,6 @@ namespace SiteServer.CMS.Provider
             {
                 TaxisAdd(siteId, selectedId);
             }
-
             ChannelManager.RemoveCacheBySiteId(siteId);
         }
 
@@ -836,13 +826,6 @@ namespace SiteServer.CMS.Provider
             }
             idList.Add(channelId);
 
-            foreach (var channelIdDeleted in idList)
-            {
-                var channelDeleted = ChannelManager.GetChannelInfo(siteId, channelIdDeleted);
-                var tableNameDeleted = ChannelManager.GetTableName(siteInfo, channelDeleted);
-                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteInfo, channelDeleted, tableNameDeleted);
-            }
-
             var deleteCmd =
                 $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
@@ -876,7 +859,10 @@ namespace SiteServer.CMS.Provider
             UpdateIsLastNode(channelInfo.ParentId);
             UpdateSubtractChildrenCount(channelInfo.ParentsPath, deletedNum);
 
-            
+            foreach (var channelIdDeleted in idList)
+            {
+                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteInfo.Id, channelIdDeleted, tableName);
+            }
             //DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
 
             if (channelInfo.ParentId == 0)
@@ -1361,22 +1347,6 @@ ORDER BY Taxis";
                 GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                 GetString(rdr, i++), GetString(rdr, i++), ELinkTypeUtils.GetEnumType(GetString(rdr, i++)),
                 GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-        }
-
-        private ChannelSummary GetChannelSummary(IDataReader rdr)
-        {//Id, ChannelName, ParentId, IndexName, Taxis, AddDate
-            var i = 0;
-            return new ChannelSummary
-            {
-                Id = GetInt(rdr, i++),
-                ChannelName = GetString(rdr, i++),
-                ParentId = GetInt(rdr, i++),
-                ParentsPath = GetString(rdr, i++),
-                IndexName = GetString(rdr, i++),
-                ContentModelPluginId = GetString(rdr, i++),
-                Taxis = GetInt(rdr, i++),
-                AddDate = GetDateTime(rdr, i++)
-            };
         }
     }
 }

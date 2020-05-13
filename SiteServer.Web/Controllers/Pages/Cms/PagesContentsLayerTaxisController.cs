@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
                     var tableName = ChannelManager.GetTableName(siteInfo, contentChannelInfo);
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var isTop = contentInfo.IsTop;
@@ -66,14 +66,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(siteInfo, tableName, contentChannelInfo, channelContentId.Id, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToUp(siteId, tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(siteInfo, tableName, contentChannelInfo, channelContentId.Id, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToDown(siteId, tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
                             {
                                 break;
                             }

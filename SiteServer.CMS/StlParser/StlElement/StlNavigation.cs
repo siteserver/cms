@@ -144,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (siblingContentId != 0)
                         {
                             //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var siblingContentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
+                            var siblingContentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
                             var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, siblingContentInfo, pageInfo.IsLocal);
                             if (url.Equals(PageUtils.UnclickedUrl))
                             {

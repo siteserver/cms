@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
                     if (contentInfo != null)
                     {
                         if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
@@ -166,9 +166,14 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
                 var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteInfo, channelInfo, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+            }
+
+            if (translateChannelId > 0)
+            {
+                var tableName = ChannelManager.GetTableName(SiteInfo, translateChannelId);
+                ContentManager.RemoveCache(SiteInfo.Id, translateChannelId, tableName);
             }
 
             AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);

@@ -163,7 +163,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var adminName = request.AdminName;
 
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, id);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 contentInfo.Load(attributes);
@@ -258,10 +258,10 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, id);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                ContentUtility.Delete(tableName, siteInfo, channelInfo, id);
+                ContentUtility.Delete(tableName, siteInfo, channelId, id);
 
                 //DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
 
@@ -311,7 +311,7 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, id);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
                 return Ok(new
@@ -369,7 +369,7 @@ namespace SiteServer.API.Controllers.V1
             var contents = new List<ContentInfo>();
             foreach (var channelContentId in channelContentIds)
             {
-                var content = DataProvider.ContentDao.Get(site, channelContentId.ChannelId, channelContentId.Id);
+                var content = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.Id);
                 contents.Add(content);
             }
 
@@ -399,7 +399,7 @@ namespace SiteServer.API.Controllers.V1
             {
                 var channel = ChannelManager.GetChannelInfo(request.SiteId, channelContentId.ChannelId);
                 var tableName = ChannelManager.GetTableName(site, channel);
-                var content = DataProvider.ContentDao.Get(site, channel, channelContentId.Id);
+                var content = ContentManager.GetContentInfo(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
                 content.Set(ContentAttribute.CheckUserName, req.AdminName);

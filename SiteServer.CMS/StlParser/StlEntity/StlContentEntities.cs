@@ -72,7 +72,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                         var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                        var targetContentInfo = DataProvider.ContentDao.Get(targetSiteInfo, targetNodeInfo, contextInfo.ContentInfo.ReferenceId);
+                        var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contextInfo.ContentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                         {
                             //标题可以使用自己的

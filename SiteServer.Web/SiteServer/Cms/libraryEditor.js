@@ -3,15 +3,15 @@ var $urlUpload = apiUrl + "/pages/cms/libraryEditor/actions/upload?siteId=" + ut
 
 function insertHtml(html)
 {
-    if (html)
-    {
-      var editor = UE.getEditor('content', {
-        allowDivTransToP: false,
-        maximumWords: 99999999
-      });
+  if (html)
+  {
+    var editor = UE.getEditor('content', {
+      allowDivTransToP: false,
+      maximumWords: 99999999
+    });
 
-      editor.execCommand("insertHTML", html);
-    }
+    editor.execCommand("insertHTML", html);
+  }
 }
 
 var data = {
@@ -105,6 +105,7 @@ var methods = {
   },
 
   btnSaveClick: function() {
+    this.content = this.editor.html.get(true);
     var $this = this;
 
     if (!this.title) {

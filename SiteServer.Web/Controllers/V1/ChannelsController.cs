@@ -355,7 +355,7 @@ namespace SiteServer.API.Controllers.V1
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteInfo, channelInfo, tableName);
+                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteId, channelId, tableName);
                 DataProvider.ChannelDao.Delete(siteId, channelId);
 
                 return Ok(new

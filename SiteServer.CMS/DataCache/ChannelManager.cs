@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -18,109 +19,96 @@ namespace SiteServer.CMS.DataCache
 {
     public static class ChannelManager
     {
-        //private static class ChannelManagerCache
-        //{
-        //    private static readonly object LockObject = new object();
-        //    private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ChannelManager));
+        private static class ChannelManagerCache
+        {
+            private static readonly object LockObject = new object();
+            private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(ChannelManager));
 
-        //    private static void Update(Dictionary<int, Dictionary<int, ChannelInfo>> allDict, Dictionary<int, ChannelInfo> dic, int siteId)
-        //    {
-        //        lock (LockObject)
-        //        {
-        //            allDict[siteId] = dic;
-        //        }
-        //    }
+            private static void Update(Dictionary<int, Dictionary<int, ChannelInfo>> allDict, Dictionary<int, ChannelInfo> dic, int siteId)
+            {
+                lock (LockObject)
+                {
+                    allDict[siteId] = dic;
+                }
+            }
 
-        //    private static Dictionary<int, Dictionary<int, ChannelInfo>> GetAllDictionary()
-        //    {
-        //        var allDict = DataCacheManager.Get<Dictionary<int, Dictionary<int, ChannelInfo>>>(CacheKey);
-        //        if (allDict != null) return allDict;
+            private static Dictionary<int, Dictionary<int, ChannelInfo>> GetAllDictionary()
+            {
+                var allDict = DataCacheManager.Get<Dictionary<int, Dictionary<int, ChannelInfo>>>(CacheKey);
+                if (allDict != null) return allDict;
 
-        //        allDict = new Dictionary<int, Dictionary<int, ChannelInfo>>();
-        //        DataCacheManager.Insert(CacheKey, allDict);
-        //        return allDict;
-        //    }
+                allDict = new Dictionary<int, Dictionary<int, ChannelInfo>>();
+                DataCacheManager.Insert(CacheKey, allDict);
+                return allDict;
+            }
 
-        //    public static void Remove(int siteId)
-        //    {
-        //        var allDict = GetAllDictionary();
+            public static void Remove(int siteId)
+            {
+                var allDict = GetAllDictionary();
 
-        //        lock (LockObject)
-        //        {
-        //            allDict.Remove(siteId);
-        //        }
-        //    }
+                lock (LockObject)
+                {
+                    allDict.Remove(siteId);
+                }
+            }
 
-        //    public static void Update(int siteId, ChannelInfo channelInfo)
-        //    {
-        //        var dict = GetChannelInfoDictionaryBySiteId(siteId);
+            public static void Update(int siteId, ChannelInfo channelInfo)
+            {
+                var dict = GetChannelInfoDictionaryBySiteId(siteId);
 
-        //        lock (LockObject)
-        //        {
-        //            dict[channelInfo.Id] = channelInfo;
-        //        }
-        //    }
+                lock (LockObject)
+                {
+                    dict[channelInfo.Id] = channelInfo;
+                }
+            }
 
-        //    public static Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
-        //    {
-        //        var allDict = GetAllDictionary();
+            public static Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
+            {
+                var allDict = GetAllDictionary();
 
-        //        Dictionary<int, ChannelInfo> dict;
-        //        allDict.TryGetValue(siteId, out dict);
+                Dictionary<int, ChannelInfo> dict;
+                allDict.TryGetValue(siteId, out dict);
 
-        //        if (dict != null) return dict;
+                if (dict != null) return dict;
 
-        //        dict = DataProvider.ChannelDao.GetChannelInfoDictionaryBySiteId(siteId);
-        //        Update(allDict, dict, siteId);
-        //        return dict;
-        //    }
-        //}
+                dict = DataProvider.ChannelDao.GetChannelInfoDictionaryBySiteId(siteId);
+                Update(allDict, dict, siteId);
+                return dict;
+            }
+        }
 
         public static void RemoveCacheBySiteId(int siteId)
         {
-            var cacheManager = Caching.CacheManager;
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
-            foreach (var summary in summaries)
-            {
-                cacheManager.Remove(DataProvider.ChannelDao.GetEntityKey(summary.Id));
-            }
-
-            cacheManager.Remove(DataProvider.ChannelDao.GetListKey(siteId));
+            ChannelManagerCache.Remove(siteId);
             StlChannelCache.ClearCache();
         }
 
         public static void UpdateCache(int siteId, ChannelInfo channelInfo)
         {
-            var cacheManager = Caching.CacheManager;
-            cacheManager.Remove(DataProvider.ChannelDao.GetListKey(channelInfo.SiteId));
-            cacheManager.Remove(DataProvider.ChannelDao.GetEntityKey(channelInfo.Id));
-
+            ChannelManagerCache.Update(siteId, channelInfo);
             StlChannelCache.ClearCache();
         }
 
         public static ChannelInfo GetChannelInfo(int siteId, int channelId)
         {
-            return DataProvider.ChannelDao.Get(channelId);
-            //ChannelInfo channelInfo = null;
-            //var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            //if (channelId == 0) channelId = siteId;
-            //dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
-            //return channelInfo;
+            ChannelInfo channelInfo = null;
+            var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            if (channelId == 0) channelId = siteId;
+            dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
+            return channelInfo;
         }
 
         public static IList<ChannelInfo> GetChildren(int siteId, int parentId)
         {
             var list = new List<ChannelInfo>();
 
-            //var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
 
-            foreach (var summary in summaries)
+            foreach (var channelInfo in dic.Values)
             {
-                if (summary == null) continue;
-                if (summary.ParentId == parentId)
+                if (channelInfo == null) continue;
+                if (channelInfo.ParentId == parentId)
                 {
-                    var channelInfo = GetChannelInfo(siteId, summary.Id);
                     channelInfo.Children = GetChildren(siteId, channelInfo.Id);
                     list.Add(channelInfo);
                 }
@@ -161,8 +149,8 @@ namespace SiteServer.CMS.DataCache
         {
             if (string.IsNullOrEmpty(indexName)) return 0;
 
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
-            var channelInfo = summaries.FirstOrDefault(x => x != null && x.IndexName == indexName);
+            var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            var channelInfo = dict.Values.FirstOrDefault(x => x != null && x.IndexName == indexName);
             return channelInfo?.Id ?? 0;
         }
 
@@ -170,82 +158,42 @@ namespace SiteServer.CMS.DataCache
         {
             if (parentId <= 0 || string.IsNullOrEmpty(channelName)) return 0;
 
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
+            var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            var channelInfoList = dict.Values.OrderBy(x => x.Taxis).ToList();
 
-            IChannelSummary channel;
+            ChannelInfo channelInfo;
 
             if (recursive)
             {
                 if (siteId == parentId)
                 {
-                    channel = summaries.FirstOrDefault(x => x.ChannelName == channelName);
+                    channelInfo = channelInfoList.FirstOrDefault(x => x.ChannelName == channelName);
 
                     //sqlString = $"SELECT Id FROM siteserver_Channel WHERE (SiteId = {siteId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
                 }
                 else
                 {
-                    channel = summaries.FirstOrDefault(x => (x.ParentId == parentId || TranslateUtils.StringCollectionToIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
+                    channelInfo = channelInfoList.FirstOrDefault(x => (x.ParentId == parentId || TranslateUtils.StringCollectionToIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
 
-                    //                    sqlString = $@"SELECT Id
-                    //FROM siteserver_Channel 
-                    //WHERE ((ParentId = {parentId}) OR
-                    //      (ParentsPath = '{parentId}') OR
-                    //      (ParentsPath LIKE '{parentId},%') OR
-                    //      (ParentsPath LIKE '%,{parentId},%') OR
-                    //      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
-                    //ORDER BY Taxis";
+//                    sqlString = $@"SELECT Id
+//FROM siteserver_Channel 
+//WHERE ((ParentId = {parentId}) OR
+//      (ParentsPath = '{parentId}') OR
+//      (ParentsPath LIKE '{parentId},%') OR
+//      (ParentsPath LIKE '%,{parentId},%') OR
+//      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
+//ORDER BY Taxis";
                 }
             }
             else
             {
-                channel = summaries.FirstOrDefault(x => x.ParentId == parentId && x.ChannelName == channelName);
+                channelInfo = channelInfoList.FirstOrDefault(x => x.ParentId == parentId && x.ChannelName == channelName);
 
                 //sqlString = $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
             }
 
-            return channel?.Id ?? 0;
+            return channelInfo?.Id ?? 0;
         }
-
-        //        public static int GetChannelIdByParentIdAndChannelName(int siteId, int parentId, string channelName, bool recursive)
-        //        {
-        //            if (parentId <= 0 || string.IsNullOrEmpty(channelName)) return 0;
-
-        //            var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-        //            var channelInfoList = dict.Values.OrderBy(x => x.Taxis).ToList();
-
-        //            ChannelInfo channelInfo;
-
-        //            if (recursive)
-        //            {
-        //                if (siteId == parentId)
-        //                {
-        //                    channelInfo = channelInfoList.FirstOrDefault(x => x.ChannelName == channelName);
-
-        //                    //sqlString = $"SELECT Id FROM siteserver_Channel WHERE (SiteId = {siteId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
-        //                }
-        //                else
-        //                {
-        //                    channelInfo = channelInfoList.FirstOrDefault(x => (x.ParentId == parentId || TranslateUtils.StringCollectionToIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
-
-        ////                    sqlString = $@"SELECT Id
-        ////FROM siteserver_Channel 
-        ////WHERE ((ParentId = {parentId}) OR
-        ////      (ParentsPath = '{parentId}') OR
-        ////      (ParentsPath LIKE '{parentId},%') OR
-        ////      (ParentsPath LIKE '%,{parentId},%') OR
-        ////      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
-        ////ORDER BY Taxis";
-        //                }
-        //            }
-        //            else
-        //            {
-        //                channelInfo = channelInfoList.FirstOrDefault(x => x.ParentId == parentId && x.ChannelName == channelName);
-
-        //                //sqlString = $"SELECT Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND ChannelName = '{AttackUtils.FilterSql(channelName)}') ORDER BY Taxis";
-        //            }
-
-        //            return channelInfo?.Id ?? 0;
-        //        }
 
         //public static List<string> GetIndexNameList(int siteId)
         //{
@@ -255,39 +203,22 @@ namespace SiteServer.CMS.DataCache
 
         public static List<ChannelInfo> GetChannelInfoList(int siteId)
         {
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
-            var list = new List<ChannelInfo>();
-            foreach (var summary in summaries)
-            {
-                var channel = DataProvider.ChannelDao.Get(summary.Id);
-                list.Add(channel);
-            }
-
-            return list;
-
-            //var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-            //return dic.Values.Where(channelInfo => channelInfo != null).ToList();
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            return dic.Values.Where(channelInfo => channelInfo != null).ToList();
         }
 
         public static List<int> GetChannelIdList(int siteId)
         {
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
-            return summaries.OrderBy(c => c.Taxis).Select(x => x.Id).ToList();
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
-
-        //public static List<int> GetChannelIdList(int siteId)
-        //{
-        //    var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
-        //    return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
-        //}
 
         public static List<int> GetChannelIdList(int siteId, string channelGroup)
         {
             var channelInfoList = new List<ChannelInfo>();
-            var summaries = DataProvider.ChannelDao.GetAllSummary(siteId);
-            foreach (var summary in summaries)
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            foreach (var channelInfo in dic.Values)
             {
-                var channelInfo = DataProvider.ChannelDao.Get(summary.Id);
                 if (string.IsNullOrEmpty(channelInfo.GroupNameCollection)) continue;
 
                 if (StringUtils.Contains(channelInfo.GroupNameCollection, channelGroup))
@@ -307,7 +238,7 @@ namespace SiteServer.CMS.DataCache
         {
             if (channelInfo == null) return new List<int>();
 
-            var summaries = DataProvider.ChannelDao.GetAllSummary(channelInfo.SiteId);
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(channelInfo.SiteId);
             var channelInfoList = new List<ChannelInfo>();
 
             if (channelInfo.ChildrenCount == 0)
@@ -323,44 +254,40 @@ namespace SiteServer.CMS.DataCache
             }
             else if (scopeType == EScopeType.All)
             {
-                foreach (var summary in summaries)
+                foreach (var nodeInfo in dic.Values)
                 {
-                    if (summary.Id == channelInfo.Id || summary.ParentId == channelInfo.Id || StringUtils.In(summary.ParentsPath, channelInfo.Id))
+                    if (nodeInfo.Id == channelInfo.Id || nodeInfo.ParentId == channelInfo.Id || StringUtils.In(nodeInfo.ParentsPath, channelInfo.Id))
                     {
-                        var nodeInfo = DataProvider.ChannelDao.Get(summary.Id);
                         channelInfoList.Add(nodeInfo);
                     }
                 }
             }
             else if (scopeType == EScopeType.Children)
             {
-                foreach (var summary in summaries)
+                foreach (var nodeInfo in dic.Values)
                 {
-                    if (summary.ParentId == channelInfo.Id)
+                    if (nodeInfo.ParentId == channelInfo.Id)
                     {
-                        var nodeInfo = DataProvider.ChannelDao.Get(summary.Id);
                         channelInfoList.Add(nodeInfo);
                     }
                 }
             }
             else if (scopeType == EScopeType.Descendant)
             {
-                foreach (var summary in summaries)
+                foreach (var nodeInfo in dic.Values)
                 {
-                    if (summary.ParentId == channelInfo.Id || StringUtils.In(summary.ParentsPath, channelInfo.Id))
+                    if (nodeInfo.ParentId == channelInfo.Id || StringUtils.In(nodeInfo.ParentsPath, channelInfo.Id))
                     {
-                        var nodeInfo = DataProvider.ChannelDao.Get(summary.Id);
                         channelInfoList.Add(nodeInfo);
                     }
                 }
             }
             else if (scopeType == EScopeType.SelfAndChildren)
             {
-                foreach (var summary in summaries)
+                foreach (var nodeInfo in dic.Values)
                 {
-                    if (summary.Id == channelInfo.Id || summary.ParentId == channelInfo.Id)
+                    if (nodeInfo.Id == channelInfo.Id || nodeInfo.ParentId == channelInfo.Id)
                     {
-                        var nodeInfo = DataProvider.ChannelDao.Get(summary.Id);
                         channelInfoList.Add(nodeInfo);
                     }
                 }
@@ -432,7 +359,7 @@ namespace SiteServer.CMS.DataCache
             return GetTableName(siteInfo, GetChannelInfo(siteInfo.Id, channelId));
         }
 
-        public static string GetTableName(SiteInfo siteInfo, IChannelSummary channelInfo)
+        public static string GetTableName(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             return channelInfo != null ? GetTableName(siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
         }
@@ -589,21 +516,21 @@ namespace SiteServer.CMS.DataCache
 
         public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, PermissionsImpl permissionsImpl)
         {
-            var list = DataProvider.ChannelDao.GetAllSummary(siteInfo.Id);
+            var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var summary in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = permissionsImpl.IsOwningChannelId(summary.Id);
+                    enabled = permissionsImpl.IsOwningChannelId(channelId);
                     if (!enabled)
                     {
-                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, summary.Id)) continue;
+                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
                     }
                 }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, summary.Id);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
                 var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
@@ -616,21 +543,21 @@ namespace SiteServer.CMS.DataCache
 
         public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, string contentModelId, PermissionsImpl permissionsImpl)
         {
-            var list = DataProvider.ChannelDao.GetAllSummary(siteInfo.Id);
+            var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var summary in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = permissionsImpl.IsOwningChannelId(summary.Id);
+                    enabled = permissionsImpl.IsOwningChannelId(channelId);
                     if (!enabled)
                     {
-                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, summary.Id)) continue;
+                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
                     }
                 }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, summary.Id);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
                 var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
@@ -647,18 +574,18 @@ namespace SiteServer.CMS.DataCache
 
         public static void AddListItemsForAddContent(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionsImpl permissionsImpl)
         {
-            var list = DataProvider.ChannelDao.GetAllSummary(siteInfo.Id);
+            var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var summary in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = permissionsImpl.IsOwningChannelId(summary.Id);
+                    enabled = permissionsImpl.IsOwningChannelId(channelId);
                 }
 
-                var nodeInfo = GetChannelInfo(siteInfo.Id, summary.Id);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
                 if (enabled)
                 {
                     if (nodeInfo.Additional.IsContentAddable == false) enabled = false;
@@ -681,18 +608,18 @@ namespace SiteServer.CMS.DataCache
         /// </summary>
         public static void AddListItemsForCreateChannel(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionsImpl permissionsImpl)
         {
-            var list = DataProvider.ChannelDao.GetAllSummary(siteInfo.Id);
+            var list = GetChannelIdList(siteInfo.Id);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
-            foreach (var summary in list)
+            foreach (var channelId in list)
             {
                 var enabled = true;
                 if (isSeeOwning)
                 {
-                    enabled = permissionsImpl.IsOwningChannelId(summary.Id);
+                    enabled = permissionsImpl.IsOwningChannelId(channelId);
                 }
 
-                var nodeInfo = GetChannelInfo(siteInfo.Id, summary.Id);
+                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
                 if (!enabled)
                 {
@@ -728,8 +655,8 @@ namespace SiteServer.CMS.DataCache
 
             if (isShowContentNum)
             {
-                //var adminId = adminPermissions.GetAdminId(siteInfo.Id, channelInfo.Id);
-                var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                var adminId = adminPermissions.GetAdminId(siteInfo.Id, channelInfo.Id);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
                 retVal = string.Concat(retVal, " (", count, ")");
             }
 
@@ -863,12 +790,12 @@ namespace SiteServer.CMS.DataCache
         {
             var options = new List<KeyValuePair<int, string>>();
 
-            var list = DataProvider.ChannelDao.GetAllSummary(siteId);
-            foreach (var summary in list)
+            var list = GetChannelIdList(siteId);
+            foreach (var channelId in list)
             {
-                var enabled = permissionsImpl.HasChannelPermissions(siteId, summary.Id, channelPermissions);
+                var enabled = permissionsImpl.HasChannelPermissions(siteId, channelId, channelPermissions);
 
-                var channelInfo = GetChannelInfo(siteId, summary.Id);
+                var channelInfo = GetChannelInfo(siteId, channelId);
                 if (enabled && channelPermissions.Contains(ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     if (channelInfo.Additional.IsContentAddable == false) enabled = false;
@@ -876,8 +803,8 @@ namespace SiteServer.CMS.DataCache
 
                 if (enabled)
                 {
-                    var tuple = new KeyValuePair<int, string>(summary.Id,
-                        GetChannelNameNavigation(siteId, summary.Id));
+                    var tuple = new KeyValuePair<int, string>(channelId,
+                        GetChannelNameNavigation(siteId, channelId));
                     options.Add(tuple);
                 }
             }
@@ -901,17 +828,17 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                 isCreatable = count != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                 isCreatable = count != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                 if (count != 0 && count != 1)
                 {
                     isCreatable = true;
@@ -919,7 +846,7 @@ namespace SiteServer.CMS.DataCache
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                 isCreatable = count < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)

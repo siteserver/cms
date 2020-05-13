@@ -3,7 +3,7 @@
     only:
       - netfx-master
 
-  version: 6.15.{build}
+  version: 6.14.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -81,7 +81,7 @@
     only:
       - netfx-staging
 
-  version: 6.15.{build}-beta
+  version: 6.14.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:

@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
             //return ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
-            return DataProvider.ContentDao.Get(ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo.Id, contentId);
+            return DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo.Id, contentId);
         }
 
         public List<IContentInfo> GetContentInfoList(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
@@ -32,23 +32,15 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0) return null;
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            var summaries = DataProvider.ContentDao.GetSummaries(siteInfo, channelInfo, false);
-            var list = new List<IContentInfo>();
-            foreach (var summary in summaries)
+            var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
+            var retVal = new List<IContentInfo>();
+            foreach (var contentInfo in list)
             {
-                list.Add(DataProvider.ContentDao.Get(siteInfo, channelInfo, summary.Id));
+                retVal.Add(contentInfo);
             }
-
-            //var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
-            //var retVal = new List<IContentInfo>();
-            //foreach (var contentInfo in list)
-            //{
-            //    retVal.Add(contentInfo);
-            //}
-            //return retVal;
-            return list;
+            return retVal;
         }
 
         public int GetCount(int siteId, int channelId, string whereString)
@@ -56,9 +48,9 @@ namespace SiteServer.CMS.Plugin.Apis
             if (siteId <= 0 || channelId <= 0) return 0;
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
-            return DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+            return DataProvider.ContentDao.GetCount(tableName, whereString);
         }
 
         public string GetTableName(int siteId, int channelId)
@@ -198,7 +190,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
             var contentIdList = new List<int> { contentId };
-            DataProvider.ContentDao.UpdateTrashContents(siteInfo, nodeInfo, tableName, contentIdList);
+            DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
         }
 
         public IList<int> GetContentIdList(int siteId, int channelId)

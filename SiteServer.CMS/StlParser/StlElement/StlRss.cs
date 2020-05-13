@@ -214,7 +214,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var item = new RssItem();
 
-                    var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                    var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                     item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
                     item.Description = contentInfo.Summary;
                     if (string.IsNullOrEmpty(item.Description))

@@ -5,6 +5,7 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();

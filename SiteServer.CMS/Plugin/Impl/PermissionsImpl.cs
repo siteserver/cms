@@ -105,7 +105,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 {
                     foreach (var siteId in TranslateUtils.StringCollectionToIntList(_adminInfo.SiteIdCollection))
                     {
-                        if (!siteIdList.Contains(siteId) && SiteManager.IsExists(siteId))
+                        if (!siteIdList.Contains(siteId))
                         {
                             siteIdList.Add(siteId);
                         }
@@ -118,7 +118,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
                 foreach (var siteId in dict.Keys)
                 {
-                    if (!siteIdList.Contains(siteId) && SiteManager.IsExists(siteId))
+                    if (!siteIdList.Contains(siteId))
                     {
                         siteIdList.Add(siteId);
                     }

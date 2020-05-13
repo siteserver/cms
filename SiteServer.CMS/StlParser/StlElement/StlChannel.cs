@@ -422,7 +422,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfContents.ToLower()))
             {
-                var count = DataProvider.ContentDao.GetCount(pageInfo.SiteInfo, channel);
+                var count = ContentManager.GetCount(pageInfo.SiteInfo, channel, true);
                 parsedContent = count.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))

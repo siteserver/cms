@@ -48,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -123,8 +123,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     var contentIdList = channelContentIds.Where(x => x.ChannelId == distinctChannelId)
                         .Select(x => x.Id).ToList();
-                    var distinctChannelInfo = ChannelManager.GetChannelInfo(siteId, distinctChannelId);
-                    DataProvider.ContentDao.UpdateTrashContents(siteInfo, distinctChannelInfo, tableName, contentIdList);
+                    DataProvider.ContentDao.UpdateTrashContents(siteId, distinctChannelId, tableName, contentIdList);
 
                     CreateManager.TriggerContentChangedEvent(siteId, distinctChannelId);
                 }

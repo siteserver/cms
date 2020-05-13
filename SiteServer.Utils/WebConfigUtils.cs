@@ -31,8 +31,6 @@ namespace SiteServer.Utils
             }
         }
 
-        public static string RedisConnectionString { get; private set; }
-
         public static string AdminDirectory { get; private set; }
         public static string HomeDirectory { get; private set; }
         public static string SecretKey { get; private set; }
@@ -84,14 +82,6 @@ namespace SiteServer.Utils
                                     if (attrValue != null)
                                     {
                                         connectionString = attrValue.Value;
-                                    }
-                                }
-                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(RedisConnectionString)))
-                                {
-                                    var attrValue = setting.Attributes["value"];
-                                    if (attrValue != null)
-                                    {
-                                        RedisConnectionString = attrValue.Value;
                                     }
                                 }
                                 else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(AdminDirectory)))
@@ -161,19 +151,19 @@ namespace SiteServer.Utils
             }
         }
 
-        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string redisConnectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
             var configPath = PathUtils.Combine(PhysicalApplicationPath, WebConfigFileName);
-            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, redisConnectionString, adminDirectory, homeDirectory, secretKey, isNightlyUpdate);
+            UpdateWebConfig(configPath, isProtectData, databaseType, connectionString, adminDirectory, homeDirectory, secretKey, isNightlyUpdate);
 
             IsProtectData = isProtectData;
             DatabaseType = databaseType;
             ConnectionString = connectionString;
         }
 
-        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string redisConnectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
+        public static void UpdateWebConfig(string configPath, bool isProtectData, DatabaseType databaseType, string connectionString, string adminDirectory, string homeDirectory, string secretKey, bool isNightlyUpdate)
         {
             connectionString = GetConnectionString(databaseType, connectionString);
 
@@ -222,15 +212,6 @@ namespace SiteServer.Utils
                                     {
                                         attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value, secretKey);
                                     }
-                                    dirty = true;
-                                }
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(RedisConnectionString)))
-                            {
-                                var attrValue = setting.Attributes["value"];
-                                if (attrValue != null)
-                                {
-                                    attrValue.Value = redisConnectionString;
                                     dirty = true;
                                 }
                             }

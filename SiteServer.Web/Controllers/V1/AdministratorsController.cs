@@ -180,10 +180,6 @@ namespace SiteServer.API.Controllers.V1
                 var accessToken = request.AdminLogin(adminInfo.UserName, isAutoLogin);
                 var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
-                var sessionId = StringUtils.Guid();
-                var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
-                CacheUtils.Insert(cacheKey, sessionId);
-
                 var isEnforcePasswordChange = false;
                 if (ConfigManager.SystemConfigInfo.IsAdminEnforcePasswordChange)
                 {
@@ -206,7 +202,6 @@ namespace SiteServer.API.Controllers.V1
                     Value = adminInfo,
                     AccessToken = accessToken,
                     ExpiresAt = expiresAt,
-                    SessionId = sessionId,
                     IsEnforcePasswordChange = isEnforcePasswordChange
                 });
             }

@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("id");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            _contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelInfo, _contentId);
+            _contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, _contentId);
 
             if (IsPostBack) return;
 
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
                 var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
-                var referenceContentInfo = DataProvider.ContentDao.Get(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
+                var referenceContentInfo = ContentManager.GetContentInfo(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
 
                 if (referenceContentInfo != null)
                 {

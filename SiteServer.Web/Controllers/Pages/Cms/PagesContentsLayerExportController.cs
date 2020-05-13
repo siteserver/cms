@@ -98,9 +98,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                //var adminId = channelInfo.Additional.IsSelfOnly
-                //    ? request.AdminId
-                //    : request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var adminId = channelInfo.Additional.IsSelfOnly
+                    ? request.AdminId
+                    : request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
                 var isAllContents = channelInfo.Additional.IsAllContents;
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
@@ -112,7 +112,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (channelContentIds.Count == 0)
                 {
-                    var ccIds = DataProvider.ContentDao.GetSummaries(siteInfo, channelInfo, isAllContents);
+                    var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, string.Empty, string.Empty);
                     var count = ccIds.Count;
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                     if (pages == 0) pages = 1;
@@ -129,7 +129,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                             foreach (var channelContentId in pageCcIds)
                             {
-                                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelContentId.ChannelId, channelContentId.Id);
+                                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                                 if (contentInfo == null) continue;
 
                                 if (!isAllCheckedLevel)
@@ -164,7 +164,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var sequence = 1;
                     foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelContentId.ChannelId, channelContentId.Id);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         if (!isAllCheckedLevel)

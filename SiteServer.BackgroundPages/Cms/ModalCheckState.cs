@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = AuthRequest.GetQueryInt("contentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
 
-            var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelId, _contentId);
+            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelId, _contentId);
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);

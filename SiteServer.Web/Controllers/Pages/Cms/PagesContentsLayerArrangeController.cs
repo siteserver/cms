@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                DataProvider.ContentDao.UpdateArrangeTaxis(siteInfo, tableName, channelInfo, attributeName, isDesc);
+                DataProvider.ContentDao.UpdateArrangeTaxis(siteId, tableName, channelId, attributeName, isDesc);
 
                 request.AddSiteLog(siteId, "批量整理", string.Empty);
 

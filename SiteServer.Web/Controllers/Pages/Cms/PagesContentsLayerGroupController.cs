@@ -82,7 +82,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, channelContentId.Id);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -102,7 +102,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, channelContentId.Id);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -140,7 +140,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     foreach (var channelContentId in channelContentIds)
                     {
                         var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, channelContentId.Id);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);

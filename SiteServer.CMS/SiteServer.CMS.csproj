@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.CMS</RootNamespace>
     <AssemblyName>SiteServer.CMS</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -37,18 +37,6 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="CacheManager.Core, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.Core.1.2.0\lib\net45\CacheManager.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="CacheManager.Microsoft.Extensions.Caching.Memory, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.Microsoft.Extensions.Caching.Memory.1.2.0\lib\net451\CacheManager.Microsoft.Extensions.Caching.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="CacheManager.Serialization.Json, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.Serialization.Json.1.2.0\lib\net45\CacheManager.Serialization.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="CacheManager.StackExchange.Redis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=5b450b4fb65c4cdb, processorArchitecture=MSIL">
-      <HintPath>..\packages\CacheManager.StackExchange.Redis.1.2.0\lib\net461\CacheManager.StackExchange.Redis.dll</HintPath>
-    </Reference>
     <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
     </Reference>
@@ -72,21 +60,6 @@
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.11.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.11.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.1.0.2\lib\netstandard1.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Caching.Memory, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.1.0.2\lib\net451\Microsoft.Extensions.Caching.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.2\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options, Version=1.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Options.1.0.2\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Primitives.1.0.1\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.XmlTransform, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
@@ -124,17 +97,11 @@
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.3.1\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
-    <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pipelines.Sockets.Unofficial.1.0.7\lib\net461\Pipelines.Sockets.Unofficial.dll</HintPath>
-    </Reference>
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
     <Reference Include="SiteServer.Plugin, Version=2.3.15.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SiteServer.Plugin.2.3.15\lib\net452\SiteServer.Plugin.dll</HintPath>
-    </Reference>
-    <Reference Include="StackExchange.Redis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
-      <HintPath>..\packages\StackExchange.Redis.2.0.513\lib\net461\StackExchange.Redis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -142,7 +109,6 @@
     </Reference>
     <Reference Include="System.Collections.Concurrent" />
     <Reference Include="System.ComponentModel" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
@@ -154,15 +120,9 @@
     <Reference Include="System.Data.SqlClient, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SqlClient.4.6.1\lib\net451\System.Data.SqlClient.dll</HintPath>
     </Reference>
-    <Reference Include="System.Diagnostics.PerformanceCounter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.PerformanceCounter.4.5.0\lib\net461\System.Diagnostics.PerformanceCounter.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Pipelines, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Pipelines.4.5.1\lib\netstandard2.0\System.IO.Pipelines.dll</HintPath>
-    </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard1.1\System.Memory.dll</HintPath>
@@ -170,18 +130,11 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Channels, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Channels.4.5.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
-    </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -223,15 +176,13 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
     <Compile Include="Api\V1\PageResponse.cs" />
-    <Compile Include="Core\CachingUtils.cs" />
+    <Compile Include="Core\Caching.cs" />
     <Compile Include="Core\CmsPages.cs" />
     <Compile Include="Core\ContentColumn.cs" />
     <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
-    <Compile Include="Core\IRedis.cs" />
     <Compile Include="Core\Office\ExcelUtils.cs" />
     <Compile Include="Core\Office\WordManager.cs" />
-    <Compile Include="Core\Redis.cs" />
     <Compile Include="Core\SqlUtils.cs" />
     <Compile Include="DataCache\Content\ContentManager.ContentCache.cs" />
     <Compile Include="DataCache\Content\ContentManager.CountCache.cs" />
@@ -269,13 +220,11 @@
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="DataCache\PermissionConfigManager.cs" />
-    <Compile Include="Model\ContentSummary.cs" />
-    <Compile Include="Model\ChannelSummary.cs" />
+    <Compile Include="Model\ChannelContentId.cs" />
     <Compile Include="Model\ContentTagInfo.cs" />
     <Compile Include="Model\Enumerations\ETaxisType.cs" />
     <Compile Include="Core\AuthenticatedRequest.cs" />
     <Compile Include="Model\Enumerations\LibraryType.cs" />
-    <Compile Include="Model\IChannelSummary.cs" />
     <Compile Include="Model\LibraryGroupInfo.cs" />
     <Compile Include="Model\LibraryImageInfo.cs" />
     <Compile Include="Model\LibraryTextInfo.cs" />
@@ -424,12 +373,10 @@
     <Compile Include="Provider\AdministratorDao.cs" />
     <Compile Include="Provider\AdministratorsInRolesDao.cs" />
     <Compile Include="Provider\ChannelDao.cs" />
-    <Compile Include="Provider\ChannelDao.Select.cs" />
     <Compile Include="Provider\ChannelGroupDao.cs" />
     <Compile Include="Provider\ConfigDao.cs" />
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
-    <Compile Include="Provider\ContentDao.Select.cs" />
     <Compile Include="Provider\ContentGroupDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />

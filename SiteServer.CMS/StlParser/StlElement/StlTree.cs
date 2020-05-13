@@ -391,7 +391,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (_isShowContentNum)
                 {
-                    var count = DataProvider.ContentDao.GetCount(_pageInfo.SiteInfo, _nodeInfo);
+                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }
@@ -721,7 +721,7 @@ var stltree_isNodeTree = {isNodeTree};
 
                 if (_isShowContentNum)
                 {
-                    var count = DataProvider.ContentDao.GetCount(_siteInfo, _nodeInfo);
+                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }

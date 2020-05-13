@@ -66,8 +66,6 @@ var methods = {
         $this.activeParentMenu = $this.siteMenus[0];
 
         document.title = $this.adminTitle;
-
-        setTimeout($this.ready, 100);
       } else {
         location.href = res.redirectUrl;
       }
@@ -77,6 +75,8 @@ var methods = {
       } else if (error.response && error.response.status === 500) {
         $this.pageAlert = utils.getPageAlert(error);
       }
+    }).then(function () {
+      setTimeout($this.ready, 100);
     });
   },
 
@@ -84,12 +84,12 @@ var methods = {
     var $this = this;
 
     $api.post($url + '/actions/cache', {
-      siteId: $siteId
+      siteId: this.siteId
     }).then(function (response) {
       var res = response.data;
       
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
+      utils.error($this, error);
     }).then(function () {
       $this.create();
     });
@@ -114,8 +114,6 @@ var methods = {
         $this.create();
       }
     }, 60000);
-
-    $this.pageLoad = true;
   },
 
   getUpdates: function () {
@@ -182,10 +180,7 @@ var methods = {
 
     $this.lastExecuteTime = new Date();
     clearTimeout($this.timeoutId);
-    var sessionId = localStorage.getItem('sessionId');
-    $api.post($urlCreate, {
-      sessionId: sessionId
-    }).then(function (response) {
+    $api.post($urlCreate).then(function (response) {
       var res = response.data;
 
       $this.pendingCount = res.value;
@@ -194,6 +189,7 @@ var methods = {
       } else {
         $this.timeoutId = setTimeout($this.create, 100);
       }
+      $this.pageLoad = true;
     }).catch(function (error) {
       if (error.response && error.response.status === 401) {
         location.href = 'pageLogin.cshtml';

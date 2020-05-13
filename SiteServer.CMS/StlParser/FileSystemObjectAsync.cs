@@ -215,7 +215,7 @@ namespace SiteServer.CMS.StlParser
 
         private static async Task CreateContentAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
         {
-            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
             if (contentInfo == null)
             {

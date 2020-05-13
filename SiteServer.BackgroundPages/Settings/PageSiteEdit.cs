@@ -273,6 +273,10 @@ namespace SiteServer.BackgroundPages.Settings
 		    }
 
             DataProvider.SiteDao.Update(SiteInfo);
+            if (isTableChanged)
+            {
+                ContentManager.RemoveCountCache(tableName);
+            }
 
             AuthRequest.AddAdminLog("修改站点属性", $"站点:{SiteInfo.SiteName}");
 

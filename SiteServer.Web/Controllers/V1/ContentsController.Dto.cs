@@ -62,7 +62,7 @@ namespace SiteServer.API.Controllers.V1
         public class CheckRequest
         {
             public int SiteId { get; set; }
-            public List<ContentSummary> Contents { get; set; }
+            public List<ChannelContentId> Contents { get; set; }
             public string Reasons { get; set; }
         }
 

@@ -749,7 +749,7 @@ namespace SiteServer.CMS.Core
             public static string Parse(SiteInfo siteInfo, int channelId, int contentId)
             {
                 var contentFilePathRule = GetContentFilePathRule(siteInfo, channelId);
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelId, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
                 var filePath = ParseContentPath(siteInfo, channelId, contentInfo, contentFilePathRule);
                 return filePath;
             }
@@ -1024,7 +1024,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetContentPageFilePath(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
         {
-            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelId, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
             return GetContentPageFilePath(siteInfo, channelId, contentInfo, currentPageIndex);
         }
 

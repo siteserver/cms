@@ -118,21 +118,17 @@ namespace SiteServer.BackgroundPages.Cms
                 AuthRequest.AdminPermissionsImpl,
                 allAttributeNameList);
 
-            if (_isTrashOnly || _isWritingOnly || !string.IsNullOrEmpty(keyword))
+            PgContents.Param = new PagerParam
             {
-                PgContents.Param = new PagerParam
-                {
-                    ControlToPaginate = RptContents,
-                    TableName = tableName,
-                    //PageSize = SiteInfo.Additional.PageSize,
-                    PageSize = 20,
-                    Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
-                    OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
-                    ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
-                    WhereSqlString = whereString,
-                    TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString)
-                };
-            }
+                ControlToPaginate = RptContents,
+                TableName = tableName,
+                PageSize = SiteInfo.Additional.PageSize,
+                Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
+                OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
+                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
+                WhereSqlString = whereString,
+                TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString)
+            };
 
             if (IsPostBack) return;
 
@@ -145,8 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var list = DataProvider.ContentDao.GetContentIdListByTrash(SiteId, tableName);
                     foreach (var (contentChannelId, contentId) in list)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, contentChannelId);
-                        ContentUtility.Delete(tableName, SiteInfo, channelInfo, contentId);
+                        ContentUtility.Delete(tableName, SiteInfo, contentChannelId, contentId);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");
@@ -157,17 +152,15 @@ namespace SiteServer.BackgroundPages.Cms
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
                     foreach (var channelId in idsDictionary.Keys)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                        var channelTableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
                         var contentIdList = idsDictionary[channelId];
-                        DataProvider.ContentDao.UpdateTrashContents(SiteInfo, channelInfo, channelTableName, contentIdList);
+                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdList);
                     }
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.UpdateRestoreContentsByTrash(SiteInfo, _channelInfo, tableName);
+                    DataProvider.ContentDao.UpdateRestoreContentsByTrash(SiteId, _channelId, tableName);
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }
@@ -206,10 +199,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbDateFrom.Text = dateFrom;
             TbDateTo.Text = dateTo;
 
-            if (_isTrashOnly || _isWritingOnly || !string.IsNullOrEmpty(keyword))
-            {
-                PgContents.DataBind();
-            }
+            PgContents.DataBind();
 
             LtlColumnsHead.Text += TextUtility.GetColumnsHeadHtml(_styleInfoList, _pluginColumns, _attributesOfDisplay);
             

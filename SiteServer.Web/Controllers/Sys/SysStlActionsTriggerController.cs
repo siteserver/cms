@@ -73,7 +73,7 @@ namespace SiteServer.API.Controllers.Sys
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         redirectUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, false);
                     }
                     else if (channelId != 0)

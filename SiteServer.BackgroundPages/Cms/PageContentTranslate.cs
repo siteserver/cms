@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelId, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelId, contentId);
                         if (contentInfo != null)
                         {
                             builder.Append(

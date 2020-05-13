@@ -1,7 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -26,7 +25,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
-            var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, contentItemInfo.ChannelId,
+            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contentItemInfo.ChannelId,
                 contentItemInfo.ContentId);
 
             var contextInfo = contextInfoRef.Clone();

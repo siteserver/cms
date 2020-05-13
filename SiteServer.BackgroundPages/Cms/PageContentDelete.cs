@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelId, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelId, contentId);
                     if (contentInfo != null)
                     {
                         builder.Append(
@@ -129,8 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var channelId in _idsDictionary.Keys)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                    var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
+                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                     var contentIdList = _idsDictionary[channelId];
 
                     if (!_isDeleteFromTrash)
@@ -158,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}");
                         }
 
-                        DataProvider.ContentDao.UpdateTrashContents(SiteInfo, channelInfo, tableName, contentIdList);
+                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
 
                         //引用内容，需要删除
                         //var siteTableNameList = SiteManager.GetTableNameList();
@@ -181,7 +180,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         foreach (var contentId in contentIdList)
                         {
-                            ContentUtility.Delete(tableName, SiteInfo, channelInfo, contentId);
+                            ContentUtility.Delete(tableName, SiteInfo, channelId, contentId);
                         }
 
                         AuthRequest.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");

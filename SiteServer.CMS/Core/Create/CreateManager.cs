@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Core.Create
                 
                 if (channelInfo != null)
                 {
-                    var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                    var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                     if (count > 0)
                     {
                         pageCount = count;

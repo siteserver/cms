@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages
                 {
                     foreach(var siteInfo in SiteManager.GetSiteInfoList())
                     {
-                        var count = DataProvider.ContentDao.GetCountChecking(siteInfo.Id);
+                        var count = ContentManager.GetCountChecking(siteInfo);
                         if (count > 0)
                         {
                             checkingList.Add(new
@@ -85,7 +85,7 @@ namespace SiteServer.API.Controllers.Pages
                         var siteInfo = SiteManager.GetSiteInfo(siteId);
                         if (siteInfo == null) continue;
 
-                        var count = DataProvider.ContentDao.GetCountChecking(siteInfo.Id);
+                        var count = ContentManager.GetCountChecking(siteInfo);
                         if (count > 0)
                         {
                             checkingList.Add(new

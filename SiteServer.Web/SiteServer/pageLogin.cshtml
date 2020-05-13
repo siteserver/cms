@@ -14,7 +14,7 @@
 
     <h4 class="m-l-5">管理员登录</h4>
 
-    <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20" method="post">
+    <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20">
 
       <template v-if="pageAlert">
         <div class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
@@ -32,7 +32,7 @@
               </span>
             </div>
             <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text"
-              v-focus placeholder="请输入用户名/手机号/邮箱" autocomplete="off">
+              v-focus placeholder="请输入用户名/手机号/邮箱">
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
               </span>
             </div>
             <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
-              type="password" placeholder="请输入密码" autocomplete="off">
+              type="password" placeholder="请输入密码">
           </div>
         </div>
       </div>

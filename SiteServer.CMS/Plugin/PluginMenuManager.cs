@@ -130,6 +130,44 @@ namespace SiteServer.CMS.Plugin
             return menus;
         }
 
+        public static List<PluginMenu> GetHomeMenus()
+        {
+            var menus = new List<PluginMenu>();
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (service.HomeMenuFuncs == null) continue;
+
+                try
+                {
+                    var metadataMenus = new List<Menu>();
+
+                    foreach (var menuFunc in service.HomeMenuFuncs)
+                    {
+                        var metadataMenu = menuFunc.Invoke();
+                        if (metadataMenu != null)
+                        {
+                            metadataMenus.Add(metadataMenu);
+                        }
+                    }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu);
+                        menus.Add(pluginMenu);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex);
+                }
+            }
+
+            return menus;
+        }
+
         public static List<PluginMenu> GetContentMenus(List<string> pluginIds, ContentInfo contentInfo)
         {
             var menus = new List<PluginMenu>();
@@ -351,7 +389,7 @@ namespace SiteServer.CMS.Plugin
                 {
                     var metadataMenu = menuFunc.Invoke(siteId);
                     if (metadataMenu == null) continue;
-                        
+
                     if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
                     {
                         foreach (var menu in metadataMenu.Menus)

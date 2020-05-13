@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.API.Results;
 using SiteServer.CMS.Core;
@@ -82,15 +83,16 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
 
             var libraryFileName = PathUtils.GetLibraryFileName(fileName);
-            var virtualFilePath = PathUtils.GetLibraryVirtualPath(EUploadType.Image, libraryFileName);
-
-            var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualFilePath);
+            var virtualDirectoryPath = PathUtils.GetLibraryVirtualPath(EUploadType.Image, libraryFileName);
+            
+            var directoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualDirectoryPath);
+            var filePath = PathUtils.Combine(directoryPath, libraryFileName);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
             library.Title = fileName;
-            library.Url = virtualFilePath;
+            library.Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
 
             library.Id = DataProvider.LibraryImageDao.Insert(library);
 

@@ -12,9 +12,11 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model
 {
-	public class ChannelInfo : IChannelInfo, IChannelSummary
+	public class ChannelInfo : IChannelInfo
     {
-	    public ChannelInfo()
+	    private string _extendValues;
+
+		public ChannelInfo()
 		{
 			Id = 0;
 			ChannelName = string.Empty;
@@ -41,7 +43,7 @@ namespace SiteServer.CMS.Model
             ContentTemplateId = 0;
             Keywords = string.Empty;
             Description = string.Empty;
-            ExtendValues = string.Empty;
+            _extendValues = string.Empty;
 		}
 
         public ChannelInfo(int id, string channelName, int siteId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string indexName, string groupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
@@ -71,7 +73,7 @@ namespace SiteServer.CMS.Model
             ContentTemplateId = contentTemplateId;
             Keywords = keywords;
             Description = description;
-            ExtendValues = extendValues;
+            _extendValues = extendValues;
 		}
 
         public ChannelInfo(ChannelInfo channelInfo)
@@ -101,7 +103,7 @@ namespace SiteServer.CMS.Model
             ContentTemplateId = channelInfo.ContentTemplateId;
             Keywords = channelInfo.Keywords;
             Description = channelInfo.Description;
-            ExtendValues = channelInfo.ExtendValues;
+            _extendValues = channelInfo._extendValues;
         }
 
 		public int Id { get; set; }
@@ -155,12 +157,15 @@ namespace SiteServer.CMS.Model
 
 	    public string Description { get; set; }
 
-        public string ExtendValues { get; set; }
+        public void SetExtendValues(string extendValues)
+        {
+            _extendValues = extendValues;
+        }
 
         private ChannelInfoExtend _additional;
 
         [JsonIgnore]
-        public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(ExtendValues));
+        public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(_extendValues));
 
         public IList<ChannelInfo> Children { get; set; }
 

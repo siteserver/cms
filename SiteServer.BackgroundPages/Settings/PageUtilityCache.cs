@@ -70,9 +70,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
-
-            //ChannelManager.RemoveCacheBySiteId(272);
-
             PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageUtilityCache), null));
         }
 

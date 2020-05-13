@@ -12,6 +12,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using System.Linq;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.CMS.Core
 {
@@ -521,11 +522,11 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void Delete(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
+        public static void Delete(string tableName, SiteInfo siteInfo, int channelId, int contentId)
         {
             if (string.IsNullOrEmpty(tableName) || siteInfo == null || contentId <= 0) return;
             
-            DataProvider.ContentDao.Delete(tableName, siteInfo, channelInfo, contentId);
+            DataProvider.ContentDao.Delete(tableName, siteInfo.Id, contentId);
 
             TagUtils.RemoveTags(siteInfo.Id, contentId);
 
@@ -533,13 +534,15 @@ namespace SiteServer.CMS.Core
             {
                 try
                 {
-                    service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelInfo.Id, contentId));
+                    service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelId, contentId));
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
                 }
             }
+
+            ContentManager.RemoveCache(siteInfo.Id, channelId, tableName);
         }
 
         public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
@@ -553,7 +556,7 @@ namespace SiteServer.CMS.Core
             var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
             if (contentInfo == null) return;
 
@@ -607,7 +610,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                Delete(tableName, siteInfo, channelInfo, contentId);
+                Delete(tableName, siteInfo, channelId, contentId);
 
                 //DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 

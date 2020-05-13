@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var parent = ChannelManager.GetChannelInfo(siteId, parentId);
                 var countDict = new Dictionary<int, int>();
-                countDict[parent.Id] = DataProvider.ContentDao.GetCount(siteInfo, parent);
+                countDict[parent.Id] = ContentManager.GetCount(siteInfo, parent);
 
                 var channelInfoList = new List<ChannelInfo>();
 
@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     channelInfoList.Add(channelInfo);
-                    countDict[channelInfo.Id] = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                    countDict[channelInfo.Id] = ContentManager.GetCount(siteInfo, channelInfo);
                 }
 
                 return Ok(new

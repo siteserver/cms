@@ -44,7 +44,7 @@ namespace SiteServer.API.Controllers.Home
                 var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -110,7 +110,7 @@ namespace SiteServer.API.Controllers.Home
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                DataProvider.ContentDao.UpdateTrashContents(siteInfo, channelInfo, tableName, contentIdList);
+                DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

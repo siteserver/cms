@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.Home
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
                     var isTop = contentInfo.IsTop;
@@ -64,14 +64,14 @@ namespace SiteServer.API.Controllers.Home
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(siteInfo, tableName, channelInfo, contentId, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToUp(siteId, tableName, channelId, contentId, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(siteInfo, tableName, channelInfo, contentId, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToDown(siteId, tableName, channelId, contentId, isTop) == false)
                             {
                                 break;
                             }

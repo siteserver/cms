@@ -140,8 +140,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
 		    str = string.Concat(str, channelInfo.IsLastNode ? "└" : "├");
 		    str = string.Concat(str, channelInfo.ChannelName);
-		    //var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelInfo.Id);
-            var count = DataProvider.ContentDao.GetCount(SiteInfo, channelInfo);
+		    var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelInfo.Id);
+            var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
             if (count != 0)
             {
                 str = $"{str} ({count})";

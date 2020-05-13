@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentId = AuthRequest.GetQueryInt("contentId");
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
-                var contentInfo = DataProvider.ContentDao.Get(SiteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
                 
                 var tagList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
                 if (tagList.Contains(_tag))

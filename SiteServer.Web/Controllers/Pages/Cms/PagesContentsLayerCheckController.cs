@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -120,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelContentId in channelContentIds)
                 {
                     var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, contentChannelInfo, channelContentId.Id);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
@@ -145,6 +145,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     var checkInfo = new ContentCheckInfo(0, tableName, siteId, contentInfo.ChannelId, contentInfo.Id, request.AdminName, isChecked, checkedLevel, DateTime.Now, reasons);
                     DataProvider.ContentCheckDao.Insert(checkInfo);
+                }
+
+                if (isTranslate && translateChannelId > 0)
+                {
+                    ContentManager.RemoveCache(siteId, channelId, tableName);
+                    var translateTableName = ChannelManager.GetTableName(siteInfo, translateChannelId);
+                    ContentManager.RemoveCache(siteInfo.Id, translateChannelId, translateTableName);
                 }
 
                 request.AddSiteLog(siteId, "批量审核内容");

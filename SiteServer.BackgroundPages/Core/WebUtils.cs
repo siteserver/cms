@@ -118,8 +118,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            //var adminId = permissionsImpl.GetAdminId(siteInfo.Id, channelInfo.Id);
-            var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+            var adminId = permissionsImpl.GetAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
 
             if (count > 0 && permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
@@ -210,8 +210,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            //var adminId = permissionsImpl.GetAdminId(siteInfo.Id, channelInfo.Id);
-            var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+            var adminId = permissionsImpl.GetAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
 
             if (count > 0)
             {

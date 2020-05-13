@@ -154,7 +154,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetContentUrl(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal)
         {
-            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
             return GetContentUrlById(siteInfo, contentInfo, isLocal);
         }
 
@@ -185,7 +185,7 @@ namespace SiteServer.CMS.Core
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var contentInfo = DataProvider.ContentDao.Get(targetSiteInfo, targetChannelInfo, referenceId);
+                    var contentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -227,7 +227,7 @@ namespace SiteServer.CMS.Core
                 return ApiRoutePreview.GetContentUrl(siteInfo.Id, channelId, contentId);
             }
 
-            var contentInfoCurrent = DataProvider.ContentDao.Get(siteInfo, channelId, contentId);
+            var contentInfoCurrent = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
 
             if (referenceId > 0 && contentInfoCurrent.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
@@ -238,7 +238,7 @@ namespace SiteServer.CMS.Core
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    var contentInfo = DataProvider.ContentDao.Get(targetSiteInfo, targetChannelInfo, referenceId);
+                    var contentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -328,12 +328,12 @@ namespace SiteServer.CMS.Core
                 {
                     if (linkType == ELinkType.NoLinkIfContentNotExists)
                     {
-                        var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                         url = count == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToOnlyOneContent)
                     {
-                        var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                         if (count == 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
@@ -347,7 +347,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
                     {
-                        var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                         if (count == 0)
                         {
                             url = PageUtils.UnclickedUrl;
@@ -365,7 +365,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.LinkToFirstContent)
                     {
-                        var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                         if (count >= 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
@@ -380,7 +380,7 @@ namespace SiteServer.CMS.Core
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
                     {
-                        var count = DataProvider.ContentDao.GetCount(siteInfo, channelInfo);
+                        var count = ContentManager.GetCount(siteInfo, channelInfo, true);
                         if (count >= 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);

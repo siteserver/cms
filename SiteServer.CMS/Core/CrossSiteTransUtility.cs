@@ -251,7 +251,7 @@ namespace SiteServer.CMS.Core
         {
             var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
 
-            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
             FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;

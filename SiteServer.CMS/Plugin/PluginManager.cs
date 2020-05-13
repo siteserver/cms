@@ -158,10 +158,10 @@ namespace SiteServer.CMS.Plugin
 
                 var service = new ServiceImpl(metadata);
 
+                plugin.Startup(service);
+
                 PluginContentTableManager.SyncContentTable(service);
                 PluginDatabaseTableManager.SyncTable(service);
-
-                plugin.Startup(service);
 
                 return new PluginInstance(metadata, service, plugin, s.ElapsedMilliseconds);
             }

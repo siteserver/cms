@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (templateType == TemplateType.ContentTemplate)
                 {
                     var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                    var count = DataProvider.ContentDao.GetCount(SiteInfo, channelInfo);
+                    var count = ContentManager.GetCount(SiteInfo, channelInfo, true);
                     if (count > 0)
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);

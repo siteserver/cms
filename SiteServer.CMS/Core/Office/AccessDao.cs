@@ -70,7 +70,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) continue;
 
                 var insertBuilder = new StringBuilder();

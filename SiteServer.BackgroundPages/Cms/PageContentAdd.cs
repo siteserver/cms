@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (contentId > 0)
             {
                 //contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
-                contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                contentInfo = DataProvider.ContentDao.GetCacheContentInfo(_tableName, _channelInfo.Id, contentId);
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
@@ -331,12 +331,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     LogUtils.AddErrorLog(ex);
                     FailMessage($"内容添加失败：{ex.Message}");
-                    return;
                 }
             }
             else
             {
-                var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                 try
                 {
                     contentInfo.LastEditUserName = AuthRequest.AdminName;

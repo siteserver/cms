@@ -15,6 +15,50 @@ namespace SiteServer.CMS.DataCache.Content
 {
     public static partial class ContentManager
     {
+        public static void RemoveCache(int siteId, int channelId, string tableName)
+        {
+            RemoveListCache(siteId, channelId);
+            ContentCache.Remove(channelId);
+            CountCache.Clear(tableName);
+            StlContentCache.ClearCache();
+        }
+
+        public static void RemoveCountCache(string tableName)
+        {
+            CountCache.Clear(tableName);
+            StlContentCache.ClearCache();
+        }
+
+        public static void InsertCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        {
+            if (contentInfo.SourceId == SourceManager.Preview) return;
+
+            RemoveListCache(siteInfo.Id, channelInfo.Id);
+
+            var dict = ContentCache.GetContentDict(contentInfo.ChannelId);
+            dict[contentInfo.Id] = contentInfo;
+
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            CountCache.Add(tableName, contentInfo);
+
+            StlContentCache.ClearCache();
+        }
+
+        public static void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        {
+            var dict = ContentCache.GetContentDict(channelInfo.Id);
+
+            RemoveListCache(siteInfo.Id, channelInfo.Id);
+
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            CountCache.Remove(tableName, contentInfo);
+            CountCache.Add(tableName, contentInfo);
+
+            dict[contentInfo.Id] = contentInfo;
+
+            StlContentCache.ClearCache();
+        }
+
         public static List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var columns = new List<ContentColumn>();

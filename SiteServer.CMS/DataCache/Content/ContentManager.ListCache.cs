@@ -1,50 +1,53 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache.Content
 {
     public static partial class ContentManager
     {
-        //private static string ListCacheKey(int siteId, int channelId, bool isAllContents) =>
-        //    $"{nameof(ContentManager)}:{siteId}:{channelId}:{isAllContents}";
+        private static string ListCacheKey(int siteId, int channelId, int adminId, bool isAllContents) =>
+            $"{nameof(ContentManager)}:{siteId}:{channelId}:{adminId}:{isAllContents}";
 
-        //public static List<(int ChannelId, int ContentId)> GetChannelContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo)
-        //{
-        //    var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+        public static void RemoveListCache(int siteId, int channelId)
+        {
+            CacheUtils.RemoveByStartString($"{nameof(ContentManager)}:{siteId}:{channelId}:");
+        }
 
-        //    var cacheKey = GetListKey(tableName, channelInfo.Additional.IsAllContents, siteInfo.Id, channelInfo.Id);
+        public static List<(int ChannelId, int ContentId)> GetChannelContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents)
+        {
+            var cacheKey = ListCacheKey(siteInfo.Id, channelInfo.Id, adminId, isAllContents);
+            var retVal = CacheUtils.Get<List<(int ChannelId, int ContentId)>>(cacheKey);
+            if (retVal != null) return retVal;
 
-        //    return Caching.CacheManager.GetOrCreate(cacheKey, () =>
-        //    {
-        //        return DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, channelInfo.Additional.IsAllContents, string.Empty, string.Empty),
-        //            DataProvider.ContentDao.GetOrderString(string.Empty, channelInfo.Additional.IsAllContents));
-        //    });
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            retVal = DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents, string.Empty, string.Empty),
+                DataProvider.ContentDao.GetOrderString(string.Empty, isAllContents));
 
-        //    //var cacheKey = ListCacheKey(siteInfo.Id, channelInfo.Id, adminId, isAllContents);
-        //    //var retVal = CacheUtils.Get<List<(int ChannelId, int ContentId)>>(cacheKey);
-        //    //if (retVal != null) return retVal;
+            CacheUtils.Insert(cacheKey, retVal);
 
-        //    //var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-        //    //retVal = DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents, string.Empty, string.Empty),
-        //    //    DataProvider.ContentDao.GetOrderString(string.Empty, isAllContents));
+            return retVal;
+        }
 
-        //    //CacheUtils.Insert(cacheKey, retVal);
+        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        {
+            return CountCache.GetChannelCountByIsChecked(siteInfo, channelInfo, isChecked);
+        }
 
-        //    //return retVal;
-        //}
+        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            var ccIds = GetChannelContentIdList(siteInfo, channelInfo, 0, false);
+            return ccIds.Count();
+        }
 
-        //public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
-        //{
-        //    return CountCache.GetChannelCountByIsChecked(siteInfo, channelInfo, isChecked);
-        //}
-
-        //public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo)
-        //{
-        //    var ccIds = GetChannelContentIdList(siteInfo, channelInfo);
-        //    return ccIds.Count();
-        //}
+        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents = false)
+        {
+            var ccIds = GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents);
+            return ccIds.Count();
+        }
     }
 }

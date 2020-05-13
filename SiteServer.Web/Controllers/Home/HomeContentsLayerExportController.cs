@@ -94,14 +94,14 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                //var adminId = request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var adminId = request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
-                var ccIds = DataProvider.ContentDao.GetSummaries(siteInfo, channelInfo, true);
+                var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, true, string.Empty, string.Empty);
                 var count = ccIds.Count;
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
@@ -119,7 +119,7 @@ namespace SiteServer.API.Controllers.Home
 
                         foreach (var channelContentId in pageCcIds)
                         {
-                            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelContentId.ChannelId, channelContentId.Id);
+                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                             if (contentInfo == null) continue;
 
                             if (!isAllCheckedLevel)

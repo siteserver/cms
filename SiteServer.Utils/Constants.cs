@@ -13,11 +13,6 @@
         public const string AuthKeyApiQuery = "apiKey";
         public const int AccessTokenExpireDays = 7;
 
-        public static string GetSessionIdCacheKey(int userId)
-        {
-            return $"SESSION-ID-{userId}";
-        }
-
         public const string ReturnAndNewline = "\r\n";//回车换行
         public const string Html5Empty = @"<html><head><meta charset=""utf-8""></head><body></body></html>";
 

@@ -69,7 +69,7 @@ namespace SiteServer.CMS.ImportExport.Components
             nodeInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Keywords);
             nodeInfo.Description = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Description);
 
-            nodeInfo.ExtendValues = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues);
+            nodeInfo.SetExtendValues(AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues));
         }
 
         public AtomFeed ExportNodeInfo(ChannelInfo channelInfo)

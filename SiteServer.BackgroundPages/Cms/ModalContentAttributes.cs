@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idList)
                         {
-                            var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
@@ -151,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var contentId in _idList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                         if (contentInfo != null)
                         {
                             contentInfo.Downloads = downloads;

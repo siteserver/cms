@@ -229,7 +229,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -316,7 +316,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -377,7 +377,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -496,7 +496,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))

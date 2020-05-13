@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -103,7 +103,7 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -140,7 +140,7 @@ namespace SiteServer.API.Controllers.Home
 
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);

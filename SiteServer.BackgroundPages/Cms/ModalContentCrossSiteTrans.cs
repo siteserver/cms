@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
                             var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelId, contentId);
+                                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelId, contentId);
                                 FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;

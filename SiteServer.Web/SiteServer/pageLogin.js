@@ -71,7 +71,6 @@ var methods = {
       password: md5($this.password),
       isAutoLogin: $this.isAutoLogin
     }).then(function (response) {
-      localStorage.setItem('sessionId', response.data.sessionId);
       if (response.data.isEnforcePasswordChange) {
         $this.redirectPassword();
       } else {

@@ -174,7 +174,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = DataProvider.ContentDao.Get(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
+                            var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -184,7 +184,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, contextInfo.ChannelId, contentId);
+                        contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, contentId);
                     }
 
                     if (contentInfo != null)

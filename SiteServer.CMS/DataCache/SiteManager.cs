@@ -151,10 +151,7 @@ namespace SiteServer.CMS.DataCache
             var list = new List<int>();
             foreach (var pair in pairList)
             {
-                if (IsExists(pair.Key))
-                {
-                    list.Add(pair.Key);
-                }
+                list.Add(pair.Key);
             }
             return list;
         }
@@ -171,6 +168,7 @@ namespace SiteServer.CMS.DataCache
             {
                 var siteInfo = GetSiteInfo(siteId);
                 if (siteInfo == null) continue;
+
                 if (siteInfo.IsRoot)
                 {
                     hqSiteId = siteInfo.Id;

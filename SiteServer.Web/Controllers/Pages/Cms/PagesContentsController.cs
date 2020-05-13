@@ -57,6 +57,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
+                var adminId = channelInfo.Additional.IsSelfOnly
+                    ? request.AdminId
+                    : request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
                 var isAllContents = channelInfo.Additional.IsAllContents;
 
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
@@ -65,17 +68,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
 
                 var pageContentInfoList = new List<ContentInfo>();
-
-                IList<ContentSummary> ccIds;
-                if (!string.IsNullOrEmpty(type) && !string.IsNullOrEmpty(keyword))
-                {
-                    ccIds = DataProvider.ContentDao.GetSummariesByKeyword(siteInfo, channelInfo, isAllContents, type, keyword);
-                }
-                else
-                {
-                    ccIds = DataProvider.ContentDao.GetSummaries(siteInfo, channelInfo, isAllContents);
-                }
-
+                //var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, type, keyword);
+                var ccIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents);
                 var count = ccIds.Count;
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;
@@ -87,15 +81,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var pageCcIds = ccIds.Skip(offset).Take(limit).ToList();
 
                     var sequence = offset + 1;
-                    foreach (var summary in pageCcIds)
+                    foreach (var (contentChannelId, contentId) in pageCcIds)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, summary.ChannelId, summary.Id);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
                         if (contentInfo == null) continue;
 
                         var menus = PluginMenuManager.GetContentMenus(pluginIds, contentInfo);
                         contentInfo.Set("PluginMenus", menus);
 
-                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, summary.ChannelId);
+                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, contentChannelId);
                         contentInfo.Set("ChannelName", channelName);
 
                         pageContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));

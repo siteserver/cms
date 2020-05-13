@@ -304,7 +304,7 @@ selObj.selectedIndex=0;
                 {
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
                         var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                         var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
                         if (!string.IsNullOrEmpty(queryString))

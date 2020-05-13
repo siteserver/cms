@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.API</RootNamespace>
     <AssemblyName>SiteServer.API</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
@@ -203,8 +203,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Home\HomeContentAddLayerFileController.cs" />
-    <Compile Include="Controllers\Home\HomeContentAddLayerVideoController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesEditorLayerImageController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesEditorLayerImageController.Dto.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesLibraryEditorController.cs" />

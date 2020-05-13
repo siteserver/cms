@@ -76,14 +76,14 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (isUp)
                     {
-                        if (DataProvider.ContentDao.SetTaxisToUp(SiteInfo, _tableName, nodeInfo, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.SetTaxisToUp(SiteId, _tableName, _channelId, contentId, isTop) == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (DataProvider.ContentDao.SetTaxisToDown(SiteInfo, _tableName, nodeInfo, contentId, isTop) == false)
+                        if (DataProvider.ContentDao.SetTaxisToDown(SiteId, _tableName, _channelId, contentId, isTop) == false)
                         {
                             break;
                         }

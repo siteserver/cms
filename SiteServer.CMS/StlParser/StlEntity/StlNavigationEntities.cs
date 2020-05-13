@@ -63,7 +63,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            var contentInfo = DataProvider.ContentDao.Get(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
+                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
                             parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
                         }
                     }

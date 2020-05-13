@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Home
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -110,7 +110,7 @@ namespace SiteServer.API.Controllers.Home
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;

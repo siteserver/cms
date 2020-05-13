@@ -49,9 +49,9 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete)) continue;
 
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                //var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelId);
+                var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelId);
                 var displayName = channelInfo.ChannelName;
-                var count = DataProvider.ContentDao.GetCount(SiteInfo, channelInfo);
+                var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
                 if (count > 0)
                 {
                     displayName += $"({count})";
@@ -119,11 +119,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in channelIdListToDelete)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                         var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
                         DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
-                        DataProvider.ContentDao.UpdateTrashContents(SiteInfo, channelInfo, tableName, contentIdList);
+                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
@@ -142,9 +141,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in channelIdListToDelete)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
-                        DataProvider.ContentDao.UpdateTrashContentsByChannelId(SiteInfo, channelInfo, tableName);
+                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        DataProvider.ContentDao.UpdateTrashContentsByChannelId(SiteId, channelId, tableName);
                         DataProvider.ChannelDao.Delete(SiteId, channelId);
                     }
 

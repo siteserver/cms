@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 contentInfo.Load(new

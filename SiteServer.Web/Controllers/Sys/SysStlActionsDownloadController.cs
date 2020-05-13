@@ -77,9 +77,9 @@ namespace SiteServer.API.Controllers.Sys
                     var fileUrl = TranslateUtils.DecryptStringBySecretKey(request.GetQueryString("fileUrl"));
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                    var contentInfo = DataProvider.ContentDao.Get(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
-                    DataProvider.ContentDao.AddDownloads(siteInfo, ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo, contentId);
+                    DataProvider.ContentDao.AddDownloads( siteId, ChannelManager.GetTableName(siteInfo, channelInfo), channelId, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {

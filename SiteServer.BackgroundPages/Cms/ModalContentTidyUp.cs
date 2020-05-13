@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
 
-            DataProvider.ContentDao.UpdateArrangeTaxis(SiteInfo, _tableName, channelInfo, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
+            DataProvider.ContentDao.UpdateArrangeTaxis(SiteId, _tableName, channelId, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }

@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var contentId = AuthRequest.GetQueryInt("contentId");
 
-                var contentInfo = DataProvider.ContentDao.Get(SiteInfo, _channelInfo, contentId);
+                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                 var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
                 if (groupList.Contains(_contentGroupName))
                 {
