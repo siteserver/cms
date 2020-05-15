@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Mono.Options;
 using Semver;
@@ -15,6 +16,7 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "update";
 
+        private bool? _isNightly;
         private bool _isHelp;
 
         private readonly IApiService _apiService;
@@ -23,16 +25,34 @@ namespace SSCMS.Cli.Jobs
         private readonly IPathManager _pathManager;
         private readonly OptionSet _options;
 
-        public UpdateJob(IApiService apiService, ISettingsManager settingsManager, IConfigRepository configRepository, IPathManager pathManager)
+        public UpdateJob(IApiService apiService, ISettingsManager settingsManager, IConfigRepository configRepository,
+            IPathManager pathManager)
         {
             _apiService = apiService;
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _pathManager = pathManager;
 
-            _options = new OptionSet {
-                { "h|help",  "命令说明",
-                    v => _isHelp = v != null }
+            _options = new OptionSet
+            {
+                {
+                    "nightly", "Update to nightly version",
+                    v =>
+                    {
+                        if (string.IsNullOrEmpty(v))
+                        {
+                            _isNightly = null;
+                        }
+                        else
+                        {
+                            _isNightly = true;
+                        }
+                    }
+                },
+                {
+                    "h|help", "命令说明",
+                    v => _isHelp = v != null
+                }
             };
         }
 
@@ -62,7 +82,9 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, result, failureMessage) = _apiService.GetReleases(_settingsManager.IsNightlyUpdate, _settingsManager.Version, null);
+            var isNightly = _isNightly ?? _settingsManager.IsNightlyUpdate;
+
+            var (success, result, failureMessage) = _apiService.GetReleases(isNightly, _settingsManager.Version, null);
             if (!success)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -78,15 +100,23 @@ namespace SSCMS.Cli.Jobs
             var proceed = ReadUtils.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
             if (!proceed) return;
 
-            CloudUtils.DownloadCms(_pathManager, result.Cms.Version);
-            var name = CloudUtils.GetCmsDownloadName(result.Cms.Version);
+            Console.WriteLine($"Downloading {result.Cms.Version}...");
+            CloudUtils.Dl.DownloadCms(_pathManager, result.Cms.Version);
+            var name = CloudUtils.Dl.GetCmsDownloadName(result.Cms.Version);
             var packagePath = _pathManager.GetPackagesPath(name);
-            var packageZipPath = PathUtils.Combine(packagePath, $"{name}.zip");
-            var packageConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
-            FileUtils.DeleteFileIfExists(packageZipPath);
-            FileUtils.DeleteFileIfExists(packageConfigPath);
 
-            DirectoryUtils.Copy(packagePath, contentRootPath, true);
+            foreach (var fileName in DirectoryUtils.GetFileNames(packagePath).Where(fileName =>
+                !StringUtils.EqualsIgnoreCase(fileName, $"{name}.zip") &&
+                !StringUtils.EqualsIgnoreCase(fileName, Constants.ConfigFileName)))
+            {
+                FileUtils.CopyFile(PathUtils.Combine(packagePath, fileName),
+                    PathUtils.Combine(contentRootPath, fileName), true);
+            }
+
+            foreach (var directoryName in DirectoryUtils.GetDirectoryNames(packagePath))
+            {
+                DirectoryUtils.Copy(PathUtils.Combine(packagePath, directoryName), PathUtils.Combine(contentRootPath, directoryName), true);
+            }
 
             await WriteUtils.PrintSuccessAsync($"Congratulations, SS CMS was updated to {result.Cms.Version} successfully!");
         }

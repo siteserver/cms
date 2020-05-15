@@ -21,7 +21,7 @@ namespace SSCMS.Cli.Extensions
             services.AddScoped<IJobService, DataRestoreJob>();
             services.AddScoped<IJobService, DataSyncJob>();
             services.AddScoped<IJobService, DataUpdateJob>();
-            services.AddScoped<IJobService, InstallPrepareJob>();
+            services.AddScoped<IJobService, InstallDownloadJob>();
             services.AddScoped<IJobService, InstallSsCmsJob>();
             services.AddScoped<IJobService, LoginJob>();
             services.AddScoped<IJobService, LogoutJob>();
@@ -31,6 +31,7 @@ namespace SSCMS.Cli.Extensions
             services.AddScoped<IJobService, PluginShowJob>();
             services.AddScoped<IJobService, PluginUnPublishJob>();
             services.AddScoped<IJobService, RegisterJob>();
+            services.AddScoped<IJobService, RunJob>();
             services.AddScoped<IJobService, StatusJob>();
             services.AddScoped<IJobService, UpdateJob>();
         }

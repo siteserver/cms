@@ -7,8 +7,8 @@ Object.defineProperty(Object.prototype, "getEntityValue", {
 
 if (window.swal && swal.mixin) {
   var alert = swal.mixin({
-    confirmButtonClass: "btn btn-primary",
-    cancelButtonClass: "btn btn-default ml-3",
+    confirmButtonClass: "el-button el-button--primary",
+    cancelButtonClass: "el-button el-button--default",
     buttonsStyling: false,
   });
 }

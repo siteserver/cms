@@ -4,7 +4,6 @@ if (window.top != self) {
 
 var $url = '/index';
 var $urlCreate = '/index/actions/create';
-var $urlDownload = '/index/actions/download';
 var $idSite = 'site';
 var $sidebarWidth = 200;
 var $collapseWidth = 60;
@@ -141,7 +140,13 @@ var methods = {
     var pluginIds = this.plugins.map(function (x){ return x.pluginId});
     $cloud.getReleases($this.isNightly, $this.version, pluginIds, function (cms, plugins) {
       if (cms) {
-        $this.downloadSsCms(cms);
+        if (utils.compareVersion($this.version, cms.version) === -1) {
+          $this.newCms = {
+            current: $this.version,
+            version: cms.version,
+            published: cms.published
+          };
+        }
       }
 
       for (var i = 0; i < plugins.length; i++) {
@@ -173,25 +178,6 @@ var methods = {
             });
           }
         }
-      }
-    });
-  },
-
-  downloadSsCms: function (cms) {
-    var $this = this;
-    if (utils.compareVersion($this.version, cms.version) != -1) return;
-
-    $api.post($urlDownload, {
-      version: cms.version
-    }).then(function (response) {
-      var res = response.data;
-
-      if (res.value) {
-        $this.newCms = {
-          current: $this.version,
-          version: cms.version,
-          published: cms.published
-        };
       }
     });
   },

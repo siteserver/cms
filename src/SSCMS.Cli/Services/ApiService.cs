@@ -9,7 +9,7 @@ namespace SSCMS.Cli.Services
 {
     public partial class ApiService : IApiService
     {
-        private const string RestHost = "https://localhost:6001/v7/cli";
+        private const string RestHost = "http://api.sscms.com/v7/cli";
         private const string RestUrlLogin = "/login";
         private const string RestUrlStatus = "/status";
         private const string RestUrlRegister = "/register";

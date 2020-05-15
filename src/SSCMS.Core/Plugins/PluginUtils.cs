@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Semver;
@@ -171,12 +172,9 @@ namespace SSCMS.Core.Plugins
 
             foreach (var implementation in GetImplementations<T>(assemblies, useCaching))
             {
-                if (!implementation.GetTypeInfo().IsAbstract)
-                {
-                    var instance = (T)Activator.CreateInstance(implementation, args);
-
-                    instances.Add(instance);
-                }
+                if (implementation.IsAbstract || implementation.GetConstructor(Type.EmptyTypes) == null) continue;
+                var instance = (T)Activator.CreateInstance(implementation, args);
+                instances.Add(instance);
             }
 
             return instances;

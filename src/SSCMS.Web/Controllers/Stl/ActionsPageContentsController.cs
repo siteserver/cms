@@ -9,6 +9,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
+    [Route(Constants.ApiStlPrefix)]
     public partial class ActionsPageContentsController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -32,7 +33,7 @@ namespace SSCMS.Web.Controllers.Stl
             _templateRepository = templateRepository;
         }
 
-        [HttpPost, Route(Constants.RouteActionsPageContents)]
+        [HttpPost, Route(Constants.RouteStlActionsPageContents)]
         public async Task<string> Submit([FromBody] SubmitRequest request)
         {
             var user = await _authManager.GetUserAsync();

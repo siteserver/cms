@@ -10,6 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
+    [Route(Constants.ApiStlPrefix)]
     public partial class ActionsTriggerController : ControllerBase
     {
         private readonly ICreateManager _createManager;
@@ -27,88 +28,80 @@ namespace SSCMS.Web.Controllers.Stl
             _contentRepository = contentRepository;
         }
 
-        [HttpGet, Route(Constants.RouteActionsTrigger)]
-        public async Task<ActionResult<string>> Get([FromQuery] GetRequest request)
+        [HttpGet, Route(Constants.RouteStlActionsTrigger)]
+        public async Task<RedirectResult> Get([FromQuery] GetRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);
+            var redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
 
-            try
+            var channelId = request.ChannelId;
+            if (channelId == 0)
             {
-                var channelId = request.ChannelId;
-                if (channelId == 0)
-                {
-                    channelId = request.SiteId;
-                }
+                channelId = request.SiteId;
+            }
+
+            if (request.SpecialId != 0)
+            {
+                await _createManager.ExecuteAsync(request.SiteId, CreateType.Special, 0, 0, 0, request.SpecialId);
+            }
+            else if (request.FileTemplateId != 0)
+            {
+                await _createManager.ExecuteAsync(request.SiteId, CreateType.File, 0, 0, request.FileTemplateId, 0);
+            }
+            else if (request.ContentId != 0)
+            {
+                await _createManager.ExecuteAsync(request.SiteId, CreateType.Content, channelId, request.ContentId, 0, 0);
+            }
+            else if (channelId != 0)
+            {
+                await _createManager.ExecuteAsync(request.SiteId, CreateType.Channel, channelId, 0, 0, 0);
+            }
+            else if (request.SiteId != 0)
+            {
+                await _createManager.ExecuteAsync(request.SiteId, CreateType.Channel, request.SiteId, 0, 0, 0);
+            }
+
+            if (request.IsRedirect)
+            {
+                var channelInfo = await _channelRepository.GetAsync(channelId);
 
                 if (request.SpecialId != 0)
                 {
-                    await _createManager.ExecuteAsync(request.SiteId, CreateType.Special, 0, 0, 0, request.SpecialId);
+                    redirectUrl = await _pathManager.GetFileUrlAsync(site, request.SpecialId, false);
                 }
                 else if (request.FileTemplateId != 0)
                 {
-                    await _createManager.ExecuteAsync(request.SiteId, CreateType.File, 0, 0, request.FileTemplateId, 0);
+                    redirectUrl = await _pathManager.GetFileUrlAsync(site, request.FileTemplateId, false);
                 }
                 else if (request.ContentId != 0)
                 {
-                    await _createManager.ExecuteAsync(request.SiteId, CreateType.Content, channelId, request.ContentId, 0, 0);
+                    var contentInfo = await _contentRepository.GetAsync(site, channelInfo, request.ContentId);
+                    redirectUrl = await _pathManager.GetContentUrlAsync(site, contentInfo, false);
                 }
                 else if (channelId != 0)
                 {
-                    await _createManager.ExecuteAsync(request.SiteId, CreateType.Channel, channelId, 0, 0, 0);
+                    redirectUrl = await _pathManager.GetChannelUrlAsync(site, channelInfo, false);
                 }
                 else if (request.SiteId != 0)
                 {
-                    await _createManager.ExecuteAsync(request.SiteId, CreateType.Channel, request.SiteId, 0, 0, 0);
+                    redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
                 }
 
-                if (request.IsRedirect)
+                if (!string.IsNullOrEmpty(redirectUrl))
                 {
-                    var channelInfo = await _channelRepository.GetAsync(channelId);
-
-                    var redirectUrl = string.Empty;
-                    if (request.SpecialId != 0)
+                    var parameters = new NameValueCollection();
+                    if (!string.IsNullOrEmpty(request.ReturnUrl) && request.ReturnUrl.StartsWith("?"))
                     {
-                        redirectUrl = await _pathManager.GetFileUrlAsync(site, request.SpecialId, false);
-                    }
-                    else if (request.FileTemplateId != 0)
-                    {
-                        redirectUrl = await _pathManager.GetFileUrlAsync(site, request.FileTemplateId, false);
-                    }
-                    else if (request.ContentId != 0)
-                    {
-                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, request.ContentId);
-                        redirectUrl = await _pathManager.GetContentUrlAsync(site, contentInfo, false);
-                    }
-                    else if (channelId != 0)
-                    {
-                        redirectUrl = await _pathManager.GetChannelUrlAsync(site, channelInfo, false);
-                    }
-                    else if (request.SiteId != 0)
-                    {
-                        redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
+                        parameters = TranslateUtils.ToNameValueCollection(request.ReturnUrl.Substring(1));
                     }
 
-                    if (!string.IsNullOrEmpty(redirectUrl))
-                    {
-                        var parameters = new NameValueCollection();
-                        if (!string.IsNullOrEmpty(request.ReturnUrl) && request.ReturnUrl.StartsWith("?"))
-                        {
-                            parameters = TranslateUtils.ToNameValueCollection(request.ReturnUrl.Substring(1));
-                        }
+                    parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
-                        parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
-
-                        return Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
-                    }
+                    redirectUrl = PageUtils.AddQueryString(redirectUrl, parameters);
                 }
             }
-            catch
-            {
-                var redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
-                return Redirect(redirectUrl);
-            }
 
-            return string.Empty;
+            return Redirect(redirectUrl);
         }
     }
 }

@@ -18,6 +18,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
+    [Route(Constants.ApiStlPrefix)]
     public partial class ActionsSearchController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -39,7 +40,7 @@ namespace SSCMS.Web.Controllers.Stl
             _contentRepository = contentRepository;
         }
 
-        [HttpPost, Route(Constants.RouteActionsSearch)]
+        [HttpPost, Route(Constants.RouteStlActionsSearch)]
         public async Task<ActionResult<string>> Submit([FromBody] SubmitRequest request)
         {
             var template = string.Empty;

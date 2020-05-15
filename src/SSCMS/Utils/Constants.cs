@@ -22,17 +22,19 @@ namespace SSCMS.Utils
         public const string ApiAdminPrefix = "/api/admin";
         public const string ApiHomePrefix = "/api/home";
         public const string ApiV1Prefix = "/api/v1";
+        public const string ApiStlPrefix = "/api/stl";
         public const string RoutePreview = "preview/{siteId}";
         public const string RoutePreviewChannel = "preview/{siteId}/{channelId}";
         public const string RoutePreviewContent = "preview/{siteId}/{channelId}/{contentId}";
         public const string RoutePreviewFile = "preview/{siteId}/file/{fileTemplateId}";
         public const string RoutePreviewSpecial = "preview/{siteId}/special/{specialId}";
-        public const string RouteActionsDownload = "stl/actions/download";
-        public const string RouteActionsDynamic = "sys/stl/actions/dynamic";
-        public const string RouteRouteActionsIf = "sys/stl/actions/if";
-        public const string RouteActionsPageContents = "sys/stl/actions/pagecontents";
-        public const string RouteActionsSearch = "sys/stl/actions/search";
-        public const string RouteActionsTrigger = "sys/stl/actions/trigger";
+
+        public const string RouteStlActionsDownload = "actions/download";
+        public const string RouteStlActionsDynamic = "actions/dynamic";
+        public const string RouteStlRouteActionsIf = "actions/if";
+        public const string RouteStlActionsPageContents = "actions/pagecontents";
+        public const string RouteStlActionsSearch = "actions/search";
+        public const string RouteStlActionsTrigger = "actions/trigger";
 
         public const string OperatingSystem = "win-x64";
 

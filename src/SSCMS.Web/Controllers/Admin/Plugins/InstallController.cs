@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            CloudUtils.DownloadPlugin(_pathManager, request.PackageId, request.Version);
+            CloudUtils.Dl.DownloadPlugin(_pathManager, request.PackageId, request.Version);
 
             return new BoolResult
             {

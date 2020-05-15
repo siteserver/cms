@@ -13,14 +13,15 @@ namespace SSCMS.Core.Services
 {
     public partial class PluginManager : IPluginManager
     {
-        private readonly ISettingsManager _settingsManager;
         private readonly IConfiguration _config;
+        private readonly ISettingsManager _settingsManager;
         private List<IPlugin> _plugins;
 
         public PluginManager(IConfiguration config, ISettingsManager settingsManager)
         {
-            _settingsManager = settingsManager;
             _config = config;
+            _settingsManager = settingsManager;
+            
             DirectoryPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryPath);
         }

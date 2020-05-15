@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
+    [Route(Constants.ApiStlPrefix)]
     public partial class ActionsRelatedFieldController : ControllerBase
     {
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;

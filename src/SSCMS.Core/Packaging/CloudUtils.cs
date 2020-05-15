@@ -8,158 +8,166 @@ namespace SSCMS.Core.Packaging
 {
     public static class CloudUtils
     {
-        private const string UrlResources = "http://sscms-public.oss-accelerate.aliyuncs.com";
-
-        public static string GetCmsDownloadName(string version)
+        public static class Www
         {
-            return $"sscms-{version}-{Constants.OperatingSystem}";
+            public const string Host = "http://www.sscms.com";
         }
 
-        public static string GetCmsDownloadUrl(string version)
+        public static class Dl
         {
-            return $"{UrlResources}/cms/{version}/{GetCmsDownloadName(version)}.zip";
-        }
+            private const string Host = "http://dl.sscms.com";
 
-        public static string GetPluginsDownloadName(string pluginId, string version)
-        {
-            return $"{pluginId}.{version}";
-        }
-
-        public static string GetPluginsDownloadUrl(string pluginId, string version)
-        {
-            return $"{UrlResources}/plugins/{GetPluginsDownloadName(pluginId, version)}.zip";
-        }
-
-        public static void DownloadCms(IPathManager pathManager, string version)
-        {
-            if (IsCmsDownload(pathManager, version))
+            public static string GetCmsDownloadName(string version)
             {
-                return;
+                return $"sscms-{version}-{Constants.OperatingSystem}";
             }
 
-            var packagesPath = pathManager.GetPackagesPath();
-            var name = GetCmsDownloadName(version);
-
-            var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
-            foreach (var directoryName in directoryNames.Where(directoryName => StringUtils.StartsWithIgnoreCase(directoryName, "sscms-")))
+            public static string GetCmsDownloadUrl(string version)
             {
-                DirectoryUtils.DeleteDirectoryIfExists(PathUtils.Combine(packagesPath, directoryName));
+                return $"{Host}/cms/{version}/{GetCmsDownloadName(version)}.zip";
             }
 
-            var directoryPath = PathUtils.Combine(packagesPath, name);
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
-
-            var filePath = PathUtils.Combine(directoryPath, $"{GetCmsDownloadName(version)}.zip");
-            FileUtils.WriteText(filePath, string.Empty);
-            using (var writer = File.OpenWrite(filePath))
+            public static string GetPluginsDownloadUrl(string pluginId, string version)
             {
-                var client = new RestClient(GetCmsDownloadUrl(version));
-                var request = new RestRequest();
-                request.ResponseWriter = responseStream =>
+                return $"{Host}/plugins/{GetPluginsDownloadName(pluginId, version)}.zip";
+            }
+
+            public static string GetPluginsDownloadName(string pluginId, string version)
+            {
+                return $"{pluginId}.{version}";
+            }
+
+            public static void DownloadCms(IPathManager pathManager, string version)
+            {
+                if (IsCmsDownload(pathManager, version))
                 {
-                    using (responseStream)
-                    {
-                        responseStream.CopyTo(writer);
-                    }
-                };
-                client.DownloadData(request);
-            }
+                    return;
+                }
 
-            ZipUtils.ExtractZip(filePath, directoryPath);
-        }
+                var packagesPath = pathManager.GetPackagesPath();
+                var name = GetCmsDownloadName(version);
 
-        public static bool IsCmsDownload(IPathManager pathManager, string version)
-        {
-            var packagesPath = pathManager.GetPackagesPath();
-            var name = GetCmsDownloadName(version);
-
-            var directoryPath = PathUtils.Combine(packagesPath, name);
-
-            if (!DirectoryUtils.IsDirectoryExists(directoryPath))
-            {
-                return false;
-            }
-
-            if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{name}.zip")))
-            {
-                return false;
-            }
-
-            var fileNames = DirectoryUtils.GetFileNames(directoryPath);
-
-            return fileNames.Count > 1;
-        }
-
-        public static void DownloadPlugin(IPathManager pathManager, string pluginId, string version)
-        {
-            if (IsPluginDownload(pathManager, pluginId, version))
-            {
-                return;
-            }
-
-            var name = GetPluginsDownloadName(pluginId, version);
-
-            var packagesPath = pathManager.GetPackagesPath();
-            var directoryPath = PathUtils.Combine(packagesPath, name);
-
-            var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
-            foreach (var directoryName in directoryNames.Where(directoryName => StringUtils.StartsWithIgnoreCase(directoryName, $"{pluginId}.")))
-            {
-                DirectoryUtils.DeleteDirectoryIfExists(PathUtils.Combine(packagesPath, directoryName));
-            }
-
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
-
-            var filePath = PathUtils.Combine(directoryPath, name + ".zip");
-            FileUtils.WriteText(filePath, string.Empty);
-            using (var writer = File.OpenWrite(filePath))
-            {
-                var client = new RestClient(GetCmsDownloadUrl(version));
-                var request = new RestRequest();
-                request.ResponseWriter = responseStream =>
+                var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
+                foreach (var directoryName in directoryNames.Where(directoryName => StringUtils.StartsWithIgnoreCase(directoryName, "sscms-")))
                 {
-                    using (responseStream)
+                    DirectoryUtils.DeleteDirectoryIfExists(PathUtils.Combine(packagesPath, directoryName));
+                }
+
+                var directoryPath = PathUtils.Combine(packagesPath, name);
+                DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+
+                var filePath = PathUtils.Combine(directoryPath, $"{GetCmsDownloadName(version)}.zip");
+                FileUtils.WriteText(filePath, string.Empty);
+                using (var writer = File.OpenWrite(filePath))
+                {
+                    var client = new RestClient(GetCmsDownloadUrl(version));
+                    var request = new RestRequest();
+                    request.ResponseWriter = responseStream =>
                     {
-                        responseStream.CopyTo(writer);
-                    }
-                };
-                client.DownloadData(request);
+                        using (responseStream)
+                        {
+                            responseStream.CopyTo(writer);
+                        }
+                    };
+                    client.DownloadData(request);
+                }
+
+                ZipUtils.ExtractZip(filePath, directoryPath);
             }
 
-            ZipUtils.ExtractZip(filePath, directoryPath);
-
-            //var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
-            //? MyGetPackageSource
-            //: NuGetPackageSource);
-
-            //var packageManager = new PackageManager(repo, packagesPath);
-
-            ////Download and unzip the package
-            //packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), true, WebConfigUtils.IsNightlyUpdate);
-
-            //ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
-            //    directoryPath, ".nuspec");
-        }
-
-        public static bool IsPluginDownload(IPathManager pathManager, string pluginId, string version)
-        {
-            var name = GetPluginsDownloadName(pluginId, version);
-            var packagesPath = pathManager.GetPackagesPath();
-            var directoryPath = PathUtils.Combine(packagesPath, name);
-
-            if (!DirectoryUtils.IsDirectoryExists(directoryPath))
+            public static bool IsCmsDownload(IPathManager pathManager, string version)
             {
-                return false;
+                var packagesPath = pathManager.GetPackagesPath();
+                var name = GetCmsDownloadName(version);
+
+                var directoryPath = PathUtils.Combine(packagesPath, name);
+
+                if (!DirectoryUtils.IsDirectoryExists(directoryPath))
+                {
+                    return false;
+                }
+
+                if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{name}.zip")))
+                {
+                    return false;
+                }
+
+                var fileNames = DirectoryUtils.GetFileNames(directoryPath);
+
+                return fileNames.Count > 1;
             }
 
-            if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{name}.zip")))
+            public static void DownloadPlugin(IPathManager pathManager, string pluginId, string version)
             {
-                return false;
+                if (IsPluginDownload(pathManager, pluginId, version))
+                {
+                    return;
+                }
+
+                var name = GetPluginsDownloadName(pluginId, version);
+
+                var packagesPath = pathManager.GetPackagesPath();
+                var directoryPath = PathUtils.Combine(packagesPath, name);
+
+                var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
+                foreach (var directoryName in directoryNames.Where(directoryName => StringUtils.StartsWithIgnoreCase(directoryName, $"{pluginId}.")))
+                {
+                    DirectoryUtils.DeleteDirectoryIfExists(PathUtils.Combine(packagesPath, directoryName));
+                }
+
+                DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+
+                var filePath = PathUtils.Combine(directoryPath, name + ".zip");
+                FileUtils.WriteText(filePath, string.Empty);
+                using (var writer = File.OpenWrite(filePath))
+                {
+                    var client = new RestClient(GetCmsDownloadUrl(version));
+                    var request = new RestRequest();
+                    request.ResponseWriter = responseStream =>
+                    {
+                        using (responseStream)
+                        {
+                            responseStream.CopyTo(writer);
+                        }
+                    };
+                    client.DownloadData(request);
+                }
+
+                ZipUtils.ExtractZip(filePath, directoryPath);
+
+                //var repo = PackageRepositoryFactory.Default.CreateRepository(WebConfigUtils.IsNightlyUpdate
+                //? MyGetPackageSource
+                //: NuGetPackageSource);
+
+                //var packageManager = new PackageManager(repo, packagesPath);
+
+                ////Download and unzip the package
+                //packageManager.InstallPackage(packageId, SemanticVersion.Parse(version), true, WebConfigUtils.IsNightlyUpdate);
+
+                //ZipUtils.UnpackFilesByExtension(PathUtils.Combine(directoryPath, idWithVersion + ".nupkg"),
+                //    directoryPath, ".nuspec");
             }
 
-            var fileNames = DirectoryUtils.GetFileNames(directoryPath);
+            public static bool IsPluginDownload(IPathManager pathManager, string pluginId, string version)
+            {
+                var name = GetPluginsDownloadName(pluginId, version);
+                var packagesPath = pathManager.GetPackagesPath();
+                var directoryPath = PathUtils.Combine(packagesPath, name);
 
-            return fileNames.Count > 1;
+                if (!DirectoryUtils.IsDirectoryExists(directoryPath))
+                {
+                    return false;
+                }
+
+                if (!FileUtils.IsFileExists(PathUtils.Combine(directoryPath, $"{name}.zip")))
+                {
+                    return false;
+                }
+
+                var fileNames = DirectoryUtils.GetFileNames(directoryPath);
+
+                return fileNames.Count > 1;
+            }
         }
     }
 }

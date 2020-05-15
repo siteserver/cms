@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Core.Packaging;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -59,7 +60,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                 if (StringUtils.EqualsIgnoreCase(PoweredBy, attributeName))//支持信息
                 {
-                    parsedContent = @"Powered by <a href=""https://www.siteserver.cn"" target=""_blank"">SS CMS</a>";
+                    parsedContent = @$"Powered by <a href=""{CloudUtils.Www.Host}"" target=""_blank"">SS CMS</a>";
                 }
                 else if (StringUtils.EqualsIgnoreCase(RootUrl, attributeName))//系统根目录地址
                 {

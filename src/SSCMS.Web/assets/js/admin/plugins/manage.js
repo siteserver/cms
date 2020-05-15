@@ -75,7 +75,7 @@ var methods = {
     var text = pkg.isDisabled ? '启用' : '禁用';
     var isReference = this.referencePluginIds.indexOf(pkg.pluginId) !== -1;
     if (isReference) {
-      return swal("无法" + text, "存在其他插件依赖此插件，需要删除依赖插件后才能进行" + text + "操作", "error");
+      this.$message.error("无法" + text, "存在其他插件依赖此插件，需要删除依赖插件后才能进行" + text + "操作");
     }
     utils.alertDelete({
       title: text + '插件',
@@ -89,11 +89,9 @@ var methods = {
         utils.loading($this, true);
         $api.post($url + '/' + pkg.pluginId + '/actions/enable').then(function () {
           utils.loading($this, false);
-          swal({
-            type: 'success',
+          utils.alertSuccess({
             title: '插件' + text + '成功',
-            text: '插件' + text + '成功，系统需要重载页面',
-            confirmButtonText: '重新载入'
+            text: '插件' + text + '成功，系统需要重载页面'
           }).then(function () {
             window.top.location.reload(true);
           });
@@ -157,13 +155,12 @@ var methods = {
     utils.loading(this, true);
     $api.post($url + '/actions/reload').then(function () {
       utils.loading($this, false);
-      swal({
-        type: 'success',
+      utils.alertSuccess({
         title: '插件重新加载成功',
         text: '插件重新加载成功，系统需要重载页面',
-        confirmButtonText: '重新载入'
-      }).then(function () {
-        window.top.location.reload(true);
+        callback: function() {
+          window.top.location.reload(true);
+        }
       });
     });
   },

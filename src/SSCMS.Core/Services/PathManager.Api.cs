@@ -15,7 +15,7 @@ namespace SSCMS.Core.Services
 
         public string GetApiUrl(Config config)
         {
-            return config.IsSeparatedApi ? config.SeparatedApiUrl : Constants.ApiPrefix;
+            return config.IsSeparatedApi ? config.SeparatedApiUrl : "/";
         }
 
         public string InnerApiUrl => Constants.ApiPrefix;
@@ -27,7 +27,7 @@ namespace SSCMS.Core.Services
 
         public string GetDownloadApiUrl(string apiUrl, int siteId, int channelId, int contentId, string fileUrl)
         {
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.RouteActionsDownload), new NameValueCollection
+            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},
@@ -38,7 +38,7 @@ namespace SSCMS.Core.Services
 
         public string GetDownloadApiUrl(string apiUrl, int siteId, string fileUrl)
         {
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.RouteActionsDownload), new NameValueCollection
+            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"fileUrl", _settingsManager.Encrypt(fileUrl)}
@@ -47,7 +47,7 @@ namespace SSCMS.Core.Services
 
         public string GetDownloadApiUrl(string apiUrl, string filePath)
         {
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.RouteActionsDownload), new NameValueCollection
+            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"filePath", _settingsManager.Encrypt(filePath)}
             });
@@ -55,17 +55,17 @@ namespace SSCMS.Core.Services
 
         public string GetDynamicApiUrl(string apiUrl)
         {
-            return PageUtils.Combine(apiUrl, Constants.RouteActionsDynamic);
+            return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDynamic);
         }
 
         public string GetIfApiUrl(string apiUrl)
         {
-            return PageUtils.Combine(apiUrl, Constants.RouteRouteActionsIf);
+            return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlRouteActionsIf);
         }
 
         public string GetPageContentsApiUrl(string apiUrl)
         {
-            return PageUtils.Combine(apiUrl, Constants.RouteActionsPageContents);
+            return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsPageContents);
         }
 
         public string GetPageContentsApiParameters(int siteId, int pageChannelId, int templateId, int totalNum, int pageCount,
@@ -85,7 +85,7 @@ namespace SSCMS.Core.Services
 
         public string GetSearchApiUrl(string apiUrl)
         {
-            return PageUtils.Combine(apiUrl, Constants.RouteActionsSearch);
+            return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
         }
 
         public string GetSearchApiParameters(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)
@@ -138,7 +138,7 @@ namespace SSCMS.Core.Services
         public string GetTriggerApiUrl(string apiUrl, int siteId, int channelId, int contentId,
             int fileTemplateId, bool isRedirect)
         {
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.RouteActionsTrigger), new NameValueCollection
+            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsTrigger), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},

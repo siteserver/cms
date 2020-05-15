@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
@@ -13,9 +14,9 @@ using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
-    public class InstallPrepareJob : IJobService
+    public class InstallDownloadJob : IJobService
     {
-        public string CommandName => "install prepare";
+        public string CommandName => "install download";
 
         private bool _isNightly;
         private bool _isHelp;
@@ -26,7 +27,7 @@ namespace SSCMS.Cli.Jobs
         private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
 
-        public InstallPrepareJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
+        public InstallDownloadJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
         {
             _apiService = apiService;
             _settingsManager = settingsManager;
@@ -77,16 +78,23 @@ namespace SSCMS.Cli.Jobs
                 }
 
                 Console.WriteLine($"Downloading {result.Cms.Version}...");
-                CloudUtils.DownloadCms(_pathManager, result.Cms.Version);
+                CloudUtils.Dl.DownloadCms(_pathManager, result.Cms.Version);
 
-                var name = CloudUtils.GetCmsDownloadName(result.Cms.Version);
+                var name = CloudUtils.Dl.GetCmsDownloadName(result.Cms.Version);
                 var packagePath = _pathManager.GetPackagesPath(name);
-                var packageZipPath = PathUtils.Combine(packagePath, $"{name}.zip");
-                var packageConfigPath = PathUtils.Combine(packagePath, Constants.ConfigFileName);
-                FileUtils.DeleteFileIfExists(packageZipPath);
-                FileUtils.DeleteFileIfExists(packageConfigPath);
 
-                DirectoryUtils.Copy(packagePath, contentRootPath, true);
+                foreach (var fileName in DirectoryUtils.GetFileNames(packagePath).Where(fileName =>
+                    !StringUtils.EqualsIgnoreCase(fileName, $"{name}.zip") &&
+                    !StringUtils.EqualsIgnoreCase(fileName, Constants.ConfigFileName)))
+                {
+                    FileUtils.CopyFile(PathUtils.Combine(packagePath, fileName),
+                        PathUtils.Combine(contentRootPath, fileName), true);
+                }
+
+                foreach (var directoryName in DirectoryUtils.GetDirectoryNames(packagePath))
+                {
+                    DirectoryUtils.Copy(PathUtils.Combine(packagePath, directoryName), PathUtils.Combine(contentRootPath, directoryName), true);
+                }
             }
 
             if (!await _configRepository.IsNeedInstallAsync())
