@@ -10,27 +10,20 @@ namespace SSCMS.Core.Services
     public class QueuedHostedService : BackgroundService
     {
         private readonly ILogger<QueuedHostedService> _logger;
+        private readonly ITaskManager _taskManager;
 
-        public QueuedHostedService(ITaskManager taskQueue,
-            ILogger<QueuedHostedService> logger)
+        public QueuedHostedService(ILogger<QueuedHostedService> logger, ITaskManager taskManager)
         {
-            TaskQueue = taskQueue;
             _logger = logger;
+            _taskManager = taskManager;
         }
-
-        public ITaskManager TaskQueue { get; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await BackgroundProcessing(stoppingToken);
-        }
-
-        private async Task BackgroundProcessing(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 var workItem =
-                    await TaskQueue.DequeueAsync(stoppingToken);
+                    await _taskManager.DequeueAsync(stoppingToken);
 
                 try
                 {

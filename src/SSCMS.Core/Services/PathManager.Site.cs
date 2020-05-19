@@ -716,7 +716,7 @@ namespace SSCMS.Core.Services
 
         public string GetBackupFilePath(Site site, BackupType backupType)
         {
-            var extention = ".zip";
+            var extension = ".zip";
             var siteName = site.SiteDir;
             if (!string.IsNullOrEmpty(siteName))
             {
@@ -724,9 +724,9 @@ namespace SSCMS.Core.Services
             }
             if (backupType == BackupType.Templates)
             {
-                extention = ".xml";
+                extension = ".xml";
             }
-            return PathUtils.Combine(PhysicalSiteFilesPath, DirectoryUtils.SiteFiles.BackupFiles, site.SiteDir, DateTime.Now.ToString("yyyy-MM"), backupType.GetValue() + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extention);
+            return PathUtils.Combine(PhysicalSiteFilesPath, DirectoryUtils.SiteFiles.BackupFiles, site.SiteDir, DateTime.Now.ToString("yyyy-MM"), backupType.GetValue() + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extension);
         }
 
         public async Task<string> GetUploadDirectoryPathAsync(Site site, string fileExtension)
@@ -1013,9 +1013,16 @@ namespace SSCMS.Core.Services
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, await GetWebUrlAsync(site)))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
-                if (!FileUtils.IsImageOrPlayer(fileExtName)) continue;
+                if (!FileUtils.IsImageOrPlayer(fileExtName))
+                {
+                    fileExtName = ".png";
+                }
 
                 var fileName = GetUploadFileName(site, originalImageSrc);
+                if (string.IsNullOrEmpty(fileName) || !StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(fileName), fileExtName))
+                {
+                    fileName = StringUtils.GetShortGuid(false) + fileExtName;
+                }
                 var directoryPath = await GetUploadDirectoryPathAsync(site, fileExtName);
                 var filePath = PathUtils.Combine(directoryPath, fileName);
 
@@ -1178,9 +1185,9 @@ namespace SSCMS.Core.Services
             return filePath;
         }
 
-        public bool IsImageExtensionAllowed(Site site, string fileExtention)
+        public bool IsImageExtensionAllowed(Site site, string fileExtension)
         {
-            return PathUtils.IsFileExtensionAllowed(site.ImageUploadTypeCollection, fileExtention);
+            return PathUtils.IsFileExtensionAllowed(site.ImageUploadExtensions, fileExtension);
         }
 
         public bool IsImageSizeAllowed(Site site, long contentLength)
@@ -1188,9 +1195,9 @@ namespace SSCMS.Core.Services
             return contentLength <= site.ImageUploadTypeMaxSize * 1024;
         }
 
-        public bool IsVideoExtensionAllowed(Site site, string fileExtention)
+        public bool IsVideoExtensionAllowed(Site site, string fileExtension)
         {
-            return PathUtils.IsFileExtensionAllowed(site.VideoUploadTypeCollection, fileExtention);
+            return PathUtils.IsFileExtensionAllowed(site.VideoUploadExtensions, fileExtension);
         }
 
         public bool IsVideoSizeAllowed(Site site, int contentLength)
@@ -1198,10 +1205,10 @@ namespace SSCMS.Core.Services
             return contentLength <= site.VideoUploadTypeMaxSize * 1024;
         }
 
-        public bool IsFileExtensionAllowed(Site site, string fileExtention)
+        public bool IsFileExtensionAllowed(Site site, string fileExtension)
         {
-            var typeCollection = site.FileUploadTypeCollection + "," + site.ImageUploadTypeCollection + "," + site.VideoUploadTypeCollection;
-            return PathUtils.IsFileExtensionAllowed(typeCollection, fileExtention);
+            var typeCollection = site.FileUploadExtensions + "," + site.ImageUploadExtensions + "," + site.VideoUploadExtensions;
+            return PathUtils.IsFileExtensionAllowed(typeCollection, fileExtension);
         }
 
         public bool IsFileSizeAllowed(Site site, int contentLength)
@@ -1209,19 +1216,19 @@ namespace SSCMS.Core.Services
             return contentLength <= site.FileUploadTypeMaxSize * 1024;
         }
 
-        public bool IsUploadExtensionAllowed(UploadType uploadType, Site site, string fileExtention)
+        public bool IsUploadExtensionAllowed(UploadType uploadType, Site site, string fileExtension)
         {
             if (uploadType == UploadType.Image)
             {
-                return IsImageExtensionAllowed(site, fileExtention);
+                return IsImageExtensionAllowed(site, fileExtension);
             }
             else if (uploadType == UploadType.Video)
             {
-                return IsVideoExtensionAllowed(site, fileExtention);
+                return IsVideoExtensionAllowed(site, fileExtension);
             }
             else if (uploadType == UploadType.File)
             {
-                return IsFileExtensionAllowed(site, fileExtention);
+                return IsFileExtensionAllowed(site, fileExtension);
             }
             return false;
         }

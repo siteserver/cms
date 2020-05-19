@@ -88,7 +88,7 @@ namespace SSCMS.Core.Repositories
             }
             else
             {
-                content.Taxis = await SyncTaxisAsync(site, channel, content);
+                taxis = await SyncTaxisAsync(site, channel, content);
             }
             return await InsertWithTaxisAsync(site, channel, content, taxis);
         }

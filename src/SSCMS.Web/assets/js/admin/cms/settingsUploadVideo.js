@@ -23,7 +23,7 @@ var methods = {
         videoUploadDirectoryName: res.value.videoUploadDirectoryName,
         videoUploadDateFormatString: res.value.videoUploadDateFormatString,
         isVideoUploadChangeFileName: res.value.isVideoUploadChangeFileName,
-        videoUploadTypeCollection: res.value.videoUploadTypeCollection,
+        videoUploadExtensions: res.value.videoUploadExtensions,
         videoUploadTypeMaxSize: res.value.videoUploadTypeMaxSize,
       };
     }).catch(function (error) {

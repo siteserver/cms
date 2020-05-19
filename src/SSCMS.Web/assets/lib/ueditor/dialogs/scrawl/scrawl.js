@@ -659,9 +659,12 @@ function exec(scrawlObj) {
             };
             options[editor.getOpt('scrawlFieldName')] = base64;
 
+            var ADMIN_ACCESS_TOKEN_NAME = "ss_admin_access_token";
+            var $token = sessionStorage.getItem(ADMIN_ACCESS_TOKEN_NAME) || localStorage.getItem(ADMIN_ACCESS_TOKEN_NAME);
+
             var actionUrl = editor.getActionUrl(editor.getOpt('scrawlActionName')),
                 params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
-                url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + params);
+                url = utils.formatUrl(actionUrl + '&access_token=' + $token + '&' + params);
             ajax.request(url, options);
         }
     } else {

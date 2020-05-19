@@ -21,8 +21,8 @@
     </el-radio-group>
     <div class="tips">本设置只影响新上传的图片, 设置更改之前的图片名仍保持不变</div>
   </el-form-item>
-  <el-form-item label="上传图片类型" prop="imageUploadTypeCollection" :rules="{ required: true, message: '请输入上传图片类型' }">
-    <el-input v-model="form.imageUploadTypeCollection" placeholder="请输入上传图片类型"></el-input>
+  <el-form-item label="上传图片类型" prop="imageUploadExtensions" :rules="{ required: true, message: '请输入上传图片类型' }">
+    <el-input v-model="form.imageUploadExtensions" placeholder="请输入上传图片类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
   <el-form-item label="上传图片最大大小（KB）" prop="imageUploadTypeMaxSize" :rules="{ required: true, message: '请输入上传图片最大大小' }">

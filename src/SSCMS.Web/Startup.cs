@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -79,6 +80,26 @@ namespace SSCMS.Web
                         IssuerSigningKey = new SymmetricSecurityKey(key),
                         ValidateIssuer = false,
                         ValidateAudience = false
+                    };
+                    x.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = (context) => {
+                            if (!context.Request.Query.TryGetValue("access_token", out var values))
+                            {
+                                return Task.CompletedTask;
+                            }
+                            if (values.Count > 1)
+                            {
+                                return Task.CompletedTask;
+                            }
+                            var token = values.Single();
+                            if (string.IsNullOrWhiteSpace(token))
+                            {
+                                return Task.CompletedTask;
+                            }
+                            context.Token = token;
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 

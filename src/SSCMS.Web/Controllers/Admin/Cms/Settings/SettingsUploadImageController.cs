@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.ImageUploadDirectoryName = request.ImageUploadDirectoryName;
             site.ImageUploadDateFormatString = request.ImageUploadDateFormatString;
             site.IsImageUploadChangeFileName = request.IsImageUploadChangeFileName;
-            site.ImageUploadTypeCollection = request.ImageUploadTypeCollection.Replace("|", ",");
+            site.ImageUploadExtensions = request.ImageUploadExtensions.Replace("|", ",");
             site.ImageUploadTypeMaxSize = request.ImageUploadTypeMaxSize;
             site.PhotoSmallWidth = request.PhotoSmallWidth;
             site.PhotoMiddleWidth = request.PhotoMiddleWidth;

@@ -21,8 +21,8 @@
     </el-radio-group>
     <div class="tips">本设置只影响新上传的附件, 设置更改之前的附件名仍保持不变</div>
   </el-form-item>
-  <el-form-item label="上传附件类型" prop="fileUploadTypeCollection" :rules="{ required: true, message: '请输入上传附件类型' }">
-    <el-input v-model="form.fileUploadTypeCollection" placeholder="请输入上传附件类型"></el-input>
+  <el-form-item label="上传附件类型" prop="fileUploadExtensions" :rules="{ required: true, message: '请输入上传附件类型' }">
+    <el-input v-model="form.fileUploadExtensions" placeholder="请输入上传附件类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
   <el-form-item label="上传附件最大大小（KB）" prop="fileUploadTypeMaxSize" :rules="{ required: true, message: '请输入上传附件最大大小' }">

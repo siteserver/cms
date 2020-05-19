@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -66,6 +65,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
                 }
             }
+
+            await _createManager.CreateContentAsync(request.SiteId, channel.Id, content.Id);
+            await _createManager.TriggerContentChangedEventAsync(request.SiteId, channel.Id);
 
             return new BoolResult
             {

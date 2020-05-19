@@ -11,16 +11,18 @@ namespace SSCMS.Core.Services
     {
         private readonly IPathManager _pathManager;
         private readonly IParseManager _parseManager;
+        private readonly ITaskManager _taskManager;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly ISpecialRepository _specialRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public CreateManager(IPathManager pathManager, IParseManager parseManager, IChannelRepository channelRepository, IContentRepository contentRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository)
+        public CreateManager(IPathManager pathManager, IParseManager parseManager, ITaskManager taskManager, IChannelRepository channelRepository, IContentRepository contentRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository)
         {
             _pathManager = pathManager;
             _parseManager = parseManager;
+            _taskManager = taskManager;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _siteRepository = siteRepository;

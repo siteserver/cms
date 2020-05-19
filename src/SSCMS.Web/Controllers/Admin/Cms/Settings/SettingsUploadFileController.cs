@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.FileUploadDirectoryName = request.FileUploadDirectoryName;
             site.FileUploadDateFormatString = request.FileUploadDateFormatString;
             site.IsFileUploadChangeFileName = request.IsFileUploadChangeFileName;
-            site.FileUploadTypeCollection = request.FileUploadTypeCollection.Replace("|", ",");
+            site.FileUploadExtensions = request.FileUploadExtensions.Replace("|", ",");
             site.FileUploadTypeMaxSize = request.FileUploadTypeMaxSize;
 
             await _siteRepository.UpdateAsync(site);

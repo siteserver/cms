@@ -3,7 +3,6 @@ if (window.top != self) {
 }
 
 var $url = '/index';
-var $urlCreate = '/index/actions/create';
 var $idSite = 'site';
 var $sidebarWidth = 200;
 var $collapseWidth = 60;
@@ -27,9 +26,6 @@ var data = utils.init({
   searchWord: null,
   newCms: null,
   newPlugins: [],
-  pendingCount: 0,
-  lastExecuteTime: new Date(),
-  timeoutId: null,
 
   defaultOpenedId: null,
   tabName: null,
@@ -42,15 +38,6 @@ var data = utils.init({
 });
 
 var methods = {
-  openPageCreateStatus: function() {
-    utils.openLayer({
-      title: '生成进度查看',
-      url: utils.getCmsUrl('createStatus', {siteId: this.siteId}),
-      full: true
-    });
-    return false;
-  },
-
   apiGet: function () {
     var $this = this;
 
@@ -106,8 +93,6 @@ var methods = {
       
     }).catch(function (error) {
       utils.error($this, error);
-    }).then(function () {
-      $this.create();
     });
   },
 
@@ -122,14 +107,6 @@ var methods = {
     if ($this.isSuperAdmin) {
       $this.getUpdates();
     }
-
-    setInterval(function () {
-      var dif = new Date().getTime() - $this.lastExecuteTime.getTime();
-      var minutes = dif / 1000 / 60;
-      if (minutes > 2) {
-        $this.create();
-      }
-    }, 60000);
 
     utils.loading($this, false);
   },
@@ -179,30 +156,6 @@ var methods = {
           }
         }
       }
-    });
-  },
-
-  create: function () {
-    var $this = this;
-    
-    $this.lastExecuteTime = new Date();
-    clearTimeout($this.timeoutId);
-    $api.post($urlCreate, {
-      sessionId: this.sessionId
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.pendingCount = res.value;
-      if ($this.pendingCount === 0) {
-        $this.timeoutId = setTimeout($this.create, 10000);
-      } else {
-        $this.timeoutId = setTimeout($this.create, 100);
-      }
-    }).catch(function (error) {
-      if (error.response && error.response.status === 401) {
-        location.href = utils.getRootUrl('login');
-      }
-      $this.timeoutId = setTimeout($this.create, 1000);
     });
   },
 
@@ -272,8 +225,6 @@ var methods = {
 
     }).catch(function (error) {
       utils.error($this, error);
-    }).then(function () {
-      $this.create();
     });
   },
 

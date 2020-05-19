@@ -20,10 +20,10 @@
         for (e = e.replace(s, "").split("?")[0].split("#")[0], e = e.replace(/\\/g, "/").split(/\//), e[e.length - 1] = ""; e.length;) ".." === (t = e.shift()) ? l.pop() : "." !== t && l.push(t);
         return s + l.join("/")
     }
-    var a = window.UEDITOR_HOME_URL || e();
+    
     window.UEDITOR_CONFIG = {
-        UEDITOR_HOME_URL: a,
-        serverUrl: window.UEDITOR_CONTROLLER_URL,
+        UEDITOR_HOME_URL: utils.getAssetsUrl('lib/ueditor/'),
+        serverUrl: $apiUrl + "/shared/editor?siteId=" + utils.getQueryInt("siteId"),
         toolbars: [
             ["fullscreen",
                 "source",
@@ -83,9 +83,10 @@
                 "|",
                 "simpleupload",
                 "insertimage",
-                "emotion",
-                "scrawl",
                 "attachment",
+                "insertvideo",
+                "scrawl",
+                "emotion",
                 "map",
                 "insertframe",
                 "insertcode",

@@ -26,7 +26,7 @@ namespace SSCMS.Core.StlParser.StlEntity
         public const string DownloadUrl = "DownloadUrl";
         public const string AddDate = nameof(Models.Content.AddDate);
         public const string LastModifiedDate = nameof(Models.Content.LastModifiedDate);
-        public const string Content = nameof(Models.Content.Body);
+        public const string Body = nameof(Models.Content.Body);
         public const string Group = "Group";
         public const string Tags = "Tags";
         public const string ItemIndex = "ItemIndex";
@@ -36,7 +36,7 @@ namespace SSCMS.Core.StlParser.StlEntity
             {Id, "内容ID"},
             {Title, "内容标题"},
             {FullTitle, "内容标题全称"},
-            {Content, "内容正文"},
+            {Body, "内容正文"},
             {NavigationUrl, "内容链接地址"},
             {ImageUrl, "内容图片地址"},
             {VideoUrl, "内容视频地址"},
@@ -178,7 +178,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                             parsedContent = DateUtils.Format(contentInfo.LastModifiedDate, string.Empty);
                         }
                     }
-                    else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//内容正文
+                    else if (StringUtils.EqualsIgnoreCase(Body, attributeName) || StringUtils.EqualsIgnoreCase("Content", attributeName))//内容正文
                     {
                         if (contentInfo != null)
                         {

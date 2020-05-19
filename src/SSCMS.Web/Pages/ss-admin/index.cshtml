@@ -80,11 +80,6 @@
         </el-link>
       </el-popover>
 
-      <el-badge v-if="siteId > 0 && pendingCount > 0" :value="pendingCount">
-        <el-link icon="ion-wand" class="el-dropdown" :underline="false" v-on:click="openPageCreateStatus"></el-link>
-      </el-badge>
-      <el-link v-if="siteId > 0 && pendingCount === 0" icon="ion-wand" class="el-dropdown" :underline="false" v-on:click="openPageCreateStatus"></el-link>
-
       <el-dropdown v-on:command="btnCultureClick">
         <span class="el-dropdown-link">
           <i class="fa fa-language" style="font-size: 16px;"></i>

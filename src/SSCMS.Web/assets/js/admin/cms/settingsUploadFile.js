@@ -23,7 +23,7 @@ var methods = {
         fileUploadDirectoryName: res.value.fileUploadDirectoryName,
         fileUploadDateFormatString: res.value.fileUploadDateFormatString,
         isFileUploadChangeFileName: res.value.isFileUploadChangeFileName,
-        fileUploadTypeCollection: res.value.fileUploadTypeCollection,
+        fileUploadExtensions: res.value.fileUploadExtensions,
         fileUploadTypeMaxSize: res.value.fileUploadTypeMaxSize,
       };
     }).catch(function (error) {

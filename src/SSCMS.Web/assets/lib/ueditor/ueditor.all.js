@@ -8026,8 +8026,9 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
             }
 
             if(serverUrl) {
-                serverUrl = serverUrl + (serverUrl.indexOf('?') == -1 ? '?':'&') + 'action=' + (actionName || '');
-                return utils.formatUrl(serverUrl);
+                var url = serverUrl.substr(0, serverUrl.indexOf('?'));
+                var query = serverUrl.substr(serverUrl.indexOf('?') + 1);
+                return utils.formatUrl(url + "/actions/" + actionName + '?' + query);
             } else {
                 return '';
             }
@@ -8229,8 +8230,9 @@ UE.ajax = function() {
         }, ajaxOpts.timeout);
 
         var method = ajaxOpts.method.toUpperCase();
-        var str = url + (url.indexOf("?")==-1?"?":"&") + (method=="POST"?"":submitStr+ "&noCache=" + +new Date);
+        var str = url + (url.indexOf("?")==-1?"?":"&") + (method=="POST"?"":submitStr);
         xhr.open(method, str, ajaxOpts.async);
+        xhr.setRequestHeader("Authorization", "Bearer " + $token);
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 if (!timeIsOut && xhr.status == 200) {
@@ -23821,6 +23823,7 @@ UE.plugin.register('autoupload', function (){
         fd.append(fieldName, file, file.name || ('blob.' + file.type.substr('image/'.length)));
         fd.append('type', 'ajax');
         xhr.open("post", url, true);
+        xhr.setRequestHeader("Authorization", "Bearer " + $token);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.addEventListener('load', function (e) {
             try{
@@ -24565,7 +24568,7 @@ UE.plugin.register('simpleupload', function (){
                 }
 
                 domUtils.on(iframe, 'load', callback);
-                form.action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?':'&') + params);
+                form.action = utils.formatUrl(imageActionUrl + '&access_token=' + $token + '&' + params);
                 form.submit();
             });
 

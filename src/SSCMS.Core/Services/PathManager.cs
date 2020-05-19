@@ -99,5 +99,12 @@ namespace SSCMS.Core.Services
             await using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
         }
+
+        public async Task UploadAsync(byte[] bytes, string filePath)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+            await using var stream = new FileStream(filePath, FileMode.Create);
+            await stream.WriteAsync(bytes);
+        }
     }
 }

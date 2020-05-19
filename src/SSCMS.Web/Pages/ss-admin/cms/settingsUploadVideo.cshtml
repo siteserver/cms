@@ -21,8 +21,8 @@
     </el-radio-group>
     <div class="tips">本设置只影响新上传的视频, 设置更改之前的视频名仍保持不变</div>
   </el-form-item>
-  <el-form-item label="上传视频类型" prop="videoUploadTypeCollection" :rules="{ required: true, message: '请输入上传视频类型' }">
-    <el-input v-model="form.videoUploadTypeCollection" placeholder="请输入上传视频类型"></el-input>
+  <el-form-item label="上传视频类型" prop="videoUploadExtensions" :rules="{ required: true, message: '请输入上传视频类型' }">
+    <el-input v-model="form.videoUploadExtensions" placeholder="请输入上传视频类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
   <el-form-item label="上传视频最大大小（KB）" prop="videoUploadTypeMaxSize" :rules="{ required: true, message: '请输入上传视频最大大小' }">

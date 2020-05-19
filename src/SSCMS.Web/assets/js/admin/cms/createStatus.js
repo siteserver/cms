@@ -35,7 +35,7 @@ var methods = {
     .then(function() {
       $this.timeoutId = setTimeout(function () {
         $this.load();
-      }, 3000);
+      }, 5000);
       utils.loading($this, false);
     });
   },

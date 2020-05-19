@@ -166,14 +166,14 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var contentId = contextInfo.ContentId;
-            var contentInfo = await parseManager.GetContentAsync();
+            var content = await parseManager.GetContentAsync();
 
             if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
             {
-                return contentInfo.ToDictionary();
+                return content.ToDictionary();
             }
 
-            var parsedContent = await ParseImplAsync(parseManager, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, contentInfo, contentId);
+            var parsedContent = await ParseImplAsync(parseManager, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, content, contentId);
 
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);

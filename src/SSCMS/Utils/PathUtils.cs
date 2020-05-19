@@ -184,9 +184,9 @@ namespace SSCMS.Utils
 
         public static bool IsFileExtensionAllowed(string sAllowedExt, string sExt)
         {
-            if (sExt != null && sExt.StartsWith("."))
+            if (sExt != null && !sExt.StartsWith("."))
             {
-                sExt = sExt.Substring(1, sExt.Length - 1);
+                sExt = $".{sExt}";
             }
             sAllowedExt = sAllowedExt.Replace("|", ",");
             var aExt = sAllowedExt.Split(',');

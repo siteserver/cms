@@ -1,0 +1,63 @@
+﻿using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Utils;
+
+namespace SSCMS.Web.Controllers.Admin.Shared
+{
+    public partial class EditorController
+    {
+        [HttpPost, Route(RouteActionsUploadImage)]
+        public async Task<ActionResult<UploadImageResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
+        {
+            var site = await _siteRepository.GetAsync(request.SiteId);
+
+            if (file == null)
+            {
+                return new UploadImageResult
+                {
+                    Error = "请选择有效的文件上传"
+                };
+            }
+
+            var original = Path.GetFileName(file.FileName);
+            var fileName = _pathManager.GetUploadFileName(site, original);
+
+            if (!_pathManager.IsImageExtensionAllowed(site, PathUtils.GetExtension(fileName)))
+            {
+                return new UploadImageResult
+                {
+                    Error = "请选择有效的文件上传"
+                };
+            }
+
+            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
+            var filePath = PathUtils.Combine(localDirectoryPath, fileName);
+
+            await _pathManager.UploadAsync(file, filePath);
+
+            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+
+            return new UploadImageResult
+            {
+                State = "SUCCESS",
+                Url = imageUrl,
+                Title = original,
+                Original = original,
+                Error = null
+            };
+        }
+
+        public class UploadImageResult
+        {
+            public string State { get; set; }
+            public string Url { get; set; }
+            public string Title { get; set; }
+            public string Original { get; set; }
+            public string Error { get; set; }
+        }
+    }
+}

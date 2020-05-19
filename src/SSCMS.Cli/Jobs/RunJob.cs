@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
@@ -54,8 +56,11 @@ namespace SSCMS.Cli.Jobs
             }
             else
             {
+                Console.WriteLine("Starting SS CMS...");
+                Thread.Sleep(3000);
+
                 OpenUrl("http://localhost:5000");
-                Console.WriteLine("-------------Start SS CMS--------------");
+
                 using var sr = proc.StandardOutput;
                 while (!sr.EndOfStream)
                 {

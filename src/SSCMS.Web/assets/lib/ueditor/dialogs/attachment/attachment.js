@@ -485,6 +485,9 @@
 
             uploader.on('uploadBeforeSend', function (file, data, header) {
                 //这里可以通过data对象添加POST参数
+                var ADMIN_ACCESS_TOKEN_NAME = "ss_admin_access_token";
+                var $token = sessionStorage.getItem(ADMIN_ACCESS_TOKEN_NAME) || localStorage.getItem(ADMIN_ACCESS_TOKEN_NAME);
+                header['Authorization'] = 'Bearer ' + $token;
                 header['X_Requested_With'] = 'XMLHttpRequest';
             });
 

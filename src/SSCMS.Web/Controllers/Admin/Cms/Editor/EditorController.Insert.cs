@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -23,9 +22,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             
-            var content = request.Content;
+            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
+
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
+            content.AdminId = _authManager.AdminId;
             content.LastEditAdminId = _authManager.AdminId;
 
             content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;
@@ -43,6 +44,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
                 }
             }
+
+            await _createManager.CreateContentAsync(request.SiteId, channel.Id, content.Id);
+            await _createManager.TriggerContentChangedEventAsync(request.SiteId, channel.Id);
 
             return new BoolResult
             {

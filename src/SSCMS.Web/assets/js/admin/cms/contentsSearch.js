@@ -231,7 +231,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      parent.$vue.openPageCreateStatus();
+      utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
     }).catch(function(error) {
       utils.error($this, error);
     }).then(function() {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 
@@ -32,26 +33,46 @@ namespace SSCMS.Core.Services
                     return;
                 }
                 PendingTasks.Insert(0, task);
+
+                _taskManager.Queue(async token =>
+                {
+                    try
+                    {
+                        var start = DateTime.Now;
+                        await ExecuteAsync(task.SiteId, task.CreateType, task.ChannelId, task.ContentId,
+                            task.FileTemplateId, task.SpecialId);
+                        var timeSpan = DateUtils.GetRelatedDateTimeString(start);
+                        AddSuccessLog(task, timeSpan);
+                    }
+                    catch (Exception ex)
+                    {
+                        AddFailureLog(task, ex);
+                    }
+                    finally
+                    {
+                        RemovePendingTask(task);
+                    }
+                });
             }
         }
 
         public int PendingTaskCount => PendingTasks.Count == 0 ? 0 : PendingTasks.Sum(taskInfo => taskInfo.PageCount);
 
-        public CreateTask GetFirstPendingTask()
-        {
-            lock (LockObject)
-            {
-                var taskInfo = PendingTasks.FirstOrDefault(task => !task.Executing);
-                if (taskInfo == null) return null;
-                //var taskInfo = PendingTasks[0];
-                taskInfo.Executing = true;
-                PendingTasks.Remove(taskInfo);
-                PendingTasks.Add(taskInfo);
-                return taskInfo;
-            }
-        }
+        //public CreateTask GetFirstPendingTask()
+        //{
+        //    lock (LockObject)
+        //    {
+        //        var taskInfo = PendingTasks.FirstOrDefault(task => !task.Executing);
+        //        if (taskInfo == null) return null;
+        //        //var taskInfo = PendingTasks[0];
+        //        taskInfo.Executing = true;
+        //        PendingTasks.Remove(taskInfo);
+        //        PendingTasks.Add(taskInfo);
+        //        return taskInfo;
+        //    }
+        //}
 
-        public void RemovePendingTask(CreateTask task)
+        private void RemovePendingTask(CreateTask task)
         {
             lock (LockObject)
             {
@@ -59,7 +80,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public void AddSuccessLog(CreateTask task, string timeSpan)
+        private void AddSuccessLog(CreateTask task, string timeSpan)
         {
             var taskLog = new CreateTaskLog(0, task.CreateType, task.SiteId, task.ChannelId, task.ContentId, task.FileTemplateId, task.SpecialId, task.Name, timeSpan, true, string.Empty, DateTime.Now);
             lock (LockObject)
@@ -72,7 +93,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public void AddFailureLog(CreateTask task, Exception ex)
+        private void AddFailureLog(CreateTask task, Exception ex)
         {
             var taskLog = new CreateTaskLog(0, task.CreateType, task.SiteId, task.ChannelId, task.ContentId, task.FileTemplateId, task.SpecialId, task.Name, string.Empty, false, ex.Message, DateTime.Now);
             lock (LockObject)

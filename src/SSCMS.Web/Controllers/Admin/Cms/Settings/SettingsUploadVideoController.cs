@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.VideoUploadDirectoryName = request.VideoUploadDirectoryName;
             site.VideoUploadDateFormatString = request.VideoUploadDateFormatString;
             site.IsVideoUploadChangeFileName = request.IsVideoUploadChangeFileName;
-            site.VideoUploadTypeCollection = request.VideoUploadTypeCollection.Replace("|", ",");
+            site.VideoUploadExtensions = request.VideoUploadExtensions.Replace("|", ",");
             site.VideoUploadTypeMaxSize = request.VideoUploadTypeMaxSize;
 
             await _siteRepository.UpdateAsync(site);

@@ -23,7 +23,7 @@ var methods = {
         imageUploadDirectoryName: res.value.imageUploadDirectoryName,
         imageUploadDateFormatString: res.value.imageUploadDateFormatString,
         isImageUploadChangeFileName: res.value.isImageUploadChangeFileName,
-        imageUploadTypeCollection: res.value.imageUploadTypeCollection,
+        imageUploadExtensions: res.value.imageUploadExtensions,
         imageUploadTypeMaxSize: res.value.imageUploadTypeMaxSize,
         photoSmallWidth: res.value.photoSmallWidth,
         photoMiddleWidth: res.value.photoMiddleWidth,

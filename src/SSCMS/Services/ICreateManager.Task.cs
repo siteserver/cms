@@ -9,13 +9,13 @@ namespace SSCMS.Services
 
         int PendingTaskCount { get; }
 
-        CreateTask GetFirstPendingTask();
+        //CreateTask GetFirstPendingTask();
 
-        void RemovePendingTask(CreateTask task);
+        //void RemovePendingTask(CreateTask task);
 
-        void AddSuccessLog(CreateTask task, string timeSpan);
+        //void AddSuccessLog(CreateTask task, string timeSpan);
 
-        void AddFailureLog(CreateTask task, Exception ex);
+        //void AddFailureLog(CreateTask task, Exception ex);
 
         void ClearAllTask(int siteId);
 
