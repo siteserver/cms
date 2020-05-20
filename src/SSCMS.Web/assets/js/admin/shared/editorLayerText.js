@@ -57,7 +57,7 @@ var methods = {
         return item.imageUrl;
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -131,7 +131,7 @@ var methods = {
       utils.closeLayer();
     })
     .catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     })
     .then(function() {
       utils.loading($this, false);

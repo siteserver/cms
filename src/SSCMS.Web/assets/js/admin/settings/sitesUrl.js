@@ -42,7 +42,7 @@ var methods = {
       $this.isSeparatedApi = res.isSeparatedApi;
       $this.separatedApiUrl = res.separatedApiUrl;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -87,7 +87,7 @@ var methods = {
       $this.sites = res.sites;
       $this.editPanel = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       $this.editLoading = false;
     });
@@ -127,7 +127,7 @@ var methods = {
 
       $this.apiPanel = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       $this.apiLoading = false;
     });

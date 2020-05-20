@@ -28,11 +28,11 @@ var methods = {
       $this.total = res.total;
       $this.tagNames = res.tagNames;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     });
   },
@@ -54,7 +54,7 @@ var methods = {
       $this.apiList('内容标签删除成功！');
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -69,7 +69,7 @@ var methods = {
       $this.panel = false;
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

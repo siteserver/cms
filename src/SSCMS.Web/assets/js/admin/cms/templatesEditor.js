@@ -12,6 +12,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   templateId: utils.getQueryInt("templateId"),
   templateType: utils.getQueryString("templateType"),
+  tabName: utils.getQueryString("tabName"),
   createdFileFullNameTips: '以“~/”开头代表系统根目录，以“@/”开头代表站点根目录',
   template: null,
   contentEditor: null,
@@ -46,13 +47,13 @@ var methods = {
       $this.template = res.template;
       $this.setEditorContent($this.template.content);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
   },
 
-  apiSubmit: function (isReturn) {
+  apiSubmit: function (isClose) {
     this.template.content = this.getEditorContent();
     var $this = this;
 
@@ -62,17 +63,12 @@ var methods = {
         var res = response.data;
 
         $this.template = res.template;
-        $this.$message({
-          type: 'success',
-          message: '模板保存成功!'
-        });
-        if (isReturn) {
-          setTimeout(function () {
-            $this.btnCancelClick();
-          }, 1000);
+        utils.success('模板保存成功!');
+        if (isClose) {
+          $this.closeAndReload();
         }
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
@@ -82,21 +78,25 @@ var methods = {
   
         $this.templateId = res.template.id;
         $this.template = res.template;
-        $this.$message({
-          type: 'success',
-          message: '模板保存成功!'
-        });
-        if (isReturn) {
-          setTimeout(function () {
-            $this.btnCancelClick();
-          }, 1000);
+        utils.success('模板保存成功!');
+        if (isClose) {
+          $this.closeAndReload();
         }
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
     }
+  },
+
+  closeAndReload: function() {
+    var tabVue = utils.getTabVue(this.tabName);
+    if (tabVue) {
+      tabVue.apiList();
+    }
+    utils.removeTab();
+    utils.openTab(this.tabName);
   },
 
   getTemplateType: function() {
@@ -141,12 +141,8 @@ var methods = {
   },
 
   btnFormatClick: function() {
-    var $this = this;
     this.contentEditor.getAction('editor.action.formatDocument').run().then(function() {
-      $this.$message({
-        type: 'success',
-        message: '模板代码格式化成功!'
-      });
+      utils.success('模板代码格式化成功!');
     });
   },
 
@@ -173,26 +169,20 @@ var methods = {
 
       utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
   },
 
-  btnSubmitClick: function(isReturn) {
+  btnSubmitClick: function(isClose) {
     var $this = this;
     this.$refs.template.validate(function(valid) {
       if (valid) {
-        $this.apiSubmit(isReturn);
+        $this.apiSubmit(isClose);
       }
     });
   },
-
-  btnCancelClick: function() {
-    location.href = utils.getCmsUrl('templates', {
-      siteId: this.siteId
-    });
-  }
 };
 
 var $vue = new Vue({

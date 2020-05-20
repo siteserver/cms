@@ -26,7 +26,7 @@ var methods = {
 
       $this.dict = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -57,7 +57,7 @@ var methods = {
 
   btnCopyClick: function(text) {
     if (this.copyToClipboard(text)) {
-      this.$message.success('文本复制成功!');
+      utils.success('文本复制成功!');
     }
   },
 

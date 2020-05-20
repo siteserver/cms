@@ -25,7 +25,7 @@ var methods = {
       $this.form.groupName = res.groupName;
       $this.form.description = res.description;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -46,7 +46,7 @@ var methods = {
         parent.$vue.updateGroups(res, $this.getSuccessMessage());
         utils.closeLayer();
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
@@ -62,7 +62,7 @@ var methods = {
         parent.$vue.updateGroups(res, $this.getSuccessMessage());
         utils.closeLayer();
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });

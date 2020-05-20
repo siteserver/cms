@@ -31,7 +31,7 @@ var methods = {
       $this.form.checkedLevel = res.value;
       $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&channelId=' + $this.form.channelId;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -47,7 +47,7 @@ var methods = {
       utils.closeLayer();
       parent.$vue.apiList($this.form.channelId, 1, '文件导入成功！', true);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -55,7 +55,7 @@ var methods = {
 
   btnSubmitClick: function () {
     if (this.form.fileNames.length === 0) {
-      return this.$message.error('请选择需要导入的文件！');
+      return utils.error('请选择需要导入的文件！');
     }
 
     this.apiSubmit();
@@ -76,7 +76,7 @@ var methods = {
     }
     if(!re.exec(file.name))
     {
-      this.$message.error('请选择有效的文件上传!');
+      utils.error('请选择有效的文件上传!');
       return false;
     }
     return true;
@@ -100,7 +100,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

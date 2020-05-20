@@ -36,7 +36,7 @@ var methods = {
 
       $this.getPackages();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -128,7 +128,7 @@ var methods = {
       $this.currentDownloadIds.push(packageId);
       $this.download();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -162,7 +162,7 @@ var methods = {
       $this.currentUpdatedIds.push(packageId);
       $this.update();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -194,7 +194,7 @@ var methods = {
         window.top.location.reload(true);
       }, 3000);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   }
 };

@@ -25,7 +25,7 @@ var methods = {
       parent.$vue.apiList($this.form.channelId, $this.page, '内容属性设置成功!');
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -33,7 +33,7 @@ var methods = {
 
   btnSubmitClick: function () {
     if (!this.form.isTop && !this.form.isRecommend && !this.form.isHot && !this.form.isColor){
-      return this.$message.error('请选择内容属性！');
+      return utils.error('请选择内容属性！');
     }
     this.apiSubmit();
   },

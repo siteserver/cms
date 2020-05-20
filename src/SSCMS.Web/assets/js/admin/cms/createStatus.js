@@ -30,7 +30,7 @@ var methods = {
       $this.specialsCount = res.value.specialsCount;
     })
     .catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     })
     .then(function() {
       $this.timeoutId = setTimeout(function () {
@@ -76,7 +76,7 @@ var methods = {
         $this.load();
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.error(error);
       });
   }
 };

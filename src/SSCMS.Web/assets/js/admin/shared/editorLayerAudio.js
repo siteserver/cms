@@ -16,7 +16,7 @@ var methods = {
     var $this = this;
 
     if (!this.form.audioUrl) {
-      this.$message.error('请上传需要插入的音频文件！');
+      utils.error('请上传需要插入的音频文件！');
       return false;
     }
 
@@ -35,7 +35,7 @@ var methods = {
     var re = /(\.mp3)$/i;
     if(!re.exec(file.name))
     {
-      this.$message.error('文件只能是音频格式，请选择有效的文件上传!');
+      utils.error('文件只能是音频格式，请选择有效的文件上传!');
       return false;
     }
     return true;
@@ -54,7 +54,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

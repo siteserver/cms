@@ -13,6 +13,7 @@ var data = utils.init({
   directoryPath: utils.getQueryString("directoryPath"),
   fileName: utils.getQueryString("fileName"),
   extName: utils.getQueryString("extName"),
+  tabName: utils.getQueryString("tabName"),
   form: {
     path: null
   },
@@ -38,7 +39,7 @@ var methods = {
         $this.extName = res.extName;
         $this.setEditorContent(res.content);
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
@@ -49,7 +50,7 @@ var methods = {
     }
   },
 
-  apiSubmit: function (isReturn) {
+  apiSubmit: function (isClose) {
     var data = {
       siteId: this.siteId,
       path: this.form.path,
@@ -68,17 +69,12 @@ var methods = {
         $this.directoryPath = res.directoryPath;
         $this.fileName = res.fileName;
   
-        $this.$message({
-          type: 'success',
-          message: '文件保存成功!'
-        });
-        if (isReturn) {
-          setTimeout(function () {
-            $this.btnCancelClick();
-          }, 1000);
+        utils.success('文件保存成功!');
+        if (isClose) {
+          $this.closeAndReload();
         }
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
@@ -89,21 +85,25 @@ var methods = {
         $this.directoryPath = res.directoryPath;
         $this.fileName = res.fileName;
   
-        $this.$message({
-          type: 'success',
-          message: '文件保存成功!'
-        });
-        if (isReturn) {
-          setTimeout(function () {
-            $this.btnCancelClick();
-          }, 1000);
+        utils.success('文件保存成功!');
+        if (isClose) {
+          $this.closeAndReload();
         }
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
     }
+  },
+
+  closeAndReload: function() {
+    var tabVue = utils.getTabVue(this.tabName);
+    if (tabVue) {
+      tabVue.apiList();
+    }
+    utils.removeTab();
+    utils.openTab(this.tabName);
   },
 
   getFileType: function() {
@@ -158,28 +158,17 @@ var methods = {
   },
 
   btnFormatClick: function() {
-    var $this = this;
     this.contentEditor.getAction('editor.action.formatDocument').run().then(function() {
-      $this.$message({
-        type: 'success',
-        message: '文件代码格式化成功!'
-      });
+      utils.success('文件代码格式化成功!');
     });
   },
 
-  btnSubmitClick: function(isReturn) {
+  btnSubmitClick: function(isClose) {
     var $this = this;
     this.$refs.form.validate(function(valid) {
       if (valid) {
-        $this.apiSubmit(isReturn);
+        $this.apiSubmit(isClose);
       }
-    });
-  },
-
-  btnCancelClick: function() {
-    location.href = utils.getCmsUrl('templateAssets', {
-      siteId: this.siteId,
-      fileType: this.extName
     });
   }
 };

@@ -40,7 +40,7 @@ var methods = {
       }
 
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -59,13 +59,13 @@ var methods = {
       mobile: this.form.mobile,
       email: this.form.email
     }).then(function (response) {
-      $this.$message.success('管理员资料保存成功！');
+      utils.success('管理员资料保存成功！');
 
       setTimeout(function () {
         utils.closeLayer();
       }, 1000);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -95,13 +95,13 @@ var methods = {
     var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
     if(!re.exec(file.name))
     {
-      this.$message.error('头像只能是图片格式，请选择有效的文件上传!');
+      utils.error('头像只能是图片格式，请选择有效的文件上传!');
       return false;
     }
 
     var isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
-      this.$message.error('头像图片大小不能超过 10MB!');
+      utils.error('头像图片大小不能超过 10MB!');
       return false;
     }
     return true;
@@ -120,7 +120,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   uploadRemove(file) {

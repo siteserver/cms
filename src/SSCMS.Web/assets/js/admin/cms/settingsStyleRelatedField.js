@@ -39,11 +39,11 @@ var methods = {
       $this.relatedFields = res;
       $this.urlUpload = $apiUrl + $urlImport + '?siteId=' + $this.siteId;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     });
   },
@@ -63,7 +63,7 @@ var methods = {
       $this.itemsTree = res.tree;
       $this.itemsPanel = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -82,9 +82,9 @@ var methods = {
       var res = response.data;
 
       $this.relatedFields = res;
-      $this.$message.success('联动字段删除成功！');
+      utils.success('联动字段删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -99,9 +99,9 @@ var methods = {
 
       $this.relatedFields = res;
       $this.editorPanel = false;
-      $this.$message.success('联动字段新增成功！');
+      utils.success('联动字段新增成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -116,9 +116,9 @@ var methods = {
 
       $this.relatedFields = res;
       $this.editorPanel = false;
-      $this.$message.success('联动字段编辑成功！');
+      utils.success('联动字段编辑成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -190,7 +190,7 @@ var methods = {
   uploadBefore(file) {
     var isZip = file.name.indexOf('.zip', file.name.length - '.zip'.length) !== -1;
     if (!isZip) {
-      this.$message.error('样式导入文件只能是 Zip 格式!');
+      utils.error('样式导入文件只能是 Zip 格式!');
     }
     return isZip;
   },
@@ -209,7 +209,7 @@ var methods = {
     this.uploadList = [];
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   btnExportClick: function() {
@@ -223,7 +223,7 @@ var methods = {
 
       window.open(res.value);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -268,9 +268,9 @@ var methods = {
       var res = response.data;
 
       $this.itemsTree = res.tree;
-      $this.$message.success('联动字段项删除成功！');
+      utils.success('联动字段项删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -289,10 +289,10 @@ var methods = {
       var res = response.data;
 
       $this.itemsTree = res.tree;
-      $this.$message.success('联动字段项添加成功！');
+      utils.success('联动字段项添加成功！');
       $this.itemsAddDialog = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -311,9 +311,9 @@ var methods = {
       var res = response.data;
 
       $this.itemsTree = res.tree;
-      $this.$message.success('联动字段项排序成功！');
+      utils.success('联动字段项排序成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -333,10 +333,10 @@ var methods = {
       var res = response.data;
 
       $this.itemsTree = res.tree;
-      $this.$message.success('联动字段项编辑成功！');
+      utils.success('联动字段项编辑成功！');
       $this.itemsEditDialog = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

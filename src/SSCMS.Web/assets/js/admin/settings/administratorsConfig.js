@@ -36,7 +36,7 @@ var methods = {
       $this.form.isAdminEnforceLogout = res.config.isAdminEnforceLogout;
       $this.form.adminEnforceLogoutMinutes = res.config.adminEnforceLogoutMinutes;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -61,9 +61,9 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('管理员设置保存成功！');
+      utils.success('管理员设置保存成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

@@ -48,7 +48,7 @@ var methods = {
       }
       $this.checkedLevel = res.checkedLevel;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -65,10 +65,10 @@ var methods = {
         window.open(res.value);
         utils.closeLayer();
       } else {
-        return $this.$message.error('没有符合条件的内容，请重新选择导出条件');
+        return utils.error('没有符合条件的内容，请重新选择导出条件');
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -98,7 +98,7 @@ var methods = {
 
   btnSubmitClick: function () {
     if (this.form.checkedLevelKeys.length === 0) {
-      return this.$message.error('必须至少选择一项内容状态');
+      return utils.error('必须至少选择一项内容状态');
     }
 
     this.apiSubmit();

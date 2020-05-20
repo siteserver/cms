@@ -1,4 +1,4 @@
-﻿var $url = '/settings/usersPassword';
+﻿var $url = '/settings/usersLayerPassword';
 
 var data = utils.init({
   userId: utils.getQueryInt('userId'),
@@ -22,7 +22,7 @@ var methods = {
 
       $this.user = res.user;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -38,13 +38,10 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('密码更改成功！');
-
-      setTimeout(function () {
-        location.href = utils.getSettingsUrl('users');
-      }, 3000);
+      utils.success('密码更改成功！');
+      utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -70,8 +67,8 @@ var methods = {
     });
   },
 
-  btnReturnClick: function () {
-    location.href = utils.getSettingsUrl('users');
+  btnCancelClick: function () {
+    utils.closeLayer();
   }
 };
 

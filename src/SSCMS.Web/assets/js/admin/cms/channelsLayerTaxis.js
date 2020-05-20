@@ -25,7 +25,7 @@ var methods = {
       parent.$vue.apiList('栏目排序成功!', res);
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

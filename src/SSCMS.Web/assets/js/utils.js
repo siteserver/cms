@@ -45,7 +45,9 @@ var $api = axios.create({
   },
 });
 
-var $urlPortal = 'https://www.siteserver.cn';
+var $urlCloud = 'https://sscms.com';
+var $urlCloudDl = 'https://dl.sscms.com';
+var $urlCloudDocs = 'https://sscms.com/docs/v7';
 
 var utils = {
   init: function (data) {
@@ -200,6 +202,11 @@ var utils = {
     return null;
   },
 
+  getTabName: function() {
+    var $this = utils.getRootVue();
+    return $this.tabName;
+  },
+
   openTab: function(name) {
     var $this = utils.getRootVue();
     $this.tabName = name;
@@ -221,6 +228,8 @@ var utils = {
       $this.tabs.push(tab);
     } else {
       tab = $this.tabs[index];
+      var iframe = top.document.getElementById('frm-' + tab.name).contentWindow;
+      iframe.location.reload();
     }
     $this.tabName = tab.name;
   },
@@ -346,34 +355,45 @@ var utils = {
     );
   },
 
-  error: function (app, error, options) {
-    var message = utils.getErrorMessage(error);
+  success: function (message) {
+    utils.getRootVue().$message({
+      type: "success",
+      message: message,
+      showIcon: true
+    });
+  },
 
-    if (error.response && error.response.status === 500 || options && options.redirect) {
-      var uuid = utils.uuid();
-      sessionStorage.setItem(uuid, message);
+  error: function (error, options) {
+    if (error.response) {
+      var message = utils.getErrorMessage(error);
 
-      if (options && options.redirect) {
-        location.href = utils.getRootUrl("error", { uuid: uuid })
+      if (error.response && error.response.status === 500 || options && options.redirect) {
+        var uuid = utils.uuid();
+        sessionStorage.setItem(uuid, message);
+  
+        if (options && options.redirect) {
+          location.href = utils.getRootUrl("error", { uuid: uuid })
+          return;
+        }
+  
+        top.utils.openLayer({
+          url: utils.getRootUrl("error", { uuid: uuid }),
+        });
         return;
       }
 
-      top.utils.openLayer({
-        url: utils.getRootUrl("error", { uuid: uuid }),
+      utils.getRootVue().$message({
+        type: "error",
+        message: message,
+        showIcon: true
       });
-      return;
+    } else {
+      utils.getRootVue().$message({
+        type: "error",
+        message: error,
+        showIcon: true
+      });
     }
-
-    app.$message(
-      _.assign(
-        {
-          type: "error",
-          message: message,
-          showIcon: true,
-        },
-        options || {}
-      )
-    );
   },
 
   loading: function (app, isLoading) {

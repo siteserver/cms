@@ -33,26 +33,32 @@ var methods = {
       $this.count = res.count;
       $this.groups = res.groups;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
   },
 
   btnViewClick: function(userId) {
-    location.href = utils.getSettingsUrl('usersView', {userId: userId});
+    utils.openLayer({
+      title: '查看资料',
+      url: utils.getSharedUrl('userLayerView', {userId: userId})
+    });
   },
 
   btnAddClick: function() {
-    location.href = utils.getSettingsUrl('usersProfile');
+    utils.addTab('添加用户', utils.getSettingsUrl('usersProfile'));
   },
 
   btnEditClick: function(row) {
-    location.href = utils.getSettingsUrl('usersProfile', {userId: row.id});
+    utils.addTab('编辑用户', utils.getSettingsUrl('usersProfile', {userId: row.id}));
   },
 
   btnPasswordClick: function(row) {
-    location.href = utils.getSettingsUrl('usersPassword', {userId: row.id});
+    utils.openLayer({
+      title: '更改密码',
+      url: utils.getSettingsUrl('usersLayerPassword', {userId: row.id})
+    });
   },
 
   btnExportClick: function() {
@@ -72,7 +78,7 @@ var methods = {
 
       $this.items.splice($this.items.indexOf(item), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -101,7 +107,7 @@ var methods = {
 
       item.checked = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -130,7 +136,7 @@ var methods = {
 
       item.locked = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -159,7 +165,7 @@ var methods = {
 
       item.locked = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -189,7 +195,7 @@ var methods = {
       $this.items = res.users;
       $this.count = res.count;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -209,7 +215,7 @@ var methods = {
   uploadBefore(file) {
     var isExcel = file.name.indexOf('.xlsx', file.name.length - '.xlsx'.length) !== -1;
     if (!isExcel) {
-      this.$message.error('用户导入文件只能是 Excel 格式!');
+      utils.error('用户导入文件只能是 Excel 格式!');
     }
     return isExcel;
   },
@@ -236,13 +242,13 @@ var methods = {
       $this.count = res.count;
       $this.groups = res.groups;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       if (success) {
-        $this.$message.success('成功导入 ' + success + ' 名用户！');
+        utils.success('成功导入 ' + success + ' 名用户！');
       }
       if (errorMessage) {
-        $this.$message.error(failure + ' 名用户导入失败：' + errorMessage);
+        utils.error(failure + ' 名用户导入失败：' + errorMessage);
       }
       utils.loading($this, false);
     });
@@ -251,7 +257,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

@@ -41,7 +41,7 @@ var methods = {
       $this.form.templateName = res.site.siteName;
       $this.form.templateDir = res.templateDir;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -63,10 +63,6 @@ var methods = {
 
   handleCheckedFilesChange(value) {
     this.checkAllFiles = this.form.checkedFiles.length === this.files.length;
-  },
-
-  btnCancelClick: function () {
-    location.href = utils.getSettingsUrl('sites');
   },
 
   btnNextClick: function () {
@@ -96,7 +92,7 @@ var methods = {
       $this.files = res.files;
       $this.active = 1;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -112,7 +108,7 @@ var methods = {
       $this.channel = res.channel;
       $this.active = 2;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -130,7 +126,7 @@ var methods = {
         location.href = utils.getSettingsUrl('sitesTemplates');
       }, 3000);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

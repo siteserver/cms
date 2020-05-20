@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <!-- <button v-on:click="btnUploadClick()" class="btn btn-default m-l-10 btn-md float-right">离线安装</button> -->
-<!-- <a v-if="!q" href="https://www.siteserver.cn/plugins/" target="_blank" class="btn btn-primary btn-block">更多</a> -->
+<!-- <a v-if="!q" :href="$urlCloud + '/plugins/'" target="_blank" class="btn btn-primary btn-block">更多</a> -->
 
 <el-form :inline="true" size="mini">
   <el-form-item label="关键字">
@@ -45,7 +45,7 @@
               <td rowspan="1" colspan="1">
                 <div class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;">
                   插件Id：
-                  <el-link :underline="false" type="primary" :href="'https://www.siteserver.cn/users/user.html?userName=' + plugin.publisher"
+                  <el-link :underline="false" type="primary" :href="$urlCloud + '/users/user.html?userName=' + plugin.publisher"
                     target="_blank" class="text-primary">
                     {{ plugin.pluginId }}
                   </el-link>
@@ -57,7 +57,7 @@
               <td rowspan="1" colspan="1">
                 <div class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;">
                   开发者：
-                  <el-link :underline="false" type="primary" :href="'https://www.siteserver.cn/users/user.html?userName=' + plugin.publisher"
+                  <el-link :underline="false" type="primary" :href="$urlCloud + '/users/user.html?userName=' + plugin.publisher"
                     target="_blank" class="text-primary">
                     {{ plugin.publisher }}
                   </el-link>

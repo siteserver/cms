@@ -54,7 +54,7 @@ var methods = {
 
   updateGroups: function(res, message) {
     this.groupNames = res.groupNames;
-    this.$message.success(message);
+    utils.success(message);
   },
 
   apiList: function(message, expandedChannelIds) {
@@ -78,10 +78,10 @@ var methods = {
       $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
 
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -106,7 +106,7 @@ var methods = {
         $this.loadEditor();
       }, 100)
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -131,7 +131,7 @@ var methods = {
       $this.apiList('栏目添加成功!', res);
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -146,7 +146,7 @@ var methods = {
       $this.apiList('栏目编辑成功!', res);
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -163,7 +163,7 @@ var methods = {
       $this.apiList('栏目删除成功!', res);
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -183,7 +183,7 @@ var methods = {
       $this.apiList('栏目导入成功!', res);
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     })
   },
 
@@ -368,7 +368,7 @@ var methods = {
       $this.apiList('栏目排序成功!', res);
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -431,7 +431,7 @@ var methods = {
 
       window.open(res.value);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -476,7 +476,7 @@ var methods = {
   uploadBefore(file) {
     var isZip = file.name.indexOf('.zip', file.name.length - '.zip'.length) !== -1;
     if (!isZip) {
-      this.$message.error('导入文件只能是 Zip 格式!');
+      utils.error('导入文件只能是 Zip 格式!');
     }
     return isZip;
   },
@@ -493,7 +493,7 @@ var methods = {
   uploadError: function(err) {
     this.loading && this.loading.close();
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   btnLayerClick: function(options) {

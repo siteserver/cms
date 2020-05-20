@@ -27,7 +27,7 @@ var methods = {
 
       $this.contents = res.contents;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -48,7 +48,7 @@ var methods = {
       parent.$vue.apiList($this.channelId, $this.page, '内容删除成功!', true);
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

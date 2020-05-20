@@ -77,7 +77,7 @@
       </el-form>
     </el-col>
     <el-col :span="4" align="right">
-      <el-link :underline="false" type="primary" target="_blank" href="https://www.siteserver.cn/templates/">官网模板中心</el-link>
+      <el-link :underline="false" type="primary" target="_blank" :href="$urlCloud + '/templates/'">官网模板中心</el-link>
     </el-col>
   </el-row>
   <el-row>
@@ -242,4 +242,6 @@
 </template>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/admin/settings/sitesAdd.js" type="text/javascript"></script> }
+  <script src="/sitefiles/assets/js/cloud.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/settings/sitesAdd.js" type="text/javascript"></script>
+}

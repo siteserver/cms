@@ -26,7 +26,7 @@ var methods = {
       $this.homeTitle = res.homeTitle;
       $this.reload();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -44,7 +44,7 @@ var methods = {
       $this.pageSubmit = false;
       $this.captchaUrl = $apiUrl + $urlCaptcha + '?token=' + $this.captchaToken;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -62,7 +62,7 @@ var methods = {
     }).catch(function (error) {
       $this.reload();
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -90,7 +90,7 @@ var methods = {
         $this.redirectIndex();
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       $this.reload();
       utils.loading($this, false);

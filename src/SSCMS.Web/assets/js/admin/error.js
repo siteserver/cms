@@ -24,7 +24,7 @@ var methods = {
       $this.stackTrace = res.error.stackTrace;
       $this.addDate = res.error.addDate;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

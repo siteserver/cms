@@ -19,11 +19,11 @@ var methods = {
       $this.groups = res.groups;
       $this.adminNames = res.adminNames;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     });
   },
@@ -38,9 +38,9 @@ var methods = {
       var res = response.data;
 
       $this.groups = res.groups;
-      $this.$message.success('用户组删除成功！');
+      utils.success('用户组删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -54,10 +54,10 @@ var methods = {
       var res = response.data;
       
       $this.groups = res.groups;
-      $this.$message.success($this.form.id === -1 ? '用户组添加成功！' : '用户组修改成功！');
+      utils.success($this.form.id === -1 ? '用户组添加成功！' : '用户组修改成功！');
       $this.panel = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

@@ -56,7 +56,7 @@ var methods = {
         $this.uploadFileListHomeDefaultAvatarUrl.push({name: 'avatar', url: $this.form.homeDefaultAvatarUrl});
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -80,9 +80,9 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('用户中心设置保存成功！');
+      utils.success('用户中心设置保存成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -116,13 +116,13 @@ var methods = {
     var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
     if(!re.exec(file.name))
     {
-      this.$message.error('管理后台Logo只能是图片格式，请选择有效的文件上传!');
+      utils.error('管理后台Logo只能是图片格式，请选择有效的文件上传!');
       return false;
     }
 
     var isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
-      this.$message.error('管理后台Logo图片大小不能超过 10MB!');
+      utils.error('管理后台Logo图片大小不能超过 10MB!');
       return false;
     }
     return true;
@@ -146,7 +146,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   uploadRemoveHomeLogoUrl(file) {

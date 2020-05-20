@@ -38,7 +38,7 @@ var methods = {
       $this.tagNames = res.tagNames;
       $this.editorColumns = res.editorColumns;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

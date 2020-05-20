@@ -24,7 +24,7 @@ var methods = {
       $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -39,7 +39,7 @@ var methods = {
 
       $this.items = [];
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -80,7 +80,7 @@ var methods = {
       $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -99,7 +99,7 @@ var methods = {
       $this.items = res.items;
       $this.count = res.count;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

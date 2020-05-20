@@ -25,7 +25,7 @@ var methods = {
       $this.channels = res.channels;
       $this.allTemplates = $this.templates = res.templates;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -44,12 +44,9 @@ var methods = {
       $this.channels = res.channels;
       $this.allTemplates = res.templates;
       $this.reload();
-      $this.$message({
-        type: 'success',
-        message: '默认模板设置成功！'
-      });
+      utils.success('默认模板设置成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -70,12 +67,9 @@ var methods = {
       $this.channels = res.channels;
       $this.allTemplates = res.templates;
       $this.reload();
-      $this.$message({
-        type: 'success',
-        message: '模板删除成功！'
-      });
+      utils.success('模板删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -126,12 +120,9 @@ var methods = {
       $this.channels = res.channels;
       $this.allTemplates = res.templates;
       $this.reload();
-      $this.$message({
-        type: 'success',
-        message: '快速复制成功！'
-      });
+      utils.success('快速复制成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -149,7 +140,7 @@ var methods = {
 
       utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -167,15 +158,20 @@ var methods = {
     });
   },
 
+  btnEditClick(template) {
+    utils.addTab('编辑' + ':' + template.templateName, this.getEditorUrl(template.templateType, template.id));
+  },
+
   btnAddClick: function(templateType) {
-    location.href = this.getEditorUrl(templateType, 0);
+    utils.addTab('新增' + this.getTemplateType(templateType), this.getEditorUrl(templateType, 0));
   },
 
   getEditorUrl: function(templateType, templateId) {
     return utils.getCmsUrl('templatesEditor', {
       siteId: this.siteId,
       templateId: templateId,
-      templateType: templateType
+      templateType: templateType,
+      tabName: utils.getTabName()
     });
   },
 

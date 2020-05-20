@@ -40,7 +40,7 @@ var methods = {
         utils.loading($this, false);
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

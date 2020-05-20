@@ -1,106 +1,99 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-card class="box-card">
-  <div slot="header" class="clearfix">
-    <span>用户中心菜单</span>
-  </div>
+<el-table
+  :data="userMenus"
+  row-key="id"
+  size="small"
+  :expand-row-keys="expandRowKeys"
+  style="width: 100%">
+  <el-table-column type="expand">
+    <template slot-scope="props">
+      
+      <el-table
+        v-if="props.row.children.length > 0"
+        :data="props.row.children"
+        row-key="id"
+        size="small"
+        style="width: 100%">
+        <el-table-column prop="taxis" label="排序" width="60"></el-table-column>
+        <el-table-column prop="text" label="标题" width="220"></el-table-column>
+        <el-table-column prop="href" label="链接"></el-table-column>
+        <el-table-column label="用户组" width="150">
+          <template slot-scope="scope">
+            {{ getUserGroups(scope.row) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="100">
+          <template slot-scope="scope">
+            {{ (scope.row.disabled ? '禁用' : '启用') }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          width="230"
+          align="center"
+          show-overflow-tooltip
+          label="操作">
+          <template slot-scope="scope">
+            <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnAddClick(scope.row.id)">
+              新增下级菜单
+            </el-link>
+            <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
+              编 辑
+            </el-link>
+            <el-link :underline="false" style="margin-right: 5px;" v-if="!scope.row.systemId" type="primary" v-on:click="btnDeleteClick(scope.row)">
+              删 除
+            </el-link>
+          </template>
+        </el-table-column>
+      </el-table>
 
-  <el-table
-    :data="userMenus"
-    row-key="id"
-    size="small"
-    :expand-row-keys="expandRowKeys"
-    style="width: 100%">
-    <el-table-column type="expand">
-      <template slot-scope="props">
-        
-        <el-table
-          v-if="props.row.children.length > 0"
-          :data="props.row.children"
-          row-key="id"
-          size="small"
-          style="width: 100%">
-          <el-table-column prop="taxis" label="排序" width="60"></el-table-column>
-          <el-table-column prop="text" label="标题" width="220"></el-table-column>
-          <el-table-column prop="href" label="链接"></el-table-column>
-          <el-table-column label="用户组" width="150">
-            <template slot-scope="scope">
-              {{ getUserGroups(scope.row) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" width="100">
-            <template slot-scope="scope">
-              {{ (scope.row.disabled ? '禁用' : '启用') }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            width="230"
-            align="center"
-            show-overflow-tooltip
-            label="操作">
-            <template slot-scope="scope">
-              <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnAddClick(scope.row.id)">
-                新增下级菜单
-              </el-link>
-              <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
-                编 辑
-              </el-link>
-              <el-link :underline="false" style="margin-right: 5px;" v-if="!scope.row.systemId" type="primary" v-on:click="btnDeleteClick(scope.row)">
-                删 除
-              </el-link>
-            </template>
-          </el-table-column>
-        </el-table>
+    </template>
+  </el-table-column>
+  <el-table-column prop="taxis" label="排序" width="60"></el-table-column>
+  <el-table-column prop="text" label="标题" width="220"></el-table-column>
+  <el-table-column prop="href" label="链接"></el-table-column>
+  <el-table-column label="用户组" width="150">
+    <template slot-scope="scope">
+      {{ getUserGroups(scope.row) }}
+    </template>
+  </el-table-column>
+  <el-table-column label="状态" width="100">
+    <template slot-scope="scope">
+      {{ (scope.row.disabled ? '禁用' : '启用') }}
+    </template>
+  </el-table-column>
+  <el-table-column
+    fixed="right"
+    width="230"
+    align="center"
+    show-overflow-tooltip
+    label="操作">
+    <template slot-scope="scope">
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnAddClick(scope.row.id)">
+        新增下级菜单
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
+        编 辑
+      </el-link>
+      <el-link :underline="false" style="margin-right: 5px;" v-if="!scope.row.systemId" type="primary" v-on:click="btnDeleteClick(scope.row)">
+        删 除
+      </el-link>
+    </template>
+  </el-table-column>
+</el-table>
 
-      </template>
-    </el-table-column>
-    <el-table-column prop="taxis" label="排序" width="60"></el-table-column>
-    <el-table-column prop="text" label="标题" width="220"></el-table-column>
-    <el-table-column prop="href" label="链接"></el-table-column>
-    <el-table-column label="用户组" width="150">
-      <template slot-scope="scope">
-        {{ getUserGroups(scope.row) }}
-      </template>
-    </el-table-column>
-    <el-table-column label="状态" width="100">
-      <template slot-scope="scope">
-        {{ (scope.row.disabled ? '禁用' : '启用') }}
-      </template>
-    </el-table-column>
-    <el-table-column
-      fixed="right"
-      width="230"
-      align="center"
-      show-overflow-tooltip
-      label="操作">
-      <template slot-scope="scope">
-        <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnAddClick(scope.row.id)">
-          新增下级菜单
-        </el-link>
-        <el-link :underline="false" style="margin-right: 5px;" type="primary" v-on:click="btnEditClick(scope.row)">
-          编 辑
-        </el-link>
-        <el-link :underline="false" style="margin-right: 5px;" v-if="!scope.row.systemId" type="primary" v-on:click="btnDeleteClick(scope.row)">
-          删 除
-        </el-link>
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <el-row>
-    <el-divider></el-divider>
-    <div style="height: 10px"></div>
-    <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick(0)">
-      新增菜单
-    </el-button>
-    <el-button size="small" plain type="primary" style="margin-left: 0px;" v-on:click="btnResetClick">
-      重置菜单
-    </el-button>
-  </el-row>
-
-</el-card>
+<el-row>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+  <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick(0)">
+    新增菜单
+  </el-button>
+  <el-button size="small" plain type="primary" style="margin-left: 0px;" v-on:click="btnResetClick">
+    重置菜单
+  </el-button>
+</el-row>
 
 <el-drawer
   v-if="userMenu"

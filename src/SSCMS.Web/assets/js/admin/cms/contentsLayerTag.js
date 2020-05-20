@@ -28,7 +28,7 @@ var methods = {
 
       $this.tagNames = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -44,7 +44,7 @@ var methods = {
       parent.$vue.apiList($this.form.channelId, $this.page, '内容标签设置成功!');
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

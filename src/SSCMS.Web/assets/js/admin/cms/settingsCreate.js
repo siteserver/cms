@@ -35,7 +35,7 @@ var methods = {
         createStaticContentAddDate: res.value.createStaticContentAddDate,
       };
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -48,9 +48,9 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('页面生成设置保存成功！');
+      utils.success('页面生成设置保存成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

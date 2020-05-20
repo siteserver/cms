@@ -22,7 +22,7 @@ var methods = {
       parent.$vue.apiList($this.form.channelId, $this.page, '内容点击量设置成功!');
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

@@ -33,7 +33,7 @@ var methods = {
       $this.isOrdinaryAdmin = res.isOrdinaryAdmin;
       $this.roleNames = res.roleNames;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

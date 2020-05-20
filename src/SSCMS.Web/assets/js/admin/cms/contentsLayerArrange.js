@@ -21,7 +21,7 @@ var methods = {
       parent.$vue.apiList($this.form.channelId, $this.page, '整理排序成功!');
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

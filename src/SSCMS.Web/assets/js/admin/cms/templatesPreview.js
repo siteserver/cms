@@ -39,7 +39,7 @@ var methods = {
         });
       }, 100);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -71,7 +71,7 @@ var methods = {
         });
       }, 100);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -84,10 +84,7 @@ var methods = {
   btnSubmitClick: function() {
     this.content = this.getEditorContent();
     if (!this.content) {
-      this.$message({
-        type: 'error',
-        message: '请输入需要解析的模板标签!'
-      });
+      utils.error('请输入需要解析的模板标签!');
       return;
     }
 

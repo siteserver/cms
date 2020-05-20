@@ -26,11 +26,11 @@ var methods = {
 
       $this.urlUpload = $apiUrl + $url + '/actions/import';
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     });
   },
@@ -48,7 +48,7 @@ var methods = {
 
       $this.styles = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -63,7 +63,7 @@ var methods = {
 
       $this.styles = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -110,20 +110,6 @@ var methods = {
     });
   },
 
-  btnCommandClick: function(command){
-    if (command === 'Add') {
-      this.btnAddClick();
-    } else if (command === 'AddMultiple') {
-      this.btnAddMultipleClick();
-    } else if (command === 'Import') {
-      this.btnImportClick();
-    } else if (command === 'Export') {
-      this.btnExportClick();
-    } else if (command === 'Reset') {
-      this.btnResetClick();
-    }
-  },
-
   btnAddClick: function () {
     utils.openLayer({
       title: '新增字段',
@@ -163,7 +149,7 @@ var methods = {
   uploadBefore(file) {
     var isZip = file.name.indexOf('.zip', file.name.length - '.zip'.length) !== -1;
     if (!isZip) {
-      this.$message.error('样式导入文件只能是 Zip 格式!');
+      utils.error('样式导入文件只能是 Zip 格式!');
     }
     return isZip;
   },
@@ -182,15 +168,11 @@ var methods = {
     this.uploadList = [];
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   btnExportClick: function() {
     window.open($apiUrl + $url + '/actions/export');
-  },
-
-  btnReturnClick: function() {
-    location.href = this.returnUrl;
   }
 };
 

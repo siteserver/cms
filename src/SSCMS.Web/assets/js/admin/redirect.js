@@ -26,7 +26,7 @@ var methods = {
       }
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   }
 };

@@ -13,14 +13,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class UsersPasswordController : ControllerBase
+    public partial class UsersLayerPasswordController : ControllerBase
     {
-        private const string Route = "settings/usersPassword";
+        private const string Route = "settings/usersLayerPassword";
 
         private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;
 
-        public UsersPasswordController(IAuthManager authManager, IUserRepository userRepository)
+        public UsersLayerPasswordController(IAuthManager authManager, IUserRepository userRepository)
         {
             _authManager = authManager;
             _userRepository = userRepository;

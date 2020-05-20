@@ -34,7 +34,7 @@ var methods = {
       $this.form.transSiteIds = [$this.siteId];
       $this.apiGetOptions();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -57,7 +57,7 @@ var methods = {
       parent.$vue.apiList($this.channelId, $this.page, '内容复制成功!', true);
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -77,7 +77,7 @@ var methods = {
       $this.form.transChannelIds = null;
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

@@ -27,7 +27,7 @@ var methods = {
       $this.siteTemplateUrl = res.siteTemplateUrl;
       $this.siteAddPermission = res.siteAddPermission;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -60,11 +60,11 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('站点模板压缩成功！');
+      utils.success('站点模板压缩成功！');
 
       row.fileExists = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -93,11 +93,11 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('站点模板删除成功！');
+      utils.success('站点模板删除成功！');
 
       $this.siteTemplateInfoList.splice($this.siteTemplateInfoList.indexOf(row.directoryName), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -120,7 +120,7 @@ var methods = {
       $this.siteTemplateInfoList = res.siteTemplateInfoList;
       $this.fileNameList = res.fileNameList;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -153,11 +153,11 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('站点模板压缩包删除成功！');
+      utils.success('站点模板压缩包删除成功！');
 
       $this.fileNameList.splice($this.fileNameList.indexOf(row), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -170,7 +170,7 @@ var methods = {
   uploadBefore(file) {
     var isZIP = file.type === 'application/x-zip-compressed';
     if (!isZIP) {
-      this.$message.error('上传站点模板只能是 ZIP 格式!');
+      utils.error('上传站点模板只能是 ZIP 格式!');
     }
     return isZIP;
   },
@@ -185,13 +185,13 @@ var methods = {
     this.fileNameList = res.fileNameList;
     this.siteTemplateUrl = res.siteTemplateUrl;
     this.uploadPanel = false;
-    this.$message.success('站点模板上传成功！');
+    utils.success('站点模板上传成功！');
   },
 
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

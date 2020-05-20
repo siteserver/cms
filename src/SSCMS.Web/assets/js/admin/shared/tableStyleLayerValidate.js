@@ -28,7 +28,7 @@ var methods = {
       $this.options = res.options;
       $this.rules = res.rules || [];
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -49,7 +49,7 @@ var methods = {
       utils.closeLayer();
       parent.$vue.apiList();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

@@ -46,7 +46,7 @@ var methods = {
       $this.rootSiteId = res.rootSiteId;
       $this.tableNames = res.tableNames;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -66,7 +66,7 @@ var methods = {
         window.top.location.href = utils.getIndexUrl();
       }, 1500);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       $this.deleteLoading = false;
     });
@@ -81,27 +81,26 @@ var methods = {
       $this.sites = res.sites;
       $this.editPanel = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       $this.editLoading = false;
     });
   },
 
   btnAddClick: function() {
-    location.href = utils.getSettingsUrl('sitesAdd');
+    utils.addTab('创建新站点', utils.getSettingsUrl('sitesAdd'));
   },
 
-  btnSaveClick: function(row) {
-    location.href = utils.getSettingsUrl('sitesSave', {siteId: row.id});
+  btnSaveClick: function(site) {
+    utils.addTab('保存站点模板', utils.getSettingsUrl('sitesSave', {siteId: site.id}));
   },
 
-  btnChangeClick: function(row) {
-    location.href = utils.getSettingsUrl('sitesChangeRoot', {siteId: row.id});
+  btnChangeClick: function(site) {
+    var title = site.root ? '转移到子目录' : '转移到根目录';
+    utils.addTab(title, utils.getSettingsUrl('sitesChangeRoot', {siteId: site.id}));
   },
 
-  btnEditClick: function(row) {
-    var site = row;
-
+  btnEditClick: function(site) {
     this.editForm = {
       siteId: site.id,
       root: site.root,

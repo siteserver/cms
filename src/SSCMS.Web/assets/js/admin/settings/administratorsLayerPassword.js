@@ -34,7 +34,7 @@ var methods = {
         });
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -50,13 +50,13 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('密码更改成功！');
+      utils.success('密码更改成功！');
 
       setTimeout(function () {
         utils.closeLayer();
       }, 1000);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

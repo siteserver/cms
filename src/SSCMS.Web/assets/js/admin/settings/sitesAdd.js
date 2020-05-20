@@ -56,7 +56,7 @@ var methods = {
       $this.tableNameList = res.tableNameList;
       $this.form.guid = res.guid;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if ($this.pageType == 'selectCloud') {
@@ -88,7 +88,7 @@ var methods = {
       clearTimeout(interval);
       $this.pageType = 'submit';
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -117,7 +117,7 @@ var methods = {
       }
       utils.loading($this, false);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -209,7 +209,7 @@ var methods = {
         $this.allTagNames = res.allTagNames;
       })
       .catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       })
       .then(function () {
         utils.loading($this, false);

@@ -1,38 +1,30 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-card class="box-card">
-  <div slot="header" class="clearfix">
-    <span>STL模板语言参考</span>
-    <el-link :underline="false" type="primary" style="float: right; padding: 3px 0" href="https://www.siteserver.cn/docs/stl/" target="_blank">STL 语言参考手册</el-link>
-  </div>
-  <div>
-    <el-table
-      :data="elements"
-      stripe
-      style="width: 100%">
-      <el-table-column
-        label="标签"
-        width="150">
-        <template slot-scope="scope">
-          <el-link :underline="false" type="primary" v-on:click="btnElementSelectClick(scope.row)">
-            {{ scope.row.name }}
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="title"
-        label="说明"
-        width="150">
-      </el-table-column>
-      <el-table-column label="参考">
-        <template slot-scope="scope">
-            <el-link :underline="false" type="primary" :href="getLinkUrl(scope.row.name)" target="_blank">{{ getLinkUrl(scope.row.name) }}</el-link>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
-</el-card>
+<el-table
+  :data="elements"
+  stripe
+  style="width: 100%">
+  <el-table-column
+    label="标签"
+    width="150">
+    <template slot-scope="scope">
+      <el-link :underline="false" type="primary" v-on:click="btnElementSelectClick(scope.row)">
+        {{ scope.row.name }}
+      </el-link>
+    </template>
+  </el-table-column>
+  <el-table-column
+    prop="title"
+    label="说明"
+    width="150">
+  </el-table-column>
+  <el-table-column label="参考">
+    <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="getLinkUrl(scope.row.name)" target="_blank">{{ getLinkUrl(scope.row.name) }}</el-link>
+    </template>
+  </el-table-column>
+</el-table>
 
 <el-dialog
   v-if="elementFields"

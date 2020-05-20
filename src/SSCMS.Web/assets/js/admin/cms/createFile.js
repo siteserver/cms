@@ -23,7 +23,7 @@ var methods = {
 
       $this.allTemplates = $this.templates = res.templates;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     })
@@ -39,7 +39,7 @@ var methods = {
     }).then(function (response) {
       location.href = utils.getCmsUrl('createStatus', {siteId: $this.siteId});
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

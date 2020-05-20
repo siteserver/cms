@@ -14,7 +14,7 @@ var methods = {
 
       $this.homeWelcomeHtml = res.homeWelcomeHtml || '欢迎使用用户中心';
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

@@ -66,7 +66,7 @@ var methods = {
         $this.expendedChannelIds = [$this.siteId, $this.channelId];
       }
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function() {
       $this.asideHeight = $(window).height() - 4;
       $this.tableMaxHeight = $(window).height() - 128;
@@ -99,13 +99,13 @@ var methods = {
       $this.searchForm.isAllContents = res.isAllContents;
 
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
       if (reload) {
         $this.apiTree(true);
       }
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function() {
       utils.loading($this, false);
       $this.scrollToTop();
@@ -123,7 +123,7 @@ var methods = {
       var res = response.data;
 
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -140,7 +140,7 @@ var methods = {
 
       $this.apiList($this.channelId, 1);
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -231,7 +231,7 @@ var methods = {
       siteId: this.siteId,
       channelId: this.channelId,
       page: this.page,
-      tabName: utils.getRootVue().tabName
+      tabName: utils.getTabName()
     });
   },
 
@@ -241,7 +241,7 @@ var methods = {
       channelId: content.channelId,
       contentId: content.id,
       page: this.page,
-      tabName: utils.getRootVue().tabName
+      tabName: utils.getTabName()
     });
   },
 
@@ -258,7 +258,7 @@ var methods = {
 
       utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function() {
       utils.loading($this, false);
     });

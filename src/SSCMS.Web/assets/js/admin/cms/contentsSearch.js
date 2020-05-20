@@ -69,7 +69,7 @@ var methods = {
       }
     }).catch(function(error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -113,10 +113,10 @@ var methods = {
       $this.page = page;
 
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function() {
       utils.loading($this, false);
       $this.scrollToTop();
@@ -133,7 +133,7 @@ var methods = {
       var res = response.data;
 
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -233,7 +233,7 @@ var methods = {
 
       utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
     }).catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function() {
       utils.loading($this, false);
     });

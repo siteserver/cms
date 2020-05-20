@@ -27,5 +27,7 @@ namespace SSCMS.Repositories
         Task<List<int>> GetChannelIdsCheckedByLastModifiedDateHourAsync(Site site, int hour);
 
         Task<List<ContentSummary>> GetSummariesAsync(Site site, Channel channel, bool isAllContents);
+
+        Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel);
     }
 }

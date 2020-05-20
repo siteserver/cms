@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -25,10 +24,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await _contentRepository.GetCountAsync(site, summary);
+                var current = await _contentRepository.GetSummariesAsync(site, summary);
+
+                //var count = await _contentRepository.GetCountAsync(site, summary);
                 return new
                 {
-                    Count = count
+                    current.Count
                 };
             });
 

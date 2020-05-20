@@ -35,7 +35,7 @@ var methods = {
         $this.isAddForm = true;
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -51,7 +51,7 @@ var methods = {
       parent.$vue.apiList('栏目组设置成功!', res);
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -67,7 +67,7 @@ var methods = {
       parent.$vue.apiList('栏目组设置成功!', res);
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -83,7 +83,7 @@ var methods = {
       });
     } else {
       if (this.form.groupNames.length === 0) {
-        return this.$message.error('请选择栏目组！');
+        return utils.error('请选择栏目组！');
       }
       this.apiSubmit();
     }

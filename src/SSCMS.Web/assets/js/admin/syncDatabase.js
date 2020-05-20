@@ -17,7 +17,7 @@ var methods = {
       $this.databaseVersion = res.databaseVersion;
       $this.version = res.version;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -29,7 +29,7 @@ var methods = {
     $api.post($url).then(function (response) {
       $this.pageType = 'done';
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

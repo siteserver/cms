@@ -24,13 +24,10 @@ var methods = {
       $this.channels = [res.channel];
 
       if (message) {
-        $this.$message({
-          type: 'success',
-          message: message
-        });
+        utils.success(message);
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -47,7 +44,7 @@ var methods = {
       $this.apiList('页面生成触发器设置成功!');
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

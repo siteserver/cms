@@ -12,7 +12,7 @@ var data = utils.init({
 var methods = {
   btnSubmitClick: function () {
     if (!this.files.length === 0) {
-      this.$message.error('请上传需要插入的附件文件！');
+      utils.error('请上传需要插入的附件文件！');
       return false;
     }
 
@@ -48,7 +48,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   uploadRemove(file) {

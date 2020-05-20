@@ -179,7 +179,7 @@ namespace SSCMS.Core.Utils
             {
                 retVal = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
             }
-            
+
             return retVal;
         }
 

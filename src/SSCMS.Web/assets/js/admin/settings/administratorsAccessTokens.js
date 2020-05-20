@@ -23,7 +23,7 @@ var methods = {
       $this.scopes = res.scopes;
       $this.adminName = res.adminName;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -42,7 +42,7 @@ var methods = {
 
       $this.tokens = res.tokens;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -56,10 +56,10 @@ var methods = {
       var res = response.data;
 
       $this.tokens = res.tokens;
-      $this.$message.success($this.form.id > 0 ? 'API密钥修改成功！' : 'API密钥添加成功！');
+      utils.success($this.form.id > 0 ? 'API密钥修改成功！' : 'API密钥添加成功！');
       $this.panel = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

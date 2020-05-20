@@ -22,7 +22,7 @@ var methods = {
       $this.dateY = res.dateY;
       $this.loadCharts();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -39,7 +39,7 @@ var methods = {
       $this.dateY = res.dateY;
       $this.loadCharts();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

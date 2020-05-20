@@ -43,7 +43,7 @@ var methods = {
         return item.url;
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -119,7 +119,7 @@ var methods = {
 
       $this.items.splice($this.items.indexOf(library), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -171,20 +171,20 @@ var methods = {
     $api.put($url + '/' + library.id, library).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('转移分组成功');
+      utils.success('转移分组成功');
 
       if ($this.selectedGroupId !== $this.form.groupId && $this.form.groupId !== 0) {
         $this.btnSearchClick();
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
   rename: function(library) {
     if (this.renameId === 0) return;
     if (!this.renameTitle) {
-      this.$message.error('名称不能为空');
+      utils.error('名称不能为空');
       return false;
     }
     
@@ -196,9 +196,9 @@ var methods = {
     $api.put($url + '/' + library.id, library).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('编辑名称成功');
+      utils.success('编辑名称成功');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
 
     return false;
@@ -295,7 +295,7 @@ var methods = {
     var re = /(\.mp4|\.flv|\.f4v|.\webm|\.m4v|\.mov|\.3gp|\.3g2)$/i;
     if(!re.exec(file.name))
     {
-      this.$message.error('文件只能是视频格式，请选择有效的文件上传!');
+      utils.error('文件只能是视频格式，请选择有效的文件上传!');
       return false;
     }
     return true;
@@ -314,7 +314,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

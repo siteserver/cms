@@ -68,7 +68,7 @@
           <template slot-scope="scope">
             <el-link
               :underline="false"
-              :href="getEditorUrl(scope.row.templateType, scope.row.id)"
+              v-on:click="btnEditClick(scope.row)"
               type="primary">
               {{ scope.row.templateName }}
               <el-tag size="mini" type="danger" v-if="scope.row.defaultTemplate">
@@ -101,7 +101,7 @@
           <template slot-scope="scope">
             <el-link
               :underline="false"
-              :href="getEditorUrl(scope.row.templateType, scope.row.id)"
+              v-on:click="btnEditClick(scope.row)"
               type="primary">
               编辑
             </el-link>

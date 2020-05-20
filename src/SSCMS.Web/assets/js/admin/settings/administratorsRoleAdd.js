@@ -61,7 +61,7 @@ var methods = {
 
       $this.pageType = 'role';
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -191,7 +191,7 @@ var methods = {
       $this.defaultExpandedKeys = [$this.permissionInfo.channel.id];
       $this.pageType = 'permissions';
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -331,9 +331,9 @@ var methods = {
         setTimeout(function() {
           utils.removeTab();
         }, 1000);
-        $this.$message.success('角色保存成功！');
+        utils.success('角色保存成功！');
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });
@@ -350,9 +350,9 @@ var methods = {
         setTimeout(function() {
           utils.removeTab();
         }, 1000);
-        $this.$message.success('角色保存成功！');
+        utils.success('角色保存成功！');
       }).catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       }).then(function () {
         utils.loading($this, false);
       });

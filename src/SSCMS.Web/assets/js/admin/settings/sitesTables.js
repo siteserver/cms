@@ -20,7 +20,7 @@ var methods = {
       $this.tableNames = res.value;
       $this.nameDict = res.nameDict;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -38,7 +38,7 @@ var methods = {
       $this.columns = res.columns;
       $this.count = res.count;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -59,9 +59,9 @@ var methods = {
       $this.pageType = 'columns';
       $this.columns = res.columns;
       $this.count = res.count;
-      $this.$message.success('内容表缓存清除成功！');
+      utils.success('内容表缓存清除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

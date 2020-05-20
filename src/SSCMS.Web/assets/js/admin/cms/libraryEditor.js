@@ -49,7 +49,7 @@ var methods = {
         $this.loadEditor(res);
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.error(error);
       })
       .then(function() {
         utils.loading($this, false);
@@ -99,11 +99,11 @@ var methods = {
     var $this = this;
 
     if (!this.title) {
-      this.$message.error('标题不能为空!');
+      utils.error('标题不能为空!');
       return;
     }
     if (!this.content) {
-      this.$message.error('正文不能为空!');
+      utils.error('正文不能为空!');
       return;
     }
 
@@ -121,7 +121,7 @@ var methods = {
         utils.closeLayer(true);
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.error(error);
       })
       .then(function() {
         utils.loading($this, false);
@@ -139,7 +139,7 @@ var methods = {
         utils.closeLayer(true);
       })
       .catch(function(error) {
-        utils.error($this, error);
+        utils.error(error);
       })
       .then(function() {
         utils.loading($this, false);
@@ -151,13 +151,13 @@ var methods = {
     var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.svg|\.png|\.webp)$/i;
     if(!re.exec(file.name))
     {
-      this.$message.error('文件只能是图片格式，请选择有效的文件上传!');
+      utils.error('文件只能是图片格式，请选择有效的文件上传!');
       return false;
     }
 
     var isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
-      this.$message.error('上传图片大小不能超过 10MB!');
+      utils.error('上传图片大小不能超过 10MB!');
       return false;
     }
     return true;
@@ -175,7 +175,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

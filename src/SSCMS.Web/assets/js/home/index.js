@@ -43,11 +43,11 @@ var methods = {
       }
     }).catch(function (error) {
       if (error.response && error.response.status === 400) {
-        utils.error($this, error, {redirect: true});
+        utils.error(error, {redirect: true});
       } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         location.href = utils.getRootUrl('login');
       } else if (error.response && error.response.status === 500) {
-        utils.error($this, error);
+        utils.error(error);
       }
     });
   },

@@ -26,7 +26,7 @@ var methods = {
       $this.form.isLogUser = res.config.isLogUser;
       $this.form.isLogError = res.config.isLogError;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -46,9 +46,9 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('日志设置保存成功！');
+      utils.success('日志设置保存成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

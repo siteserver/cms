@@ -34,10 +34,61 @@ var data = utils.init({
   winWidth: 0,
   isCollapse: false,
   isDesktop: true,
-  isMobileMenu: false
+  isMobileMenu: false,
+
+  contextMenuVisible: false,
+  contextTabName: null,
+  contextLeft: 0,
+  contextTop: 0
 });
 
 var methods = {
+  openContextMenu: function(e) {
+    if (e.srcElement.id && _.startsWith(e.srcElement.id, 'tab-')) {
+      this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
+      this.contextMenuVisible = true;
+      this.contextLeft = e.clientX;
+      this.contextTop = e.clientY;
+    }
+  },
+
+  closeContextMenu: function() {
+    this.contextMenuVisible = false;
+  },
+
+  btnContextClick: function(command) {
+    var $this = this;
+    if (command === 'this') {
+      this.tabs = this.tabs.filter(function(tab) {
+        return tab.name !== $this.contextTabName;
+      });
+    } else if (command === 'others') {
+      this.tabs = this.tabs.filter(function(tab) {
+        return tab.name === $this.contextTabName;
+      });
+      utils.openTab($this.contextTabName);
+    } else if (command === 'left') {
+      var isTab = false;
+      this.tabs = this.tabs.filter(function(tab) {
+        if (tab.name === $this.contextTabName) {
+          isTab = true;
+        }
+        return tab.name === $this.contextTabName || isTab;
+      });
+    } else if (command === 'right') {
+      var isTab = false;
+      this.tabs = this.tabs.filter(function(tab) {
+        if (tab.name === $this.contextTabName) {
+          isTab = true;
+        }
+        return tab.name === $this.contextTabName || !isTab;
+      });
+    } else if (command === 'all') {
+      this.tabs = [];
+    }
+    this.closeContextMenu();
+  },
+
   apiGet: function () {
     var $this = this;
 
@@ -74,11 +125,11 @@ var methods = {
       }
     }).catch(function (error) {
       if (error.response && error.response.status === 400) {
-        utils.error($this, error, {redirect: true});
+        utils.error(error, {redirect: true});
       } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         location.href = utils.getRootUrl('login');
       } else if (error.response && error.response.status === 500) {
-        utils.error($this, error);
+        utils.error(error);
       }
     });
   },
@@ -92,7 +143,7 @@ var methods = {
       var res = response.data;
       
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -224,7 +275,7 @@ var methods = {
       location.reload();
 
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 
@@ -266,6 +317,15 @@ var $vue = new Vue({
         return this.isCollapse ? $collapseWidth : $sidebarWidth;
       }
       return this.isMobileMenu ? this.winWidth : 0;
+    }
+  },
+  watch: {
+    contextMenuVisible(value) {
+      if (this.contextMenuVisible) {
+        document.body.addEventListener("click", this.closeContextMenu);
+      } else {
+        document.body.removeEventListener("click", this.closeContextMenu);
+      }
     }
   }
 });

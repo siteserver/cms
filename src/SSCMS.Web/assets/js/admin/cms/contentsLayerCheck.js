@@ -39,7 +39,7 @@ var methods = {
       $this.form.transSiteIds = [$this.siteId];
       $this.apiGetOptions();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -64,7 +64,7 @@ var methods = {
       parent.$vue.apiList($this.channelId, $this.page, '内容审核成功!');
       utils.closeLayer();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -83,7 +83,7 @@ var methods = {
       $this.transChannels = [res.transChannels];
       $this.form.transChannelIds = [];
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

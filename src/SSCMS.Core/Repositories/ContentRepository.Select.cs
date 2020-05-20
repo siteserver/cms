@@ -12,11 +12,6 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        private string GetCountKey(string tableName, int siteId, int channelId)
-        {
-            return CacheUtils.GetCountKey(tableName, siteId, channelId);
-        }
-
         private string GetEntityKey(string tableName, int contentId)
         {
             return CacheUtils.GetEntityKey(tableName, contentId);
@@ -33,12 +28,11 @@ namespace SSCMS.Core.Repositories
             {
                 var tableName = await _channelRepository.GetTableNameAsync(site, channel.Id);
                 var listKey = GetListKey(tableName, site.Id, channel.Id);
-                var countKey = GetCountKey(tableName, site.Id, channel.Id);
 
                 var repository = GetRepository(site, channel);
                 var cacheManager = await repository.GetCacheManagerAsync();
 
-                if (!cacheManager.Exists(listKey) && !cacheManager.Exists(countKey))
+                if (!cacheManager.Exists(listKey))
                 {
                     var summaries = await repository.GetAllAsync<ContentSummary>(Q
                         .Select(nameof(Content.Id), nameof(Content.ChannelId), nameof(Content.Checked))
@@ -48,9 +42,7 @@ namespace SSCMS.Core.Repositories
                         .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id))
                     );
 
-                    var count = summaries.Count;
                     cacheManager.Put(listKey, summaries);
-                    cacheManager.Put(countKey, count);
                 }
             }
         }
@@ -88,13 +80,8 @@ namespace SSCMS.Core.Repositories
 
         public async Task<int> GetCountAsync(Site site, IChannelSummary channel)
         {
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var repository = GetRepository(tableName);
-
-            return await repository.CountAsync(
-                GetQuery(site.Id, channel.Id)
-                    .CachingGet(GetCountKey(tableName, site.Id, channel.Id))
-            );
+            var summaries = await GetSummariesAsync(site, channel);
+            return summaries.Count;
         }
 
         private async Task<Content> GetAsync(string tableName, int contentId)
@@ -196,7 +183,7 @@ namespace SSCMS.Core.Repositories
             return await GetSummariesAsync(site, channel);
         }
 
-        private async Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel)
+        public async Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel)
         {
             var repository = GetRepository(site, channel);
             var query = Q.Select(nameof(Content.Id), nameof(Content.ChannelId), nameof(Content.Checked));

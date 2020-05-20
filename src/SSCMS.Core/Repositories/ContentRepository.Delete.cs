@@ -19,7 +19,6 @@ namespace SSCMS.Core.Repositories
 
             var cacheKeys = new List<string>
             {
-                GetCountKey(repository.TableName, site.Id, channel.Id),
                 GetListKey(repository.TableName, site.Id, channel.Id)
             };
             foreach (var contentId in contentIdList)
@@ -69,7 +68,6 @@ namespace SSCMS.Core.Repositories
 
             var cacheKeys = new List<string>
             {
-                GetCountKey(repository.TableName, site.Id, channelId),
                 GetListKey(repository.TableName, site.Id, channelId)
             };
             foreach (var contentId in contentIdList)
@@ -92,7 +90,6 @@ namespace SSCMS.Core.Repositories
         /// <returns></returns>
         public async Task RecycleDeleteAllAsync(IOldPluginManager pluginManager, Site site)
         {
-            var cacheKeys = new List<string>();
             var tableNames = await _siteRepository.GetTableNamesAsync(pluginManager, site);
             foreach (var tableName in tableNames)
             {
@@ -105,11 +102,7 @@ namespace SSCMS.Core.Repositories
                     .Distinct()
                 );
 
-                foreach (var channelId in channelIds)
-                {
-                    cacheKeys.Add(GetListKey(tableName, site.Id, channelId));
-                    cacheKeys.Add(GetCountKey(tableName, site.Id, channelId));
-                }
+                var cacheKeys = channelIds.Select(channelId => GetListKey(tableName, site.Id, channelId));
 
                 await repository.DeleteAsync(Q
                     .Where(nameof(Content.SiteId), site.Id)
@@ -133,7 +126,6 @@ namespace SSCMS.Core.Repositories
 
                 var cacheKeys = new List<string>
                 {
-                    GetCountKey(repository.TableName, site.Id, restoreChannelId),
                     GetListKey(repository.TableName, site.Id, restoreChannelId)
                 };
 
@@ -144,11 +136,7 @@ namespace SSCMS.Core.Repositories
                     .Distinct()
                 );
 
-                foreach (var channelId in channelIds)
-                {
-                    cacheKeys.Add(GetListKey(tableName, site.Id, channelId));
-                    cacheKeys.Add(GetCountKey(tableName, site.Id, channelId));
-                }
+                cacheKeys.AddRange(channelIds.Select(channelId => GetListKey(tableName, site.Id, channelId)));
 
                 await repository.UpdateAsync(Q
                     .Set(nameof(Content.ChannelId), restoreChannelId)
@@ -172,15 +160,10 @@ namespace SSCMS.Core.Repositories
 
             var cacheKeys = new List<string>
             {
-                GetCountKey(repository.TableName, site.Id, restoreChannelId),
                 GetListKey(repository.TableName, site.Id, restoreChannelId),
-                GetCountKey(repository.TableName, site.Id, channelId),
                 GetListKey(repository.TableName, site.Id, channelId)
             };
-            foreach (var contentId in contentIdList)
-            {
-                cacheKeys.Add(GetEntityKey(repository.TableName, contentId));
-            }
+            cacheKeys.AddRange(contentIdList.Select(contentId => GetEntityKey(repository.TableName, contentId)));
 
             await repository.UpdateAsync(Q
                 .Set(nameof(Content.ChannelId), restoreChannelId)
@@ -198,7 +181,6 @@ namespace SSCMS.Core.Repositories
             var repository = GetRepository(site, channel);
 
             await repository.DeleteAsync(contentId, Q
-                .CachingRemove(GetCountKey(repository.TableName, site.Id, channel.Id))
                 .CachingRemove(GetEntityKey(repository.TableName, contentId))
                 .CachingRemove(GetListKey(repository.TableName, site.Id, channel.Id))
             );
@@ -226,7 +208,6 @@ namespace SSCMS.Core.Repositories
                     .Where(nameof(Content.ReferenceId), ">", 0)
                     .Where(nameof(Content.Id), summary.Id)
                     .CachingRemove(
-                        GetCountKey(repository.TableName, site.Id, channel.Id),
                         GetListKey(repository.TableName, site.Id, channel.Id),
                         GetEntityKey(repository.TableName, summary.Id)
                     )

@@ -41,7 +41,7 @@ var methods = {
       $this.channelTemplateId = $this.defaultChannelTemplate.id;
       $this.contentTemplateId = $this.defaultContentTemplate.id;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -60,9 +60,9 @@ var methods = {
       $this.filterText = '';
       $this.filterChannelTemplateId = 0;
       $this.filterContentTemplateId = 0;
-      $this.$message.success('模板匹配成功！');
+      utils.success('模板匹配成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -83,9 +83,9 @@ var methods = {
       $this.filterText = '';
       $this.filterChannelTemplateId = 0;
       $this.filterContentTemplateId = 0;
-      $this.$message.success('模板创建并匹配成功！');
+      utils.success('模板创建并匹配成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

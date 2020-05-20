@@ -38,7 +38,7 @@ var methods = {
       $this.isSuperAdmin = res.isSuperAdmin;
       $this.adminId = res.adminId;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -57,7 +57,7 @@ var methods = {
 
       $this.administrators.splice($this.administrators.indexOf(item), 1);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -74,7 +74,7 @@ var methods = {
 
       item.locked = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -91,7 +91,7 @@ var methods = {
 
       item.locked = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -150,7 +150,7 @@ var methods = {
 
       $this.drawer = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -176,7 +176,7 @@ var methods = {
 
       $this.drawer = false;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -230,7 +230,7 @@ var methods = {
       $this.administrators = res.administrators;
       $this.count = res.count;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -243,7 +243,7 @@ var methods = {
 
       window.open(res.value);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -267,7 +267,7 @@ var methods = {
   uploadBefore(file) {
     var isExcel = file.name.indexOf('.xlsx', file.name.length - '.xlsx'.length) !== -1;
     if (!isExcel) {
-      this.$message.error('管理员导入文件只能是 Excel 格式!');
+      utils.error('管理员导入文件只能是 Excel 格式!');
     }
     return isExcel;
   },
@@ -296,13 +296,13 @@ var methods = {
       $this.isSuperAdmin = res.isSuperAdmin;
       $this.adminId = res.adminId;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       if (success) {
-        $this.$message.success('成功导入 ' + success + ' 名管理员！');
+        utils.success('成功导入 ' + success + ' 名管理员！');
       }
       if (errorMessage) {
-        $this.$message.error(failure + ' 名管理员导入失败：' + errorMessage);
+        utils.error(failure + ' 名管理员导入失败：' + errorMessage);
       }
       utils.loading($this, false);
     });
@@ -311,7 +311,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   }
 };
 

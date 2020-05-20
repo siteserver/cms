@@ -8,7 +8,7 @@ var data = utils.init({
 var methods = {
   updateGroups: function(res, message) {
     this.groups = res.groups;
-    this.$message.success(message);
+    utils.success(message);
   },
   
   apiList: function (message) {
@@ -24,11 +24,11 @@ var methods = {
 
       $this.groups = res.groups;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     });
   },
@@ -46,9 +46,9 @@ var methods = {
       var res = response.data;
 
       $this.groups = res.groups;
-      $this.$message.success('内容组删除成功！');
+      utils.success('内容组删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -102,9 +102,9 @@ var methods = {
       var res = response.data;
       
       $this.groups = res.groups;
-      $this.$message.success('内容组排序成功！');
+      utils.success('内容组排序成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

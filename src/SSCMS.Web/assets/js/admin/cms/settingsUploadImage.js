@@ -29,7 +29,7 @@ var methods = {
         photoMiddleWidth: res.value.photoMiddleWidth,
       };
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -42,9 +42,9 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('图片上传设置保存成功！');
+      utils.success('图片上传设置保存成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

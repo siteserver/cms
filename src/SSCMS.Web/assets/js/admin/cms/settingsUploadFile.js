@@ -27,7 +27,7 @@ var methods = {
         fileUploadTypeMaxSize: res.value.fileUploadTypeMaxSize,
       };
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -40,9 +40,9 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      $this.$message.success('附件上传设置保存成功！');
+      utils.success('附件上传设置保存成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

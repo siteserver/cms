@@ -63,7 +63,7 @@ var methods = {
         }
       });
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -75,7 +75,7 @@ var methods = {
     var text = pkg.isDisabled ? '启用' : '禁用';
     var isReference = this.referencePluginIds.indexOf(pkg.pluginId) !== -1;
     if (isReference) {
-      this.$message.error("无法" + text, "存在其他插件依赖此插件，需要删除依赖插件后才能进行" + text + "操作");
+      utils.error("无法" + text, "存在其他插件依赖此插件，需要删除依赖插件后才能进行" + text + "操作");
     }
     utils.alertDelete({
       title: text + '插件',

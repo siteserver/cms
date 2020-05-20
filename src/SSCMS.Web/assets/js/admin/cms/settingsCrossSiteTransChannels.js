@@ -28,13 +28,10 @@ var methods = {
       $this.transDoneTypes = res.transDoneTypes;
 
       if (message) {
-        $this.$message({
-          type: 'success',
-          message: message
-        });
+        utils.success(message);
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -71,7 +68,7 @@ var methods = {
       };
       $this.editPanel = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -88,7 +85,7 @@ var methods = {
       $this.apiList('跨站转发栏目设置成功!');
     }).catch(function (error) {
       utils.loading($this, false);
-      utils.error($this, error);
+      utils.error(error);
     });
   },
 

@@ -20,7 +20,7 @@ var methods = {
         }, 200);
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   }
 };

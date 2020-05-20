@@ -22,7 +22,7 @@ var methods = {
 
       $this.elements = res;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -43,7 +43,7 @@ var methods = {
       $this.elementPanel = true;
       $this.elementFields = res;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

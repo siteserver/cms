@@ -32,11 +32,11 @@ var methods = {
 
       $this.urlUpload = $apiUrl + $urlImport + '?siteId=' + $this.siteId;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if (message) {
-        $this.$message.success(message);
+        utils.success(message);
       }
     });
   },
@@ -55,7 +55,7 @@ var methods = {
 
       $this.styles = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -145,7 +145,7 @@ var methods = {
   uploadBefore(file) {
     var isZip = file.name.indexOf('.zip', file.name.length - '.zip'.length) !== -1;
     if (!isZip) {
-      this.$message.error('样式导入文件只能是 Zip 格式!');
+      utils.error('样式导入文件只能是 Zip 格式!');
     }
     return isZip;
   },
@@ -164,7 +164,7 @@ var methods = {
     this.uploadList = [];
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   btnExportClick: function() {
@@ -178,7 +178,7 @@ var methods = {
 
       window.open(res.value);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

@@ -25,7 +25,7 @@ var methods = {
         }
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -44,7 +44,7 @@ var methods = {
 
       $this.userMenus = $this.getItems(res.userMenus);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -59,7 +59,7 @@ var methods = {
 
       $this.userMenus = $this.getItems(res.userMenus);
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -75,9 +75,9 @@ var methods = {
       $this.userMenu = null;
       $this.userMenus = $this.getItems(res.userMenus);
       $this.panel = false;
-      $this.$message.success(userMenu.id === 0 ? '用户菜单添加成功！' : '用户菜单修改成功！');
+      utils.success(userMenu.id === 0 ? '用户菜单添加成功！' : '用户菜单修改成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

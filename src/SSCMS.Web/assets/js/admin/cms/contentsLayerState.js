@@ -27,7 +27,7 @@ var methods = {
       $this.content = res.content;
       $this.state = res.state;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

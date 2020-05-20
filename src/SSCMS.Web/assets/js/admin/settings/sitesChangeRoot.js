@@ -37,7 +37,7 @@ var methods = {
       $this.pageTitle = $this.site.root ? '转移到子目录' : '转移到根目录';
       $this.root = $this.site.root;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -60,7 +60,7 @@ var methods = {
       }, 1500);
 
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -82,10 +82,6 @@ var methods = {
 
   handleCheckedFilesChange(value) {
     this.checkAllFiles = this.form.checkedFiles.length === this.files.length;
-  },
-
-  btnCancelClick: function () {
-    location.href = utils.getSettingsUrl('sites');
   },
 
   btnSubmitClick: function () {

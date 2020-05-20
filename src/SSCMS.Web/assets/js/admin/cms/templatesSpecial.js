@@ -26,7 +26,7 @@ var methods = {
       $this.specials = res.value;
       $this.siteUrl = res.siteUrl;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -66,7 +66,7 @@ var methods = {
       }
       $this.uploadList = [];
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -86,7 +86,7 @@ var methods = {
 
       $this.specials = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -99,11 +99,11 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      $this.$message.success($this.form.id === 0 ? '专题添加成功！' : '专题修改成功！');
+      utils.success($this.form.id === 0 ? '专题添加成功！' : '专题修改成功！');
       $this.form = null;
       $this.specials = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -139,7 +139,7 @@ var methods = {
 
       window.location.href = res.value;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -163,7 +163,7 @@ var methods = {
 
   btnSubmitClick: function () {
     if (!this.form.isEditOnly && this.form.fileNames.length === 0) {
-      return this.$message.error('请上传专题文件');
+      return utils.error('请上传专题文件');
     }
     var $this = this;
     this.$refs.form.validate(function(valid) {
@@ -194,7 +194,7 @@ var methods = {
   uploadBefore(file) {
     // var isExcel = file.name.indexOf('.xlsx', file.name.length - '.xlsx'.length) !== -1;
     // if (!isExcel) {
-    //   this.$message.error('用户导入文件只能是 Excel 格式!');
+    //   utils.error('用户导入文件只能是 Excel 格式!');
     // }
     // return isExcel;
     return true;
@@ -212,7 +212,7 @@ var methods = {
   uploadError: function(err) {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
-    this.$message.error(error.message);
+    utils.error(error.message);
   },
 
   uploadRemove: function(file, fileList) {

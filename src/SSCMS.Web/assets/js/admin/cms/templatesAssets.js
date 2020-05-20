@@ -38,7 +38,7 @@ var methods = {
       $this.jsDir = res.jsDir;
       $this.reload();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -59,12 +59,9 @@ var methods = {
 
       $this.allFiles.splice($this.allFiles.indexOf(file), 1);
       $this.reload();
-      $this.$message({
-        type: 'success',
-        message: '文件删除成功！'
-      });
+      utils.success('文件删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -86,15 +83,23 @@ var methods = {
       $this.reload();
 
       $this.configPanel = false;
-      $this.$message({
-        type: 'success',
-        message: '文件夹路径设置成功!'
-      });
+      utils.success('文件夹路径设置成功!');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  getFileType: function(fileType) {
+    if (fileType === '.html') {
+      return '包含文件';
+    } else if (fileType === '.css') {
+      return '样式文件';
+    } else if (fileType === '.js') {
+      return '脚本文件';
+    }
+    return '';
   },
 
   btnDefaultClick: function (template) {
@@ -122,12 +127,9 @@ var methods = {
       $this.directories = res.directories;
       $this.allFiles = res.files;
       $this.reload();
-      $this.$message({
-        type: 'success',
-        message: '快速复制成功！'
-      });
+      utils.success('快速复制成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -146,7 +148,11 @@ var methods = {
   },
 
   btnAddClick: function(fileType) {
-    location.href = this.getEditorUrl('', '', fileType);
+    utils.addTab('新增' + this.getFileType(fileType), this.getEditorUrl('', '', fileType));
+  },
+
+  btnEditClick: function(file) {
+    utils.addTab('编辑' + ':' + file.key + '/' + file.value, this.getEditorUrl(file.key, file.value, ''));
   },
 
   getEditorUrl: function(directoryPath, fileName, extName) {
@@ -154,7 +160,8 @@ var methods = {
       siteId: this.siteId,
       directoryPath: directoryPath,
       fileName: fileName,
-      extName: extName
+      extName: extName,
+      tabName: utils.getTabName()
     });
   },
 

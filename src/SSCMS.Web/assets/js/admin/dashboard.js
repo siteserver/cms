@@ -24,7 +24,7 @@ var methods = {
 
       $this.getUnCheckedList();
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -41,7 +41,7 @@ var methods = {
         $this.unCheckedListTotalCount += $this.unCheckedList[i].count;
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     });
   }
 };

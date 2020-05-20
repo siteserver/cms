@@ -22,7 +22,7 @@ var methods = {
 
       $this.siteAddPermission = res.siteAddPermission;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       $this.load();
@@ -51,7 +51,7 @@ var methods = {
         $this.allTagNames = res.allTagNames;
       })
       .catch(function (error) {
-        utils.error($this, error);
+        utils.error(error);
       })
       .then(function () {
         utils.loading($this, false);

@@ -23,7 +23,7 @@ var methods = {
       $this.user = res.user;
       $this.groupName = res.groupName;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

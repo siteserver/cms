@@ -34,13 +34,10 @@ var methods = {
 
       $this.channels = [res.channel];
       if (message) {
-        $this.$message({
-          type: 'success',
-          message: message
-        });
+        utils.success(message);
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -66,7 +63,7 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editPanel = true;
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -82,7 +79,7 @@ var methods = {
       $this.editPanel = false;
       $this.apiList('页面路径设置成功!');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

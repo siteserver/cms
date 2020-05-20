@@ -55,7 +55,7 @@ var methods = {
 
   updateGroups: function(res, message) {
     this.groupNames = res.groupNames;
-    this.$message.success(message);
+    utils.success(message);
   },
 
   apiGet: function() {
@@ -77,7 +77,7 @@ var methods = {
       $this.loadEditor(res);
     })
     .catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     })
     .then(function() {
       utils.loading($this, false);
@@ -100,7 +100,7 @@ var methods = {
       $this.closeAndRedirect();
     })
     .catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     })
     .then(function() {
       utils.loading($this, false);
@@ -123,7 +123,7 @@ var methods = {
       $this.closeAndRedirect();
     })
     .catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     })
     .then(function() {
       utils.loading($this, false);
@@ -315,7 +315,7 @@ var methods = {
       window.open(res.url);
     })
     .catch(function(error) {
-      utils.error($this, error);
+      utils.error(error);
     })
     .then(function() {
       utils.loading($this, false);

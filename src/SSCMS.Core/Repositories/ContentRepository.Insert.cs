@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -121,12 +120,7 @@ namespace SSCMS.Core.Repositories
             }
             else
             {
-                var cacheKeys = new List<string>
-                {
-                    GetListKey(tableName, content.SiteId, content.ChannelId),
-                    GetCountKey(tableName, content.SiteId, content.ChannelId)
-                };
-                await repository.InsertAsync(content, Q.CachingRemove(cacheKeys.ToArray()));
+                await repository.InsertAsync(content, Q.CachingRemove(GetListKey(tableName, content.SiteId, content.ChannelId)));
             }
 
             return content.Id;

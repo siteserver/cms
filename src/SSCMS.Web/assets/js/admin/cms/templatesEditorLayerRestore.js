@@ -32,7 +32,7 @@ var methods = {
         $this.setEditorContent($this.original, $this.modified);
       }
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -58,12 +58,9 @@ var methods = {
       if ($this.logId) {
         $this.setEditorContent($this.original, $this.modified);
       }
-      $this.$message({
-        type: 'success',
-        message: '历史版本删除成功！'
-      });
+      utils.success('历史版本删除成功！');
     }).catch(function (error) {
-      utils.error($this, error);
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
