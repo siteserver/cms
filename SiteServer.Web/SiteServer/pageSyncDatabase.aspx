@@ -110,7 +110,7 @@
               <hr>
               <p class="mb-0">
                 获取更多使用帮助请访问
-                <a href="https://www.siteserver.cn/docs/" target="_blank">SiteServer CMS 文档中心</a>
+                <a href="https://sscms.com/docs/" target="_blank">SiteServer CMS 文档中心</a>
               </p>
             </div>
           </div>

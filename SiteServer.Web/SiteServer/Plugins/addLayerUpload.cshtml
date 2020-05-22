@@ -1,7 +1,7 @@
 ﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
 
 <div class="form-group">
-  <small class="help-block">请到<a href="https://www.siteserver.cn/plugins/" target="_blank">官网下载</a>插件离线安装包并在此上传。</small>
+  <small class="help-block">请到<a :href="$urlCloud + '/plugins/'" target="_blank">官网下载</a>插件离线安装包并在此上传。</small>
 </div>
 
 <div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">

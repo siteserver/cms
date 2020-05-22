@@ -4,6 +4,7 @@ using System.Linq;
 using NuGet.Packaging;
 using NuGet.Versioning;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Packaging
 {
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Packaging
         {
             Id = directoryName;
             Title = directoryName;
-            IconUrl = new Uri("https://www.siteserver.cn/assets/images/favicon.png");
+            IconUrl = new Uri(CloudUtils.Root.IconUrl);
             Version = "0.0.0";
         }
 

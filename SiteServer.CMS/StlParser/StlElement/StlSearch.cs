@@ -60,6 +60,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否关键字高亮")]
         public const string IsHighlight = nameof(IsHighlight);
 
+        [StlAttribute(Title = "是否默认显示全部内容")]
+        public const string IsDefaultDisplay = nameof(IsDefaultDisplay);
+
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var isAllSites = false;
@@ -77,6 +80,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var since = string.Empty;
             var pageNum = 0;
             var isHighlight = false;
+            var isDefaultDisplay = false;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -136,18 +140,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, PageNum))
                 {
-                    pageNum = TranslateUtils.ToInt(value, 0);
+                    pageNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsHighlight))
                 {
                     isHighlight = TranslateUtils.ToBool(value);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsDefaultDisplay))
+                {
+                    isDefaultDisplay = TranslateUtils.ToBool(value);
+                }
             }
 
-            string loading;
-            string yes;
-            string no;
-            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
 
             if (string.IsNullOrEmpty(loading))
             {
@@ -167,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
             var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
+            var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -185,18 +190,20 @@ jQuery(document).ready(function(){{
     var parameters = {apiParameters};
 
     var queryString = document.location.search;
-    if (queryString && queryString.length > 1) {{
-        queryString = queryString.substring(1);
-        var arr = queryString.split('&');
-        for(var i=0; i < arr.length; i++) {{
-            var item = arr[i];
-            var arr2 = item.split('=');
-            if (arr2 && arr2.length == 2) {{
-                var key = (arr2[0] || '').toLowerCase();
-                if (key) {{
-                    var value = decodeURIComponent(arr2[1]) || '';
-                    value = value.replace(/\+/g, ' ');
-                    parameters[key] = value;
+    if ((queryString && queryString.length > 1) || {isDefaultDisplay.ToString().ToLower()}) {{
+        if (queryString && queryString.length > 1) {{
+            queryString = queryString.substring(1);
+            var arr = queryString.split('&');
+            for(var i=0; i < arr.length; i++) {{
+                var item = arr[i];
+                var arr2 = item.split('=');
+                if (arr2 && arr2.length == 2) {{
+                    var key = (arr2[0] || '').toLowerCase();
+                    if (key) {{
+                        var value = decodeURIComponent(arr2[1]) || '';
+                        value = value.replace(/\+/g, ' ');
+                        parameters[key] = value;
+                    }}
                 }}
             }}
         }}
@@ -233,19 +240,22 @@ jQuery(document).ready(function(){{
 function stlRedirect{ajaxDivId}(page)
 {{
     var queryString = document.location.search;
-    if (queryString && queryString.length > 1) {{
-        queryString = queryString.substring(1);
+    if ((queryString && queryString.length > 1) || {isDefaultDisplay.ToString().ToLower()}) {{
         var parameters = '';
-        var arr = queryString.split('&');
-        for(var i=0; i < arr.length; i++) {{
-            var item = arr[i];
-            var arr2 = item.split('=');
-            if (arr2 && arr2.length == 2) {{
-                if (arr2[0] !== 'page') {{
-                    parameters += item + '&';
+        if (queryString && queryString.length > 1) {{
+            queryString = queryString.substring(1);
+            var arr = queryString.split('&');
+            for(var i=0; i < arr.length; i++) {{
+                var item = arr[i];
+                var arr2 = item.split('=');
+                if (arr2 && arr2.length == 2) {{
+                    if (arr2[0] !== 'page') {{
+                        parameters += item + '&';
+                    }}
                 }}
             }}
         }}
+        
         parameters += 'page=' + page;
         location.href = location.protocol + '//' + location.host + location.pathname + location.hash + '?' + parameters;
     }}

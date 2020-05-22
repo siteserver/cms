@@ -76,7 +76,7 @@ namespace SiteServer.CMS.ImportExport
             {
                 Title = new AtomContentConstruct("title", "siteserver channel"),
                 Author = new AtomPersonConstruct("author",
-                    "siteserver", new Uri("https://www.siteserver.cn")),
+                    "siteserver", new Uri(CloudUtils.Root.Host)),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
                     TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now))
             };
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var entry = new AtomEntry
             {
-                Id = new Uri("https://www.siteserver.cn/"),
+                Id = new Uri(CloudUtils.Root.Host),
                 Title = new AtomContentConstruct("title", "title"),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
                     TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now)),

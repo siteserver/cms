@@ -52,10 +52,10 @@ var methods = {
         packageIds: $this.pluginIds.join(",")
       }
     }).then(function (response) {
-      var res = response.data;
+      var releases = response.data;
 
-      for (var i = 0; i < res.value.length; i++) {
-        var releaseInfo = res.value[i];
+      for (var i = 0; i < releases.length; i++) {
+        var releaseInfo = releases[i];
 
         for (var j = 0; j < releaseInfo.pluginReferences.length; j++) {
           var reference = releaseInfo.pluginReferences[j];

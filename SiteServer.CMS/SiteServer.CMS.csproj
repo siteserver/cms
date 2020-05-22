@@ -215,7 +215,6 @@
     <Compile Include="Core\Office\ExcelObject.cs" />
     <Compile Include="Core\Office\TxtObject.cs" />
     <Compile Include="Core\Office\WordUtils.cs" />
-    <Compile Include="Core\OnlineTemplateManager.cs" />
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />

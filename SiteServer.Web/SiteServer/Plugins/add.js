@@ -13,13 +13,13 @@ var data = {
 
 var methods = {
   getIconUrl: function (url) {
-    return 'https://www.siteserver.cn/plugins/' + url;
+    return $urlCloud + '/plugins/' + url;
   },
 
-  getTagNames: function (pluginInfo) {
+  getTagNames: function (plugin) {
     var tagNames = [];
-    if (pluginInfo.tags) {
-      tagNames = pluginInfo.tags.split(',');
+    if (plugin.tags) {
+      tagNames = plugin.tags.split(',');
     }
     return tagNames;
   },
@@ -41,19 +41,17 @@ var methods = {
           keyword: $this.keyword
         }
       }).then(function (response) {
-        var res = response.data;
+        var packages = response.data;
 
-        $this.packages = res.value;
+        $this.packages = packages;
       }).catch(function (error) {
-        this.pageAlert = utils.getPageAlert(error);
+        $this.pageAlert = utils.getPageAlert(error);
       }).then(function () {
         $this.pageLoad = true;
       });
 
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
-    }).then(function () {
-      $this.pageLoad = true;
     });
   },
 

@@ -95,7 +95,6 @@
                     <th class="text-nowrap">新版本</th>
                     <th>更新说明</th>
                     <th class="text-center">发布时间</th>
-                    <th class="text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -115,9 +114,6 @@
                     </td>
                     <td class="text-center text-nowrap">
                       {{ package.published }}
-                    </td>
-                    <td class="text-center text-nowrap">
-                      <a class="card-link" v-bind:href="updatesUrl" target="_blank">查看发行说明</a>
                     </td>
                   </tr>
                 </tbody>
@@ -159,7 +155,7 @@
           <hr>
           <p class="mb-0">
             获取更多使用帮助请访问
-            <a href="https://www.siteserver.cn/docs/" target="_blank">SiteServer CMS 文档中心</a>
+            <a href="https://sscms.com/docs/" target="_blank">SiteServer CMS 文档中心</a>
           </p>
         </div>
 
@@ -190,7 +186,6 @@
     isCheck: false,
     isShouldUpdate: false,
     installedVersion: '<%=InstalledVersion%>',
-    updatesUrl: '',
     errorMessage: null
   };
 
@@ -208,14 +203,10 @@
             packageIds: packageId
           }
         }).then(function (response) {
-          var res = response.data;
+          var releases = response.data;
 
-          $this.package = res.value[0];
+          $this.package = releases[0];
           $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
-          var major = $this.package.version.split('.')[0];
-          var minor = $this.package.version.split('.')[1];
-          $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
-
         }).catch(function (error) {
           $this.pageAlert = utils.getPageAlert(error);
         }).then(function () {
@@ -230,9 +221,6 @@
 
         //   $this.package = res.value;
         //   $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
-        //   var major = $this.package.version.split('.')[0];
-        //   var minor = $this.package.version.split('.')[1];
-        //   $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
         // }, 'packages', packageId);
       },
       check: function () {

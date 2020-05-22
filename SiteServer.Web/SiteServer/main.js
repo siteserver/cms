@@ -127,9 +127,9 @@ var methods = {
         packageIds: $this.packageIds.join(',')
       }
     }).then(function (response) {
-      var res = response.data;
-      for (var i = 0; i < res.value.length; i++) {
-        var releaseInfo = res.value[i];
+      var releases = response.data;
+      for (var i = 0; i < releases.length; i++) {
+        var releaseInfo = releases[i];
         if (!releaseInfo || !releaseInfo.version) continue;
         if (releaseInfo.pluginId == $packageIdSsCms) {
           $this.downloadSsCms(releaseInfo);
@@ -155,8 +155,6 @@ var methods = {
   downloadSsCms: function (releaseInfo) {
     var $this = this;
     if (compareversion($this.productVersion, releaseInfo.version) != -1) return;
-    var major = releaseInfo.version.split('.')[0];
-    var minor = releaseInfo.version.split('.')[1];
 
     $api.post($urlDownload, {
       packageId: $packageIdSsCms,
@@ -166,7 +164,6 @@ var methods = {
 
       if (res.value) {
         $this.newVersion = {
-          updatesUrl: 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
           version: releaseInfo.version,
           published: releaseInfo.published,
           releaseNotes: releaseInfo.releaseNotes

@@ -44,6 +44,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 foreach (var siteId in siteIdList)
                 {
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    if (siteInfo == null) continue;
+                    
                     if (siteInfo.IsRoot == false)
                     {
                         if (siteInfo.ParentId == 0)

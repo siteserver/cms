@@ -166,7 +166,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 var filePath = PathUtility.GetSiteTemplatesPath($"T_{onlineTemplateName}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
-                var downloadUrl = OnlineTemplateManager.GetDownloadUrl(onlineTemplateName);
+                var downloadUrl = CloudUtils.Dl.GetTemplatesUrl(onlineTemplateName);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");

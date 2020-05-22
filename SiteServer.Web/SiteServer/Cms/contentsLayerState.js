@@ -37,8 +37,7 @@ var methods = {
         this.siteId +
         "&channelId=" +
         this.channelId +
-        "&contentIds=" +
-        this.contentId,
+        "&channelContentIds=" + this.channelId + "_" + this.contentId,
       full: true
     });
   }

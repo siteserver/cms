@@ -115,6 +115,8 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var psId in siteIdList)
                 {
                     var psInfo = SiteManager.GetSiteInfo(psId);
+                    if(psInfo == null) continue;
+
                     var show = false;
                     if (contributeType == ECrossSiteTransType.SpecifiedSite)
                     {
