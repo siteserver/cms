@@ -364,6 +364,8 @@ var utils = {
   },
 
   error: function (error, options) {
+    if (!error) return;
+
     if (error.response) {
       var message = utils.getErrorMessage(error);
 
@@ -387,7 +389,7 @@ var utils = {
         message: message,
         showIcon: true
       });
-    } else {
+    } else if (typeof error === 'string') {
       utils.getRootVue().$message({
         type: "error",
         message: error,

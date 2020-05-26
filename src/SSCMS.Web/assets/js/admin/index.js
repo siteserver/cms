@@ -43,52 +43,6 @@ var data = utils.init({
 });
 
 var methods = {
-  openContextMenu: function(e) {
-    if (e.srcElement.id && _.startsWith(e.srcElement.id, 'tab-')) {
-      this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
-      this.contextMenuVisible = true;
-      this.contextLeft = e.clientX;
-      this.contextTop = e.clientY;
-    }
-  },
-
-  closeContextMenu: function() {
-    this.contextMenuVisible = false;
-  },
-
-  btnContextClick: function(command) {
-    var $this = this;
-    if (command === 'this') {
-      this.tabs = this.tabs.filter(function(tab) {
-        return tab.name !== $this.contextTabName;
-      });
-    } else if (command === 'others') {
-      this.tabs = this.tabs.filter(function(tab) {
-        return tab.name === $this.contextTabName;
-      });
-      utils.openTab($this.contextTabName);
-    } else if (command === 'left') {
-      var isTab = false;
-      this.tabs = this.tabs.filter(function(tab) {
-        if (tab.name === $this.contextTabName) {
-          isTab = true;
-        }
-        return tab.name === $this.contextTabName || isTab;
-      });
-    } else if (command === 'right') {
-      var isTab = false;
-      this.tabs = this.tabs.filter(function(tab) {
-        if (tab.name === $this.contextTabName) {
-          isTab = true;
-        }
-        return tab.name === $this.contextTabName || !isTab;
-      });
-    } else if (command === 'all') {
-      this.tabs = [];
-    }
-    this.closeContextMenu();
-  },
-
   apiGet: function () {
     var $this = this;
 
@@ -208,6 +162,52 @@ var methods = {
         }
       }
     });
+  },
+
+  openContextMenu: function(e) {
+    if (e.srcElement.id && _.startsWith(e.srcElement.id, 'tab-')) {
+      this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
+      this.contextMenuVisible = true;
+      this.contextLeft = e.clientX;
+      this.contextTop = e.clientY;
+    }
+  },
+
+  closeContextMenu: function() {
+    this.contextMenuVisible = false;
+  },
+
+  btnContextClick: function(command) {
+    var $this = this;
+    if (command === 'this') {
+      this.tabs = this.tabs.filter(function(tab) {
+        return tab.name !== $this.contextTabName;
+      });
+    } else if (command === 'others') {
+      this.tabs = this.tabs.filter(function(tab) {
+        return tab.name === $this.contextTabName;
+      });
+      utils.openTab($this.contextTabName);
+    } else if (command === 'left') {
+      var isTab = false;
+      this.tabs = this.tabs.filter(function(tab) {
+        if (tab.name === $this.contextTabName) {
+          isTab = true;
+        }
+        return tab.name === $this.contextTabName || isTab;
+      });
+    } else if (command === 'right') {
+      var isTab = false;
+      this.tabs = this.tabs.filter(function(tab) {
+        if (tab.name === $this.contextTabName) {
+          isTab = true;
+        }
+        return tab.name === $this.contextTabName || !isTab;
+      });
+    } else if (command === 'all') {
+      this.tabs = [];
+    }
+    this.closeContextMenu();
   },
 
   winResize: function () {

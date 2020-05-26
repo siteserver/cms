@@ -9,7 +9,7 @@ trigger:
 variables:
   netCoreSdkVersion: '3.1.201'
   buildConfiguration: 'Release'
-  productVersion: '7.0.0-preview6'
+  productVersion: '7.0.0-preview7'
 
 jobs:
 

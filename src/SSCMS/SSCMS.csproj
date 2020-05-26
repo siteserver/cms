@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
-    <Version>7.0.0-preview6</Version>
+    <Version>7.0.0-preview7</Version>
     <Authors>SiteServer CMS</Authors>
     <Company>SiteServer CMS</Company>
     <PackageDescription>SSCMS .NET Core abstractions for developers.</PackageDescription>

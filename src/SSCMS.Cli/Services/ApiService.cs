@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using RestSharp;
+using Serilog;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Models;
+using SSCMS.Core.Packaging;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
 {
     public partial class ApiService : IApiService
     {
-        private const string RestHost = "http://api.sscms.com/v7/cli";
         private const string RestUrlLogin = "/login";
         private const string RestUrlStatus = "/status";
         private const string RestUrlRegister = "/register";
@@ -34,7 +36,7 @@ namespace SSCMS.Cli.Services
                 return (false, null, "you have not logged in");
             }
 
-            var client = new RestClient(RestHost + RestUrlStatus) { Timeout = -1 };
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlStatus)) { Timeout = -1 };
             var request = new RestRequest(Method.GET);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
@@ -50,7 +52,7 @@ namespace SSCMS.Cli.Services
 
         public (bool success, string failureMessage) Register(string userName, string mobile, string email, string password)
         {
-            var client = new RestClient(RestHost + RestUrlRegister) {Timeout = -1};
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlRegister)) {Timeout = -1};
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(new RegisterRequest
@@ -67,7 +69,7 @@ namespace SSCMS.Cli.Services
 
         public async Task<(bool success, string failureMessage)> LoginAsync(string account, string password)
         {
-            var client = new RestClient(RestHost + RestUrlLogin) { Timeout = -1 };
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlLogin)) { Timeout = -1 };
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(new LoginRequest
@@ -103,7 +105,7 @@ namespace SSCMS.Cli.Services
                 return (false, "you have not logged in");
             }
 
-            var client = new RestClient(RestHost + RestUrlPluginPublish) {Timeout = -1};
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginPublish)) {Timeout = -1};
             var request = new RestRequest(Method.POST);
             //request.AddHeader("Content-Type", "multipart/form-data");
             request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
@@ -121,7 +123,7 @@ namespace SSCMS.Cli.Services
                 return (false, "you have not logged in");
             }
 
-            var client = new RestClient(RestHost + RestUrlPluginUnPublish) { Timeout = -1 };
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginUnPublish)) { Timeout = -1 };
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
@@ -140,54 +142,109 @@ namespace SSCMS.Cli.Services
 
         public (bool success, List<PluginAndUser> results, string failureMessage) PluginsSearch(string word)
         {
-            var client = new RestClient(RestHost + RestUrlPluginSearch) { Timeout = -1 };
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new SearchRequest
+            //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginSearch)) { Timeout = -1 };
+            //var request = new RestRequest(Method.POST);
+            //request.AddHeader("Content-Type", "application/json");
+            //request.AddParameter("application/json", TranslateUtils.JsonSerialize(new SearchRequest
+            //{
+            //    Word = word
+            //}), ParameterType.RequestBody);
+            //var response = client.Execute<List<PluginAndUser>>(request);
+            //if (!response.IsSuccessful)
+            //{
+            //    return (false, null, response.ErrorMessage);
+            //}
+
+            //return (true, response.Data, null);
+
+            return ExecutePost<SearchRequest, List<PluginAndUser>>(RestUrlPluginSearch, new SearchRequest
             {
                 Word = word
-            }), ParameterType.RequestBody);
-            var response = client.Execute<List<PluginAndUser>>(request);
-            if (!response.IsSuccessful)
-            {
-                return (false, null, response.ErrorMessage);
-            }
-
-            return (true, response.Data, null);
+            });
         }
 
         public (bool success, PluginAndUser result, string failureMessage) PluginsShow(string pluginId)
         {
-            var client = new RestClient(RestHost + RestUrlPluginShow) { Timeout = -1 };
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new ShowRequest
+            //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginShow)) { Timeout = -1 };
+            //var request = new RestRequest(Method.POST);
+            //request.AddHeader("Content-Type", "application/json");
+            //request.AddParameter("application/json", TranslateUtils.JsonSerialize(new ShowRequest
+            //{
+            //    PluginId = pluginId
+            //}), ParameterType.RequestBody);
+            //var response = client.Execute<PluginAndUser>(request);
+            //if (!response.IsSuccessful)
+            //{
+            //    return (false, null, response.ErrorMessage);
+            //}
+
+            //return (true, response.Data, null);
+
+            return ExecutePost<ShowRequest, PluginAndUser>(RestUrlPluginShow, new ShowRequest
             {
                 PluginId = pluginId
-            }), ParameterType.RequestBody);
-            var response = client.Execute<PluginAndUser>(request);
-            if (!response.IsSuccessful)
-            {
-                return (false, null, response.ErrorMessage);
-            }
-
-            return (true, response.Data, null);
+            });
         }
 
         public (bool success, GetReleasesResult result, string failureMessage) GetReleases(bool isNightly, string version, List<string> pluginIds)
         {
-            var client = new RestClient(RestHost + RestUrlReleases) { Timeout = -1 };
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new GetReleasesRequest
+            //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlReleases)) { Timeout = -1 };
+            //var request = new RestRequest(Method.POST);
+            //request.AddHeader("Content-Type", "application/json");
+            //request.AddParameter("application/json", TranslateUtils.JsonSerialize(new GetReleasesRequest
+            //{
+            //    IsNightly = isNightly,
+            //    Version = version,
+            //    PluginIds = pluginIds
+            //}), ParameterType.RequestBody);
+            //var response = client.Execute<GetReleasesResult>(request);
+            //if (!response.IsSuccessful)
+            //{
+            //    if (response.StatusCode == HttpStatusCode.InternalServerError)
+            //    {
+            //        Log.Fatal(response.Content);
+            //        var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
+            //        if (error != null)
+            //        {
+            //            return (false, null, error.Message);
+            //        }
+            //    }
+            //    return (false, null, response.ErrorMessage);
+            //}
+
+            //return (true, response.Data, null);
+
+            return ExecutePost<GetReleasesRequest, GetReleasesResult>(RestUrlReleases, new GetReleasesRequest
             {
                 IsNightly = isNightly,
                 Version = version,
                 PluginIds = pluginIds
-            }), ParameterType.RequestBody);
-            var response = client.Execute<GetReleasesResult>(request);
+            });
+        }
+
+        private static (bool success, TResult result, string failureMessage) ExecutePost<TRequest, TResult>(string relatedUrl, TRequest body, string accessToken = null) where TResult : class
+
+        {
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(relatedUrl)) { Timeout = -1 };
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+            }
+            request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
+            var response = client.Execute<TResult>(request);
             if (!response.IsSuccessful)
             {
+                if (response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    Log.Fatal(response.Content);
+                    var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
+                    if (error != null)
+                    {
+                        return (false, null, error.Message);
+                    }
+                }
                 return (false, null, response.ErrorMessage);
             }
 

@@ -13,6 +13,8 @@ using SSCMS.Cli.Extensions;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Utils;
+using Serilog;
+using Serilog.Events;
 
 namespace SSCMS.Cli
 {
@@ -48,7 +50,13 @@ namespace SSCMS.Cli
                 .AddEnvironmentVariables();
 
             var configuration = builder.Build();
-            var services = new ServiceCollection().AddLogging(logging => logging.AddConsole());
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File("log/log.log", rollingInterval: RollingInterval.Day)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            var services = new ServiceCollection();
 
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
@@ -67,6 +75,7 @@ namespace SSCMS.Cli
             services.AddCliJobs();
 
             var provider = services.BuildServiceProvider();
+
             CliUtils.SetProvider(provider);
 
             await application.RunAsync(args);

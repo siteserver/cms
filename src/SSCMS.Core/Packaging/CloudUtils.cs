@@ -10,12 +10,22 @@ namespace SSCMS.Core.Packaging
     {
         public static class Www
         {
-            public const string Host = "http://www.sscms.com";
+            public const string Host = "https://www.sscms.com";
+        }
+
+        public static class Api
+        {
+            private const string Host = "https://api.sscms.com";
+
+            public static string GetCliUrl(string relatedUrl)
+            {
+                return PageUtils.Combine(Host, "v7/cli", relatedUrl);
+            }
         }
 
         public static class Dl
         {
-            private const string Host = "http://dl.sscms.com";
+            private const string Host = "https://dl.sscms.com";
 
             public static string GetCmsDownloadName(string version)
             {

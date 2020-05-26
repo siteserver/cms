@@ -1,5 +1,8 @@
 var $url = '/index';
 
+var $sidebarWidth = 200;
+var $collapseWidth = 60;
+
 var data = utils.init({
   defaultPageUrl: null,
   homeLogoUrl: null,
@@ -8,13 +11,20 @@ var data = utils.init({
   user: null,
 
   menu: null,
-  activeParentMenu: null,
-  activeChildMenu: null,
 
+  defaultOpenedId: null,
+  tabName: null,
+  tabs: [],
   winHeight: 0,
   winWidth: 0,
+  isCollapse: false,
   isDesktop: true,
-  isMobileMenu: false
+  isMobileMenu: false,
+
+  contextMenuVisible: false,
+  contextTabName: null,
+  contextLeft: 0,
+  contextTop: 0
 });
 
 var methods = {
@@ -33,7 +43,6 @@ var methods = {
         $this.menus = res.menus;
         
         $this.menu = $this.menus[0];
-        $this.activeParentMenu = $this.menus[0].children[0];
 
         document.title = $this.homeTitle;
 
@@ -61,6 +70,52 @@ var methods = {
     utils.loading($this, false);
   },
 
+  openContextMenu: function(e) {
+    if (e.srcElement.id && _.startsWith(e.srcElement.id, 'tab-')) {
+      this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
+      this.contextMenuVisible = true;
+      this.contextLeft = e.clientX;
+      this.contextTop = e.clientY;
+    }
+  },
+
+  closeContextMenu: function() {
+    this.contextMenuVisible = false;
+  },
+
+  btnContextClick: function(command) {
+    var $this = this;
+    if (command === 'this') {
+      this.tabs = this.tabs.filter(function(tab) {
+        return tab.name !== $this.contextTabName;
+      });
+    } else if (command === 'others') {
+      this.tabs = this.tabs.filter(function(tab) {
+        return tab.name === $this.contextTabName;
+      });
+      utils.openTab($this.contextTabName);
+    } else if (command === 'left') {
+      var isTab = false;
+      this.tabs = this.tabs.filter(function(tab) {
+        if (tab.name === $this.contextTabName) {
+          isTab = true;
+        }
+        return tab.name === $this.contextTabName || isTab;
+      });
+    } else if (command === 'right') {
+      var isTab = false;
+      this.tabs = this.tabs.filter(function(tab) {
+        if (tab.name === $this.contextTabName) {
+          isTab = true;
+        }
+        return tab.name === $this.contextTabName || !isTab;
+      });
+    } else if (command === 'all') {
+      this.tabs = [];
+    }
+    this.closeContextMenu();
+  },
+
   winResize: function () {
     this.winHeight = $(window).height();
     this.winWidth = $(window).width();
@@ -81,7 +136,7 @@ var methods = {
       for(var i = 0; i < menu.children.length; i++) {
         var child = menu.children[i];
         if (child.children) {
-          this.activeParentMenu = child;
+          this.defaultOpenedId = [child.id];
           break;
         }
       }
@@ -89,26 +144,41 @@ var methods = {
     this.menu = menu;
   },
 
-  btnLeftMenuClick: function (menu, e) {
-    if (menu.children) {
-      this.activeParentMenu = this.activeParentMenu === menu ? null : menu;
+  btnMenuClick: function(key) {
+    var menu = JSON.parse(key);
+    this.isMobileMenu = false;
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: menu.link,
+        full: true
+      });
+    } else if (menu.target == '_self') {
+      location.href = menu.link;
+    } else if (menu.target == '_parent') {
+      parent.location.href = menu.link;
+    }  else if (menu.target == '_top') {
+      top.location.href = menu.link;
+    } else if (menu.target == '_blank') {
+      window.open(menu.link);
     } else {
-      this.activeChildMenu = menu;
-      this.isMobileMenu = false;
-      if (menu.target == '_layer') {
-        e.stopPropagation();
-        e.preventDefault();
-        utils.openLayer({
-          title: menu.text,
-          url: menu.link,
-          full: true
-        });
-      }
-    }
+      utils.addTab(menu.text, menu.link);
+    } 
   },
 
   btnMobileMenuClick: function () {
+    this.isCollapse = false;
     this.isMobileMenu = !this.isMobileMenu;
+  },
+
+  btnUserMenuClick: function (command) {
+    if (command === 'profile') {
+      utils.addTab('修改资料', utils.getPageUrl(null, 'profile'));
+    } else if (command === 'password') {
+      utils.addTab('更改密码', utils.getPageUrl(null, 'password'));
+    } else if (command === 'logout') {
+      location.href = utils.getRootUrl('logout');
+    }
   }
 };
 
@@ -120,9 +190,11 @@ var $vue = new Vue({
     this.apiGet();
   },
   computed: {
-    leftMenuWidth: function () {
-      if (this.isDesktop) return '200px';
-      return this.isMobileMenu ? '100%' : '200px'
+    leftWidth: function () {
+      if (this.isDesktop) {
+        return this.isCollapse ? $collapseWidth : $sidebarWidth;
+      }
+      return this.isMobileMenu ? this.winWidth : 0;
     }
   }
 });

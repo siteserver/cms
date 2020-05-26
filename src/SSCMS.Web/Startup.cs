@@ -202,14 +202,12 @@ namespace SSCMS.Web
 
             //app.UseHttpsRedirection();
 
-            app.UseDefaultFiles(new DefaultFilesOptions
-            {
-                DefaultFileNames = new List<string>
-                {
-                    "index.html"
-                }
-            });
+            var options = new DefaultFilesOptions();
+            options.DefaultFileNames.Clear();
+            options.DefaultFileNames.Add("index.html");
+            app.UseDefaultFiles(options);
             app.UseStaticFiles();
+
             if (env.IsDevelopment())
             {
                 app.Map($"/{DirectoryUtils.SiteFilesDirectoryName}/assets", assets =>
