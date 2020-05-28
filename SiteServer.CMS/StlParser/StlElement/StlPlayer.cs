@@ -53,7 +53,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
             var type = BackgroundContentAttribute.VideoUrl;
-            var playUrl = string.Empty;
+            var playUrl = PlayByFlowPlayer;
             var imageUrl = string.Empty;
             var playBy = string.Empty;
             var width = 450;

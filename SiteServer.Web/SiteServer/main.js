@@ -88,8 +88,6 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
       
-    }).catch(function (error) {
-      utils.error($this, error);
     }).then(function () {
       $this.create();
     });

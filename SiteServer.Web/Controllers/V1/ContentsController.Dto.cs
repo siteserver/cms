@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.V1
         public class QueryResult
         {
             public int TotalCount { get; set; }
-            public IEnumerable<ContentInfo> Contents { get; set; }
+            public IEnumerable<Dictionary<string, object>> Contents { get; set; }
         }
 
         public class CheckRequest
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.V1
 
         public class CheckResult
         {
-            public List<ContentInfo> Contents { get; set; }
+            public List<Dictionary<string, object>> Contents { get; set; }
         }
     }
 }

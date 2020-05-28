@@ -117,7 +117,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -212,7 +212,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -267,7 +267,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -316,7 +316,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -366,11 +366,11 @@ namespace SiteServer.API.Controllers.V1
             var totalCount = DataProvider.ContentDao.GetTotalCount(tableName, query);
             var channelContentIds = DataProvider.ContentDao.GetChannelContentIdList(tableName, query);
 
-            var contents = new List<ContentInfo>();
+            var contents = new List<Dictionary<string, object>>();
             foreach (var channelContentId in channelContentIds)
             {
                 var content = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.Id);
-                contents.Add(content);
+                contents.Add(content.ToDictionary());
             }
 
             return new QueryResult
@@ -394,7 +394,7 @@ namespace SiteServer.API.Controllers.V1
             var site = SiteManager.GetSiteInfo(request.SiteId);
             if (site == null) return Request.BadRequest<CheckResult>("无法确定内容对应的站点");
 
-            var contents = new List<ContentInfo>();
+            var contents = new List<Dictionary<string, object>>();
             foreach (var channelContentId in request.Contents)
             {
                 var channel = ChannelManager.GetChannelInfo(request.SiteId, channelContentId.ChannelId);
@@ -410,7 +410,7 @@ namespace SiteServer.API.Controllers.V1
 
                 DataProvider.ContentDao.Update(site, channel, content);
 
-                contents.Add(content);
+                contents.Add(content.ToDictionary());
 
                 var contentCheck = new ContentCheckInfo
                 {
