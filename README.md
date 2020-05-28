@@ -2,7 +2,7 @@
 
 SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。
 
-![SiteServer CMS](https://www.siteserver.cn/assets/images/github-banner.png)
+![SiteServer CMS](https://sscms.com/assets/images/github-banner.png)
 
 ## 版本
 
@@ -45,17 +45,17 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 
 ## 开发文档
 
-[《STL 语言参考手册》](https://www.siteserver.cn/docs/stl/)
+[《STL 语言参考手册》](https://sscms.com/docs/v6/stl/)
 
-[《插件开发参考手册》](https://www.siteserver.cn/docs/plugins/)
+[《插件开发参考手册》](https://sscms.com/docs/v6/plugins/)
 
-[《CLI 命令行参考手册》](https://www.siteserver.cn/docs/cli/)
+[《CLI 命令行参考手册》](https://sscms.com/docs/v6/cli/)
 
-[《REST API 参考手册》](https://www.siteserver.cn/docs/api/)
+[《REST API 参考手册》](https://sscms.com/docs/v6/api/)
 
-[《数据结构参考手册》](https://www.siteserver.cn/docs/model/)
+[《数据结构参考手册》](https://sscms.com/docs/v6/model/)
 
-系统使用文档请点击 [SiteServer CMS 文档中心](https://www.siteserver.cn/docs/)
+系统使用文档请点击 [SiteServer CMS 文档中心](https://sscms.com/docs/)
 
 ## SiteServer CMS 源码结构
 
@@ -110,7 +110,7 @@ SiteServer CMS 产品将每隔两月发布新的正式版本，我们将在每�
 
 ## 关注最新动态
 
-[![qrcode](https://www.siteserver.cn/assets/images/qrcode_for_wx.jpg)](https://www.siteserver.cn/)
+[![qrcode](https://sscms.com/assets/images/qrcode_for_wx.jpg)](https://sscms.com/)
 
 ## License
 
