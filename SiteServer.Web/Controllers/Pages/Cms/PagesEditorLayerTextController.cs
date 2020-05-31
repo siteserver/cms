@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -6,6 +7,7 @@ using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/editorLayerText")]
     public partial class PagesEditorLayerTextController : ApiController
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.API.Results;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -11,7 +11,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
-
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/libraryImage")]
     public partial class PagesLibraryImageController : ApiController
     {
@@ -83,16 +83,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
             }
 
             var libraryFileName = PathUtils.GetLibraryFileName(fileName);
-            var virtualDirectoryPath = PathUtils.GetLibraryVirtualPath(EUploadType.Image, libraryFileName);
+            var virtualPath = PathUtils.GetLibraryVirtualPath(EUploadType.Image, libraryFileName);
             
-            var directoryPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualDirectoryPath);
-            var filePath = PathUtils.Combine(directoryPath, libraryFileName);
+            var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, virtualPath);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             file.SaveAs(filePath);
 
             library.Title = fileName;
-            library.Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
+            library.Url = virtualPath;
 
             library.Id = DataProvider.LibraryImageDao.Insert(library);
 
@@ -130,6 +129,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
             {
                 return Request.Unauthorized<DefaultResult>();
             }
+
+            var lib = DataProvider.LibraryImageDao.Get(id);
+            var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, lib.Url);
+            FileUtils.DeleteFileIfExists(filePath);
 
             DataProvider.LibraryImageDao.Delete(id);
 

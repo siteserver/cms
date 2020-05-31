@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -16,6 +18,76 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteSite = "{siteId:int}";
         private const string RouteChannel = "{siteId:int}/{channelId:int}";
 
+        [OpenApiOperation("获取栏目列表 API", "https://sscms.com/docs/v6/api/guide/channels/list.html")]
+        [HttpGet, Route(RouteSite)]
+        public IHttpActionResult List(int siteId)
+        {
+            try
+            {
+                var request = new AuthenticatedRequest();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeChannels) ||
+                             request.IsAdminLoggin;
+                if (!isAuth) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var root = ChannelManager.GetChannelInfo(siteId, siteId);
+                var channelIdList = ChannelManager.GetChannelIdList(root, EScopeType.Children);
+
+                var dictInfoList = new List<Dictionary<string, object>>();
+                foreach (var channelId in channelIdList)
+                {
+                    var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                    dictInfoList.Add(channelInfo.ToDictionary());
+                }
+
+                return Ok(new
+                {
+                    Value = dictInfoList
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [OpenApiOperation("获取栏目 API", "https://sscms.com/docs/v6/api/guide/channels/get.html")]
+        [HttpGet, Route(RouteChannel)]
+        public IHttpActionResult Get(int siteId, int channelId)
+        {
+            try
+            {
+                var request = new AuthenticatedRequest();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeChannels) ||
+                             request.IsAdminLoggin;
+                if (!isAuth) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                channelInfo.Children = ChannelManager.GetChildren(siteId, channelId);
+
+                return Ok(new
+                {
+                    Value = channelInfo.ToDictionary()
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [OpenApiOperation("新增栏目 API", "https://sscms.com/docs/v6/api/guide/channels/create.html")]
         [HttpPost, Route(RouteSite)]
         public IHttpActionResult Create(int siteId)
         {
@@ -157,6 +229,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("修改栏目 API", "https://sscms.com/docs/v6/api/guide/channels/update.html")]
         [HttpPut, Route(RouteChannel)]
         public IHttpActionResult Update(int siteId, int channelId)
         {
@@ -335,6 +408,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("删除栏目 API", "https://sscms.com/docs/v6/api/guide/channels/delete.html")]
         [HttpDelete, Route(RouteChannel)]
         public IHttpActionResult Delete(int siteId, int channelId)
         {
@@ -361,71 +435,6 @@ namespace SiteServer.API.Controllers.V1
                 return Ok(new
                 {
                     Value = channelInfo.ToDictionary()
-                });
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex);
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpGet, Route(RouteChannel)]
-        public IHttpActionResult Get(int siteId, int channelId)
-        {
-            try
-            {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeChannels) ||
-                              request.IsAdminLoggin;
-                if (!isAuth) return Unauthorized();
-
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
-
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-                channelInfo.Children = ChannelManager.GetChildren(siteId, channelId);
-
-                return Ok(new
-                {
-                    Value = channelInfo.ToDictionary()
-                });
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex);
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpGet, Route(RouteSite)]
-        public IHttpActionResult GetChannels(int siteId)
-        {
-            try
-            {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeChannels) ||
-                             request.IsAdminLoggin;
-                if (!isAuth) return Unauthorized();
-
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
-
-                var channelInfoList = ChannelManager.GetChannelInfoList(siteId);
-
-                var dictInfoList = new List<Dictionary<string, object>>();
-                foreach (var channelInfo in channelInfoList)
-                {
-                    dictInfoList.Add(channelInfo.ToDictionary());
-                }
-
-                return Ok(new
-                {
-                    Value = dictInfoList
                 });
             }
             catch (Exception ex)

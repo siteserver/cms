@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -8,6 +8,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/libraryLayerVideo")]
     public partial class PagesLibraryLayerVideoController : ApiController
     {

@@ -8,16 +8,16 @@
 
             public static string IconUrl => $"{Host}/assets/images/favicon.png";
 
-            public static string DocsCliUrl => $"{Host}/docs/cli/";
+            public static string DocsCliUrl => $"{Host}/docs/v6/cli/";
 
             public static string GetDocsStlUrl(string tagName)
             {
-                return $"{Host}/docs/stl/{tagName}/";
+                return $"{Host}/docs/v6/stl/{tagName}/";
             }
 
             public static string GetDocsStlUrl(string tagName, string fieldName, string attrTitle)
             {
-                return $"{Host}/docs/stl/{tagName}/#{fieldName.ToLower()}-{attrTitle.ToLower()}";
+                return $"{Host}/docs/v6/stl/{tagName}/#{fieldName.ToLower()}-{attrTitle.ToLower()}";
             }
         }
 

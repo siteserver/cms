@@ -14,10 +14,10 @@ Object.defineProperty(Object.prototype, "getProp", {
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName("siteId")),
   channelId: parseInt(pageUtils.getQueryStringByName("channelId")),
+  page: parseInt(pageUtils.getQueryStringByName("page") || '1'),
   pageLoad: false,
   pageAlert: null,
   pageType: null,
-  page: 1,
   pageContents: null,
   count: null,
   pages: null,
@@ -40,7 +40,7 @@ var methods = {
   },
 
   getPageContentAddUrl: function (content) {
-    return 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + content.channelId + '&id=' + content.id + '&returnUrl=' + encodeURIComponent(location.href);
+    return 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + content.channelId + '&id=' + content.id + '&returnUrl=' + encodeURIComponent('contents.cshtml?siteId=' + this.siteId + '&channelId=' + this.channelId + '&page=' + this.page);
   },
 
   btnCreateClick: function (e) {
@@ -294,6 +294,6 @@ var $vue = new Vue({
     }
   },
   created: function () {
-    this.loadContents(1);
+    this.loadContents(this.page);
   }
 });

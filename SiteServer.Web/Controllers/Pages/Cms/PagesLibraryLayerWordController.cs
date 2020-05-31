@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.API.Results;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
@@ -10,6 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/libraryLayerWord")]
     public partial class PagesLibraryLayerWordController : ApiController
     {

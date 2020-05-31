@@ -324,6 +324,12 @@ var methods = {
     utils.loading(false);
     var error = JSON.parse(err.message);
     this.$message.error(error.message);
+  },
+
+  getPreviewList: function(url) {
+    var index = this.urlList.indexOf(url);
+    var array = _.slice(this.urlList, index, this.urlList.length);
+    return array.concat(_.slice(this.urlList, 0, index));
   }
 };
 

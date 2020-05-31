@@ -27,7 +27,7 @@ var data = {
   content: null,
   imageUrl: null,
   summary: null,
-  editor: null,
+  // editor: null,
 };
 
 var methods = {
@@ -105,7 +105,10 @@ var methods = {
   },
 
   btnSaveClick: function() {
-    this.content = this.editor.html.get(true);
+    // var editor = UE.getEditor('content');
+    // this.content = editor.getContent();
+
+    // this.content = this.editor.html.get(true);
     var $this = this;
 
     if (!this.title) {
