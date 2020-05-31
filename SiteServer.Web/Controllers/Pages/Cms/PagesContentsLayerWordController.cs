@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Web.Http;
 using NSwag.Annotations;
@@ -167,11 +168,26 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     if (string.IsNullOrEmpty(fileName)) continue;
 
-                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    var title = string.Empty;
+                    var content = string.Empty;
+                    try
+                    {
+                        (title, content) = WordUtils.GetWord(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat,
+                            isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    }
+                    catch
+                    {
+                        (title, content) = WordManager.GetWord(siteInfo, isFirstLineTitle, isFirstLineRemove, isClearFormat,
+                            isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    }
 
-                    if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
+                    if (string.IsNullOrEmpty(title)) continue;
 
-                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
+                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, new NameValueCollection
+                    {
+                        {ContentAttribute.Title, title },
+                        {"Content", content }
+                    }, ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new ContentInfo(dict)
                     {
@@ -186,7 +202,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     contentInfo.IsChecked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
 
-                    contentInfo.Title = formCollection[ContentAttribute.Title];
+                    contentInfo.Title = title;
 
                     contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
 

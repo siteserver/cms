@@ -27,7 +27,7 @@
       </div>
       <p class="text-muted font-13 m-b-25">
         STL语言为SiteServer模板语言(SiteServer Template Language)的缩写，是一种和HTML语言类似的服务器端语言。
-        <a href="https://www.siteserver.cn/docs/stl/" target="_blank">STL 语言参考手册</a>
+        <a href="https://sscms.com/docs/v6/stl/" target="_blank">STL 语言参考手册</a>
       </p>
 
       <asp:Literal ID="LtlAll" runat="server"></asp:Literal>

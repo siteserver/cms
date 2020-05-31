@@ -19,7 +19,7 @@ var data = {
 
 var methods = {
   getIconUrl: function (url) {
-    return 'https://www.siteserver.cn/plugins/' + url;
+    return $urlCloudDl + '/plugins/' + url;
   },
 
   load: function () {
@@ -53,20 +53,20 @@ var methods = {
           packageIds: $this.packageIds
         }
       }).then(function (response) {
-        var res = response.data;
+        var releases = response.data;
 
-        for (var i = 0; i < res.value.length; i++) {
-          var releaseInfo = res.value[i];
+        for (var i = 0; i < releases.length; i++) {
+          var release = releases[i];
 
           var installedPackages = $.grep($this.allPackages, function (e) {
-            return e.id == releaseInfo.pluginId;
+            return e.id == release.pluginId;
           });
           if (installedPackages.length == 1) {
             var installedPackage = installedPackages[0];
-            installedPackage.updatePackage = releaseInfo;
+            installedPackage.updatePackage = release;
 
             if (installedPackage.metadata && installedPackage.metadata.version) {
-              if (compareversion(installedPackage.metadata.version, releaseInfo.version) == -1) {
+              if (compareversion(installedPackage.metadata.version, release.version) == -1) {
                 $this.updatePackages.push(installedPackage);
                 $this.updatePackageIds.push(installedPackage.id);
               }

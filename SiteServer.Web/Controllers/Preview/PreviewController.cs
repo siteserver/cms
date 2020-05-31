@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -20,6 +21,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Preview
 {
+    [OpenApiIgnore]
     public class PreviewController : ApiController
     {
         [HttpGet, Route(ApiRoutePreview.Route)]

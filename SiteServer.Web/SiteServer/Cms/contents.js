@@ -14,10 +14,10 @@ Object.defineProperty(Object.prototype, "getProp", {
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName("siteId")),
   channelId: parseInt(pageUtils.getQueryStringByName("channelId")),
+  page: parseInt(pageUtils.getQueryStringByName("page") || '1'),
   pageLoad: false,
   pageAlert: null,
   pageType: null,
-  page: 1,
   pageContents: null,
   count: null,
   pages: null,
@@ -25,7 +25,12 @@ var data = {
   columns: null,
   isAllContents: false,
   pageOptions: null,
-  isAllChecked: false
+  isAllChecked: false,
+  isSearch: false,
+  type: 'title',
+  keyword: '',
+  tableHeight: 0,
+  tableWidth: 0
 };
 
 var methods = {
@@ -35,7 +40,7 @@ var methods = {
   },
 
   getPageContentAddUrl: function (content) {
-    return 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + content.channelId + '&id=' + content.id + '&returnUrl=' + encodeURIComponent(location.href);
+    return 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + content.channelId + '&id=' + content.id + '&returnUrl=' + encodeURIComponent('contents.cshtml?siteId=' + this.siteId + '&channelId=' + this.channelId + '&page=' + this.page);
   },
 
   btnCreateClick: function (e) {
@@ -185,15 +190,19 @@ var methods = {
 
   loadContents: function (page) {
     var $this = this;
+    $this.tableHeight = ($(window).height() - 100) + 'px';
+    $this.tableWidth = ($(window).width() - 15) + 'px';
 
     if ($this.pageLoad) {
       pageUtils.loading(true);
     }
 
     $api.get({
-        siteId: $this.siteId,
-        channelId: $this.channelId,
-        page: page
+        siteId: this.siteId,
+        channelId: this.channelId,
+        page: page,
+        type: this.type,
+        keyword: this.keyword
       },
       function (err, res) {
         if (err || !res || !res.value) return;
@@ -226,6 +235,18 @@ var methods = {
         }
       }
     );
+  },
+
+  btnSearchSubmitClick: function() {
+    this.loadContents(1);
+  },
+
+  btnSearchCancelClick: function() {
+    this.isSearch = false;
+    if (this.keyword) {
+      this.keyword = '';
+      this.loadContents(1);
+    }
   }
 };
 
@@ -273,6 +294,6 @@ var $vue = new Vue({
     }
   },
   created: function () {
-    this.loadContents(1);
+    this.loadContents(this.page);
   }
 });

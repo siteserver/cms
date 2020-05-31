@@ -164,9 +164,10 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "1");
                 CacheUtils.Insert(cacheMessageKey, "开始下载模板压缩包，可能需要几分钟，请耐心等待...");
 
-                var filePath = PathUtility.GetSiteTemplatesPath($"T_{onlineTemplateName}.zip");
+                var fileName = $"T_{onlineTemplateName}.zip";
+                var filePath = PathUtility.GetSiteTemplatesPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
-                var downloadUrl = OnlineTemplateManager.GetDownloadUrl(onlineTemplateName);
+                var downloadUrl = CloudUtils.Dl.GetTemplatesUrl(fileName);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");

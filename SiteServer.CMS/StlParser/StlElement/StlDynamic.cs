@@ -17,6 +17,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         private StlDynamic() { }
         public const string ElementName = "stl:dynamic";
 
+        [StlAttribute(Title = "显示模式")]
+        private const string Inline = nameof(Inline);
+
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
@@ -40,6 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
+            var inline = false;
             var onBeforeSend = string.Empty;
             var onSuccess = string.Empty;
             var onComplete = string.Empty;
@@ -49,7 +53,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Context))
+                if (StringUtils.EqualsIgnoreCase(name, Inline))
+                {
+                    inline = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
@@ -79,10 +87,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 loading = innerBuilder.ToString();
             }
 
-            return ParseImpl(pageInfo, contextInfo, loading, template, onBeforeSend, onSuccess, onComplete, onError);
+            return ParseImpl(pageInfo, contextInfo, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string loading, string template, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
 
@@ -108,13 +116,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 OnError = onError
             };
 
-            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl));
+            return dynamicInfo.GetScript(ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl), inline);
         }
 
         internal static string ParseDynamicElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return ParseImpl(pageInfo, contextInfo, string.Empty, stlElement, string.Empty, string.Empty, string.Empty, string.Empty);
+            return ParseImpl(pageInfo, contextInfo, string.Empty, stlElement, false, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
         public static string ParseDynamicContent(DynamicInfo dynamicInfo, string template)

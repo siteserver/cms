@@ -106,7 +106,7 @@
         <el-image 
           style="width: 100%; min-height: 120px; max-height:220px;"
           :src="o.url"
-          :preview-src-list="urlList">
+          :preview-src-list="getPreviewList(o.url)">
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline"></i>
           </div>
@@ -159,7 +159,7 @@
         <el-image 
           style="max-height: 120px; max-width: 120px;"
           :src="scope.row.url" 
-          :preview-src-list="urlList">
+          :preview-src-list="getPreviewList(scope.row.url)">
         </el-image>
       </template>
     </el-table-column>

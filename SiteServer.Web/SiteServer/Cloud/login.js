@@ -13,7 +13,7 @@ var methods = {
   reload: function () {
     this.captcha = '';
     this.pageSubmit = false;
-    this.captchaUrl = $urlCloud + $urlCaptchaGet + '?r=' + new Date().getTime();
+    this.captchaUrl = $urlCloudApi + $urlCaptchaGet + '?r=' + new Date().getTime();
     this.pageLoad = true;
   },
 

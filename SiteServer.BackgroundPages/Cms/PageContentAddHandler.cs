@@ -79,7 +79,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreview(tableName, siteInfo, channelInfo, contentInfo);
+            contentInfo.SourceId = SourceManager.Preview;
+            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
 
             return new
             {

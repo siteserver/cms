@@ -71,7 +71,19 @@ var methods = {
   },
 
   load: function() {
-    new FroalaEditor('textarea');
+    var $this = this;
+
+    setTimeout(function () {
+      var editor = UE.getEditor('content', {
+        allowDivTransToP: false,
+        maximumWords: 99999999
+      });
+      editor.ready(function () {
+        editor.addListener("contentChange", function () {
+          $this.bodyHtml = this.getContent();
+        });
+      });
+    }, 100);
   }
 };
 

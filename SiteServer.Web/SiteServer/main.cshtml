@@ -22,7 +22,7 @@
       <header id="topnav">
         <div class="topbar-main">
           <div class="logo">
-            <a href="https://www.siteserver.cn" target="_blank" class="logo">
+            <a :href="$urlCloud" target="_blank" class="logo">
               <img :src="adminLogoUrl" style="max-width: 160px;" />
             </a>
           </div>
@@ -55,8 +55,7 @@
                     <h5 class="card-title text-success">发现 CMS 新版本</h5>
                     <p class="card-text"> 当前版本：{{ productVersion }} <br /> 最新版本： {{ newVersion.version }} <br /> 发布日期：
                       {{ newVersion.published }} <br />
-                      <hr /> {{ newVersion.releaseNotes }} <br />
-                      <a class="text-primary" :href="newVersion.updatesUrl" target="_blank">查看发行说明</a>
+                      <hr /> {{ newVersion.releaseNotes }}
                       <hr />
                       <div class="text-center">
                         <button href="javascript:;" onclick="location.href = 'pageUpdateSystem.aspx'" class="btn btn-warning btn-block">立即升级</button>

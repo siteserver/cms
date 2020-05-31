@@ -408,6 +408,43 @@ namespace SiteServer.CMS.Core
             return content;
         }
 
+        public static string SaveFiles(SiteInfo siteInfo, string content)
+        {
+            var originalLinkHrefs = RegexUtils.GetOriginalLinkHrefs(content);
+            foreach (var originalLinkHref in originalLinkHrefs)
+            {
+                if (!PageUtils.IsProtocolUrl(originalLinkHref) ||
+                    StringUtils.StartsWithIgnoreCase(originalLinkHref, PageUtils.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalLinkHref, siteInfo.Additional.WebUrl))
+                    continue;
+                var fileExtName = PageUtils.GetExtensionFromUrl(originalLinkHref);
+                if (!EFileSystemTypeUtils.IsDownload(EFileSystemTypeUtils.GetEnumType(fileExtName))) continue;
+
+                var fileName = GetUploadFileName(siteInfo, originalLinkHref);
+                var directoryPath = GetUploadDirectoryPath(siteInfo, fileExtName);
+                var filePath = PathUtils.Combine(directoryPath, fileName);
+
+                try
+                {
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        WebClientUtils.SaveRemoteFileToLocal(originalLinkHref, filePath);
+                        if (EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
+                        {
+                            FileUtility.AddWaterMark(siteInfo, filePath);
+                        }
+                    }
+                    var fileUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, filePath, true);
+                    content = content.Replace(originalLinkHref, fileUrl);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            return content;
+        }
+
         public static string GetTemporaryFilesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);

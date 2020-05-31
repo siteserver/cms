@@ -114,6 +114,33 @@ namespace SiteServer.API.Controllers.Home
                         Menus = children
                     });
                 }
+                var homeMenus = PluginMenuManager.GetHomeMenus();
+                foreach (var menuInfo1 in homeMenus)
+                {
+                    var children = new List<object>();
+                    if (menuInfo1.Menus != null)
+                    {
+                        foreach (var menuInfo2 in menuInfo1.Menus)
+                        {
+                            children.Add(new
+                            {
+                                menuInfo2.Text,
+                                menuInfo2.IconClass,
+                                menuInfo2.Href,
+                                menuInfo2.Target
+                            });
+                        }
+                    }
+
+                    menus.Add(new
+                    {
+                        menuInfo1.Text,
+                        menuInfo1.IconClass,
+                        menuInfo1.Href,
+                        menuInfo1.Target,
+                        Menus = children
+                    });
+                }
 
                 defaultPageUrl = PluginMenuManager.GetHomeDefaultPageUrl();
             }

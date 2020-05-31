@@ -11,6 +11,7 @@ using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
@@ -24,6 +25,7 @@ namespace SiteServer.API.Controllers.Pages
     public class PagesMainController : ApiController
     {
         private const string Route = "";
+        private const string RouteActionsCache = "actions/cache";
         private const string RouteActionsCreate = "actions/create";
         private const string RouteActionsDownload = "actions/download";
 
@@ -117,6 +119,8 @@ namespace SiteServer.API.Controllers.Pages
                 var siteMenus =
                     GetLeftMenus(siteInfo, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
+
+                ChannelManager.GetChannelInfoList(siteId);
 
                 return Ok(new
                 {
@@ -318,6 +322,47 @@ namespace SiteServer.API.Controllers.Pages
             return href;
         }
 
+        [HttpPost, Route(RouteActionsCache)]
+        public IHttpActionResult Cache()
+        {
+            var request = new AuthenticatedRequest();
+            if (!request.IsAdminLoggin)
+            {
+                return Unauthorized();
+            }
+
+            var siteId = request.GetQueryInt("siteId");
+            var site = SiteManager.GetSiteInfo(siteId);
+
+            var channelInfoList = ChannelManager.GetChannelInfoList(siteId);
+            foreach (var channelInfo in channelInfoList)
+            {
+                var adminId = channelInfo.Additional.IsSelfOnly
+                    ? request.AdminId
+                    : request.AdminPermissionsImpl.GetAdminId(siteId, channelInfo.Id);
+                var isAllContents = channelInfo.Additional.IsAllContents;
+
+                var ccIds = ContentManager.GetChannelContentIdList(site, channelInfo, adminId, isAllContents);
+                var count = ccIds.Count;
+
+                if (count > 0)
+                {
+                    var limit = site.Additional.PageSize;
+                    var pageCcIds = ccIds.Take(limit).ToList();
+
+                    foreach (var (contentChannelId, contentId) in pageCcIds)
+                    {
+                        ContentManager.GetContentInfo(site, contentChannelId, contentId);
+                    }
+                }
+            }
+
+            return Ok(new
+            {
+                Value = true
+            });
+        }
+
         [HttpPost, Route(RouteActionsCreate)]
         public async Task<IHttpActionResult> Create()
         {
@@ -328,15 +373,6 @@ namespace SiteServer.API.Controllers.Pages
                 {
                     return Unauthorized();
                 }
-
-#if !DEBUG
-                var sessionId = request.GetPostString("sessionId");
-                var cacheKey = Constants.GetSessionIdCacheKey(request.AdminId);
-                if (string.IsNullOrEmpty(sessionId) || CacheUtils.GetString(cacheKey) != sessionId)
-                {
-                    return Unauthorized();
-                }
-#endif
 
                 if (request.AdminInfo.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
                 {

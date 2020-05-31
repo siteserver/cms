@@ -46,6 +46,9 @@
     <Reference Include="Datory, Version=0.1.20.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Datory.0.1.20\lib\net452\Datory.dll</HintPath>
     </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.8.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.8.1\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
     </Reference>
@@ -88,6 +91,9 @@
     <Reference Include="NuGet.Versioning, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\NuGet.Versioning.4.5.0\lib\net45\NuGet.Versioning.dll</HintPath>
     </Reference>
+    <Reference Include="OpenXmlPowerTools, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Open-Xml-PowerTools.4.4.0\lib\net45\OpenXmlPowerTools.dll</HintPath>
+    </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.19.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.19.3.1\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
@@ -128,6 +134,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -145,6 +152,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="WordPlugin">
       <HintPath>..\ref\WordPlugin.dll</HintPath>
     </Reference>
@@ -168,11 +176,13 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
     <Compile Include="Api\V1\PageResponse.cs" />
+    <Compile Include="Core\Caching.cs" />
     <Compile Include="Core\CmsPages.cs" />
     <Compile Include="Core\ContentColumn.cs" />
     <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
     <Compile Include="Core\Office\ExcelUtils.cs" />
+    <Compile Include="Core\Office\WordManager.cs" />
     <Compile Include="Core\SqlUtils.cs" />
     <Compile Include="DataCache\Content\ContentManager.ContentCache.cs" />
     <Compile Include="DataCache\Content\ContentManager.CountCache.cs" />
@@ -205,7 +215,6 @@
     <Compile Include="Core\Office\ExcelObject.cs" />
     <Compile Include="Core\Office\TxtObject.cs" />
     <Compile Include="Core\Office\WordUtils.cs" />
-    <Compile Include="Core\OnlineTemplateManager.cs" />
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />

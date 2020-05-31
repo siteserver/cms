@@ -127,8 +127,7 @@ namespace SiteServer.Utils
         {
             if (string.IsNullOrEmpty(url)) return false;
 
-            url = url.Trim();
-            return url.IndexOf("://", StringComparison.Ordinal) != -1 || url.StartsWith("javascript:");
+            return url.IndexOf("://", StringComparison.Ordinal) != -1;
         }
 
         public static bool IsAbsoluteUrl(string url)

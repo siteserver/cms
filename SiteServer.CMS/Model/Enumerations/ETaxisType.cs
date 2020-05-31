@@ -329,11 +329,11 @@ namespace SiteServer.CMS.Model.Enumerations
 		    }
 		    if (type == ETaxisType.OrderByTaxis)
 		    {
-		        return "自定义排序（升序）";
+		        return "默认（升序）";
 		    }
 		    if (type == ETaxisType.OrderByTaxisDesc)
 		    {
-		        return "自定义排序（降序）";
+		        return "默认（降序）";
 		    }
 		    if (type == ETaxisType.OrderByHits)
 		    {
@@ -467,12 +467,8 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (listControl == null) return;
 
-            listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
             listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
             listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
-            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
             listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
             listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
         }

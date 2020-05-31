@@ -23,6 +23,111 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteChannel = "{siteId:int}/{channelId:int}";
         private const string RouteContent = "{siteId:int}/{channelId:int}/{id:int}";
 
+        [OpenApiOperation("获取内容列表 API", "https://sscms.com/docs/v6/api/guide/contents/list.html")]
+        [HttpPost, Route(Route)]
+        public QueryResult GetContents([FromBody] QueryRequest request)
+        {
+            var req = new AuthenticatedRequest();
+            var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+            var channelId = request.ChannelId ?? request.SiteId;
+
+            bool isAuth;
+            if (sourceId == SourceManager.User)
+            {
+                isAuth = req.IsUserLoggin && req.UserPermissions.HasChannelPermissions(request.SiteId, channelId, ConfigManager.ChannelPermissions.ContentView);
+            }
+            else
+            {
+                isAuth = req.IsApiAuthenticated &&
+                         AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents) ||
+                         req.IsUserLoggin &&
+                         req.UserPermissions.HasChannelPermissions(request.SiteId, channelId,
+                             ConfigManager.ChannelPermissions.ContentView) ||
+                         req.IsAdminLoggin &&
+                         req.AdminPermissions.HasChannelPermissions(request.SiteId, channelId,
+                             ConfigManager.ChannelPermissions.ContentView);
+            }
+            if (!isAuth) return Request.Unauthorized<QueryResult>();
+
+            var site = SiteManager.GetSiteInfo(request.SiteId);
+            if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
+
+            var channelInfo = ChannelManager.GetChannelInfo(request.SiteId, channelId);
+            if (channelInfo == null) return Request.BadRequest<QueryResult>("无法确定内容对应的栏目");
+
+            if (!req.AdminPermissionsImpl.HasChannelPermissions(request.SiteId, channelId,
+                ConfigManager.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
+
+            var tableName = site.TableName;
+            var query = GetQuery(request.SiteId, request.ChannelId, request);
+            var totalCount = DataProvider.ContentDao.GetTotalCount(tableName, query);
+            var channelContentIds = DataProvider.ContentDao.GetChannelContentIdList(tableName, query);
+
+            var contents = new List<Dictionary<string, object>>();
+            foreach (var channelContentId in channelContentIds)
+            {
+                var content = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.Id);
+                contents.Add(content.ToDictionary());
+            }
+
+            return new QueryResult
+            {
+                Contents = contents,
+                TotalCount = totalCount
+            };
+        }
+
+        [OpenApiOperation("获取内容 API", "https://sscms.com/docs/v6/api/guide/contents/get.html")]
+        [HttpGet, Route(RouteContent)]
+        public IHttpActionResult Get(int siteId, int channelId, int id)
+        {
+            try
+            {
+                var request = new AuthenticatedRequest();
+                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
+                bool isAuth;
+                if (sourceId == SourceManager.User)
+                {
+                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentView);
+                }
+                else
+                {
+                    isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
+                             request.IsUserLoggin &&
+                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView) ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
+                                 ConfigManager.ChannelPermissions.ContentView);
+                }
+                if (!isAuth) return Unauthorized();
+
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
+
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
+
+                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
+
+                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
+                if (contentInfo == null) return NotFound();
+
+                return Ok(new
+                {
+                    Value = contentInfo.ToDictionary()
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [OpenApiOperation("新增内容 API", "https://sscms.com/docs/v6/api/guide/contents/create.html")]
         [HttpPost, Route(RouteChannel)]
         public IHttpActionResult Create(int siteId, int channelId)
         {
@@ -117,7 +222,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -127,6 +232,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("修改内容 API", "https://sscms.com/docs/v6/api/guide/contents/update.html")]
         [HttpPut, Route(RouteContent)]
         public IHttpActionResult Update(int siteId, int channelId, int id)
         {
@@ -212,7 +318,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -222,6 +328,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("删除内容 API", "https://sscms.com/docs/v6/api/guide/contents/delete.html")]
         [HttpDelete, Route(RouteContent)]
         public IHttpActionResult Delete(int siteId, int channelId, int id)
         {
@@ -267,7 +374,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = contentInfo
+                    Value = contentInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -277,111 +384,9 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
-        [HttpGet, Route(RouteContent)]
-        public IHttpActionResult Get(int siteId, int channelId, int id)
-        {
-            try
-            {
-                var request = new AuthenticatedRequest();
-                var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-                bool isAuth;
-                if (sourceId == SourceManager.User)
-                {
-                    isAuth = request.IsUserLoggin && request.UserPermissions.HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentView);
-                }
-                else
-                {
-                    isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeContents) ||
-                             request.IsUserLoggin &&
-                             request.UserPermissions.HasChannelPermissions(siteId, channelId,
-                                 ConfigManager.ChannelPermissions.ContentView) ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasChannelPermissions(siteId, channelId,
-                                 ConfigManager.ChannelPermissions.ContentView);
-                }
-                if (!isAuth) return Unauthorized();
-
-                var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
-
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
-                if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                    ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
-
-                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
-                if (contentInfo == null) return NotFound();
-
-                return Ok(new
-                {
-                    Value = contentInfo
-                });
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex);
-                return InternalServerError(ex);
-            }
-        }
-
-        [OpenApiOperation("获取内容API", "")]
-        [HttpPost, Route(Route)]
-        public QueryResult GetContents([FromBody] QueryRequest request)
-        {
-            var req = new AuthenticatedRequest();
-            var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-            var channelId = request.ChannelId ?? request.SiteId;
-
-            bool isAuth;
-            if (sourceId == SourceManager.User)
-            {
-                isAuth = req.IsUserLoggin && req.UserPermissions.HasChannelPermissions(request.SiteId, channelId, ConfigManager.ChannelPermissions.ContentView);
-            }
-            else
-            {
-                isAuth = req.IsApiAuthenticated &&
-                         AccessTokenManager.IsScope(req.ApiToken, AccessTokenManager.ScopeContents) ||
-                         req.IsUserLoggin &&
-                         req.UserPermissions.HasChannelPermissions(request.SiteId, channelId,
-                             ConfigManager.ChannelPermissions.ContentView) ||
-                         req.IsAdminLoggin &&
-                         req.AdminPermissions.HasChannelPermissions(request.SiteId, channelId,
-                             ConfigManager.ChannelPermissions.ContentView);
-            }
-            if (!isAuth) return Request.Unauthorized<QueryResult>();
-
-            var site = SiteManager.GetSiteInfo(request.SiteId);
-            if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
-
-            var channelInfo = ChannelManager.GetChannelInfo(request.SiteId, channelId);
-            if (channelInfo == null) return Request.BadRequest<QueryResult>("无法确定内容对应的栏目");
-
-            if (!req.AdminPermissionsImpl.HasChannelPermissions(request.SiteId, channelId,
-                ConfigManager.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
-
-            var tableName = site.TableName;
-            var query = GetQuery(request.SiteId, request.ChannelId, request);
-            var totalCount = DataProvider.ContentDao.GetTotalCount(tableName, query);
-            var channelContentIds = DataProvider.ContentDao.GetChannelContentIdList(tableName, query);
-
-            var contents = new List<ContentInfo>();
-            foreach (var channelContentId in channelContentIds)
-            {
-                var content = ContentManager.GetContentInfo(site, channelContentId.ChannelId, channelContentId.Id);
-                contents.Add(content);
-            }
-
-            return new QueryResult
-            {
-                Contents = contents,
-                TotalCount = totalCount
-            };
-        }
-
+        [OpenApiOperation("审核内容 API", "https://sscms.com/docs/v6/api/guide/contents/check.html")]
         [HttpPost, Route(RouteCheck)]
-        public CheckResult CheckContents([FromBody] CheckRequest request)
+        public CheckResult Check([FromBody] CheckRequest request)
         {
             var req = new AuthenticatedRequest();
 
@@ -394,7 +399,7 @@ namespace SiteServer.API.Controllers.V1
             var site = SiteManager.GetSiteInfo(request.SiteId);
             if (site == null) return Request.BadRequest<CheckResult>("无法确定内容对应的站点");
 
-            var contents = new List<ContentInfo>();
+            var contents = new List<Dictionary<string, object>>();
             foreach (var channelContentId in request.Contents)
             {
                 var channel = ChannelManager.GetChannelInfo(request.SiteId, channelContentId.ChannelId);
@@ -410,7 +415,7 @@ namespace SiteServer.API.Controllers.V1
 
                 DataProvider.ContentDao.Update(site, channel, content);
 
-                contents.Add(content);
+                contents.Add(content.ToDictionary());
 
                 var contentCheck = new ContentCheckInfo
                 {

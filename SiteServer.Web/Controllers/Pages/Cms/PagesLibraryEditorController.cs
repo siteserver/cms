@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.API.Results;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -10,7 +11,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
-    
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/libraryEditor")]
     public class PagesLibraryEditorController : ApiController
     {

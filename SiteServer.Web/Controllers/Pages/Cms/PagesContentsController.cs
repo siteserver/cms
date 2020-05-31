@@ -30,6 +30,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
                 var page = request.GetQueryInt("page");
+                var type = request.GetQueryString("type");
+                var keyword = request.GetQueryString("keyword");
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
@@ -66,7 +68,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
 
                 var pageContentInfoList = new List<ContentInfo>();
-                var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents);
+                //var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, type, keyword);
+                var ccIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents);
                 var count = ccIds.Count;
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;

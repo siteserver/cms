@@ -48,7 +48,7 @@ namespace SiteServer.API.Controllers.Home
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var pageContentInfoList = new List<ContentInfo>();
-                var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, true);
+                var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, true, string.Empty, string.Empty);
                 var count = ccIds.Count;
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));

@@ -77,10 +77,9 @@ namespace SiteServer.CMS.Plugin
 
                     if (metadataMenus.Count == 0) continue;
 
-                    var i = 0;
                     foreach (var metadataMenu in metadataMenus)
                     {
-                        var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu, ++i);
+                        var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu);
                         menus.Add(pluginMenu);
                     }
                 }
@@ -116,10 +115,47 @@ namespace SiteServer.CMS.Plugin
 
                     if (metadataMenus.Count == 0) continue;
 
-                    var i = 0;
                     foreach (var metadataMenu in metadataMenus)
                     {
-                        var pluginMenu = GetMenu(service.PluginId, siteId, 0, 0, metadataMenu, ++i);
+                        var pluginMenu = GetMenu(service.PluginId, siteId, 0, 0, metadataMenu);
+                        menus.Add(pluginMenu);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex);
+                }
+            }
+
+            return menus;
+        }
+
+        public static List<PluginMenu> GetHomeMenus()
+        {
+            var menus = new List<PluginMenu>();
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (service.HomeMenuFuncs == null) continue;
+
+                try
+                {
+                    var metadataMenus = new List<Menu>();
+
+                    foreach (var menuFunc in service.HomeMenuFuncs)
+                    {
+                        var metadataMenu = menuFunc.Invoke();
+                        if (metadataMenu != null)
+                        {
+                            metadataMenus.Add(metadataMenu);
+                        }
+                    }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu);
                         menus.Add(pluginMenu);
                     }
                 }
@@ -158,10 +194,9 @@ namespace SiteServer.CMS.Plugin
 
                     if (metadataMenus.Count == 0) continue;
 
-                    var i = 0;
                     foreach (var metadataMenu in metadataMenus)
                     {
-                        var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu, ++i);
+                        var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu);
                         menus.Add(pluginMenu);
                     }
                 }
@@ -241,7 +276,7 @@ namespace SiteServer.CMS.Plugin
         //    });
         //}
 
-        private static PluginMenu GetMenu(string pluginId, int siteId, int channelId, int contentId, Menu metadataMenu, int i)
+        private static PluginMenu GetMenu(string pluginId, int siteId, int channelId, int contentId, Menu metadataMenu)
         {
             var menu = new PluginMenu
             {
@@ -255,7 +290,7 @@ namespace SiteServer.CMS.Plugin
 
             if (string.IsNullOrEmpty(menu.Id))
             {
-                menu.Id = pluginId + i;
+                menu.Id = metadataMenu.Text;
             }
             if (!string.IsNullOrEmpty(menu.Href))
             {
@@ -269,10 +304,9 @@ namespace SiteServer.CMS.Plugin
             if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
             {
                 var children = new List<Menu>();
-                var x = 1;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
-                    var child = GetMenu(pluginId, siteId, channelId, contentId, childMetadataMenu, x++);
+                    var child = GetMenu(pluginId, siteId, channelId, contentId, childMetadataMenu);
 
                     children.Add(child);
                 }
@@ -282,7 +316,7 @@ namespace SiteServer.CMS.Plugin
             return menu;
         }
 
-        public static Tab GetPluginTab(string pluginId, string prefix, Menu menu)
+        public static Tab GetPluginTab(string pluginId, Menu parent, Menu menu)
         {
             var tab = new Tab
             {
@@ -302,15 +336,15 @@ namespace SiteServer.CMS.Plugin
                 for (var i = 0; i < menu.Menus.Count; i++)
                 {
                     var child = menu.Menus[i];
-                    var childPermission = GetMenuPermission(pluginId, menu.Text, child);
+                    var childPermission = GetMenuPermission(pluginId, menu, child);
                     permissions.Add(childPermission);
 
-                    tab.Children[i] = GetPluginTab(pluginId, menu.Text, child);
+                    tab.Children[i] = GetPluginTab(pluginId, menu, child);
                 }
             }
             else
             {
-                var permission = GetMenuPermission(pluginId, prefix, menu);
+                var permission = GetMenuPermission(pluginId, parent, menu);
                 permissions.Add(permission);
             }
             tab.Permissions = TranslateUtils.ObjectCollectionToString(permissions);
@@ -333,9 +367,14 @@ namespace SiteServer.CMS.Plugin
             return permissions;
         }
 
-        private static string GetMenuPermission(string pluginId, string prefix, Menu menu)
+        private static string GetMenuPermission(string pluginId, Menu parent, Menu menu)
         {
-            return string.IsNullOrEmpty(prefix) ? $"{pluginId}:{menu.Text}" : $"{pluginId}:{prefix}:{menu.Text}";
+            var prefix = string.Empty;
+            if (parent != null)
+            {
+                prefix = string.IsNullOrEmpty(parent.Id) ? $":{parent.Text}" : $":{parent.Id}";
+            }
+            return string.IsNullOrEmpty(menu.Id) ? $"{pluginId}{prefix}:{menu.Text}" : $"{pluginId}{prefix}:{menu.Id}";
         }
 
         public static List<PermissionConfigManager.PermissionConfig> GetSitePermissions(int siteId)
@@ -350,18 +389,18 @@ namespace SiteServer.CMS.Plugin
                 {
                     var metadataMenu = menuFunc.Invoke(siteId);
                     if (metadataMenu == null) continue;
-                        
+
                     if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
                     {
                         foreach (var menu in metadataMenu.Menus)
                         {
-                            var permission = GetMenuPermission(service.PluginId, metadataMenu.Text, menu);
+                            var permission = GetMenuPermission(service.PluginId, metadataMenu, menu);
                             permissions.Add(new PermissionConfigManager.PermissionConfig(permission, $"{service.Metadata.Title} -> {menu.Text}"));
                         }
                     }
                     else
                     {
-                        var permission = GetMenuPermission(service.PluginId, string.Empty, metadataMenu);
+                        var permission = GetMenuPermission(service.PluginId, null, metadataMenu);
                         permissions.Add(new PermissionConfigManager.PermissionConfig(permission, $"{service.Metadata.Title} -> {metadataMenu.Text}"));
                     }
                 }

@@ -8,7 +8,7 @@ var apiUtils = {
       return decodeURIComponent(result[1]);
     };
 
-    this.apiUrl = apiUrl || 'https://api.siteserver.cn/v1.1';
+    this.apiUrl = apiUrl || 'https://api.sscms.com/v6';
 
     this._getURL = function (url, data, method) {
       url += ((/\?/).test(url) ? '&' : '?');

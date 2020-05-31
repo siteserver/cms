@@ -79,12 +79,12 @@
         </div>
       </div>
       <div class="form-group form-row">
-        <label class="col-sm-2 col-form-label text-right">内容默认排序规则</label>
+        <label class="col-sm-2 col-form-label text-right">新增内容排序规则</label>
         <div class="col-sm-4">
           <asp:DropDownList ID="DdlTaxisType" class="form-control" runat="server"></asp:DropDownList>
         </div>
         <div class="col-sm-6">
-          <small class="form-text text-muted">设置内容默认排序规则后，后台内容列表将改变排序显示规则</small>
+          <small class="form-text text-muted">新增或导入的内容将按照此排序规则进行排序</small>
         </div>
       </div>
       <div class="form-group form-row">

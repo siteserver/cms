@@ -45,6 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var tagName = elementName.Substring(4);
                 var stlAttribute = (StlElementAttribute)Attribute.GetCustomAttribute(elementType, typeof(StlElementAttribute));
+                var tagNameUrl = CloudUtils.Root.GetDocsStlUrl(tagName);
 
                 allBuilder.Append($@"
 <tr class=""{(elementName == _elementName ? "bg-secondary text-white" : string.Empty)}"">
@@ -54,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
     </a>
   </td>
   <td>{stlAttribute.Title}</td>
-  <td><a href=""https://www.siteserver.cn/docs/stl/{tagName}/"" target=""_blank"" class=""{(elementName == _elementName ? "text-white" : string.Empty)}"">https://www.siteserver.cn/docs/stl/{tagName}/</a></td>
+  <td><a href=""{tagNameUrl}"" target=""_blank"" class=""{(elementName == _elementName ? "text-white" : string.Empty)}"">{tagNameUrl}</a></td>
 </tr>");
             }
 
@@ -96,8 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (attr != null)
                         {
-                            var attrUrl =
-                                $"https://www.siteserver.cn/docs/stl/{tagName}/#{fieldName.ToLower()}-{attr.Title.ToLower()}";
+                            var attrUrl = CloudUtils.Root.GetDocsStlUrl(tagName, fieldName, attr.Title);
                             attrBuilder.Append($@"
 <tr>
   <td>{fieldName}</td>
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    var helpUrl = $"https://www.siteserver.cn/docs/stl/{tagName}/";
+                    var tagNameUrl = CloudUtils.Root.GetDocsStlUrl(tagName);
 
                     var stlAttribute = (StlElementAttribute)Attribute.GetCustomAttribute(elementType, typeof(StlElementAttribute));
 
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
     </h4>
     <p>
     {stlAttribute.Description}
-    <a href=""{helpUrl}"" target=""_blank"">详细使用说明</a>
+    <a href=""{tagNameUrl}"" target=""_blank"">详细使用说明</a>
     </p>
     <div class=""panel panel-default m-t-10"">
         <div class=""panel-body p-0"">

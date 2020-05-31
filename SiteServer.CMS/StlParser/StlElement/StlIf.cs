@@ -47,6 +47,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
         public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
         public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";        //用户或管理员是否已登录
+        public const string TypeIsUserGroup = "IsUserGroup";                                      //用户是否已登录且属于对应用户组
         private const string TypeChannelName = "ChannelName";			                            //栏目名称
         private const string TypeChannelIndex = "ChannelIndex";			                            //栏目索引
         private const string TypeTemplateName = "TemplateName";			                            //模板名称
@@ -67,6 +68,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {TypeIsUserLoggin, "用户是否已登录"},
             {TypeIsAdministratorLoggin, "管理员是否已登录"},
             {TypeIsUserOrAdministratorLoggin, "用户或管理员是否已登录"},
+            {TypeIsUserGroup, "用户是否已登录且属于对应用户组"},
             {TypeChannelName, "栏目名称"},
             {TypeChannelIndex, "栏目索引"},
             {TypeTemplateName, "模板名称"},
@@ -175,7 +177,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin))
+                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin) ||
+                StringUtils.EqualsIgnoreCase(testType, TypeIsUserGroup))
             {
                 return ParseDynamic(pageInfo, contextInfo, testType, testValue, testOperate, loading,
                     yes, no, onBeforeSend, onSuccess, onComplete, onError);

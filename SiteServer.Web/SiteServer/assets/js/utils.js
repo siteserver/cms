@@ -3,9 +3,12 @@ var $api = axios.create({
   withCredentials: true
 });
 
-var $urlCloud = 'https://api.siteserver.cn';
+var $urlCloud = 'https://sscms.com';
+var $urlCloudDl = 'https://dl.sscms.com';
+var $urlCloudDemo = 'https://demo.sscms.com';
+var $urlCloudApi = 'https://api.sscms.com';
 var $apiCloud = axios.create({
-  baseURL: $urlCloud + '/v1.2',
+  baseURL: $urlCloudApi + '/v6',
   withCredentials: true
 });
 

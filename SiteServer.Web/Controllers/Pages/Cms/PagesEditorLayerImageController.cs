@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -9,6 +10,7 @@ using SiteServer.Utils.Images;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/editorLayerImage")]
     public partial class PagesEditorLayerImageController : ApiController
     {

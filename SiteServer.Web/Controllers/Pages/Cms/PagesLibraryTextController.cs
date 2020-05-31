@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.API.Results;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
@@ -12,7 +12,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
-
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/libraryText")]
     public partial class PagesLibraryTextController : ApiController
     {
@@ -97,9 +97,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
             FileUtils.DeleteFileIfExists(filePath);
 
             library.Title = fileName;
-            library.ImageUrl = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
             library.Content = wordContent;
             library.Id = DataProvider.LibraryTextDao.Insert(library);
+
+            return library;
+        }
+
+        [HttpPut, Route(RouteId)]
+        public LibraryTextInfo Update([FromUri] int id, [FromBody] LibraryTextInfo library)
+        {
+            var auth = new AuthenticatedRequest();
+
+            if (!auth.IsAdminLoggin ||
+                !auth.AdminPermissionsImpl.HasSitePermissions(auth.SiteId,
+                    ConfigManager.SitePermissions.Library))
+            {
+                return Request.Unauthorized<LibraryTextInfo>();
+            }
+
+            var lib = DataProvider.LibraryTextDao.Get(id);
+            lib.GroupId = library.GroupId;
+            DataProvider.LibraryTextDao.Update(lib);
 
             return library;
         }

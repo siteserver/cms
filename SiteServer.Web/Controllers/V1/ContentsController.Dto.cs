@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Datory;
-using NSwag.Annotations;
-using SiteServer.CMS.Api.V1;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
+﻿using System.Collections.Generic;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
-using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -56,7 +44,7 @@ namespace SiteServer.API.Controllers.V1
         public class QueryResult
         {
             public int TotalCount { get; set; }
-            public IEnumerable<ContentInfo> Contents { get; set; }
+            public IEnumerable<Dictionary<string, object>> Contents { get; set; }
         }
 
         public class CheckRequest
@@ -68,7 +56,7 @@ namespace SiteServer.API.Controllers.V1
 
         public class CheckResult
         {
-            public List<ContentInfo> Contents { get; set; }
+            public List<Dictionary<string, object>> Contents { get; set; }
         }
     }
 }

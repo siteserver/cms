@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
@@ -23,6 +24,7 @@ namespace SiteServer.API.Controllers.V1
             public string Captcha { get; set; }
         }
 
+        [OpenApiOperation("获取验证码图片 API", "https://sscms.com/docs/v6/api/guide/other/captchaGet.html")]
         [HttpGet, Route(ApiRoute)]
         public void Get(string name)
         {
@@ -89,6 +91,7 @@ namespace SiteServer.API.Controllers.V1
             response.End();
         }
 
+        [OpenApiOperation("验证验证码 API", "https://sscms.com/docs/v6/api/guide/other/captchaCheck.html")]
         [HttpPost, Route(ApiRouteActionsCheck)]
         public IHttpActionResult Check(string name, [FromBody] CaptchaInfo captchaInfo)
         {

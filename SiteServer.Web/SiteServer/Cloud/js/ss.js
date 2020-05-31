@@ -4,7 +4,7 @@ var $urlCaptchaGet = '/v1/captcha/LOGIN-CAPTCHA';
 var $urlCaptchaCheck = '/v1/captcha/LOGIN-CAPTCHA/actions/check';
 
 var $ssApi = axios.create({
-  baseURL: $urlCloud,
+  baseURL: $urlCloudApi,
   withCredentials: true
 });
 

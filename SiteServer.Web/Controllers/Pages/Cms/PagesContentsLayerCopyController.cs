@@ -63,6 +63,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var permissionSiteId in siteIdList)
                 {
                     var permissionSiteInfo = SiteManager.GetSiteInfo(permissionSiteId);
+                    if (permissionSiteInfo == null) continue;
+
                     sites.Add(new
                     {
                         permissionSiteInfo.Id,

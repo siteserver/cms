@@ -3,11 +3,15 @@ var $urlUpload = apiUrl + "/pages/cms/libraryEditor/actions/upload?siteId=" + ut
 
 function insertHtml(html)
 {
-    if (html)
-    {
-      var editor = new FroalaEditor('textarea#content');
-      editor.html.insert(html);
-    }
+  if (html)
+  {
+    var editor = UE.getEditor('content', {
+      allowDivTransToP: false,
+      maximumWords: 99999999
+    });
+
+    editor.execCommand("insertHTML", html);
+  }
 }
 
 var data = {
@@ -23,7 +27,7 @@ var data = {
   content: null,
   imageUrl: null,
   summary: null,
-  editor: null,
+  // editor: null,
 };
 
 var methods = {
@@ -69,10 +73,14 @@ var methods = {
     var $this = this;
 
     setTimeout(function () {
-      $this.editor = new FroalaEditor('textarea#content', {
-        language: 'zh_cn',
-        heightMin: 390,
-        toolbarButtons: [['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript'], ['fontFamily', 'fontSize', 'textColor', 'backgroundColor'], ['inlineClass', 'inlineStyle', 'clearFormatting']]
+      var editor = UE.getEditor('content', {
+        allowDivTransToP: false,
+        maximumWords: 99999999
+      });
+      editor.ready(function () {
+        editor.addListener("contentChange", function () {
+          $this.content = this.getContent();
+        });
       });
     }, 100);
   },
@@ -97,7 +105,10 @@ var methods = {
   },
 
   btnSaveClick: function() {
-    this.content = this.editor.html.get(true);
+    // var editor = UE.getEditor('content');
+    // this.content = editor.getContent();
+
+    // this.content = this.editor.html.get(true);
     var $this = this;
 
     if (!this.title) {

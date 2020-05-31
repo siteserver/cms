@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -24,6 +25,7 @@ namespace SiteServer.API.Controllers.V1
         private const string RouteUserLogs = "{id:int}/logs";
         private const string RouteUserResetPassword = "{id:int}/actions/resetPassword";
 
+        [OpenApiOperation("新增用户 API", "https://sscms.com/docs/v6/api/guide/users/create.html")]
         [HttpPost, Route(Route)]
         public IHttpActionResult Create()
         {
@@ -55,6 +57,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("修改用户 API", "https://sscms.com/docs/v6/api/guide/users/update.html")]
         [HttpPut, Route(RouteUser)]
         public IHttpActionResult Update(int id)
         {
@@ -94,6 +97,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("删除用户 API", "https://sscms.com/docs/v6/api/guide/users/delete.html")]
         [HttpDelete, Route(RouteUser)]
         public IHttpActionResult Delete(int id)
         {
@@ -126,6 +130,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("获取用户 API", "https://sscms.com/docs/v6/api/guide/users/get.html")]
         [HttpGet, Route(RouteUser)]
         public IHttpActionResult Get(int id)
         {
@@ -156,6 +161,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("获取用户头像 API", "https://sscms.com/docs/v6/api/guide/users/getAvatar.html")]
         [HttpGet, Route(RouteUserAvatar)]
         public IHttpActionResult GetAvatar(int id)
         {
@@ -170,6 +176,7 @@ namespace SiteServer.API.Controllers.V1
             });
         }
 
+        [OpenApiOperation("上传用户头像 API", "https://sscms.com/docs/v6/api/guide/users/updateAvatar.html")]
         [HttpPost, Route(RouteUserAvatar)]
         public IHttpActionResult UploadAvatar(int id)
         {
@@ -224,6 +231,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("获取用户列表 API", "https://sscms.com/docs/v6/api/guide/users/list.html")]
         [HttpGet, Route(Route)]
         public IHttpActionResult List()
         {
@@ -251,6 +259,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("用户登录 API", "https://sscms.com/docs/v6/api/guide/users/login.html")]
         [HttpPost, Route(RouteActionsLogin)]
         public IHttpActionResult Login()
         {
@@ -285,6 +294,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("用户退出登录 API", "https://sscms.com/docs/v6/api/guide/users/logout.html")]
         [HttpPost, Route(RouteActionsLogout)]
         public IHttpActionResult Logout()
         {
@@ -306,6 +316,50 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("修改用户密码 API", "https://sscms.com/docs/v6/api/guide/users/resetPassword.html")]
+        [HttpPost, Route(RouteUserResetPassword)]
+        public IHttpActionResult ResetPassword(int id)
+        {
+            try
+            {
+                var request = new AuthenticatedRequest();
+                var isAuth = request.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             request.IsUserLoggin &&
+                             request.UserId == id ||
+                             request.IsAdminLoggin &&
+                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
+                if (!isAuth) return Unauthorized();
+
+                var userInfo = UserManager.GetUserInfoByUserId(id);
+                if (userInfo == null) return NotFound();
+
+                var password = request.GetPostString("password");
+                var newPassword = request.GetPostString("newPassword");
+
+                if (!DataProvider.UserDao.CheckPassword(password, false, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
+                {
+                    return BadRequest("原密码不正确，请重新输入");
+                }
+
+                if (!DataProvider.UserDao.ChangePassword(userInfo.UserName, newPassword, out string errorMessage))
+                {
+                    return BadRequest(errorMessage);
+                }
+
+                return Ok(new
+                {
+                    Value = userInfo
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [OpenApiOperation("新增用户操作日志 API", "https://sscms.com/docs/v6/api/guide/users/createLog.html")]
         [HttpPost, Route(RouteUserLogs)]
         public IHttpActionResult CreateLog(int id, [FromBody] UserLogInfo logInfo)
         {
@@ -337,6 +391,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("获取用户操作日志 API", "https://sscms.com/docs/v6/api/guide/users/getLogs.html")]
         [HttpGet, Route(RouteUserLogs)]
         public IHttpActionResult GetLogs(int id)
         {
@@ -360,48 +415,6 @@ namespace SiteServer.API.Controllers.V1
                 var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, skip, top);
 
                 return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex);
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpPost, Route(RouteUserResetPassword)]
-        public IHttpActionResult ResetPassword(int id)
-        {
-            try
-            {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.AppPermissions.SettingsUser);
-                if (!isAuth) return Unauthorized();
-
-                var userInfo = UserManager.GetUserInfoByUserId(id);
-                if (userInfo == null) return NotFound();
-
-                var password = request.GetPostString("password");
-                var newPassword = request.GetPostString("newPassword");
-
-                if (!DataProvider.UserDao.CheckPassword(password, false, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
-                {
-                    return BadRequest("原密码不正确，请重新输入");
-                }
-
-                if (!DataProvider.UserDao.ChangePassword(userInfo.UserName, newPassword, out string errorMessage))
-                {
-                    return BadRequest(errorMessage);
-                }
-                
-                return Ok(new
-                {
-                    Value = userInfo
-                });
             }
             catch (Exception ex)
             {

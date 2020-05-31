@@ -139,7 +139,7 @@ namespace SiteServer.CMS.Model.Attributes
 
         public int AdminEnforceLogoutMinutes
         {
-            get => GetInt("AdminEnforceLogoutMinutes", 30);
+            get => GetInt("AdminEnforceLogoutMinutes", 960);
             set => Set("AdminEnforceLogoutMinutes", value);
         }
 

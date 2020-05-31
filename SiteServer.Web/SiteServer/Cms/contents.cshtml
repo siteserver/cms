@@ -1,6 +1,6 @@
 ﻿@{ Layout = "../Shared/_LayoutWhite.cshtml"; }
 
-<div class="btn-toolbar btn-group mb-2">
+<div style="position: fixed;" class="btn-toolbar btn-group mb-2">
   <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-outline-primary btn-sm">
     <i class="ion-plus"></i>
     添加
@@ -68,157 +68,117 @@
     <i class="ion-wand"></i>
     生成
   </button>
+  <button v-if="count > 0" :class="{'btn-outline-primary': isSearch, 'btn-outline-default': !isSearch}"
+    v-on:click="isSearch = !isSearch" class="btn btn-sm">
+    <i class="ion-search"></i>
+    搜索
+  </button>
 </div>
 
-<div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
-  <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
-  <span v-html="pageAlert.html"></span>
-</div>
-
-<table class="table table-sm tablesaw table-bordered table-hover bg-white mt-1">
-  <thead>
-    <tr>
-      <th class="text-nowrap" v-for="column in columns" v-html="column.displayName"></th>
-
-      <th v-if="isAllContents" class="text-center text-nowrap">栏目</th>
-      <th class="text-center text-nowrap">操作</th>
-      <th class="text-center text-nowrap">状态</th>
-      <th class="text-nowrap checkbox checkbox-primary" style="width: 34px">
-        <input id="all" v-on:click="selectAll()" v-model="isAllChecked" type="checkbox">
-        <label for="all" style="margin-left: 5px;"></label>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
-      <td v-for="column in columns">
-
-        <template v-if="column.attributeName === 'Title'">
-          <template v-if="content.isChecked">
-            <a :href="content.navigationUrl" v-html="content.title" target="_blank" v-on:click.stop></a>
+<div style="position: absolute; top: 50px; overflow: auto;" :style="{'height': tableHeight, 'width': tableWidth}">
+  <div class="row" v-if="isSearch">
+    <div class="col-sm-12">
+      <form>
+        <div class="form-row align-items-center">
+            <div class="col-auto">
+              <label for="type" class="col-form-label">目标</label>
+              <select v-model="type" id="type" class="form-control form-control-sm">
+                <option label="内容标题" value="title"></option>
+                <option label="内容正文" value="content"></option>
+              </select>
+            </div>
+            <div class="col-auto">
+              <label for="keyword" class="col-form-label">关键字</label>
+              <input v-model="keyword" type="text" class="form-control form-control-sm" id="keyword" placeholder="请输入搜索关键字">
+            </div>
+            <div class="col-auto">
+              <a href="javascript:;" v-on:click="btnSearchSubmitClick" style="margin-top: 35px;" class="btn btn-sm btn-primary">搜 索</a>
+              <a href="javascript:;" v-on:click="btnSearchCancelClick" style="margin-top: 35px;" class="btn btn-sm">取 消</a>
+            </div>
+        </div>
+      </form>
+    </div>
+  
+  </div>
+  
+  <div v-if="pageAlert" class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+    <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+    <span v-html="pageAlert.html"></span>
+  </div>
+  
+  <table class="table table-sm tablesaw table-bordered table-hover bg-white mt-1">
+    <thead>
+      <tr>
+        <th class="text-nowrap" v-for="column in columns" v-html="column.displayName"></th>
+  
+        <th v-if="isAllContents" class="text-center text-nowrap">栏目</th>
+        <th class="text-center text-nowrap">操作</th>
+        <th class="text-center text-nowrap">状态</th>
+        <th class="text-nowrap checkbox checkbox-primary" style="width: 34px">
+          <input id="all" v-on:click="selectAll()" v-model="isAllChecked" type="checkbox">
+          <label for="all" style="margin-left: 5px;"></label>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
+        <td v-for="column in columns">
+  
+          <template v-if="column.attributeName === 'Title'">
+            <template v-if="content.isChecked">
+              <a :href="content.navigationUrl" v-html="content.title" target="_blank" v-on:click.stop></a>
+            </template>
+            <template v-else>
+              <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', channelId: content.channelId, contentId: content.id, full: true}, $event)"></a>
+            </template>
+            <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
+            <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
+            <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
+            <i v-if="content.isColor" class="text-primary fa fa-eye" title="醒目"></i>
+            <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" v-on:click.stop><i
+                class="text-primary fa fa-file-photo-o"></i></a>
+            <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" v-on:click.stop><i
+                class="text-primary fa fa-file-video-o"></i></a>
+            <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-file-archive-o"></i></a>
+            <i v-if="content.sourceId && content.referenceId && content.translateContentType === 'Reference'" class="text-primary fa fa-external-link" title="引用地址"></i>
+            <i v-else-if="content.sourceId && content.referenceId && content.translateContentType === 'ReferenceContent'" class="text-primary fa fa-external-link-square" title="引用内容"></i>
+            <a v-else-if="content.linkUrl" :href="content.linkUrl" target="_blank" v-on:click.stop title="外部链接"><i class="text-primary fa fa-external-link"></i></a>
+          </template>
+          <template v-else-if="column.inputType === 'Image'">
+            <a v-if="content.getProp(column.attributeName)" :href="content.getProp(column.attributeName)" target="_blank"
+              v-on:click.stop>
+              <img :src="content.getProp(column.attributeName)" style="height: 36px;width: 36px;" class="rounded-circle">
+            </a>
           </template>
           <template v-else>
-            <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', channelId: content.channelId, contentId: content.id, full: true}, $event)"></a>
+            <span v-html="content.getProp(column.attributeName)"></span>
           </template>
-          <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
-          <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
-          <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
-          <i v-if="content.isColor" class="text-primary fa fa-eye" title="醒目"></i>
-          <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" v-on:click.stop><i
-              class="text-primary fa fa-file-photo-o"></i></a>
-          <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" v-on:click.stop><i
-              class="text-primary fa fa-file-video-o"></i></a>
-          <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-file-archive-o"></i></a>
-          <i v-if="content.sourceId && content.referenceId && content.translateContentType === 'Reference'" class="text-primary fa fa-external-link" title="引用地址"></i>
-          <i v-else-if="content.sourceId && content.referenceId && content.translateContentType === 'ReferenceContent'" class="text-primary fa fa-external-link-square" title="引用内容"></i>
-          <a v-else-if="content.linkUrl" :href="content.linkUrl" target="_blank" v-on:click.stop title="外部链接"><i class="text-primary fa fa-external-link"></i></a>
-        </template>
-        <template v-else-if="column.inputType === 'Image'">
-          <a v-if="content.getProp(column.attributeName)" :href="content.getProp(column.attributeName)" target="_blank"
-            v-on:click.stop>
-            <img :src="content.getProp(column.attributeName)" style="height: 36px;width: 36px;" class="rounded-circle">
+  
+        </td>
+  
+        <td v-if="isAllContents" class="text-center text-nowrap">
+          {{ content.channelName }}
+        </td>
+        <td class="text-center text-nowrap" style="width: 80px;">
+          <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
+            v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
+          <a :href="getPageContentAddUrl(content)" v-on:click.stop>编辑</a>
+        </td>
+        <td class="text-center text-nowrap" style="width: 80px">
+          <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">
+            {{content.checkState }}
           </a>
-        </template>
-        <template v-else>
-          <span v-html="content.getProp(column.attributeName)"></span>
-        </template>
-
-      </td>
-
-      <td v-if="isAllContents" class="text-center text-nowrap">
-        {{ content.channelName }}
-      </td>
-      <td class="text-center text-nowrap" style="width: 80px;">
-        <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
-          v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
-        <a :href="getPageContentAddUrl(content)" v-on:click.stop>编辑</a>
-      </td>
-      <td class="text-center text-nowrap" style="width: 80px">
-        <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">
-          {{content.checkState }}
-        </a>
-      </td>
-      <td class="text-nowrap checkbox checkbox-primary">
-        <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">
-        <label :for="'checkbox' + content.id" style="padding: 0;margin-bottom: 13px;"></label>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<div v-if="count > 20" class="btn-toolbar btn-group mb-2">
-  <button v-if="permissions.isAdd" v-on:click="btnAddClick" class="btn btn-outline-primary btn-sm">
-    <i class="ion-plus"></i>
-    添加
-  </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入Word', name: 'Word', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-wikipedia-w"></i>
-    Word
-  </button>
-  <button v-if="count > 0 && permissions.isChannelEdit" v-on:click="btnLayerClick({title: '设置显示列', name: 'Columns', full: true}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-columns"></i>
-    显示列
-  </button>
-  <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-download"></i>
-    导出
-  </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-upload"></i>
-    导入
-  </button>
-  <button v-if="count > 0 && permissions.isArrange" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-list-ol"></i>
-    整理
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true}, $event)"
-    class="btn btn-sm">
-    <i class="fa fa-flag"></i>
-    属性
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-check-square"></i>
-    内容组
-  </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-sort"></i>
-    排序
-  </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-cut"></i>
-    转移
-  </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-copy"></i>
-    复制
-  </button>
-  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-trash"></i>
-    删除
-  </button>
-  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true}, $event)" class="btn btn-sm">
-    <i class="fa fa-shield"></i>
-    审核
-  </button>
-  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
-    v-on:click="btnCreateClick" class="btn btn-sm">
-    <i class="ion-wand"></i>
-    生成
-  </button>
+        </td>
+        <td class="text-nowrap checkbox checkbox-primary">
+          <input :id="'checkbox' + content.id" v-model="content.isSelected" type="checkbox">
+          <label :for="'checkbox' + content.id" style="padding: 0;margin-bottom: 13px;"></label>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-
-<hr />
-
-<div class="row">
+  
+<div class="row fixed-bottom" style="padding: 0 20px; bottom: -9px;">
   <div class="col-11">
     <ul class="pagination pagination-sm float-left">
       <li class="page-item" :class="{disabled : page === 1}">

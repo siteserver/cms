@@ -20,7 +20,7 @@
     </p>
     <button v-on:click="btnCloudClick()" type="button" class="btn btn-block btn-md btn-outline-primary">使用在线站点模板创建站点</button>
     <p class="text-muted mt-2 mb-4 font-13">
-      点击按钮从<a href="https://www.siteserver.cn/templates/" target="_blank">官网模板中心</a>中选择并创建站点。
+      点击按钮从<a :href="$urlCloud + '/templates/'" target="_blank">官网模板中心</a>中选择并创建站点。
     </p>
   </template>
 
@@ -76,7 +76,7 @@
         </div>
       </div>
       <div class="col-4 text-right">
-        <a class="text-primary mr-2" target="_blank" href="https://www.siteserver.cn/templates/">官网模板中心</a>
+        <a class="text-primary mr-2" target="_blank" :href="$urlCloud + '/templates/'">官网模板中心</a>
       </div>
     </div>
 

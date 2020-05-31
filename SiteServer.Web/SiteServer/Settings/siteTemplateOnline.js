@@ -18,15 +18,15 @@ var data = {
 
 var methods = {
   getDisplayUrl: function (templateId) {
-    return 'https://www.siteserver.cn/templates/template.html?id=' + templateId;
+    return $urlCloud + '/templates/template.html?id=' + templateId;
   },
 
   getTemplateUrl: function (relatedUrl) {
-    return 'https://www.siteserver.cn/templates/' + relatedUrl;
+    return $urlCloud + '/templates/' + relatedUrl;
   },
 
   getPreviewUrl: function (templateId) {
-    return 'https://demo.siteserver.cn/' + templateId;
+    return $urlCloudDemo + '/' + templateId;
   },
 
   getPageUrl: function (page) {

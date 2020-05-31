@@ -80,13 +80,26 @@ var methods = {
     });
   },
 
+  apiCache: function() {
+    var $this = this;
+
+    $api.post($url + '/actions/cache', {
+      siteId: this.siteId
+    }).then(function (response) {
+      var res = response.data;
+      
+    }).then(function () {
+      $this.create();
+    });
+  },
+
   ready: function () {
     var $this = this;
 
     window.onresize = $this.winResize;
     window.onresize();
 
-    $this.create();
+    $this.apiCache();
 
     if ($this.isSuperAdmin) {
       $this.getUpdates();
@@ -112,9 +125,9 @@ var methods = {
         packageIds: $this.packageIds.join(',')
       }
     }).then(function (response) {
-      var res = response.data;
-      for (var i = 0; i < res.value.length; i++) {
-        var releaseInfo = res.value[i];
+      var releases = response.data;
+      for (var i = 0; i < releases.length; i++) {
+        var releaseInfo = releases[i];
         if (!releaseInfo || !releaseInfo.version) continue;
         if (releaseInfo.pluginId == $packageIdSsCms) {
           $this.downloadSsCms(releaseInfo);
@@ -140,8 +153,6 @@ var methods = {
   downloadSsCms: function (releaseInfo) {
     var $this = this;
     if (compareversion($this.productVersion, releaseInfo.version) != -1) return;
-    var major = releaseInfo.version.split('.')[0];
-    var minor = releaseInfo.version.split('.')[1];
 
     $api.post($urlDownload, {
       packageId: $packageIdSsCms,
@@ -151,7 +162,6 @@ var methods = {
 
       if (res.value) {
         $this.newVersion = {
-          updatesUrl: 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
           version: releaseInfo.version,
           published: releaseInfo.published,
           releaseNotes: releaseInfo.releaseNotes
@@ -162,11 +172,10 @@ var methods = {
 
   create: function () {
     var $this = this;
+
+    $this.lastExecuteTime = new Date();
     clearTimeout($this.timeoutId);
-    var sessionId = localStorage.getItem('sessionId');
-    $api.post($urlCreate, {
-      sessionId: sessionId
-    }).then(function (response) {
+    $api.post($urlCreate).then(function (response) {
       var res = response.data;
 
       $this.pendingCount = res.value;
@@ -181,8 +190,6 @@ var methods = {
         location.href = 'pageLogin.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
-    }).then(function () {
-      $this.lastExecuteTime = new Date();
     });
   },
 

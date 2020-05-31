@@ -76,7 +76,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (isImportContents)
                 {
-                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride, adminName);
+                    _contentIe.ImportContents(feed.Entries, nodeInfo, isOverride, adminName);
                 }
             }
             else
@@ -113,7 +113,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (isImportContents)
                 {
-                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride, adminName);
+                    _contentIe.ImportContents(feed.Entries, nodeInfo, isOverride, adminName);
                 }
             }
 

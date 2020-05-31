@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -12,6 +13,7 @@ namespace SiteServer.API.Controllers.V1
     {
         private const string Route = "{elementName}";
 
+        [OpenApiOperation("STL 模板语言 API", "https://sscms.com/docs/v6/api/guide/stl/")]
         [HttpGet, Route(Route)]
         public IHttpActionResult Get(string elementName)
         {

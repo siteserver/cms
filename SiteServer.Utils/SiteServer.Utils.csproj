@@ -133,6 +133,7 @@
     <Compile Include="Base64Decoder.cs" />
     <Compile Include="Base64Encoder.cs" />
     <Compile Include="CacheUtils.cs" />
+    <Compile Include="CloudUtils.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControlUtils.cs" />
     <Compile Include="ConvertHelper.cs" />

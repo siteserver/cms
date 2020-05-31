@@ -4,7 +4,7 @@ var data = {
   pageLoad: false,
   pageAlert: {
     type: 'warning',
-    html: 'API密钥可以用于访问 SiteServer REST API <a href="https://www.siteserver.cn/docs/api/" target="_blank">阅读更多</a>'
+    html: 'API密钥可以用于访问 SiteServer REST API <a href="' + $urlCloud + '/docs/api/" target="_blank">阅读更多</a>'
   },
   pageType: null,
   items: null,

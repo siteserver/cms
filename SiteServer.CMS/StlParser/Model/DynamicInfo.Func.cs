@@ -24,7 +24,7 @@ namespace SiteServer.CMS.StlParser.Model
             return dynamicInfo;
         }
 
-        public string GetScript(string apiUrl)
+        public string GetScript(string apiUrl, bool inline = true)
         {
             if (string.IsNullOrEmpty(LoadingTemplate) && 
                 string.IsNullOrEmpty(SuccessTemplate) &&
@@ -35,6 +35,8 @@ namespace SiteServer.CMS.StlParser.Model
 
             var values = TranslateUtils.EncryptStringBySecretKey(TranslateUtils.JsonSerialize(this));
 
+            var display = inline ? "inline-block" : "block";
+
             return $@"
 <span id=""{AjaxDivId}_loading"">{LoadingTemplate}</span>
 <span id=""{AjaxDivId}_success"" style=""display: none""></span>
@@ -42,7 +44,7 @@ namespace SiteServer.CMS.StlParser.Model
 <script type=""text/javascript"" language=""javascript"">
 function stlDynamic{AjaxDivId}(page)
 {{
-    document.getElementById('{AjaxDivId}_loading').style.display = 'block';
+    document.getElementById('{AjaxDivId}_loading').style.display = '{display}';
     document.getElementById('{AjaxDivId}_success').style.display = 'none';
     document.getElementById('{AjaxDivId}_failure').style.display = 'none';
     {OnBeforeSend}
@@ -54,10 +56,10 @@ function stlDynamic{AjaxDivId}(page)
             if (data.value) {{
                 {OnSuccess}
                 document.getElementById('{AjaxDivId}_success').innerHTML = data.html;
-                document.getElementById('{AjaxDivId}_success').style.display = 'block';
+                document.getElementById('{AjaxDivId}_success').style.display = '{display}';
             }} else {{
                 document.getElementById('{AjaxDivId}_failure').innerHTML = data.html;
-                document.getElementById('{AjaxDivId}_failure').style.display = 'block';
+                document.getElementById('{AjaxDivId}_failure').style.display = '{display}';
             }}
         }} else {{
             {OnError}

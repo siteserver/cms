@@ -112,7 +112,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (channelContentIds.Count == 0)
                 {
-                    var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents);
+                    var ccIds = DataProvider.ContentDao.GetCacheChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, string.Empty, string.Empty);
                     var count = ccIds.Count;
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                     if (pages == 0) pages = 1;

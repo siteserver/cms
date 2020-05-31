@@ -167,6 +167,8 @@ namespace SiteServer.CMS.DataCache
             foreach (var siteId in siteIdList)
             {
                 var siteInfo = GetSiteInfo(siteId);
+                if (siteInfo == null) continue;
+
                 if (siteInfo.IsRoot)
                 {
                     hqSiteId = siteInfo.Id;

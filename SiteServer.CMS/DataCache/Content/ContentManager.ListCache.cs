@@ -25,8 +25,8 @@ namespace SiteServer.CMS.DataCache.Content
             if (retVal != null) return retVal;
 
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-            retVal = DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents),
-                DataProvider.ContentDao.GetOrderString(channelInfo, string.Empty, isAllContents));
+            retVal = DataProvider.ContentDao.GetCacheChannelContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents, string.Empty, string.Empty),
+                DataProvider.ContentDao.GetOrderString(string.Empty, isAllContents));
 
             CacheUtils.Insert(cacheKey, retVal);
 
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.DataCache.Content
 
         public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents = false)
         {
-            var ccIds = GetChannelContentIdList(siteInfo, channelInfo, adminId, false);
+            var ccIds = GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents);
             return ccIds.Count();
         }
     }

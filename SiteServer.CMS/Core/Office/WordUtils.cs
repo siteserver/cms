@@ -16,87 +16,89 @@ namespace SiteServer.CMS.Core.Office
             var filename = PathUtils.GetFileNameWithoutExtension(filePath);
 
             //被转换的html文档保存的位置
-            try
+            var saveFilePath = PathUtils.GetTemporaryFilesPath(filename + ".html");
+            FileUtils.DeleteFileIfExists(saveFilePath);
+            WordDntb.buildWord(filePath, saveFilePath);
+
+            var parsedContent = FileUtils.ReadText(saveFilePath, System.Text.Encoding.Default);
+            parsedContent = RegexUtils.GetInnerContent("body", parsedContent);
+
+            //try
+            //{
+            //    parsedContent = HtmlClearUtils.ClearElementAttributes(parsedContent, "p");
+            //}
+            //catch { }
+
+            if (isClearFormat)
             {
-                var saveFilePath = PathUtils.GetTemporaryFilesPath(filename + ".html");
-                FileUtils.DeleteFileIfExists(saveFilePath);
-                WordDntb.buildWord(filePath, saveFilePath);
+                parsedContent = HtmlClearUtils.ClearFormat(parsedContent);
+            }
 
-                var parsedContent = FileUtils.ReadText(saveFilePath, System.Text.Encoding.Default);
-                parsedContent = RegexUtils.GetInnerContent("body", parsedContent);
+            if (isFirstLineIndent)
+            {
+                parsedContent = HtmlClearUtils.FirstLineIndent(parsedContent);
+            }
 
-                //try
-                //{
-                //    parsedContent = HtmlClearUtils.ClearElementAttributes(parsedContent, "p");
-                //}
-                //catch { }
+            if (isClearFontSize)
+            {
+                parsedContent = HtmlClearUtils.ClearFontSize(parsedContent);
+            }
 
-                if (isClearFormat)
+            if (isClearFontFamily)
+            {
+                parsedContent = HtmlClearUtils.ClearFontFamily(parsedContent);
+            }
+
+            if (isClearImages)
+            {
+                parsedContent = StringUtils.StripTags(parsedContent, "img");
+            }
+            else
+            {
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+                var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
+                if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
                 {
-                    parsedContent = HtmlClearUtils.ClearFormat(parsedContent);
-                }
-
-                if (isFirstLineIndent)
-                {
-                    parsedContent = HtmlClearUtils.FirstLineIndent(parsedContent);
-                }
-
-                if (isClearFontSize)
-                {
-                    parsedContent = HtmlClearUtils.ClearFontSize(parsedContent);
-                }
-
-                if (isClearFontFamily)
-                {
-                    parsedContent = HtmlClearUtils.ClearFontFamily(parsedContent);
-                }
-
-                if (isClearImages)
-                {
-                    parsedContent = StringUtils.StripTags(parsedContent, "img");
-                }
-                else
-                {
-                    var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    var imageFileNameArrayList = RegexUtils.GetOriginalImageSrcs(parsedContent);
-                    if (imageFileNameArrayList != null && imageFileNameArrayList.Count > 0)
+                    foreach (var imageFileName in imageFileNameArrayList)
                     {
-                        foreach (var imageFileName in imageFileNameArrayList)
-                        {
-                            var imageFilePath = PathUtils.GetTemporaryFilesPath(imageFileName);
-                            var fileExtension = PathUtils.GetExtension(imageFilePath);
-                            var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtension);
-                            var uploadDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, uploadDirectoryPath, true);
-                            if (!FileUtils.IsFileExists(imageFilePath)) continue;
+                        var imageFilePath = PathUtils.GetTemporaryFilesPath(imageFileName);
+                        var fileExtension = PathUtils.GetExtension(imageFilePath);
+                        var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtension);
+                        var uploadDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, uploadDirectoryPath, true);
+                        if (!FileUtils.IsFileExists(imageFilePath)) continue;
 
-                            var uploadFileName = PathUtility.GetUploadFileName(siteInfo, imageFilePath);
-                            var destFilePath = PathUtils.Combine(uploadDirectoryPath, uploadFileName);
-                            FileUtils.MoveFile(imageFilePath, destFilePath, false);
-                            parsedContent = parsedContent.Replace(imageFileName, PageUtils.Combine(uploadDirectoryUrl, uploadFileName));
+                        var uploadFileName = PathUtility.GetUploadFileName(siteInfo, imageFilePath);
+                        var destFilePath = PathUtils.Combine(uploadDirectoryPath, uploadFileName);
+                        FileUtils.MoveFile(imageFilePath, destFilePath, false);
+                        parsedContent = parsedContent.Replace(imageFileName, PageUtils.Combine(uploadDirectoryUrl, uploadFileName));
 
-                            FileUtils.DeleteFileIfExists(imageFilePath);
-                        }
+                        FileUtils.DeleteFileIfExists(imageFilePath);
                     }
                 }
+            }
 
-                FileUtils.DeleteFileIfExists(filePath);
-                FileUtils.DeleteFileIfExists(saveFilePath);
-                return parsedContent.Trim();
-            }
-            catch(Exception ex)
-            {
-                LogUtils.AddErrorLog(ex);
-                return string.Empty;
-            }
+            FileUtils.DeleteFileIfExists(filePath);
+            FileUtils.DeleteFileIfExists(saveFilePath);
+            return parsedContent.Trim();
         }
 
         public static NameValueCollection GetWordNameValueCollection(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
         {
-            var formCollection = new NameValueCollection();
+            var (title, content) = GetWord(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+            return new NameValueCollection
+            {
+                {"title", title },
+                {"content", content }
+            };
+        }
+
+        public static (string title, string content) GetWord(int siteId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
+        {
+            var title = string.Empty;
+            var content = string.Empty;
             var wordContent = Parse(siteId, PathUtils.GetTemporaryFilesPath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);
             if (!string.IsNullOrEmpty(wordContent))
             {
-                var title = string.Empty;
                 if (isFirstLineTitle)
                 {
                     title = RegexUtils.GetInnerContent("p", wordContent);
@@ -120,13 +122,12 @@ namespace SiteServer.CMS.Core.Office
                 {
                     title = StringUtils.MaxLengthText(title, 200, string.Empty);
                 }
-                formCollection[ContentAttribute.Title] = title;
 
                 wordContent = StringUtils.ReplaceFirst("<p></p>", wordContent, string.Empty);
 
-                formCollection[BackgroundContentAttribute.Content] = wordContent;
+                content = wordContent;
             }
-            return formCollection;
+            return (title, content);
         }
     }
 }

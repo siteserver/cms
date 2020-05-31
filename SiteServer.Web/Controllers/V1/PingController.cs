@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.V1
     {
         private const string Route = "";
 
-        [OpenApiOperation("Ping 可用性 API", "Ping用于确定 API 是否可以访问，使用GET发起请求，请求地址为/api/v1/ping")]
+        [OpenApiOperation("Ping 可用性 API", "https://sscms.com/docs/v6/api/guide/other/ping.html")]
         [HttpGet, Route(Route)]
         public HttpResponseMessage Get()
         {

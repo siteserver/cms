@@ -155,7 +155,7 @@ namespace SiteServer.Cli
                 }
 
                 await CliUtils.PrintRowLine();
-                await CliUtils.PrintRow("https://www.siteserver.cn/docs/cli");
+                await CliUtils.PrintRow(CloudUtils.Root.DocsCliUrl);
                 await CliUtils.PrintRowLine();
                 Console.ReadLine();
             }

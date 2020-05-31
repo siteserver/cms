@@ -28,40 +28,40 @@
     <h4 class="page-title">精选</h4>
   </div>
 </template>
-<div class="card-box row" v-for="package in packages" v-if="!package.pluginInfo.price || package.pluginInfo.price == 0">
+<div class="card-box row" v-for="package in packages" v-if="!package.plugin.price || package.plugin.price == 0">
   <div class="col-sm-1 hidden-xs hidden-sm">
-    <img :src="getIconUrl(package.pluginInfo.iconUrl)" class="img-responsive" style="max-width: 100%;">
+    <img :src="getIconUrl(package.plugin.iconUrl)" class="img-responsive" style="max-width: 100%;">
   </div>
   <div class="col-sm-11">
     <div>
-      <a :href="'view.cshtml?pluginId=' + package.pluginInfo.pluginId + '&returnUrl=' + encodeURIComponent(location.href)"
-        class="text-primary font-16"> {{ package.pluginInfo.pluginId }} - {{ package.pluginInfo.title }}</a>
-      <span v-if="packageIds.indexOf(package.pluginInfo.pluginId) !== -1" class="text-danger">（已安装）</span>
-      <span class="ml-3"> 开发者： <a :href="'https://www.siteserver.cn/users/user.html?userName=' + package.userInfo.userName"
-          target="_blank" class="text-primary"> {{ package.userInfo.displayName }} </a>
+      <a :href="'view.cshtml?pluginId=' + package.plugin.pluginId + '&returnUrl=' + encodeURIComponent(location.href)"
+        class="text-primary font-16"> {{ package.plugin.pluginId }} - {{ package.plugin.title }}</a>
+      <span v-if="packageIds.indexOf(package.plugin.pluginId) !== -1" class="text-danger">（已安装）</span>
+      <span class="ml-3"> 开发者： <a :href="$urlCloud + '/users/user.html?userName=' + package.user.userName"
+          target="_blank" class="text-primary"> {{ package.user.displayName }} </a>
       </span>
     </div>
     <div class="mt-2 mb-2">
-      <span class="text-dark"> 价格： <span v-if="package.pluginInfo.price" class="text-primary">{{package.pluginInfo.price.toFixed(2)}}</span>
-        <span v-else="package.pluginInfo.price" class="text-primary">免 费</span>
+      <span class="text-dark"> 价格： <span v-if="package.plugin.price" class="text-primary">{{package.plugin.price.toFixed(2)}}</span>
+        <span v-else="package.plugin.price" class="text-primary">免 费</span>
       </span>
       <span>
         <span class="ml-2 mr-2 text-dark">|</span>
-        <span class="text-dark"> 最新版本: <span class="text-primary"> {{ package.releaseInfo.version }} </span>
+        <span class="text-dark"> 最新版本: <span class="text-primary"> {{ package.release.version }} </span>
         </span>
         <span class="ml-2 mr-2 text-dark">|</span>
-        <span class="text-dark"> 更新时间： <span class="text-primary"> {{ package.releaseInfo.published }} </span>
+        <span class="text-dark"> 更新时间： <span class="text-primary"> {{ package.release.published }} </span>
         </span>
-        <span v-if="package.pluginInfo.tags">
+        <span v-if="package.plugin.tags">
           <span class="ml-2 mr-2 text-dark">|</span>
-          <span class="text-dark"> 标签： <a v-for="tagName in getTagNames(package.pluginInfo)" class="mr-2 text-primary"
+          <span class="text-dark"> 标签： <a v-for="tagName in getTagNames(package.plugin)" class="mr-2 text-primary"
               :href="'?q=' + encodeURIComponent(tagName)">{{ tagName }}</a>
           </span>
         </span>
       </span>
     </div>
-    <div style="max-height: 65px; overflow: hidden;"> {{ package.pluginInfo.summary }} </div>
+    <div style="max-height: 65px; overflow: hidden;"> {{ package.plugin.summary }} </div>
   </div>
 </div>
-<a v-if="!q" href="https://www.siteserver.cn/plugins/" target="_blank" class="btn btn-primary btn-block">更多</a>
+<a v-if="!q" :href="$urlCloud + '/plugins/'" target="_blank" class="btn btn-primary btn-block">更多</a>
 @section Scripts{ <script src="add.js" type="text/javascript"></script> }
