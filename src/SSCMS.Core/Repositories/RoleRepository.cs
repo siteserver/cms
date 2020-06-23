@@ -30,12 +30,12 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAsync(roleId);
         }
 
-        public async Task<List<Role>> GetRoleListAsync()
+        public async Task<List<Role>> GetRolesAsync()
         {
             return await _repository.GetAllAsync(Q.OrderBy(nameof(Role.RoleName)));
         }
 
-        public async Task<List<Role>> GetRoleListByCreatorUserNameAsync(string creatorUserName)
+        public async Task<List<Role>> GetRolesByCreatorUserNameAsync(string creatorUserName)
         {
             if (string.IsNullOrEmpty(creatorUserName)) return new List<Role>();
 
@@ -45,7 +45,7 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<List<string>> GetRoleNameListAsync()
+        public async Task<List<string>> GetRoleNamesAsync()
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Role.RoleName))
@@ -53,7 +53,7 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-		public async Task<List<string>> GetRoleNameListByCreatorUserNameAsync(string creatorUserName)
+		public async Task<List<string>> GetRoleNamesByCreatorUserNameAsync(string creatorUserName)
 		{
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Role.RoleName))
@@ -86,14 +86,14 @@ namespace SSCMS.Core.Repositories
 
         public bool IsPredefinedRole(string roleName)
         {
-            var roles = TranslateUtils.GetEnums<PredefinedRole>().Select(x => x.GetValue()).ToList();
-            return StringUtils.ContainsIgnoreCase(roles, roleName);
+            var roles = ListUtils.GetEnums<PredefinedRole>().Select(x => x.GetValue()).ToList();
+            return ListUtils.ContainsIgnoreCase(roles, roleName);
         }
 
         public bool IsConsoleAdministrator(IList<string> roles)
         {
             return roles != null &&
-                   StringUtils.ContainsIgnoreCase(roles, PredefinedRole.ConsoleAdministrator.GetValue());
+                   ListUtils.ContainsIgnoreCase(roles, PredefinedRole.ConsoleAdministrator.GetValue());
         }
 
         public bool IsConsoleAdministrator(string role)
@@ -104,8 +104,8 @@ namespace SSCMS.Core.Repositories
         public bool IsSystemAdministrator(IList<string> roles)
         {
             return roles != null &&
-                   (StringUtils.ContainsIgnoreCase(roles, PredefinedRole.ConsoleAdministrator.GetValue()) ||
-                    StringUtils.ContainsIgnoreCase(roles, PredefinedRole.SystemAdministrator.GetValue()));
+                   (ListUtils.ContainsIgnoreCase(roles, PredefinedRole.ConsoleAdministrator.GetValue()) ||
+                    ListUtils.ContainsIgnoreCase(roles, PredefinedRole.SystemAdministrator.GetValue()));
         }
 
         public bool IsSystemAdministrator(string role)

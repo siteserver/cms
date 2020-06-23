@@ -9,13 +9,13 @@ namespace SSCMS.Repositories
     {
         Task<Role> GetRoleAsync(int roleId);
 
-        Task<List<Role>> GetRoleListAsync();
+        Task<List<Role>> GetRolesAsync();
 
-        Task<List<Role>> GetRoleListByCreatorUserNameAsync(string creatorUserName);
+        Task<List<Role>> GetRolesByCreatorUserNameAsync(string creatorUserName);
 
-        Task<List<string>> GetRoleNameListAsync();
+        Task<List<string>> GetRoleNamesAsync();
 
-        Task<List<string>> GetRoleNameListByCreatorUserNameAsync(string creatorUserName);
+        Task<List<string>> GetRoleNamesByCreatorUserNameAsync(string creatorUserName);
 
         Task<int> InsertRoleAsync(Role role);
 

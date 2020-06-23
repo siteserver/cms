@@ -68,21 +68,21 @@ namespace SSCMS.Core.Repositories
             {
                 ParentId = parentId,
                 Text = "修改资料",
-                IconClass = "fa fa-home",
+                IconClass = "fa fa-edit",
                 Link = "/home/profile/"
             });
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "更改密码",
-                IconClass = "fa fa-home",
+                IconClass = "fa fa-lock",
                 Link = "/home/password/"
             });
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "退出系统",
-                IconClass = "fa fa-home",
+                IconClass = "fa fa-sign-out",
                 Link = "/home/logout/"
             });
 
@@ -96,14 +96,14 @@ namespace SSCMS.Core.Repositories
                 ParentId = parentId,
                 Text = "新增稿件",
                 IconClass = "fa fa-plus",
-                Link = "/home/contentAdd/"
+                Link = "/home/write/editor/"
             });
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "稿件管理",
                 IconClass = "fa fa-list",
-                Link = "/home/contents/"
+                Link = "/home/write/contents/"
             });
         }
     }

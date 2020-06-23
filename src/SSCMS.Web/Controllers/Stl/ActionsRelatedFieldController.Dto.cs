@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Stl
 
             jsonString.Append("[");
 
-            var list = await _relatedFieldItemRepository.GetListAsync(siteId, relatedFieldId, parentId);
+            var list = await _relatedFieldItemRepository.GetRelatedFieldItemsAsync(siteId, relatedFieldId, parentId);
             if (list.Any())
             {
                 foreach (var itemInfo in list)

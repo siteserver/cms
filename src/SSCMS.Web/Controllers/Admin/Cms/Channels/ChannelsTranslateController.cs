@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Core.Extensions;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             });
 
             var transSites = await _siteRepository.GetSelectsAsync();
-            var translateTypes = TranslateUtils.GetEnums<TranslateType>().Select(x => new Select<string>(x));
+            var translateTypes = ListUtils.GetEnums<TranslateType>().Select(x => new Select<string>(x));
 
             return new GetResult
             {

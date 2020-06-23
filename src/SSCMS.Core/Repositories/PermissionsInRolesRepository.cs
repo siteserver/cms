@@ -37,7 +37,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAsync(Q.Where(nameof(PermissionsInRoles.RoleName), roleName));
         }
 
-		public async Task<List<string>> GetAppPermissionListAsync(IEnumerable<string> roles)
+		public async Task<List<string>> GetAppPermissionsAsync(IEnumerable<string> roles)
 		{
             var list = new List<string>();
 		    if (roles == null) return list;

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             }
 
             var user = await _userRepository.GetByUserIdAsync(userId);
-            var userStyles = await _tableStyleRepository.GetUserStyleListAsync();
+            var userStyles = await _tableStyleRepository.GetUserStylesAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
 
             return new GetResult

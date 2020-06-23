@@ -26,11 +26,12 @@
     <None Remove="plugins\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="assets\**\*" CopyToPublishDirectory="Never" />
-  </ItemGroup>
+  <!--<ItemGroup>
+    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>-->
 
   <!--<ItemGroup>
+    https://github.com/dotnet/core/blob/master/Documentation/build-and-install-rhel6-prerequisites.md
     <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
     this code will cause sqlserver connection not work
   </ItemGroup>-->

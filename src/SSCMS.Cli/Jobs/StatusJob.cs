@@ -51,14 +51,10 @@ namespace SSCMS.Cli.Jobs
 
             await WriteUtils.PrintInfoAsync(_settingsManager);
 
-            var (success, successContent, failureContent) = _apiService.GetStatus();
-            if (success)
+            var (status, _) = _apiService.GetStatus();
+            if (status != null)
             {
-                await WriteUtils.PrintSuccessAsync(successContent);
-            }
-            else
-            {
-                await WriteUtils.PrintErrorAsync(failureContent);
+                await Console.Out.WriteLineAsync($"Login user: {status.UserName}");
             }
         }
     }

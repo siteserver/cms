@@ -75,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
                     });
                 }
 
@@ -96,7 +96,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
                     });
                 }
 
@@ -143,7 +143,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
                     });
                 }
             }
@@ -162,7 +162,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                                 {
                                     Name = permission.Id,
                                     Text = permission.Text,
-                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
+                                    Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
                                 });
                             }
                         }
@@ -193,7 +193,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                             {
                                 Name = permission.Id,
                                 Text = permission.Text,
-                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
                             });
                         }
                     }
@@ -231,7 +231,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                             {
                                 Name = permission.Id,
                                 Text = permission.Text,
-                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
                             });
                         }
                     }

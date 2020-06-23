@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -385,7 +384,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         //var extendValues = content.Get<string>(extendAttributeName);
                         //if (!string.IsNullOrEmpty(extendValues))
                         //{
-                        //    foreach (var extendValue in Utilities.GetStringList(extendValues))
+                        //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
                         //    {
                         //        var newExtendValue = extendValue;
                         //        sbParsedContent.Append(contextInfo.IsStlEntity
@@ -417,7 +416,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             //if (!string.IsNullOrEmpty(extendValues))
                             //{
                             //    var index = 2;
-                            //    foreach (var extendValue in Utilities.GetStringList(extendValues))
+                            //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
                             //    {
                             //        var newExtendValue = extendValue;
                             //        if (index == num)
@@ -457,7 +456,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         //var extendValues = content.Get<string>(extendAttributeName);
                         //if (!string.IsNullOrEmpty(extendValues))
                         //{
-                        //    foreach (string extendValue in Utilities.GetStringList(extendValues))
+                        //    foreach (string extendValue in ListUtils.GetStringList(extendValues))
                         //    {
 
                         //        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
@@ -585,7 +584,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.TagNames)))
                 {
-                    parsedContent = Utilities.ToString(content.TagNames);
+                    parsedContent = ListUtils.ToString(content.TagNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
                 {
@@ -598,7 +597,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (content.ContainsKey(type))
                     {
-                        if (!StringUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, type))
+                        if (!ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, type))
                         {
                             var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channel);
                             var tableName = databaseManager.ChannelRepository.GetTableName(pageInfo.Site, channel);

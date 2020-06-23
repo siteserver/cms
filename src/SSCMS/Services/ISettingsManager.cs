@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using Datory;
 
 namespace SSCMS.Services
 {
     public interface ISettingsManager
     {
+        IServiceProvider ServiceProvider { get; }
         string ContentRootPath { get; }
         string WebRootPath { get; }
         string Version { get; }

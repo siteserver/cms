@@ -93,10 +93,8 @@ namespace SSCMS.Web.Controllers.Admin
                 AdminUrl = _pathManager.GetAdminUrl(LoginController.Route)
             };
 
-            foreach (var databaseType in TranslateUtils.GetEnums<DatabaseType>())
+            foreach (var databaseType in ListUtils.GetEnums<DatabaseType>())
             {
-                if (databaseType == DatabaseType.Oracle) continue;
-
                 result.DatabaseTypes.Add(new Select<string>(databaseType));
             }
 

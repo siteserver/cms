@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
             return new GetResult
             {
                 UserMenus = await _userMenuRepository.GetUserMenusAsync(),
-                Groups = await _userGroupRepository.GetUserGroupListAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync()
             };
         }
 

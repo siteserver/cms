@@ -14,7 +14,7 @@ namespace SSCMS.Core.Services
             if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
 
             return list.Where(tableColumnInfo =>
-                !StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
+                !ListUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
         }
 
         public async Task<List<TableColumn>> GetTableColumnInfoListAsync(string tableName, DataType excludeDataType)

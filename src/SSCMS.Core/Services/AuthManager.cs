@@ -60,13 +60,8 @@ namespace SSCMS.Core.Services
                 if (user != null && !user.Locked && user.Checked)
                 {
                     _userGroup = await _databaseManager.UserGroupRepository.GetUserGroupAsync(user.GroupId);
-                    if (_userGroup != null)
-                    {
-                        _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(_userGroup.AdminName);
-                    }
+                    _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(_userGroup.AdminName);
                 }
-
-                _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(AdminName);
             }
             else if (IsApi)
             {

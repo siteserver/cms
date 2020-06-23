@@ -72,7 +72,7 @@ namespace SSCMS.Core.Tests.Repositories
             };
             await _accessTokenRepository.InsertAsync(accessTokenInfo);
 
-            var list = await _accessTokenRepository.GetAccessTokenListAsync();
+            var list = await _accessTokenRepository.GetAccessTokensAsync();
 
             Assert.True(list.Any());
 

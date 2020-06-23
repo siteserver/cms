@@ -26,7 +26,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             var feed = ExportRelatedFieldInfo(relatedField);
 
-            var relatedFieldItemInfoList = await _databaseManager.RelatedFieldItemRepository.GetListAsync(_site.Id, relatedField.Id, 0);
+            var relatedFieldItemInfoList = await _databaseManager.RelatedFieldItemRepository.GetRelatedFieldItemsAsync(_site.Id, relatedField.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
 			{
@@ -60,7 +60,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = await databaseManager.RelatedFieldItemRepository.GetListAsync(siteId, relatedFieldItem.RelatedFieldId, relatedFieldItem.Id);
+            var relatedFieldItemInfoList = await databaseManager.RelatedFieldItemRepository.GetRelatedFieldItemsAsync(siteId, relatedFieldItem.RelatedFieldId, relatedFieldItem.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {

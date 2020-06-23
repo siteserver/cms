@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -86,7 +85,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 if (content == null) continue;
 
                 var list = new List<string>();
-                foreach (var tagName in Utilities.GetStringList(content.TagNames))
+                foreach (var tagName in ListUtils.GetStringList(content.TagNames))
                 {
                     if (allTagNames.Contains(tagName))
                     {

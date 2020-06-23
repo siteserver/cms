@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
@@ -6,14 +6,15 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
     {
         public class UploadResult
         {
+            public IPlugin OldPlugin { set; get; }
+            public IPlugin NewPlugin { set; get; }
             public string FileName { set; get; }
-            public long Length { set; get; }
-            public int Ret { set; get; }
         }
 
-        public class SubmitRequest
+        public class OverrideRequest
         {
-            public List<string> FileNames { set; get; }
+            public string PluginId { set; get; }
+            public string FileName { set; get; }
         }
     }
 }

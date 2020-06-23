@@ -39,8 +39,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             var roleInfoList = await _authManager.IsSuperAdminAsync()
-                ? await _roleRepository.GetRoleListAsync()
-                : await _roleRepository.GetRoleListByCreatorUserNameAsync(_authManager.AdminName);
+                ? await _roleRepository.GetRolesAsync()
+                : await _roleRepository.GetRolesByCreatorUserNameAsync(_authManager.AdminName);
 
             var roles = roleInfoList.Where(x => !_roleRepository.IsPredefinedRole(x.RoleName)).ToList();
 
@@ -67,8 +67,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             await _authManager.AddAdminLogAsync("删除管理员角色", $"角色名称:{roleInfo.RoleName}");
 
             var roles = await _authManager.IsSuperAdminAsync()
-                ? await _roleRepository.GetRoleListAsync()
-                : await _roleRepository.GetRoleListByCreatorUserNameAsync(_authManager.AdminName);
+                ? await _roleRepository.GetRolesAsync()
+                : await _roleRepository.GetRolesByCreatorUserNameAsync(_authManager.AdminName);
 
             return new ListRequest
             {

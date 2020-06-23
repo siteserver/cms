@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var editorColumns = new List<ContentColumn>();
 
             var tableName = _channelRepository.GetTableName(site, channel);
-            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var styleList = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
             foreach (var tableStyle in styleList)
             {
                 if (tableStyle.InputType == InputType.TextEditor)

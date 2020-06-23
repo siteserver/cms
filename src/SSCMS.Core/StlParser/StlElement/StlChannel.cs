@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -256,7 +255,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (type.Equals(nameof(Channel.ContentRelatedPluginIds).ToLower()))
             {
-                parsedContent = Utilities.ToString(channel.ContentRelatedPluginIds);
+                parsedContent = ListUtils.ToString(channel.ContentRelatedPluginIds);
             }
             else if (type.Equals(nameof(Channel.ParentId).ToLower()))
             {
@@ -290,7 +289,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (type.Equals(nameof(Channel.GroupNames).ToLower()))
             {
-                parsedContent = Utilities.ToString(channel.GroupNames);
+                parsedContent = ListUtils.ToString(channel.GroupNames);
             }
             else if (type.Equals(nameof(Channel.Taxis).ToLower()))
             {

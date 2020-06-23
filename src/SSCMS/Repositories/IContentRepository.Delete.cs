@@ -7,17 +7,17 @@ namespace SSCMS.Repositories
 {
     public partial interface IContentRepository
     {
-        Task RecycleContentsAsync(Site site, Channel channel, IEnumerable<int> contentIdList, int adminId);
+        Task RecycleContentsAsync(Site site, Channel channel, IEnumerable<int> contentIds, int adminId);
 
         Task RecycleAllAsync(Site site, int channelId, int adminId);
 
-        Task RecycleDeleteAsync(Site site, int channelId, string tableName, List<int> contentIdList);
+        Task RecycleDeleteAsync(Site site, int channelId, string tableName, List<int> contentIds);
 
         Task RecycleDeleteAllAsync(IOldPluginManager pluginManager, Site site);
 
         Task RecycleRestoreAllAsync(IOldPluginManager pluginManager, Site site, int restoreChannelId);
 
-        Task RecycleRestoreAsync(Site site, int channelId, string tableName, List<int> contentIdList,
+        Task RecycleRestoreAsync(Site site, int channelId, string tableName, List<int> contentIds,
             int restoreChannelId);
 
         Task DeleteAsync(IOldPluginManager pluginManager, Site site, Channel channel, int contentId);

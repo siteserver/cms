@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var nameDict = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var site in await _siteRepository.GetSiteListAsync())
+            foreach (var site in await _siteRepository.GetSitesAsync())
             {
                 if (nameDict.ContainsKey(site.TableName))
                 {

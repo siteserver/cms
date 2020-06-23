@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
                 new KeyValuePair<string, string>("SS CMS 版本", _settingsManager.Version),
                 new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(config.UpdateDate)),
                 new KeyValuePair<string, string>("数据库类型", _settingsManager.Database.DatabaseType.GetValue()),
-                new KeyValuePair<string, string>("数据库名称", SqlUtils.GetDatabaseNameFormConnectionString(_settingsManager.Database.DatabaseType, _settingsManager.Database.ConnectionString)),
+                new KeyValuePair<string, string>("数据库名称", SqlUtils.GetDatabaseNameFormConnectionString(_settingsManager.Database.ConnectionString)),
                 new KeyValuePair<string, string>("缓存类型", string.IsNullOrEmpty(_settingsManager.Redis.ConnectionString) ? "Memory" : "Redis")
             };
 

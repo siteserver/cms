@@ -2,12 +2,12 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-//https://github.com/JeringTech/Javascript.NodeJS
-
 namespace SSCMS.Core.Plugins
 {
+    //https://github.com/JeringTech/Javascript.NodeJS
     //https://docs.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support
     //https://github.com/epic2001/AspNetCorePlugins
+    //https://github.com/lamondlu/Mystique/issues
     internal class PluginLoadContext : AssemblyLoadContext
     {
 

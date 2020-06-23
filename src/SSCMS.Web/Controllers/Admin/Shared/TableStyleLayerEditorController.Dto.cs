@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             {
                 if (request.IsRapid)
                 {
-                    foreach (var rapidValue in Utilities.GetStringList(request.RapidValues))
+                    foreach (var rapidValue in ListUtils.GetStringList(request.RapidValues))
                     {
                         var itemInfo = new InputStyleItem
                         {
@@ -144,7 +144,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             {
                 if (request.IsRapid)
                 {
-                    foreach (var rapidValue in Utilities.GetStringList(request.RapidValues))
+                    foreach (var rapidValue in ListUtils.GetStringList(request.RapidValues))
                     {
                         var itemInfo = new InputStyleItem
                         {

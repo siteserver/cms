@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
+using SSCMS.Extensions;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 
@@ -121,7 +121,7 @@ namespace SSCMS.Web.Controllers.Admin
                     var switchMenus = new List<Menu>();
                     var allSiteMenus = new List<Menu>();
                     var siteIdListLatestAccessed = await _administratorRepository.UpdateSiteIdAsync(admin, site.Id);
-                    var siteIdList = await _siteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
+                    var siteIdList = await _siteRepository.GetLatestSiteIdsAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
                     foreach (var siteId in siteIdList)
                     {
                         var theSite = await _siteRepository.GetAsync(siteId);
@@ -129,6 +129,7 @@ namespace SSCMS.Web.Controllers.Admin
 
                         allSiteMenus.Add(new Menu
                         {
+                            Id = $"site_switch_{theSite.Id}",
                             Link = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}",
                             Target = "_top",
                             Text = theSite.SiteName
@@ -137,6 +138,7 @@ namespace SSCMS.Web.Controllers.Admin
 
                     switchMenus.Add(new Menu
                     {
+                        Id = "site_switch_select",
                         IconClass = "ion-edit",
                         Link = _pathManager.GetAdminUrl(SitesLayerSelectController.Route),
                         Target = "_layer",
@@ -144,6 +146,7 @@ namespace SSCMS.Web.Controllers.Admin
                     });
                     switchMenus.Add(new Menu
                     {
+                        Id = "site_switch_all",
                         IconClass = "ion-earth",
                         Text = _local["Recently site"],
                         Children = allSiteMenus.ToArray()
@@ -151,6 +154,7 @@ namespace SSCMS.Web.Controllers.Admin
 
                     menus.Add(new Menu
                     {
+                        Id = "site_switch",
                         Text = _local["Switch site"],
                         Children = switchMenus.ToArray()
                     });

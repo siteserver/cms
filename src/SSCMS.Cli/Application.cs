@@ -67,7 +67,7 @@ namespace SSCMS.Cli
                                 commandName = StringUtils.Trim(arg);
                             }
 
-                            isJobService = StringUtils.ContainsIgnoreCase(jobServiceCommandNames, commandName);
+                            isJobService = ListUtils.ContainsIgnoreCase(jobServiceCommandNames, commandName);
                         }
                     }
                     else

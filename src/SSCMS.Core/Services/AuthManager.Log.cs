@@ -1,12 +1,4 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using SSCMS.Models;
-using SSCMS.Services;
-using SSCMS.Utils;
+﻿using System.Threading.Tasks;
 
 namespace SSCMS.Core.Services
 {

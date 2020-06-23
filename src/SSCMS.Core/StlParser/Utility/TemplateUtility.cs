@@ -1,7 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Services;
@@ -43,7 +42,7 @@ namespace SSCMS.Core.StlParser.Utility
             {
                 foreach (var itemTypes in selectedItems.AllKeys)
                 {
-                    var itemTypeArrayList = Utilities.GetStringList(itemTypes);
+                    var itemTypeArrayList = ListUtils.GetStringList(itemTypes);
                     var isTrue = true;
                     foreach (var itemType in itemTypeArrayList)
                     {

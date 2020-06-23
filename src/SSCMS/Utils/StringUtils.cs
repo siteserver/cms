@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using Datory.Utils;
 
 namespace SSCMS.Utils
 {
@@ -33,33 +31,6 @@ namespace SSCMS.Utils
             const string formatDateTime = @"^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-)) (20|21|22|23|[0-1]?\d):[0-5]?\d:[0-5]?\d$";
 
             return Regex.IsMatch(val, formatDate) || Regex.IsMatch(val, formatDateTime);
-        }
-
-        public static bool In(string strCollection, int inInt)
-        {
-            return !string.IsNullOrEmpty(strCollection) && In(strCollection, inInt.ToString());
-        }
-
-        public static bool In(string strCollection, string inStr)
-        {
-            if (string.IsNullOrEmpty(strCollection)) return false;
-            return strCollection == inStr || strCollection.StartsWith(inStr + ",") || strCollection.EndsWith("," + inStr) || strCollection.IndexOf("," + inStr + ",", StringComparison.Ordinal) != -1;
-        }
-
-        public static bool Contains(string text, string inner)
-        {
-            return text?.IndexOf(inner, StringComparison.Ordinal) >= 0;
-        }
-
-        public static bool ContainsIgnoreCase(string text, string inner)
-        {
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(inner)) return false;
-            return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
-        }
-
-        public static bool ContainsIgnoreCase(IEnumerable<string> list, string target)
-        {
-            return list != null && list.Any(element => EqualsIgnoreCase(element, target));
         }
 
         public static string Trim(string text)
@@ -535,8 +506,8 @@ namespace SSCMS.Utils
         {
             if (replace.IndexOf(',') != -1)
             {
-                var replaceList = Utilities.GetStringList(replace);
-                var toList = Utilities.GetStringList(to);
+                var replaceList = ListUtils.GetStringList(replace);
+                var toList = ListUtils.GetStringList(to);
 
                 if (replaceList.Count == toList.Count)
                 {
@@ -569,21 +540,6 @@ namespace SSCMS.Utils
                 retVal = parsedContent.Replace(replace, to);
             }
 
-            return retVal;
-        }
-
-        public static string GetTrueImageHtml(string isDefaultStr)
-        {
-            return GetTrueImageHtml(TranslateUtils.ToBool(isDefaultStr));
-        }
-
-        private static string GetTrueImageHtml(bool isDefault)
-        {
-            var retVal = string.Empty;
-            if (isDefault)
-            {
-                retVal = "<img src='../pic/icon/right.gif' border='0'/>";
-            }
             return retVal;
         }
 
@@ -712,6 +668,16 @@ namespace SSCMS.Utils
         {
             const string pattern = "[\u4e00-\u9fbb]";
             return Regex.IsMatch(chr.ToString(), pattern);
+        }
+
+        public const string StrictNameRegex = "^[a-z][a-z0-9\\-]*$";
+
+        public static bool IsStrictName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return false;
+
+            var reg = new Regex(StrictNameRegex, RegexOptions.Singleline);
+            return reg.IsMatch(name);
         }
     }
 }

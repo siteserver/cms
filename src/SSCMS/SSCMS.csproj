@@ -24,9 +24,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Datory" Version="1.0.18" />
-    <PackageReference Include="HtmlSanitizer" Version="5.0.310" />
-    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="Datory" Version="1.0.20" />
   </ItemGroup>
 
 </Project>

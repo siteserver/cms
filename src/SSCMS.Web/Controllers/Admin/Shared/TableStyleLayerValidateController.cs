@@ -8,7 +8,6 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
-using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -36,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
         {
             var style = await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities);
 
-            var options = TranslateUtils.GetEnums<ValidateType>().Select(validateType =>
+            var options = ListUtils.GetEnums<ValidateType>().Select(validateType =>
                 new Select<string>(validateType.GetValue(), validateType.GetDisplayName()));
 
             return new GetResult

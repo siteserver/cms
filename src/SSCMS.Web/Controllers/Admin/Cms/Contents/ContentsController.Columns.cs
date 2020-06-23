@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Utils;
@@ -22,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            channel.ListColumns = Utilities.ToString(request.AttributeNames);
+            channel.ListColumns = ListUtils.ToString(request.AttributeNames);
 
             await _channelRepository.UpdateAsync(channel);
 

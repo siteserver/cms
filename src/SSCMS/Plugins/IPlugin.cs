@@ -8,11 +8,10 @@ namespace SSCMS.Plugins
     public interface IPlugin
     {
         public string PluginId { get; }
-        public string FolderName { get; }
-        [JsonIgnore]
-        public Assembly Assembly { get; }
-        [JsonIgnore]
-        public IConfiguration Configuration { get; }
+        [JsonIgnore] public string ContentRootPath { get; }
+        [JsonIgnore] public string WebRootPath { get; }
+        [JsonIgnore] public Assembly Assembly { get; }
+        [JsonIgnore] public IConfiguration Configuration { get; }
         public string Name { get; }
         public string Version { get; }
         public string Publisher { get; }
@@ -26,6 +25,8 @@ namespace SSCMS.Plugins
         public string Homepage { get; }
         public string Main { get; }
         public bool Disabled { get; }
+        public bool Success { get; }
+        public string ErrorMessage { get; }
         public int Taxis { get; }
     }
 }

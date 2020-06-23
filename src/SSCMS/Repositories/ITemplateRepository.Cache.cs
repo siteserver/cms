@@ -7,7 +7,7 @@ namespace SSCMS.Repositories
 {
     public partial interface ITemplateRepository
     {
-        Task<List<Template>> GetTemplateListByTypeAsync(int siteId, TemplateType templateType);
+        Task<List<Template>> GetTemplatesByTypeAsync(int siteId, TemplateType templateType);
 
         Task<Template> GetTemplateByTemplateNameAsync(int siteId, TemplateType templateType, string templateName);
 
@@ -19,11 +19,11 @@ namespace SSCMS.Repositories
 
         Task<int> GetTemplateIdByTemplateNameAsync(int siteId, TemplateType templateType, string templateName);
 
-        Task<List<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType);
+        Task<List<string>> GetTemplateNamesAsync(int siteId, TemplateType templateType);
 
-        Task<List<string>> GetRelatedFileNameListAsync(int siteId, TemplateType templateType);
+        Task<List<string>> GetRelatedFileNamesAsync(int siteId, TemplateType templateType);
 
-        Task<List<int>> GetAllFileTemplateIdListAsync(int siteId);
+        Task<List<int>> GetAllFileTemplateIdsAsync(int siteId);
 
         Task<string> GetCreatedFileFullNameAsync(int templateId);
 

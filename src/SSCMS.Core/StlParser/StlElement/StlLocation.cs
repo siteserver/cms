@@ -1,7 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -91,7 +90,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     nodePath = nodePath + "," + contextInfo.ChannelId;
                 }
-                var channelIdArrayList = Utilities.GetStringList(nodePath);
+                var channelIdArrayList = ListUtils.GetStringList(nodePath);
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = TranslateUtils.ToInt(channelIdStr);

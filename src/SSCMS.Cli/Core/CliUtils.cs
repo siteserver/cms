@@ -112,5 +112,20 @@ namespace SSCMS.Cli.Core
         {
             return FileUtils.IsFileExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName)) && FileUtils.IsFileExists(PathUtils.Combine(directoryPath, "appsettings.json")) && DirectoryUtils.IsDirectoryExists("wwwroot");
         }
+
+        public static string GetOsUserConfigFilePath()
+        {
+            return PathUtils.GetOsUserProfileDirectoryPath("config.json");
+        }
+
+        public static string GetOsUserPluginsDirectoryPath(params string[] paths)
+        {
+            return PathUtils.GetOsUserProfileDirectoryPath("plugins", PageUtils.Combine(paths));
+        }
+
+        public static string GetOsUserTempDirectoryPath(params string[] paths)
+        {
+            return PathUtils.GetOsUserProfileDirectoryPath("temp", PageUtils.Combine(paths));
+        }
     }
 }

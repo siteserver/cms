@@ -153,11 +153,12 @@
   </div>
 
   <el-menu
-    :default-openeds="defaultOpenedId"
+    :default-openeds="defaultOpeneds"
+    :default-active="defaultActive"
     :unique-opened="true"
     :collapse="isCollapse"
     :collapse-transition="false"
-    v-on:select="btnMenuClick">
+    v-on:select="btnSideMenuClick">
 
     <template v-for="level1 in menu.children">
       <template v-if="level1.children && level1.children.length > 0">
@@ -179,7 +180,7 @@
                 </template>
       
                 <template v-for="level3 in level2.children">
-                  <el-menu-item :index="JSON.stringify(level3)">
+                  <el-menu-item :class="{'is-active': getIndex(level1, level2, level3) == defaultActive}" :index="getIndex(level1, level2, level3)">
                     <i v-if="level3.iconClass" :class="level3.iconClass"></i>
                     <span>{{ level3.text }}</span>
                   </el-menu-item>
@@ -189,7 +190,7 @@
       
             </template>
             <template v-else>
-              <el-menu-item :index="JSON.stringify(level2)">
+              <el-menu-item :class="{'is-active': getIndex(level1, level2) == defaultActive}" :index="getIndex(level1, level2)">
                 <i v-if="level2.iconClass" :class="level2.iconClass"></i>
                 <span>{{ level2.text }}</span>
               </el-menu-item>
@@ -200,7 +201,7 @@
 
       </template>
       <template v-else>
-        <el-menu-item :index="JSON.stringify(level1)">
+        <el-menu-item :class="{'is-active': getIndex(level1) == defaultActive}" :index="getIndex(level1)">
           <i v-if="level1.iconClass" :class="level1.iconClass"></i>
           <span>{{ level1.text }}</span>
         </el-menu-item>

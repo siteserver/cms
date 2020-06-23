@@ -104,7 +104,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             if (nodeIndexNameList == null)
             {
-                nodeIndexNameList = await _channelRepository.GetIndexNameListAsync(targetSiteId);
+                nodeIndexNameList = await _channelRepository.GetIndexNamesAsync(targetSiteId);
             }
 
             if (filePathList == null)

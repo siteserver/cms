@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -13,7 +12,7 @@ namespace SSCMS.Core.Repositories
 {
     public partial class TableStyleRepository
     {
-        public async Task<List<TableStyle>> GetStyleListAsync(string tableName, List<int> relatedIdentities)
+        public async Task<List<TableStyle>> GetStylesAsync(string tableName, List<int> relatedIdentities)
         {
             var allAttributeNames = new List<string>();
             var styleList = new List<TableStyle>();
@@ -55,7 +54,7 @@ namespace SSCMS.Core.Repositories
 
                     foreach (var columnName in tableStyleAttributes)
                     {
-                        if (!StringUtils.ContainsIgnoreCase(allAttributeNames, columnName))
+                        if (!ListUtils.ContainsIgnoreCase(allAttributeNames, columnName))
                         {
                             allAttributeNames.Add(columnName);
                             styleList.Add(GetDefaultUserTableStyle(tableName, columnName));
@@ -71,14 +70,14 @@ namespace SSCMS.Core.Repositories
                 if (excludeAttributeNameList != null && excludeAttributeNameList.Count > 0)
                 {
                     list = list.Where(tableColumnInfo =>
-                        !StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
+                        !ListUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
                 }
 
                 var columnNames = list.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
 
                 foreach (var columnName in columnNames)
                 {
-                    if (!StringUtils.ContainsIgnoreCase(allAttributeNames, columnName))
+                    if (!ListUtils.ContainsIgnoreCase(allAttributeNames, columnName))
                     {
                         allAttributeNames.Add(columnName);
                         styleList.Add(GetDefaultContentTableStyle(tableName, columnName));
@@ -89,31 +88,31 @@ namespace SSCMS.Core.Repositories
             return styleList.OrderBy(style => style.Taxis == 0 ? int.MaxValue : style.Taxis).ToList();
         }
 
-        public async Task<List<TableStyle>> GetSiteStyleListAsync(int siteId)
+        public async Task<List<TableStyle>> GetSiteStylesAsync(int siteId)
         {
             var relatedIdentities = GetRelatedIdentities(siteId);
             var siteTableName = new Repository<Site>(_repository.Database).TableName;
-            return await GetStyleListAsync(siteTableName, relatedIdentities);
+            return await GetStylesAsync(siteTableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyle>> GetChannelStyleListAsync(Channel channel)
+        public async Task<List<TableStyle>> GetChannelStylesAsync(Channel channel)
         {
             var relatedIdentities = GetRelatedIdentities(channel);
             var channelTableName = new Repository<Channel>(_repository.Database).TableName;
-            return await GetStyleListAsync(channelTableName, relatedIdentities);
+            return await GetStylesAsync(channelTableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyle>> GetContentStyleListAsync(Channel channel, string tableName)
+        public async Task<List<TableStyle>> GetContentStylesAsync(Channel channel, string tableName)
         {
             var relatedIdentities = GetRelatedIdentities(channel);
-            return await GetStyleListAsync(tableName, relatedIdentities);
+            return await GetStylesAsync(tableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyle>> GetUserStyleListAsync()
+        public async Task<List<TableStyle>> GetUserStylesAsync()
         {
             var relatedIdentities = EmptyRelatedIdentities;
             var userTableName = new Repository<User>(_repository.Database).TableName;
-            return await GetStyleListAsync(userTableName, relatedIdentities);
+            return await GetStylesAsync(userTableName, relatedIdentities);
         }
 
         //relatedIdentities从大到小，最后是0
@@ -203,7 +202,7 @@ namespace SSCMS.Core.Repositories
                     channelIdCollection = "0," + channel.ParentsPath + "," + channel.Id;
                 }
 
-                list = Utilities.GetIntList(channelIdCollection);
+                list = ListUtils.GetIntList(channelIdCollection);
                 list.Reverse();
             }
             else
@@ -217,7 +216,7 @@ namespace SSCMS.Core.Repositories
 
         private async Task<int> GetMaxTaxisAsync(string tableName, List<int> relatedIdentities)
         {
-            var list = await GetStyleListAsync(tableName, relatedIdentities);
+            var list = await GetStylesAsync(tableName, relatedIdentities);
             if (list != null && list.Count > 0)
             {
                 return list.Max(x => x.Taxis);

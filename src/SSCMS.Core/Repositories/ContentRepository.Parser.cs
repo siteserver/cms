@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SqlKata;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -30,7 +29,7 @@ namespace SSCMS.Core.Repositories
 
                 foreach (var attributeName in others.AllKeys)
                 {
-                    if (StringUtils.ContainsIgnoreCase(columnNameList, attributeName))
+                    if (ListUtils.ContainsIgnoreCase(columnNameList, attributeName))
                     {
                         var value = others.Get(attributeName);
                         if (!string.IsNullOrEmpty(value))
@@ -45,7 +44,7 @@ namespace SSCMS.Core.Repositories
                                 }
                                 else
                                 {
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     foreach (var val in collection)
                                     {
                                         sqlWhereString += $" AND ({attributeName} <> '{val}')";
@@ -62,7 +61,7 @@ namespace SSCMS.Core.Repositories
                                 else
                                 {
                                     var builder = new StringBuilder(" AND (");
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     foreach (var val in collection)
                                     {
                                         builder.Append($" {attributeName} LIKE '%{val}%' OR ");
@@ -84,7 +83,7 @@ namespace SSCMS.Core.Repositories
                                 else
                                 {
                                     var builder = new StringBuilder(" AND (");
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     foreach (var val in collection)
                                     {
                                         builder.Append($" {attributeName} LIKE '{val}%' OR ");
@@ -106,7 +105,7 @@ namespace SSCMS.Core.Repositories
                                 else
                                 {
                                     var builder = new StringBuilder(" AND (");
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     foreach (var val in collection)
                                     {
                                         builder.Append($" {attributeName} LIKE '%{val}' OR ");
@@ -127,7 +126,7 @@ namespace SSCMS.Core.Repositories
                                 else
                                 {
                                     var builder = new StringBuilder(" AND (");
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     foreach (var val in collection)
                                     {
                                         builder.Append($" {attributeName} = '{val}' OR ");
@@ -172,7 +171,7 @@ namespace SSCMS.Core.Repositories
             return await GetStlDataSourceCheckedAsync(databaseManager, channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
-        public async Task<List<ContentSummary>> GetMinContentInfoListAsync(IDatabaseManager databaseManager, IOldPluginManager pluginManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<List<ContentSummary>> GetSummariesAsync(IDatabaseManager databaseManager, IOldPluginManager pluginManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             var dataSource = await GetContentsDataSourceAsync(databaseManager, pluginManager, site, channelId, contentId, groupContent, groupContentNot, tags,
                 isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isRelatedContents, startNum,
@@ -254,7 +253,7 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(tags))
             {
-                var tagNames = Utilities.GetStringList(tags);
+                var tagNames = ListUtils.GetStringList(tags);
                 foreach (var tagName in tagNames)
                 {
                     query.Where(q => q
@@ -342,7 +341,7 @@ namespace SSCMS.Core.Repositories
                                 }
                                 else
                                 {
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     foreach (var val in collection)
                                     {
                                         query.WhereNot(attributeName, val);
@@ -358,7 +357,7 @@ namespace SSCMS.Core.Repositories
                                 }
                                 else
                                 {
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     query.Where(q =>
                                     {
                                         foreach (var val in collection)
@@ -378,7 +377,7 @@ namespace SSCMS.Core.Repositories
                                 }
                                 else
                                 {
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     query.Where(q =>
                                     {
                                         foreach (var val in collection)
@@ -398,7 +397,7 @@ namespace SSCMS.Core.Repositories
                                 }
                                 else
                                 {
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     query.Where(q =>
                                     {
                                         foreach (var val in collection)
@@ -417,7 +416,7 @@ namespace SSCMS.Core.Repositories
                                 }
                                 else
                                 {
-                                    var collection = Utilities.GetStringList(value);
+                                    var collection = ListUtils.GetStringList(value);
                                     query.Where(q =>
                                     {
                                         foreach (var val in collection)

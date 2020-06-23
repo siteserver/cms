@@ -47,7 +47,7 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<List<RelatedField>> GetRelatedFieldListAsync(int siteId)
+        public async Task<List<RelatedField>> GetRelatedFieldsAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(RelatedField.SiteId), siteId)

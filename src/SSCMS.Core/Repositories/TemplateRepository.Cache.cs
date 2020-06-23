@@ -10,7 +10,7 @@ namespace SSCMS.Core.Repositories
 {
     public partial class TemplateRepository
     {
-        public async Task<List<Template>> GetTemplateListByTypeAsync(int siteId, TemplateType templateType)
+        public async Task<List<Template>> GetTemplatesByTypeAsync(int siteId, TemplateType templateType)
         {
             var list = new List<Template>();
 
@@ -66,13 +66,13 @@ namespace SSCMS.Core.Repositories
             return summary?.Id ?? 0;
         }
 
-        public async Task<List<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType)
+        public async Task<List<string>> GetTemplateNamesAsync(int siteId, TemplateType templateType)
         {
             var summaries = await GetSummariesAsync(siteId);
             return summaries.Where(x => x.TemplateType == templateType).Select(x => x.TemplateName).ToList();
         }
 
-        public async Task<List<string>> GetRelatedFileNameListAsync(int siteId, TemplateType templateType)
+        public async Task<List<string>> GetRelatedFileNamesAsync(int siteId, TemplateType templateType)
         {
             var list = new List<string>();
 
@@ -86,7 +86,7 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
-        public async Task<List<int>> GetAllFileTemplateIdListAsync(int siteId)
+        public async Task<List<int>> GetAllFileTemplateIdsAsync(int siteId)
         {
             var summaries = await GetSummariesAsync(siteId);
             return summaries.Where(x => x.TemplateType == TemplateType.FileTemplate).Select(x => x.Id).ToList();

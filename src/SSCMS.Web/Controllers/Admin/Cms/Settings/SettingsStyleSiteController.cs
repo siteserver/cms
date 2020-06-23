@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var styles = new List<Style>();
-            foreach (var style in await _tableStyleRepository.GetSiteStyleListAsync(request.SiteId))
+            foreach (var style in await _tableStyleRepository.GetSiteStylesAsync(request.SiteId))
             {
                 styles.Add(new Style
                 {
@@ -84,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             await _tableStyleRepository.DeleteAsync(request.SiteId, _siteRepository.TableName, request.AttributeName);
 
             var styles = new List<Style>();
-            foreach (var style in await _tableStyleRepository.GetSiteStyleListAsync(request.SiteId))
+            foreach (var style in await _tableStyleRepository.GetSiteStylesAsync(request.SiteId))
             {
                 styles.Add(new Style
                 {

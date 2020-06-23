@@ -86,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             var count = await _siteLogRepository.GetCountAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo);
             var siteLogs = await _siteLogRepository.GetAllAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
 
-            var siteIdList = await _siteRepository.GetSiteIdListAsync();
+            var siteIdList = await _siteRepository.GetSiteIdsAsync();
             var logTasks = siteLogs.Where(x => siteIdList.Contains(x.SiteId)).Select(async x =>
             {
                 var site = await _siteRepository.GetAsync(x.SiteId);

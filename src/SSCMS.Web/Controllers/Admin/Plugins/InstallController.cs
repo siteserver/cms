@@ -1,13 +1,9 @@
 ﻿using System.Threading.Tasks;
-using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
-using SSCMS.Core.Packaging;
 using SSCMS.Dto;
-using SSCMS.Enums;
-using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -18,29 +14,26 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
     [Route(Constants.ApiAdminPrefix)]
     public partial class InstallController : ControllerBase
     {
-        private const string RouteConfig = "plugins/install/config";
-        private const string RouteDownload = "plugins/install/download";
-        private const string RouteUpdate = "plugins/install/update";
-        private const string RouteCache = "plugins/install/cache";
+        private const string Route = "plugins/install";
+        private const string RouteActionsDownload = "plugins/install/actions/download";
+        private const string RouteActionsUpdate = "plugins/install/actions/update";
+        private const string RouteActionsRestart = "plugins/install/actions/restart";
 
-        private readonly ICacheManager<object> _cacheManager;
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
-        private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
-        private readonly IDbCacheRepository _dbCacheRepository;
+        private readonly IPluginManager _pluginManager;
 
-        public InstallController(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IOldPluginManager pluginManager, IDbCacheRepository dbCacheRepository)
+        public InstallController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager,
+            IAuthManager authManager, IPluginManager pluginManager)
         {
-            _cacheManager = cacheManager;
+            _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;
             _authManager = authManager;
-            _pathManager = pathManager;
             _pluginManager = pluginManager;
-            _dbCacheRepository = dbCacheRepository;
         }
 
-        [HttpGet, Route(RouteConfig)]
+        [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
@@ -51,12 +44,11 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             return new GetResult
             {
                 IsNightly = _settingsManager.IsNightlyUpdate,
-                Version = _settingsManager.Version,
-                DownloadPlugins = _pluginManager.PackagesIdAndVersionList
+                Version = _settingsManager.Version
             };
         }
 
-        [HttpPost, Route(RouteDownload)]
+        [HttpPost, Route(RouteActionsDownload)]
         public async Task<ActionResult<BoolResult>> Download([FromBody]DownloadRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
@@ -64,7 +56,9 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            CloudUtils.Dl.DownloadPlugin(_pathManager, request.PackageId, request.Version);
+            _pluginManager.Install(request.PluginId, request.Version);
+
+            await _authManager.AddAdminLogAsync("安装插件", $"插件:{request.PluginId}");
 
             return new BoolResult
             {
@@ -72,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             };
         }
 
-        [HttpPost, Route(RouteUpdate)]
+        [HttpPost, Route(RouteActionsUpdate)]
         public async Task<ActionResult<BoolResult>> Update([FromBody]UploadRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
@@ -80,11 +74,11 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            var idWithVersion = $"{request.PackageId}.{request.Version}";
-            if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
-            {
-                return this.Error(errorMessage);
-            }
+            var idWithVersion = $"{request.PluginId}.{request.Version}";
+            //if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
+            //{
+            //    return this.Error(errorMessage);
+            //}
 
             return new BoolResult
             {
@@ -92,17 +86,16 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             };
         }
 
-        
-        [HttpPost, Route(RouteCache)]
-        public async Task<ActionResult<BoolResult>> Cache()
+        [HttpPost, Route(RouteActionsRestart)]
+        public async Task<ActionResult<BoolResult>> Restart()
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
 
-            _cacheManager.Clear();
-            await _dbCacheRepository.ClearAsync();
+            
+            _hostApplicationLifetime.StopApplication();
 
             return new BoolResult
             {

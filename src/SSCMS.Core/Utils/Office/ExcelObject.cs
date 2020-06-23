@@ -32,7 +32,7 @@ namespace SSCMS.Core.Utils.Office
             var rows = new List<List<string>>();
 
             var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
+            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName));
 
             foreach (var style in styleList)
             {
@@ -85,7 +85,7 @@ namespace SSCMS.Core.Utils.Office
 
             foreach (var column in columns)
             {
-                if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
+                if (ListUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
                 {
                     head.Add(column.DisplayName);
                 }
@@ -97,7 +97,7 @@ namespace SSCMS.Core.Utils.Office
 
                 foreach (var column in columns)
                 {
-                    if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
+                    if (ListUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
                     {
                         var value = contentInfo.Get<string>(column.AttributeName);
                         row.Add(StringUtils.StripTags(value));
@@ -126,17 +126,15 @@ namespace SSCMS.Core.Utils.Office
             };
             var rows = new List<List<string>>();
 
-
-
             List<int> userIdList;
             if (checkedState.HasValue)
             {
-                userIdList = (await _databaseManager.UserRepository.GetIdListAsync(checkedState.Value)).ToList();
+                userIdList = (await _databaseManager.UserRepository.GetUserIdsAsync(checkedState.Value)).ToList();
             }
             else
             {
-                userIdList = (await _databaseManager.UserRepository.GetIdListAsync(true)).ToList();
-                userIdList.AddRange(await _databaseManager.UserRepository.GetIdListAsync(false));
+                userIdList = (await _databaseManager.UserRepository.GetUserIdsAsync(true)).ToList();
+                userIdList.AddRange(await _databaseManager.UserRepository.GetUserIdsAsync(false));
             }
 
             foreach (var userId in userIdList)
@@ -173,7 +171,7 @@ namespace SSCMS.Core.Utils.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = await _databaseManager.AdministratorRepository.GetUserIdListAsync();
+            var userIdList = await _databaseManager.AdministratorRepository.GetUserIdsAsync();
 
             foreach (var userId in userIdList)
             {
@@ -202,7 +200,7 @@ namespace SSCMS.Core.Utils.Office
             if (rows.Count <= 0) return contentInfoList;
 
             var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
+            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName));
             var nameValueCollection = new NameValueCollection();
             foreach (var style in styleList)
             {

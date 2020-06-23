@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -92,7 +91,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 await _contentTagRepository.InsertAsync(request.SiteId, tagName);
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容标签", $"内容标签:{Utilities.ToString(request.TagNames)}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容标签", $"内容标签:{ListUtils.ToString(request.TagNames)}");
 
             return new BoolResult
             {

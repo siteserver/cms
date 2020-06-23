@@ -31,7 +31,7 @@ namespace SSCMS.Core.Utils
 
 	    public static IEnumerable<KeyValuePair<InputType, string>> GetInputTypes()
 	    {
-            return TranslateUtils.GetEnums<InputType>().Select(inputType =>
+            return ListUtils.GetEnums<InputType>().Select(inputType =>
                 new KeyValuePair<InputType, string>(inputType, inputType.GetDisplayName()));
         }
 

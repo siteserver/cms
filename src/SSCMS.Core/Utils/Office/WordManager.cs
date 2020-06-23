@@ -95,7 +95,6 @@ namespace SSCMS.Core.Utils.Office
 
                     title = PathUtils.GetFileNameWithoutExtension(title);
 
-                    // TODO: Determine max-width from size of content area.
                     var htmlSettings = new HtmlConverterSettings
                     {
                         // AdditionalCss = "body { margin: 1cm auto; max-width: 20cm; padding: 0; }",

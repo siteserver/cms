@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
@@ -37,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             };
 
             var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetChannelStyleListAsync( channel))
+            foreach (var style in await _tableStyleRepository.GetChannelStylesAsync( channel))
             {
                 styles.Add(new InputStyle(style));
 
@@ -51,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 else if (style.InputType == InputType.CheckBox ||
                          style.InputType == InputType.SelectMultiple)
                 {
-                    var list = Utilities.GetStringList(channel.Get(style.AttributeName,
+                    var list = ListUtils.GetStringList(channel.Get(style.AttributeName,
                         string.Empty));
                     channel.Set(style.AttributeName, list);
                 }
@@ -135,7 +134,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var styles = await _tableStyleRepository.GetChannelStyleListAsync(channel);
+            var styles = await _tableStyleRepository.GetChannelStylesAsync(channel);
             foreach (var style in styles)
             {
                 var inputType = style.InputType;
@@ -162,7 +161,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                          style.InputType == InputType.SelectMultiple)
                 {
                     var list = request.Get<IEnumerable<object>>(style.AttributeName);
-                    channel.Set(style.AttributeName, Utilities.ToString(list));
+                    channel.Set(style.AttributeName, ListUtils.ToString(list));
                 }
                 else
                 {

@@ -17,7 +17,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAsync(channelId);
         }
 
-        public async Task<List<string>> ImportGetIndexNameListAsync(int siteId)
+        public async Task<List<string>> ImportGetIndexNamesAsync(int siteId)
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Channel.IndexName))

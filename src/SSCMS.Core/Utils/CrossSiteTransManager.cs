@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -57,7 +56,7 @@ namespace SSCMS.Core.Utils
                     if (site != null && !string.IsNullOrEmpty(channel.TransChannelIds))
                     {
                         var nodeNameBuilder = new StringBuilder();
-                        var channelIdArrayList = Utilities.GetIntList(channel.TransChannelIds);
+                        var channelIdArrayList = ListUtils.GetIntList(channel.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
                             var theNodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -78,7 +77,7 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(channel.ParentsPath))
             {
                 await _repository.IncrementAsync(nameof(Channel.ChildrenCount), Q
-                    .WhereIn(nameof(Channel.Id), Utilities.GetIntList(channel.ParentsPath))
+                    .WhereIn(nameof(Channel.Id), ListUtils.GetIntList(channel.ParentsPath))
                 );
             }
         }
@@ -187,7 +186,7 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(channelEntity.ParentsPath))
             {
                 await _repository.DecrementAsync(nameof(Channel.ChildrenCount), Q
-                        .WhereIn(nameof(Channel.Id), Utilities.GetIntList(channelEntity.ParentsPath))
+                        .WhereIn(nameof(Channel.Id), ListUtils.GetIntList(channelEntity.ParentsPath))
                     , deletedNum);
             }
         }
@@ -274,7 +273,7 @@ namespace SSCMS.Core.Repositories
             return whereStringBuilder.ToString();
         }
 
-        public async Task<List<int>> GetIdListByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
+        public async Task<List<int>> GetChannelIdsByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -395,7 +394,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             return 0;
         }
 
-        public async Task<List<int>> GetChannelIdListAsync(Template template)
+        public async Task<List<int>> GetChannelIdsAsync(Template template)
         {
             if (template.TemplateType != TemplateType.ChannelTemplate &&
                 template.TemplateType != TemplateType.ContentTemplate)
@@ -443,7 +442,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             );
         }
 
-        public List<int> GetChannelIdListByTemplateId(bool isChannelTemplate, int templateId, List<Channel> channels)
+        public List<int> GetChannelIdsByTemplateId(bool isChannelTemplate, int templateId, List<Channel> channels)
         {
             return isChannelTemplate
                 ? channels.Where(x => x.ChannelTemplateId == templateId).Select(x => x.Id).ToList()

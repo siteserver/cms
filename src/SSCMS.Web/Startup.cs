@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,7 +17,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
@@ -49,7 +47,7 @@ namespace SSCMS.Web
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
             var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly);
-            var pluginManager = services.AddPluginsAsync(_config, settingsManager).GetAwaiter().GetResult();
+            var pluginManager = services.AddPlugins(_config, settingsManager);
 
             services.AddCors(options =>
             {
@@ -208,16 +206,16 @@ namespace SSCMS.Web
             app.UseDefaultFiles(options);
             app.UseStaticFiles();
 
-            if (env.IsDevelopment())
-            {
-                app.Map($"/{DirectoryUtils.SiteFilesDirectoryName}/assets", assets =>
-                {
-                    assets.UseStaticFiles(new StaticFileOptions
-                    {
-                        FileProvider = new PhysicalFileProvider(Path.Combine(settingsManager.ContentRootPath, "assets"))
-                    });
-                });
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.Map($"/{DirectoryUtils.SiteFilesDirectoryName}/assets", assets =>
+            //    {
+            //        assets.UseStaticFiles(new StaticFileOptions
+            //        {
+            //            FileProvider = new PhysicalFileProvider(Path.Combine(settingsManager.ContentRootPath, "assets"))
+            //        });
+            //    });
+            //}
 
             var supportedCultures = new[]
             {
@@ -234,7 +232,7 @@ namespace SSCMS.Web
                 SupportedUICultures = supportedCultures
             });
 
-            app.UsePlugins(pluginManager);
+            app.UsePluginsAsync(settingsManager, pluginManager).GetAwaiter().GetResult();
 
             app.UseRouting();
 
@@ -254,10 +252,10 @@ namespace SSCMS.Web
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
-            app.UseReDoc(options =>
+            app.UseReDoc(settings =>
             {
-                options.Path = "/docs";
-                options.DocumentPath = "/swagger/v1/swagger.json";
+                settings.Path = "/docs";
+                settings.DocumentPath = "/swagger/v1/swagger.json";
             });
         }
     }

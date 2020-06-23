@@ -8,13 +8,13 @@ namespace SSCMS.Core.Repositories
     {
         public async Task<bool> IsExistsAsync(string groupName)
         {
-            var list = await GetUserGroupListAsync();
+            var list = await GetUserGroupsAsync();
             return list.Any(group => group.GroupName == groupName);
         }
 
         public async Task<UserGroup> GetUserGroupAsync(int groupId)
         {
-            var list = await GetUserGroupListAsync();
+            var list = await GetUserGroupsAsync();
             return list.FirstOrDefault(group => group.Id == groupId) ?? list[0];
         }
 

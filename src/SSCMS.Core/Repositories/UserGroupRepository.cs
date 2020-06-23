@@ -38,12 +38,17 @@ namespace SSCMS.Core.Repositories
             await _repository.UpdateAsync(group, Q.CachingRemove(CacheKey));
         }
 
+        public async Task ClearCache()
+        {
+            await _repository.RemoveCacheAsync(CacheKey);
+        }
+
         public async Task DeleteAsync(int groupId)
         {
             await _repository.DeleteAsync(groupId, Q.CachingRemove(CacheKey));
         }
 
-        public async Task<List<UserGroup>> GetUserGroupListAsync()
+        public async Task<List<UserGroup>> GetUserGroupsAsync()
         {
             var config = await _configRepository.GetAsync();
 

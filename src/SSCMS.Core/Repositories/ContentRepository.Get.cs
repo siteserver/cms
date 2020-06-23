@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
-using Datory.Utils;
 using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -136,7 +135,7 @@ group by tmp.adminId";
             return await repository.CountAsync(query);
         }
 
-        public async Task<List<int>> GetIdListBySameTitleAsync(Site site, Channel channel, string title)
+        public async Task<List<int>> GetContentIdsBySameTitleAsync(Site site, Channel channel, string title)
         {
             var repository = GetRepository(site, channel);
 
@@ -211,7 +210,7 @@ group by tmp.adminId";
             }
             else if (!string.IsNullOrEmpty(siteIds))
             {
-                whereBuilder.Append($"(SiteId IN ({TranslateUtils.ToSqlInStringWithoutQuote(Utilities.GetIntList(siteIds))})) ");
+                whereBuilder.Append($"(SiteId IN ({TranslateUtils.ToSqlInStringWithoutQuote(ListUtils.GetIntList(siteIds))})) ");
             }
             else
             {
@@ -222,7 +221,7 @@ group by tmp.adminId";
             {
                 whereBuilder.Append(" AND ");
                 var channelIdList = new List<int>();
-                foreach (var theChannelId in Utilities.GetIntList(channelIds))
+                foreach (var theChannelId in ListUtils.GetIntList(channelIds))
                 {
                     var theChannel = await _channelRepository.GetAsync(theChannelId);
                     channelIdList.AddRange(
@@ -250,7 +249,7 @@ group by tmp.adminId";
             }
             else
             {
-                typeList = Utilities.GetStringList(type);
+                typeList = ListUtils.GetStringList(type);
             }
 
             if (!string.IsNullOrEmpty(word))

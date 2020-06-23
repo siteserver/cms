@@ -21,11 +21,11 @@ namespace SSCMS.Repositories
 
         Task<(bool success, string errorMessage)> IsPasswordCorrectAsync(string password);
 
-        Task CheckAsync(IList<int> idList);
+        Task CheckAsync(IList<int> userIds);
 
-        Task LockAsync(IList<int> idList);
+        Task LockAsync(IList<int> userIds);
 
-        Task UnLockAsync(IList<int> idList);
+        Task UnLockAsync(IList<int> userIds);
 
         Task<bool> IsUserNameExistsAsync(string userName);
 
@@ -33,7 +33,7 @@ namespace SSCMS.Repositories
 
         Task<bool> IsMobileExistsAsync(string mobile);
 
-        Task<List<int>> GetIdListAsync(bool isChecked);
+        Task<List<int>> GetUserIdsAsync(bool isChecked);
 
         bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat,
             string passwordSalt);

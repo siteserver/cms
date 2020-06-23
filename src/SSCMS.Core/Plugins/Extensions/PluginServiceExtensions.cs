@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SSCMS.Core.Services;
@@ -10,10 +9,10 @@ namespace SSCMS.Core.Plugins.Extensions
 {
     public static class PluginServiceExtensions
     {
-        public static async Task<IPluginManager> AddPluginsAsync(this IServiceCollection services, IConfiguration configuration, ISettingsManager settingsManager)
+        public static IPluginManager AddPlugins(this IServiceCollection services, IConfiguration configuration, ISettingsManager settingsManager)
         {
             var pluginManager = new PluginManager(configuration, settingsManager);
-            await pluginManager.ReloadAsync();
+            pluginManager.Load();
             services.TryAdd(ServiceDescriptor.Singleton<IPluginManager>(pluginManager));
 
             //foreach (var plugin in pluginManager.Plugins)

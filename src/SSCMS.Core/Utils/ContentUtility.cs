@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -245,7 +244,7 @@ namespace SSCMS.Core.Utils
             var channelContentIds = new List<ContentSummary>();
             if (string.IsNullOrEmpty(summaries)) return channelContentIds;
 
-            foreach (var channelContentId in Utilities.GetStringList(summaries))
+            foreach (var channelContentId in ListUtils.GetStringList(summaries))
             {
                 var summary = ParseSummary(channelContentId);
                 if (summary != null)

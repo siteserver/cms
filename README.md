@@ -1,17 +1,17 @@
-# SiteServer CMS
+# SSCMS
 
-SiteServer CMS 基于 .NET Core，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。
+SSCMS 基于 .NET Core，能够以最低的成本、最少的人力投入在最短的时间内架设一个功能齐全、性能优异、规模庞大并易于维护的网站平台。
 
-![SiteServer CMS](https://www.siteserver.cn/assets/images/github-banner.png)
+![SSCMS](https://sscms.com/assets/images/github-banner.png)
 
 ## 版本
 
 项目发布的正式版本存放在 `master` 分支，最新版本存放在 `staging` 分支
 
-| 版本   | 编译状态                                                                                                                                                              | 版本号                                                         | 发布日期                                                                                     |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 正式版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/master?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/master)   | ![Nuget version](https://img.shields.io/nuget/v/SS.CMS.svg)    | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg)   |
-| 开发版 | [![Build Status](https://sscms.visualstudio.com/cms/_apis/build/status/siteserver.cms?branchName=staging)](https://sscms.visualstudio.com/cms/_build/latest?definitionId=1&branchName=master) | ![Nuget version](https://img.shields.io/nuget/vpre/SS.CMS.svg) | ![staging last commit](https://img.shields.io/github/last-commit/siteserver/cms/staging.svg) |
+| 版本   | 编译状态                                                                                                                                                                                      | 版本号                                                         | 发布日期                                                                                     |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 正式版 | [![Build status](https://sscms.visualstudio.com/cms/_apis/build/status/siteserver.cms?branchName=master)](https://sscms.visualstudio.com/cms/_build/latest?definitionId=1&branchName=master)                           | ![Nuget version](https://img.shields.io/nuget/v/SS.CMS.svg)    | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg)   |
+| 开发版 | [![Build Status](https://sscms.visualstudio.com/cms/_apis/build/status/siteserver.cms?branchName=staging)](https://sscms.visualstudio.com/cms/_build/latest?definitionId=1&branchName=staging) | ![Nuget version](https://img.shields.io/nuget/vpre/SS.CMS.svg) | ![staging last commit](https://img.shields.io/github/last-commit/siteserver/cms/staging.svg) |
 
 ## 迭代计划
 
@@ -47,19 +47,19 @@ SiteServer CMS 基于 .NET Core，能够以最低的成本、最少的人力投�
 
 ## 开发文档
 
-[《STL 语言参考手册》](https://www.siteserver.cn/docs/stl/)
+[《STL 语言参考手册》](https://sscms.com/docs/stl/)
 
-[《插件开发参考手册》](https://www.siteserver.cn/docs/plugins/)
+[《插件开发参考手册》](https://sscms.com/docs/plugins/)
 
-[《CLI 命令行参考手册》](https://www.siteserver.cn/docs/cli/)
+[《CLI 命令行参考手册》](https://sscms.com/docs/cli/)
 
-[《REST API 参考手册》](https://www.siteserver.cn/docs/api/)
+[《REST API 参考手册》](https://sscms.com/docs/api/)
 
-[《数据结构参考手册》](https://www.siteserver.cn/docs/model/)
+[《数据结构参考手册》](https://sscms.com/docs/model/)
 
-系统使用文档请点击 [SiteServer CMS 文档中心](https://www.siteserver.cn/docs/)
+系统使用文档请点击 [SSCMS 文档中心](https://sscms.com/docs/)
 
-## SiteServer CMS 源码结构
+## SSCMS 源码结构
 
 ```code
 │ sscms.sln                  Visual Studio 项目文件
@@ -73,22 +73,26 @@ SiteServer CMS 基于 .NET Core，能够以最低的成本、最少的人力投�
 
 ## 发布跨平台版本
 
-Window(64位)：
+Window(64 位)：
+
 ```
 dotnet publish ./src/SSCMS/SSCMS.csproj -r win-x64 --configuration Release -o dist/sscms-win-x64 /p:PublishSingleFile=true
 ```
 
-Window(32位)：
+Window(32 位)：
+
 ```
 dotnet publish ./src/SSCMS/SSCMS.csproj -r win-x86 --configuration Release -o dist/sscms-win-x86 /p:PublishSingleFile=true
 ```
 
 Linux：
+
 ```
 dotnet publish ./src/SSCMS/SSCMS.csproj -r linux-x64 --configuration Release -o dist/sscms-linux-x64 /p:PublishSingleFile=true
 ```
 
 MacOS：
+
 ```
 dotnet publish ./src/SSCMS/SSCMS.csproj -r osx-x64 --configuration Release -o dist/sscms-osx-x64 /p:PublishSingleFile=true
 ```
@@ -97,7 +101,7 @@ dotnet publish ./src/SSCMS/SSCMS.csproj -r osx-x64 --configuration Release -o di
 
 代码贡献有很多形式，从提交问题，撰写文档，到提交代码，我们欢迎任何形式的贡献！
 
-项目编译需要使用 Visual Studio 2017，你可以从这里下载 [Visual Studio Community 2017](https://www.visualstudio.com/downloads/)
+项目编译需要使用 Visual Studio 2019，你可以从这里下载 [Visual Studio Community 2019](https://www.visualstudio.com/downloads/)
 
 - 1、Fork
 - 2、创建您的特性分支 (`git checkout -b my-new-feature`)
@@ -107,7 +111,7 @@ dotnet publish ./src/SSCMS/SSCMS.csproj -r osx-x64 --configuration Release -o di
 
 ## 系统更新
 
-SiteServer CMS 产品将每隔两月发布新的正式版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进。
+SSCMS 产品将每隔两月发布新的正式版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进。
 
 ## 问题与建议
 
@@ -115,10 +119,10 @@ SiteServer CMS 产品将每隔两月发布新的正式版本，我们将在每�
 
 ## 关注最新动态
 
-[![qrcode](https://www.siteserver.cn/assets/images/qrcode_for_wx.jpg)](https://www.siteserver.cn/)
+[![qrcode](https://sscms.com/assets/images/qrcode_for_wx.jpg)](https://sscms.com/)
 
 ## License
 
 [GNU GENERAL PUBLIC LICENSE 3.0](LICENSE)
 
-Copyright (C) 2003-2020 SiteServer CMS
+Copyright (C) 2003-2020 SSCMS

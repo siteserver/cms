@@ -34,7 +34,7 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(Q.Where(nameof(SitePermissions.RoleName), roleName));
         }
 
-        public async Task<List<SitePermissions>> GetListAsync(string roleName)
+        public async Task<List<SitePermissions>> GetAllAsync(string roleName)
         {
             var permissionsList = await _repository.GetAllAsync(Q.Where(nameof(SitePermissions.RoleName), roleName));
 
@@ -49,14 +49,14 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<Dictionary<int, List<string>>> GetSitePermissionSortedListAsync(IEnumerable<string> roles)
+        public async Task<Dictionary<int, List<string>>> GetSitePermissionDictionaryAsync(IEnumerable<string> roles)
         {
             var sortedList = new Dictionary<int, List<string>>();
             if (roles == null) return sortedList;
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetListAsync(roleName);
+                var systemPermissionsList = await GetAllAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
                     if (systemPermissions.Permissions == null) continue;
@@ -73,14 +73,14 @@ namespace SSCMS.Core.Repositories
             return sortedList;
         }
 
-        public async Task<Dictionary<string, List<string>>> GetChannelPermissionSortedListAsync(IList<string> roles)
+        public async Task<Dictionary<string, List<string>>> GetChannelPermissionDictionaryAsync(IList<string> roles)
         {
             var dict = new Dictionary<string, List<string>>();
             if (roles == null) return dict;
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetListAsync(roleName);
+                var systemPermissionsList = await GetAllAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
                     if (systemPermissions.ChannelIds == null) continue;
@@ -109,14 +109,14 @@ namespace SSCMS.Core.Repositories
             return dict;
         }
 
-        public async Task<Dictionary<string, List<string>>> GetContentPermissionSortedListAsync(IList<string> roles)
+        public async Task<Dictionary<string, List<string>>> GetContentPermissionDictionaryAsync(IList<string> roles)
         {
             var dict = new Dictionary<string, List<string>>();
             if (roles == null) return dict;
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetListAsync(roleName);
+                var systemPermissionsList = await GetAllAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
                     if (systemPermissions.ChannelIds == null) continue;
@@ -152,7 +152,7 @@ namespace SSCMS.Core.Repositories
 
             foreach (var roleName in roles)
             {
-                var systemPermissionsList = await GetListAsync(roleName);
+                var systemPermissionsList = await GetAllAsync(roleName);
                 foreach (var systemPermissions in systemPermissionsList)
                 {
                     if (systemPermissions.ChannelPermissions != null)

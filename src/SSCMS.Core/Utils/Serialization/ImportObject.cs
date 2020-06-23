@@ -49,13 +49,13 @@ namespace SSCMS.Core.Utils.Serialization
                     FileUtils.MoveFile(filePath, destFilePath, isOverride);
                 }
 
-                var siteDirList = await _databaseManager.SiteRepository.GetSiteDirListAsync(0);
+                var siteDirList = await _databaseManager.SiteRepository.GetSiteDirsAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!_pathManager.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
+                    if (!_pathManager.IsSystemDirectory(directoryName) && !ListUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         _caching.SetProcess(guid, $"导入站点文件夹: {subDirectoryPath}");
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
@@ -296,7 +296,7 @@ namespace SSCMS.Core.Utils.Serialization
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
-                    var existsIds = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channelInfo, contentInfo.Title);
+                    var existsIds = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channelInfo, contentInfo.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
@@ -338,7 +338,7 @@ namespace SSCMS.Core.Utils.Serialization
 
                 if (isOverride)
                 {
-                    var existsIds = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
+                    var existsIds = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channel, contentInfo.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
@@ -415,7 +415,7 @@ namespace SSCMS.Core.Utils.Serialization
 
                 if (isOverride)
                 {
-                    var existsIDs = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channelInfo, contentInfo.Title);
+                    var existsIDs = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channelInfo, contentInfo.Title);
                     if (existsIDs.Count > 0)
                     {
                         foreach (int id in existsIDs)
@@ -456,7 +456,7 @@ namespace SSCMS.Core.Utils.Serialization
 
             if (isOverride)
             {
-                var existsIDs = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
+                var existsIDs = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channel, contentInfo.Title);
                 if (existsIDs.Count > 0)
                 {
                     foreach (var id in existsIDs)

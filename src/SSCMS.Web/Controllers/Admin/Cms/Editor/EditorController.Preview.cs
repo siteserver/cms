@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Extensions;
-using SSCMS.Utils;
+using SSCMS.Extensions;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {

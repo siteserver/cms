@@ -30,7 +30,7 @@ namespace SSCMS.Repositories
 
         string GetWhereString(string group, string groupNot, bool isImageExists, bool isImage);
 
-        Task<List<int>> GetIdListByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString,
+        Task<List<int>> GetChannelIdsByTotalNumAsync(List<int> channelIds, int totalNum, string orderByString,
             string whereString);
 
         Task<List<string>> GetAllFilePathBySiteIdAsync(int siteId);
@@ -38,8 +38,8 @@ namespace SSCMS.Repositories
         int GetTemplateUseCount(int siteId, int templateId, TemplateType templateType, bool isDefault,
             List<Channel> channels);
 
-        Task<List<int>> GetChannelIdListAsync(Template template);
+        Task<List<int>> GetChannelIdsAsync(Template template);
 
-        List<int> GetChannelIdListByTemplateId(bool isChannelTemplate, int templateId, List<Channel> channels);
+        List<int> GetChannelIdsByTemplateId(bool isChannelTemplate, int templateId, List<Channel> channels);
     }
 }

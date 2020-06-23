@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <Version>7.0.0-preview7</Version>
-    <AssemblyName>sscms-cli</AssemblyName>
+    <AssemblyName>ss</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

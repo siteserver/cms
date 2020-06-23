@@ -1,0 +1,50 @@
+@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    .el-tag {
+      height: auto;
+      white-space: inherit;
+      margin-bottom: 5px;
+    }
+  </style>
+}
+
+<el-row>
+  <el-col :span="12">
+    <el-button size="small" v-on:click="getWordSpliter();return false;">提取标签</el-button>
+    <el-button size="small" v-on:click="detection_Content();return false;">敏感词检测</el-button>
+    
+  </el-col>
+  <el-col align="right" :span="12">
+    <el-button size="small" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+    <el-button size="small" v-on:click="btnPreviewClick" type="info">预 览</el-button>
+  </el-col>
+</el-row>
+
+<el-divider></el-divider>
+
+<el-container style="padding-top: 0; padding-bottom: 0; overflow:hidden;" :style="{height: mainHeight}">
+  <el-main style="padding: 0; margin: 0">
+    <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
+      
+      <!-- <el-form style="margin: 10px 20px 20px 10px" size="small" label-position="left" label-width="80px"> -->
+      
+      <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="80px">
+        @await Html.PartialAsync("_PartialForm")
+      </el-form>
+
+    </el-scrollbar>
+  </el-main>
+</el-container>
+
+@section Scripts{
+<script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
+<script src="/sitefiles/assets/lib/ueditor/ueditor.all.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/js/home/write/editor.js" type="text/javascript"></script> }

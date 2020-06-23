@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             await _siteRepository.UpdateAsync(site);
             await _authManager.AddSiteLogAsync(request.SiteId, "修改站点访问地址");
 
-            var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
+            var siteIdList = await _siteRepository.GetSiteIdsAsync(0);
             var sites = new List<Site>();
             foreach (var id in siteIdList)
             {

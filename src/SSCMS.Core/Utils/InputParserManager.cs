@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Parse;
@@ -60,7 +59,7 @@ namespace SSCMS.Core.Utils
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new List<string>();
-                var selectedValues = Utilities.GetStringList(content);
+                var selectedValues = ListUtils.GetStringList(content);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -73,7 +72,7 @@ namespace SSCMS.Core.Utils
                     }
                 }
                 
-                parsedContent = separator == null ? Utilities.ToString(selectedTexts) : Utilities.ToString(selectedTexts, separator);
+                parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             //else if (style.InputType == InputType.TextArea)
             //{
@@ -133,7 +132,7 @@ namespace SSCMS.Core.Utils
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new List<string>();
-                var selectedValues = Utilities.GetStringList(value);
+                var selectedValues = ListUtils.GetStringList(value);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -146,7 +145,7 @@ namespace SSCMS.Core.Utils
                     }
                 }
                 
-                parsedContent = separator == null ? Utilities.ToString(selectedTexts) : Utilities.ToString(selectedTexts, separator);
+                parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             else if (inputType == InputType.TextEditor)
             {

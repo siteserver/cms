@@ -104,21 +104,6 @@ namespace SSCMS.Utils
             return TranslateUtils.ToNameValueCollection(querystring);
         }
 
-        public static NameValueCollection GetQueryStringFilterXss(string url)
-        {
-            if (string.IsNullOrEmpty(url) || url.IndexOf("?", StringComparison.Ordinal) == -1) return new NameValueCollection();
-
-            var attributes = new NameValueCollection();
-            
-            var querystring = url.Substring(url.IndexOf("?", StringComparison.Ordinal) + 1);
-            var originals = TranslateUtils.ToNameValueCollection(querystring);
-            foreach (string key in originals.Keys)
-            {
-                attributes[key] = AttackUtils.FilterXss(originals[key]);
-            }
-            return attributes;
-        }
-
         public static string Combine(params string[] urls)
         {
             if (urls == null || urls.Length <= 0) return string.Empty;

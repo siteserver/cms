@@ -64,7 +64,7 @@ namespace SSCMS.Core.Tests
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
             var settingsManager = services.AddSettingsManager(Configuration, ContentRootPath, WebRootPath, entryAssembly);
-            services.AddPluginsAsync(Configuration, settingsManager).GetAwaiter().GetResult();
+            services.AddPlugins(Configuration, settingsManager);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
 

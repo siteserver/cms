@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             if (site == null) return NotFound();
 
             var templates =
-                await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.FileTemplate);
+                await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.FileTemplate);
 
             return new GetResult
             {

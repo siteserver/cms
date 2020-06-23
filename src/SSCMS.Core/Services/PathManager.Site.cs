@@ -853,6 +853,11 @@ namespace SSCMS.Core.Services
             return $"{fileName}{PathUtils.GetExtension(filePath)}";
         }
 
+        private bool Contains(string text, string inner)
+        {
+            return text?.IndexOf(inner, StringComparison.Ordinal) >= 0;
+        }
+
         public async Task<Site> GetSiteAsync(string path)
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
@@ -860,7 +865,7 @@ namespace SSCMS.Core.Services
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
-            var siteList = await _siteRepository.GetSiteListAsync();
+            var siteList = await _siteRepository.GetSitesAsync();
 
             Site headquarter = null;
             foreach (var site in siteList)
@@ -871,7 +876,7 @@ namespace SSCMS.Core.Services
                 }
                 else
                 {
-                    if (StringUtils.Contains(directoryDir, site.SiteDir.ToLower()))
+                    if (Contains(directoryDir, site.SiteDir.ToLower()))
                     {
                         return site;
                     }
@@ -892,12 +897,12 @@ namespace SSCMS.Core.Services
                 return string.Empty;
             }
 
-            var siteList = await _siteRepository.GetSiteListAsync();
+            var siteList = await _siteRepository.GetSitesAsync();
             foreach (var site in siteList)
             {
                 if (site?.Root != false) continue;
 
-                if (StringUtils.Contains(directoryDir, site.SiteDir.ToLower()))
+                if (Contains(directoryDir, site.SiteDir.ToLower()))
                 {
                     siteDir = site.SiteDir;
                 }
@@ -909,7 +914,7 @@ namespace SSCMS.Core.Services
         public async Task<int> GetCurrentSiteIdAsync()
         {
             int siteId;
-            var siteIdList = await _siteRepository.GetSiteIdListAsync();
+            var siteIdList = await _siteRepository.GetSiteIdsAsync();
             if (siteIdList.Any())
             {
                 siteId = siteIdList.First();
@@ -1274,13 +1279,13 @@ namespace SSCMS.Core.Services
                     FileUtils.DeleteFileIfExists(filePath);
                 }
 
-                var siteDirList = await _databaseManager.SiteRepository.GetSiteDirListAsync(0);
+                var siteDirList = await _databaseManager.SiteRepository.GetSiteDirsAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
+                    if (!IsSystemDirectory(directoryName) && !ListUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
                     }

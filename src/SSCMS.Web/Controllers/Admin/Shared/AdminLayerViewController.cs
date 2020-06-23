@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -78,7 +77,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                 Administrator = admin,
                 Level = level,
                 IsSuperAdmin = isSuperAdmin,
-                SiteNames = Utilities.ToString(siteNames, "<br />"),
+                SiteNames = ListUtils.ToString(siteNames, "<br />"),
                 IsOrdinaryAdmin = isOrdinaryAdmin,
                 RoleNames = roleNames
             };

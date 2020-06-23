@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -34,7 +34,7 @@ namespace SSCMS.Core.Services
         {
             ClearAllTask(siteId);
 
-            var channelIdList = await _channelRepository.GetChannelIdListAsync(siteId);
+            var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId);
             foreach (var channelId in channelIdList)
             {
                 await CreateChannelAsync(siteId, channelId);
@@ -45,12 +45,12 @@ namespace SSCMS.Core.Services
                 await CreateAllContentAsync(siteId, channelId);
             }
 
-            foreach (var specialId in await _specialRepository.GetAllSpecialIdListAsync(siteId))
+            foreach (var specialId in await _specialRepository.GetAllSpecialIdsAsync(siteId))
             {
                 await CreateSpecialAsync(siteId, specialId);
             }
 
-            foreach (var fileTemplateId in await _templateRepository.GetAllFileTemplateIdListAsync(siteId))
+            foreach (var fileTemplateId in await _templateRepository.GetAllFileTemplateIdsAsync(siteId))
             {
                 await CreateFileAsync(siteId, fileTemplateId);
             }
@@ -66,7 +66,7 @@ namespace SSCMS.Core.Services
             }
             else if (templateInfo.TemplateType == TemplateType.ChannelTemplate)
             {
-                var channelIdList = await _channelRepository.GetChannelIdListAsync(templateInfo);
+                var channelIdList = await _channelRepository.GetChannelIdsAsync(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     await CreateChannelAsync(siteId, channelId);
@@ -74,7 +74,7 @@ namespace SSCMS.Core.Services
             }
             else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
             {
-                var channelIdList = await _channelRepository.GetChannelIdListAsync(templateInfo);
+                var channelIdList = await _channelRepository.GetChannelIdsAsync(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     await CreateAllContentAsync(siteId, channelId);
@@ -146,7 +146,7 @@ namespace SSCMS.Core.Services
             if (siteId <= 0 || channelId <= 0) return;
 
             var channelInfo = await _channelRepository.GetAsync(channelId);
-            var channelIdList = Utilities.GetIntList(channelInfo.CreateChannelIdsIfContentChanged);
+            var channelIdList = ListUtils.GetIntList(channelInfo.CreateChannelIdsIfContentChanged);
             if (channelInfo.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
                 channelIdList.Add(channelId);

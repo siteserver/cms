@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Plugins;
 using SSCMS.Services;
 
 namespace SSCMS.Core.Plugins.Extensions
@@ -15,26 +15,26 @@ namespace SSCMS.Core.Plugins.Extensions
             {
                 if (plugin.Assembly != null)
                 {
-                    AddApplicationPart(mvcBuilder.PartManager, plugin);
+                    AddApplicationPart(mvcBuilder.PartManager, plugin.Assembly);
                 }
             }
             return mvcBuilder;
         }
 
-        private static void AddApplicationPart(ApplicationPartManager applicationPartManager, IPlugin plugin)
+        private static void AddApplicationPart(ApplicationPartManager applicationPartManager, Assembly assembly)
         {
-            var partFactory = ApplicationPartFactory.GetApplicationPartFactory(plugin.Assembly);
+            var partFactory = ApplicationPartFactory.GetApplicationPartFactory(assembly);
 
-            foreach (var part in partFactory.GetApplicationParts(plugin.Assembly))
+            foreach (var part in partFactory.GetApplicationParts(assembly))
             {
                 applicationPartManager.ApplicationParts.Add(part);
             }
 
-            var relatedAssemblies = RelatedAssemblyAttribute.GetRelatedAssemblies(plugin.Assembly, throwOnError: true);
-            foreach (var assembly in relatedAssemblies)
+            var relatedAssemblies = RelatedAssemblyAttribute.GetRelatedAssemblies(assembly, throwOnError: true);
+            foreach (var relatedAssembly in relatedAssemblies)
             {
-                partFactory = ApplicationPartFactory.GetApplicationPartFactory(assembly);
-                foreach (var part in partFactory.GetApplicationParts(assembly))
+                partFactory = ApplicationPartFactory.GetApplicationPartFactory(relatedAssembly);
+                foreach (var part in partFactory.GetApplicationParts(relatedAssembly))
                 {
                     applicationPartManager.ApplicationParts.Add(part);
                 }

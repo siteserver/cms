@@ -4,7 +4,6 @@ using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
-using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {

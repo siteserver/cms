@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Cli.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -142,7 +141,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//栏目组别
                 {
-                    parsedContent = Utilities.ToString(nodeInfo.GroupNames);
+                    parsedContent = ListUtils.ToString(nodeInfo.GroupNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
                 {

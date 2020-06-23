@@ -17,9 +17,9 @@ namespace SSCMS.Repositories
 
         Task<List<int>> UpdateSiteIdAsync(Administrator administrator, int siteId);
 
-        Task LockAsync(IList<string> userNameList);
+        Task LockAsync(IList<string> userNames);
 
-        Task UnLockAsync(IList<string> userNameList);
+        Task UnLockAsync(IList<string> userNames);
 
         Task<int> GetCountAsync(string creatorUserName, string role, int lastActivityDate, string keyword);
 
@@ -32,9 +32,9 @@ namespace SSCMS.Repositories
 
         Task<bool> IsMobileExistsAsync(string mobile);
 
-        Task<List<string>> GetUserNameListAsync();
+        Task<List<string>> GetUserNamesAsync();
 
-        Task<List<int>> GetUserIdListAsync();
+        Task<List<int>> GetUserIdsAsync();
 
         Task<(bool IsValid, string ErrorMessage)> InsertValidateAsync(string userName, string password, string email,
             string mobile);

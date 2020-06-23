@@ -45,6 +45,18 @@ namespace SSCMS.Utils
             return retVal;
         }
 
+        private static string NormalizePath(string path)
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
+        }
+
+        public static bool IsEquals(string path1, string path2)
+        {
+            return NormalizePath(path1) == NormalizePath(path2);
+        }
+
         public static bool IsExtension(string ext, params string[] extensions)
         {
             return extensions.Any(extension => StringUtils.EqualsIgnoreCase(ext, extension));

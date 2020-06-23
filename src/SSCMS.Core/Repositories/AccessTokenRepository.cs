@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -68,7 +67,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(AccessToken.Title), title));
         }
 
-        public async Task<List<AccessToken>> GetAccessTokenListAsync()
+        public async Task<List<AccessToken>> GetAccessTokensAsync()
         {
             return await _repository.GetAllAsync(Q.OrderBy(nameof(AccessToken.Id)));
         }
@@ -83,7 +82,7 @@ namespace SSCMS.Core.Repositories
             if (string.IsNullOrEmpty(token)) return false;
 
             var tokenInfo = await GetByTokenAsync(token);
-            return tokenInfo != null && StringUtils.ContainsIgnoreCase(Utilities.GetStringList(tokenInfo.Scopes), scope);
+            return tokenInfo != null && ListUtils.ContainsIgnoreCase(ListUtils.GetStringList(tokenInfo.Scopes), scope);
         }
     }
 }

@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -125,7 +125,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
             var tableName = _channelRepository.GetTableName(site, channel);
-            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var styleList = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
 
             var adminId = _authManager.AdminId;

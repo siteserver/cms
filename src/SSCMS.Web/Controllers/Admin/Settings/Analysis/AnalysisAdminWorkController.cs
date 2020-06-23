@@ -53,7 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
                 Items = new List<QueryResultItem>()
             };
 
-            var siteIdList = await _siteRepository.GetSiteIdListOrderByLevelAsync();
+            var siteIdList = await _siteRepository.GetSiteIdsOrderByLevelAsync();
             if (siteId == 0 && siteIdList.Count > 0)
             {
                 siteId = siteIdList[0];

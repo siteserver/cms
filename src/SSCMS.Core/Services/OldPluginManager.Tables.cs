@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
@@ -253,7 +252,7 @@ namespace SSCMS.Core.Services
             {
                 if (IsContentTable(plugin))
                 {
-                    if (!StringUtils.ContainsIgnoreCase(list, plugin.ContentTableName))
+                    if (!ListUtils.ContainsIgnoreCase(list, plugin.ContentTableName))
                     {
                         list.Add(plugin.ContentTableName);
                     }
@@ -294,7 +293,7 @@ namespace SSCMS.Core.Services
         public List<IOldPlugin> GetContentPlugins(Channel channel, bool includeContentTable)
         {
             var list = new List<IOldPlugin>();
-            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
+            var pluginIds = ListUtils.GetStringList(channel.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 pluginIds.Add(channel.ContentModelPluginId);
@@ -320,7 +319,7 @@ namespace SSCMS.Core.Services
                 return null;
             }
 
-            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
+            var pluginIds = ListUtils.GetStringList(channel.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 pluginIds.Add(channel.ContentModelPluginId);

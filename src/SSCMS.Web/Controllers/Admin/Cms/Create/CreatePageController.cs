@@ -80,8 +80,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
                 };
             });
 
-            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             return new GetResult
             {
@@ -125,7 +125,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
 
             if (request.IsAllChecked)
             {
-                selectedChannelIdList = await _channelRepository.GetChannelIdListAsync(request.SiteId);
+                selectedChannelIdList = await _channelRepository.GetChannelIdsAsync(request.SiteId);
             }
             else if (request.IsDescendent)
             {

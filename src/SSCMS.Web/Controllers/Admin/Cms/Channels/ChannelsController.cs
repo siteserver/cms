@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -88,11 +88,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 };
             });
 
-            var indexNames = await _channelRepository.GetChannelIndexNameListAsync(request.SiteId);
+            var indexNames = await _channelRepository.GetChannelIndexNamesAsync(request.SiteId);
             var groupNameList = await _channelGroupRepository.GetGroupNamesAsync(request.SiteId);
 
-            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
             var contentPlugins = _pluginManager.GetContentModelPlugins();
             var relatedPlugins = _pluginManager.GetAllContentRelatedPlugins(false);
 
@@ -155,7 +155,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         indexName = channelName.Trim();
                     }
 
-                    if (StringUtils.Contains(channelName, "(") && StringUtils.Contains(channelName, ")"))
+                    if (channelName.Contains('(') && channelName.Contains(')'))
                     {
                         var length = channelName.IndexOf(')') - channelName.IndexOf('(');
                         if (length > 0)
@@ -170,7 +170,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     {
                         if (nodeIndexNameList == null)
                         {
-                            nodeIndexNameList = (await _channelRepository.GetIndexNameListAsync(request.SiteId)).ToList();
+                            nodeIndexNameList = (await _channelRepository.GetIndexNamesAsync(request.SiteId)).ToList();
                         }
                         if (nodeIndexNameList.Contains(indexName))
                         {

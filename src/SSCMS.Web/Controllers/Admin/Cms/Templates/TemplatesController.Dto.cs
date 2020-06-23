@@ -52,12 +52,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 }
                 else if (template.TemplateType == TemplateType.ChannelTemplate)
                 {
-                    template.Set("channelIds", _channelRepository.GetChannelIdListByTemplateId(true, template.Id, channels));
+                    template.Set("channelIds", _channelRepository.GetChannelIdsByTemplateId(true, template.Id, channels));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.ContentTemplate)
                 {
-                    template.Set("channelIds", _channelRepository.GetChannelIdListByTemplateId(false, template.Id, channels));
+                    template.Set("channelIds", _channelRepository.GetChannelIdsByTemplateId(false, template.Id, channels));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.FileTemplate)

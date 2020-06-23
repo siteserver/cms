@@ -6,6 +6,8 @@ namespace SSCMS.Utils
     {
         public const string ConfigFileName = "sscms.json";
         public const string PackageFileName = "package.json";
+        public const string ReadmeFileName = "README.md";
+        public const string ChangeLogFileName = "CHANGELOG.md";
         public const string PluginConfigFileName = "config.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
@@ -43,9 +45,6 @@ namespace SSCMS.Utils
         public const string ScopeAdministrators = "Administrators";
         public const string ScopeUsers = "Users";
         public const string ScopeStl = "STL";
-
-        public const string OsUserProfileTypeConfig = "config.json";
-        public const string OsUserProfileTypePlugins = "plugins";
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
 

@@ -5,8 +5,8 @@ using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -60,9 +60,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             {
                 role = await _roleRepository.GetRoleAsync(request.RoleId);
                 sitePermissionsList =
-                    await _sitePermissionsRepository.GetListAsync(role.RoleName);
+                    await _sitePermissionsRepository.GetAllAsync(role.RoleName);
                 permissionList =
-                    await _permissionsInRolesRepository.GetAppPermissionListAsync(new[] { role.RoleName });
+                    await _permissionsInRolesRepository.GetAppPermissionsAsync(new[] { role.RoleName });
             }
 
             var permissions = new List<Option>();
@@ -80,7 +80,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(permissionList, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(permissionList, permission.Id)
                     });
                 }
             }

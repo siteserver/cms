@@ -5,7 +5,7 @@ namespace SSCMS.Core.Repositories
 {
     public partial class SiteRepository
     {
-        public async Task<List<int>> GetLatestSiteIdListAsync(List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
+        public async Task<List<int>> GetLatestSiteIdsAsync(List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
         {
             var siteIdList = new List<int>();
 
@@ -17,7 +17,7 @@ namespace SSCMS.Core.Repositories
                 }
             }
 
-            var siteIdListOrderByLevel = await GetSiteIdListOrderByLevelAsync();
+            var siteIdListOrderByLevel = await GetSiteIdsOrderByLevelAsync();
             foreach (var siteId in siteIdListOrderByLevel)
             {
                 if (!siteIdList.Contains(siteId) && siteIdListWithPermissions.Contains(siteId))

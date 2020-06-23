@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -210,7 +211,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 foreach (var filePath in DirectoryUtils.GetFilePaths(uploadDirectoryPath))
                 {
                     var fileName = PathUtils.GetFileName(filePath);
-                    if (!StringUtils.ContainsIgnoreCase(request.FileNames, fileName)) continue;
+                    if (!ListUtils.ContainsIgnoreCase(request.FileNames, fileName)) continue;
 
                     if (FileUtils.IsZip(PathUtils.GetExtension(filePath)))
                     {
@@ -243,7 +244,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 foreach (var filePath in DirectoryUtils.GetFilePaths(uploadDirectoryPath))
                 {
                     var fileName = PathUtils.GetFileName(filePath);
-                    if (!StringUtils.ContainsIgnoreCase(request.FileNames, fileName)) continue;
+                    if (!ListUtils.ContainsIgnoreCase(request.FileNames, fileName)) continue;
 
                     if (FileUtils.IsZip(PathUtils.GetExtension(filePath)))
                     {

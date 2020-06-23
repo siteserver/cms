@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Components;
 using SSCMS.Enums;
@@ -34,7 +33,7 @@ namespace SSCMS.Core.Utils.Serialization
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = await _databaseManager.SiteRepository.GetSiteDirListAsync(0);
+            var siteDirList = await _databaseManager.SiteRepository.GetSiteDirsAsync(0);
             var sitePath = await _pathManager.GetSitePathAsync(_site);
 
             var directoryNames = DirectoryUtils.GetDirectoryNames(sitePath);
@@ -44,7 +43,7 @@ namespace SSCMS.Core.Utils.Serialization
                 var srcPath = PathUtils.Combine(sitePath, directoryName);
                 var destPath = PathUtils.Combine(siteTemplatePath, directoryName);
 
-                if (!isAllFiles && !StringUtils.ContainsIgnoreCase(directories, directoryName)) continue;
+                if (!isAllFiles && !ListUtils.ContainsIgnoreCase(directories, directoryName)) continue;
 
                 var isSiteDirectory = false;
 
@@ -70,7 +69,7 @@ namespace SSCMS.Core.Utils.Serialization
                 var srcPath = PathUtils.Combine(sitePath, fileName);
                 var destPath = PathUtils.Combine(siteTemplatePath, fileName);
 
-                if (!isAllFiles && !StringUtils.ContainsIgnoreCase(files, fileName)) continue;
+                if (!isAllFiles && !ListUtils.ContainsIgnoreCase(files, fileName)) continue;
 
                 FileUtils.CopyFile(srcPath, destPath);
             }
@@ -179,7 +178,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(_databaseManager, _site, relatedFieldDirectoryPath);
-            var relatedFieldInfoList = await _databaseManager.RelatedFieldRepository.GetRelatedFieldListAsync(_site.Id);
+            var relatedFieldInfoList = await _databaseManager.RelatedFieldRepository.GetRelatedFieldsAsync(_site.Id);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
@@ -196,7 +195,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
             var site = await databaseManager.SiteRepository.GetAsync(siteId);
-            var relatedFieldInfoList = await databaseManager.RelatedFieldRepository.GetRelatedFieldListAsync(siteId);
+            var relatedFieldInfoList = await databaseManager.RelatedFieldRepository.GetRelatedFieldsAsync(siteId);
             var relatedFieldIe = new RelatedFieldIe(databaseManager,  site, directoryPath);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
@@ -237,13 +236,13 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allChannelIdList = await _databaseManager.ChannelRepository.GetChannelIdListAsync(_site.Id);
+            var allChannelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(_site.Id);
 
             var includeChannelIdArrayList = new ArrayList();
             foreach (int channelId in channelIdArrayList)
             {
                 var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-                var parentIdArrayList = Utilities.GetIntList(nodeInfo.ParentsPath);
+                var parentIdArrayList = ListUtils.GetIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
                     if (!includeChannelIdArrayList.Contains(parentId))

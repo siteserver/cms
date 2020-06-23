@@ -19,7 +19,7 @@ namespace SSCMS
         private static string GetPluginName(Type type)
         {
             var name = GetPluginId(type);
-            return StringUtils.Contains(name, ".") ? name.Substring(name.LastIndexOf('.') + 1) : name;
+            return name.Contains('.') ? name.Substring(name.LastIndexOf('.') + 1) : name;
         }
 
         private static string GetPluginVersion(Type type)
@@ -93,11 +93,11 @@ namespace SSCMS
         public string ContentTableName { get; private set; }
         public bool IsApiAuthorization { get; private set; }
 
-        public List<Datory.TableColumn> ContentTableColumns { get; private set; }
+        public List<TableColumn> ContentTableColumns { get; private set; }
 
         public List<InputStyle> ContentInputStyles { get; private set; }
 
-        public Dictionary<string, List<Datory.TableColumn>> DatabaseTables { get; private set; }
+        public Dictionary<string, List<TableColumn>> DatabaseTables { get; private set; }
 
         public event EventHandler<ContentEventArgs> ContentAddCompleted;
 
@@ -154,7 +154,7 @@ namespace SSCMS
             return this;
         }
 
-        public IOldPlugin AddContentModel(string tableName, List<Datory.TableColumn> tableColumns, List<InputStyle> inputStyles)
+        public IOldPlugin AddContentModel(string tableName, List<TableColumn> tableColumns, List<InputStyle> inputStyles)
         {
             ContentTableName = tableName;
             ContentTableColumns = tableColumns;
@@ -163,11 +163,11 @@ namespace SSCMS
             return this;
         }
 
-        public IOldPlugin AddDatabaseTable(string tableName, List<Datory.TableColumn> tableColumns)
+        public IOldPlugin AddDatabaseTable(string tableName, List<TableColumn> tableColumns)
         {
             if (DatabaseTables == null)
             {
-                DatabaseTables = new Dictionary<string, List<Datory.TableColumn>>();
+                DatabaseTables = new Dictionary<string, List<TableColumn>>();
             }
 
             DatabaseTables[tableName] = tableColumns;

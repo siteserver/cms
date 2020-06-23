@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SSCMS.Configuration;
-using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {

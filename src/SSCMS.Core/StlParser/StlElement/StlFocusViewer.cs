@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
@@ -213,7 +212,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
             var channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = await databaseManager.ContentRepository.GetSummariesAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -291,9 +290,9 @@ namespace SSCMS.Core.StlParser.StlElement
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
-var files_uniqueID='{Utilities.ToString(imageUrls, "|")}';
-var links_uniqueID='{Utilities.ToString(navigationUrls, "|")}';
-var texts_uniqueID='{Utilities.ToString(titleCollection, "|")}';
+var files_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
+var links_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
+var texts_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
 var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
@@ -355,9 +354,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
-var urls_uniqueID='{Utilities.ToString(navigationUrls, "|")}';
-var imgs_uniqueID='{Utilities.ToString(imageUrls, "|")}';
-var titles_uniqueID='{Utilities.ToString(titleCollection, "|")}';
+var urls_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
+var imgs_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
+var titles_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
 var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
@@ -537,7 +536,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     }
                     else
                     {
-                        titles = Utilities.ToString(titleCollection, "|");
+                        titles = ListUtils.ToString(titleCollection, "|");
                     }
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     attributes["id"] = uniqueId;
@@ -551,8 +550,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 	var uniqueID_text_height={textHeight}
 	var uniqueID_swf_height = uniqueID_focus_height + uniqueID_text_height
 	
-	var uniqueID_pics='{Utilities.ToString(imageUrls, "|")}'
-	var uniqueID_links='{Utilities.ToString(navigationUrls, "|")}'
+	var uniqueID_pics='{ListUtils.ToString(imageUrls, "|")}'
+	var uniqueID_links='{ListUtils.ToString(navigationUrls, "|")}'
 	var uniqueID_texts='{titles}'
 	
 	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");

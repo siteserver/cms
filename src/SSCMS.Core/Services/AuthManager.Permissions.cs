@@ -44,7 +44,7 @@ namespace SSCMS.Core.Services
 
             if (await IsSuperAdminAsync())
             {
-                siteIdList = (await _databaseManager.SiteRepository.GetSiteIdListAsync()).ToList();
+                siteIdList = (await _databaseManager.SiteRepository.GetSiteIdsAsync()).ToList();
             }
             else if (await IsSiteAdminAsync())
             {
@@ -79,7 +79,7 @@ namespace SSCMS.Core.Services
         {
             if (await IsSiteAdminAsync(siteId))
             {
-                return await _databaseManager.ChannelRepository.GetChannelIdListAsync(siteId);
+                return await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
             }
 
             var siteChannelIdList = new List<int>();
@@ -137,7 +137,7 @@ namespace SSCMS.Core.Services
             }
             else
             {
-                appPermissions = await _databaseManager.PermissionsInRolesRepository.GetAppPermissionListAsync(roles);
+                appPermissions = await _databaseManager.PermissionsInRolesRepository.GetAppPermissionsAsync(roles);
             }
 
             return appPermissions;
@@ -327,7 +327,7 @@ namespace SSCMS.Core.Services
             else
             {
                 var roles = await GetRolesAsync();
-                sitePermissionDict = await _databaseManager.SitePermissionsRepository.GetSitePermissionSortedListAsync(roles);
+                sitePermissionDict = await _databaseManager.SitePermissionsRepository.GetSitePermissionDictionaryAsync(roles);
             }
 
             return sitePermissionDict;
@@ -357,7 +357,7 @@ namespace SSCMS.Core.Services
             }
             else
             {
-                channelPermissionDict = await _databaseManager.SitePermissionsRepository.GetChannelPermissionSortedListAsync(roles);
+                channelPermissionDict = await _databaseManager.SitePermissionsRepository.GetChannelPermissionDictionaryAsync(roles);
             }
 
             return channelPermissionDict;
@@ -387,7 +387,7 @@ namespace SSCMS.Core.Services
             }
             else
             {
-                contentPermissionDict = await _databaseManager.SitePermissionsRepository.GetContentPermissionSortedListAsync(roles);
+                contentPermissionDict = await _databaseManager.SitePermissionsRepository.GetContentPermissionDictionaryAsync(roles);
             }
 
             return contentPermissionDict;

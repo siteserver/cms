@@ -123,7 +123,7 @@ namespace SSCMS.Cli.Jobs
 
                 var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
 
-                if (StringUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
+                if (ListUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
                 {
                     if (_contentSplit)
                     {

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             if (await _authManager.IsSuperAdminAsync())
             {
-                adminNames = await _administratorRepository.GetUserNameListAsync();
+                adminNames = await _administratorRepository.GetUserNamesAsync();
             }
             else
             {
@@ -69,7 +69,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            var tokens = await _accessTokenRepository.GetAccessTokenListAsync();
+            var tokens = await _accessTokenRepository.GetAccessTokensAsync();
 
             return new ListResult
             {
@@ -89,7 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             }
 
             await _accessTokenRepository.DeleteAsync(request.Id);
-            var list = await _accessTokenRepository.GetAccessTokenListAsync();
+            var list = await _accessTokenRepository.GetAccessTokensAsync();
 
             return new TokensResult
             {
@@ -141,7 +141,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 await _authManager.AddAdminLogAsync("新增API密钥", $"Access Token:{tokenInfo.Title}");
             }
 
-            var list = await _accessTokenRepository.GetAccessTokenListAsync();
+            var list = await _accessTokenRepository.GetAccessTokensAsync();
 
             return new TokensResult
             {

@@ -23,6 +23,6 @@ namespace SSCMS.Repositories
 
         Task<string> GetTitleAsync(int siteId, int specialId);
 
-        Task<List<int>> GetAllSpecialIdListAsync(int siteId);
+        Task<List<int>> GetAllSpecialIdsAsync(int siteId);
     }
 }

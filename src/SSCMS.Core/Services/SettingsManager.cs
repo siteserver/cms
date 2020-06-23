@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
-using System.Threading.Tasks;
 using Datory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -12,10 +13,12 @@ namespace SSCMS.Core.Services
 {
     public class SettingsManager : ISettingsManager
     {
+        private readonly IServiceCollection _services;
         private readonly IConfiguration _config;
 
-        public SettingsManager(IConfiguration config, string contentRootPath, string webRootPath, Assembly entryAssembly)
+        public SettingsManager(IServiceCollection services, IConfiguration config, string contentRootPath, string webRootPath, Assembly entryAssembly)
         {
+            _services = services;
             _config = config;
             ContentRootPath = contentRootPath;
             WebRootPath = webRootPath;
@@ -33,6 +36,8 @@ namespace SSCMS.Core.Services
                 }
             }
         }
+
+        public IServiceProvider ServiceProvider => _services.BuildServiceProvider();
 
         public string ContentRootPath { get; }
         public string WebRootPath { get; }

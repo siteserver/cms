@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -191,14 +190,14 @@ namespace SSCMS.Core.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = Utilities.ToString(contentInfo.GroupNames);
+                            parsedContent = ListUtils.ToString(contentInfo.GroupNames);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Tags, attributeName))//标签
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = Utilities.ToString(contentInfo.TagNames);
+                            parsedContent = ListUtils.ToString(contentInfo.TagNames);
                         }
                     }
                     else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)

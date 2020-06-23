@@ -11,15 +11,15 @@ namespace SSCMS.Enums
         Index,
         [DataEnum(DisplayName = "栏目页")]
         Channel,
-        [DataEnum(DisplayName = "栏目页")]
-        Content,
         [DataEnum(DisplayName = "内容页")]
-        File,
+        Content,
         [DataEnum(DisplayName = "文件页")]
-        Special,
+        File,
         [DataEnum(DisplayName = "专题页")]
-        AllContent,
+        Special,
         [DataEnum(DisplayName = "栏目下所有内容页")]
+        AllContent,
+        [DataEnum(DisplayName = "所有页面")]
         All
     }
 }

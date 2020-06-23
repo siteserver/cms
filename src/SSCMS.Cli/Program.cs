@@ -7,14 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Extensions;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Utils;
 using Serilog;
-using Serilog.Events;
 
 namespace SSCMS.Cli
 {
@@ -40,7 +38,7 @@ namespace SSCMS.Cli
 
             var contentRootPath = Directory.GetCurrentDirectory();
 
-            var profilePath = PathUtils.GetOsUserProfileDirectoryPath(Constants.OsUserProfileTypeConfig);
+            var profilePath = CliUtils.GetOsUserConfigFilePath();
             var sscmsPath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
 
             var builder = new ConfigurationBuilder()
@@ -62,7 +60,7 @@ namespace SSCMS.Cli
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
             var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), entryAssembly);
-            await services.AddPluginsAsync(configuration, settingsManager);
+            services.AddPlugins(configuration, settingsManager);
 
             var application = new Application(settingsManager);
             services.AddSingleton<IConfiguration>(configuration);

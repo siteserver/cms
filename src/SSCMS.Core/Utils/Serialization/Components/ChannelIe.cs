@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Enums;
@@ -36,7 +35,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             {
                 channel.ContentModelPluginId = contentModelPluginId;
             }
-            var contentRelatedPluginIdList = Utilities.GetStringList(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentRelatedPluginIds)));
+            var contentRelatedPluginIdList = ListUtils.GetStringList(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentRelatedPluginIds)));
             channel.ContentRelatedPluginIds = contentRelatedPluginIdList;
             channel.ParentId = parentId;
             var indexName = AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.IndexName), "NodeIndexName" });
@@ -45,7 +44,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 channel.IndexName = indexName;
                 indexNameList.Add(indexName);
             }
-            channel.GroupNames = Utilities.GetStringList(AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.GroupNames), "NodeGroupNameCollection" }));
+            channel.GroupNames = ListUtils.GetStringList(AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.GroupNames), "NodeGroupNameCollection" }));
             channel.AddDate = DateTime.Now;
             channel.ImageUrl = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ImageUrl));
             channel.Content = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Content)));
@@ -80,13 +79,13 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.ChannelName), "NodeName" }, channel.ChannelName);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.SiteId), "PublishmentSystemId" }, channel.SiteId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ContentModelPluginId), channel.ContentModelPluginId);
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ContentRelatedPluginIds), Utilities.ToString(channel.ContentRelatedPluginIds));
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ContentRelatedPluginIds), ListUtils.ToString(channel.ContentRelatedPluginIds));
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ParentId), channel.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ParentsPath), channel.ParentsPath);
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ParentsCount), channel.ParentsCount.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ChildrenCount), channel.ChildrenCount.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.IndexName), "NodeIndexName" }, channel.IndexName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.GroupNames), "NodeGroupNameCollection" }, Utilities.ToString(channel.GroupNames));
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.GroupNames), "NodeGroupNameCollection" }, ListUtils.ToString(channel.GroupNames));
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.Taxis), channel.Taxis.ToString());
             if (channel.AddDate.HasValue)
             {
@@ -108,7 +107,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 "ExtendValues");
             if (!string.IsNullOrEmpty(json))
             {
-                var dict = Utilities.ToDictionary(json);
+                var dict = ListUtils.ToDictionary(json);
                 foreach (var o in dict)
                 {
                     channel.Set(o.Key, o.Value);

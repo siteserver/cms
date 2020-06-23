@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Cli.Abstractions;
+using SSCMS.Cli.Core;
 using SSCMS.Cli.Models;
 using SSCMS.Utils;
 
@@ -19,7 +20,7 @@ namespace SSCMS.Cli.Services
 
         public async Task SaveStatusAsync(ConfigStatus status)
         {
-            var configPath = PathUtils.GetOsUserProfileDirectoryPath(Constants.OsUserProfileTypeConfig);
+            var configPath = CliUtils.GetOsUserConfigFilePath();
 
             var config = new Config
             {

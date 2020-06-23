@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -41,8 +41,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Groups = await _userGroupRepository.GetUserGroupListAsync(),
-                AdminNames = await _administratorRepository.GetUserNameListAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync(),
+                AdminNames = await _administratorRepository.GetUserNamesAsync()
             };
         }
 
@@ -58,7 +58,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Groups = await _userGroupRepository.GetUserGroupListAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync()
             };
         }
 
@@ -94,6 +94,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 config.UserDefaultGroupAdminName = request.AdminName;
 
                 await _configRepository.UpdateAsync(config);
+                await _userGroupRepository.ClearCache();
 
                 await _authManager.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
             }
@@ -116,7 +117,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Groups = await _userGroupRepository.GetUserGroupListAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync()
             };
         }
     }

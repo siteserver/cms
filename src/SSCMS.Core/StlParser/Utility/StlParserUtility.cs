@@ -179,7 +179,7 @@ namespace SSCMS.Core.StlParser.Utility
         {
             if (content == null) return false;
             content = content.ToLower();
-            return StringUtils.Contains(content, "}") && (StringUtils.Contains(content, "{stl:") || StringUtils.Contains(content, "{stl.") || StringUtils.Contains(content, "{content.") || StringUtils.Contains(content, "{channel."));
+            return content.Contains('}') && (content.IndexOf("{stl:", StringComparison.Ordinal) != -1 || content.IndexOf("{stl.", StringComparison.Ordinal) != -1 || content.IndexOf("{content.", StringComparison.Ordinal) != -1 || content.IndexOf("{channel.", StringComparison.Ordinal) != -1);
         }
 
         public static bool IsSpecifiedStlElement(string stlElement, string elementName)

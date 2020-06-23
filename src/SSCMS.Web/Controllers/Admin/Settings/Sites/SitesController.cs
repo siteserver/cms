@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -113,7 +113,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             await _authManager.AddAdminLogAsync("删除站点", $"站点:{site.SiteName}");
             await _siteRepository.DeleteAsync(request.SiteId);
 
-            var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
+            var siteIdList = await _siteRepository.GetSiteIdsAsync(0);
             var sites = new List<Site>();
             foreach (var id in siteIdList)
             {
@@ -173,8 +173,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             {
                 if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(site.SiteDir, false), request.SiteDir))
                 {
-                    var list = await _siteRepository.GetSiteDirListAsync(site.ParentId);
-                    if (StringUtils.ContainsIgnoreCase(list, request.SiteDir))
+                    var list = await _siteRepository.GetSiteDirsAsync(site.ParentId);
+                    if (ListUtils.ContainsIgnoreCase(list, request.SiteDir))
                     {
                         return this.Error("站点修改失败，已存在相同的发布路径！");
                     }
@@ -190,8 +190,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
                 if (site.ParentId != request.ParentId)
                 {
-                    var list = await _siteRepository.GetSiteDirListAsync(request.ParentId);
-                    if (StringUtils.ContainsIgnoreCase(list, request.SiteDir))
+                    var list = await _siteRepository.GetSiteDirsAsync(request.ParentId);
+                    if (ListUtils.ContainsIgnoreCase(list, request.SiteDir))
                     {
                         return this.Error("站点修改失败，已存在相同的发布路径！");
                     }
@@ -207,7 +207,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             await _authManager.AddAdminLogAsync("修改站点属性", $"站点:{site.SiteName}");
 
-            var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
+            var siteIdList = await _siteRepository.GetSiteIdsAsync(0);
             var sites = new List<Site>();
             foreach (var id in siteIdList)
             {
