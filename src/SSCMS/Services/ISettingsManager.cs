@@ -5,7 +5,6 @@ namespace SSCMS.Services
 {
     public interface ISettingsManager
     {
-        IServiceProvider ServiceProvider { get; }
         string ContentRootPath { get; }
         string WebRootPath { get; }
         string Version { get; }
@@ -13,6 +12,7 @@ namespace SSCMS.Services
         bool IsNightlyUpdate { get; }
         bool IsProtectData { get; }
         string SecurityKey { get; }
+        string ApiHost { get; }
         DatabaseType DatabaseType { get; }
         string DatabaseConnectionString { get; }
         IDatabase Database { get; }
@@ -21,5 +21,6 @@ namespace SSCMS.Services
         string Encrypt(string inputString, string securityKey = null);
         string Decrypt(string inputString, string securityKey = null);
         void SaveSettings(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString);
+        IServiceProvider BuildServiceProvider();
     }
 }

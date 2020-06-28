@@ -18,7 +18,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
-    [Route(Constants.ApiStlPrefix)]
+    [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
     public partial class ActionsSearchController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Stl
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, _pathManager.GetSearchExlcudeAttributeNames, form);
+                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, _pathManager.GetSearchExcludeAttributeNames, form);
 
                     var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager, request.PageNum, site.TableName, whereString);
                     var (pageCount, totalNum) = stlPageContents.GetPageCount();

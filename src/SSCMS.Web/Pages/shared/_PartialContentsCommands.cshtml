@@ -4,8 +4,8 @@
       添加
     </el-button>
     
-    <el-dropdown size="mini" v-on:command="btnAddClick">
-      <el-button size="mini" :disabled="!permissions.isAdd" v-on:click="btnAddClick">
+    <el-dropdown size="mini" v-on:command="btnImportClick">
+      <el-button size="mini" :disabled="!permissions.isAdd">
         导入<i class="el-icon-arrow-down el-icon--right"></i>
       </el-button>
       <el-dropdown-menu slot="dropdown">

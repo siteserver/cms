@@ -1,20 +1,6 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form label-width="150px" size="mini">
-  <el-form-item label="API部署方式">
-    <el-link :underline="false" type="primary" v-on:click="btnApiClick">
-      <span v-if="isSeparatedApi">API独立部署</span>
-      <span v-else>API与CMS部署在一起</span>
-    </el-link>
-  </el-form-item>
-  <el-form-item v-if="isSeparatedApi" label="独立部署API访问地址">
-    <el-link :underline="false" type="primary" v-on:click="btnApiClick">
-      <span>{{ separatedApiUrl }}</span>
-    </el-link>
-  </el-form-item>
-</el-form>
-
 <el-table
   :data="sites"
   style="width: 100%;margin-bottom: 20px;"
@@ -51,35 +37,6 @@
     </template>
   </el-table-column>
 </el-table>
-
-<el-drawer
-  v-if="apiForm"
-  title="修改API访问地址"
-  ref="apiPanel"
-  :visible.sync="apiPanel"
-  destroy-on-close
-  direction="rtl"
-  size="50%">
-  <div class="drawer__content">
-    <el-form ref="apiForm" :model="apiForm" size="small" :rules="apiRules" label-width="160px">
-      <el-form-item label="API部署方式">
-        <el-radio-group v-model="apiForm.isSeparatedApi">
-          <el-radio :label="true">API独立部署</el-radio>
-          <el-radio :label="false">API与CMS部署在一起</el-radio>
-        </el-radio-group>
-        <div class="tips">设置API页面部署方式</div>
-      </el-form-item>
-      <el-form-item v-if="apiForm.isSeparatedApi" label="独立部署API访问地址" prop="separatedApiUrl">
-        <el-input v-model="apiForm.separatedApiUrl"></el-input>
-      </el-form-item>
-      
-    </el-form>
-    <div class="drawer__footer">
-      <el-button type="primary" size="small" v-on:click="btnApiSubmitClick" :loading="apiLoading">{{ apiLoading ? '提交中 ...' : '确 定' }}</el-button>
-      <el-button size="small" v-on:click="btnApiCancelClick">取 消</el-button>
-    </div>
-  </div>
-</el-drawer>
 
 <el-drawer
   v-if="editForm"

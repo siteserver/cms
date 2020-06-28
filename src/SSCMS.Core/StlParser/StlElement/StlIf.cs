@@ -461,7 +461,8 @@ namespace SSCMS.Core.StlParser.StlElement
             };
             dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            return dynamicInfo.GetScript(parseManager.PathManager.GetIfApiUrl(pageInfo.ApiUrl), true);
+            var dynamicUrl = parseManager.PathManager.GetIfApiUrl();
+            return dynamicInfo.GetScript(dynamicUrl, true);
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)

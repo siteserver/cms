@@ -9,7 +9,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
-    [Route(Constants.ApiStlPrefix)]
+    [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
     public partial class ActionsDownloadController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -70,7 +70,7 @@ namespace SSCMS.Web.Controllers.Stl
                     }
                     else
                     {
-                        var fileUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
+                        var fileUrl = _pathManager.GetRootUrlByPath(filePath);
                         return Redirect(_pathManager.ParseNavigationUrl(fileUrl));
                     }
                 }

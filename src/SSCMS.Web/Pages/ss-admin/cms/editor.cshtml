@@ -11,6 +11,7 @@
       height: auto;
       white-space: inherit;
       margin-bottom: 5px;
+      margin-right: 5px;
     }
   </style>
 }
@@ -112,10 +113,13 @@
                 v-for="translation in translations"
                 :key="translation.name"
                 closable
+                size="mini"
                 v-on:close="handleTranslationClose(translation.name)"
                 type="primary">
                 {{translation.name}}
               </el-tag>
+
+              <div></div>
   
               <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnTranslateAddClick">
                 新增转移

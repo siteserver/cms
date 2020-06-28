@@ -212,10 +212,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 var inputParser = new InputParserManager(parseManager.PathManager);
 
                 parsedContent = contentInfo != null
-                    ? inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, contentInfo.ChannelId,
+                    ? inputParser.GetFileHtmlWithCount(pageInfo.Site, contentInfo.ChannelId,
                         contentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
                         contextInfo.IsStlEntity, isLower, isUpper)
-                    : inputParser.GetFileHtmlWithoutCount(pageInfo.Config, pageInfo.Site, fileUrl, attributes,
+                    : inputParser.GetFileHtmlWithoutCount(pageInfo.Site, fileUrl, attributes,
                         contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 

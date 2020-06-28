@@ -49,8 +49,8 @@ var $urlCloudDl = 'https://dl.sscms.com';
 var $urlCloudStorage = 'https://storage.sscms.com';
 var $urlCloudDemo = 'https://demo.sscms.com';
 var $urlCloudDocs = 'https://sscms.com/docs/v7';
-// var $urlCloudApi = 'https://api.sscms.com/v7';
-var $urlCloudApi = 'http://localhost:81/v7';
+var $urlCloudApi = 'https://api.sscms.com/v7';
+// var $urlCloudApi = 'http://localhost:81/v7';
 
 var utils = {
   init: function (data) {

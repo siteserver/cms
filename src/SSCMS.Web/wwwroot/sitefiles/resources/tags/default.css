@@ -1,0 +1,41 @@
+ul.tagCloud {
+margin:5px;
+}
+ul.tagCloud li {
+display:inline;
+padding:0 5px 0 0;
+}
+ul.tagCloud a {
+line-height:25px;
+padding:3px 2px 1px 3px;
+text-decoration:none !important;
+white-space:nowrap;
+}
+ul.tagCloud a:hover {
+text-decoration:none !important;
+}
+li.tag_popularity_1 a, li.tag_popularity_1 a:hover {
+font-size:12px;
+font-weight:normal;
+}
+li.tag_popularity_2 a, li.tag_popularity_2 a:hover {
+font-size:12px;
+font-weight:bold;
+}
+li.tag_popularity_3 a, li.tag_popularity_3 a:hover {
+font-size:14px;
+font-weight:bold;
+}
+li.tag_popularity_4 a, li.tag_popularity_4 a:hover {
+color:#FF0F6F !important;
+font-size:16px;
+font-weight:bold;
+}
+li.tag_popularity_1 a:hover, li.tag_popularity_2 a:hover, li.tag_popularity_3 a:hover {
+background:#104D6C none repeat scroll 0 0 !important;
+color:#FFFFFF !important;
+}
+li.tag_popularity_4 a:hover {
+background:#FF0F6F none repeat scroll 0 0 !important;
+color:#FFFFFF !important;
+}

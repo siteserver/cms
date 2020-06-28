@@ -287,6 +287,8 @@ namespace SSCMS.Core.StlParser.StlElement
                     paramBuilder.Append(
                         $@"so_{uniqueId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(Constants.ReturnAndNewline);
 
+                    var bcastrUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Bcastr);
+
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
@@ -294,7 +296,7 @@ var files_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
 var links_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
 var texts_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{bcastrUrl}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -351,6 +353,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     paramBuilder.Append(
                         $@"so_{uniqueId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(Constants.ReturnAndNewline);
 
+                    var aliUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Ali);
+
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
@@ -358,7 +362,7 @@ var urls_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
 var imgs_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
 var titles_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{aliUrl}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -425,9 +429,10 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var bgUrl = parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
+                    var bgUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
                         "@/images/focusviewerbg.png", pageInfo.IsLocal);
-                    string scriptHtml = $@"
+
+                    var scriptHtml = $@"
 <style type=""text/css"">
 .fv_adnum{{ position:absolute; z-index:1005; width:{imageWidth - 24}px; height:24px; padding:5px 3px 0 0; left:21px; top:{imageHeight -
                                                                                                                                                                                                   29}px; }}
@@ -542,8 +547,11 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     attributes["id"] = uniqueId;
                     var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
 
-                    string scriptHtml = $@"
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.BaiRongFlash.Js)}""></script>
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.BaiRongFlash.Js);
+                    var focusViewerUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.FocusViewer);
+
+                    var scriptHtml = $@"
+<script type=""text/javascript"" src=""{jsUrl}""></script>
 <script type=""text/javascript"">
 	var uniqueID_focus_width={imageWidth}
 	var uniqueID_focus_height={imageHeight}
@@ -554,7 +562,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 	var uniqueID_links='{ListUtils.ToString(navigationUrls, "|")}'
 	var uniqueID_texts='{titles}'
 	
-	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
+	var uniqueID_FocusFlash = new bairongFlash(""{focusViewerUrl}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
 	uniqueID_FocusFlash.addParam(""allowScriptAccess"", ""sameDomain"");
 	uniqueID_FocusFlash.addParam(""menu"", ""false"");
 	uniqueID_FocusFlash.addParam(""wmode"", ""transparent"");

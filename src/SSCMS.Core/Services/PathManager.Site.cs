@@ -15,48 +15,6 @@ namespace SSCMS.Core.Services
 {
     public partial class PathManager
     {
-        // 系统根目录访问地址
-        public string GetWebRootUrl(params string[] paths)
-        {
-            return PageUtils.Combine("/", PathUtils.Combine(paths));
-        }
-
-        public string GetWebRootPath(params string[] paths)
-        {
-            return PathUtils.Combine(_settingsManager.WebRootPath, PathUtils.Combine(paths));
-        }
-
-        public string GetContentRootPath(params string[] paths)
-        {
-            return PathUtils.Combine(_settingsManager.ContentRootPath, PathUtils.Combine(paths));
-        }
-
-        public string GetTemporaryFilesUrl(string relatedUrl)
-        {
-            return PageUtils.Combine($"/{DirectoryUtils.SiteFilesDirectoryName}", DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
-        }
-
-        public string GetSiteTemplatesUrl(string relatedUrl)
-        {
-            return PageUtils.Combine($"/{DirectoryUtils.SiteFilesDirectoryName}", DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
-        }
-
-        public string GetRootUrlByPhysicalPath(string physicalPath)
-        {
-            var requestPath = PathUtils.GetPathDifference(_settingsManager.WebRootPath, physicalPath);
-            requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
-            return GetWebRootUrl(requestPath);
-        }
-
-        public string ParseNavigationUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
-
-            url = url.StartsWith("~") ? PageUtils.Combine("/", url.Substring(1)) : url;
-            url = url.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
-            return url;
-        }
-
         //根据发布系统属性判断是否为相对路径并返回解析后路径
         public async Task<string> ParseNavigationUrlAsync(Site site, string url, bool isLocal)
         {
@@ -177,50 +135,50 @@ namespace SSCMS.Core.Services
             return url;
         }
 
-        public string GetLocalSiteUrl(int siteId)
+        public string GetPreviewSiteUrl(int siteId)
         {
-            var apiUrl = GetInnerApiUrl(Constants.RoutePreview);
+            var apiUrl = GetApiUrl(Constants.RoutePreview);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             return apiUrl;
         }
 
-        public string GetLocalChannelUrl(int siteId, int channelId)
+        public string GetPreviewChannelUrl(int siteId, int channelId)
         {
-            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewChannel);
+            var apiUrl = GetApiUrl(Constants.RoutePreviewChannel);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
             return apiUrl;
         }
 
-        public string GetLocalContentUrl(int siteId, int channelId, int contentId)
+        public string GetPreviewContentUrl(int siteId, int channelId, int contentId)
         {
-            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewContent);
+            var apiUrl = GetApiUrl(Constants.RoutePreviewContent);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
             apiUrl = apiUrl.Replace("{contentId}", contentId.ToString());
             return apiUrl;
         }
 
-        public string GetContentPreviewUrl(int siteId, int channelId, int contentId, int previewId)
+        public string GetPreviewContentUrl(int siteId, int channelId, int contentId, int previewId)
         {
             if (contentId == 0)
             {
                 contentId = previewId;
             }
-            return $"{GetLocalContentUrl(siteId, channelId, contentId)}?isPreview=true&previewId={previewId}";
+            return $"{GetPreviewContentUrl(siteId, channelId, contentId)}?isPreview=true&previewId={previewId}";
         }
 
-        public string GetLocalFileUrl(int siteId, int fileTemplateId)
+        public string GetPreviewFileUrl(int siteId, int fileTemplateId)
         {
-            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewFile);
+            var apiUrl = GetApiUrl(Constants.RoutePreviewFile);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{fileTemplateId}", fileTemplateId.ToString());
             return apiUrl;
         }
 
-        public string GetLocalSpecialUrl(int siteId, int specialId)
+        public string GetPreviewSpecialUrl(int siteId, int specialId)
         {
-            var apiUrl = GetInnerApiUrl(Constants.RoutePreviewSpecial);
+            var apiUrl = GetApiUrl(Constants.RoutePreviewSpecial);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{specialId}", specialId.ToString());
             return apiUrl;
@@ -233,7 +191,7 @@ namespace SSCMS.Core.Services
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(indexTemplateId);
 
             var url = isLocal
-                ? GetLocalSiteUrl(site.Id)
+                ? GetPreviewSiteUrl(site.Id)
                 : await ParseNavigationUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
@@ -244,7 +202,7 @@ namespace SSCMS.Core.Services
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(fileTemplateId);
 
             var url = isLocal
-                ? GetLocalFileUrl(site.Id, fileTemplateId)
+                ? GetPreviewFileUrl(site.Id, fileTemplateId)
                 : await ParseNavigationUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
@@ -267,7 +225,7 @@ namespace SSCMS.Core.Services
 
             if (isLocal)
             {
-                return GetLocalContentUrl(site.Id, contentCurrent.ChannelId,
+                return GetPreviewContentUrl(site.Id, contentCurrent.ChannelId,
                     contentCurrent.Id);
             }
 
@@ -326,7 +284,7 @@ namespace SSCMS.Core.Services
         {
             if (isLocal)
             {
-                return GetLocalContentUrl(site.Id, channelId, contentId);
+                return GetPreviewContentUrl(site.Id, channelId, contentId);
             }
 
             var contentInfoCurrent = await _contentRepository.GetAsync(site, channelId, contentId);
@@ -408,7 +366,7 @@ namespace SSCMS.Core.Services
 
             if (isLocal)
             {
-                return GetLocalChannelUrl(site.Id, channel.Id);
+                return GetPreviewChannelUrl(site.Id, channel.Id);
             }
 
             var url = string.Empty;
@@ -584,37 +542,6 @@ namespace SSCMS.Core.Services
             return url.StartsWith("/");
         }
 
-        public string GetSiteFilesUrl(string relatedUrl)
-        {
-            return PageUtils.Combine($"/{DirectoryUtils.SiteFilesDirectoryName}", relatedUrl);
-        }
-
-        public string GetSiteFilesUrl(string apiUrl, string relatedUrl)
-        {
-            if (string.IsNullOrEmpty(apiUrl))
-            {
-                apiUrl = "/api";
-            }
-            apiUrl = apiUrl.Trim().ToLower();
-            if (apiUrl == "/api")
-            {
-                apiUrl = "/";
-            }
-            else if (apiUrl.EndsWith("/api"))
-            {
-                apiUrl = apiUrl.Substring(0, apiUrl.LastIndexOf("/api", StringComparison.Ordinal));
-            }
-            else if (apiUrl.EndsWith("/api/"))
-            {
-                apiUrl = apiUrl.Substring(0, apiUrl.LastIndexOf("/api/", StringComparison.Ordinal));
-            }
-            if (string.IsNullOrEmpty(apiUrl))
-            {
-                apiUrl = "/";
-            }
-            return PageUtils.Combine(apiUrl, DirectoryUtils.SiteFilesDirectoryName, relatedUrl);
-        }
-
         public List<Select<string>> GetLinkTypeSelects()
         {
             return new List<Select<string>>
@@ -643,7 +570,7 @@ namespace SSCMS.Core.Services
         {
             if (site == null)
             {
-                return GetWebRootPath(paths);
+                return GetRootPath(paths);
             }
 
             string sitePath;
@@ -671,7 +598,7 @@ namespace SSCMS.Core.Services
         {
             if (siteId == 0)
             {
-                return GetWebRootPath(paths);
+                return GetRootPath(paths);
             }
             var site = await _siteRepository.GetAsync(siteId);
             return await GetSitePathAsync(site, paths);
@@ -838,19 +765,7 @@ namespace SSCMS.Core.Services
                 isUploadChangeFileName = site.IsVideoUploadChangeFileName;
             }
 
-            return GetUploadFileName(filePath, isUploadChangeFileName);
-        }
-
-        public string GetUploadFileName(string filePath, bool isUploadChangeFileName)
-        {
-            if (isUploadChangeFileName)
-            {
-                return $"{StringUtils.GetShortGuid(false)}{PathUtils.GetExtension(filePath)}";
-            }
-
-            var fileName = PathUtils.GetFileNameWithoutExtension(filePath);
-            fileName = PathUtils.GetSafeFilename(fileName);
-            return $"{fileName}{PathUtils.GetExtension(filePath)}";
+            return PathUtils.GetUploadFileName(filePath, isUploadChangeFileName);
         }
 
         private bool Contains(string text, string inner)

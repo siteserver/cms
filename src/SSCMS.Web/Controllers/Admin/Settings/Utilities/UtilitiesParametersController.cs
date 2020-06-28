@@ -43,6 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 
             var parameterList = new List<KeyValuePair<string, string>>
             {
+                new KeyValuePair<string, string>("API 地址", _settingsManager.ApiHost),
                 new KeyValuePair<string, string>("系统主机名", Dns.GetHostName().ToUpper()),
                 new KeyValuePair<string, string>("系统根目录地址", _settingsManager.ContentRootPath),
                 new KeyValuePair<string, string>("站点根目录地址", _settingsManager.WebRootPath),

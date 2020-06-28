@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -66,13 +65,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             return new GetResult
             {
-                Value = checkedLevels,
+                CheckedLevels = checkedLevels,
                 CheckedLevel = CheckManager.LevelInt.CaoGao
             };
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<NameTitle>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
@@ -81,17 +80,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
             if (file == null)
             {
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(file.FileName);
-
-            var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-            if (!StringUtils.EqualsIgnoreCase(extendName, ".doc") && !StringUtils.EqualsIgnoreCase(extendName, ".docx") && !StringUtils.EqualsIgnoreCase(extendName, ".wps"))
+            var title = PathUtils.GetFileNameWithoutExtension(file.FileName);
+            var fileName = PathUtils.GetUploadFileName(file.FileName, true);
+            var extendName = PathUtils.GetExtension(fileName);
+            
+            if (!FileUtils.IsWord(extendName))
             {
                 return this.Error("文件只能是 Word 格式，请选择有效的文件上传!");
             }
@@ -99,12 +97,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             await _pathManager.UploadAsync(file, filePath);
 
-            var url = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-
-            return new UploadResult
+            return new NameTitle
             {
-                Name = fileName,
-                Url = url
+                FileName = fileName,
+                Title = title
             };
         }
 
@@ -130,16 +126,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var adminId = _authManager.AdminId;
             var contentIdList = new List<int>();
-            foreach (var fileName in request.FileNames)
+            foreach (var file in request.Files)
             {
-                if (string.IsNullOrEmpty(fileName)) continue;
+                if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
-                var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                var (title, body) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
+                var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
+                var (title, body) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
 
                 if (string.IsNullOrEmpty(title)) continue;
-
-                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ColumnsManager.MetadataAttributes.Value);
 
                 var contentInfo = new Content
                 {
@@ -153,9 +147,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     Title = title,
                     Body = body
                 };
-                contentInfo.LoadDict(dict);
 
-                
                 await _contentRepository.InsertAsync(site, channel, contentInfo);
                 contentIdList.Add(contentInfo.Id);
             }

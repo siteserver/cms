@@ -115,9 +115,15 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url + '/' + library.id).then(function (response) {
+    $api.delete($url, {
+      data: {
+        siteId: this.siteId,
+        id: library.id
+      }
+    }).then(function (response) {
       var res = response.data;
 
+      utils.success('图文素材删除成功!');
       $this.items.splice($this.items.indexOf(library), 1);
     }).catch(function (error) {
       utils.error(error);

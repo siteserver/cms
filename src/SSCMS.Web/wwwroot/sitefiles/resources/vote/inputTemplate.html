@@ -1,0 +1,31 @@
+<div class="votingFrame kk">
+<div class="head">
+<div class="leftCon">
+<p class="txt">参与人数</p>
+<p class="num">{$T.totalOperation}</p>
+</div>
+<div class="rightCon">
+<p class="title">{$T.title}</p>
+<p style="display:none">{$T.limitDate}</p>
+<p class="desc"><span id="timeSpan_[contentID]"></span>｜ 最多选择{$T.maxSelectNum}项</p>
+</div>
+</div>
+<div class="kk list">
+
+{#foreach $T.table as row}
+<div class="kk item">
+<div class="k4 leftCon color"><input type="[inputType]" id="voteOption_[contentID]_{$T.row.optionID}" name="voteOption_[contentID]" value="{$T.row.optionID}" /><span class="option">{$T.row.title}</span></div>
+<div class="vote_right k5 rightCon">
+<div id="vote_color_{$T.row.optionID}" class="column color{$T.row.itemIndex}"></div>
+<span id="vote_num_{$T.row.optionID}"></span>
+</div>
+</div>
+{#/for}
+<div class="k96 gap">
+<span id="voteSuccess_[contentID]" class="voteSuccess" style="display:none"><span class="icon_succ"></span><span id="voteSuccessText_[contentID]">您的投票已成功，谢谢关注</span></span>
+<span id="voteFailure_[contentID]" class="voteFailure" style="display:none"><span class="icon_del"></span><span id="voteFailureText_[contentID]"></span></span>
+<a id="voteButton_[contentID]" href="javascript:;" onclick="submit_vote_[contentID]();" class="but" style="display:{$T.isOver}"></a>
+</div>  
+
+</div>
+</div>

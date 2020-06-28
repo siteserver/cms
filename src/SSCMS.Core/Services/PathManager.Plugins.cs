@@ -69,24 +69,5 @@ namespace SSCMS.Core.Services
 
             return string.Empty;
         }
-
-        public string ParsePluginUrl(string pluginId, string url)
-        {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
-
-            if (PageUtils.IsProtocolUrl(url)) return url;
-
-            if (StringUtils.StartsWith(url, "~/"))
-            {
-                return GetWebRootUrl(url.Substring(1));
-            }
-
-            if (StringUtils.StartsWith(url, "@/"))
-            {
-                return GetAdminUrl(url.Substring(1));
-            }
-
-            return GetWebRootUrl(PageUtils.Combine(DirectoryUtils.Plugins, pluginId, url));
-        }
     }
 }

@@ -154,7 +154,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var fileName = await ExportObject.ExportRootSingleTableStyleAsync(_pathManager, _databaseManager, request.SiteId, _siteRepository.TableName, _tableStyleRepository.GetRelatedIdentities(request.SiteId));
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPath(filePath);
 
             return new StringResult
             {

@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error(errorMessage);
             }
 
-            await FileUtils.WriteTextAsync(_pathManager.GetWebRootPath("index.html"), Constants.Html5Empty);
+            await FileUtils.WriteTextAsync(_pathManager.GetRootPath("index.html"), Constants.Html5Empty);
 
             return new BoolResult
             {

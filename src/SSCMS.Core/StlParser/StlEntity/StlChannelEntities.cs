@@ -174,7 +174,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                             {
                                 var inputParser = new InputParserManager(parseManager.PathManager);
 
-                                parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, null, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                                parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, null, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                             }
                         }
                     }

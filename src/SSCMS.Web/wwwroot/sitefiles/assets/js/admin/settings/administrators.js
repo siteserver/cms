@@ -257,7 +257,11 @@ var methods = {
   },
 
   btnAddClick: function () {
-    location.href = utils.getSettingsUrl('administratorsProfile', {pageType: 'admin'});
+    utils.openLayer({
+      title: '新增管理员',
+      url: utils.getSettingsUrl('administratorsLayerProfile', {pageType: 'admin'}),
+      full: true
+    });
   },
 
   btnImportClick: function() {

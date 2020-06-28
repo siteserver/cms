@@ -7,7 +7,6 @@
       v-model="form.transSiteIds"
       :options="transSites"
       :props="{ checkStrictly: true }"
-      :multiple="false"
       v-on:change="handleTransSiteIdChange"
       filterable
       placeholder="请选择站点">
@@ -17,8 +16,8 @@
     <el-cascader
       v-model="form.transChannelIds"
       :options="transChannels"
-      :props="{ checkStrictly: true }"
-      filterable 
+      :props="{ checkStrictly: true, multiple: true }"
+      filterable
       placeholder="请选择栏目">
     </el-cascader>
   </el-form-item>

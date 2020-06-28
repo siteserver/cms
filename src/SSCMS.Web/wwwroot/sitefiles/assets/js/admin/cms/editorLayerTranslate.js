@@ -56,25 +56,34 @@ var methods = {
   apiSubmit: function() {
     var $this = this;
 
+    var transChannelIds = [];
+    this.form.transChannelIds.forEach(function(arr) {
+      var transChannelId = arr[arr.length - 1];
+      transChannelIds.push(transChannelId);
+    });
+
     var transSiteId = this.form.transSiteIds[this.form.transSiteIds.length - 1];
-    var transChannelId = this.form.transChannelIds[this.form.transChannelIds.length - 1];
 
     utils.loading(this, true);
     $api.post($url, {
       siteId: this.siteId,
       channelId: this.channelId,
       transSiteId: transSiteId,
-      transChannelId: transChannelId,
+      transChannelIds: transChannelIds,
       transType: this.form.transType
     }).then(function (response) {
       var res = response.data;
 
-      parent.$vue.addTranslation(
-        transSiteId,
-        transChannelId,
-        $this.form.transType,
-        res.value
-      );
+      var channels = res.channels;
+      channels.forEach(function (channel) {
+        parent.$vue.addTranslation(
+          transSiteId,
+          channel.id,
+          $this.form.transType,
+          channel.name
+        );
+      });
+      
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);

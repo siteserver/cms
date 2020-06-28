@@ -11,11 +11,10 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             public int CheckedLevel { set; get; }
         }
 
-        public class UploadResult
+        public class NameTitle
         {
             public string FileName { get; set; }
-            public long Length { get; set; }
-            public int Ret { get; set; }
+            public string Title { get; set; }
         }
 
         public class SubmitRequest : ChannelRequest
@@ -27,7 +26,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             public bool IsClearFontFamily { get; set; }
             public bool IsClearImages { get; set; }
             public int CheckedLevel { get; set; }
-            public List<string> FileNames { get; set; }
+            public List<NameTitle> Files { get; set; }
         }
     }
 }

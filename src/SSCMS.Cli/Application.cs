@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
 using Quartz;
 using Quartz.Impl;
+using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli
 {
-    public class Application
+    public class Application : IApplication
     {
         private bool _isHelp;
         private string _repeat;
@@ -22,10 +25,12 @@ namespace SSCMS.Cli
         public static string[] CommandExtras { get; private set; }
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
 
-        public Application(ISettingsManager settingsManager)
+        public Application(ISettingsManager settingsManager, IPluginManager pluginManager)
         {
             _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
 
             _options = new OptionSet {
                 { "r|repeat=", "schedule CRON expression",
@@ -39,7 +44,7 @@ namespace SSCMS.Cli
         {
             if (!CliUtils.ParseArgs(_options, args)) return;
 
-            var jobServiceCommandNames = CliUtils.GetJobServiceCommandNames();
+            var jobServiceCommandNames = GetJobServiceCommandNames();
             var isJobService = false;
 
             var commandName = string.Empty;
@@ -115,10 +120,10 @@ namespace SSCMS.Cli
         {
             if (_isHelp || string.IsNullOrEmpty(commandName))
             {
-                await WriteUtils.PrintInfoAsync(_settingsManager);
+                await Console.Out.WriteLineAsync("Welcome to SSCMS Command Line");
                 await Console.Out.WriteLineAsync();
 
-                var services = CliUtils.GetJobServices();
+                var services = GetJobServices();
                 foreach (var service in services)
                 {
                     await WriteUtils.PrintRowLine();
@@ -171,7 +176,7 @@ namespace SSCMS.Cli
         {
             try
             {
-                var service = CliUtils.GetJobService(commandName);
+                var service = GetJobService(commandName);
                 if (service != null)
                 {
                     var context = new JobContext(commandName, commandArgs, commandExtras, jobContext);
@@ -194,6 +199,26 @@ namespace SSCMS.Cli
                 //    }
                 //});
             }
+        }
+
+        private IJobService GetJobService(string commandName)
+        {
+            var provider = _settingsManager.BuildServiceProvider();
+            var services = provider.GetServices<IJobService>();
+            return services.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.CommandName, commandName));
+        }
+
+        private List<string> GetJobServiceCommandNames()
+        {
+            var provider = _settingsManager.BuildServiceProvider();
+            var services = provider.GetServices<IJobService>();
+            return services.Select(x => x.CommandName).ToList();
+        }
+
+        private IEnumerable<IJobService> GetJobServices()
+        {
+            var provider = _settingsManager.BuildServiceProvider();
+            return provider.GetServices<IJobService>();
         }
     }
 }

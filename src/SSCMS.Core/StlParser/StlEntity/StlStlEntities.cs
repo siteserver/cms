@@ -72,7 +72,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ApiUrl, attributeName))//API地址
                 {
-                    parsedContent = pageInfo.ApiUrl.TrimEnd('/');
+                    parsedContent = parseManager.PathManager.GetRootUrl();
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteId, attributeName))//ID
                 {
@@ -154,7 +154,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                                     InputType.File)
                                     ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent,
                                         pageInfo.IsLocal)
-                                    : await inputParser.GetContentByTableStyleAsync(parsedContent, string.Empty, pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty,
+                                    : await inputParser.GetContentByTableStyleAsync(parsedContent, string.Empty, pageInfo.Site, styleInfo, string.Empty, null, string.Empty,
                                         true);
                             }
                             else

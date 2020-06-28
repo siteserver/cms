@@ -35,7 +35,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
             // 如果是实体标签则返回空
@@ -117,7 +116,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 OnError = onError
             };
 
-            return dynamicInfo.GetScript(parseManager.PathManager.GetDynamicApiUrl(parseManager.PageInfo.ApiUrl), inline);
+            var dynamicUrl = parseManager.PathManager.GetDynamicApiUrl();
+            return dynamicInfo.GetScript(dynamicUrl, inline);
         }
 
         internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager)

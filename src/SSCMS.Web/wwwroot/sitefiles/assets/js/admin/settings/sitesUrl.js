@@ -3,8 +3,6 @@
 var data = utils.init({
   pageType: null,
   sites: null,
-  isSeparatedApi: null,
-  separatedApiUrl: null,
 
   editPanel: false,
   editForm: null,
@@ -19,15 +17,6 @@ var data = utils.init({
     separatedAssetsUrl: [
       { required: true, message: '独立部署上传文件访问地址', trigger: 'blur' }
     ]
-  },
-
-  apiPanel: false,
-  apiForm: null,
-  apiLoading: false,
-  apiRules: {
-    separatedApiUrl: [
-      { required: true, message: '独立部署API访问地址', trigger: 'blur' }
-    ]
   }
 });
 
@@ -39,8 +28,6 @@ var methods = {
       var res = response.data;
 
       $this.sites = res.sites;
-      $this.isSeparatedApi = res.isSeparatedApi;
-      $this.separatedApiUrl = res.separatedApiUrl;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -81,7 +68,7 @@ var methods = {
   apiEdit: function() {
     var $this = this;
 
-    $api.put($url + '/actions/web', this.editForm).then(function (response) {
+    $api.put($url, this.editForm).then(function (response) {
       var res = response.data;
 
       $this.sites = res.sites;
@@ -90,46 +77,6 @@ var methods = {
       utils.error(error);
     }).then(function () {
       $this.editLoading = false;
-    });
-  },
-
-  btnApiClick: function() {
-    this.apiForm = {
-      isSeparatedApi: this.isSeparatedApi,
-      separatedApiUrl: this.separatedApiUrl,
-    };
-    this.apiPanel = true;
-  },
-
-  btnApiCancelClick: function() {
-    this.apiPanel = false;
-    this.apiLoading = false;
-  },
-
-  btnApiSubmitClick: function() {
-    var $this = this;
-    this.$refs.apiForm.validate(function(valid) {
-      if (valid) {
-        $this.apiLoading = true;
-        $this.apiApi();
-      }
-    });
-  },
-
-  apiApi: function() {
-    var $this = this;
-
-    $api.put($url + '/actions/api', this.apiForm).then(function (response) {
-      var res = response.data;
-
-      $this.isSeparatedApi = $this.apiForm.isSeparatedApi;
-      $this.separatedApiUrl = $this.apiForm.separatedApiUrl;
-
-      $this.apiPanel = false;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      $this.apiLoading = false;
     });
   }
 };

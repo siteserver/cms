@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             return new PreviewResult
             {
-                Url = _pathManager.GetContentPreviewUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
+                Url = _pathManager.GetPreviewContentUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
             };
 
             ////contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);

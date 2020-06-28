@@ -147,12 +147,13 @@ namespace SSCMS.Core.Services
                 return href;
             }
 
-            var url = PageUtils.AddQueryStringIfNotExists(_pathManager.ParsePluginUrl(pluginId, href), new NameValueCollection
-            {
-                {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
-                {"pluginId", pluginId},
-                {"apiUrl", _pathManager.InnerApiUrl}
-            });
+            //var url = PageUtils.AddQueryStringIfNotExists(_pathManager.ParsePluginUrl(pluginId, href), new NameValueCollection
+            //{
+            //    {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
+            //    {"pluginId", pluginId},
+            //    {"apiUrl", _pathManager.InnerApiUrl}
+            //});
+            var url = string.Empty;
             if (siteId > 0)
             {
                 url = PageUtils.AddQueryStringIfNotExists(url, new NameValueCollection

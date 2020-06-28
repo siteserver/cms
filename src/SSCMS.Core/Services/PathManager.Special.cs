@@ -16,7 +16,7 @@ namespace SSCMS.Core.Services
             var specialUrl = await GetSpecialUrlAsync(site, specialId);
 
             var url = isLocal
-                ? GetLocalSpecialUrl(site.Id, specialId)
+                ? GetPreviewSpecialUrl(site.Id, specialId)
                 : await ParseNavigationUrlAsync(site, specialUrl, false);
 
             return RemoveDefaultFileName(site, url);

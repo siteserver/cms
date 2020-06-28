@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Video);
-            var localFileName = _pathManager.GetUploadFileName(fileName, true);
+            var localFileName = PathUtils.GetUploadFileName(fileName, true);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             await _pathManager.UploadAsync(file, filePath);

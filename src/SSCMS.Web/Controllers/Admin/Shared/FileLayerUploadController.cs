@@ -46,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.File);
-            var localFileName = _pathManager.GetUploadFileName(fileName, request.IsChangeFileName);
+            var localFileName = PathUtils.GetUploadFileName(fileName, request.IsChangeFileName);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             await _pathManager.UploadAsync(file, filePath);

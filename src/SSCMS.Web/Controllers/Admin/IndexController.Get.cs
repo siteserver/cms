@@ -171,7 +171,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var config = await _configRepository.GetAsync();
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, false);
-            var previewUrl = _pathManager.GetLocalSiteUrl(site.Id);
+            var previewUrl = _pathManager.GetPreviewSiteUrl(site.Id);
 
             var requestCulture = HttpContext.Features.Get<IRequestCultureFeature>();
             var culture = requestCulture.RequestCulture.UICulture.Name;

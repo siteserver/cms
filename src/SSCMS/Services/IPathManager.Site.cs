@@ -9,20 +9,6 @@ namespace SSCMS.Services
 {
     partial interface IPathManager
     {
-        string GetWebRootUrl(params string[] paths);
-
-        string GetWebRootPath(params string[] paths);
-
-        string GetTemporaryFilesUrl(string relatedUrl);
-
-        string GetSiteTemplatesUrl(string relatedUrl);
-
-        string ParsePluginUrl(string pluginId, string url);
-
-        string GetRootUrlByPhysicalPath(string physicalPath);
-
-        string ParseNavigationUrl(string url);
-
         //根据发布系统属性判断是否为相对路径并返回解析后路径
         Task<string> ParseNavigationUrlAsync(Site site, string url, bool isLocal);
 
@@ -30,17 +16,17 @@ namespace SSCMS.Services
 
         Task<string> GetSiteUrlAsync(Site site, string requestPath, bool isLocal);
 
-        string GetLocalSiteUrl(int siteId);
+        string GetPreviewSiteUrl(int siteId);
 
-        string GetLocalChannelUrl(int siteId, int channelId);
+        string GetPreviewChannelUrl(int siteId, int channelId);
 
-        string GetLocalContentUrl(int siteId, int channelId, int contentId);
+        string GetPreviewContentUrl(int siteId, int channelId, int contentId);
 
-        string GetContentPreviewUrl(int siteId, int channelId, int contentId, int previewId);
+        string GetPreviewContentUrl(int siteId, int channelId, int contentId, int previewId);
 
-        string GetLocalFileUrl(int siteId, int fileTemplateId);
+        string GetPreviewFileUrl(int siteId, int fileTemplateId);
 
-        string GetLocalSpecialUrl(int siteId, int specialId);
+        string GetPreviewSpecialUrl(int siteId, int specialId);
 
         Task<string> GetSiteUrlByPhysicalPathAsync(Site site, string physicalPath, bool isLocal);
 
@@ -78,10 +64,6 @@ namespace SSCMS.Services
 
         bool IsRelativeUrl(string url);
 
-        string GetSiteFilesUrl(string relatedUrl);
-
-        string GetSiteFilesUrl(string apiUrl, string relatedUrl);
-
         List<Select<string>> GetLinkTypeSelects();
 
         Task<string> GetSitePathAsync(Site site);
@@ -103,8 +85,6 @@ namespace SSCMS.Services
         Task<string> GetUploadDirectoryPathAsync(Site site, DateTime datetime, UploadType uploadType);
 
         string GetUploadFileName(Site site, string filePath);
-
-        string GetUploadFileName(string filePath, bool isUploadChangeFileName);
 
         Task<Site> GetSiteAsync(string path);
 

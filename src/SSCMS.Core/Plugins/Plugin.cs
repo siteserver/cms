@@ -14,7 +14,7 @@ namespace SSCMS.Core.Plugins
         public Plugin(string folderPath, bool reloadOnChange)
         {
             ContentRootPath = folderPath;
-            WebRootPath = PathUtils.Combine(folderPath, "wwwroot");
+            WebRootPath = PathUtils.Combine(folderPath, Constants.WwwrootDirectory);
             var builder = new ConfigurationBuilder()
                 .SetBasePath(folderPath)
                 .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: reloadOnChange);

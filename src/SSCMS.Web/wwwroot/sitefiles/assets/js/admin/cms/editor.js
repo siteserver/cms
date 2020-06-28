@@ -286,7 +286,7 @@ var methods = {
         siteId: this.siteId,
         channelId: this.channelId
       }),
-      width: 550,
+      width: 620,
       height: 400
     });
   },

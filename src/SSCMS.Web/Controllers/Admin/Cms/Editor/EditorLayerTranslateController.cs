@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -85,7 +86,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Translate))
             {
@@ -98,17 +99,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
             var siteName = transSite.SiteName;
 
-            var name = await _channelRepository.GetChannelNameNavigationAsync(request.TransSiteId, request.TransChannelId);
-            if (request.TransSiteId != request.SiteId)
+            var channels = new List<TransChannel>();
+            foreach (var transChannelId in request.TransChannelIds)
             {
-                name = siteName + " : " + name;
+                var name = await _channelRepository.GetChannelNameNavigationAsync(request.TransSiteId, transChannelId);
+                if (request.TransSiteId != request.SiteId)
+                {
+                    name = siteName + " : " + name;
+                }
+
+                name += $" ({request.TransType.GetDisplayName()})";
+
+                channels.Add(new TransChannel
+                {
+                    Id = transChannelId,
+                    Name = name
+                });
             }
 
-            name += $" ({request.TransType.GetDisplayName()})";
-
-            return new StringResult
+            return new SubmitResult
             {
-                Value = name
+                Channels = channels
             };
         }
     }

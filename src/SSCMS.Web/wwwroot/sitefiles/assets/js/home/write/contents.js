@@ -154,13 +154,15 @@ var methods = {
     });
   },
 
-  btnAddClick: function (command) {
+  btnAddClick: function () {
+    utils.addTab('添加内容', this.getAddUrl());
+  },
+
+  btnImportClick: function (command) {
     if (command === 'Word') {
       this.btnLayerClick({title: '批量导入Word', name: 'Word', full: true});
     } else if (command === 'Import') {
       this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
-    } else {
-      utils.addTab('添加内容', this.getAddUrl());
     }
   },
 

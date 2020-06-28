@@ -369,7 +369,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
             await excelObject.CreateExcelFileForAdministratorsAsync(filePath);
-            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPath(filePath);
 
             return new StringResult
             {

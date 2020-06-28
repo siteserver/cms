@@ -37,7 +37,10 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public IServiceProvider ServiceProvider => _services.BuildServiceProvider();
+        public IServiceProvider BuildServiceProvider()
+        {
+            return _services.BuildServiceProvider();
+        }
 
         public string ContentRootPath { get; }
         public string WebRootPath { get; }
@@ -46,6 +49,7 @@ namespace SSCMS.Core.Services
         public bool IsNightlyUpdate => _config.GetValue(nameof(IsNightlyUpdate), false);
         public bool IsProtectData => _config.GetValue(nameof(IsProtectData), false);
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
+        public string ApiHost => _config.GetValue(nameof(ApiHost), "/");
         public DatabaseType DatabaseType => TranslateUtils.ToEnum(IsProtectData ? Decrypt(_config.GetValue<string>("Database:Type")) : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
         public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
         public IDatabase Database => new Database(DatabaseType, DatabaseConnectionString);

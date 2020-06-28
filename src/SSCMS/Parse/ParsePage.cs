@@ -22,8 +22,6 @@ namespace SSCMS.Parse
 
         public Dictionary<string, string> Parameters { get; set; }
 
-        public string ApiUrl { get; private set; }
-
         public Template Template { get; private set; }
 
         public User User { get; set; }
@@ -70,7 +68,6 @@ namespace SSCMS.Parse
         public ParsePage(IPathManager pathManager, Config config, int pageChannelId, int pageContentId, Site site, Template template, Dictionary<string, object> pluginItems)
         {
             _pathManager = pathManager;
-            var apiUrl = pathManager.GetApiUrl(config);
             Template = template;
             SiteId = site.Id;
             PageChannelId = pageChannelId;
@@ -83,7 +80,6 @@ namespace SSCMS.Parse
             Site = site;
             User = null;
             _uniqueId = 1;
-            ApiUrl = apiUrl;
             ChannelItems = new Stack<KeyValuePair<int, Channel>>(5);
             ContentItems = new Stack<KeyValuePair<int, Content>>(5);
             SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5);
@@ -158,8 +154,6 @@ namespace SSCMS.Parse
             public const string JsUserScript = "Js_User_Script";
             public const string JsInnerCalendar = "Js_Inner_Calendar";
 
-            public const string JsStaticAdFloating = "Js_Static_AdFloating";      //漂浮广告
-
             public const string Vue = nameof(Vue);
             public const string VueElement = nameof(VueElement);
         }
@@ -172,55 +166,78 @@ namespace SSCMS.Parse
             {
                 if (Site.IsCreateWithJQuery)
                 {
+                    var jsUrl = _pathManager.GetSiteFilesUrl(Resources.Components.Jquery);
+
                     retVal =
-                        $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
+                        $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
                 }
             }
             else if (pageJsName == Const.JsCookie)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.Components.JsCookie);
+
                 retVal =
-                    $@"<script src=""{ SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.JsCookie)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.StlClient)
             {
+                var lodashUrl = _pathManager.GetSiteFilesUrl(Resources.Components.Lodash);
+                var clientUrl = _pathManager.GetSiteFilesUrl(Resources.Components.StlClient);
+
                 retVal =
-                    $@"<script src=""{ SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Lodash)}"" type=""text/javascript""></script><script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.StlClient)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{lodashUrl}"" type=""text/javascript""></script><script src=""{clientUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BAjaxUpload)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.AjaxUpload.Js);
+
                 retVal =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BQueryString)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.QueryString.Js);
+
                 retVal =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BjQueryForm)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.JQueryForm.Js);
+
                 retVal =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BShowLoading)
             {
+                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.ShowLoading.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.ShowLoading.Js);
+
                 retVal =
-                    $@"<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ShowLoading.Css)}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{SiteFilesAssets
-                        .JQuery.ShowLoading.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ShowLoading.Js)}""></script>";
+                    $@"<link href=""{cssUrl}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{Resources
+                        .JQuery.ShowLoading.Charset}"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.BjTemplates)
             {
+                var jsUrl =
+                    _pathManager.GetSiteFilesUrl(Resources.JQuery.JTemplates.Js);
+
                 retVal =
-                    $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.JTemplates.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JTemplates.Js)}""></script>";
+                    $@"<script type=""text/javascript"" charset=""{Resources.JQuery.JTemplates.Charset}"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.BValidate)
             {
+                var jsUrl =
+                    _pathManager.GetSiteFilesUrl(Resources.JQuery.ValidateJs.Js);
+
                 retVal =
-                    $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.ValidateJs.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ValidateJs.Js)}""></script>";
+                    $@"<script type=""text/javascript"" charset=""{Resources.JQuery.ValidateJs.Charset}"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.BBootstrap)
             {
-                var cssUrl = SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.Bootstrap.Css);
-                var jsUrl = SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.Bootstrap.Js);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.Bootstrap.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.Bootstrap.Js);
+
                 retVal = $@"
 <link rel=""stylesheet"" type=""text/css"" href=""{cssUrl}"">
 <script language=""javascript"" src=""{jsUrl}""></script>
@@ -228,28 +245,39 @@ namespace SSCMS.Parse
             }
             else if (pageJsName == Const.JsAcSwfObject)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.SwfObject.Js);
+
                 retVal =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.SwfObject.Js)}""></script>";
+                    $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAcJwPlayer6)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JwPlayer6.Js);
+
                 retVal =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JwPlayer6.Js)}""></script><script type=""text/javascript"">jwplayer.key=""ABCDEFGHIJKLMOPQ"";</script>";
+                    $@"<script type=""text/javascript"" src=""{jsUrl}""></script><script type=""text/javascript"">jwplayer.key=""ABCDEFGHIJKLMOPQ"";</script>";
             }
             else if (pageJsName == Const.JsAcFlowPlayer)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.FlowPlayer.Js);
+
                 retVal =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.FlowPlayer.Js)}""></script>";
+                    $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAcMediaElement)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.MediaElement.Js);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.MediaElement.Css);
+
                 retVal =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.MediaElement.Js)}""></script><link rel=""stylesheet"" href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.MediaElement.Css)}"" />";
+                    $@"<script type=""text/javascript"" src=""{jsUrl}""></script><link rel=""stylesheet"" href=""{cssUrl}"" />";
             }
             else if (pageJsName == Const.JsAcAudioJs)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.AudioJs.Js);
+
                 retVal =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.AudioJs.Js)}""></script>
+                    $@"<script type=""text/javascript"" src=""{jsUrl}""></script>
 <script type='text/javascript'>
 audiojs.events.ready(function() {{
     audiojs.createAll();
@@ -259,9 +287,12 @@ audiojs.events.ready(function() {{
             }
             else if (pageJsName == Const.JsAcVideoJs)
             {
+                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.VideoJs.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.VideoJs.Js);
+
                 retVal = $@"
-<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VideoJs.Css)}"" rel=""stylesheet"">
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VideoJs.Js)}""></script>
+<link href=""{cssUrl}"" rel=""stylesheet"">
+<script type=""text/javascript"" src=""{jsUrl}""></script>
 ";
             }
             else if (pageJsName == Const.JsPageOpenWindow)
@@ -283,35 +314,44 @@ wnd_frame.src=url;}}
             }
             else if (pageJsName == Const.JsUserScript)
             {
+                var jsPageScriptUrl = _pathManager.GetSiteFilesUrl(Resources.Stl.JsPageScript);
+                var assetsUrl = _pathManager.GetSiteFilesUrl();
+                var jsUserScriptUrl = _pathManager.GetSiteFilesUrl(Resources.Stl.JsUserScript);
+
                 retVal = $@"
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{Site.Id}', {(await _pathManager.GetWebUrlAsync(Site)).TrimEnd('/')}');</script>
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
+<script type=""text/javascript"" src=""{jsPageScriptUrl}""></script>
+<script type=""text/javascript"">stlInit('{assetsUrl}', '{Site.Id}', {(await _pathManager.GetWebUrlAsync(Site)).TrimEnd('/')}');</script>
+<script type=""text/javascript"" src=""{jsUserScriptUrl}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)
             {
-                retVal = $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
-            }
-            else if (pageJsName == Const.JsStaticAdFloating)
-            {
-                retVal =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Static.JsStaticAdFloating)}""></script>";
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.DatePicker.Js);
+
+                retVal = $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAhTranslate)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.TwCn.Js);
+
                 retVal =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.TwCn.Js)}"" charset=""{SiteFilesAssets.TwCn.Charset}"" type=""text/javascript""></script>";
+                    $@"<script src=""{jsUrl}"" charset=""{Resources.TwCn.Charset}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.Vue)
             {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.VueJs.Vue);
+
                 retVal =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.Vue)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.VueElement)
             {
+                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.VueJs.ElementCss);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.VueJs.ElementJs);
+
                 retVal =
-                    $@"<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.ElementCss)}"" rel=""stylesheet"" /><script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VueJs.ElementJs)}""></script>";
+                    $@"<link href=""{cssUrl}"" rel=""stylesheet"" /><script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
+
             return retVal;
         }
 

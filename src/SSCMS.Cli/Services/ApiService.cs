@@ -81,7 +81,7 @@ namespace SSCMS.Cli.Services
             var response = client.Execute<LoginResult>(request);
             if (!response.IsSuccessful)
             {
-                return (false, $"your account or password was incorrect, status code: {response.StatusDescription}");
+                return (false, "your account or password was incorrect");
             }
 
             var loginResult = response.Data;

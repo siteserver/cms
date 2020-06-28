@@ -319,7 +319,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
             var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var url = _pathManager.GetDownloadApiUrl(_pathManager.InnerApiUrl, filePath);
+            var url = _pathManager.GetDownloadApiUrl(true, filePath);
 
             return new StringResult
             {

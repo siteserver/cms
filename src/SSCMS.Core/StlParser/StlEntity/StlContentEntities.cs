@@ -160,7 +160,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = parseManager.PathManager.GetDownloadApiUrl(pageInfo.ApiUrl, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
+                            parsedContent = parseManager.PathManager.GetDownloadApiUrl(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//内容添加日期
@@ -232,7 +232,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var inputParser = new InputParserManager(parseManager.PathManager);
 
-                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                         }
 
                     }

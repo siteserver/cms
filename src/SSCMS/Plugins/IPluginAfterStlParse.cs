@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace SSCMS.Plugins
+﻿namespace SSCMS.Plugins
 {
     public interface IPluginAfterStlParse : IPluginExtension
     {

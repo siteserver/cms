@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -70,7 +69,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         }
 
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<NameTitle>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
             {
@@ -82,34 +81,22 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(file.FileName);
+            var title = PathUtils.GetFileNameWithoutExtension(file.FileName);
+            var fileName = PathUtils.GetUploadFileName(file.FileName, true);
+            var extendName = PathUtils.GetExtension(fileName);
 
-            if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".doc", ".docx", ".wps"))
+            if (!FileUtils.IsWord(extendName))
             {
-                return this.Error("文件只能是 Image 格式，请选择有效的文件上传!");
+                return this.Error("文件只能是 Word 格式，请选择有效的文件上传!");
             }
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             await _pathManager.UploadAsync(file, filePath);
 
-            FileInfo fileInfo = null;
-            if (!string.IsNullOrEmpty(filePath))
+            return new NameTitle
             {
-                fileInfo = new FileInfo(filePath);
-            }
-            if (fileInfo != null)
-            {
-                return new UploadResult
-                {
-                    FileName = fileName,
-                    Length = fileInfo.Length,
-                    Ret = 1
-                };
-            }
-
-            return new UploadResult
-            {
-                Ret = 0
+                FileName = fileName,
+                Title = title
             };
         }
 
@@ -134,12 +121,12 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             var userId = _authManager.UserId;
 
             var contentIdList = new List<int>();
-            foreach (var fileName in request.FileNames)
+            foreach (var file in request.Files)
             {
-                if (string.IsNullOrEmpty(fileName)) continue;
+                if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
-                var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                var (title, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath);
+                var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
+                var (title, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
 
                 if (string.IsNullOrEmpty(title)) continue;
 

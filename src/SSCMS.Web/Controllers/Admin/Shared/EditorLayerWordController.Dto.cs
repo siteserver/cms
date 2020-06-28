@@ -12,13 +12,13 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             public bool IsClearFontSize { get; set; }
             public bool IsClearFontFamily { get; set; }
             public bool IsClearImages { get; set; }
-            public List<string> FileNames { get; set; }
+            public List<NameTitle> Files { get; set; }
         }
 
-        public class UploadResult
+        public class NameTitle
         {
-            public string Name { get; set; }
-            public string Url { get; set; }
+            public string FileName { get; set; }
+            public string Title { get; set; }
         }
     }
 }

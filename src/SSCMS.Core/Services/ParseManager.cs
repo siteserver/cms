@@ -85,6 +85,23 @@ namespace SSCMS.Core.Services
                 await ParseTemplateContentAsync(contentBuilder);
             }
 
+            var afterStlParsesAsync = _pluginManager.GetExtensions<IPluginAfterStlParseAsync>();
+            if (afterStlParsesAsync != null)
+            {
+                foreach (var extension in afterStlParsesAsync)
+                {
+                    try
+                    {
+                        await extension.AfterStlParseAsync(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        await AddStlErrorLogAsync(nameof(IPluginAfterStlParseAsync), string.Empty,
+                            ex);
+                    }
+                }
+            }
+
             var afterStlParses = _pluginManager.GetExtensions<IPluginAfterStlParse>();
             if (afterStlParses != null)
             {
@@ -93,10 +110,6 @@ namespace SSCMS.Core.Services
                     try
                     {
                         extension.AfterStlParse(context);
-                        //plugin.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
-                        //    PageInfo.PageContentId, await GetContentAsync(),
-                        //    PageInfo.Template.TemplateType, PageInfo.Template.Id, filePath, PageInfo.HeadCodes,
-                        //    PageInfo.BodyCodes, PageInfo.FootCodes, contentBuilder));
                     }
                     catch (Exception ex)
                     {
@@ -152,8 +165,7 @@ namespace SSCMS.Core.Services
                             fileTemplateId = PageInfo.Template.Id;
                         }
 
-                        var apiUrl = PageInfo.ApiUrl;
-                        var ajaxUrl = PathManager.GetTriggerApiUrl(apiUrl, PageInfo.SiteId, ContextInfo.ChannelId,
+                        var ajaxUrl = PathManager.GetTriggerApiUrl(PageInfo.SiteId, ContextInfo.ChannelId,
                             ContextInfo.ContentId, fileTemplateId, true);
                         if (!PageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
                         {

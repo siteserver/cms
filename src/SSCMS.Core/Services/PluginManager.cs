@@ -88,7 +88,8 @@ namespace SSCMS.Core.Services
 
         public IEnumerable<T> GetExtensions<T>(bool useCaching = false) where T : IPluginExtension
         {
-            return PluginUtils.GetInstances<T>(NetCorePlugins, _settingsManager.ServiceProvider, useCaching);
+            var provider = _settingsManager.BuildServiceProvider();
+            return PluginUtils.GetInstances<T>(NetCorePlugins, provider, useCaching);
         }
 
         public async Task<Dictionary<string, object>> GetConfigAsync(string pluginId)

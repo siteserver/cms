@@ -27,7 +27,7 @@ namespace SSCMS.Core.Tests
             var dirPath = Path.GetDirectoryName(codeBasePath);
 
             ContentRootPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(dirPath)));
-            WebRootPath = PathUtils.Combine(ContentRootPath, "wwwroot");
+            WebRootPath = PathUtils.Combine(ContentRootPath, Constants.WwwrootDirectory);
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(ContentRootPath)

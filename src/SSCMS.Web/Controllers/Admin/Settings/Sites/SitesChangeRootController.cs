@@ -106,7 +106,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 {
                     return this.Error("文件夹名称不符合系统要求，请更改文件夹名称！");
                 }
-                var rootPath = _pathManager.GetWebRootPath();
+                var rootPath = _pathManager.GetRootPath();
                 var directories = DirectoryUtils.GetDirectoryNames(rootPath);
                 if (ListUtils.ContainsIgnoreCase(directories, request.SiteDir))
                 {

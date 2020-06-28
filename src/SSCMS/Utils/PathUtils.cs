@@ -86,6 +86,18 @@ namespace SSCMS.Utils
             return url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
         }
 
+        public static string GetUploadFileName(string filePath, bool isUploadChangeFileName)
+        {
+            if (isUploadChangeFileName)
+            {
+                return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
+            }
+
+            var fileName = GetFileNameWithoutExtension(filePath);
+            fileName = GetSafeFilename(fileName);
+            return $"{fileName}{GetExtension(filePath)}";
+        }
+
         public static string GetExtension(string path)
         {
             var retVal = string.Empty;

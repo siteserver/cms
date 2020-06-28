@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +20,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
     public partial class LibraryTextController : ControllerBase
     {
         private const string Route = "cms/library/libraryText";
-        private const string RouteId = "cms/library/libraryText/{id}";
         private const string RouteList = "cms/library/libraryText/list";
         private const string RouteGroups = "cms/library/libraryText/groups";
         private const string RouteGroupId = "cms/library/libraryText/groups/{id}";
@@ -86,10 +84,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
                 return this.Error("请选择有效的文件上传");
             }
 
-            var fileName = Path.GetFileName(file.FileName);
+            var fileTitle = PathUtils.GetFileNameWithoutExtension(file.FileName);
+            var fileName = PathUtils.GetUploadFileName(file.FileName, true);
+            var extendName = PathUtils.GetExtension(fileName);
 
-            var sExt = PathUtils.GetExtension(fileName);
-            if (!StringUtils.EqualsIgnoreCase(sExt, ".doc") && !StringUtils.EqualsIgnoreCase(sExt, ".docx") && !StringUtils.EqualsIgnoreCase(sExt, ".wps"))
+            if (!FileUtils.IsWord(extendName))
             {
                 return this.Error("文件只能是 Word 格式，请选择有效的文件上传!");
             }
@@ -102,10 +101,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
 
             await _pathManager.UploadAsync(file, filePath);
 
-            var (_, wordContent) = await WordManager.GetWordAsync(_pathManager, null, false, true, true, true, true, false, filePath);
+            var (title, wordContent) = await WordManager.GetWordAsync(_pathManager, null, false, true, true, true, true, false, filePath, fileTitle);
             FileUtils.DeleteFileIfExists(filePath);
 
-            library.Title = fileName;
+            library.Title = title;
             library.ImageUrl = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
             library.Content = wordContent;
             library.Id = await _libraryTextRepository.InsertAsync(library);
@@ -113,7 +112,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
             return library;
         }
 
-        [HttpDelete, Route(RouteId)]
+        [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

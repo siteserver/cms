@@ -259,7 +259,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
 
                     var inputParser = new InputParserManager(parseManager.PathManager);
-                    parsedContent = await inputParser.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                    parsedContent = await inputParser.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(content.Get<string>(ColumnsManager.GetFormatStringAttributeName(nameof(Content.Title)))))
@@ -438,7 +438,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity));
+                        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity));
 
                         //第n条
                         var countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
@@ -448,7 +448,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
                             var extend = content.Get<string>(extendName);
 
-                            sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site,
+                            sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Site,
                                 extend, contextInfo.Attributes, contextInfo.IsStlEntity));
                         }
 
@@ -471,7 +471,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity);
+                            parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity);
                         }
                         else
                         {
@@ -479,7 +479,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extend = content.Get<string>(extendName);
                             if (!string.IsNullOrEmpty(extend))
                             {
-                                parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, extend, contextInfo.Attributes, contextInfo.IsStlEntity);
+                                parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, contextInfo.IsStlEntity);
                             }
                         }
                     }
@@ -511,7 +511,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var inputParser = new InputParserManager(parseManager.PathManager);
 
                             //第一条
-                            sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                            sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
 
                             //第n条
                             var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
@@ -521,7 +521,7 @@ namespace SSCMS.Core.StlParser.StlElement
                                 var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
                                 var extend = content.Get<string>(extendName);
 
-                                sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site,
+                                sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Site,
                                     content.ChannelId, content.Id, extend, contextInfo.Attributes,
                                     contextInfo.InnerHtml,
                                     false, isLower, isUpper));
@@ -560,7 +560,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                             if (num <= 1)
                             {
-                                parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -568,7 +568,7 @@ namespace SSCMS.Core.StlParser.StlElement
                                 var extend = content.Get<string>(extendName);
                                 if (!string.IsNullOrEmpty(extend))
                                 {
-                                    parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site,
+                                    parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Site,
                                         content.ChannelId, content.Id, extend, contextInfo.Attributes,
                                         contextInfo.InnerHtml, false, isLower, isUpper);
                                 }
@@ -607,7 +607,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var num = TranslateUtils.ToInt(no);
 
                             var inputParser = new InputParserManager(parseManager.PathManager);
-                            parsedContent = await inputParser.GetContentByTableStyleAsync(content, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(content, separator, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
                             parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else

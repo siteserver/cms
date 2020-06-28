@@ -269,7 +269,7 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-            var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl(pageInfo.ApiUrl);
+            var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl();
             var apiParameters = ParseManager.PathManager.GetPageContentsApiParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
 
             var builder = new StringBuilder();

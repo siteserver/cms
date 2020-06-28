@@ -13,7 +13,7 @@ var data = utils.init({
     isClearFontFamily: true,
     isClearImages: false,
     checkedLevel: null,
-    fileNames: []
+    files: []
   },
   uploadUrl: null,
   uploadList: []
@@ -32,10 +32,8 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.checkedLevels = res.value;
+      $this.checkedLevels = res.checkedLevels;
       $this.form.checkedLevel = res.checkedLevel;
-
-      $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&channelId=' + $this.form.channelId;
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {
@@ -60,7 +58,7 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    if (this.form.fileNames.length === 0) {
+    if (this.form.files.length === 0) {
       return utils.error('请选择需要导入的Word文件！');
     }
 
@@ -87,12 +85,18 @@ var methods = {
 
   uploadRemove(file) {
     if (file.response) {
-      this.form.fileNames.splice(this.form.fileNames.indexOf(file.response.name), 1);
+      var startIndex = this.form.files.findIndex(function(x) {
+        return x.fileName == file.response.name;
+      });
+      this.form.files.splice(startIndex, 1);
     }
   },
 
   uploadSuccess: function(res) {
-    this.form.fileNames.push(res.name);
+    this.form.files.push({
+      fileName: res.fileName,
+      title: res.title
+    });
     utils.loading(this, false);
   },
 
@@ -109,5 +113,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.apiGet();
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&channelId=' + this.form.channelId;
   }
 });

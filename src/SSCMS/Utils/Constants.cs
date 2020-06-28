@@ -11,6 +11,7 @@ namespace SSCMS.Utils
         public const string PluginConfigFileName = "config.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
+        public const string WwwrootDirectory = "wwwroot";
         public const string PluginsDirectory = "plugins";
         public const string DefaultLanguage = "en";
         public const string DefaultLocalDbFileName = "database.sqlite";
@@ -24,7 +25,7 @@ namespace SSCMS.Utils
         public const string ApiAdminPrefix = "/api/admin";
         public const string ApiHomePrefix = "/api/home";
         public const string ApiV1Prefix = "/api/v1";
-        public const string ApiStlPrefix = "/api/stl";
+        public const string ApiStlPrefix = "/stl";
         public const string RoutePreview = "preview/{siteId}";
         public const string RoutePreviewChannel = "preview/{siteId}/{channelId}";
         public const string RoutePreviewContent = "preview/{siteId}/{channelId}/{contentId}";

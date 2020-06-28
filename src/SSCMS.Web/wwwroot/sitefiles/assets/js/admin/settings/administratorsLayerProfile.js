@@ -59,11 +59,13 @@ var methods = {
       mobile: this.form.mobile,
       email: this.form.email
     }).then(function (response) {
-      utils.success('管理员资料保存成功！');
+      if ($this.userId) {
+        utils.success('管理员编辑成功！');
+      } else {
+        utils.success('管理员新增成功！');
+      }
 
-      setTimeout(function () {
-        utils.closeLayer();
-      }, 1000);
+      utils.closeLayer(true);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

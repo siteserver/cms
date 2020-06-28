@@ -33,7 +33,7 @@ namespace SSCMS.Core.Utils.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static async Task<(string title, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
+        public static async Task<(string title, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath, string docsFileTitle)
         {
             string imageDirectoryPath;
             string imageDirectoryUrl;
@@ -71,12 +71,17 @@ namespace SSCMS.Core.Utils.Office
                 body = await pathManager.DecodeTextEditorAsync(siteInfo, body, true);
             }
 
+            if (string.IsNullOrEmpty(title))
+            {
+                title = docsFileTitle;
+            }
+
             return (title, body);
         }
 
         public static (string title, string body) ConvertToHtml(string docxFilePath, ConverterSettings settings)
         {
-            string title;
+            var title = string.Empty;
             string content;
             var fi = new FileInfo(docxFilePath);
 
@@ -86,14 +91,11 @@ namespace SSCMS.Core.Utils.Office
                 memoryStream.Write(byteArray, 0, byteArray.Length);
                 using (var wDoc = WordprocessingDocument.Open(memoryStream, true))
                 {
-                    title = fi.FullName;
                     var part = wDoc.CoreFilePropertiesPart;
                     if (part != null)
                     {
-                        title = (string)part.GetXDocument().Descendants(DC.title).FirstOrDefault() ?? fi.FullName;
+                        title = (string)part.GetXDocument().Descendants(DC.title).FirstOrDefault();
                     }
-
-                    title = PathUtils.GetFileNameWithoutExtension(title);
 
                     var htmlSettings = new HtmlConverterSettings
                     {
@@ -225,11 +227,6 @@ namespace SSCMS.Core.Utils.Office
             if (settings.IsClearFontFamily)
             {
                 content = HtmlClearUtils.ClearFontFamily(content);
-            }
-
-            if (string.IsNullOrEmpty(title))
-            {
-                title = PathUtils.GetFileNameWithoutExtension(docxFilePath);
             }
 
             return (title, content);

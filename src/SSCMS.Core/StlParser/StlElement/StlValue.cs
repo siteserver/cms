@@ -172,8 +172,9 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
                 {
-                    pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
-                        pageInfo.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.DateString.Js);
+
+                    pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
@@ -182,8 +183,9 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring"))
                 {
-                    pageInfo.BodyCodes.Add("datestring", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
-                        pageInfo.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.DateString.Js);
+
+                    pageInfo.BodyCodes.Add("datestring", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(true);</script>";
@@ -213,7 +215,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             {
                                 var inputParser = new InputParserManager(parseManager.PathManager);
 
-                                parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                                 parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }
