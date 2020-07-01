@@ -352,9 +352,13 @@ namespace SSCMS.Core.Utils
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, CheckAdminId))
                 {
-                    var checkAdminName =
-                        await _databaseManager.AdministratorRepository.GetDisplayAsync(source.Get<int>(CheckAdminId));
-                    content.Set(CheckAdminName, checkAdminName);
+                    var checkedId = source.Get<int?>(CheckAdminId);
+                    if (checkedId.HasValue)
+                    {
+                        var checkAdminName =
+                            await _databaseManager.AdministratorRepository.GetDisplayAsync(checkedId.Value);
+                        content.Set(CheckAdminName, checkAdminName);
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))
                 {

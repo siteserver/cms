@@ -17,8 +17,9 @@ var data = utils.init({
   total: null,
   pageSize: null,
   page: 1,
-  permissions: null,
   columns: null,
+  permissions: null,
+  menus: null,
   
   asideHeight: 0,
   tableMaxHeight: 0,
@@ -95,6 +96,7 @@ var methods = {
       $this.pageSize = res.pageSize;
       $this.page = page;
       $this.permissions = res.permissions;
+      $this.menus = res.menus;
       $this.expendedChannelIds = [$this.siteId, channelId];
       $this.searchForm.isAllContents = res.isAllContents;
 
@@ -305,6 +307,32 @@ var methods = {
       }),
       full: true
     });
+  },
+
+  btnMenuClick: function(menu, content) {
+    var url = utils.addQuery(menu.link, {
+      siteId: this.siteId,
+      channelId: content.channelId,
+      contentId: content.id
+    });
+
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: url,
+        full: true
+      });
+    } else if (menu.target == '_self') {
+      location.href = url;
+    } else if (menu.target == '_parent') {
+      parent.location.href = url;
+    }  else if (menu.target == '_top') {
+      top.location.href = url;
+    } else if (menu.target == '_blank') {
+      window.open(url);
+    } else {
+      utils.addTab(menu.text, url);
+    }
   },
 
   scrollToTop: function() {

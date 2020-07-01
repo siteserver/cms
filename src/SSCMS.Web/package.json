@@ -362,94 +362,94 @@
         "type": "site",
         "order": 41
       },
-      "site_channel_add": {
+      "channel_add": {
         "text": "添加栏目",
-        "type": "site:channel",
+        "type": "channel",
         "order": 1
       },
-      "site_channel_edit": {
+      "channel_edit": {
         "text": "修改栏目",
-        "type": "site:channel",
+        "type": "channel",
         "order": 2
       },
-      "site_channel_delete": {
+      "channel_delete": {
         "text": "删除栏目",
-        "type": "site:channel",
+        "type": "channel",
         "order": 3
       },
-      "site_channel_translate": {
+      "channel_translate": {
         "text": "转移栏目",
-        "type": "site:channel",
+        "type": "channel",
         "order": 4
       },
-      "site_channel_create": {
+      "channel_create": {
         "text": "生成栏目页面",
-        "type": "site:channel",
+        "type": "channel",
         "order": 5
       },
-      "site_content_view": {
+      "content_view": {
         "text": "浏览内容",
-        "type": "site:content",
+        "type": "content",
         "order": 1
       },
-      "site_content_add": {
+      "content_add": {
         "text": "添加内容",
-        "type": "site:content",
+        "type": "content",
         "order": 2
       },
-      "site_content_edit": {
+      "content_edit": {
         "text": "修改内容",
-        "type": "site:content",
+        "type": "content",
         "order": 3
       },
-      "site_content_delete": {
+      "content_delete": {
         "text": "删除内容",
-        "type": "site:content",
+        "type": "content",
         "order": 4
       },
-      "site_content_translate": {
+      "content_translate": {
         "text": "转移内容",
-        "type": "site:content",
+        "type": "content",
         "order": 5
       },
-      "site_content_arrange": {
+      "content_arrange": {
         "text": "整理内容",
-        "type": "site:content",
+        "type": "content",
         "order": 6
       },
-      "site_content_check": {
+      "content_check": {
         "text": "审核内容",
-        "type": "site:content",
+        "type": "content",
         "order": 7
       },
-      "site_content_checkLevel1": {
+      "content_checkLevel1": {
         "text": "一级内容审核权",
-        "type": "site:content",
+        "type": "content",
         "order": 8
       },
-      "site_content_checkLevel2": {
+      "content_checkLevel2": {
         "text": "二级内容审核权",
-        "type": "site:content",
+        "type": "content",
         "order": 9
       },
-      "site_content_checkLevel3": {
+      "content_checkLevel3": {
         "text": "三级内容审核权",
-        "type": "site:content",
+        "type": "content",
         "order": 10
       },
-      "site_content_checkLevel4": {
+      "content_checkLevel4": {
         "text": "四级内容审核权",
-        "type": "site:content",
+        "type": "content",
         "order": 11
       },
-      "site_content_checkLevel5": {
+      "content_checkLevel5": {
         "text": "五级内容审核权",
-        "type": "site:content",
+        "type": "content",
         "order": 12
       },
-      "site_content_create": {
+      "content_create": {
         "text": "生成内容页面",
-        "type": "site:content",
+        "type": "content",
         "order": 13
       }
     },

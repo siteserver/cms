@@ -278,7 +278,7 @@ namespace SSCMS.Core.Utils.Serialization
             };
 
             var xmlPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileMetadata);
-            Serializer.SaveAsXml(siteTemplateInfo, xmlPath);
+            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
         }
 
         public async Task<string> ExportChannelsAsync(List<int> channelIdList)

@@ -6,9 +6,9 @@ using System.IO;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
-namespace SSCMS.Core.Utils.Images
+namespace SSCMS.Core.Utils
 {
-    public static class ImageUtils
+    public static class OldImageUtils
     {
         public static Image GetImage(string imageFilePath)
 		{

@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             foreach (var field in fields)
             {
-                var fieldName = field.Name.ToCamelCase();
+                var fieldName = StringUtils.ToCamelCase(field.Name);
                 var attr = (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
 
                 if (attr != null)
@@ -125,7 +125,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             fields.AddRange(elementType.GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public));
             foreach (var field in fields)
             {
-                var fieldName = field.Name.ToCamelCase();
+                var fieldName = StringUtils.ToCamelCase(field.Name);
                 var attr = (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
 
                 if (attr != null)

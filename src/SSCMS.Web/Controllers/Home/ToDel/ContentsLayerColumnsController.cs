@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]ChannelRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Edit))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ChannelPermissions.Edit))
             {
                 return Unauthorized();
             }
@@ -60,7 +60,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,  AuthTypes.SiteChannelPermissions.Edit))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId,  AuthTypes.ChannelPermissions.Edit))
             {
                 return Unauthorized();
             }

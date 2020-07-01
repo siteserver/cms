@@ -37,7 +37,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IOldPluginManager _oldPluginManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -45,13 +46,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _oldPluginManager = oldPluginManager;
             _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -93,8 +95,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
             var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
-            var contentPlugins = _pluginManager.GetContentModelPlugins();
-            var relatedPlugins = _pluginManager.GetAllContentRelatedPlugins(false);
+            var contentPlugins = _oldPluginManager.GetContentModelPlugins();
+            var relatedPlugins = _oldPluginManager.GetAllContentRelatedPlugins(false);
 
             return new ChannelsResult
             {
@@ -111,7 +113,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.SiteChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -198,7 +200,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<List<int>>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Delete))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ChannelPermissions.Delete))
             {
                 return Unauthorized();
             }
@@ -242,7 +244,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int siteId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.SiteChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -274,7 +276,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<List<int>>> Import([FromBody] ImportRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -286,7 +288,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 var adminId = _authManager.AdminId;
                 var caching = new CacheUtils(_cacheManager);
 
-                var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
+                var importObject = new ImportObject(_pathManager, _oldPluginManager, _databaseManager, caching, site, adminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
                     request.IsOverride, null);
 
@@ -316,7 +318,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             if (site == null) return NotFound();
 
             var caching = new CacheUtils(_cacheManager);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _oldPluginManager, site);
             var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var url = _pathManager.GetDownloadApiUrl(true, filePath);

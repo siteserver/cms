@@ -345,7 +345,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
                 var allContentPermissionList = _permissions
-                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel))
+                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel))
                     .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();
@@ -375,7 +375,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
                 var allContentPermissionList = _permissions
-                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel))
+                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel))
                     .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();

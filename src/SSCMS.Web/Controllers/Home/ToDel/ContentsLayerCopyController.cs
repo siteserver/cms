@@ -43,7 +43,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -81,7 +81,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             }
 
             var channelIdList = await _authManager.GetChannelIdsAsync(site.Id,
-                AuthTypes.SiteContentPermissions.Add);
+                AuthTypes.ContentPermissions.Add);
             foreach (var permissionChannelId in channelIdList)
             {
                 var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
@@ -106,7 +106,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         {
             var channels = new List<object>();
             var channelIdList = await _authManager.GetChannelIdsAsync(request.SiteId,
-                AuthTypes.SiteContentPermissions.Add);
+                AuthTypes.ContentPermissions.Add);
             foreach (var permissionChannelId in channelIdList)
             {
                 var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
@@ -126,7 +126,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }

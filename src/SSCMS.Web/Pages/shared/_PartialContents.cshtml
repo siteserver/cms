@@ -223,8 +223,8 @@
 
   <el-table-column
     fixed="right"
-    width="70"
     align="center"
+    width="70"
     show-overflow-tooltip
     label="状态">
     <template slot-scope="scope">
@@ -235,14 +235,26 @@
   </el-table-column>
 
   <el-table-column
+    v-if="menus"
+    v-for="menu in menus"
+    :key="menu.id"
     fixed="right"
     align="center"
-    label="操作"
-    show-overflow-tooltip
-    width="70">
+    min-width="80"
+    show-overflow-tooltip>
     <template slot-scope="scope">
-      <el-link size="mini" :underline="false" v-for="pluginMenu in scope.row.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
-          v-on:click="btnPluginMenuClick(pluginMenu)" class="mr-2" v-html="pluginMenu.text"></el-link>
+      <el-link v-if="menus" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">
+        <i v-if="menu.iconClass" :class="menu.iconClass"></i>
+        {{ menu.text }}
+      </el-link>
+    </template>
+  </el-table-column>
+
+  <el-table-column
+    fixed="right"
+    align="center"
+    width="60">
+    <template slot-scope="scope">
       <el-link size="mini" :underline="false" v-on:click.stop.native="btnEditClick(scope.row)" type="primary">编辑</el-link>
     </template>
   </el-table-column>

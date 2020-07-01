@@ -81,7 +81,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                 if (siteInfo != null)
                 {
                     var channelIdList = await _authManager.GetChannelIdsAsync(siteInfo.Id,
-                        AuthTypes.SiteContentPermissions.Add);
+                        AuthTypes.ContentPermissions.Add);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);

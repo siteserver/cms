@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Utils.Images;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
@@ -90,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
 
                     var width = request.ThumbWidth;
                     var height = request.ThumbHeight;
-                    ImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
+                    OldImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
 
                     if (request.IsLinkToOriginal)
                     {

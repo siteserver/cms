@@ -189,7 +189,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             };
             var xmlPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath,
                 DirectoryUtils.SiteTemplates.FileMetadata);
-            Serializer.SaveAsXml(siteTemplateInfo, xmlPath);
+            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
 
             return new BoolResult
             {

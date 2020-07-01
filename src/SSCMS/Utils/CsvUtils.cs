@@ -22,7 +22,7 @@ namespace SSCMS.Utils
             {
                 foreach (var r in row)
                 {
-                    var value = r.Replace(@"""", @"""""");
+                    var value = StringUtils.Replace(r, @"""", @"""""");
                     builder.Append(@"""" + value + @"""").Append(",");
                 }
                 builder.Length -= 1;

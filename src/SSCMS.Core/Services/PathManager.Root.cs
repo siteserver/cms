@@ -11,7 +11,7 @@ namespace SSCMS.Core.Services
     {
         public string GetRootUrl(params string[] paths)
         {
-            return PathUtils.Combine(_settingsManager.ApiHost, PageUtils.Combine(paths));
+            return PageUtils.Combine(_settingsManager.ApiHost, PageUtils.Combine(paths));
         }
 
         public string GetRootUrlByPath(string physicalPath)

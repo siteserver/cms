@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Core.Utils;
-using SSCMS.Core.Utils.Images;
 using SSCMS.Core.Utils.PathRules;
 using SSCMS.Dto;
 using SSCMS.Enums;
@@ -1335,7 +1334,7 @@ namespace SSCMS.Core.Services
                         {
                             if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                ImageUtils.AddImageWaterMark(imagePath, await MapPathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                OldImageUtils.AddImageWaterMark(imagePath, await MapPathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
@@ -1343,7 +1342,7 @@ namespace SSCMS.Core.Services
                             if (!string.IsNullOrEmpty(site.WaterMarkFormatString))
                             {
                                 var now = DateTime.Now;
-                                ImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                OldImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                     }

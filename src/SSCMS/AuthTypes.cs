@@ -21,8 +21,8 @@
         {
             public const string App = "app";
             public const string Site = "site";
-            public const string SiteChannel = "site:channel";
-            public const string SiteContent = "site:content";
+            public const string Channel = "channel";
+            public const string Content = "content";
         }
 
         public static class AppPermissions
@@ -106,29 +106,29 @@
             public const string CreateStatus = "site_createStatus";
         }
 
-        public static class SiteChannelPermissions
+        public static class ChannelPermissions
         {
-            public const string Add = "site_channel_add";
-            public const string Edit = "site_channel_edit";
-            public const string Delete = "site_channel_delete";
-            public const string Translate = "site_channel_translate";
-            public const string Create = "site_channel_create";
+            public const string Add = "channel_add";
+            public const string Edit = "channel_edit";
+            public const string Delete = "channel_delete";
+            public const string Translate = "channel_translate";
+            public const string Create = "channel_create";
         }
 
-        public static class SiteContentPermissions
+        public static class ContentPermissions
         {
-            public const string View = "site_content_view";
-            public const string Add = "site_content_add";
-            public const string Edit = "site_content_edit";
-            public const string Delete = "site_content_delete";
-            public const string Translate = "site_content_translate";
-            public const string Arrange = "site_content_arrange";
-            public const string CheckLevel1 = "site_content_checkLevel1";
-            public const string CheckLevel2 = "site_content_checkLevel2";
-            public const string CheckLevel3 = "site_content_checkLevel3";
-            public const string CheckLevel4 = "site_content_checkLevel4";
-            public const string CheckLevel5 = "site_content_checkLevel5";
-            public const string Create = "site_content_create";
+            public const string View = "content_view";
+            public const string Add = "content_add";
+            public const string Edit = "content_edit";
+            public const string Delete = "content_delete";
+            public const string Translate = "content_translate";
+            public const string Arrange = "content_arrange";
+            public const string CheckLevel1 = "content_checkLevel1";
+            public const string CheckLevel2 = "content_checkLevel2";
+            public const string CheckLevel3 = "content_checkLevel3";
+            public const string CheckLevel4 = "content_checkLevel4";
+            public const string CheckLevel5 = "content_checkLevel5";
+            public const string Create = "content_create";
         }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Utils.Images;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
@@ -38,7 +38,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -58,7 +58,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -111,7 +111,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -144,7 +144,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                     {
                         var width = TranslateUtils.ToInt(request.FixWidth);
                         var height = TranslateUtils.ToInt(request.FixHeight);
-                        ImageUtils.MakeThumbnail(filePath, fixFilePath, width, height, true);
+                        OldImageUtils.MakeThumbnail(filePath, fixFilePath, width, height, true);
                     }
 
                     if (request.IsEditor)
@@ -153,7 +153,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                         {
                             var width = TranslateUtils.ToInt(request.EditorFixWidth);
                             var height = TranslateUtils.ToInt(request.EditorFixHeight);
-                            ImageUtils.MakeThumbnail(filePath, editorFixFilePath, width, height, true);
+                            OldImageUtils.MakeThumbnail(filePath, editorFixFilePath, width, height, true);
                         }
                     }
                 }

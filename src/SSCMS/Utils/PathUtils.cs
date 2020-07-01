@@ -98,6 +98,11 @@ namespace SSCMS.Utils
             return $"{fileName}{GetExtension(filePath)}";
         }
 
+        /// <summary>
+        /// including the period "."
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string GetExtension(string path)
         {
             var retVal = string.Empty;

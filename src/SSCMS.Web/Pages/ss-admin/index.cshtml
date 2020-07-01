@@ -82,7 +82,7 @@
 
       <el-dropdown v-on:command="btnCultureClick">
         <span class="el-dropdown-link">
-          <i class="fa fa-language" style="font-size: 16px;"></i>
+          <i class="fa fa-language"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="en-US" :disabled="culture === 'en-US'">English</el-dropdown-item>
@@ -137,7 +137,6 @@
       <div v-else>
         <el-link :underline="false" style="margin-left: -15px;">
           {{ menu.text }}
-          <i v-if="menu.iconClass" :class="menu.iconClass"></i>
         </el-link>
       </div>
 

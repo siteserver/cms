@@ -13,8 +13,9 @@ var data = utils.init({
   total: null,
   pageSize: null,
   page: 1,
-  permissions: null,
   columns: null,
+  permissions: null,
+  menus: null,
   
   tableMaxHeight: 999999999999,
   multipleSelection: [],

@@ -65,6 +65,15 @@ namespace SSCMS.Utils
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower();
         }
 
+        public static string ToCamelCase(string str)
+        {
+            if (!string.IsNullOrEmpty(str) && str.Length > 1)
+            {
+                return char.ToLowerInvariant(str[0]) + str.Substring(1);
+            }
+            return str;
+        }
+
         public static string Remove(string text, int startIndex)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;
@@ -224,44 +233,43 @@ namespace SSCMS.Utils
             return retVal;
         }
 
-        public static string ReplaceIgnoreCase(string original, string pattern, string replacement)
+        public static string ReplaceIgnoreCase(string value, string replace, string to)
         {
-            if (original == null) return string.Empty;
-            if (replacement == null) replacement = string.Empty;
+            if (value == null) return string.Empty;
+            if (to == null) to = string.Empty;
             var count = 0;
             var position0 = 0;
             int position1;
-            var upperString = original.ToUpper();
-            var upperPattern = pattern.ToUpper();
-            var inc = (original.Length / pattern.Length) * (replacement.Length - pattern.Length);
-            var chars = new char[original.Length + Math.Max(0, inc)];
+            var upperString = value.ToUpper();
+            var upperPattern = replace.ToUpper();
+            var inc = (value.Length / replace.Length) * (to.Length - replace.Length);
+            var chars = new char[value.Length + Math.Max(0, inc)];
             while ((position1 = upperString.IndexOf(upperPattern, position0, StringComparison.Ordinal)) != -1)
             {
-                for (var i = position0; i < position1; ++i) chars[count++] = original[i];
-                foreach (var t in replacement)
+                for (var i = position0; i < position1; ++i) chars[count++] = value[i];
+                foreach (var t in to)
                 {
                     chars[count++] = t;
                 }
-                position0 = position1 + pattern.Length;
+                position0 = position1 + replace.Length;
             }
-            if (position0 == 0) return original;
-            for (var i = position0; i < original.Length; ++i) chars[count++] = original[i];
+            if (position0 == 0) return value;
+            for (var i = position0; i < value.Length; ++i) chars[count++] = value[i];
             return new string(chars, 0, count);
         }
 
-        public static string Replace(string replace, string input, string to)
+        public static string Replace(string value, string replace, string to)
         {
-            var retVal = RegexUtils.Replace(replace, input, to);
-            if (string.IsNullOrEmpty(replace)) return retVal;
+            if (value == null) return string.Empty;
+            if (string.IsNullOrEmpty(replace)) return value;
+
+            if (to == null) to = string.Empty;
             if (replace.StartsWith("/") && replace.EndsWith("/"))
             {
-                retVal = RegexUtils.Replace(replace.Trim('/'), input, to);
+                return RegexUtils.Replace(replace.Trim('/'), value, to);
             }
-            else
-            {
-                retVal = input.Replace(replace, to);
-            }
-            return retVal;
+
+            return value.Replace(replace, to);
         }
 
         public static void ReplaceHrefOrSrc(StringBuilder builder, string replace, string to)

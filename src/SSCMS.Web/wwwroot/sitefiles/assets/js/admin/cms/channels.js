@@ -52,6 +52,11 @@ var methods = {
     }
   },
 
+  insertText: function(attributeName, no, text) {
+    this.editChannel[attributeName] = text;
+    this.editChannel = _.assign({}, this.editChannel);
+  },
+
   updateGroups: function(res, message) {
     this.groupNames = res.groupNames;
     utils.success(message);
@@ -510,7 +515,7 @@ var methods = {
 
     utils.openLayer({
       title: options.title,
-      url: utils.getSharedUrl('editorLayer' + options.name, query),
+      url: utils.getSharedUrl(options.name, query),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500

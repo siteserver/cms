@@ -279,7 +279,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(replace))
                 {
-                    parsedContent = StringUtils.Replace(replace, parsedContent, to);
+                    parsedContent = StringUtils.Replace(parsedContent, replace, to);
                 }
 
                 if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
@@ -317,7 +317,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(replace))
                 {
-                    parsedContent = StringUtils.Replace(replace, parsedContent, to);
+                    parsedContent = StringUtils.Replace(parsedContent, replace, to);
                 }
 
                 if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
@@ -372,7 +372,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(replace))
                 {
-                    parsedContent = StringUtils.Replace(replace, parsedContent, to);
+                    parsedContent = StringUtils.Replace(parsedContent, replace, to);
                 }
 
                 if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
@@ -393,7 +393,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (!string.IsNullOrEmpty(replace))
                     {
-                        parsedContent = StringUtils.Replace(replace, parsedContent, to);
+                        parsedContent = StringUtils.Replace(parsedContent, replace, to);
                     }
 
                     if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)

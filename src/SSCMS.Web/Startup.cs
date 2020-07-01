@@ -232,12 +232,12 @@ namespace SSCMS.Web
                 SupportedUICultures = supportedCultures
             });
 
-            app.UsePluginsAsync(settingsManager, pluginManager).GetAwaiter().GetResult();
-
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UsePluginsAsync(settingsManager, pluginManager).GetAwaiter().GetResult();
 
             app.UseEndpoints(endpoints =>
             {

@@ -211,22 +211,22 @@ namespace SSCMS.Core.Utils.Office
 
             if (settings.IsClearFormat)
             {
-                content = HtmlClearUtils.ClearFormat(content);
+                content = HtmlUtils.ClearFormat(content);
             }
 
             if (settings.IsFirstLineIndent)
             {
-                content = HtmlClearUtils.FirstLineIndent(content);
+                content = HtmlUtils.FirstLineIndent(content);
             }
 
             if (settings.IsClearFontSize)
             {
-                content = HtmlClearUtils.ClearFontSize(content);
+                content = HtmlUtils.ClearFontSize(content);
             }
 
             if (settings.IsClearFontFamily)
             {
-                content = HtmlClearUtils.ClearFontFamily(content);
+                content = HtmlUtils.ClearFontFamily(content);
             }
 
             return (title, content);

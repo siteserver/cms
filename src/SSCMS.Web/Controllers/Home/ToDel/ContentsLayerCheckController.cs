@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.CheckLevel1))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.CheckLevel1))
             {
                 return Unauthorized();
             }
@@ -67,7 +67,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
             var allChannels =
-                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, AuthTypes.SiteContentPermissions.Add);
+                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, AuthTypes.ContentPermissions.Add);
 
             return new GetResult
             {
@@ -81,7 +81,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.CheckLevel1))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.CheckLevel1))
             {
                 return Unauthorized();
             }

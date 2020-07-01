@@ -1,9 +1,10 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using SSCMS.Utils;
 
-namespace SSCMS.Utils
+namespace SSCMS.Core.Utils
 {
-    public class HtmlClearUtils
+    public static class HtmlUtils
     {
         /// <summary>
         /// 替换新闻内容中的Html标签的多余属性

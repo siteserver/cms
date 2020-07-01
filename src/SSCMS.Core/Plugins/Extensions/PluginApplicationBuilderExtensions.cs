@@ -38,12 +38,21 @@ namespace SSCMS.Core.Plugins.Extensions
                     });
             }
 
-            var instances = pluginManager.GetExtensions<IPluginConfigure>();
-            if (instances != null)
+            var configures = pluginManager.GetExtensions<IPluginConfigure>();
+            if (configures != null)
             {
-                foreach (var pluginConfigure in instances)
+                foreach (var configure in configures)
                 {
-                    pluginConfigure.Configure(app);
+                    configure.Configure(app);
+                }
+            }
+
+            var middlewares = pluginManager.GetExtensions<IPluginMiddleware>();
+            if (middlewares != null)
+            {
+                foreach (var middleware in middlewares)
+                {
+                    app.Use(next => async context => await middleware.UseAsync(next, context));
                 }
             }
 

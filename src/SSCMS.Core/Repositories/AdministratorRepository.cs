@@ -335,14 +335,16 @@ namespace SSCMS.Core.Repositories
             {
                 passwordSalt = GenerateSalt();
 
-                var des = new DesEncryptor
-                {
-                    InputString = password,
-                    EncryptKey = passwordSalt
-                };
-                des.DesEncrypt();
+                retVal = TranslateUtils.EncryptStringBySecretKey(password, passwordSalt);
 
-                retVal = des.OutString;
+                //var des = new DesEncryptor
+                //{
+                //    InputString = password,
+                //    EncryptKey = passwordSalt
+                //};
+                //des.DesEncrypt();
+
+                //retVal = des.OutString;
             }
             return retVal;
         }
@@ -581,14 +583,16 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                var des = new DesEncryptor
-                {
-                    InputString = password,
-                    DecryptKey = passwordSalt
-                };
-                des.DesDecrypt();
+                retVal = TranslateUtils.DecryptStringBySecretKey(password, passwordSalt);
 
-                retVal = des.OutString;
+                //var des = new DesEncryptor
+                //{
+                //    InputString = password,
+                //    DecryptKey = passwordSalt
+                //};
+                //des.DesDecrypt();
+
+                //retVal = des.OutString;
             }
             return retVal;
         }
