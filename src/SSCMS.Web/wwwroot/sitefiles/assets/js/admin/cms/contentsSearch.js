@@ -55,6 +55,7 @@ var methods = {
       $this.checkedLevels = res.checkedLevels;
       $this.columns = res.columns;
       $this.permissions = res.permissions;
+      $this.permissions.isAdd = false;
       var titleColumn = _.find($this.columns, function(o) { return o.attributeName == 'Title'; });
       var keyword = utils.getQueryString("keyword") || '';
       $this.searchColumns.push({

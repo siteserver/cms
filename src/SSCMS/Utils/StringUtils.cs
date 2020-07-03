@@ -122,7 +122,7 @@ namespace SSCMS.Utils
             return a.Equals(b, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool EqualsIgnoreNull(string a, string b)
+        public static bool Equals(string a, string b)
         {
             return string.IsNullOrEmpty(a) ? string.IsNullOrEmpty(b) : string.Equals(a, b);
         }
@@ -686,6 +686,62 @@ namespace SSCMS.Utils
 
             var reg = new Regex(StrictNameRegex, RegexOptions.Singleline);
             return reg.IsMatch(name);
+        }
+
+        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
+        {
+            var parsedContent = content;
+
+            if (!string.IsNullOrEmpty(replace))
+            {
+                parsedContent = ParseReplace(parsedContent, replace, to);
+            }
+
+            if (isClearTags)
+            {
+                parsedContent = StripTags(parsedContent);
+            }
+
+            if (!string.IsNullOrEmpty(parsedContent))
+            {
+                if (startIndex > 0 || length > 0)
+                {
+                    try
+                    {
+                        parsedContent = length > 0 ? parsedContent.Substring(startIndex, length) : parsedContent.Substring(startIndex);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+
+                if (wordNum > 0)
+                {
+                    parsedContent = MaxLengthText(parsedContent, wordNum, ellipsis);
+                }
+
+                if (isReturnToBr)
+                {
+                    parsedContent = ReplaceNewlineToBr(parsedContent);
+                }
+
+                if (!string.IsNullOrEmpty(formatString))
+                {
+                    parsedContent = string.Format(formatString, parsedContent);
+                }
+
+                if (isLower)
+                {
+                    parsedContent = parsedContent.ToLower();
+                }
+                if (isUpper)
+                {
+                    parsedContent = parsedContent.ToUpper();
+                }
+            }
+
+            return parsedContent;
         }
     }
 }

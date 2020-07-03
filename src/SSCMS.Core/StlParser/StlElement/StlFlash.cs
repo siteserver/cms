@@ -190,7 +190,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else
                 {                    
-                    flashUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, flashUrl, pageInfo.IsLocal);
+                    flashUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, flashUrl, pageInfo.IsLocal);
 
                     parsedContent = $@"
 <embed src=""{flashUrl}"" allowfullscreen=""true"" width=""{width}"" height=""{height}"" align=""middle"" allowscriptaccess=""always"" type=""application/x-shockwave-flash"" />

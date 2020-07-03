@@ -18,7 +18,7 @@ var data = utils.init({
 
 var methods = {
   getIconUrl: function (plugin) {
-    return $cloudApi.getPluginIconUrl(plugin);
+    return cloud.getPluginIconUrl(plugin);
   },
 
   apiGet: function () {
@@ -30,7 +30,8 @@ var methods = {
 
       var server = response.headers['server'];
       if (!server || server === 'Kestrel') {
-        utils.error('页面加载失败，SSCMS 插件需要在进程管理器（Nginx、Apache、IIS、Windows 服务）中运行，请参考文档 <a href="https://sscms.com/docs/v7/getting-started/deploy.html" target="_blank">托管和部署</a>', {
+        var docsUrl = cloud.getDocsUrl('getting-started/deploy.html');
+        utils.error('页面加载失败，SSCMS 插件需要在进程管理器（Nginx、Apache、IIS、Windows 服务）中运行，请参考文档 <a href="' + docsUrl + '" target="_blank">托管和部署</a>', {
           redirect: true
         });
         return;
@@ -55,7 +56,7 @@ var methods = {
 
       var pluginIds = $this.enabledPlugins.map(function(x) { return x.pluginId });
 
-      $cloudApi.getUpdates($this.isNightly, $this.version, pluginIds).then(function (response) {
+      cloud.getUpdates($this.isNightly, $this.version, pluginIds).then(function (response) {
         var res = response.data;
   
         var plugins = res.plugins;

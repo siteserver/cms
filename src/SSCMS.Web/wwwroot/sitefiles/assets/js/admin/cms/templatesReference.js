@@ -50,11 +50,11 @@ var methods = {
   },
 
   getLinkUrl: function(name) {
-    return 'https://www.siteserver.cn/docs/stl/' + name + '/';
+    return cloud.getDocsUrl('stl/' + name + '/');
   },
 
   getFieldLinkUrl: function(field) {
-    return 'https://www.siteserver.cn/docs/stl/' + this.elementTagName + '/#' + field.name.toLowerCase() + '-' + field.title.toLowerCase();
+    return cloud.getDocsUrl('stl/' + this.elementTagName + '/#' + field.name.toLowerCase() + '-' + field.title.toLowerCase());
   },
 
   btnElementSelectClick: function (element) {

@@ -114,7 +114,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var distinctChannel = await _channelRepository.GetAsync(distinctChannelId);
                 var contentIdList = summaries.Where(x => x.ChannelId == distinctChannelId)
                     .Select(x => x.Id).ToList();
-                await _contentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList, adminId);
+                await _contentRepository.TrashContentsAsync(site, distinctChannel, contentIdList, adminId);
 
                 await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }

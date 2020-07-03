@@ -101,6 +101,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                     Action = x.Action,
                     Summary = x.Summary,
                     SiteName = site.SiteName,
+                    CreatedDate = x.CreatedDate,
                     WebUrl = await _pathManager.GetWebUrlAsync(site)
                 };
                 return log;

@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var channel = await _channelRepository.GetAsync(request.Id);
-            if (!channel.IndexName.Equals(request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
+            if (!StringUtils.Equals(channel.IndexName, request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
             {
                 if (await _channelRepository.IsIndexNameExistsAsync(request.SiteId, request.IndexName))
                 {
@@ -90,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            if (!channel.FilePath.Equals(request.FilePath) && !string.IsNullOrEmpty(request.FilePath))
+            if (!StringUtils.Equals(channel.FilePath, request.FilePath) && !string.IsNullOrEmpty(request.FilePath))
             {
                 if (!DirectoryUtils.IsDirectoryNameCompliant(request.FilePath))
                 {

@@ -82,30 +82,32 @@
     <el-form-item label="站点">
       {{site.siteName}}
     </el-form-item>
-    <el-form-item label="站点权限设置">
+
+    <el-divider></el-divider>
+    <el-alert
+      title="从下边选择站点菜单"
+      type="warning"
+      :closable="false">
+    </el-alert>
+    <div style="height:5px"></div>
+
+    <el-form-item label="站点菜单设置">
       <el-checkbox :indeterminate="permissionInfo.isSiteIndeterminate" v-model="permissionInfo.siteCheckAll" style="margin-left: 10px;" v-on:change="handleSiteCheckAllChange">全选</el-checkbox>
       <div></div>
       <el-checkbox-group v-model="permissionInfo.checkedSitePermissions" v-on:change="handleCheckedSitePermissionsChange">
         <el-checkbox v-for="permission in permissionInfo.allSitePermissions" :label="permission" :key="permission">{{getSitePermissionText(permission)}}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
-    <el-form-item label="插件权限设置" v-if="permissionInfo.allPluginPermissions && permissionInfo.allPluginPermissions.length > 0">
-      <el-checkbox :indeterminate="permissionInfo.isPluginIndeterminate" v-model="permissionInfo.pluginCheckAll" style="margin-left: 10px;" v-on:change="handlePluginCheckAllChange">全选</el-checkbox>
-      <div></div>
-      <el-checkbox-group v-model="permissionInfo.checkedPluginPermissions" v-on:change="handleCheckedPluginPermissionsChange">
-        <el-checkbox v-for="permission in permissionInfo.allPluginPermissions" :label="permission" :key="permission">{{getPluginPermissionText(permission)}}</el-checkbox>
-      </el-checkbox-group>
-    </el-form-item>
+
+    <el-divider></el-divider>
+    <el-alert
+      title="从下边选择有权限管理的栏目"
+      type="warning"
+      :closable="false">
+    </el-alert>
+    <div style="height:5px"></div>
     
     <el-form-item label="可管理栏目">
-      <el-alert
-        title="从下边选择需要管理的栏目，所选栏目下的所有子栏目都属于可管理范围"
-        type="info"
-        size="mini"
-        :closable="false">
-      </el-alert>
-      <div style="height:5px"></div>
-
       <el-tree
         :data="treeData"
         ref="tree"

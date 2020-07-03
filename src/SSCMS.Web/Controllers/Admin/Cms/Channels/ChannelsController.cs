@@ -227,7 +227,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var channelId in channelIdList)
             {
-                await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+                await _contentRepository.TrashContentsAsync(site, channelId, adminId);
                 await _channelRepository.DeleteAsync(site, channelId, adminId);
             }
 

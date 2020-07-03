@@ -121,8 +121,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
-            imageUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
+            playUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            imageUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
             var extension = PathUtils.GetExtension(playUrl);
             var uniqueId = pageInfo.UniqueId;

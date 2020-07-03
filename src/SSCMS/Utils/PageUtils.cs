@@ -10,6 +10,8 @@ namespace SSCMS.Utils
     public static class PageUtils
     {
         public const char SeparatorChar = '/';
+        public const string DoubleSeparator = "//";
+        public const string SingleSeparator = "/";
         public const string UnClickableUrl = "javascript:;";
 
         public static string AddProtocolToUrl(string url)

@@ -15,7 +15,9 @@ namespace SSCMS.Services
 
         string GetSiteTemplatesUrl(string relatedUrl);
 
-        string ParseNavigationUrl(string url);
+        string ParseUrl(string url);
+
+        string ParsePath(string directoryPath, string virtualPath);
 
         string GetSiteFilesPath(params string[] paths);
 

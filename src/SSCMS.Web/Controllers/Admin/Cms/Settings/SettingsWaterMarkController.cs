@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var families = FontUtils.GetFontFamilies();
-            var imageUrl = await _pathManager.ParseNavigationUrlAsync(site, site.WaterMarkImagePath, true);
+            var imageUrl = await _pathManager.ParseSiteUrlAsync(site, site.WaterMarkImagePath, true);
 
             return new GetResult
             {

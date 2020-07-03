@@ -10,7 +10,9 @@ namespace SSCMS.Services
     partial interface IPathManager
     {
         //根据发布系统属性判断是否为相对路径并返回解析后路径
-        Task<string> ParseNavigationUrlAsync(Site site, string url, bool isLocal);
+        Task<string> ParseSiteUrlAsync(Site site, string url, bool isLocal);
+
+        Task<string> ParseSitePathAsync(Site site, string virtualPath);
 
         Task<string> GetSiteUrlAsync(Site site, bool isLocal);
 
@@ -29,6 +31,8 @@ namespace SSCMS.Services
         string GetPreviewSpecialUrl(int siteId, int specialId);
 
         Task<string> GetSiteUrlByPhysicalPathAsync(Site site, string physicalPath, bool isLocal);
+
+        Task<string> GetVirtualUrlByPhysicalPathAsync(Site site, string physicalPath);
 
         Task<string> GetRemoteSiteUrlAsync(Site site, string requestPath);
 
@@ -93,12 +97,6 @@ namespace SSCMS.Services
         Task<int> GetCurrentSiteIdAsync();
 
         string AddVirtualToPath(string path);
-
-        Task<string> MapPathAsync(Site site, string virtualPath);
-
-        Task<string> MapPathAsync(Site site, string virtualPath, bool isCopyToSite);
-
-        string MapPath(string directoryPath, string virtualPath);
 
         //将编辑器中图片上传至本机
         Task<string> SaveImageAsync(Site site, string content);

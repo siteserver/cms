@@ -61,7 +61,7 @@ namespace SSCMS.Core.Plugins
         /// when the same type(s) is requested.
         /// </param>
         /// <returns>Found implementations of the given type.</returns>
-        private static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
+        private static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = true)
         {
             var type = typeof(T);
 
@@ -102,7 +102,7 @@ namespace SSCMS.Core.Plugins
         /// when the instance(s) of the same type(s) is requested.
         /// </param>
         /// <returns>The instances of the found implementations of the given type.</returns>
-        public static IEnumerable<T> GetInstances<T>(IEnumerable<IPlugin> plugins, IServiceProvider provider, bool useCaching = false)
+        public static IEnumerable<T> GetInstances<T>(IEnumerable<IPlugin> plugins, IServiceProvider provider, bool useCaching = true)
         {
             var instances = new List<T>();
 

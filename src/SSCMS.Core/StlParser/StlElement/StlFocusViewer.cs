@@ -235,7 +235,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -324,7 +324,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -384,7 +384,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
                             navigationUrls.Add(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal));
-                            imageUrls.Add(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal));
+                            imageUrls.Add(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal));
                         }
                     }
 
@@ -429,7 +429,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var bgUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
+                    var bgUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site,
                         "@/images/focusviewerbg.png", pageInfo.IsLocal);
 
                     var scriptHtml = $@"
@@ -509,7 +509,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }

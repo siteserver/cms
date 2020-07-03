@@ -31,13 +31,62 @@ namespace SSCMS.Core.Services
             return GetRootUrl(DirectoryUtils.SiteFilesDirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
         }
 
-        public string ParseNavigationUrl(string url)
+        public string ParseUrl(string virtualUrl)
         {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
+            if (string.IsNullOrEmpty(virtualUrl)) return string.Empty;
 
-            url = url.StartsWith("~") ? GetRootUrl(url.Substring(1)) : url;
-            url = url.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
-            return url;
+            virtualUrl = virtualUrl.StartsWith("~") ? GetRootUrl(virtualUrl.Substring(1)) : virtualUrl;
+            virtualUrl = virtualUrl.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
+            virtualUrl = virtualUrl.Replace(PageUtils.DoubleSeparator, PageUtils.SingleSeparator);
+            return virtualUrl;
+        }
+
+        public string ParsePath(string virtualPath)
+        {
+            virtualPath = PathUtils.RemovePathInvalidChar(virtualPath);
+            if (!string.IsNullOrEmpty(virtualPath))
+            {
+                if (virtualPath.StartsWith("~"))
+                {
+                    virtualPath = virtualPath.Substring(1);
+                }
+                virtualPath = PageUtils.Combine("~", virtualPath);
+            }
+            else
+            {
+                virtualPath = "~/";
+            }
+            var rootPath = WebRootPath;
+
+            virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
+            var retVal = PathUtils.Combine(rootPath, virtualPath) ?? string.Empty;
+
+            return retVal.Replace(PageUtils.SeparatorChar, PathUtils.SeparatorChar);
+        }
+
+        public string ParsePath(string directoryPath, string virtualPath)
+        {
+            var resolvedPath = virtualPath;
+            if (string.IsNullOrEmpty(virtualPath))
+            {
+                virtualPath = "@";
+            }
+            if (!virtualPath.StartsWith("@") && !virtualPath.StartsWith("~"))
+            {
+                virtualPath = "@" + virtualPath;
+            }
+            if (virtualPath.StartsWith("@"))
+            {
+                if (string.IsNullOrEmpty(directoryPath))
+                {
+                    resolvedPath = string.Concat("~", virtualPath.Substring(1));
+                }
+                else
+                {
+                    return PageUtils.Combine(directoryPath, virtualPath.Substring(1));
+                }
+            }
+            return ParsePath(resolvedPath);
         }
 
         public string GetSiteFilesUrl(params string[] paths)

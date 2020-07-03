@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SSCMS.Enums;
-using SSCMS.Models;
 
-namespace SSCMS
+namespace SSCMS.Context
 {
     /// <summary>
     /// STL解析上下文。
     /// </summary>
-    public interface IStlParseContext
+    public interface IParseContext
     {
         /// <summary>
         /// 站点Id。
@@ -34,11 +33,6 @@ namespace SSCMS
         /// 模板Id。
         /// </summary>
         int TemplateId { get; }
-
-        /// <summary>
-        /// 生成页面的绝对路径。
-        /// </summary>
-        public string FilePath { get; }
 
         /// <summary>
         /// 生成的Html页面中包含在head标签内的代码。
@@ -71,24 +65,6 @@ namespace SSCMS
         /// <returns>如果STL解析上下文中存在指定的键，则返回对应的值；否则返回类型T的默认值。</returns>
         T Get<T>(string key);
 
-        /// <summary>
-        /// 当前解析的STL标签的属性键值集合。
-        /// </summary>
-        NameValueCollection StlAttributes { get; }
-
-        /// <summary>
-        /// 当前解析的STL标签的完整代码，而不仅限于标签内部的内容。
-        /// </summary>
-        string StlOuterHtml { get; }
-
-        /// <summary>
-        /// 当前解析的STL标签内部的内容。
-        /// </summary>
-        string StlInnerHtml { get; }
-
-        /// <summary>
-        /// 判断当前解析的STL标签是STL元素还是STL实体，如果是元素，则返回true；如果是实体，则返回false。
-        /// </summary>
-        bool IsStlElement { get; }
+        Task<string> ParseAsync(string template);
     }
 }

@@ -1,17 +1,33 @@
-var CLOUD_ACCESS_TOKEN_NAME = "ss_cloud_access_token";
-
-var $cloudApi = _.extend(axios.create({
-  baseURL: $urlCloudApi,
+var cloud = _.extend(axios.create({
+  baseURL: 'https://api.sscms.com/v7',
+  // baseURL: 'http://localhost:81/v7',
   headers: {
-    Authorization: "Bearer " + localStorage.getItem(CLOUD_ACCESS_TOKEN_NAME),
+    Authorization: "Bearer " + localStorage.getItem('ss_cloud_access_token'),
   },
 }), {
+  host: 'https://sscms.com',
+  hostDl: 'https://dl.sscms.com',
+  hostDemo: 'https://demo.sscms.com',
+  hostStorage: 'https://storage.sscms.com',
+
   getPluginIconUrl: function (plugin) {
     if (!plugin.icon) return utils.getAssetsUrl('images/favicon.png');
     if (plugin.success && !plugin.disabled) {
       return plugin.icon;
     }
-    return $urlCloudStorage + '/plugins/' + plugin.pluginId + '/logo' + plugin.icon.substring(plugin.icon.lastIndexOf('.'));
+    return this.hostStorage + '/plugins/' + plugin.pluginId + '/logo' + plugin.icon.substring(plugin.icon.lastIndexOf('.'));
+  },
+
+  getTemplatesUrl: function(relatedUrl) {
+    return this.host + '/templates/' + relatedUrl;
+  },
+
+  getPluginsUrl: function(relatedUrl) {
+    return this.host + '/plugins/' + relatedUrl;
+  },
+
+  getDocsUrl: function(relatedUrl) {
+    return this.host + '/docs/v7/' + relatedUrl;
   },
 
   getPlugins: function(word) {

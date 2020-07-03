@@ -102,7 +102,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             }
 
             var adminId = _authManager.AdminId;
-            await _contentRepository.RecycleContentsAsync(site, channel, request.ContentIds, adminId);
+            await _contentRepository.TrashContentsAsync(site, channel, request.ContentIds, adminId);
 
             await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
 

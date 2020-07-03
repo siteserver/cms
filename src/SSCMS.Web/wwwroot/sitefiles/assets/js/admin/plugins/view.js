@@ -33,7 +33,7 @@ var methods = {
       $this.content = res.content;
       $this.changeLog = res.changeLog;
 
-      $cloudApi.getPlugin($this.pluginId, $this.isNightly, $this.version).then(function (response) {
+      cloud.getPlugin($this.pluginId, $this.isNightly, $this.version).then(function (response) {
         var res = response.data;
 
         $this.cloudPlugin = res.plugin;
@@ -142,7 +142,7 @@ var methods = {
     if (this.localPlugin && this.localPlugin.homepage) {
       return this.localPlugin.homepage;
     }
-    return $urlCloud + '/plugins/plugin.html?id=' + this.pluginId;
+    return cloud.getPluginsUrl('/plugin.html?id=' + this.pluginId);
   },
 
   getIconUrl: function () {

@@ -393,7 +393,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             foreach (string imageUrl in collection.Keys)
             {
                 var sourceFilePath = collection[imageUrl];
-                var destFilePath = _pathManager.MapPath(_siteContentDirectoryPath, imageUrl);
+                var destFilePath = _pathManager.ParsePath(_siteContentDirectoryPath, imageUrl);
                 DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
                 FileUtils.MoveFile(sourceFilePath, destFilePath, true);
             }
@@ -427,7 +427,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             foreach (string imageUrl in collection.Keys)
             {
                 var sourceFilePath = collection[imageUrl];
-                var destFilePath = _pathManager.MapPath(_siteContentDirectoryPath, imageUrl);
+                var destFilePath = _pathManager.ParsePath(_siteContentDirectoryPath, imageUrl);
                 DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
                 FileUtils.MoveFile(sourceFilePath, destFilePath, true);
             }

@@ -95,7 +95,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            playUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
 
             // 如果是实体标签，则只返回数字
             if (contextInfo.IsStlEntity)

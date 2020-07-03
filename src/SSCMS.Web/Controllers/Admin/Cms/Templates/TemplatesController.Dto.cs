@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                 if (template.TemplateType == TemplateType.IndexPageTemplate)
                 {
-                    template.Set("url", _pathManager.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
+                    template.Set("url", await _pathManager.ParseSiteUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.ChannelTemplate)
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 }
                 else if (template.TemplateType == TemplateType.FileTemplate)
                 {
-                    template.Set("url", _pathManager.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
+                    template.Set("url", await _pathManager.ParseSiteUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
             }

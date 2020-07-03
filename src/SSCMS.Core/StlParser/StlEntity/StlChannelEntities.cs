@@ -128,7 +128,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                        parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//栏目添加日期
@@ -168,7 +168,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                         {
                             if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                             {
-                                parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                             else
                             {

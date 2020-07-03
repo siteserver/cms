@@ -237,7 +237,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    attributes["src"] = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, picUrl, pageInfo.IsLocal);
+                    attributes["src"] = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, picUrl, pageInfo.IsLocal);
                     parsedContent = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
                 }
             }

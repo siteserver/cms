@@ -33,7 +33,7 @@ var methods = {
   getVersion: function () {
     var $this = this;
     
-    $cloudApi.getUpdates(this.isNightly, this.version, null).then(function (response) {
+    cloud.getUpdates(this.isNightly, this.version, null).then(function (response) {
       var res = response.data;
 
       $this.newCms = res.cms;
@@ -41,19 +41,6 @@ var methods = {
       $this.isShouldUpdate = utils.compareVersion($this.version, $this.newCms.version) == -1;
       utils.loading($this, false);
     });
-
-    // ssApi.get({
-    //   isNightly: isNightly,
-    //   version: version
-    // }, function (err, res) {
-    //   if (err || !res || !res.value) return;
-
-    //   $this.newCms = res.value;
-    //   $this.isShouldUpdate = utils.compareVersion($this.version, $this.newCms.version) == -1;
-    //   var major = $this.newCms.version.split('.')[0];
-    //   var minor = $this.newCms.version.split('.')[1];
-    //   $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
-    // }, 'newCmss', newCmsId);
   },
 
   updateSsCms: function () {

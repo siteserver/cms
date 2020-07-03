@@ -7,7 +7,7 @@ var data = utils.init({
   tag: utils.getQueryString('tag'),
   price: utils.getQueryString('price'),
   order: utils.getQueryString('order'),
-  templateInfoList: null,
+  templates: null,
   count: null,
   pages: null,
   allTagNames: []
@@ -33,10 +33,10 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $cloudApi.getTemplates(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
+    cloud.getTemplates(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
         var res = response.data;
 
-        $this.templateInfoList = res.value;
+        $this.templates = res.value;
         $this.count = res.count;
         $this.pages = res.pages;
         $this.allTagNames = res.allTagNames;
@@ -50,11 +50,7 @@ var methods = {
   },
   
   getDisplayUrl: function (templateId) {
-    return 'https://www.siteserver.cn/templates/template.html?id=' + templateId;
-  },
-
-  getTemplateUrl: function (relatedUrl) {
-    return 'https://www.siteserver.cn/templates/' + relatedUrl;
+    return cloud.getTemplatesUrl('template.html?id=' + templateId);
   },
 
   btnImageClick: function(templateId) {
@@ -62,7 +58,7 @@ var methods = {
   },
 
   btnPreviewClick: function (templateId) {
-    window.open('https://demo.siteserver.cn/' + templateId);
+    window.open(cloud.hostDemo + '/' + templateId.toLowerCase() + '/');
   },
 
   btnCreateClick: function(templateId) {

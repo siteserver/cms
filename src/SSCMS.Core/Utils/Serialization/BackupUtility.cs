@@ -84,7 +84,7 @@ namespace SSCMS.Core.Utils.Serialization
                 var channelIdList = await databaseManager.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, ScopeType.Children);
                 foreach (var channelId in channelIdList)
                 {
-                    await databaseManager.ContentRepository.RecycleAllAsync(site, channelId, adminId);
+                    await databaseManager.ContentRepository.TrashContentsAsync(site, channelId, adminId);
                     await databaseManager.ChannelRepository.DeleteAsync(site, channelId, adminId);
                 }
             }

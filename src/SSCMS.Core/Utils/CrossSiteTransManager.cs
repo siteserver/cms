@@ -117,7 +117,7 @@ namespace SSCMS.Core.Utils
             if (!string.IsNullOrEmpty(contentInfo.ImageUrl))
             {
                 //修改图片
-                var sourceImageUrl = await pathManager.MapPathAsync(site, contentInfo.ImageUrl);
+                var sourceImageUrl = await pathManager.ParseSitePathAsync(site, contentInfo.ImageUrl);
                 CopyReferenceFiles(targetSite, sourceImageUrl, site);
 
                 var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
@@ -126,7 +126,7 @@ namespace SSCMS.Core.Utils
                 {
                     var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
                     var extend = contentInfo.Get<string>(extendName);
-                    sourceImageUrl = await pathManager.MapPathAsync(site, extend);
+                    sourceImageUrl = await pathManager.ParseSitePathAsync(site, extend);
                     CopyReferenceFiles(targetSite, sourceImageUrl, site);
                 }
             }
@@ -134,7 +134,7 @@ namespace SSCMS.Core.Utils
             if (!string.IsNullOrEmpty(contentInfo.FileUrl))
             {
                 //修改附件
-                var sourceFileUrl = await pathManager.MapPathAsync(site, contentInfo.FileUrl);
+                var sourceFileUrl = await pathManager.ParseSitePathAsync(site, contentInfo.FileUrl);
                 CopyReferenceFiles(targetSite, sourceFileUrl, site);
 
                 var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
@@ -143,7 +143,7 @@ namespace SSCMS.Core.Utils
                 {
                     var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
                     var extend = contentInfo.Get<string>(extendName);
-                    sourceFileUrl = await pathManager.MapPathAsync(site, extend);
+                    sourceFileUrl = await pathManager.ParseSitePathAsync(site, extend);
                     CopyReferenceFiles(targetSite, sourceFileUrl, site);
                 }
             }

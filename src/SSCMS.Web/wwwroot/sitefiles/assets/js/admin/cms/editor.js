@@ -27,8 +27,19 @@ var data = utils.init({
 });
 
 var methods = {
+  getEditorAttributeName: function() {
+    for (var i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      if (style.inputType === 'TextEditor') {
+        return style.attributeName;
+      }
+    }
+    return null;
+  },
+
   insertEditor: function(attributeName, html)
   {
+    if (!attributeName) attributeName = 'Content';
     if (html)
     {
       UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);

@@ -203,7 +203,7 @@ namespace SSCMS.Core.Utils
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = await _pathManager.ParseNavigationUrlAsync(site, imageUrl, false);
+                imageUrl = await _pathManager.ParseSiteUrlAsync(site, imageUrl, false);
                 if (isStlEntity)
                 {
                     retVal = imageUrl;
@@ -251,7 +251,7 @@ namespace SSCMS.Core.Utils
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = await _pathManager.ParseNavigationUrlAsync(site, videoUrl, false);
+                videoUrl = await _pathManager.ParseSiteUrlAsync(site, videoUrl, false);
                 if (isStlEntity)
                 {
                     retVal = videoUrl;

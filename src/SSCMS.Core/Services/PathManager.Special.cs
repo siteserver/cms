@@ -17,7 +17,7 @@ namespace SSCMS.Core.Services
 
             var url = isLocal
                 ? GetPreviewSpecialUrl(site.Id, specialId)
-                : await ParseNavigationUrlAsync(site, specialUrl, false);
+                : await ParseSiteUrlAsync(site, specialUrl, false);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -25,7 +25,7 @@ namespace SSCMS.Core.Services
         public async Task<string> GetSpecialDirectoryPathAsync(Site site, string url)
         {
             var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
-            return await MapPathAsync(site, virtualPath);
+            return await ParseSitePathAsync(site, virtualPath);
         }
 
         private async Task<string> GetSpecialUrlAsync(Site site, string url)
@@ -35,7 +35,7 @@ namespace SSCMS.Core.Services
             {
                 virtualPath = $"@/{StringUtils.TrimSlash(virtualPath)}";
             }
-            return await ParseNavigationUrlAsync(site, virtualPath, false);
+            return await ParseSiteUrlAsync(site, virtualPath, false);
         }
 
         public async Task<string> GetSpecialUrlAsync(Site site, int specialId)
@@ -51,7 +51,7 @@ namespace SSCMS.Core.Services
 
         public async Task<string> GetSpecialZipFileUrlAsync(Site site, Special special)
         {
-            return await ParseNavigationUrlAsync(site, $"@/{special.Url}/{special.Title}.zip", true);
+            return await ParseSiteUrlAsync(site, $"@/{special.Url}/{special.Title}.zip", true);
         }
 
         public string GetSpecialSrcDirectoryPath(string directoryPath)

@@ -323,7 +323,7 @@ namespace SSCMS.Web.Controllers.V1
             if (channel == null) return NotFound();
 
             var adminId = _authManager.AdminId;
-            await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+            await _contentRepository.TrashContentsAsync(site, channelId, adminId);
             await _channelRepository.DeleteAsync(site, channelId, adminId);
 
             return channel;

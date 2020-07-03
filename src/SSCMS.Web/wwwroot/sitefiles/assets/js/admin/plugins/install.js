@@ -97,7 +97,7 @@ var methods = {
   getPackages: function () {
     var $this = this;
 
-    $cloudApi.getUpdates($this.isNightly, $this.version, $this.pluginIds).then(function (response) {
+    cloud.getUpdates($this.isNightly, $this.version, $this.pluginIds).then(function (response) {
       var res = response.data;
 
       var plugins = res.plugins;

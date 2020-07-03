@@ -94,19 +94,19 @@ namespace SSCMS.Core.Services
                         styleInfo.InputType = inputStyle.InputType;
                     }
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.DisplayName, inputStyle.DisplayName))
+                    if (!StringUtils.Equals(styleInfo.DisplayName, inputStyle.DisplayName))
                     {
                         isEquals = false;
                         styleInfo.DisplayName = inputStyle.DisplayName;
                     }
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.HelpText, inputStyle.HelpText))
+                    if (!StringUtils.Equals(styleInfo.HelpText, inputStyle.HelpText))
                     {
                         isEquals = false;
                         styleInfo.HelpText = inputStyle.HelpText;
                     }
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.DefaultValue, inputStyle.DefaultValue))
+                    if (!StringUtils.Equals(styleInfo.DefaultValue, inputStyle.DefaultValue))
                     {
                         isEquals = false;
                         styleInfo.DefaultValue = inputStyle.DefaultValue;
@@ -148,7 +148,7 @@ namespace SSCMS.Core.Services
                     //    styleInfo.RegExp = inputStyle.RegExp;
                     //}
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.Width, inputStyle.Width))
+                    if (!StringUtils.Equals(styleInfo.Width, inputStyle.Width))
                     {
                         isEquals = false;
                         styleInfo.Width = inputStyle.Width;
@@ -188,13 +188,13 @@ namespace SSCMS.Core.Services
                             {
                                 var styleItem = styleItems[i];
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.Label, listItem.Label))
+                                if (!StringUtils.Equals(styleItem.Label, listItem.Label))
                                 {
                                     isEquals = false;
                                     styleItem.Label = listItem.Label;
                                 }
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.Value, listItem.Value))
+                                if (!StringUtils.Equals(styleItem.Value, listItem.Value))
                                 {
                                     isEquals = false;
                                     styleItem.Value = listItem.Value;

@@ -55,7 +55,7 @@ namespace SSCMS.Core.Services
 
         public async Task<string> GetIncludeContentAsync(Site site, string file)
         {
-            var filePath = await MapPathAsync(site, AddVirtualToPath(file));
+            var filePath = await ParseSitePathAsync(site, AddVirtualToPath(file));
             return await GetContentByFilePathAsync(filePath);
         }
 

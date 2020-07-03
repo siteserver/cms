@@ -88,7 +88,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 {
                     foreach (var channelId in channelIdListToTranslate)
                     {
-                        await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+                        await _contentRepository.TrashContentsAsync(site, channelId, adminId);
                         await _channelRepository.DeleteAsync(site, channelId, adminId);
                     }
                 }
@@ -184,7 +184,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var contentId in contentIdList)
             {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, channelId, contentId, targetSiteId, targetChannelId, translateType, _createManager, _authManager.AdminId);
             }
         }
     }

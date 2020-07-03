@@ -3,12 +3,13 @@
 var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
-  editorAttributeName: utils.getQueryString('editorAttributeName'),
+  editorAttributeName: parent.$vue.getEditorAttributeName && parent.$vue.getEditorAttributeName(),
   uploadUrl: null,
   dialogImageUrl: '',
   dialogVisible: false,
   form: {
     siteId: utils.getQueryInt('siteId'),
+    isOptions: false,
     isEditor: false,
     isThumb: false,
     thumbWidth: 500,
@@ -20,8 +21,8 @@ var data = utils.init({
 
 var methods = {
   insert: function(no, result) {
-    parent.$vue.insertText(this.attributeName, no, result.imageUrl);
-    if (this.editorAttributeName && result.isEditor) {
+    parent.$vue.insertText(this.attributeName, no, result.imageVirtualUrl);
+    if (this.editorAttributeName && this.form.isEditor) {
       var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
       if (result.previewUrl) {
         var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
@@ -29,6 +30,32 @@ var methods = {
       }
       parent.$vue.insertEditor(this.editorAttributeName, html);
     }
+  },
+
+  apiGet: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.form.siteId
+      }
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.form.isOptions = true;
+      $this.form.isEditor = res.isEditor;
+      $this.form.isThumb = res.isThumb;
+      $this.form.thumbWidth = res.thumbWidth;
+      $this.form.thumbHeight = res.thumbHeight;
+      $this.form.isLinkToOriginal = res.isLinkToOriginal;
+    })
+    .catch(function(error) {
+      utils.error(error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
   },
 
   btnSubmitClick: function () {
@@ -65,13 +92,6 @@ var methods = {
   },
 
   uploadBefore(file) {
-    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
-    if(!re.exec(file.name))
-    {
-      utils.error('文件只能是图片格式，请选择有效的文件上传!');
-      return false;
-    }
-
     var isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
       utils.error('上传图片大小不能超过 10MB!');
@@ -113,6 +133,10 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId;
-    utils.loading(this, false);
+    if (this.form.siteId && this.editorAttributeName) {
+      this.apiGet();
+    } else {
+      utils.loading(this, false);
+    }
   }
 });

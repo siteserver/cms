@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Configuration;
+using SSCMS.Context;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -136,7 +137,7 @@ namespace SSCMS
             ContentFormSubmit?.Invoke(this, e);
         }
 
-        public Dictionary<string, Func<IStlParseContext, string>> StlElementsToParse { get; private set; }
+        public Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; private set; }
 
         public Dictionary<string, Func<IJobContext, Task>> Jobs { get; private set; }
 
@@ -187,11 +188,11 @@ namespace SSCMS
             return this;
         }
 
-        public IOldPlugin AddStlElementParser(string elementName, Func<IStlParseContext, string> parse)
+        public IOldPlugin AddStlElementParser(string elementName, Func<IParseContext, string> parse)
         {
             if (StlElementsToParse == null)
             {
-                StlElementsToParse = new Dictionary<string, Func<IStlParseContext, string>>();
+                StlElementsToParse = new Dictionary<string, Func<IParseContext, string>>();
             }
 
             StlElementsToParse[elementName] = parse;

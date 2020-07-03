@@ -103,16 +103,6 @@ var methods = {
       }
     }
 
-    var pluginPermissions = res.pluginPermissions || [];
-    var checkedPluginPermissions = [];
-    var allPluginPermissions = [];
-    for (var i = 0; i < pluginPermissions.length; i++){
-      allPluginPermissions.push(pluginPermissions[i].name)
-      if (pluginPermissions[i].selected){
-        checkedPluginPermissions.push(pluginPermissions[i].name)
-      }
-    }
-
     var channelPermissions = res.channelPermissions || [];
     var checkedChannelPermissions = [];
     var allChannelPermissions = [];
@@ -144,11 +134,7 @@ var methods = {
       allSitePermissions: allSitePermissions,
       checkedSitePermissions: checkedSitePermissions,
   
-      pluginPermissions: pluginPermissions,
-      pluginCheckAll: false,
-      isPluginIndeterminate: true,
-      allPluginPermissions: allPluginPermissions,
-      checkedPluginPermissions: checkedPluginPermissions,
+
   
       channelPermissions: channelPermissions,
       channelCheckAll: false,
@@ -222,31 +208,6 @@ var methods = {
     return '';
   },
 
-  handlePluginCheckAllChange: function(val) {
-    this.permissionInfo.checkedPluginPermissions = [];
-    if (val) {
-      for (var i = 0; i < this.permissionInfo.pluginPermissions.length; i++){
-        this.permissionInfo.checkedPluginPermissions.push(this.permissionInfo.pluginPermissions[i].name)
-      }
-    }
-    this.permissionInfo.isPluginIndeterminate = false;
-  },
-
-  handleCheckedPluginPermissionsChange: function(value) {
-    var checkedCount = value.length;
-    this.permissionInfo.pluginCheckAll = checkedCount === this.permissionInfo.pluginPermissions.length;
-    this.permissionInfo.isPluginIndeterminate = checkedCount > 0 && checkedCount < this.permissionInfo.pluginPermissions.length;
-  },
-
-  getPluginPermissionText: function(name) {
-    for (var i = 0; i < this.permissionInfo.pluginPermissions.length; i++){
-      if (this.permissionInfo.pluginPermissions[i].name === name) {
-        return this.permissionInfo.pluginPermissions[i].text;
-      }
-    }
-    return '';
-  },
-
   handleChannelCheckAllChange: function(val) {
     this.permissionInfo.checkedChannelPermissions = [];
     if (val) {
@@ -313,7 +274,7 @@ var methods = {
           siteId: site.id,
           channelIds: site.permissionInfo.checkedChannelIds,
           channelPermissions: site.permissionInfo.checkedChannelPermissions,
-          websitePermissions: _.union(site.permissionInfo.checkedSitePermissions, site.permissionInfo.checkedPluginPermissions),
+          websitePermissions: _.union(site.permissionInfo.checkedSitePermissions),
         });
       }
     }

@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             {
                 foreach (var translation in request.Translations)
                 {
-                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
+                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager, _authManager.AdminId);
                 }
             }
 

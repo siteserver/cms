@@ -187,7 +187,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (isFileType)
             {
-                var filePath = await parseManager.PathManager.MapPathAsync(pageInfo.Site, fileUrl);
+                var filePath = await parseManager.PathManager.ParseSitePathAsync(pageInfo.Site, fileUrl);
                 parsedContent = PathUtils.GetExtension(filePath).Trim('.');
                 if (isLower)
                 {
@@ -200,7 +200,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (isFileSize)
             {
-                var filePath = await parseManager.PathManager.MapPathAsync(pageInfo.Site, fileUrl);
+                var filePath = await parseManager.PathManager.ParseSitePathAsync(pageInfo.Site, fileUrl);
                 parsedContent = FileUtils.GetFileSizeByFilePath(filePath);
             }
             else if (isCount)

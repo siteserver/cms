@@ -3,7 +3,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace SSCMS.Plugins
+namespace SSCMS
 {
     public interface IPlugin
     {

@@ -139,7 +139,7 @@ var methods = {
     var $this = this;
 
     var pluginIds = this.plugins.map(function (x){ return x.pluginId});
-    $cloudApi.getUpdates($this.isNightly, $this.version, pluginIds).then(function (response) {
+    cloud.getUpdates($this.isNightly, $this.version, pluginIds).then(function (response) {
       var res = response.data;
 
       var cms = res.cms;

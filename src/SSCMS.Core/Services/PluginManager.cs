@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Core.Plugins;
-using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -86,7 +85,7 @@ namespace SSCMS.Core.Services
             return Plugins.FirstOrDefault(x => x.PluginId == pluginId);
         }
 
-        public IEnumerable<T> GetExtensions<T>(bool useCaching = false) where T : IPluginExtension
+        public IEnumerable<T> GetExtensions<T>(bool useCaching = true) where T : IPluginExtension
         {
             var provider = _settingsManager.BuildServiceProvider();
             return PluginUtils.GetInstances<T>(NetCorePlugins, provider, useCaching);

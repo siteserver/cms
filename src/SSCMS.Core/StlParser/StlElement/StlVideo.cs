@@ -126,8 +126,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(videoUrl)) return string.Empty;
 
-            videoUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
-            imageUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
+            videoUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
+            imageUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcVideoJs);
 

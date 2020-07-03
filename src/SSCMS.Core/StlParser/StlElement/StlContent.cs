@@ -359,7 +359,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var sbParsedContent = new StringBuilder();
                         //第一条
                         sbParsedContent.Append(contextInfo.IsStlEntity
-                            ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
+                            ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site,
                                 content.ImageUrl, pageInfo.IsLocal)
                             : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site,
                                 content.ImageUrl,
@@ -374,7 +374,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extend = content.Get<string>(extendName);
 
                             sbParsedContent.Append(contextInfo.IsStlEntity
-                                ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, extend,
+                                ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend,
                                     pageInfo.IsLocal)
                                 : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend,
                                     contextInfo.Attributes, false));
@@ -400,7 +400,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, content.ImageUrl, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, content.ImageUrl, contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, content.ImageUrl, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, content.ImageUrl, contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -408,7 +408,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extend = content.Get<string>(extendName);
                             if (!string.IsNullOrEmpty(extend))
                             {
-                                parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, false);
+                                parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, false);
                             }
 
                             //var extendAttributeName = ColumnsManager.GetExtendAttributeName(nameof(Content.ImageUrl));
@@ -551,7 +551,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                         }
                         else

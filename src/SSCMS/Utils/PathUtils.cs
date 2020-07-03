@@ -207,7 +207,7 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(filePath))
                 return filePath;
             var invalidChars = new string(Path.GetInvalidPathChars());
-            string invalidReStr = $"[{Regex.Escape(invalidChars)}]";
+            var invalidReStr = $"[{Regex.Escape(invalidChars)}]";
             return Regex.Replace(filePath, invalidReStr, "");
         }
 

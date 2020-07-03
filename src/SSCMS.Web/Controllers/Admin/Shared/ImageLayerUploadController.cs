@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
@@ -31,6 +31,24 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             _siteRepository = siteRepository;
         }
 
+        [HttpGet, Route(Route)]
+        public async Task<ActionResult<Options>> Get([FromQuery] SiteRequest request)
+        {
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            if (site == null) return this.Error("无法确定内容对应的站点");
+
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(ImageLayerUploadController)), new Options
+            {
+                IsEditor = true,
+                IsThumb = false,
+                ThumbWidth = 1024,
+                ThumbHeight = 1024,
+                IsLinkToOriginal = true,
+            });
+
+            return options;
+        }
+
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery]int siteId,  [FromForm]IFormFile file)
         {
@@ -43,9 +61,10 @@ namespace SSCMS.Web.Controllers.Admin.Shared
 
             var fileName = Path.GetFileName(file.FileName);
 
-            if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".jpg", ".jpeg", ".bmp", ".gif", ".png", ".webp"))
+            var extName = PathUtils.GetExtension(fileName);
+            if (!_pathManager.IsImageExtensionAllowed(site, extName))
             {
-                return this.Error("文件只能是 Image 格式，请选择有效的文件上传!");
+                return this.Error("此图片格式已被禁止上传，请转换格式后上传!");
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
@@ -53,13 +72,10 @@ namespace SSCMS.Web.Controllers.Admin.Shared
 
             await _pathManager.UploadAsync(file, filePath);
 
-            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-
             return new UploadResult
             {
                 Name = fileName,
-                Path = filePath,
-                Url = imageUrl
+                Path = filePath
             };
         }
 
@@ -79,25 +95,27 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
                 var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
 
-                var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+                var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
+                var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
 
-                if (request.IsThumb)
+                if (request.IsOptions && request.IsThumb)
                 {
                     var localSmallFileName = Constants.SmallImageAppendix + fileName;
                     var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
-                    var thumbnailUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localSmallFilePath, true);
+                    var thumbnailVirtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, localSmallFilePath);
+                    var thumbnailUrl = await _pathManager.ParseSiteUrlAsync(site, thumbnailVirtualUrl, true);
 
-                    var width = request.ThumbWidth;
-                    var height = request.ThumbHeight;
-                    OldImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
+                    ImageUtils.ResizeByMax(filePath, localSmallFilePath, request.ThumbWidth, request.ThumbHeight);
 
                     if (request.IsLinkToOriginal)
                     {
                         result.Add(new SubmitResult
                         {
                             ImageUrl = thumbnailUrl,
-                            PreviewUrl = imageUrl
+                            ImageVirtualUrl = thumbnailVirtualUrl,
+                            PreviewUrl = imageUrl,
+                            PreviewVirtualUrl = virtualUrl
                         });
                     }
                     else
@@ -105,7 +123,8 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                         FileUtils.DeleteFileIfExists(filePath);
                         result.Add(new SubmitResult
                         {
-                            ImageUrl = thumbnailUrl
+                            ImageUrl = thumbnailUrl,
+                            ImageVirtualUrl = thumbnailVirtualUrl
                         });
                     }
                 }
@@ -113,9 +132,31 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                 {
                     result.Add(new SubmitResult
                     {
-                        ImageUrl = imageUrl
+                        ImageUrl = imageUrl,
+                        ImageVirtualUrl = virtualUrl
                     });
                 }
+            }
+
+            if (request.IsOptions)
+            {
+                var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(ImageLayerUploadController)), new Options
+                {
+                    IsEditor = true,
+                    IsThumb = false,
+                    ThumbWidth = 1024,
+                    ThumbHeight = 1024,
+                    IsLinkToOriginal = true,
+                });
+
+                options.IsEditor = request.IsEditor;
+                options.IsThumb = request.IsThumb;
+                options.ThumbWidth = request.ThumbWidth;
+                options.ThumbHeight = request.ThumbHeight;
+                options.IsLinkToOriginal = request.IsLinkToOriginal;
+                site.Set(nameof(ImageLayerUploadController), TranslateUtils.JsonSerialize(options));
+
+                await _siteRepository.UpdateAsync(site);
             }
 
             return result;

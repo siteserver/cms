@@ -417,7 +417,7 @@ namespace SSCMS.Core.Services
 
             await _parseManager.InitAsync(site, siteId, 0, templateInfo);
 
-            var filePath = await _pathManager.MapPathAsync(site, templateInfo.CreatedFileFullName);
+            var filePath = await _pathManager.ParseSitePathAsync(site, templateInfo.CreatedFileFullName);
 
             var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, templateInfo));
             await _parseManager.ParseAsync(contentBuilder, filePath, false);
@@ -433,7 +433,7 @@ namespace SSCMS.Core.Services
             {
                 await _parseManager.InitAsync(site, siteId, 0, templateInfo);
 
-                var filePath = await _pathManager.MapPathAsync(site, templateInfo.CreatedFileFullName);
+                var filePath = await _pathManager.ParseSitePathAsync(site, templateInfo.CreatedFileFullName);
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);
                 await _parseManager.ParseAsync(contentBuilder, filePath, false);

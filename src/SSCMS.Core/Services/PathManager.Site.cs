@@ -15,19 +15,36 @@ namespace SSCMS.Core.Services
     public partial class PathManager
     {
         //根据发布系统属性判断是否为相对路径并返回解析后路径
-        public async Task<string> ParseNavigationUrlAsync(Site site, string url, bool isLocal)
+        public async Task<string> ParseSiteUrlAsync(Site site, string virtualUrl, bool isLocal)
         {
-            if (string.IsNullOrEmpty(url)) return string.Empty;
+            if (string.IsNullOrEmpty(virtualUrl)) return string.Empty;
+
+            if (site != null && StringUtils.StartsWith(virtualUrl, "@"))
+            {
+                return await GetSiteUrlAsync(site, virtualUrl.Substring(1), isLocal);
+            }
+
+            return ParseUrl(virtualUrl);
+        }
+
+        public async Task<string> ParseSitePathAsync(Site site, string virtualPath)
+        {
+            var resolvedPath = virtualPath;
+            if (string.IsNullOrEmpty(virtualPath))
+            {
+                virtualPath = "@";
+            }
+            if (!virtualPath.StartsWith("@") && !virtualPath.StartsWith("~"))
+            {
+                virtualPath = "@" + virtualPath;
+            }
+            if (!virtualPath.StartsWith("@")) return ParsePath(resolvedPath);
 
             if (site != null)
             {
-                if (!string.IsNullOrEmpty(url) && url.StartsWith("@"))
-                {
-                    return await GetSiteUrlAsync(site, url.Substring(1), isLocal);
-                }
-                return ParseNavigationUrl(url);
+                return await GetSitePathAsync(site, virtualPath.Substring(1));
             }
-            return ParseNavigationUrl(url);
+            return ParsePath(resolvedPath);
         }
 
         public async Task<string> GetSiteUrlAsync(Site site, bool isLocal)
@@ -54,6 +71,18 @@ namespace SSCMS.Core.Services
                 : string.Empty;
 
             return await GetSiteUrlAsync(site, requestPath, isLocal);
+        }
+
+        public async Task<string> GetVirtualUrlByPhysicalPathAsync(Site site, string physicalPath)
+        {
+            if (site == null || string.IsNullOrEmpty(physicalPath)) return await GetWebUrlAsync(site);
+
+            var sitePath = await GetSitePathAsync(site);
+            var requestPath = StringUtils.StartsWithIgnoreCase(physicalPath, sitePath)
+                ? StringUtils.ReplaceStartsWithIgnoreCase(physicalPath, sitePath, string.Empty)
+                : string.Empty;
+
+            return AddVirtualToUrl(requestPath);
         }
 
         public async Task<string> GetRemoteSiteUrlAsync(Site site, string requestPath)
@@ -100,7 +129,7 @@ namespace SSCMS.Core.Services
             string url;
             if (site.ParentId == 0)
             {
-                url = ParseNavigationUrl($"~/{(site.Root ? string.Empty : site.SiteDir)}");
+                url = ParseUrl($"~/{(site.Root ? string.Empty : site.SiteDir)}");
             }
             else
             {
@@ -191,7 +220,7 @@ namespace SSCMS.Core.Services
 
             var url = isLocal
                 ? GetPreviewSiteUrl(site.Id)
-                : await ParseNavigationUrlAsync(site, createdFileFullName, false);
+                : await ParseSiteUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -202,7 +231,7 @@ namespace SSCMS.Core.Services
 
             var url = isLocal
                 ? GetPreviewFileUrl(site.Id, fileTemplateId)
-                : await ParseNavigationUrlAsync(site, createdFileFullName, false);
+                : await ParseSiteUrlAsync(site, createdFileFullName, false);
 
             return RemoveDefaultFileName(site, url);
         }
@@ -271,7 +300,7 @@ namespace SSCMS.Core.Services
 
             if (!string.IsNullOrEmpty(linkUrl))
             {
-                return await ParseNavigationUrlAsync(site, linkUrl, false);
+                return await ParseSiteUrlAsync(site, linkUrl, false);
             }
 
             var rules = new ContentFilePathRules(this, _databaseManager);
@@ -318,7 +347,7 @@ namespace SSCMS.Core.Services
             }
             if (!string.IsNullOrEmpty(linkUrl))
             {
-                return await ParseNavigationUrlAsync(site, linkUrl, false);
+                return await ParseSiteUrlAsync(site, linkUrl, false);
             }
 
             var rules = new ContentFilePathRules(this, _databaseManager);
@@ -351,11 +380,11 @@ namespace SSCMS.Core.Services
                         var channelUrl = await rules.ParseAsync(site, channelId);
                         return await GetSiteUrlAsync(site, channelUrl, isLocal);
                     }
-                    return await ParseNavigationUrlAsync(site, AddVirtualToPath(filePath), isLocal);
+                    return await ParseSiteUrlAsync(site, AddVirtualToPath(filePath), isLocal);
                 }
             }
 
-            return await ParseNavigationUrlAsync(site, linkUrl, isLocal);
+            return await ParseSiteUrlAsync(site, linkUrl, isLocal);
         }
 
         //得到栏目经过计算后的连接地址
@@ -511,6 +540,8 @@ namespace SSCMS.Core.Services
             var resolvedUrl = url;
             if (string.IsNullOrEmpty(url) || PageUtils.IsProtocolUrl(url)) return resolvedUrl;
 
+            url = url.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
+
             if (!url.StartsWith("@") && !url.StartsWith("~"))
             {
                 resolvedUrl = PageUtils.Combine("@/", url);
@@ -522,7 +553,7 @@ namespace SSCMS.Core.Services
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            var relatedSiteUrl = ParseNavigationUrl($"~/{site.SiteDir}");
+            var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
             var virtualUrl = StringUtils.ReplaceStartsWith(url, relatedSiteUrl, "@/");
             return StringUtils.ReplaceStartsWith(virtualUrl, "@//", "@/");
         }
@@ -628,7 +659,7 @@ namespace SSCMS.Core.Services
                 }
             }
 
-            var filePath = await MapPathAsync(site, createFileFullName);
+            var filePath = await ParseSitePathAsync(site, createFileFullName);
 
             if (currentPageIndex != 0)
             {
@@ -854,73 +885,6 @@ namespace SSCMS.Core.Services
             return resolvedPath;
         }
 
-        public async Task<string> MapPathAsync(Site site, string virtualPath)
-        {
-            var resolvedPath = virtualPath;
-            if (string.IsNullOrEmpty(virtualPath))
-            {
-                virtualPath = "@";
-            }
-            if (!virtualPath.StartsWith("@") && !virtualPath.StartsWith("~"))
-            {
-                virtualPath = "@" + virtualPath;
-            }
-            if (!virtualPath.StartsWith("@")) return MapPath(resolvedPath);
-
-            if (site != null)
-            {
-                return await GetSitePathAsync(site, virtualPath.Substring(1));
-            }
-            return MapPath(resolvedPath);
-        }
-
-        public async Task<string> MapPathAsync(Site site, string virtualPath, bool isCopyToSite)
-        {
-            if (!isCopyToSite) return await MapPathAsync(site, virtualPath);
-
-            var resolvedPath = virtualPath;
-            if (string.IsNullOrEmpty(virtualPath))
-            {
-                virtualPath = "@";
-            }
-            if (!virtualPath.StartsWith("@") && !virtualPath.StartsWith("~"))
-            {
-                virtualPath = "@" + virtualPath;
-            }
-            if (!virtualPath.StartsWith("@")) return MapPath(resolvedPath);
-
-            if (site != null)
-            {
-                return await GetSitePathAsync(site, virtualPath.Substring(1));
-            }
-            return MapPath(resolvedPath);
-        }
-
-        public string MapPath(string directoryPath, string virtualPath)
-        {
-            var resolvedPath = virtualPath;
-            if (string.IsNullOrEmpty(virtualPath))
-            {
-                virtualPath = "@";
-            }
-            if (!virtualPath.StartsWith("@") && !virtualPath.StartsWith("~"))
-            {
-                virtualPath = "@" + virtualPath;
-            }
-            if (virtualPath.StartsWith("@"))
-            {
-                if (string.IsNullOrEmpty(directoryPath))
-                {
-                    resolvedPath = string.Concat("~", virtualPath.Substring(1));
-                }
-                else
-                {
-                    return PageUtils.Combine(directoryPath, virtualPath.Substring(1));
-                }
-            }
-            return MapPath(resolvedPath);
-        }
-
         //将编辑器中图片上传至本机
         public async Task<string> SaveImageAsync(Site site, string content)
         {
@@ -1060,7 +1024,7 @@ namespace SSCMS.Core.Services
                 filePath = await rules.ParseAsync(site, channelId);
             }
 
-            filePath = await MapPathAsync(site, filePath);// PathUtils.Combine(sitePath, filePath);
+            filePath = await ParseSitePathAsync(site, filePath);// PathUtils.Combine(sitePath, filePath);
             if (PathUtils.IsDirectoryPath(filePath))
             {
                 filePath = PathUtils.Combine(filePath, channelId + ".html");
@@ -1088,7 +1052,7 @@ namespace SSCMS.Core.Services
             var rules = new ContentFilePathRules(this, _databaseManager);
             var filePath = await rules.ParseAsync(site, channelId, content);
 
-            filePath = await MapPathAsync(site, filePath);
+            filePath = await ParseSitePathAsync(site, filePath);
             if (PathUtils.IsDirectoryPath(filePath))
             {
                 filePath = PathUtils.Combine(filePath, content.Id + ".html");
@@ -1334,7 +1298,7 @@ namespace SSCMS.Core.Services
                         {
                             if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                OldImageUtils.AddImageWaterMark(imagePath, await MapPathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                OldImageUtils.AddImageWaterMark(imagePath, await ParseSitePathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
@@ -1358,8 +1322,8 @@ namespace SSCMS.Core.Services
         {
             if (!string.IsNullOrEmpty(relatedUrl))
             {
-                var sourceFilePath = await MapPathAsync(sourceSite, relatedUrl);
-                var descFilePath = await MapPathAsync(destSite, relatedUrl);
+                var sourceFilePath = await ParseSitePathAsync(sourceSite, relatedUrl);
+                var descFilePath = await ParseSitePathAsync(destSite, relatedUrl);
                 if (FileUtils.IsFileExists(sourceFilePath))
                 {
                     FileUtils.MoveFile(sourceFilePath, descFilePath, false);
