@@ -9,8 +9,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public class GetResult
         {
             public List<Site> Sites { get; set; }
-            public bool IsSeparatedApi { get; set; }
-            public string SeparatedApiUrl { get; set; }
         }
 
         public class EditWebRequest : SiteRequest
@@ -25,12 +23,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public class EditWebResult
         {
             public List<Site> Sites { get; set; }
-        }
-
-        public class EditApiRequest
-        {
-            public bool IsSeparatedApi { get; set; }
-            public string SeparatedApiUrl { get; set; }
         }
     }
 }

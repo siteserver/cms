@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Shared
 {
@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                 ImageActionName = "uploadImage",
                 ImageFieldName = "file",
                 ImageMaxSize = site.ImageUploadTypeMaxSize * 1024,
-                ImageAllowFiles = Utilities.GetStringList(site.ImageUploadExtensions),
+                ImageAllowFiles = ListUtils.GetStringList(site.ImageUploadExtensions),
                 ImageCompressEnable = false,
                 ImageCompressBorder = 1600,
                 ImageInsertAlign = "none",
@@ -34,21 +34,21 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                 VideoFieldName = "file",
                 VideoUrlPrefix = "",
                 VideoMaxSize = site.VideoUploadTypeMaxSize * 1024,
-                VideoAllowFiles = Utilities.GetStringList(site.VideoUploadExtensions),
+                VideoAllowFiles = ListUtils.GetStringList(site.VideoUploadExtensions),
                 FileActionName = "uploadFile",
                 FileFieldName = "file",
                 FileUrlPrefix = "",
                 FileMaxSize = site.FileUploadTypeMaxSize * 1024,
-                FileAllowFiles = Utilities.GetStringList($"{site.ImageUploadExtensions},{site.VideoUploadExtensions},{site.FileUploadExtensions}"),
+                FileAllowFiles = ListUtils.GetStringList($"{site.ImageUploadExtensions},{site.VideoUploadExtensions},{site.FileUploadExtensions}"),
                 ImageManagerActionName = "listImage",
                 ImageManagerListSize = 20,
                 ImageManagerUrlPrefix = "",
                 ImageManagerInsertAlign = "none",
-                ImageManagerAllowFiles = Utilities.GetStringList(site.ImageUploadExtensions),
+                ImageManagerAllowFiles = ListUtils.GetStringList(site.ImageUploadExtensions),
                 FileManagerActionName = "listFile",
                 FileManagerListSize = 20,
                 FileManagerUrlPrefix = "",
-                FileManagerAllowFiles = Utilities.GetStringList($"{site.ImageUploadExtensions},{site.VideoUploadExtensions},{site.FileUploadExtensions}")
+                FileManagerAllowFiles = ListUtils.GetStringList($"{site.ImageUploadExtensions},{site.VideoUploadExtensions},{site.FileUploadExtensions}")
             };
         }
 

@@ -1,0 +1,1171 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>提交简历</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="../jquery/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+
+<!-- 生成页面 -->
+<script type="text/javascript" charset="utf-8" src="../scripts/independent/validate.js"></script>
+<script type="text/javascript" src="../jquery/ajaxupload.js"></script>
+<script type="text/javascript" src="../jquery/queryString.js"></script>
+<script type="text/javascript" charset="gb2312" src="../scripts/datepicker/wdatepicker.js"></script>
+<link href="css/resume.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript">
+var actionUrl = '/SiteFiles/Inner/action.aspx?publishmentSystemID={publishmentSystemID}&styleID={styleID}&type=resume';
+var previewUrl = 'preview.aspx?publishmentSystemID={publishmentSystemID}';
+var ajaxUploadUrl = '/SiteFiles/Inner/ajaxUpload.aspx?publishmentSystemID={publishmentSystemID}&isResume=True';
+</script>
+<script type="text/javascript" charset="utf-8" src="js/resume.js"></script>
+
+<!-- 模板 脚本（可编辑） -->
+<script type="text/javascript"> 
+function stlResumeCallback(jsonString){
+	var obj = eval('(' + jsonString + ')');
+	if (obj){
+		document.getElementById('resumeSuccess').style.display = 'none';
+		document.getElementById('resumeFailure').style.display = 'none';
+		if (obj.isSuccess == 'false'){
+			document.getElementById('resumeFailure').style.display = '';
+			document.getElementById('resumeFailure').innerHTML = obj.message;
+		}else{
+			document.getElementById('resumeSuccess').style.display = '';
+			document.getElementById('resumeSuccess').innerHTML = obj.message;
+			document.getElementById('resumeContainer').style.display = 'none';
+		}
+	}
+}
+</script>
+
+<!-- 模板 代码 -->
+<div id="resumeSuccess" class="successContainer" style="display:none"></div>
+<div id="resumeFailure" class="failureContainer" style="display:none"></div>
+<div id="resumeContainer" class="container">
+  <form id="frmResume" name="frmResume" style="margin:0;padding:0" method="post" enctype="multipart/form-data">
+  <input type="hidden" id="JobContentID" name="JobContentID" value="" />
+  <!-- 模板 代码（可编辑） -->
+    <div id="user">
+      <!---------------------------   #start basic   ---------------------------------->
+      <div id="basic_form">
+        <h3>基本信息</h3>
+        <table class="uc nbg">
+          <tr>
+            <th>姓名<span class="star">*</span>：</th>
+            <td><input id="RealName" name="RealName" type="text" maxlength="35" isValidate="true" isRequire="true" />
+              &nbsp;<span id="RealName_msg" style="color:red;display:none">&nbsp;</span>
+              <script>event_observe('RealName', 'blur', checkAttributeValue);</script></td>
+            <th>民族：</th>
+            <td><select id="Nationality" name="Nationality">
+                <option value="">-- 请选择 --</option>
+                <option value="汉族">汉族</option>
+                <option value="回族">回族</option>
+                <option value="畲族">畲族</option>
+                <option value="塔塔尔族">塔塔尔族</option>
+                <option value="阿昌族">阿昌族</option>
+                <option value="哈萨克族">哈萨克族</option>
+                <option value="土家族">土家族</option>
+                <option value="景颇族">景颇族</option>
+                <option value="哈尼族">哈尼族</option>
+                <option value="土族">土族</option>
+                <option value="白族">白族</option>
+                <option value="维吾尔族">维吾尔族</option>
+                <option value="保安族">保安族</option>
+                <option value="赫哲族">赫哲族</option>
+                <option value="乌孜别克族">乌孜别克族</option>
+                <option value="基诺族">基诺族</option>
+                <option value="额伦春族">额伦春族</option>
+                <option value="塔吉克族">塔吉克族</option>
+                <option value="京族">京族</option>
+                <option value="仡佬族">仡佬族</option>
+                <option value="鄂温克族">鄂温克族</option>
+                <option value="撒拉族">撒拉族</option>
+                <option value="柯尔克孜族">柯尔克孜族</option>
+                <option value="水族">水族</option>
+                <option value="布朗族">布朗族</option>
+                <option value="满族">满族</option>
+                <option value="彝族">彝族</option>
+                <option value="门巴族">门巴族</option>
+                <option value="侗族">侗族</option>
+                <option value="苗族">苗族</option>
+                <option value="佤族">佤族</option>
+                <option value="羌族">羌族</option>
+                <option value="独龙族">独龙族</option>
+                <option value="怒族">怒族</option>
+                <option value="珞巴族">珞巴族</option>
+                <option value="普米族">普米族</option>
+                <option value="傣族">傣族</option>
+                <option value="纳西族">纳西族</option>
+                <option value="高山族">高山族</option>
+                <option value="壮族">壮族</option>
+                <option value="布依族">布依族</option>
+                <option value="拉祜族">拉祜族</option>
+                <option value="锡伯族">锡伯族</option>
+                <option value="黎族">黎族</option>
+                <option value="东乡族">东乡族</option>
+                <option value="蒙古族">蒙古族</option>
+                <option value="仫佬族">仫佬族</option>
+                <option value="达斡尔族">达斡尔族</option>
+                <option value="藏族">藏族</option>
+                <option value="毛南族">毛南族</option>
+                <option value="裕固族">裕固族</option>
+                <option value="俄罗斯族">俄罗斯族</option>
+                <option value="德昂族">德昂族</option>
+                <option value="僳僳族">僳僳族</option>
+                <option value="瑶族">瑶族</option>
+                <option value="朝鲜族">朝鲜族</option>
+                <option value="其他">其他</option>
+              </select></td>
+            <td rowspan="11" valign="top" class="user_photo"><img src="images/resume_picture.jpg" id="imgPhoto" width="120" height="150" /> <br />
+              <a href="javascript:;" id="uploadFile" style="text-decoration:none">» 上传</a> <br />
+              <span id="img_upload_txt" class="rmsg2"></span> <br />
+              <input type="hidden" id="ImageUrl" name="ImageUrl" value="" />
+              <ol>
+                <li>只接受JPG或GIF文件 </li>
+                <li>尺寸为120x150 </li>
+                <li>不超过800K</li>
+                <li>为方便面试官筛选出您的简历 , 请务必上传真实照片 </li>
+              </ol></td>
+          </tr>
+          <tr>
+            <th>性别<span class="star">*</span>：</th>
+            <td><input name="Gender" type="radio" checked="checked" value="男" />
+              <label for="radio1">男</label>
+              <input name="Gender" type="radio"  value="女" />
+              <label for="radio2">女</label></td>
+            <th>Email：</th>
+            <td><input id="Email" name="Email" type="text"  maxlength="60" /></td>
+          </tr>
+          <tr>
+            <th>手机号码<span class="star">*</span>：</th>
+            <td><input id="MobilePhone" name="MobilePhone" type="text" maxlength="35" isValidate="true" isRequire="true" />
+              &nbsp;<span id="MobilePhone_msg" style="color:red;display:none">&nbsp;</span>
+              <script>event_observe('MobilePhone', 'blur', checkAttributeValue);</script></td>
+            <th>家庭电话：</th>
+            <td><input id="HomePhone" name="HomePhone" type="text" maxlength="35" value="" /></td>
+          </tr>
+          <tr>
+            <th>毕业院校<span class="star">*</span>：</th>
+            <td><input id="LastSchoolName" name="LastSchoolName" maxlength="35" type="text" isValidate="true" isRequire="true" />
+              &nbsp;<span id="LastSchoolName_msg" style="color:red;display:none">&nbsp;</span>
+              <script>event_observe('LastSchoolName', 'blur', checkAttributeValue);</script></td>
+            <th>学历<span class="star">*</span>：</th>
+            <td><select id="Education" name="Education" isValidate="true" isRequire="true">
+                <option value="">-- 请选择 --</option>
+                <option value="初中">初中</option>
+                <option value="高中">高中</option>
+                <option value="中技">中技</option>
+                <option value="中专">中专</option>
+                <option value="大专">大专</option>
+                <option value="本科">本科</option>
+                <option value="硕士">硕士</option>
+                <option value="博士">博士</option>
+              </select>
+              &nbsp;<span id="Education_msg" style="color:red;display:none">&nbsp;</span>
+              <script>event_observe('Education', 'blur', checkAttributeValue);</script></td>
+          </tr>
+          <tr>
+            <th>证件类型：</th>
+            <td><select id="IDCardType" name="IDCardType">
+                <option value="">-- 请选择 --</option>
+                <option value="身份证" selected="selected">身份证</option>
+                <option value="护照">护照</option>
+                <option value="军人证">军人证</option>
+                <option value="香港身份证">香港身份证</option>
+                <option value="其它">其它</option>
+              </select></td>
+            <th>证件号码：</th>
+            <td><input id="IDCardNo" name="IDCardNo" type="text" maxlength="35" /></td>
+          </tr>
+          <tr>
+            <th>出生日期：</th>
+            <td width="160"><div class="ageType1">
+                <input id="Birthday" name="Birthday" type="text" maxlength="10" onfocus="WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'});"  />
+              </div></td>
+            <th>婚姻状况：</th>
+            <td><select id="Marriage" name="Marriage">
+                <option value="">-- 请选择 --</option>
+                <option value="未婚">未婚</option>
+                <option value="已婚">已婚</option>
+                <option value="保密">保密</option>
+              </select></td>
+          </tr>
+          <tr>
+            <th>工作年限：</th>
+            <td><select id="WorkYear" name="WorkYear">
+                <option value="">-- 请选择 --</option>
+                <option value="在读学生">在读学生</option>
+                <option value="应届毕业生">应届毕业生</option>
+                <option value="一年以上">一年以上</option>
+                <option value="二年以上">二年以上</option>
+                <option value="三年以上">三年以上</option>
+                <option value="五年以上">五年以上</option>
+                <option value="八年以上">八年以上</option>
+                <option value="十年以上">十年以上</option>
+              </select></td>
+            <th>所属专业：</th>
+            <td><input id="Profession" name="Profession"  maxlength="35" type="text" value="" /></td>
+          </tr>
+          <tr>
+            <th>期望薪水(月)：</th>
+            <td><select id="ExpectSalary" name="ExpectSalary">
+                <option value="">-- 请选择 --</option>
+                <option value="1500以下">1500以下</option>
+                <option value="1500-1999">1500-1999</option>
+                <option value="2000-2999">2000-2999</option>
+                <option value="3000-4499">3000-4499</option>
+                <option value="4500-5999">4500-5999</option>
+                <option value="6000-7999">6000-7999</option>
+                <option value="8000-9999">8000-9999</option>
+                <option value="10000-14999">10000-14999</option>
+                <option value="15000-19999">15000-19999</option>
+                <option value="20000-29999">20000-29999</option>
+                <option value="30000-49999">30000-49999</option>
+                <option value="50000及以上">50000及以上</option>
+              </select></td>
+            <th>到岗时间：</th>
+            <td><select id="AvailabelTime" name="AvailabelTime">
+                <option value="">-- 请选择 --</option>
+                <option value="1460">即时</option>
+                <option value="一周">一周</option>
+                <option value="一月内">一月内</option>
+                <option value="1~3月">1~3月</option>
+                <option value="大于3月">大于3月</option>
+                <option value="待定">待定</option>
+              </select></td>
+          </tr>
+        </table>
+        <table class="uc nbg">
+          <tr>
+            <th>当前居住地：</th>
+            <td><input id="Location" name="Location" type="text" maxlength="35" /></td>
+          </tr>
+        </table>
+        <table class="uc nbg">
+          <tr>
+            <th>个人简介：</th>
+            <td><textarea id="Summary" name="Summary"></textarea></td>
+          </tr>
+        </table>
+      </div>
+      <!---------------------------   #end basic   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start exp   ---------------------------------->
+      <h3>工作经验</h3>
+      <div id="ajax_exp">
+        <div class="addresume">
+          <div id="Exp_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">时间<span class="star">*</span>：</th>
+                <td class="vbm"><select id="Exp_FromYear_1" name="Exp_FromYear_1" class="weightyear" isValidate="true" isRequire="true">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <span id="Exp_FromYear_1_msg" style="color:red;display:none">&nbsp;</span>
+                  <script>event_observe('Exp_FromYear_1', 'blur', checkAttributeValue);</script>
+                  <select id="Exp_FromMonth_1" name="Exp_FromMonth_1" class="weightmonth" isValidate="true" isRequire="true">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  <span id="Exp_FromMonth_1_msg" style="color:red;display:none">&nbsp;</span>
+                  <script>event_observe('Exp_FromMonth_1', 'blur', checkAttributeValue);</script>
+                  到
+                  <select id="Exp_ToYear_1" name="Exp_ToYear_1" class="weightyear">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <select id="Exp_ToMonth_1" name="Exp_ToMonth_1" class="weightmonth">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  (后两项不填表示至今)</td>
+              </tr>
+            </table>
+            <table class="uc nbg">
+              <tr>
+                <th>雇主名称<span class="star">*</span>：</th>
+                <td width="225"><input id="Exp_EmployerName_1" name="Exp_EmployerName_1" type="text" value=""  maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Exp_EmployerName_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Exp_EmployerName_1', 'blur', checkAttributeValue);</script></td>
+                <td width="60">所属部门：</td>
+                <td><input id="Exp_Department_1" name="Exp_Department_1" type="text" value=""  maxlength="35" /></td>
+              </tr>
+              <tr>
+                <th>联系电话：</th>
+                <td><input id="Exp_EmployerPhone_1" name="Exp_EmployerPhone_1" type="text" value="" maxlength="20" /></td>
+                <td>工作地点：</td>
+                <td><input id="Exp_WorkPlace_1" name="Exp_WorkPlace_1" type="text" value="" maxlength="35" /></td>
+              </tr>
+              <tr>
+                <th>职位<span class="star">*</span>：</th>
+                <td><input id="Exp_PositionTitle_1" name="Exp_PositionTitle_1" type="text" value="" maxlength="30" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Exp_PositionTitle_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Exp_PositionTitle_1', 'blur', checkAttributeValue);</script></td>
+                <td>所属行业：</td>
+                <td><select id="Exp_Industry_1" name="Exp_Industry_1">
+                    <option value="">-- 请选择 --</option>
+                    <option value="计算机软件">计算机软件</option>
+                    <option value="电子技术/半导体/集成电路">电子技术/半导体/集成电路</option>
+                    <option value="金融/投资/证券">金融/投资/证券</option>
+                    <option value="贸易/进出口">贸易/进出口</option>
+                    <option value="快速消费品(食品,饮料,化妆品)">快速消费品(食品,饮料,化妆品)</option>
+                    <option value="服装/纺织/皮革">服装/纺织/皮革</option>
+                    <option value="专业服务(咨询，人力资源)">专业服务(咨询，人力资源)</option>
+                    <option value="制药/生物工程">制药/生物工程</option>
+                    <option value="建筑与工程">建筑与工程</option>
+                    <option value="餐饮业">餐饮业</option>
+                    <option value="广告">广告</option>
+                    <option value="文字媒体/出版">文字媒体/出版</option>
+                    <option value="机械/设备/重工">机械/设备/重工</option>
+                    <option value="印刷/包装/造纸">印刷/包装/造纸</option>
+                    <option value="采掘业/冶炼">采掘业/冶炼</option>
+                    <option value="娱乐/休闲/体育">娱乐/休闲/体育</option>
+                    <option value="法律">法律</option>
+                    <option value="石油/化工/矿产/地质">石油/化工/矿产/地质</option>
+                    <option value="环保">环保</option>
+                    <option value="交通/运输/物流">交通/运输/物流</option>
+                    <option value="批发/零售">批发/零售</option>
+                    <option value="教育/培训">教育/培训</option>
+                    <option value="学术/科研">学术/科研</option>
+                    <option value="房地产开发">房地产开发</option>
+                    <option value="生活服务">生活服务</option>
+                    <option value="政府">政府</option>
+                    <option value="农业/渔业/林业">农业/渔业/林业</option>
+                    <option value="其他行业">其他行业</option>
+                    <option value="通信/电信/网络设备">通信/电信/网络设备</option>
+                    <option value="互联网/电子商务">互联网/电子商务</option>
+                    <option value="汽车及零配件">汽车及零配件</option>
+                    <option value="中介服务">中介服务</option>
+                    <option value="仪器仪表/工业自动化">仪器仪表/工业自动化</option>
+                    <option value="电力/水利">电力/水利</option>
+                    <option value="计算机硬件">计算机硬件</option>
+                    <option value="计算机服务(系统、数据服务，维修)">计算机服务(系统、数据服务，维修)</option>
+                    <option value="通信/电信运营、增值服务">通信/电信运营、增值服务</option>
+                    <option value="网络游戏">网络游戏</option>
+                    <option value="会计/审计">会计/审计</option>
+                    <option value="银行">银行</option>
+                    <option value="保险">保险</option>
+                    <option value="家具/家电/工艺品/玩具">家具/家电/工艺品/玩具</option>
+                    <option value="办公用品及设备">办公用品及设备</option>
+                    <option value="医疗/护理/保健/卫生">医疗/护理/保健/卫生</option>
+                    <option value="医疗设备/器械">医疗设备/器械</option>
+                    <option value="公关/市场推广/会展">公关/市场推广/会展</option>
+                    <option value="影视/媒体/艺术">影视/媒体/艺术</option>
+                    <option value="家居/室内设计/装潢">家居/室内设计/装潢</option>
+                    <option value="物业管理/商业中心">物业管理/商业中心</option>
+                    <option value="检测，认证">检测，认证</option>
+                    <option value="酒店/旅游">酒店/旅游</option>
+                    <option value="美容/保健">美容/保健</option>
+                    <option value="航天/航空">航天/航空</option>
+                    <option value="原材料和加工">原材料和加工</option>
+                    <option value="非盈利机构">非盈利机构</option>
+                    <option value="多元化业务集团公司">多元化业务集团公司</option>
+                  </select></td>
+              </tr>
+            </table>
+            <table class="uc nbg">
+              <tr>
+                <th>工作描述：</th>
+                <td><textarea id="Exp_Summary_1" name="Exp_Summary_1"></textarea></td>
+              </tr>
+              <tr>
+                <th>主要业绩：</th>
+                <td><textarea id="Exp_Score_1" name="Exp_Score_1"></textarea></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Exp_Count" name="Exp_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Exp');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end exp   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start pro   ---------------------------------->
+      <h3>项目经验</h3>
+      <div id="ajax_pro">
+        <div class="addresume">
+          <div id="Pro_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">时间<span class="star">*</span>：</th>
+                <td class="vbm" colspan="2"><select id="Pro_FromYear_1" name="Pro_FromYear_1" class="weightyear" isValidate="true" isRequire="true">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <span id="Pro_FromYear_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Pro_FromYear_1', 'blur', checkAttributeValue);</script>
+                  <select id="Pro_FromMonth_1" name="Pro_FromMonth_1" class="weightmonth" isValidate="true" isRequire="true">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  <span id="Pro_FromMonth_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Pro_FromMonth_1', 'blur', checkAttributeValue);</script>
+                  到
+                  <select id="Pro_ToYear_1" name="Pro_ToYear_1" class="weightyear">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <select id="Pro_ToMonth_1" name="Pro_ToMonth_1" class="weightmonth">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  (后两项不填表示至今)</td>
+              </tr>
+              <tr>
+                <th>项目名称<span class="star">*</span>：</th>
+                <td><input id="Pro_ProjectName_1" name="Pro_ProjectName_1" type="text" value="" maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Pro_ProjectName_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Pro_ProjectName_1', 'blur', checkAttributeValue);</script></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>项目描述：</th>
+                <td><textarea id="Pro_Summary_1" name="Pro_Summary_1"></textarea></td>
+                <td></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Pro_Count" name="Pro_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Pro');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end pro   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start edu   ---------------------------------->
+      <h3>教育经历</h3>
+      <div id="ajax_edu">
+        <div class="addresume">
+          <div id="Edu_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">时间<span class="star">*</span>：</th>
+                <td class="vbm"><select id="Edu_FromYear_1" name="Edu_FromYear_1" class="weightyear" isValidate="true" isRequire="true">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <span id="Edu_FromYear_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Edu_FromYear_1', 'blur', checkAttributeValue);</script>
+                  <select id="Edu_FromMonth_1" name="Edu_FromMonth_1" class="weightmonth" isValidate="true" isRequire="true">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  <span id="Edu_FromMonth_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Edu_FromMonth_1', 'blur', checkAttributeValue);</script>
+                  到
+                  <select id="Edu_ToYear_1" name="Edu_ToYear_1" class="weightyear">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <select id="Edu_ToMonth_1" name="Edu_ToMonth_1" class="weightmonth">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  (后两项不填表示至今)</td>
+              </tr>
+            </table>
+            <table class="uc nbg">
+              <tr>
+                <th>学校<span class="star">*</span>：</th>
+                <td width="225"><input id="Edu_SchoolName_1" name="Edu_SchoolName_1" type="text"  value="" maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Edu_SchoolName_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Edu_SchoolName_1', 'blur', checkAttributeValue);</script></td>
+                <td width="70">所获学历<span class="star">*</span>：</td>
+                <td><select id="Edu_Education_1" name="Edu_Education_1" isValidate="true" isRequire="true">
+                    <option value="">-- 请选择 --</option>
+                    <option value="初中">初中</option>
+                    <option value="高中">高中</option>
+                    <option value="中技">中技</option>
+                    <option value="中专">中专</option>
+                    <option value="大专">大专</option>
+                    <option value="本科">本科</option>
+                    <option value="硕士">硕士</option>
+                    <option value="博士">博士</option>
+                  </select>
+                  &nbsp;<span id="Edu_Education_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Edu_Education_1', 'blur', checkAttributeValue);</script></td>
+              </tr>
+              <tr>
+                <th>专业<span class="star">*</span>：</th>
+                <td colspan="3"><input id="Edu_Profession_1" name="Edu_Profession_1" type="text" value="" maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Edu_Profession_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Edu_Profession_1', 'blur', checkAttributeValue);</script></td>
+              </tr>
+            </table>
+            <table class="uc nbg">
+              <tr>
+                <th>备注：</th>
+                <td><textarea id="Edu_Summary_1" name="Edu_Summary_1"></textarea></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Edu_Count" name="Edu_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Edu');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end edu   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start tra   ---------------------------------->
+      <h3>培训信息</h3>
+      <div id="ajax_tra">
+        <div class="addresume">
+          <div id="Tra_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">时间<span class="star">*</span>：</th>
+                <td class="vbm"><select id="Tra_FromYear_1" name="Tra_FromYear_1" class="weightyear" isValidate="true" isRequire="true">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <span id="Tra_FromYear_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Tra_FromYear_1', 'blur', checkAttributeValue);</script>
+                  <select id="Tra_FromMonth_1" name="Tra_FromMonth_1" class="weightmonth" isValidate="true" isRequire="true">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  <span id="Tra_FromMonth_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Tra_FromMonth_1', 'blur', checkAttributeValue);</script>
+                  到
+                  <select id="Tra_ToYear_1" name="Tra_ToYear_1" class="weightyear">
+                    <option>年</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961">1961</option>
+                  </select>
+                  <select id="Tra_ToMonth_1" name="Tra_ToMonth_1" class="weightmonth">
+                    <option>月</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                  </select>
+                  (后两项不填表示至今)</td>
+              </tr>
+            </table>
+            <table class="uc nbg">
+              <tr>
+                <th>培训机构<span class="star">*</span>：</th>
+                <td width="225"><input id="Tra_TrainerName_1" name="Tra_TrainerName_1" maxlength="35" type="text" value="" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Tra_TrainerName_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Tra_TrainerName_1', 'blur', checkAttributeValue);</script></td>
+                <td width="68">培训地点<span class="star">*</span>：</td>
+                <td><input id="Tra_TrainerAddress_1" name="Tra_TrainerAddress_1" maxlength="35" type="text" value="" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Tra_TrainerAddress_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Tra_TrainerAddress_1', 'blur', checkAttributeValue);</script></td>
+              </tr>
+              <tr>
+                <th>课程<span class="star">*</span>：</th>
+                <td><input id="Tra_Lesson_1" name="Tra_Lesson_1" type="text" value="" maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Tra_Lesson_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Tra_Lesson_1', 'blur', checkAttributeValue);</script></td>
+                <td>所获证书<span class="star">*</span>：</td>
+                <td><input id="Tra_Centification_1" name="Tra_Centification_1" type="text" value="" maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Tra_Centification_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Tra_Centification_1', 'blur', checkAttributeValue);</script></td>
+              </tr>
+            </table>
+            <table class="uc nbg">
+              <tr>
+                <th>详细：</th>
+                <td><textarea id="Tra_Summary_1" name="Tra_Summary_1"></textarea></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Tra_Count" name="Tra_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Tra');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end tra   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start lan   ---------------------------------->
+      <h3>语言能力</h3>
+      <div id="ajax_lan">
+        <div class="addresume">
+          <div id="Lan_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">语种<span class="star">*</span>：</th>
+                <td class="vbm" width="225"><select id="Lan_Language_1" name="Lan_Language_1" isValidate="true" isRequire="true">
+                    <option value="">-- 请选择 --</option>
+                    <option value="英语">英语</option>
+                    <option value="日语">日语</option>
+                    <option value="法语">法语</option>
+                    <option value="德语">德语</option>
+                    <option value="俄语">俄语</option>
+                    <option value="西班牙语">西班牙语</option>
+                    <option value="葡萄牙语">葡萄牙语</option>
+                    <option value="朝鲜语">朝鲜语</option>
+                    <option value="阿拉伯语">阿拉伯语</option>
+                    <option value="其它">其它</option>
+                  </select>
+                  &nbsp;<span id="Lan_Language_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Lan_Language_1', 'blur', checkAttributeValue);</script></td>
+                <td class="vbm" width="60">掌握程度：</td>
+                <td class="vbm"><select id="Lan_Level_1" name="Lan_Level_1">
+                    <option value="">-- 请选择 --</option>
+                    <option value="一般">一般</option>
+                    <option value="良好">良好</option>
+                    <option value="熟练">熟练</option>
+                    <option value="精通">精通</option>
+                  </select></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Lan_Count" name="Lan_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Lan');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end lan   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start skill   ---------------------------------->
+      <h3>IT技能</h3>
+      <div id="ajax_skill">
+        <div class="addresume">
+          <div id="Ski_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">技能名称<span class="star">*</span>：</th>
+                <td class="vbm" width="225"><input id="Ski_SkillName_1" name="Ski_SkillName_1" type="text" value="" maxlength="35" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Ski_SkillName_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Ski_SkillName_1', 'blur', checkAttributeValue);</script></td>
+                <td class="vbm" width="85">使用时间(月)：</td>
+                <td class="vbm"><input id="Ski_UsedTimes_1" name="Ski_UsedTimes_1" type="text" value="" maxlength="3" /></td>
+              </tr>
+              <tr>
+                <th>熟练程度：</th>
+                <td><select id="Ski_Ability_1" name="Ski_Ability_1">
+                    <option value="">-- 请选择 --</option>
+                    <option value="精通">精通</option>
+                    <option value="熟练">熟练</option>
+                    <option value="一般">一般</option>
+                    <option value="了解">了解</option>
+                  </select></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Ski_Count" name="Ski_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Ski');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end skill   ---------------------------------->
+      <div class="dotline2"></div>
+      <!---------------------------  #start certificate   ---------------------------------->
+      <h3>证书</h3>
+      <div id="ajax_certification">
+        <div class="addresume">
+          <div id="Cer_1">
+            <table class="uc nbg">
+              <tr>
+                <th class="vbm">证书名称<span class="star">*</span>：</th>
+                <td class="vbm" width="225"><input id="Cer_CertificationName_1" name="Cer_CertificationName_1" maxlength="35" type="text" value="" isValidate="true" isRequire="true" />
+                  &nbsp;<span id="Cer_CertificationName_1_msg" style="color:red;display:none"></span>
+                  <script>event_observe('Cer_CertificationName_1', 'blur', checkAttributeValue);</script></td>
+                <td class="vbm" width="60">获得时间：</td>
+                <td class="vbm"><input id="Cer_EffectiveDate_1" name="Cer_EffectiveDate_1" type="text" value="" maxlength="10" /></td>
+              </tr>
+            </table>
+          </div>
+          <input type="hidden" id="Cer_Count" name="Cer_Count" value="1" />
+          <div class="btns rbtn" onclick="add_form('Cer');"><span> » 继续添加</span></div>
+          <br />
+        </div>
+      </div>
+      <!---------------------------  #end certificate   ---------------------------------->
+      <div class="dotline2"></div>
+    </div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td align="right"><div class="btngray" onclick="submit_resume();"><strong>提交</strong></div></td>
+      </tr>
+    </table>
+    <!-- 模板 代码（可编辑） -->
+  </form>
+  <iframe id="iframeResume" name="iframeResume" width="0" height="0" frameborder="0"></iframe>
+</div>
+<!-- 模板 代码 -->
+</body>
+</html>

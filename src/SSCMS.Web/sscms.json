@@ -4,7 +4,7 @@
   "SecurityKey": "ec169e93b156ce7a",
   "Database": {
     "Type": "SQLite",
-    "ConnectionString": "Data Source=~/database.sqlite;Version=3;"
+    "ConnectionString": "Data Source=E:\\sscms\\staging\\src\\SSCMS.Web\\database.sqlite;Version=3;"
   },
   "Redis": {
     "ConnectionString": ""

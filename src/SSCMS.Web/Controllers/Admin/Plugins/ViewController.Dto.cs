@@ -1,5 +1,4 @@
-﻿using SSCMS.Core.Packaging;
-using SSCMS.Plugins;
+﻿using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
@@ -9,9 +8,20 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         {
             public bool IsNightly { get; set; }
             public string Version { get; set; }
-            public bool Installed { get; set; }
-            public string InstalledVersion { get; set; }
-            public IPlugin Plugin { get; set; }
+            public IPlugin LocalPlugin { get; set; }
+            public string Content { get; set; }
+            public string ChangeLog { get; set; }
+        }
+
+        public class DisableRequest
+        {
+            public string PluginId { get; set; }
+            public bool Disabled { get; set; }
+        }
+
+        public class DeleteRequest
+        {
+            public string PluginId { get; set; }
         }
     }
 }

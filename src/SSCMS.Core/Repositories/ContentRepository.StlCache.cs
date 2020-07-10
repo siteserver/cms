@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -63,7 +62,7 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(group))
             {
                 group = group.Trim().Trim(',');
-                var groups = Utilities.GetStringList(group);
+                var groups = ListUtils.GetStringList(group);
                 if (groups.Count > 0)
                 {
                     whereBuilder.Append(" AND (");
@@ -82,7 +81,7 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(groupNot))
             {
                 groupNot = groupNot.Trim().Trim(',');
-                var groupNots = Utilities.GetStringList(groupNot);
+                var groupNots = ListUtils.GetStringList(groupNot);
                 if (groupNots.Count > 0)
                 {
                     whereBuilder.Append(" AND (");
@@ -103,7 +102,7 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(tags))
             {
                 tags = tags.Trim().Trim(',');
-                var tagNames = Utilities.GetStringList(tags);
+                var tagNames = ListUtils.GetStringList(tags);
                 if (tagNames.Count > 0)
                 {
                     whereBuilder.Append(" AND (");
@@ -285,7 +284,7 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(tags))
             {
                 tags = tags.Trim().Trim(',');
-                var tagNames = Utilities.GetStringList(tags);
+                var tagNames = ListUtils.GetStringList(tags);
                 if (tagNames.Count > 0)
                 {
                     whereStringBuilder.Append(" AND (");

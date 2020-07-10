@@ -6,7 +6,7 @@ using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Core.Packaging;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;

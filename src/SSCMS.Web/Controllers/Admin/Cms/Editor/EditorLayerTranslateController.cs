@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -54,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -62,7 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, AuthTypes.SiteContentPermissions.Add);
+            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, AuthTypes.ContentPermissions.Add);
 
             var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
@@ -85,9 +86,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -98,17 +99,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
             var siteName = transSite.SiteName;
 
-            var name = await _channelRepository.GetChannelNameNavigationAsync(request.TransSiteId, request.TransChannelId);
-            if (request.TransSiteId != request.SiteId)
+            var channels = new List<TransChannel>();
+            foreach (var transChannelId in request.TransChannelIds)
             {
-                name = siteName + " : " + name;
+                var name = await _channelRepository.GetChannelNameNavigationAsync(request.TransSiteId, transChannelId);
+                if (request.TransSiteId != request.SiteId)
+                {
+                    name = siteName + " : " + name;
+                }
+
+                name += $" ({request.TransType.GetDisplayName()})";
+
+                channels.Add(new TransChannel
+                {
+                    Id = transChannelId,
+                    Name = name
+                });
             }
 
-            name += $" ({request.TransType.GetDisplayName()})";
-
-            return new StringResult
+            return new SubmitResult
             {
-                Value = name
+                Channels = channels
             };
         }
     }

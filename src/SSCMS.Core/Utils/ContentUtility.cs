@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -99,7 +99,7 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        public static async Task TranslateAsync(IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType, ICreateManager createManager)
+        public static async Task TranslateAsync(IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, Site site, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType, ICreateManager createManager, int adminId)
         {
             if (site == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
@@ -122,17 +122,31 @@ namespace SSCMS.Core.Utils
                 contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Copy.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var plugin in pluginManager.GetPlugins())
+                var handlers = pluginManager.GetExtensions<PluginContentHandler>();
+                foreach (var handler in handlers)
                 {
                     try
                     {
-                        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                        handler.OnTranslated(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId);
+                        await handler.OnTranslatedAsync(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId);
                     }
                     catch (Exception ex)
                     {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(ex);
                     }
                 }
+
+                //foreach (var plugin in oldPluginManager.GetPlugins())
+                //{
+                //    try
+                //    {
+                //        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
+                //    }
+                //}
 
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
@@ -148,19 +162,35 @@ namespace SSCMS.Core.Utils
 
                 var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var plugin in pluginManager.GetPlugins())
+                var handlers = pluginManager.GetExtensions<PluginContentHandler>();
+                foreach (var handler in handlers)
                 {
                     try
                     {
-                        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId));
+                        handler.OnTranslated(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId);
+                        await handler.OnTranslatedAsync(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId);
                     }
                     catch (Exception ex)
                     {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(ex);
                     }
                 }
 
-                await databaseManager.ContentRepository.DeleteAsync(pluginManager, site, channel, contentId);
+                //foreach (var plugin in oldPluginManager.GetPlugins())
+                //{
+                //    try
+                //    {
+                //        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId));
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
+                //    }
+                //}
+
+                await databaseManager.ContentRepository.TrashContentAsync(site, channel, contentId, adminId);
+
+                //await databaseManager.ContentRepository.DeleteAsync(oldPluginManager, pluginManager, site, channel, contentId);
 
                 //GlobalSettings.ContentRepository.DeleteContents(site.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
@@ -195,17 +225,31 @@ namespace SSCMS.Core.Utils
                 contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.ReferenceContent.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
-                foreach (var plugin in pluginManager.GetPlugins())
+                var handlers = pluginManager.GetExtensions<PluginContentHandler>();
+                foreach (var handler in handlers)
                 {
                     try
                     {
-                        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                        handler.OnTranslated(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId);
+                        await handler.OnTranslatedAsync(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId);
                     }
                     catch (Exception ex)
                     {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
+                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(ex);
                     }
                 }
+
+                //foreach (var plugin in oldPluginManager.GetPlugins())
+                //{
+                //    try
+                //    {
+                //        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
+                //    }
+                //}
 
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
@@ -245,7 +289,7 @@ namespace SSCMS.Core.Utils
             var channelContentIds = new List<ContentSummary>();
             if (string.IsNullOrEmpty(summaries)) return channelContentIds;
 
-            foreach (var channelContentId in Utilities.GetStringList(summaries))
+            foreach (var channelContentId in ListUtils.GetStringList(summaries))
             {
                 var summary = ParseSummary(channelContentId);
                 if (summary != null)

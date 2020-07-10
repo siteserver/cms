@@ -1,5 +1,7 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using Newtonsoft.Json;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -19,13 +21,27 @@ namespace SSCMS.Core.StlParser.Model
                 dynamicInfo.ChannelId = dynamicInfo.SiteId;
             }
             dynamicInfo.User = user;
-            dynamicInfo.QueryString =
-                PageUtils.GetQueryStringFilterXss(pathAndQuery);
+            dynamicInfo.QueryString = GetQueryStringFilterSqlAndXss(pathAndQuery);
             dynamicInfo.QueryString.Remove("siteId");
 
             dynamicInfo.Page = page;
 
             return dynamicInfo;
+        }
+
+        private static NameValueCollection GetQueryStringFilterSqlAndXss(string url)
+        {
+            if (string.IsNullOrEmpty(url) || url.IndexOf("?", StringComparison.Ordinal) == -1) return new NameValueCollection();
+
+            var attributes = new NameValueCollection();
+
+            var querystring = url.Substring(url.IndexOf("?", StringComparison.Ordinal) + 1);
+            var originals = TranslateUtils.ToNameValueCollection(querystring);
+            foreach (string key in originals.Keys)
+            {
+                attributes[key] = AttackUtils.FilterSqlAndXss(originals[key]);
+            }
+            return attributes;
         }
 
         public string ElementName { get; set; }

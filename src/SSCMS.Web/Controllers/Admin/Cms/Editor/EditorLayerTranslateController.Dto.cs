@@ -24,8 +24,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         public class SubmitRequest : ChannelRequest
         {
             public int TransSiteId { get; set; }
-            public int TransChannelId { get; set; }
+            public List<int> TransChannelIds { get; set; }
             public TranslateContentType TransType { get; set; }
+        }
+
+        public class TransChannel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
+
+        public class SubmitResult
+        {
+            public List<TransChannel> Channels { get; set; }
         }
     }
 }

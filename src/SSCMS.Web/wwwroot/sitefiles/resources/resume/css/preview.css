@@ -1,0 +1,64 @@
+body{background:none; background-color:#FFF;}
+#main_content {
+	float:none;
+	width:765px;
+	margin:20px auto; 
+	padding:0;
+}
+.dotline {
+	margin:2px 0px;
+}
+h3 { float:left;width:500px; padding:5px 15px;background: #FFFFFF url(../images/resume_titlebg.jpg) repeat-y; }
+table.reg { clear:both; width:100% }
+table.reg tr td, table.reg tr th{ background: url(../images/line_dot.gif) repeat-x bottom; }
+#basic_form table.reg tr td,#basic_form table.reg tr th{ background:none; }
+#exp_form table.reg tr td,#exp_form table.reg tr th{ background:none; }
+#pro_form table.reg tr td,#pro_form table.reg tr th{ background:none; }
+#edu_form table.reg tr td,#edu_form table.reg tr th{ background:none; }
+#tra_form table.reg tr td,#tra_form table.reg tr th{ background:none; }
+#lan_form table.reg tr td,#lan_form table.reg tr th{ background:none; }
+#other_form table.reg tr td,#other_form table.reg tr th{ background:none; }
+#att_form table.reg tr td,#att_form table.reg tr th{ background:none; }
+a.btn { float:right; margin:2px 0px;}
+a.btn span strong{ padding-left:10px; }
+.print { }
+#reg_content {padding:25px 10px;}
+#reg_content h1{padding-left:12px; color:#444; font-size:20px;}
+#reg_content .user_photo { text-align:center; } 
+#reg_content .user_photo img {
+	border:1px solid #CCCCCC;
+	padding:1px;
+}
+table.reg tr th, table.uc tr th {
+	width:95px;
+}
+#print{
+	text-align:right;	
+}
+#print a{
+	font-size:14px; text-decoration:none;
+}
+
+.resumeContainer, .container_top, .container_bottom {
+	width:765px;
+	position:relative;
+	clear:both;
+}
+.resumeContainer {
+	background: url(../images/container_bg.jpg) repeat-y;
+	overflow:hidden;
+}
+.container_top {
+	background: url(../images/container_top.jpg) no-repeat;
+	padding-bottom:18px;
+	overflow:hidden;
+}
+.container2_top {
+	background: url(../images/container2_top.jpg) no-repeat;
+	overflow:hidden;
+	padding:20px 20px 15px;
+}
+.container_bottom {
+	background: url(../images/container_bottom.jpg) no-repeat bottom left;
+	height:10px;
+}

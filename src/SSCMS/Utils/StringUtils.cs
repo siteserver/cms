@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using Datory.Utils;
 
 namespace SSCMS.Utils
 {
@@ -33,33 +31,6 @@ namespace SSCMS.Utils
             const string formatDateTime = @"^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-)) (20|21|22|23|[0-1]?\d):[0-5]?\d:[0-5]?\d$";
 
             return Regex.IsMatch(val, formatDate) || Regex.IsMatch(val, formatDateTime);
-        }
-
-        public static bool In(string strCollection, int inInt)
-        {
-            return !string.IsNullOrEmpty(strCollection) && In(strCollection, inInt.ToString());
-        }
-
-        public static bool In(string strCollection, string inStr)
-        {
-            if (string.IsNullOrEmpty(strCollection)) return false;
-            return strCollection == inStr || strCollection.StartsWith(inStr + ",") || strCollection.EndsWith("," + inStr) || strCollection.IndexOf("," + inStr + ",", StringComparison.Ordinal) != -1;
-        }
-
-        public static bool Contains(string text, string inner)
-        {
-            return text?.IndexOf(inner, StringComparison.Ordinal) >= 0;
-        }
-
-        public static bool ContainsIgnoreCase(string text, string inner)
-        {
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(inner)) return false;
-            return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
-        }
-
-        public static bool ContainsIgnoreCase(IEnumerable<string> list, string target)
-        {
-            return list != null && list.Any(element => EqualsIgnoreCase(element, target));
         }
 
         public static string Trim(string text)
@@ -92,6 +63,15 @@ namespace SSCMS.Utils
         public static string ToLower(string text)
         {
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower();
+        }
+
+        public static string ToCamelCase(string str)
+        {
+            if (!string.IsNullOrEmpty(str) && str.Length > 1)
+            {
+                return char.ToLowerInvariant(str[0]) + str.Substring(1);
+            }
+            return str;
         }
 
         public static string Remove(string text, int startIndex)
@@ -142,7 +122,7 @@ namespace SSCMS.Utils
             return a.Equals(b, StringComparison.OrdinalIgnoreCase);
         }
 
-        public static bool EqualsIgnoreNull(string a, string b)
+        public static bool Equals(string a, string b)
         {
             return string.IsNullOrEmpty(a) ? string.IsNullOrEmpty(b) : string.Equals(a, b);
         }
@@ -253,44 +233,43 @@ namespace SSCMS.Utils
             return retVal;
         }
 
-        public static string ReplaceIgnoreCase(string original, string pattern, string replacement)
+        public static string ReplaceIgnoreCase(string value, string replace, string to)
         {
-            if (original == null) return string.Empty;
-            if (replacement == null) replacement = string.Empty;
+            if (value == null) return string.Empty;
+            if (to == null) to = string.Empty;
             var count = 0;
             var position0 = 0;
             int position1;
-            var upperString = original.ToUpper();
-            var upperPattern = pattern.ToUpper();
-            var inc = (original.Length / pattern.Length) * (replacement.Length - pattern.Length);
-            var chars = new char[original.Length + Math.Max(0, inc)];
+            var upperString = value.ToUpper();
+            var upperPattern = replace.ToUpper();
+            var inc = (value.Length / replace.Length) * (to.Length - replace.Length);
+            var chars = new char[value.Length + Math.Max(0, inc)];
             while ((position1 = upperString.IndexOf(upperPattern, position0, StringComparison.Ordinal)) != -1)
             {
-                for (var i = position0; i < position1; ++i) chars[count++] = original[i];
-                foreach (var t in replacement)
+                for (var i = position0; i < position1; ++i) chars[count++] = value[i];
+                foreach (var t in to)
                 {
                     chars[count++] = t;
                 }
-                position0 = position1 + pattern.Length;
+                position0 = position1 + replace.Length;
             }
-            if (position0 == 0) return original;
-            for (var i = position0; i < original.Length; ++i) chars[count++] = original[i];
+            if (position0 == 0) return value;
+            for (var i = position0; i < value.Length; ++i) chars[count++] = value[i];
             return new string(chars, 0, count);
         }
 
-        public static string Replace(string replace, string input, string to)
+        public static string Replace(string value, string replace, string to)
         {
-            var retVal = RegexUtils.Replace(replace, input, to);
-            if (string.IsNullOrEmpty(replace)) return retVal;
+            if (value == null) return string.Empty;
+            if (string.IsNullOrEmpty(replace)) return value;
+
+            if (to == null) to = string.Empty;
             if (replace.StartsWith("/") && replace.EndsWith("/"))
             {
-                retVal = RegexUtils.Replace(replace.Trim('/'), input, to);
+                return RegexUtils.Replace(replace.Trim('/'), value, to);
             }
-            else
-            {
-                retVal = input.Replace(replace, to);
-            }
-            return retVal;
+
+            return value.Replace(replace, to);
         }
 
         public static void ReplaceHrefOrSrc(StringBuilder builder, string replace, string to)
@@ -535,8 +514,8 @@ namespace SSCMS.Utils
         {
             if (replace.IndexOf(',') != -1)
             {
-                var replaceList = Utilities.GetStringList(replace);
-                var toList = Utilities.GetStringList(to);
+                var replaceList = ListUtils.GetStringList(replace);
+                var toList = ListUtils.GetStringList(to);
 
                 if (replaceList.Count == toList.Count)
                 {
@@ -569,21 +548,6 @@ namespace SSCMS.Utils
                 retVal = parsedContent.Replace(replace, to);
             }
 
-            return retVal;
-        }
-
-        public static string GetTrueImageHtml(string isDefaultStr)
-        {
-            return GetTrueImageHtml(TranslateUtils.ToBool(isDefaultStr));
-        }
-
-        private static string GetTrueImageHtml(bool isDefault)
-        {
-            var retVal = string.Empty;
-            if (isDefault)
-            {
-                retVal = "<img src='../pic/icon/right.gif' border='0'/>";
-            }
             return retVal;
         }
 
@@ -712,6 +676,72 @@ namespace SSCMS.Utils
         {
             const string pattern = "[\u4e00-\u9fbb]";
             return Regex.IsMatch(chr.ToString(), pattern);
+        }
+
+        public const string StrictNameRegex = "^[a-z][a-z0-9\\-]*$";
+
+        public static bool IsStrictName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return false;
+
+            var reg = new Regex(StrictNameRegex, RegexOptions.Singleline);
+            return reg.IsMatch(name);
+        }
+
+        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
+        {
+            var parsedContent = content;
+
+            if (!string.IsNullOrEmpty(replace))
+            {
+                parsedContent = ParseReplace(parsedContent, replace, to);
+            }
+
+            if (isClearTags)
+            {
+                parsedContent = StripTags(parsedContent);
+            }
+
+            if (!string.IsNullOrEmpty(parsedContent))
+            {
+                if (startIndex > 0 || length > 0)
+                {
+                    try
+                    {
+                        parsedContent = length > 0 ? parsedContent.Substring(startIndex, length) : parsedContent.Substring(startIndex);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+
+                if (wordNum > 0)
+                {
+                    parsedContent = MaxLengthText(parsedContent, wordNum, ellipsis);
+                }
+
+                if (isReturnToBr)
+                {
+                    parsedContent = ReplaceNewlineToBr(parsedContent);
+                }
+
+                if (!string.IsNullOrEmpty(formatString))
+                {
+                    parsedContent = string.Format(formatString, parsedContent);
+                }
+
+                if (isLower)
+                {
+                    parsedContent = parsedContent.ToLower();
+                }
+                if (isUpper)
+                {
+                    parsedContent = parsedContent.ToUpper();
+                }
+            }
+
+            return parsedContent;
         }
     }
 }

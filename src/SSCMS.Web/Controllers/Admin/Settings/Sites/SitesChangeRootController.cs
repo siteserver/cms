@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -46,12 +46,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return this.Error($"根目录站点已经存在，站点{site.SiteName}不能转移到根目录");
             }
 
-            var siteDirList = await _siteRepository.GetSiteDirListAsync(0);
+            var siteDirList = await _siteRepository.GetSiteDirsAsync(0);
             var directories = new List<string>();
             var directoryNames = DirectoryUtils.GetDirectoryNames(_settingsManager.WebRootPath);
             foreach (var directoryName in directoryNames)
             {
-                if (!_pathManager.IsSystemDirectory(directoryName) && !StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
+                if (!_pathManager.IsSystemDirectory(directoryName) && !ListUtils.ContainsIgnoreCase(siteDirList, directoryName))
                 {
                     directories.Add(directoryName);
                 }
@@ -106,14 +106,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 {
                     return this.Error("文件夹名称不符合系统要求，请更改文件夹名称！");
                 }
-                var rootPath = _pathManager.GetWebRootPath();
+                var rootPath = _pathManager.GetRootPath();
                 var directories = DirectoryUtils.GetDirectoryNames(rootPath);
-                if (StringUtils.ContainsIgnoreCase(directories, request.SiteDir))
+                if (ListUtils.ContainsIgnoreCase(directories, request.SiteDir))
                 {
                     return this.Error("已存在相同的文件夹，请更改文件夹名称！");
                 }
-                var list = await _siteRepository.GetSiteDirListAsync(0);
-                if (StringUtils.ContainsIgnoreCase(list, request.SiteDir))
+                var list = await _siteRepository.GetSiteDirsAsync(0);
+                if (ListUtils.ContainsIgnoreCase(list, request.SiteDir))
                 {
                     return this.Error("已存在相同的站点文件夹，请更改文件夹名称！");
                 }

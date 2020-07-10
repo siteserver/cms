@@ -96,6 +96,69 @@ namespace SSCMS.Core.Repositories
             return await repository.GetAllAsync<ContentSummary>(query);
         }
 
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> UserWriteSearch(int userId, Site site, int page, int? channelId, bool isCheckedLevels, List<int> checkedLevels, List<string> groupNames, List<string> tagNames)
+        {
+            var repository = GetRepository(site.TableName);
+
+            var query = Q
+                .Select(nameof(Content.ChannelId), nameof(Content.Id))
+                .Where(nameof(Content.SiteId), site.Id)
+                .Where(nameof(Content.UserId), userId)
+                .WhereNot(nameof(Content.SourceId), SourceManager.Preview);
+
+            if (channelId > 0)
+            {
+                query.Where(nameof(Content.ChannelId), channelId);
+            }
+
+            if (isCheckedLevels)
+            {
+                if (checkedLevels != null && checkedLevels.Count > 0)
+                {
+                    query.Where(q =>
+                    {
+                        if (checkedLevels.Contains(site.CheckContentLevel))
+                        {
+                            q.OrWhere(nameof(Content.Checked), true);
+                        }
+
+                        q.OrWhereIn(nameof(Content.CheckedLevel), checkedLevels);
+                        return q;
+                    });
+                }
+            }
+
+            if (groupNames != null && groupNames.Count > 0)
+            {
+                query.Where(q =>
+                {
+                    foreach (var groupName in groupNames)
+                    {
+                        q.OrWhereLike(nameof(Content.GroupNames), $"%{groupName}%");
+                    }
+                    return q;
+                });
+            }
+
+            if (tagNames != null && tagNames.Count > 0)
+            {
+                query.Where(q =>
+                {
+                    foreach (var tagName in tagNames)
+                    {
+                        q.OrWhereLike(nameof(Content.TagNames), $"%{tagName}%");
+                    }
+                    return q;
+                });
+            }
+
+            query.OrderByDesc(nameof(Content.LastEditAdminId), nameof(Content.AddDate), nameof(Content.Id));
+
+            var total = await repository.CountAsync(query);
+            var pageSummaries = await repository.GetAllAsync<ContentSummary>(query.ForPage(page, site.PageSize));
+            return (total, pageSummaries);
+        }
+
         public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearch(Site site, int page, List<int> channelIds, bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser)
         {
             var repository = GetRepository(site.TableName);

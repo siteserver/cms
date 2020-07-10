@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SqlKata;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -87,11 +86,11 @@ namespace SSCMS.Web.Controllers.V1
                     if (string.IsNullOrEmpty(where.Operator)) where.Operator = OpEquals;
                     if (StringUtils.EqualsIgnoreCase(where.Operator, OpIn))
                     {
-                        query.WhereIn(where.Column, Utilities.GetStringList(where.Value));
+                        query.WhereIn(where.Column, ListUtils.GetStringList(where.Value));
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpNotIn))
                     {
-                        query.WhereNotIn(where.Column, Utilities.GetStringList(where.Value));
+                        query.WhereNotIn(where.Column, ListUtils.GetStringList(where.Value));
                     }
                     else if (StringUtils.EqualsIgnoreCase(where.Operator, OpLike))
                     {

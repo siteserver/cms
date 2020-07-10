@@ -152,22 +152,25 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(loading))
             {
-                loading = await parseManager.PathManager.GetContentByFilePathAsync(SiteFilesAssets.Search.LoadingTemplatePath);
+                var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.LoadingTemplatePath);
+                loading = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
-                yes = await parseManager.PathManager.GetContentByFilePathAsync(SiteFilesAssets.Search.YesTemplatePath);
+                var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.YesTemplatePath);
+                yes = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
             }
             if (string.IsNullOrEmpty(no))
             {
-                no = await parseManager.PathManager.GetContentByFilePathAsync(SiteFilesAssets.Search.NoTemplatePath);
+                var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.NoTemplatePath);
+                no = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
             }
 
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.StlClient);
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
-            var apiUrl = parseManager.PathManager.GetSearchApiUrl(pageInfo.ApiUrl);
+            var apiUrl = parseManager.PathManager.GetSearchApiUrl();
             var apiParameters = parseManager.PathManager.GetSearchApiParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();

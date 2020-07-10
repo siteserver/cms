@@ -33,7 +33,7 @@ namespace SSCMS.Core.Utils.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static async Task<(string title, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath)
+        public static async Task<(string title, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath, string docsFileTitle)
         {
             string imageDirectoryPath;
             string imageDirectoryUrl;
@@ -71,12 +71,17 @@ namespace SSCMS.Core.Utils.Office
                 body = await pathManager.DecodeTextEditorAsync(siteInfo, body, true);
             }
 
+            if (string.IsNullOrEmpty(title))
+            {
+                title = docsFileTitle;
+            }
+
             return (title, body);
         }
 
         public static (string title, string body) ConvertToHtml(string docxFilePath, ConverterSettings settings)
         {
-            string title;
+            var title = string.Empty;
             string content;
             var fi = new FileInfo(docxFilePath);
 
@@ -86,16 +91,12 @@ namespace SSCMS.Core.Utils.Office
                 memoryStream.Write(byteArray, 0, byteArray.Length);
                 using (var wDoc = WordprocessingDocument.Open(memoryStream, true))
                 {
-                    title = fi.FullName;
                     var part = wDoc.CoreFilePropertiesPart;
                     if (part != null)
                     {
-                        title = (string)part.GetXDocument().Descendants(DC.title).FirstOrDefault() ?? fi.FullName;
+                        title = (string)part.GetXDocument().Descendants(DC.title).FirstOrDefault();
                     }
 
-                    title = PathUtils.GetFileNameWithoutExtension(title);
-
-                    // TODO: Determine max-width from size of content area.
                     var htmlSettings = new HtmlConverterSettings
                     {
                         // AdditionalCss = "body { margin: 1cm auto; max-width: 20cm; padding: 0; }",
@@ -210,27 +211,22 @@ namespace SSCMS.Core.Utils.Office
 
             if (settings.IsClearFormat)
             {
-                content = HtmlClearUtils.ClearFormat(content);
+                content = HtmlUtils.ClearFormat(content);
             }
 
             if (settings.IsFirstLineIndent)
             {
-                content = HtmlClearUtils.FirstLineIndent(content);
+                content = HtmlUtils.FirstLineIndent(content);
             }
 
             if (settings.IsClearFontSize)
             {
-                content = HtmlClearUtils.ClearFontSize(content);
+                content = HtmlUtils.ClearFontSize(content);
             }
 
             if (settings.IsClearFontFamily)
             {
-                content = HtmlClearUtils.ClearFontFamily(content);
-            }
-
-            if (string.IsNullOrEmpty(title))
-            {
-                title = PathUtils.GetFileNameWithoutExtension(docxFilePath);
+                content = HtmlUtils.ClearFontFamily(content);
             }
 
             return (title, content);

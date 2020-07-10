@@ -1,5 +1,5 @@
 ﻿using System;
-using SSCMS.Core.Packaging;
+using SSCMS.Core.Plugins;
 using SSCMS.Enums;
 using SSCMS.Utils;
 

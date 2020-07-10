@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
@@ -95,19 +94,19 @@ namespace SSCMS.Core.Services
                         styleInfo.InputType = inputStyle.InputType;
                     }
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.DisplayName, inputStyle.DisplayName))
+                    if (!StringUtils.Equals(styleInfo.DisplayName, inputStyle.DisplayName))
                     {
                         isEquals = false;
                         styleInfo.DisplayName = inputStyle.DisplayName;
                     }
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.HelpText, inputStyle.HelpText))
+                    if (!StringUtils.Equals(styleInfo.HelpText, inputStyle.HelpText))
                     {
                         isEquals = false;
                         styleInfo.HelpText = inputStyle.HelpText;
                     }
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.DefaultValue, inputStyle.DefaultValue))
+                    if (!StringUtils.Equals(styleInfo.DefaultValue, inputStyle.DefaultValue))
                     {
                         isEquals = false;
                         styleInfo.DefaultValue = inputStyle.DefaultValue;
@@ -149,7 +148,7 @@ namespace SSCMS.Core.Services
                     //    styleInfo.RegExp = inputStyle.RegExp;
                     //}
 
-                    if (!StringUtils.EqualsIgnoreNull(styleInfo.Width, inputStyle.Width))
+                    if (!StringUtils.Equals(styleInfo.Width, inputStyle.Width))
                     {
                         isEquals = false;
                         styleInfo.Width = inputStyle.Width;
@@ -189,13 +188,13 @@ namespace SSCMS.Core.Services
                             {
                                 var styleItem = styleItems[i];
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.Label, listItem.Label))
+                                if (!StringUtils.Equals(styleItem.Label, listItem.Label))
                                 {
                                     isEquals = false;
                                     styleItem.Label = listItem.Label;
                                 }
 
-                                if (!StringUtils.EqualsIgnoreNull(styleItem.Value, listItem.Value))
+                                if (!StringUtils.Equals(styleItem.Value, listItem.Value))
                                 {
                                     isEquals = false;
                                     styleItem.Value = listItem.Value;
@@ -253,7 +252,7 @@ namespace SSCMS.Core.Services
             {
                 if (IsContentTable(plugin))
                 {
-                    if (!StringUtils.ContainsIgnoreCase(list, plugin.ContentTableName))
+                    if (!ListUtils.ContainsIgnoreCase(list, plugin.ContentTableName))
                     {
                         list.Add(plugin.ContentTableName);
                     }
@@ -294,7 +293,7 @@ namespace SSCMS.Core.Services
         public List<IOldPlugin> GetContentPlugins(Channel channel, bool includeContentTable)
         {
             var list = new List<IOldPlugin>();
-            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
+            var pluginIds = ListUtils.GetStringList(channel.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 pluginIds.Add(channel.ContentModelPluginId);
@@ -320,7 +319,7 @@ namespace SSCMS.Core.Services
                 return null;
             }
 
-            var pluginIds = Utilities.GetStringList(channel.ContentRelatedPluginIds);
+            var pluginIds = ListUtils.GetStringList(channel.ContentRelatedPluginIds);
             if (!string.IsNullOrEmpty(channel.ContentModelPluginId))
             {
                 pluginIds.Add(channel.ContentModelPluginId);

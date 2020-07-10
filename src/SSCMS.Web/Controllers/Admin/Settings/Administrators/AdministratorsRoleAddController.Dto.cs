@@ -75,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
                     });
                 }
 
@@ -89,49 +89,49 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 //    });
                 //}
 
-                var channelPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel));
+                var channelPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel));
                 foreach (var permission in channelPermissionList)
                 {
                     channelPermissions.Add(new Option
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
                     });
                 }
 
-                var contentPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteContent));
+                var contentPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Content));
                 foreach (var permission in contentPermissionList)
                 {
-                    if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel1)
+                    if (permission.Id == AuthTypes.ContentPermissions.CheckLevel1)
                     {
                         if (site.CheckContentLevel < 1)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel2)
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel2)
                     {
                         if (site.CheckContentLevel < 2)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel3)
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel3)
                     {
                         if (site.CheckContentLevel < 3)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel4)
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel4)
                     {
                         if (site.CheckContentLevel < 4)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.SiteContentPermissions.CheckLevel5)
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel5)
                     {
                         if (site.CheckContentLevel < 5)
                         {
@@ -143,7 +143,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
                     });
                 }
             }
@@ -162,7 +162,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                                 {
                                     Name = permission.Id,
                                     Text = permission.Text,
-                                    Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
+                                    Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
                                 });
                             }
                         }
@@ -185,7 +185,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var channelPermissionList = await _authManager.GetChannelPermissionsAsync(siteId);
                 foreach (var channelPermission in channelPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteChannel)))
+                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel)))
                     {
                         if (permission.Id == channelPermission)
                         {
@@ -193,7 +193,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                             {
                                 Name = permission.Id,
                                 Text = permission.Text,
-                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
                             });
                         }
                     }
@@ -202,27 +202,27 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var contentPermissionList = await _authManager.GetContentPermissionsAsync(siteId);
                 foreach (var contentPermission in contentPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.SiteContent)))
+                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Content)))
                     {
                         if (permission.Id == contentPermission)
                         {
-                            if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel1)
+                            if (contentPermission == AuthTypes.ContentPermissions.CheckLevel1)
                             {
                                 if (site.CheckContentLevel < 1) continue;
                             }
-                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel2)
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel2)
                             {
                                 if (site.CheckContentLevel < 2) continue;
                             }
-                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel3)
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel3)
                             {
                                 if (site.CheckContentLevel < 3) continue;
                             }
-                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel4)
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel4)
                             {
                                 if (site.CheckContentLevel < 4) continue;
                             }
-                            else if (contentPermission == AuthTypes.SiteContentPermissions.CheckLevel5)
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel5)
                             {
                                 if (site.CheckContentLevel < 5) continue;
                             }
@@ -231,7 +231,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                             {
                                 Name = permission.Id,
                                 Text = permission.Text,
-                                Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
                             });
                         }
                     }

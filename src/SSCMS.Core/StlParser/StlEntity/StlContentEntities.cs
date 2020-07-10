@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -125,7 +124,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(VideoUrl, attributeName))//内容视频地址
@@ -137,7 +136,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(FileUrl, attributeName))//内容附件地址
@@ -149,7 +148,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                            parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(DownloadUrl, attributeName))//内容附件地址(可统计下载量)
@@ -161,7 +160,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = parseManager.PathManager.GetDownloadApiUrl(pageInfo.ApiUrl, pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
+                            parsedContent = parseManager.PathManager.GetDownloadApiUrl(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//内容添加日期
@@ -191,14 +190,14 @@ namespace SSCMS.Core.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = Utilities.ToString(contentInfo.GroupNames);
+                            parsedContent = ListUtils.ToString(contentInfo.GroupNames);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Tags, attributeName))//标签
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = Utilities.ToString(contentInfo.TagNames);
+                            parsedContent = ListUtils.ToString(contentInfo.TagNames);
                         }
                     }
                     else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
@@ -233,7 +232,7 @@ namespace SSCMS.Core.StlParser.StlEntity
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var inputParser = new InputParserManager(parseManager.PathManager);
 
-                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Config, pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                         }
 
                     }

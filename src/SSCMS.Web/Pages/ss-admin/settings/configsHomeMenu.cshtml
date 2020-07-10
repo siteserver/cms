@@ -18,7 +18,7 @@
         style="width: 100%">
         <el-table-column prop="taxis" label="排序" width="60"></el-table-column>
         <el-table-column prop="text" label="标题" width="220"></el-table-column>
-        <el-table-column prop="href" label="链接"></el-table-column>
+        <el-table-column prop="link" label="链接"></el-table-column>
         <el-table-column label="用户组" width="150">
           <template slot-scope="scope">
             {{ getUserGroups(scope.row) }}
@@ -53,7 +53,7 @@
   </el-table-column>
   <el-table-column prop="taxis" label="排序" width="60"></el-table-column>
   <el-table-column prop="text" label="标题" width="220"></el-table-column>
-  <el-table-column prop="href" label="链接"></el-table-column>
+  <el-table-column prop="link" label="链接"></el-table-column>
   <el-table-column label="用户组" width="150">
     <template slot-scope="scope">
       {{ getUserGroups(scope.row) }}
@@ -109,8 +109,8 @@
       <el-form-item label="菜单标题" prop="text" :rules="{ required: true, message: '请输入菜单标题' }">
         <el-input v-model="userMenu.text"></el-input>
       </el-form-item>
-      <el-form-item label="菜单链接" prop="href" :rules="{ required: true, message: '请输入菜单链接' }">
-        <el-input v-model="userMenu.href"></el-input>
+      <el-form-item label="菜单链接" prop="link" :rules="{ required: true, message: '请输入菜单链接' }">
+        <el-input v-model="userMenu.link"></el-input>
       </el-form-item>
       <el-form-item label="图标Css类" prop="iconClass" :rules="{ required: true, message: '请输入图标Css类' }">
         <el-input v-model="userMenu.iconClass"></el-input>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SSCMS;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater.Tables;
 using SSCMS.Models;
@@ -26,7 +25,7 @@ namespace SSCMS.Cli.Updater
 
             foreach (var oldRow in oldRows)
             {
-                var newRow = TranslateUtils.JsonGetDictionaryIgnorecase(oldRow);
+                var newRow = TranslateUtils.ToDictionaryIgnoreCase(oldRow);
                 foreach (var key in convertKeyDict.Keys)
                 {
                     var convertKey = convertKeyDict[key];
@@ -77,7 +76,7 @@ namespace SSCMS.Cli.Updater
                         var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                         foreach (var row in rows)
                         {
-                            var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                            var dict = TranslateUtils.ToDictionaryIgnoreCase(row);
                             if (dict.ContainsKey(nameof(TableSite.PublishmentSystemId)))
                             {
                                 var value = Convert.ToInt32(dict[nameof(TableSite.PublishmentSystemId)]);
@@ -137,10 +136,10 @@ namespace SSCMS.Cli.Updater
                     var newRows = new List<Dictionary<string, object>>();
                     foreach (var row in oldRows)
                     {
-                        var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                        var dict = TranslateUtils.ToDictionaryIgnoreCase(row);
                         if (dict.ContainsKey(nameof(Site.Id)))
                         {
-                            var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
+                            //var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
                             dict[nameof(Site.TableName)] = await databaseManager.ContentRepository.GetNewContentTableNameAsync();
                         }
 

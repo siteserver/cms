@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -25,7 +24,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
 		public async Task ExportTableStylesAsync(int siteId, string tableName)
 		{
-            var allRelatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdListAsync(siteId);
+            var allRelatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
             allRelatedIdentities.Insert(0, 0);
             var tableStyleWithItemsDict = await _databaseManager.TableStyleRepository.GetTableStyleWithItemsDictionaryAsync(tableName, allRelatedIdentities);
 		    if (tableStyleWithItemsDict == null || tableStyleWithItemsDict.Count <= 0) return;
@@ -78,7 +77,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 "ExtendValues");
             if (!string.IsNullOrEmpty(json))
             {
-                var dict = Utilities.ToDictionary(json);
+                var dict = ListUtils.ToDictionary(json);
                 foreach (var o in dict)
                 {
                     tableStyle.Set(o.Key, o.Value);
@@ -105,7 +104,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await databaseManager.TableStyleRepository.GetStyleListAsync(tableName, relatedIdentities);
+            var styleInfoList = await databaseManager.TableStyleRepository.GetStylesAsync(tableName, relatedIdentities);
             foreach (var tableStyle in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyle.AttributeName + ".xml");
@@ -119,7 +118,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await databaseManager.TableStyleRepository.GetStyleListAsync(tableName, relatedIdentities);
+            var styleInfoList = await databaseManager.TableStyleRepository.GetStylesAsync(tableName, relatedIdentities);
             foreach (var tableStyle in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyle.AttributeName + ".xml");
@@ -171,7 +170,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     "ExtendValues");
                 if (!string.IsNullOrEmpty(json))
                 {
-                    var dict = Utilities.ToDictionary(json);
+                    var dict = ListUtils.ToDictionary(json);
                     foreach (var o in dict)
                     {
                         styleInfo.Set(o.Key, o.Value);
@@ -247,7 +246,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                             "ExtendValues");
                         if (!string.IsNullOrEmpty(json))
                         {
-                            var dict = Utilities.ToDictionary(json);
+                            var dict = ListUtils.ToDictionary(json);
                             foreach (var o in dict)
                             {
                                 styleInfo.Set(o.Key, o.Value);

@@ -5,7 +5,7 @@ using RestSharp;
 using Serilog;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Models;
-using SSCMS.Core.Packaging;
+using SSCMS.Core.Plugins;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
@@ -28,12 +28,12 @@ namespace SSCMS.Cli.Services
             _configService = configService;
         }
 
-        public (bool success, string successContent, string failureMessage) GetStatus()
+        public (ConfigStatus status, string failureMessage) GetStatus()
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
             {
-                return (false, null, "you have not logged in");
+                return (null, "you have not logged in");
             }
 
             var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlStatus)) { Timeout = -1 };
@@ -44,10 +44,10 @@ namespace SSCMS.Cli.Services
 
             if (!response.IsSuccessful || response.Data.UserName != status.UserName)
             {
-                return (false, null, "you have not logged in");
+                return (null, "you have not logged in");
             }
 
-            return (true, response.Content, null);
+            return (status, null);
         }
 
         public (bool success, string failureMessage) Register(string userName, string mobile, string email, string password)
@@ -81,7 +81,7 @@ namespace SSCMS.Cli.Services
             var response = client.Execute<LoginResult>(request);
             if (!response.IsSuccessful)
             {
-                return (false, $"your account or password was incorrect, status code: {response.StatusDescription}");
+                return (false, "your account or password was incorrect");
             }
 
             var loginResult = response.Data;
@@ -97,12 +97,17 @@ namespace SSCMS.Cli.Services
             return (true, null);
         }
 
-        public (bool success, string failureMessage) PluginsPublish(string packageId, string zipPath)
+        public (bool success, string failureMessage) PluginsPublish(string publisher, string zipPath)
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
             {
                 return (false, "you have not logged in");
+            }
+
+            if (status.UserName != publisher)
+            {
+                return (false, $"the publisher in package.json should be '{status.UserName}'");
             }
 
             var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginPublish)) {Timeout = -1};

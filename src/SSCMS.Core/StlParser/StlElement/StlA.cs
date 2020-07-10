@@ -151,7 +151,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var onclick = string.Empty;
             if (!string.IsNullOrEmpty(href))
             {
-                url = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, href, pageInfo.IsLocal);
+                url = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, href, pageInfo.IsLocal);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 await parseManager.ParseInnerContentAsync(innerBuilder);

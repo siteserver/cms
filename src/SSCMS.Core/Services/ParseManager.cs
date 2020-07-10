@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Context;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -43,38 +43,37 @@ namespace SSCMS.Core.Services
 
         public async Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
-            var context = new PluginStlParseContext();
-            context.Load(string.Empty, string.Empty, null, PageInfo, ContextInfo);
+            var context = new PluginParseContext(this);
 
-            var beforeStlParsesAsync = _pluginManager.GetExtensions<IPluginBeforeStlParseAsync>();
-            if (beforeStlParsesAsync != null)
+            var startParsesAsync = _pluginManager.GetExtensions<IPluginCreateStartAsync>();
+            if (startParsesAsync != null)
             {
-                foreach (var extension in beforeStlParsesAsync)
+                foreach (var extension in startParsesAsync)
                 {
                     try
                     {
-                        await extension.BeforeStlParseAsync(context);
+                        await extension.ParseAsync(context);
                     }
                     catch (Exception ex)
                     {
-                        await AddStlErrorLogAsync(nameof(IPluginBeforeStlParseAsync), string.Empty,
+                        await AddStlErrorLogAsync(nameof(IPluginCreateStartAsync), string.Empty,
                             ex);
                     }
                 }
             }
 
-            var beforeStlParses = _pluginManager.GetExtensions<IPluginBeforeStlParse>();
-            if (beforeStlParses != null)
+            var startParses = _pluginManager.GetExtensions<IPluginCreateStart>();
+            if (startParses != null)
             {
-                foreach (var extension in beforeStlParses)
+                foreach (var extension in startParses)
                 {
                     try
                     {
-                        extension.BeforeStlParse(context);
+                        extension.Parse(context);
                     }
                     catch (Exception ex)
                     {
-                        await AddStlErrorLogAsync(nameof(IPluginBeforeStlParseAsync), string.Empty,
+                        await AddStlErrorLogAsync(nameof(IPluginCreateStartAsync), string.Empty,
                             ex);
                     }
                 }
@@ -85,22 +84,35 @@ namespace SSCMS.Core.Services
                 await ParseTemplateContentAsync(contentBuilder);
             }
 
-            var afterStlParses = _pluginManager.GetExtensions<IPluginAfterStlParse>();
-            if (afterStlParses != null)
+            var endParsesAsync = _pluginManager.GetExtensions<IPluginCreateEndAsync>();
+            if (endParsesAsync != null)
             {
-                foreach (var extension in afterStlParses)
+                foreach (var extension in endParsesAsync)
                 {
                     try
                     {
-                        extension.AfterStlParse(context);
-                        //plugin.OnAfterStlParse(new ParseEventArgs(PageInfo.SiteId, PageInfo.PageChannelId,
-                        //    PageInfo.PageContentId, await GetContentAsync(),
-                        //    PageInfo.Template.TemplateType, PageInfo.Template.Id, filePath, PageInfo.HeadCodes,
-                        //    PageInfo.BodyCodes, PageInfo.FootCodes, contentBuilder));
+                        await extension.ParseAsync(context);
                     }
                     catch (Exception ex)
                     {
-                        await AddStlErrorLogAsync(nameof(IPluginAfterStlParse), string.Empty,
+                        await AddStlErrorLogAsync(nameof(IPluginCreateEndAsync), string.Empty,
+                            ex);
+                    }
+                }
+            }
+
+            var endParses = _pluginManager.GetExtensions<IPluginCreateEnd>();
+            if (endParses != null)
+            {
+                foreach (var extension in endParses)
+                {
+                    try
+                    {
+                        extension.Parse(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        await AddStlErrorLogAsync(nameof(IPluginCreateEnd), string.Empty,
                             ex);
                     }
                 }
@@ -111,7 +123,7 @@ namespace SSCMS.Core.Services
                 if (isDynamic)
                 {
                     var pageUrl = PageUtils.AddProtocolToUrl(
-                        PathManager.ParseNavigationUrl(
+                        PathManager.ParseUrl(
                             $"~/{PathUtils.GetPathDifference(SettingsManager.WebRootPath, filePath)}"));
                     string templateString = $@"
 <base href=""{pageUrl}"" />";
@@ -152,8 +164,7 @@ namespace SSCMS.Core.Services
                             fileTemplateId = PageInfo.Template.Id;
                         }
 
-                        var apiUrl = PageInfo.ApiUrl;
-                        var ajaxUrl = PathManager.GetTriggerApiUrl(apiUrl, PageInfo.SiteId, ContextInfo.ChannelId,
+                        var ajaxUrl = PathManager.GetTriggerApiUrl(PageInfo.SiteId, ContextInfo.ChannelId,
                             ContextInfo.ContentId, fileTemplateId, true);
                         if (!PageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
                         {

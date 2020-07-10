@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Semver;
 using SSCMS.Plugins;
@@ -23,45 +24,30 @@ namespace SSCMS.Core.Plugins
             _types = new ConcurrentDictionary<Type, IEnumerable<Type>>();
         }
 
-        public static string GetPluginId(IPlugin plugin)
-        {
-            return $"{plugin.Publisher ?? plugin.FolderName}.{plugin.Name ?? plugin.FolderName}".ToLower();
-        }
-
         public static Assembly LoadAssembly(string assemblyPath)
         {
             //var loadContext = new PluginLoadContext(assemblyPath);
             //var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath)));
+            //return assembly;
+
+            var assemblyNames = AssemblyLoadContext.Default.Assemblies.Select(x => x.GetName().Name).ToList();
+
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            assemblyNames.Add(assembly.GetName().Name);
 
             var dllPath = Path.GetDirectoryName(assemblyPath);
-
-            var assemblyFiles = Directory.GetFiles(dllPath, "*.dll", SearchOption.AllDirectories);
+            var assemblyFiles = Directory.GetFiles(dllPath, "*.dll", SearchOption.TopDirectoryOnly);
             foreach (var assemblyFile in assemblyFiles)
             {
-                //Assembly.LoadFile(assemblyFile);
-                if (AssemblyLoadContext.Default.Assemblies.All(a => !StringUtils.EqualsIgnoreCase(Path.GetFileName(a.Location), Path.GetFileName(assemblyFile))))
-                {
-                    AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
-                }
+                var assemblyName = Path.GetFileNameWithoutExtension(assemblyFile);
+
+                if (assemblyNames.Any(x => StringUtils.EqualsIgnoreCase(x, assemblyName))) continue;
+
+                AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
+                assemblyNames.Add(assemblyName);
             }
 
-            return AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-        }
-
-        /// <summary>
-        /// Gets the first implementation of the type specified by the type parameter and located in the assemblies
-        /// filtered by the assemblies, or null if no implementations found.
-        /// </summary>
-        /// <typeparam name="T">The type parameter to find implementation of.</typeparam>
-        /// <param name="assemblies">The assemblies to filter the assemblies.</param>
-        /// <param name="useCaching">
-        /// Determines whether the type cache should be used to avoid assemblies scanning next time,
-        /// when the same type(s) is requested.
-        /// </param>
-        /// <returns>The first found implementation of the given type.</returns>
-        public static Type GetImplementation<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
-        {
-            return GetImplementations<T>(assemblies, useCaching).FirstOrDefault();
+            return assembly;
         }
 
         /// <summary>
@@ -75,7 +61,7 @@ namespace SSCMS.Core.Plugins
         /// when the same type(s) is requested.
         /// </param>
         /// <returns>Found implementations of the given type.</returns>
-        private static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
+        private static IEnumerable<Type> GetImplementations<T>(IEnumerable<Assembly> assemblies, bool useCaching = true)
         {
             var type = typeof(T);
 
@@ -86,6 +72,8 @@ namespace SSCMS.Core.Plugins
 
             foreach (var assembly in assemblies)
             {
+                if (assembly == null) continue;
+
                 foreach (var exportedType in assembly.GetExportedTypes())
                 {
                     if (type.GetTypeInfo().IsAssignableFrom(exportedType) && exportedType.GetTypeInfo().IsClass)
@@ -102,82 +90,53 @@ namespace SSCMS.Core.Plugins
         }
 
         /// <summary>
-        /// Gets the new instance of the first implementation of the type specified by the type parameter
-        /// and located in the assemblies filtered by the assemblies or null if no implementations found.
-        /// </summary>
-        /// <typeparam name="T">The type parameter to find implementation of.</typeparam>
-        /// <param name="assemblies">The assemblies to filter the assemblies.</param>
-        /// <param name="useCaching">
-        /// Determines whether the type cache should be used to avoid assemblies scanning next time,
-        /// when the instance(s) of the same type(s) is requested.
-        /// </param>
-        /// <returns>The instance of the first found implementation of the given type.</returns>
-        public static T GetInstance<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
-        {
-            return GetInstances<T>(assemblies, useCaching).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Gets the new instance (using constructor that matches the arguments) of the first implementation
-        /// of the type specified by the type parameter and located in the assemblies filtered by the assemblies
-        /// or null if no implementations found.
-        /// </summary>
-        /// <typeparam name="T">The type parameter to find implementation of.</typeparam>
-        /// <param name="assemblies">The assemblies to filter the assemblies.</param>
-        /// <param name="useCaching">
-        /// Determines whether the type cache should be used to avoid assemblies scanning next time,
-        /// when the instance(s) of the same type(s) is requested.
-        /// </param>
-        /// <param name="args">The arguments to be passed to the constructor.</param>
-        /// <returns>The instance of the first found implementation of the given type.</returns>
-        public static T GetInstance<T>(IEnumerable<Assembly> assemblies, bool useCaching = false, params object[] args)
-        {
-            return GetInstances<T>(assemblies, useCaching, args).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Gets the new instances of the implementations of the type specified by the type parameter
-        /// and located in the assemblies filtered by the assemblies or empty enumeration
-        /// if no implementations found.
-        /// </summary>
-        /// <typeparam name="T">The type parameter to find implementations of.</typeparam>
-        /// <param name="assemblies">The assemblies to filter the assemblies.</param>
-        /// <param name="useCaching">
-        /// Determines whether the type cache should be used to avoid assemblies scanning next time,
-        /// when the instance(s) of the same type(s) is requested.
-        /// </param>
-        /// <returns>The instances of the found implementations of the given type.</returns>
-        public static IEnumerable<T> GetInstances<T>(IEnumerable<Assembly> assemblies, bool useCaching = false)
-        {
-            return GetInstances<T>(assemblies, useCaching, new object[] { });
-        }
-
-        /// <summary>
         /// Gets the new instances (using constructor that matches the arguments) of the implementations
         /// of the type specified by the type parameter and located in the assemblies filtered by the assemblies
         /// or empty enumeration if no implementations found.
         /// </summary>
         /// <typeparam name="T">The type parameter to find implementations of.</typeparam>
-        /// <param name="assemblies">The assemblies to filter the assemblies.</param>
+        /// <param name="plugins"></param>
+        /// <param name="provider"></param>
         /// <param name="useCaching">
         /// Determines whether the type cache should be used to avoid assemblies scanning next time,
         /// when the instance(s) of the same type(s) is requested.
         /// </param>
-        /// <param name="args">The arguments to be passed to the constructors.</param>
         /// <returns>The instances of the found implementations of the given type.</returns>
-        private static IEnumerable<T> GetInstances<T>(IEnumerable<Assembly> assemblies, bool useCaching = false,
-            params object[] args)
+        public static IEnumerable<T> GetInstances<T>(IEnumerable<IPlugin> plugins, IServiceProvider provider, bool useCaching = true)
         {
             var instances = new List<T>();
 
-            foreach (var implementation in GetImplementations<T>(assemblies, useCaching))
+            foreach (var implementation in GetImplementations<T>(plugins.Select(x => x.Assembly), useCaching))
             {
-                if (implementation.IsAbstract || implementation.GetConstructor(Type.EmptyTypes) == null) continue;
-                var instance = (T)Activator.CreateInstance(implementation, args);
+                //if (implementation.IsAbstract || implementation.GetConstructor(Type.EmptyTypes) == null) continue;
+                //var instance = (T)Activator.CreateInstance(implementation, args);
+
+                if (implementation.IsAbstract) continue;
+
+                var instance = (T)ActivatorUtilities.CreateInstance(provider, implementation);
+
                 instances.Add(instance);
             }
 
             return instances;
+        }
+
+        public static async Task UpdateVersionAsync(string folderPath, string version)
+        {
+            var packageFile = PathUtils.Combine(folderPath, Constants.PackageFileName);
+            var json = await FileUtils.ReadTextAsync(packageFile);
+            var obj = JObject.Parse(json);
+            foreach (var prop in obj.Properties())
+            {
+                if (prop.Name == "version")
+                {
+                    prop.Value = version;
+                }
+            }
+
+            json = obj.ToString(Formatting.Indented);
+
+            await FileUtils.WriteTextAsync(packageFile, json);
         }
 
         public static async Task<(Plugin plugin, string errorMessage)> ValidateManifestAsync(string folderPath)
@@ -185,7 +144,7 @@ namespace SSCMS.Core.Plugins
             var packageFile = PathUtils.Combine(folderPath, Constants.PackageFileName);
             if (!FileUtils.IsFileExists(packageFile))
             {
-                return (null, $"Plugin manifest not found: {packageFile}");
+                return (null, "Plugin manifest file 'package.json' not found");
             }
 
             var json = await FileUtils.ReadTextAsync(packageFile);
@@ -200,37 +159,34 @@ namespace SSCMS.Core.Plugins
 
             var plugin = new Plugin(folderPath, false);
 
-            if (string.IsNullOrEmpty(plugin.Publisher))
-            {
-                return (null,
-                    "Missing publisher name.Learn more: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#publishing-extensions");
-            }
-
-            const string nameRegex = "^[a-z0-9][a-z0-9\\-]*$";
-            if (!RegexUtils.IsMatch(nameRegex, plugin.Publisher))
-            {
-                return (null,
-                    $"Invalid publisher name '{plugin.Publisher}'.Expected the identifier of a publisher, not its human - friendly name.Learn more: https://code.visualstudio.com/api/working-with-extensions/publishing-extension#publishing-extensions");
-            }
-
             if (string.IsNullOrEmpty(plugin.Name))
             {
-                return (null, "Missing extension name");
+                return (null, "Missing plugin name");
             }
 
-            if (!RegexUtils.IsMatch(nameRegex, plugin.Name))
+            if (!StringUtils.IsStrictName(plugin.Name))
             {
-                return (null, $"Invalid extension name '{plugin.Name}'");
+                return (null, $"Invalid plugin name '{plugin.Name}'");
+            }
+
+            if (string.IsNullOrEmpty(plugin.Publisher))
+            {
+                return (null, "Missing plugin publisher");
+            }
+
+            if (!StringUtils.IsStrictName(plugin.Publisher))
+            {
+                return (null, $"Invalid plugin publisher '{plugin.Publisher}'");
             }
 
             if (string.IsNullOrEmpty(plugin.Version))
             {
-                return (null, "Missing extension version");
+                return (null, "Missing plugin version");
             }
 
-            if (!SemVersion.TryParse(plugin.Version, out _))
+            if (!IsSemVersion(plugin.Version))
             {
-                return (null, $"Invalid extension version '{plugin.Version}'");
+                return (null, $"Invalid plugin version '{plugin.Version}'");
             }
 
             if (plugin.Engines == null)
@@ -257,45 +213,19 @@ namespace SSCMS.Core.Plugins
             return (plugin, null);
         }
 
-        public static string GetPackageId(Plugin plugin)
+        public static string GetPluginId(string publisher, string name)
         {
-            return $"{plugin.Publisher}.{plugin.Name}.{plugin.Version}";
+            return $"{publisher}.{name}";
         }
 
-        public static void Package(Plugin plugin, string folderPath)
+        public static string GetPackageId(string publisher, string name, string version)
         {
-            var packageId = GetPackageId(plugin);
+            return $"{publisher}.{name}.{version}";
+        }
 
-            var pluginPath = folderPath;
-            var profilePath = PathUtils.GetOsUserProfileDirectoryPath(Constants.OsUserProfileTypePlugins, packageId);
-            DirectoryUtils.DeleteDirectoryIfExists(profilePath);
-
-            foreach (var directoryName in DirectoryUtils.GetDirectoryNames(pluginPath))
-            {
-                if (//StringUtils.EqualsIgnoreCase(directoryName, "bin") ||
-                    StringUtils.EqualsIgnoreCase(directoryName, "obj") ||
-                    StringUtils.EqualsIgnoreCase(directoryName, "node_modules") ||
-                    StringUtils.EqualsIgnoreCase(directoryName, ".git") ||
-                    StringUtils.EqualsIgnoreCase(directoryName, ".vs") ||
-                    StringUtils.EqualsIgnoreCase(directoryName, ".vscode")
-                ) continue;
-
-                DirectoryUtils.Copy(PathUtils.Combine(pluginPath, directoryName), PathUtils.Combine(profilePath, directoryName));
-            }
-
-            foreach (var fileName in DirectoryUtils.GetFileNames(pluginPath))
-            {
-                if (StringUtils.EndsWithIgnoreCase(fileName, ".cs") ||
-                    StringUtils.EndsWithIgnoreCase(fileName, ".zip")
-                ) continue;
-
-                FileUtils.CopyFile(PathUtils.Combine(pluginPath, fileName), PathUtils.Combine(profilePath, fileName));
-            }
-
-            var zipPath = PathUtils.Combine(folderPath, $"{packageId}.zip");
-            FileUtils.DeleteFileIfExists(zipPath);
-
-            ZipUtils.CreateZip(zipPath, profilePath);
+        public static bool IsSemVersion(string version)
+        {
+            return !string.IsNullOrEmpty(version) && SemVersion.TryParse(version, out _);
         }
     }
 }

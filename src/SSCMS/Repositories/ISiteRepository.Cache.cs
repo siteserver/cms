@@ -9,7 +9,7 @@ namespace SSCMS.Repositories
 {
     public partial interface ISiteRepository
     {
-        Task<List<Site>> GetSiteListAsync();
+        Task<List<Site>> GetSitesAsync();
 
         Task<int> GetParentSiteIdAsync(int siteId);
 
@@ -25,11 +25,11 @@ namespace SSCMS.Repositories
 
         Task<List<Cascade<int>>> GetSiteOptionsAsync(int parentId);
 
-        Task<List<int>> GetSiteIdListAsync();
+        Task<List<int>> GetSiteIdsAsync();
 
-        Task<List<int>> GetSiteIdListOrderByLevelAsync();
+        Task<List<int>> GetSiteIdsOrderByLevelAsync();
 
-        Task<List<int>> GetSiteIdListAsync(int parentId);
+        Task<List<int>> GetSiteIdsAsync(int parentId);
 
         Task<List<string>> GetSiteTableNamesAsync(IOldPluginManager pluginManager);
 
@@ -39,7 +39,7 @@ namespace SSCMS.Repositories
 
         Task<int> GetIdByIsRootAsync();
 
-        Task<IList<string>> GetSiteDirListAsync(int parentId);
+        Task<IList<string>> GetSiteDirsAsync(int parentId);
 
         Task<List<Select<int>>> GetSelectsAsync(List<int> includedSiteIds = null);
 

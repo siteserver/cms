@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Delete))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Delete))
             {
                 return Unauthorized();
             }
@@ -73,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Delete))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Delete))
             {
                 return Unauthorized();
             }
@@ -114,7 +114,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var distinctChannel = await _channelRepository.GetAsync(distinctChannelId);
                 var contentIdList = summaries.Where(x => x.ChannelId == distinctChannelId)
                     .Select(x => x.Id).ToList();
-                await _contentRepository.RecycleContentsAsync(site, distinctChannel, contentIdList, adminId);
+                await _contentRepository.TrashContentsAsync(site, distinctChannel, contentIdList, adminId);
 
                 await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
             }

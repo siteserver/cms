@@ -5,7 +5,7 @@ namespace SSCMS.Repositories
 {
     public partial interface ISiteRepository
     {
-        Task<List<int>> GetLatestSiteIdListAsync(List<int> siteIdListLatestAccessed,
-            List<int> siteIdListWithPermissions);
+        Task<List<int>> GetLatestSiteIdsAsync(List<int> siteIdsLatestAccessed,
+            List<int> siteIdsWithPermissions);
     }
 }

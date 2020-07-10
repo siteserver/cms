@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
@@ -213,7 +212,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
             var channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = await databaseManager.ContentRepository.GetSummariesAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -236,7 +235,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -288,14 +287,16 @@ namespace SSCMS.Core.StlParser.StlElement
                     paramBuilder.Append(
                         $@"so_{uniqueId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(Constants.ReturnAndNewline);
 
+                    var bcastrUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Bcastr);
+
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
-var files_uniqueID='{Utilities.ToString(imageUrls, "|")}';
-var links_uniqueID='{Utilities.ToString(navigationUrls, "|")}';
-var texts_uniqueID='{Utilities.ToString(titleCollection, "|")}';
+var files_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
+var links_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
+var texts_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{bcastrUrl}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -323,7 +324,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -352,14 +353,16 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     paramBuilder.Append(
                         $@"so_{uniqueId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(Constants.ReturnAndNewline);
 
+                    var aliUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Ali);
+
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
-var urls_uniqueID='{Utilities.ToString(navigationUrls, "|")}';
-var imgs_uniqueID='{Utilities.ToString(imageUrls, "|")}';
-var titles_uniqueID='{Utilities.ToString(titleCollection, "|")}';
+var urls_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
+var imgs_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
+var titles_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{aliUrl}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -381,7 +384,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
                             navigationUrls.Add(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal));
-                            imageUrls.Add(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal));
+                            imageUrls.Add(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal));
                         }
                     }
 
@@ -426,9 +429,10 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var bgUrl = parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
+                    var bgUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site,
                         "@/images/focusviewerbg.png", pageInfo.IsLocal);
-                    string scriptHtml = $@"
+
+                    var scriptHtml = $@"
 <style type=""text/css"">
 .fv_adnum{{ position:absolute; z-index:1005; width:{imageWidth - 24}px; height:24px; padding:5px 3px 0 0; left:21px; top:{imageHeight -
                                                                                                                                                                                                   29}px; }}
@@ -505,7 +509,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal)));
                             }
                         }
                     }
@@ -537,25 +541,28 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     }
                     else
                     {
-                        titles = Utilities.ToString(titleCollection, "|");
+                        titles = ListUtils.ToString(titleCollection, "|");
                     }
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     attributes["id"] = uniqueId;
                     var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
 
-                    string scriptHtml = $@"
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.BaiRongFlash.Js)}""></script>
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.BaiRongFlash.Js);
+                    var focusViewerUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.FocusViewer);
+
+                    var scriptHtml = $@"
+<script type=""text/javascript"" src=""{jsUrl}""></script>
 <script type=""text/javascript"">
 	var uniqueID_focus_width={imageWidth}
 	var uniqueID_focus_height={imageHeight}
 	var uniqueID_text_height={textHeight}
 	var uniqueID_swf_height = uniqueID_focus_height + uniqueID_text_height
 	
-	var uniqueID_pics='{Utilities.ToString(imageUrls, "|")}'
-	var uniqueID_links='{Utilities.ToString(navigationUrls, "|")}'
+	var uniqueID_pics='{ListUtils.ToString(imageUrls, "|")}'
+	var uniqueID_links='{ListUtils.ToString(navigationUrls, "|")}'
 	var uniqueID_texts='{titles}'
 	
-	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
+	var uniqueID_FocusFlash = new bairongFlash(""{focusViewerUrl}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
 	uniqueID_FocusFlash.addParam(""allowScriptAccess"", ""sameDomain"");
 	uniqueID_FocusFlash.addParam(""menu"", ""false"");
 	uniqueID_FocusFlash.addParam(""wmode"", ""transparent"");

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Enums;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -56,7 +55,7 @@ namespace SSCMS.Core.StlParser.Utility
                     {
                         if (topLevel < channel.ParentsCount)
                         {
-                            var parentIdStrList = Utilities.GetStringList(channel.ParentsPath);
+                            var parentIdStrList = ListUtils.GetStringList(channel.ParentsPath);
                             if (parentIdStrList[topLevel] != null)
                             {
                                 var parentIdStr = parentIdStrList[topLevel];
@@ -73,7 +72,7 @@ namespace SSCMS.Core.StlParser.Utility
                 {
                     if (upLevel < channel.ParentsCount)
                     {
-                        var parentIdStrList = Utilities.GetStringList(channel.ParentsPath);
+                        var parentIdStrList = ListUtils.GetStringList(channel.ParentsPath);
                         if (parentIdStrList[upLevel] != null)
                         {
                             var parentIdStr = parentIdStrList[channel.ParentsCount - upLevel];
@@ -94,7 +93,7 @@ namespace SSCMS.Core.StlParser.Utility
             var whereString = _databaseManager.ChannelRepository.GetWhereString(groupChannel, groupChannelNot, isImageExists, isImage);
             var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
             var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-            return await _databaseManager.ChannelRepository.GetIdListByTotalNumAsync(channelIdList, totalNum, orderByString, whereString);
+            return await _databaseManager.ChannelRepository.GetChannelIdsByTotalNumAsync(channelIdList, totalNum, orderByString, whereString);
         }
 
         public string GetContentOrderByString(int siteId, string orderValue, TaxisType defaultType)

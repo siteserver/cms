@@ -30,7 +30,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
         public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, int adminId, string guid)
         {
             var count = await _databaseManager.ChannelRepository.ImportGetCountAsync(_site.Id, _site.Id);
-            var indexNameList = await _databaseManager.ChannelRepository.ImportGetIndexNameListAsync(_site.Id);
+            var indexNameList = await _databaseManager.ChannelRepository.ImportGetIndexNamesAsync(_site.Id);
 
             if (!FileUtils.IsFileExists(filePath)) return 0;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));

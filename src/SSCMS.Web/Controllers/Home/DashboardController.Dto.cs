@@ -1,6 +1,4 @@
-﻿using SSCMS.Models;
-
-namespace SSCMS.Web.Controllers.Home
+﻿namespace SSCMS.Web.Controllers.Home
 {
     public partial class DashboardController
     {

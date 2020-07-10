@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
@@ -322,7 +321,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     else if (StringUtils.EqualsIgnoreCase(testOperate, OperateGreatThan))
                     {
-                        if (StringUtils.Contains(theValue, "-"))
+                        if (!string.IsNullOrEmpty(theValue) && theValue.Contains('-'))
                         {
                             if (TranslateUtils.ToDateTime(theValue) > TranslateUtils.ToDateTime(testValue))
                             {
@@ -339,7 +338,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     else if (StringUtils.EqualsIgnoreCase(testOperate, OperateLessThan))
                     {
-                        if (StringUtils.Contains(theValue, "-"))
+                        if (!string.IsNullOrEmpty(theValue) && theValue.Contains('-'))
                         {
                             if (TranslateUtils.ToDateTime(theValue) < TranslateUtils.ToDateTime(testValue))
                             {
@@ -356,7 +355,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     else if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
                     {
-                        var stringList = Utilities.GetStringList(testValue);
+                        var stringList = ListUtils.GetStringList(testValue);
 
                         foreach (var str in stringList)
                         {
@@ -381,7 +380,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
                     {
-                        var stringList = Utilities.GetStringList(testValue);
+                        var stringList = ListUtils.GetStringList(testValue);
 
                         var isIn = false;
                         foreach (var str in stringList)
@@ -462,7 +461,8 @@ namespace SSCMS.Core.StlParser.StlElement
             };
             dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            return dynamicInfo.GetScript(parseManager.PathManager.GetIfApiUrl(pageInfo.ApiUrl), true);
+            var dynamicUrl = parseManager.PathManager.GetIfApiUrl();
+            return dynamicInfo.GetScript(dynamicUrl, true);
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)
@@ -472,7 +472,7 @@ namespace SSCMS.Core.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals) ||
                 StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                var stringList = Utilities.GetStringList(testValue);
+                var stringList = ListUtils.GetStringList(testValue);
 
                 foreach (var str in stringList)
                 {
@@ -484,7 +484,7 @@ namespace SSCMS.Core.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals) ||
                      StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                var stringList = Utilities.GetStringList(testValue);
+                var stringList = ListUtils.GetStringList(testValue);
 
                 var isIn = false;
                 foreach (var str in stringList)
@@ -510,7 +510,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                var channelIndexes = Utilities.GetStringList(testValue);
+                var channelIndexes = ListUtils.GetStringList(testValue);
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
@@ -527,7 +527,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                var channelIndexes = Utilities.GetStringList(testValue);
+                var channelIndexes = ListUtils.GetStringList(testValue);
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
@@ -555,7 +555,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    var channelIndexes = Utilities.GetStringList(testValue);
+                    var channelIndexes = ListUtils.GetStringList(testValue);
                     foreach (var channelIndex in channelIndexes)
                     {
                         //var parentId = databaseManager.ChannelRepository.GetIdByIndexName(pageInfo.SiteId, channelIndex);
@@ -581,7 +581,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                var channelIndexes = Utilities.GetStringList(testValue);
+                var channelIndexes = ListUtils.GetStringList(testValue);
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
@@ -611,7 +611,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    var channelIndexes = Utilities.GetStringList(testValue);
+                    var channelIndexes = ListUtils.GetStringList(testValue);
                     foreach (var channelIndex in channelIndexes)
                     {
                         //var parentId = databaseManager.ChannelRepository.GetIdByIndexName(pageInfo.SiteId, channelIndex);
@@ -658,7 +658,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                var stringList = Utilities.GetStringList(testValue);
+                var stringList = ListUtils.GetStringList(testValue);
 
                 foreach (var str in stringList)
                 {
@@ -683,7 +683,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                var stringList = Utilities.GetStringList(testValue);
+                var stringList = ListUtils.GetStringList(testValue);
 
                 var isIn = false;
                 foreach (var str in stringList)
@@ -957,7 +957,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                var intArrayList = Utilities.GetIntList(testValue);
+                var intArrayList = ListUtils.GetIntList(testValue);
                 foreach (int i in intArrayList)
                 {
                     if (i == number)
@@ -969,7 +969,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                var intArrayList = Utilities.GetIntList(testValue);
+                var intArrayList = ListUtils.GetIntList(testValue);
                 var isIn = false;
                 foreach (int i in intArrayList)
                 {

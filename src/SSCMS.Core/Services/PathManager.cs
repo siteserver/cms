@@ -70,29 +70,6 @@ namespace SSCMS.Core.Services
                 : PageUtils.Combine(await GetWebUrlAsync(site), site.AssetsDir);
         }
 
-        public string MapPath(string virtualPath)
-        {
-            virtualPath = PathUtils.RemovePathInvalidChar(virtualPath);
-            if (!string.IsNullOrEmpty(virtualPath))
-            {
-                if (virtualPath.StartsWith("~"))
-                {
-                    virtualPath = virtualPath.Substring(1);
-                }
-                virtualPath = PageUtils.Combine("~", virtualPath);
-            }
-            else
-            {
-                virtualPath = "~/";
-            }
-            var rootPath = WebRootPath;
-
-            virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
-            var retVal = PathUtils.Combine(rootPath, virtualPath) ?? string.Empty;
-
-            return retVal.Replace("/", "\\");
-        }
-
         public async Task UploadAsync(IFormFile file, string filePath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

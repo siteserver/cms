@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -17,20 +16,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     public partial class SitesUrlController : ControllerBase
     {
         private const string Route = "settings/sitesUrl";
-        private const string RouteWeb = "settings/sitesUrl/actions/web";
-        private const string RouteApi = "settings/sitesUrl/actions/api";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
-        private readonly IConfigRepository _configRepository;
 
-        public SitesUrlController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IConfigRepository configRepository)
+        public SitesUrlController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
-            _configRepository = configRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -47,18 +42,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 AssetsUrl = await _pathManager.GetAssetsUrlAsync(x)
             });
 
-            var config = await _configRepository.GetAsync();
-
             return new GetResult
             {
-                Sites = sites,
-                IsSeparatedApi = config.IsSeparatedApi,
-                SeparatedApiUrl = config.SeparatedApiUrl
+                Sites = sites
             };
         }
 
-        [HttpPut, Route(RouteWeb)]
-        public async Task<ActionResult<EditWebResult>> EditWeb([FromBody]EditWebRequest request)
+        [HttpPut, Route(Route)]
+        public async Task<ActionResult<EditWebResult>> Edit([FromBody]EditWebRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesUrl))
             {
@@ -82,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             await _siteRepository.UpdateAsync(site);
             await _authManager.AddSiteLogAsync(request.SiteId, "修改站点访问地址");
 
-            var siteIdList = await _siteRepository.GetSiteIdListAsync(0);
+            var siteIdList = await _siteRepository.GetSiteIdsAsync(0);
             var sites = new List<Site>();
             foreach (var id in siteIdList)
             {
@@ -92,29 +83,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             return new EditWebResult
             {
                 Sites = sites
-            };
-        }
-
-        [HttpPut, Route(RouteApi)]
-        public async Task<ActionResult<BoolResult>> EditApi([FromBody]EditApiRequest request)
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesUrl))
-            {
-                return Unauthorized();
-            }
-
-            var config = await _configRepository.GetAsync();
-
-            config.IsSeparatedApi = request.IsSeparatedApi;
-            config.SeparatedApiUrl = request.SeparatedApiUrl;
-
-            await _configRepository.UpdateAsync(config);
-
-            await _authManager.AddAdminLogAsync("修改API访问地址");
-
-            return new BoolResult
-            {
-                Value = true
             };
         }
     }

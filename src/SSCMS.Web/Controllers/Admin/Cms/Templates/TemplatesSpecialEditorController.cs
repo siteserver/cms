@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return this.Error("专题不存在！");
             }
 
-            var specialUrl = await _pathManager.ParseNavigationUrlAsync(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
+            var specialUrl = await _pathManager.ParseSiteUrlAsync(site, $"@/{StringUtils.TrimSlash(specialInfo.Url)}/", true);
             var filePath = PathUtils.Combine(await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url), "index.html");
             var html = FileUtils.ReadText(filePath, Encoding.UTF8);
 

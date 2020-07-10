@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -51,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 var entity = await _channelRepository.GetAsync(summary.Id);
 
                 var changeNames = new List<string>();
-                var channelIdList = Utilities.GetIntList(entity.CreateChannelIdsIfContentChanged);
+                var channelIdList = ListUtils.GetIntList(entity.CreateChannelIdsIfContentChanged);
                 foreach (var channelId in channelIdList)
                 {
                     if (await _channelRepository.IsExistsAsync(channelId))
@@ -91,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var channel = await _channelRepository.GetAsync(request.ChannelId);
 
             channel.IsCreateChannelIfContentChanged = request.IsCreateChannelIfContentChanged;
-            channel.CreateChannelIdsIfContentChanged = Utilities.ToString(request.CreateChannelIdsIfContentChanged);
+            channel.CreateChannelIdsIfContentChanged = ListUtils.ToString(request.CreateChannelIdsIfContentChanged);
 
             await _channelRepository.UpdateAsync(channel);
 

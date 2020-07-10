@@ -6,9 +6,12 @@ namespace SSCMS.Utils
     {
         public const string ConfigFileName = "sscms.json";
         public const string PackageFileName = "package.json";
+        public const string ReadmeFileName = "README.md";
+        public const string ChangeLogFileName = "CHANGELOG.md";
         public const string PluginConfigFileName = "config.json";
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
+        public const string WwwrootDirectory = "wwwroot";
         public const string PluginsDirectory = "plugins";
         public const string DefaultLanguage = "en";
         public const string DefaultLocalDbFileName = "database.sqlite";
@@ -22,7 +25,7 @@ namespace SSCMS.Utils
         public const string ApiAdminPrefix = "/api/admin";
         public const string ApiHomePrefix = "/api/home";
         public const string ApiV1Prefix = "/api/v1";
-        public const string ApiStlPrefix = "/api/stl";
+        public const string ApiStlPrefix = "/stl";
         public const string RoutePreview = "preview/{siteId}";
         public const string RoutePreviewChannel = "preview/{siteId}/{channelId}";
         public const string RoutePreviewContent = "preview/{siteId}/{channelId}/{contentId}";
@@ -43,9 +46,6 @@ namespace SSCMS.Utils
         public const string ScopeAdministrators = "Administrators";
         public const string ScopeUsers = "Users";
         public const string ScopeStl = "STL";
-
-        public const string OsUserProfileTypeConfig = "config.json";
-        public const string OsUserProfileTypePlugins = "plugins";
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
 

@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Mono.Options;
-using SSCMS.Cli.Abstractions;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -12,34 +9,6 @@ namespace SSCMS.Cli.Core
 {
     public static class CliUtils
     {
-        private static ServiceProvider Provider { get; set; }
-        public static void SetProvider(ServiceProvider provider)
-        {
-            Provider = provider;
-        }
-
-        public static Application GetApplication()
-        {
-            return Provider.GetRequiredService<Application>();
-        }
-
-        public static IJobService GetJobService(string commandName)
-        {
-            var services = Provider.GetServices<IJobService>();
-            return services.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.CommandName, commandName));
-        }
-
-        public static List<string> GetJobServiceCommandNames()
-        {
-            var services = Provider.GetServices<IJobService>();
-            return services.Select(x => x.CommandName).ToList();
-        }
-
-        public static IEnumerable<IJobService> GetJobServices()
-        {
-            return Provider.GetServices<IJobService>();
-        }
-
         // https://stackoverflow.com/questions/491595/best-way-to-parse-command-line-arguments-in-c
         public static bool ParseArgs(OptionSet options, string[] args)
         {
@@ -110,7 +79,22 @@ namespace SSCMS.Cli.Core
 
         public static bool IsSsCmsExists(string directoryPath)
         {
-            return FileUtils.IsFileExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName)) && FileUtils.IsFileExists(PathUtils.Combine(directoryPath, "appsettings.json")) && DirectoryUtils.IsDirectoryExists("wwwroot");
+            return FileUtils.IsFileExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName)) && FileUtils.IsFileExists(PathUtils.Combine(directoryPath, "appsettings.json")) && DirectoryUtils.IsDirectoryExists(Constants.WwwrootDirectory);
+        }
+
+        public static string GetOsUserConfigFilePath()
+        {
+            return PathUtils.GetOsUserProfileDirectoryPath("config.json");
+        }
+
+        public static string GetOsUserPluginsDirectoryPath(params string[] paths)
+        {
+            return PathUtils.GetOsUserProfileDirectoryPath("plugins", PageUtils.Combine(paths));
+        }
+
+        public static string GetOsUserTempDirectoryPath(params string[] paths)
+        {
+            return PathUtils.GetOsUserProfileDirectoryPath("temp", PageUtils.Combine(paths));
         }
     }
 }

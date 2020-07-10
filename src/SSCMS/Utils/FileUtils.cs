@@ -439,6 +439,24 @@ namespace SSCMS.Utils
             return StringUtils.EqualsIgnoreCase(".zip", typeStr);
         }
 
+        public static bool IsWord(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = fileExtName.ToLower().Trim();
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".doc" || fileExtName == ".docx" || fileExtName == ".wps")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
         public static bool IsFlash(string fileExtName)
         {
             var retVal = false;

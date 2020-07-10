@@ -12,7 +12,7 @@ namespace SSCMS.Core.Repositories
 {
     public partial class SiteRepository
     {
-        public async Task<List<Site>> GetSiteListAsync()
+        public async Task<List<Site>> GetSitesAsync()
         {
             var sites = new List<Site>();
 
@@ -127,17 +127,17 @@ namespace SSCMS.Core.Repositories
             return optionList;
         }
 
-        public async Task<List<int>> GetSiteIdListAsync()
+        public async Task<List<int>> GetSiteIdsAsync()
         {
             var summaries = await GetSummariesAsync();
             return summaries.Select(x => x.Id).ToList();
         }
 
-        public async Task<List<int>> GetSiteIdListOrderByLevelAsync()
+        public async Task<List<int>> GetSiteIdsOrderByLevelAsync()
         {
             var retVal = new List<int>();
 
-            var siteIdList = await GetSiteIdListAsync();
+            var siteIdList = await GetSiteIdsAsync();
             var siteList = new List<Site>();
             var parentWithChildren = new Hashtable();
             var hqSiteId = 0;
@@ -201,7 +201,7 @@ namespace SSCMS.Core.Repositories
             }
         }
 
-        public async Task<List<int>> GetSiteIdListAsync(int parentId)
+        public async Task<List<int>> GetSiteIdsAsync(int parentId)
         {
             var siteIdList = new List<int>();
 
@@ -235,7 +235,7 @@ namespace SSCMS.Core.Repositories
                 var summaries = await GetSummariesAsync();
                 foreach (var summary in summaries)
                 {
-                    if (!string.IsNullOrEmpty(summary.TableName) && !StringUtils.ContainsIgnoreCase(tableNames, summary.TableName))
+                    if (!string.IsNullOrEmpty(summary.TableName) && !ListUtils.ContainsIgnoreCase(tableNames, summary.TableName))
                     {
                         tableNames.Add(summary.TableName);
                     }
@@ -247,7 +247,7 @@ namespace SSCMS.Core.Repositories
                 var pluginTableNames = pluginManager.GetContentTableNameList();
                 foreach (var pluginTableName in pluginTableNames)
                 {
-                    if (!string.IsNullOrEmpty(pluginTableName) && !StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
+                    if (!string.IsNullOrEmpty(pluginTableName) && !ListUtils.ContainsIgnoreCase(tableNames, pluginTableName))
                     {
                         tableNames.Add(pluginTableName);
                     }
@@ -295,7 +295,7 @@ namespace SSCMS.Core.Repositories
             return summaries.Select(x => x.Taxis).DefaultIfEmpty().Max();
         }
 
-        public async Task<IList<string>> GetSiteDirListAsync(int parentId)
+        public async Task<IList<string>> GetSiteDirsAsync(int parentId)
         {
             var siteDirList = new List<string>();
 

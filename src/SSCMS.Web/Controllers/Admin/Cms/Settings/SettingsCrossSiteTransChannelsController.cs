@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -72,16 +71,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             IEnumerable<Select<string>> transTypes;
             if (site.ParentId == 0)
             {
-                transTypes = TranslateUtils.GetEnums<TransType>()
+                transTypes = ListUtils.GetEnums<TransType>()
                     .Where(x => x != TransType.ParentSite && x != TransType.AllParentSite)
                     .Select(transType => new Select<string>(transType));
             }
             else
             {
-                transTypes = TranslateUtils.GetEnums<TransType>()
+                transTypes = ListUtils.GetEnums<TransType>()
                     .Select(transType => new Select<string>(transType));
             }
-            var transDoneTypes = TranslateUtils.GetEnums<TranslateContentType>().Select(transType => new Select<string>(transType));
+            var transDoneTypes = ListUtils.GetEnums<TranslateContentType>().Select(transType => new Select<string>(transType));
 
             return new GetResult
             {
@@ -112,7 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 IsTransSiteId = false,
                 TransSiteId = request.TransSiteId,
                 IsTransChannelIds = false,
-                TransChannelIds = Utilities.GetIntList(channel.TransChannelIds),
+                TransChannelIds = ListUtils.GetIntList(channel.TransChannelIds),
                 IsTransChannelNames = false,
                 TransChannelNames = channel.TransChannelNames,
                 IsTransIsAutomatic = false,
@@ -145,7 +144,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                     result.TransSiteId = request.SiteId;
                 }
                 
-                var siteIdList = await _siteRepository.GetSiteIdListAsync();
+                var siteIdList = await _siteRepository.GetSiteIdsAsync();
                 foreach (var siteId in siteIdList)
                 {
                     var info = await _siteRepository.GetAsync(siteId);
@@ -227,7 +226,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             channel.TransType = request.TransType;
             channel.TransSiteId = request.TransType == TransType.SpecifiedSite ? request.TransSiteId : 0;
-            channel.TransChannelIds = Utilities.ToString(request.TransChannelIds);
+            channel.TransChannelIds = ListUtils.ToString(request.TransChannelIds);
             channel.TransChannelNames = request.TransChannelNames;
             channel.TransIsAutomatic = request.TransIsAutomatic;
             channel.TransDoneType = request.TransDoneType;

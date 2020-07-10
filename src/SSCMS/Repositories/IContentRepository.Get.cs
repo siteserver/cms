@@ -22,7 +22,7 @@ namespace SSCMS.Repositories
         Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope,
             DateTime begin, DateTime end, int adminId);
 
-        Task<List<int>> GetIdListBySameTitleAsync(Site site, Channel channel, string title);
+        Task<List<int>> GetContentIdsBySameTitleAsync(Site site, Channel channel, string title);
 
         Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, ScopeType scope,
             DateTime begin, DateTime end, int adminId, bool? checkedState);
@@ -40,6 +40,6 @@ namespace SSCMS.Repositories
 
         Task<string> CreateNewContentTableAsync();
 
-        Task CreateContentTableAsync(string tableName, List<TableColumn> columnInfoList);
+        Task CreateContentTableAsync(string tableName, List<TableColumn> columns);
     }
 }

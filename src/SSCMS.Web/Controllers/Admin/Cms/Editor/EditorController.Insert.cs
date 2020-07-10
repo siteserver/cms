@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             {
                 foreach (var translation in request.Translations)
                 {
-                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager);
+                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager, _authManager.AdminId);
                 }
             }
 

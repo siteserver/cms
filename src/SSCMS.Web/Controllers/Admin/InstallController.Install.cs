@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error(errorMessage);
             }
 
-            await FileUtils.WriteTextAsync(_pathManager.GetWebRootPath("index.html"), Constants.Html5Empty);
+            await FileUtils.WriteTextAsync(_pathManager.GetRootPath("index.html"), Constants.Html5Empty);
 
             return new BoolResult
             {

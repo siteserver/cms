@@ -1,0 +1,5 @@
+.stlStar{font:12px/22px Verdana,Arial,sans-serif,"Times New Roman",ËÎÌו; position:relative}
+.stlStar span.shi{position:absolute;left:0;top:2px;font-size:36px;color:#FF5A00;font-style:italic;line-height:36px;font-weight:bold}
+.stlStar span.ge{position:absolute;left:26px;top:2px;font-size:28px;line-height:28px;color:#FF5A00;font-style:italic;font-weight:bold}
+.stlStar div.stars{position:absolute;top:5px;left:60px;height:29px;}
+.stlStar span.scorer{position:absolute;top:40px;left:0;color:#247EBF}

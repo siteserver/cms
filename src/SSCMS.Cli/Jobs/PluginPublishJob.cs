@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Mono.Options;
+using Semver;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Core.Plugins;
@@ -13,18 +14,23 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "plugin publish";
 
+        private string _version;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
         private readonly IApiService _apiService;
         private readonly OptionSet _options;
 
-        public PluginPublishJob(ISettingsManager settingsManager, IApiService apiService)
+        public PluginPublishJob(ISettingsManager settingsManager, IPathManager pathManager, IApiService apiService)
         {
             _settingsManager = settingsManager;
+            _pathManager = pathManager;
             _apiService = apiService;
             _options = new OptionSet
             {
+                { "v|version=", "发布版本",
+                    v => _version = v },
                 {
                     "h|help", "命令说明",
                     v => _isHelp = v != null
@@ -51,35 +57,82 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, _, failureMessage) = _apiService.GetStatus();
-            if (!success)
+            var (status, failureMessage) = _apiService.GetStatus();
+            if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
                 return;
             }
 
-            var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(_settingsManager.ContentRootPath);
+            var pluginId = string.Empty;
+            if (context.Extras != null && context.Extras.Length > 0)
+            {
+                pluginId = context.Extras[0];
+            }
+
+            var pluginPath = string.IsNullOrEmpty(pluginId)
+                ? _settingsManager.ContentRootPath
+                : PathUtils.Combine(_pathManager.GetPluginPath(pluginId));
+
+            var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
             if (plugin == null)
             {
                 await WriteUtils.PrintErrorAsync(errorMessage);
                 return;
             }
 
-            var packageId = PluginUtils.GetPackageId(plugin);
-            var zipPath = PathUtils.Combine(_settingsManager.ContentRootPath, $"{packageId}.zip");
-            if (!FileUtils.IsFileExists(zipPath))
+            if (!string.IsNullOrEmpty(_version))
             {
-                PluginUtils.Package(plugin, _settingsManager.ContentRootPath);
+                SemVersion.TryParse(plugin.Version, out var pluginVersion);
+                string versionChanged;
+                
+                if (_version == "major")
+                {
+                    versionChanged = pluginVersion.Change(pluginVersion.Major + 1).ToString();
+                }
+                else if (_version == "minor")
+                {
+                    versionChanged = pluginVersion.Change(pluginVersion.Major, pluginVersion.Minor + 1).ToString();
+                }
+                else if (_version == "patch")
+                {
+                    versionChanged = pluginVersion.Change(pluginVersion.Major, pluginVersion.Minor, pluginVersion.Patch + 1).ToString();
+                }
+                else if (PluginUtils.IsSemVersion(_version))
+                {
+                    versionChanged = _version;
+                }
+                else
+                {
+                    await WriteUtils.PrintErrorAsync($"Invalid plugin version '{_version}'");
+                    return;
+                }
+
+                if (versionChanged != plugin.Version)
+                {
+                    await PluginUtils.UpdateVersionAsync(pluginPath, versionChanged);
+                    (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
+                    if (plugin == null)
+                    {
+                        await WriteUtils.PrintErrorAsync(errorMessage);
+                        return;
+                    }
+                }
             }
+
+            var packageId = PluginUtils.GetPackageId(plugin.Publisher, plugin.Name, plugin.Version);
+            var zipPath = PluginPackageJob.Package(plugin);
             var fileSize = FileUtils.GetFileSizeByFilePath(zipPath);
 
             await Console.Out.WriteLineAsync($"Packaged: {zipPath}");
             await Console.Out.WriteLineAsync($"Publishing {packageId} ({fileSize})...");
 
-            (success, failureMessage) = _apiService.PluginsPublish(packageId, zipPath);
+            bool success;
+            (success, failureMessage) = _apiService.PluginsPublish(plugin.Publisher, zipPath);
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at https://www.sscms.com/plugins/{packageId} (might take a few minutes for it to show up).");
+                
+                await WriteUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at {CloudUtils.Www.GetPluginUrl(plugin.PluginId)} (might take a few minutes for it to show up).");
             }
             else
             {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Dapper;
 using Datory;
 using Newtonsoft.Json.Linq;
 using SSCMS.Cli.Abstractions;
@@ -39,12 +38,12 @@ namespace SSCMS.Cli.Services
                 {
                     if (includes != null)
                     {
-                        if (!StringUtils.ContainsIgnoreCase(includes, tableName)) continue;
+                        if (!ListUtils.ContainsIgnoreCase(includes, tableName)) continue;
                     }
 
                     if (excludes != null)
                     {
-                        if (StringUtils.ContainsIgnoreCase(excludes, tableName)) continue;
+                        if (ListUtils.ContainsIgnoreCase(excludes, tableName)) continue;
                     }
 
                     var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);
@@ -106,33 +105,6 @@ namespace SSCMS.Cli.Services
             }
 
             await WriteUtils.PrintRowLineAsync();
-
-            if (_settingsManager.Database.DatabaseType == DatabaseType.Oracle)
-            {
-                var database = _databaseManager.GetDatabase();
-                var allTableNames = await database.GetTableNamesAsync();
-                foreach (var tableName in allTableNames)
-                {
-                    try
-                    {
-                        var sqlString =
-                            $"ALTER TABLE {tableName} MODIFY Id GENERATED ALWAYS AS IDENTITY(START WITH LIMIT VALUE)";
-
-                        using (var connection = _settingsManager.Database.GetConnection())
-                        {
-                            await connection.ExecuteAsync(sqlString);
-                        }
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                //foreach (var tableName in tableNameList)
-                //{
-                //    DataProvider.DatabaseRepository.AlterOracleAutoIncresementIdToMaxValue(tableName);
-                //}
-            }
 
             if (!dataOnly)
             {

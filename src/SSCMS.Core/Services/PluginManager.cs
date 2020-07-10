@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Core.Plugins;
-using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -15,33 +14,45 @@ namespace SSCMS.Core.Services
     {
         private readonly IConfiguration _config;
         private readonly ISettingsManager _settingsManager;
-        private List<IPlugin> _plugins;
+        private readonly string _directoryPath;
 
         public PluginManager(IConfiguration config, ISettingsManager settingsManager)
         {
             _config = config;
             _settingsManager = settingsManager;
-            
-            DirectoryPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryPath);
+
+            _directoryPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
+            DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
         }
 
-        public async Task ReloadAsync()
+        public void Load()
         {
-            _plugins = new List<IPlugin>();
+            Plugins = new List<IPlugin>();
             var configurations = new List<IConfiguration>
             {
                 _config
             };
-            foreach (var folderPath in Directory.GetDirectories(DirectoryPath))
+            foreach (var folderPath in Directory.GetDirectories(_directoryPath))
             {
                 if (string.IsNullOrEmpty(folderPath)) continue;
                 var configPath = PathUtils.Combine(folderPath, Constants.PackageFileName);
                 if (!FileUtils.IsFileExists(configPath)) continue;
 
                 var plugin = new Plugin(folderPath, true);
-                _plugins.Add(plugin);
-                configurations.Add(plugin.Configuration);
+                if (!StringUtils.IsStrictName(plugin.Publisher) || !StringUtils.IsStrictName(plugin.Name)) continue;
+                if (Path.GetFileName(folderPath) != plugin.PluginId) continue;
+
+                Plugins.Add(plugin);
+                if (!plugin.Disabled)
+                {
+                    var (success, errorMessage) = plugin.LoadAssembly();
+                    plugin.Success = success;
+                    plugin.ErrorMessage = errorMessage;
+                    if (success)
+                    {
+                        configurations.Add(plugin.Configuration);
+                    }
+                }
             }
 
             var builder = new ConfigurationBuilder();
@@ -50,56 +61,61 @@ namespace SSCMS.Core.Services
                 builder.AddConfiguration(configuration);
             }
             Configuration = builder.Build();
+        }
 
-            var tables = GetTables();
-            foreach (var table in tables.Where(table => !string.IsNullOrEmpty(table.Id) && table.Columns != null && table.Columns.Count > 0))
+        public IPlugin Current
+        {
+            get
             {
-                try
-                {
-                    if (!await _settingsManager.Database.IsTableExistsAsync(table.Id))
-                    {
-                        await _settingsManager.Database.CreateTableAsync(table.Id, table.Columns);
-                    }
-                    else
-                    {
-                        await _settingsManager.Database.AlterTableAsync(table.Id,
-                            table.Columns);
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
+                var assembly = Assembly.GetCallingAssembly();
+                return assembly == null ? null : NetCorePlugins.FirstOrDefault(x => x.Assembly.FullName == assembly.FullName);
             }
         }
 
         public IConfiguration Configuration { get; private set; }
 
-        public string DirectoryPath { get; }
+        public List<IPlugin> Plugins { get; private set; }
 
-        public List<IPlugin> Plugins => _plugins;
+        public List<IPlugin> EnabledPlugins => Plugins.Where(x => x.Success && !x.Disabled).ToList();
+
+        public List<IPlugin> NetCorePlugins => EnabledPlugins.Where(x => x.Assembly != null).ToList();
 
         public IPlugin GetPlugin(string pluginId)
         {
-            return _plugins.FirstOrDefault(x => PluginUtils.GetPluginId(x) == pluginId);
+            return Plugins.FirstOrDefault(x => x.PluginId == pluginId);
         }
 
-        public IEnumerable<Assembly> Assemblies => _plugins.Select(x => x.Assembly).Where(x => x != null);
+        public IEnumerable<T> GetExtensions<T>(bool useCaching = true) where T : IPluginExtension
+        {
+            var provider = _settingsManager.BuildServiceProvider();
+            return PluginUtils.GetInstances<T>(NetCorePlugins, provider, useCaching);
+        }
+
+        public async Task<Dictionary<string, object>> GetConfigAsync(string pluginId)
+        {
+            var json = string.Empty;
+            var plugin = GetPlugin(pluginId);
+            if (plugin != null)
+            {
+                var configPath = PathUtils.Combine(plugin.ContentRootPath, Constants.PluginConfigFileName);
+                if (FileUtils.IsFileExists(configPath))
+                {
+                    json = await FileUtils.ReadTextAsync(configPath);
+                }
+            }
+
+            return TranslateUtils.ToDictionaryIgnoreCase(json);
+        }
 
         public async Task SaveConfigAsync(string pluginId, Dictionary<string, object> config)
         {
             var plugin = GetPlugin(pluginId);
             if (plugin != null)
             {
-                var configPath = PathUtils.Combine(DirectoryPath, plugin.FolderName, Constants.PluginConfigFileName);
+                var configPath = PathUtils.Combine(plugin.ContentRootPath, Constants.PluginConfigFileName);
                 var configValue = TranslateUtils.JsonSerialize(config);
                 await FileUtils.WriteTextAsync(configPath, configValue);
             }
-        }
-
-        public IEnumerable<T> GetExtensions<T>(bool useCaching = false) where T : IPluginExtension
-        {
-            return PluginUtils.GetInstances<T>(Assemblies, useCaching);
         }
     }
 }

@@ -66,7 +66,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 //var extendValues = content.Get<string>(extendAttributeName);
                 //if (!string.IsNullOrEmpty(extendValues))
                 //{
-                //    foreach (var extendValue in Utilities.GetStringList(extendValues))
+                //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
                 //    {
                 //        valueList.Add(extendValue);
                 //    }

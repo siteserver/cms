@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Parse;
@@ -19,7 +18,7 @@ namespace SSCMS.Core.Utils
             _pathManager = pathManager;
         }
 
-        public async Task<string> GetContentByTableStyleAsync(string content, string separator, Config config, Site site, TableStyle style, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public async Task<string> GetContentByTableStyleAsync(string content, string separator, Site site, TableStyle style, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -60,7 +59,7 @@ namespace SSCMS.Core.Utils
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new List<string>();
-                var selectedValues = Utilities.GetStringList(content);
+                var selectedValues = ListUtils.GetStringList(content);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -73,7 +72,7 @@ namespace SSCMS.Core.Utils
                     }
                 }
                 
-                parsedContent = separator == null ? Utilities.ToString(selectedTexts) : Utilities.ToString(selectedTexts, separator);
+                parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             //else if (style.InputType == InputType.TextArea)
             //{
@@ -89,17 +88,17 @@ namespace SSCMS.Core.Utils
             }
             else if (inputType == InputType.Video)
             {
-                parsedContent = await GetVideoHtmlAsync(config, site, parsedContent, attributes, isStlEntity);
+                parsedContent = await GetVideoHtmlAsync(site, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(config, site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
+                parsedContent = GetFileHtmlWithoutCount(site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
             }
 
             return parsedContent;
         }
 
-        public async Task<string> GetContentByTableStyleAsync(Content content, string separator, Config config, Site site, TableStyle style, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public async Task<string> GetContentByTableStyleAsync(Content content, string separator, Site site, TableStyle style, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var value = content.Get<string>(style.AttributeName);
             var parsedContent = string.Empty;
@@ -133,7 +132,7 @@ namespace SSCMS.Core.Utils
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new List<string>();
-                var selectedValues = Utilities.GetStringList(value);
+                var selectedValues = ListUtils.GetStringList(value);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -146,7 +145,7 @@ namespace SSCMS.Core.Utils
                     }
                 }
                 
-                parsedContent = separator == null ? Utilities.ToString(selectedTexts) : Utilities.ToString(selectedTexts, separator);
+                parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             else if (inputType == InputType.TextEditor)
             {
@@ -169,26 +168,26 @@ namespace SSCMS.Core.Utils
             {
                 if (no <= 1)
                 {
-                    parsedContent = await GetVideoHtmlAsync(config, site, value, attributes, isStlEntity);
+                    parsedContent = await GetVideoHtmlAsync(site, value, attributes, isStlEntity);
                 }
                 else
                 {
                     var extendName = ColumnsManager.GetExtendName(style.AttributeName, no - 1);
                     var extend = content.Get<string>(extendName);
-                    parsedContent = await GetVideoHtmlAsync(config, site, extend, attributes, isStlEntity);
+                    parsedContent = await GetVideoHtmlAsync(site, extend, attributes, isStlEntity);
                 }
             }
             else if (inputType == InputType.File)
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(config, site, value, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = GetFileHtmlWithoutCount(site, value, attributes, innerHtml, isStlEntity, false, false);
                 }
                 else
                 {
                     var extendName = ColumnsManager.GetExtendName(style.AttributeName, no - 1);
                     var extend = content.Get<string>(extendName);
-                    parsedContent = GetFileHtmlWithoutCount(config, site, extend, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = GetFileHtmlWithoutCount(site, extend, attributes, innerHtml, isStlEntity, false, false);
                 }
             }
             else
@@ -204,7 +203,7 @@ namespace SSCMS.Core.Utils
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = await _pathManager.ParseNavigationUrlAsync(site, imageUrl, false);
+                imageUrl = await _pathManager.ParseSiteUrlAsync(site, imageUrl, false);
                 if (isStlEntity)
                 {
                     retVal = imageUrl;
@@ -247,20 +246,21 @@ namespace SSCMS.Core.Utils
             return retVal;
         }
 
-        public async Task<string> GetVideoHtmlAsync(Config config, Site site, string videoUrl, NameValueCollection attributes, bool isStlEntity)
+        public async Task<string> GetVideoHtmlAsync(Site site, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = await _pathManager.ParseNavigationUrlAsync(site, videoUrl, false);
+                videoUrl = await _pathManager.ParseSiteUrlAsync(site, videoUrl, false);
                 if (isStlEntity)
                 {
                     retVal = videoUrl;
                 }
                 else
                 {
+                    var url = _pathManager.GetSiteFilesUrl(Resources.BrPlayer.Swf);
                     retVal = $@"
-<embed src=""{SiteFilesAssets.GetUrl(_pathManager.GetApiUrl(config), SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{url}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -268,21 +268,21 @@ namespace SSCMS.Core.Utils
             return retVal;
         }
 
-        public string GetFileHtmlWithCount(Config config, Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public string GetFileHtmlWithCount(Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = _pathManager.GetDownloadApiUrl(_pathManager.GetApiUrl(config), site.Id, channelId, contentId,
+                retVal = _pathManager.GetDownloadApiUrl(site.Id, channelId, contentId,
                     fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(_pathManager.GetApiUrl(config), site.Id, channelId,
+                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(site.Id, channelId,
                     contentId, fileUrl);
 
                 innerHtml = string.IsNullOrEmpty(innerHtml)
@@ -304,20 +304,20 @@ namespace SSCMS.Core.Utils
             return retVal;
         }
 
-        public string GetFileHtmlWithoutCount(Config config, Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public string GetFileHtmlWithoutCount(Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = _pathManager.GetDownloadApiUrl(_pathManager.GetApiUrl(config), site.Id, fileUrl);
+                retVal = _pathManager.GetDownloadApiUrl(site.Id, fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(_pathManager.GetApiUrl(config), site.Id, fileUrl);
+                linkAttributes["href"] = _pathManager.GetDownloadApiUrl( site.Id, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

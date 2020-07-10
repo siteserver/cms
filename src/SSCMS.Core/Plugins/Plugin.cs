@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,38 +11,59 @@ namespace SSCMS.Core.Plugins
 {
     public class Plugin : IPlugin
     {
-        public Plugin(string folderPath, bool loadAssembly)
+        public Plugin(string folderPath, bool reloadOnChange)
         {
-            FolderName = Path.GetFileName(folderPath);
-
-            Configuration = new ConfigurationBuilder()
+            ContentRootPath = folderPath;
+            WebRootPath = PathUtils.Combine(folderPath, Constants.WwwrootDirectory);
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(folderPath)
-                .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: loadAssembly)
-                .Build();
-
-            if (loadAssembly)
+                .AddJsonFile(Constants.PackageFileName, optional: false, reloadOnChange: reloadOnChange);
+            if (FileUtils.IsFileExists(PathUtils.Combine(ContentRootPath, Constants.PluginConfigFileName)))
             {
-                if (string.IsNullOrEmpty(Main) || !Main.EndsWith(".dll")) return;
-
-                var assemblyPath = Directory.GetFiles(folderPath, Main, SearchOption.AllDirectories).FirstOrDefault();
-                if (string.IsNullOrEmpty(assemblyPath)) return;
-
-                try
-                {
-                    Assembly = PluginUtils.LoadAssembly(assemblyPath);
-                }
-                catch
-                {
-                    // ignored
-                }
+                builder.AddJsonFile(Constants.PluginConfigFileName, optional: false, reloadOnChange: reloadOnChange);
             }
+            Configuration = builder.Build();
         }
 
-        public string PluginId => PluginUtils.GetPluginId(this);
+        public (bool, string) LoadAssembly()
+        {
+            if (string.IsNullOrEmpty(Main)) return (true, string.Empty);
 
-        public string FolderName { get; }
+            string assemblyPath;
+            if (FileUtils.IsFileExists(PathUtils.Combine(ContentRootPath, Output, Main)))
+            {
+                assemblyPath = PathUtils.Combine(ContentRootPath, Output, Main);
+            }
+            else if (FileUtils.IsFileExists(PathUtils.Combine(ContentRootPath, Main)))
+            {
+                assemblyPath = PathUtils.Combine(ContentRootPath, Main);
+            }
+            else
+            {
+                assemblyPath = Directory.GetFiles(ContentRootPath, Main, SearchOption.AllDirectories).FirstOrDefault();
+            }
 
-        public Assembly Assembly { get; }
+            if (string.IsNullOrEmpty(assemblyPath)) return (false, $"{Main}可执行文件不存在");
+
+            try
+            {
+                Assembly = PluginUtils.LoadAssembly(assemblyPath);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+
+            return (true, string.Empty);
+        }
+
+        public string PluginId => $"{Publisher}.{Name}";
+
+        public string ContentRootPath { get; }
+
+        public string WebRootPath { get; }
+
+        public Assembly Assembly { get; private set; }
 
         public IConfiguration Configuration { get; }
 
@@ -59,9 +81,12 @@ namespace SSCMS.Core.Plugins
         public IEnumerable<string> Categories => Configuration.GetSection(nameof(Categories)).Get<string[]>();
         public IEnumerable<string> Keywords => Configuration.GetSection(nameof(Keywords)).Get<string[]>();
         public string Homepage => Configuration[nameof(Homepage)];
-        public string Main => Configuration[nameof(Main)] ?? $"{FolderName}.dll";
+        public string Output => Configuration[nameof(Output)];
+        public string Main => Configuration[nameof(Main)];
 
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
+        public bool Success { get; set; }
+        public string ErrorMessage { get; set; }
 
         public int Taxis => Configuration.GetValue<int>(nameof(Taxis));
     }

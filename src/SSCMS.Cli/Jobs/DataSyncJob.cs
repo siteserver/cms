@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
@@ -42,9 +41,9 @@ namespace SSCMS.Cli.Jobs
                 { "to=", "指定需要恢复的配置文件Web.config路径或文件名",
                     v => _to = v },
                 { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
-                    v => _includes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _includes = v == null ? null : ListUtils.GetStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
                 { "max-rows=", "指定需要备份的表的最大行数",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
                 { "h|help",  "命令说明",

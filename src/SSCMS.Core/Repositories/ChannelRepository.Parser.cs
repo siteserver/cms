@@ -30,14 +30,14 @@ namespace SSCMS.Core.Repositories
 
                 if (!string.IsNullOrEmpty(group))
                 {
-                    if (!StringUtils.ContainsIgnoreCase(channel.GroupNames, group))
+                    if (!ListUtils.ContainsIgnoreCase(channel.GroupNames, group))
                     {
                         continue;
                     }
                 }
                 if (!string.IsNullOrEmpty(groupNot))
                 {
-                    if (StringUtils.ContainsIgnoreCase(channel.GroupNames, groupNot))
+                    if (ListUtils.ContainsIgnoreCase(channel.GroupNames, groupNot))
                     {
                         continue;
                     }

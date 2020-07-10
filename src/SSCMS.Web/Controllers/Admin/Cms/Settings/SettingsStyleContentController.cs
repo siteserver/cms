@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -60,7 +60,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             var tableName = _channelRepository.GetTableName(site, channel);
             var styles = new List<Style>();
-            foreach (var style in await _tableStyleRepository.GetContentStyleListAsync(channel, tableName))
+            foreach (var style in await _tableStyleRepository.GetContentStylesAsync(channel, tableName))
             {
                 
                 styles.Add(new Style
@@ -115,7 +115,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             await _tableStyleRepository.DeleteAsync(request.ChannelId, tableName, request.AttributeName);
 
             var styles = new List<Style>();
-            foreach (var style in await _tableStyleRepository.GetContentStyleListAsync(channel, tableName))
+            foreach (var style in await _tableStyleRepository.GetContentStylesAsync(channel, tableName))
             {
                 styles.Add(new Style
                 {
@@ -200,7 +200,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                     _tableStyleRepository.GetRelatedIdentities(channel));
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPath(filePath);
 
             return new StringResult
             {

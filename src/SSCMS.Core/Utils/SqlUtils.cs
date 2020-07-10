@@ -51,10 +51,6 @@ namespace SSCMS.Core.Utils
             {
                 retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
             }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') > 0";
-            }
 
             return retVal;
         }
@@ -74,10 +70,6 @@ namespace SSCMS.Core.Utils
             else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') = 0";
             }
 
             return retVal;
@@ -99,10 +91,6 @@ namespace SSCMS.Core.Utils
             else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
             return retVal;
@@ -175,10 +163,6 @@ namespace SSCMS.Core.Utils
             {
                 retVal = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
             }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
-            }
 
             return retVal;
         }
@@ -198,10 +182,6 @@ namespace SSCMS.Core.Utils
             else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"date_part('year', {fieldName})";
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"EXTRACT(year from {fieldName})";
             }
 
             return retVal;
@@ -223,10 +203,6 @@ namespace SSCMS.Core.Utils
             {
                 retVal = $"date_part('month', {fieldName})";
             }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"EXTRACT(month from {fieldName})";
-            }            
 
             return retVal;
         }
@@ -246,10 +222,6 @@ namespace SSCMS.Core.Utils
             else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"date_part('day', {fieldName})";
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"EXTRACT(day from {fieldName})";
             }
 
             return retVal;
@@ -271,10 +243,6 @@ namespace SSCMS.Core.Utils
             {
                 retVal = "current_timestamp";
             }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = "sysdate";
-            }
 
             return retVal;
         }
@@ -294,10 +262,6 @@ namespace SSCMS.Core.Utils
             else if (databaseType == DatabaseType.PostgreSql)
             {
                 retVal = $"'{dateTime:yyyy-MM-dd}'";
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
             }
 
             return retVal;
@@ -319,22 +283,12 @@ namespace SSCMS.Core.Utils
             {
                 retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                retVal = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
-            }
 
             return retVal;
         }
 
-        public static string GetDatabaseNameFormConnectionString(DatabaseType databaseType, string connectionString)
+        public static string GetDatabaseNameFormConnectionString(string connectionString)
         {
-            if (databaseType == DatabaseType.Oracle)
-            {
-                var index1 = connectionString.IndexOf("SERVICE_NAME=", StringComparison.Ordinal);
-                var index2 = connectionString.IndexOf(")));", StringComparison.Ordinal);
-                return connectionString.Substring(index1 + 13, index2 - index1 - 13);
-            }
             var name = GetValueFromConnectionString(connectionString, "Database");
             if (string.IsNullOrEmpty(name))
             {

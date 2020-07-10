@@ -13,7 +13,7 @@ namespace SSCMS.Configuration
         /// <summary>
         /// 获取或设置资源类型。
         /// </summary>
-        public string Type { get; set; }
+        public TableType Type { get; set; }
         public List<TableColumn> Columns { get; set; }
         public List<InputStyle> Styles { get; set; }
     }

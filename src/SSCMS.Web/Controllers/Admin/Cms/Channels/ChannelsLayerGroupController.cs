@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -97,7 +96,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     expendedChannelIds.Add(channel.ParentId);
                 }
 
-                var list = Utilities.GetStringList(channel.GroupNames);
+                var list = ListUtils.GetStringList(channel.GroupNames);
                 if (!list.Contains(group.GroupName)) list.Add(group.GroupName);
                 channel.GroupNames = list;
 
@@ -138,7 +137,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
 
                 var list = new List<string>();
-                foreach (var groupNames in Utilities.GetStringList(channel.GroupNames))
+                foreach (var groupNames in ListUtils.GetStringList(channel.GroupNames))
                 {
                     if (allGroupNames.Contains(groupNames))
                     {

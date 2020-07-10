@@ -15,7 +15,7 @@ namespace SSCMS.Core.Services
             content = content.Clone<Content>();
 
             var tableName = _channelRepository.GetTableName(site, channel);
-            var tableStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var tableStyles = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
             foreach (var style in tableStyles)
             {
                 if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)
@@ -55,7 +55,7 @@ namespace SSCMS.Core.Services
             content = content.Clone<Content>();
 
             var tableName = _channelRepository.GetTableName(site, channel);
-            var tableStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var tableStyles = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
             foreach (var style in tableStyles)
             {
                 if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)
@@ -66,7 +66,7 @@ namespace SSCMS.Core.Services
                     {
                         var extendName = ColumnsManager.GetExtendName(style.AttributeName, i);
                         var value = content.Get<string>(extendName);
-                        value = await ParseNavigationUrlAsync(site, value, false);
+                        value = await ParseSiteUrlAsync(site, value, false);
 
                         content.Set(extendName, value);
                     }
@@ -105,7 +105,7 @@ namespace SSCMS.Core.Services
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
 
-            var relatedSiteUrl = ParseNavigationUrl($"~/{site.SiteDir}");
+            var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");
@@ -153,15 +153,15 @@ namespace SSCMS.Core.Services
 
             if (!string.IsNullOrEmpty(imageUrl) && IsVirtualUrl(imageUrl))
             {
-                collection[imageUrl] = await MapPathAsync(site, imageUrl);
+                collection[imageUrl] = await ParseSitePathAsync(site, imageUrl);
             }
             if (!string.IsNullOrEmpty(videoUrl) && IsVirtualUrl(videoUrl))
             {
-                collection[videoUrl] = await MapPathAsync(site, videoUrl);
+                collection[videoUrl] = await ParseSitePathAsync(site, videoUrl);
             }
             if (!string.IsNullOrEmpty(fileUrl) && IsVirtualUrl(fileUrl))
             {
-                collection[fileUrl] = await MapPathAsync(site, fileUrl);
+                collection[fileUrl] = await ParseSitePathAsync(site, fileUrl);
             }
 
             var srcList = RegexUtils.GetOriginalImageSrcs(body);
@@ -169,11 +169,11 @@ namespace SSCMS.Core.Services
             {
                 if (IsVirtualUrl(src))
                 {
-                    collection[src] = await MapPathAsync(site, src);
+                    collection[src] = await ParseSitePathAsync(site, src);
                 }
                 else if (IsRelativeUrl(src))
                 {
-                    collection[src] = MapPath(src);
+                    collection[src] = ParsePath(src);
                 }
             }
 
@@ -182,11 +182,11 @@ namespace SSCMS.Core.Services
             {
                 if (IsVirtualUrl(href))
                 {
-                    collection[href] = await MapPathAsync(site, href);
+                    collection[href] = await ParseSitePathAsync(site, href);
                 }
                 else if (IsRelativeUrl(href))
                 {
-                    collection[href] = MapPath(href);
+                    collection[href] = ParsePath(href);
                 }
             }
         }

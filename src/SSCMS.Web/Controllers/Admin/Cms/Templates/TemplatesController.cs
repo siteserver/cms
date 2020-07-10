@@ -3,8 +3,8 @@ using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -112,13 +112,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var relatedFileName = PathUtils.RemoveExtension(template.RelatedFileName) + "_复件";
             var createdFileFullName = PathUtils.RemoveExtension(template.CreatedFileFullName) + "_复件";
 
-            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, template.TemplateType);
+            var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, template.TemplateType);
             if (templateNameList.Contains(templateName))
             {
                 return this.Error("模板复制失败，模板名称已存在！");
             }
-            var fileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, template.TemplateType);
-            if (StringUtils.ContainsIgnoreCase(fileNameList, relatedFileName))
+            var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, template.TemplateType);
+            if (ListUtils.ContainsIgnoreCase(fileNameList, relatedFileName))
             {
                 return this.Error("模板复制失败，模板文件已存在！");
             }

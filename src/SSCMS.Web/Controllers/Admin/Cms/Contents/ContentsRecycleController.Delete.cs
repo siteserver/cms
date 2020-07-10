@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -36,14 +35,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         tableName = _channelRepository.GetTableName(site, channel);
                     }
 
-                    await _contentRepository.RecycleDeleteAsync(site, channelId, tableName, contentIdList);
+                    await _contentRepository.DeleteTrashAsync(site, channelId, tableName, contentIdList, _pluginManager);
                 }
 
                 await _authManager.AddSiteLogAsync(request.SiteId, "从回收站删除内容");
             }
             else if (request.Action == Action.DeleteAll)
             {
-                await _contentRepository.RecycleDeleteAllAsync(_pluginManager, site);
+                await _contentRepository.DeleteTrashAsync(site, _oldPluginManager, _pluginManager);
                 await _authManager.AddSiteLogAsync(request.SiteId, "从回收站清空所有内容");
             }
             else if (request.Action == Action.Restore)
@@ -60,14 +59,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         tableName = _channelRepository.GetTableName(site, channel);
                     }
 
-                    await _contentRepository.RecycleRestoreAsync(site, channelId, tableName, contentIdList, request.RestoreChannelId);
+                    await _contentRepository.RestoreTrashAsync(site, channelId, tableName, contentIdList, request.RestoreChannelId);
                 }
 
                 await _authManager.AddSiteLogAsync(request.SiteId, "从回收站还原内容");
             }
             else if (request.Action == Action.RestoreAll)
             {
-                await _contentRepository.RecycleRestoreAllAsync(_pluginManager, site, request.RestoreChannelId);
+                await _contentRepository.RestoreTrashAsync(_oldPluginManager, site, request.RestoreChannelId);
                 await _authManager.AddSiteLogAsync(request.SiteId, "从回收站还原所有内容");
             }
 

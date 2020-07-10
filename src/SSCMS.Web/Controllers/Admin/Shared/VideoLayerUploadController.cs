@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Video);
-            var localFileName = _pathManager.GetUploadFileName(fileName, true);
+            var localFileName = PathUtils.GetUploadFileName(fileName, true);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             await _pathManager.UploadAsync(file, filePath);

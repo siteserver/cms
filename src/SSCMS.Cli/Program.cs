@@ -7,19 +7,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Extensions;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Utils;
 using Serilog;
-using Serilog.Events;
+using SSCMS.Cli.Abstractions;
 
 namespace SSCMS.Cli
 {
     internal static class Program
     {
+        public static IApplication Application { get; private set; }
+
         static async Task Main(string[] args)
         {
             try
@@ -40,7 +41,7 @@ namespace SSCMS.Cli
 
             var contentRootPath = Directory.GetCurrentDirectory();
 
-            var profilePath = PathUtils.GetOsUserProfileDirectoryPath(Constants.OsUserProfileTypeConfig);
+            var profilePath = CliUtils.GetOsUserConfigFilePath();
             var sscmsPath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
 
             var builder = new ConfigurationBuilder()
@@ -61,12 +62,11 @@ namespace SSCMS.Cli
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
 
-            var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), entryAssembly);
-            await services.AddPluginsAsync(configuration, settingsManager);
+            var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory), entryAssembly);
+            var pluginManager = services.AddPlugins(configuration, settingsManager);
 
-            var application = new Application(settingsManager);
+            Application = new Application(settingsManager, pluginManager);
             services.AddSingleton<IConfiguration>(configuration);
-            services.AddSingleton(application);
             services.AddCache(settingsManager.Redis.ConnectionString);
 
             services.AddRepositories(assemblies);
@@ -74,11 +74,7 @@ namespace SSCMS.Cli
             services.AddCliServices();
             services.AddCliJobs();
 
-            var provider = services.BuildServiceProvider();
-
-            CliUtils.SetProvider(provider);
-
-            await application.RunAsync(args);
+            await Application.RunAsync(args);
 
             //try
             //{

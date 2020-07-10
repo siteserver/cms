@@ -17,10 +17,6 @@ namespace SSCMS.Models
 
         public bool Initialized => Id > 0;
 
-        public bool IsSeparatedApi { get; set; }
-
-        public string SeparatedApiUrl { get; set; }
-
         public bool IsLogSite { get; set; } = true;
 
         public bool IsLogAdmin { get; set; } = true;

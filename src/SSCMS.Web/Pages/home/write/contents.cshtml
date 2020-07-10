@@ -1,0 +1,131 @@
+@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    .el-main {
+      padding: 5px;
+      overflow: hidden;
+    }
+    #commands .el-button {
+      margin-bottom: 5px;
+    }
+    #commands .el-button+.el-button {
+      margin-left: 0;
+    }
+    .table-expand-form .el-form-item__label {
+      width: 120px;
+      color: #909399;
+    }
+    .table-expand-form .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
+  </style>
+}
+
+<el-alert
+  v-if="pageType === 'Unauthorized'"
+  title="提示"
+  type="warning"
+  description="您的投稿权限尚未开通，请联系管理员解决。"
+  :closable="false"
+  show-icon>
+</el-alert>
+
+<el-container v-if="!pageType">
+  <el-main>
+    <el-row style="height: 80px; overflow: hidden;">
+      <el-col :span="20">
+        <el-form :inline="true" size="small" label-width="100px">
+          <el-form-item label="站点" prop="siteId" :rules="{ required: true, message: '请选择投稿站点' }">
+            <el-select
+              ref="siteId"
+              v-model="siteId"
+              filterable
+              placeholder="请选择投稿站点">
+              <el-option
+                v-for="site in sites"
+                :key="site.value"
+                :label="site.label"
+                :value="site.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="栏目" prop="channelId">
+            <el-cascader
+              ref="channelId"
+              v-model="channelId"
+              :options="[root]"
+              :props="{ multiple: false, checkStrictly: true }"
+              filterable
+              placeholder="请选择栏目">
+              <span slot-scope="{ node, data }">
+                {{ node.label }} ({{ data.count }})
+              </span>
+            </el-cascader>
+          </el-form-item>
+          <el-form-item label="审核状态">
+            <el-checkbox-group v-model="checkedLevels">
+              <el-checkbox v-for="level in allCheckedLevels" v-key="level.label" :label="level.label">{{level.text}}</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="4" align="right">
+        <el-form :inline="true" size="small" label-width="100px">
+          <el-form-item>
+            <el-popover
+              id="sortColumns"
+              placement="top"
+              width="360"
+              trigger="click">
+              <div>
+                设置显示列
+              </div>
+              <el-table
+                :data="columns"
+                size="mini"
+                style="width: 100%; overflow: auto; max-height: 500px !important;">
+                <el-table-column prop="displayName"></el-table-column>
+                <el-table-column prop="attributeName"></el-table-column>
+                <el-table-column align="right" width="80">
+                  <template slot-scope="scope">
+                    <el-switch
+                      v-model="scope.row.isList"
+                      :disabled="scope.row.attributeName === 'Title'"
+                      v-on:change="handleColumnsChange"
+                      size="mini">
+                    </el-switch>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div slot="reference" class="el-dropdown" style="float: right;">
+                <span style="cursor: pointer;">
+                  显示列<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+              </div>
+            </el-popover>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+    
+  </el-main>
+</el-container>
+
+<el-container v-if="pageContents">
+  <el-main>
+    <el-divider></el-divider>
+    <div style="height: 10px;"></div>
+
+    @await Html.PartialAsync("_PartialContentsCommands")
+
+    <div style="height: 10px;"></div>
+
+    @await Html.PartialAsync("_PartialContents")
+  </el-main>
+</el-container>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/write/contents.js" type="text/javascript"></script> }

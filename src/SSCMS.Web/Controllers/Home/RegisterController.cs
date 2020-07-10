@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -44,9 +44,9 @@ namespace SSCMS.Web.Controllers.Home
             if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
             if (!config.IsUserRegistrationAllowed) return this.Error("对不起，系统已禁止新用户注册！");
 
-            var userStyles = await _tableStyleRepository.GetUserStyleListAsync();
+            var userStyles = await _tableStyleRepository.GetUserStylesAsync();
             var styles = userStyles
-                .Where(x => StringUtils.ContainsIgnoreCase(config.UserRegistrationAttributes, x.AttributeName))
+                .Where(x => ListUtils.ContainsIgnoreCase(config.UserRegistrationAttributes, x.AttributeName))
                 .Select(x => new InputStyle(x));
 
             return new GetResult
@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Home
                 IsHomeAgreement = config.IsHomeAgreement,
                 HomeAgreementHtml = config.HomeAgreementHtml,
                 Styles = styles,
-                Groups = await _userGroupRepository.GetUserGroupListAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync()
             };
         }
 

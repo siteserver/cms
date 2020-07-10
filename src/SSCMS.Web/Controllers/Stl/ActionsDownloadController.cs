@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -9,7 +9,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
-    [Route(Constants.ApiStlPrefix)]
+    [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
     public partial class ActionsDownloadController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Stl
                     }
 
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
-                    var filePath = await _pathManager.MapPathAsync(site, fileUrl);
+                    var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
                     var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
                     if (FileUtils.IsDownload(fileType))
                     {
@@ -53,7 +53,7 @@ namespace SSCMS.Web.Controllers.Stl
                     }
                     else
                     {
-                        var redirectUrl = await _pathManager.ParseNavigationUrlAsync(site, fileUrl, false);
+                        var redirectUrl = await _pathManager.ParseSiteUrlAsync(site, fileUrl, false);
                         return Redirect(redirectUrl);
                     }
                 }
@@ -70,8 +70,8 @@ namespace SSCMS.Web.Controllers.Stl
                     }
                     else
                     {
-                        var fileUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
-                        return Redirect(_pathManager.ParseNavigationUrl(fileUrl));
+                        var fileUrl = _pathManager.GetRootUrlByPath(filePath);
+                        return Redirect(_pathManager.ParseUrl(fileUrl));
                     }
                 }
                 else if (request.SiteId.HasValue && request.ChannelId.HasValue && request.ContentId.HasValue && !string.IsNullOrEmpty(request.FileUrl))
@@ -90,7 +90,7 @@ namespace SSCMS.Web.Controllers.Stl
                             return Redirect(fileUrl);
                         }
 
-                        var filePath = await _pathManager.MapPathAsync(site, fileUrl, true);
+                        var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
                         var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
                         if (FileUtils.IsDownload(fileType))
                         {
@@ -101,7 +101,7 @@ namespace SSCMS.Web.Controllers.Stl
                         }
                         else
                         {
-                            var redirectUrl = await _pathManager.ParseNavigationUrlAsync(site, fileUrl, false);
+                            var redirectUrl = await _pathManager.ParseSiteUrlAsync(site, fileUrl, false);
                             return Redirect(redirectUrl);
                         }
                     }

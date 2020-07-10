@@ -92,7 +92,7 @@ namespace SSCMS.Web.Controllers.Admin
                     site = await _siteRepository.GetAsync(request.SiteId);
 
                     url = site.IsSeparatedWeb
-                        ? _pathManager.GetLocalSiteUrl(request.SiteId)
+                        ? _pathManager.GetPreviewSiteUrl(request.SiteId)
                         : await _pathManager.GetWebUrlAsync(site);
                 }
                 else

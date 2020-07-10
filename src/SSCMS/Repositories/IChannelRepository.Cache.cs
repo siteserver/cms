@@ -19,7 +19,7 @@ namespace SSCMS.Repositories
 
         Task<int> GetIdByParentIdAndTaxisAsync(int siteId, int parentId, int taxis, bool isNextChannel);
 
-        Task<List<string>> GetIndexNameListAsync(int siteId);
+        Task<List<string>> GetIndexNamesAsync(int siteId);
 
         Task<bool> IsIndexNameExistsAsync(int siteId, string indexName);
 
@@ -42,11 +42,11 @@ namespace SSCMS.Repositories
         Task<int> GetChannelIdByParentIdAndChannelNameAsync(int siteId, int parentId, string channelName,
             bool recursive);
 
-        Task<List<Channel>> GetChannelListAsync(int siteId);
+        Task<List<Channel>> GetChannelsAsync(int siteId);
 
-        Task<List<int>> GetChannelIdListAsync(int siteId);
+        Task<List<int>> GetChannelIdsAsync(int siteId);
 
-        Task<List<string>> GetChannelIndexNameListAsync(int siteId);
+        Task<List<string>> GetChannelIndexNamesAsync(int siteId);
 
         Task<List<int>> GetChannelIdsAsync(int siteId, int channelId, ScopeType scopeType);
 

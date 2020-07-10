@@ -58,7 +58,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             if (await _authManager.IsSuperAdminAsync())
             {
-                foreach (var site in await _siteRepository.GetSiteListAsync())
+                foreach (var site in await _siteRepository.GetSitesAsync())
                 {
                     var count = await _contentRepository.GetCountCheckingAsync(site);
                     if (count > 0)

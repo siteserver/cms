@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Extensions;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -75,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 				template = await _templateRepository.GetAsync(templateId);
 				if (template.TemplateName != request.TemplateName)
 				{
-					var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, template.TemplateType);
+					var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, template.TemplateType);
 					if (templateNameList.Contains(request.TemplateName))
 					{
 						return this.Error("模板修改失败，模板名称已存在！");
@@ -85,7 +85,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 				var isChanged = false;
 				if (PathUtils.RemoveExtension(template.RelatedFileName) != PathUtils.RemoveExtension(request.RelatedFileName))//文件名改变
 				{
-					var fileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, template.TemplateType);
+					var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, template.TemplateType);
 					foreach (var fileName in fileNameList)
 					{
 						var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
@@ -136,13 +136,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 			}
 			else
 			{
-				var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, request.TemplateType);
+				var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, request.TemplateType);
 				if (templateNameList.Contains(request.TemplateName))
 				{
 					return this.Error("模板添加失败，模板名称已存在！");
 				}
-				var fileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, request.TemplateType);
-				if (StringUtils.ContainsIgnoreCase(fileNameList, request.RelatedFileName))
+				var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, request.TemplateType);
+				if (ListUtils.ContainsIgnoreCase(fileNameList, request.RelatedFileName))
 				{
 					return this.Error("模板添加失败，模板文件已存在！");
 				}

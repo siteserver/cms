@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using NuGet.Packaging;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Dto;
 using SSCMS.Services;
@@ -80,7 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             foreach (var field in fields)
             {
-                var fieldName = field.Name.ToCamelCase();
+                var fieldName = StringUtils.ToCamelCase(field.Name);
                 var attr = (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
 
                 if (attr != null)
@@ -127,7 +125,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             fields.AddRange(elementType.GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public));
             foreach (var field in fields)
             {
-                var fieldName = field.Name.ToCamelCase();
+                var fieldName = StringUtils.ToCamelCase(field.Name);
                 var attr = (StlAttributeAttribute)Attribute.GetCustomAttribute(field, typeof(StlAttributeAttribute));
 
                 if (attr != null)

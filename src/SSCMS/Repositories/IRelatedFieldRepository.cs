@@ -15,7 +15,7 @@ namespace SSCMS.Repositories
 
         Task<RelatedField> GetRelatedFieldAsync(int siteId, string title);
 
-        Task<List<RelatedField>> GetRelatedFieldListAsync(int siteId);
+        Task<List<RelatedField>> GetRelatedFieldsAsync(int siteId);
 
         Task<string> GetImportTitleAsync(int siteId, string relatedFieldName);
     }

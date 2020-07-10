@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -52,7 +52,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
             var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetUserStyleListAsync())
+            foreach (var style in await _tableStyleRepository.GetUserStylesAsync())
             {
                 styles.Add(new InputStyle
                 {
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                     InputType = style.InputType,
                     Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues),
                     Taxis = style.Taxis,
-                    IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
+                    IsSystem = ListUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
                 });
             }
 
@@ -87,7 +87,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
             var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetUserStyleListAsync())
+            foreach (var style in await _tableStyleRepository.GetUserStylesAsync())
             {
                 styles.Add(new InputStyle
                 {
@@ -97,7 +97,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                     InputType = style.InputType,
                     Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues),
                     Taxis = style.Taxis,
-                    IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
+                    IsSystem = ListUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
                 });
             }
 
@@ -171,7 +171,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 
             var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetUserStyleListAsync())
+            foreach (var style in await _tableStyleRepository.GetUserStylesAsync())
             {
                 styles.Add(new InputStyle
                 {
@@ -181,7 +181,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                     InputType = style.InputType,
                     Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues),
                     Taxis = style.Taxis,
-                    IsSystem = StringUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
+                    IsSystem = ListUtils.ContainsIgnoreCase(allAttributes, style.AttributeName)
                 });
             }
 

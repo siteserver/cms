@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Home
             if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
 
             var user = await _authManager.GetUserAsync();
-            var userStyles = await _tableStyleRepository.GetUserStyleListAsync();
+            var userStyles = await _tableStyleRepository.GetUserStylesAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
 
             return new GetResult

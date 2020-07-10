@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -260,7 +259,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(tableName, type, relatedIdentities);
 
                     var inputParser = new InputParserManager(parseManager.PathManager);
-                    parsedContent = await inputParser.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                    parsedContent = await inputParser.GetContentByTableStyleAsync(content.Title, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(content.Get<string>(ColumnsManager.GetFormatStringAttributeName(nameof(Content.Title)))))
@@ -296,7 +295,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (!string.IsNullOrEmpty(replace))
                     {
-                        parsedContent = StringUtils.Replace(replace, parsedContent, to);
+                        parsedContent = StringUtils.Replace(parsedContent, replace, to);
                     }
 
                     if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
@@ -324,7 +323,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (!string.IsNullOrEmpty(replace))
                     {
-                        parsedContent = StringUtils.Replace(replace, parsedContent, to);
+                        parsedContent = StringUtils.Replace(parsedContent, replace, to);
                     }
 
                     if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
@@ -360,7 +359,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var sbParsedContent = new StringBuilder();
                         //第一条
                         sbParsedContent.Append(contextInfo.IsStlEntity
-                            ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site,
+                            ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site,
                                 content.ImageUrl, pageInfo.IsLocal)
                             : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site,
                                 content.ImageUrl,
@@ -375,7 +374,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extend = content.Get<string>(extendName);
 
                             sbParsedContent.Append(contextInfo.IsStlEntity
-                                ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, extend,
+                                ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend,
                                     pageInfo.IsLocal)
                                 : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend,
                                     contextInfo.Attributes, false));
@@ -385,7 +384,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         //var extendValues = content.Get<string>(extendAttributeName);
                         //if (!string.IsNullOrEmpty(extendValues))
                         //{
-                        //    foreach (var extendValue in Utilities.GetStringList(extendValues))
+                        //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
                         //    {
                         //        var newExtendValue = extendValue;
                         //        sbParsedContent.Append(contextInfo.IsStlEntity
@@ -401,7 +400,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, content.ImageUrl, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, content.ImageUrl, contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, content.ImageUrl, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, content.ImageUrl, contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -409,7 +408,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extend = content.Get<string>(extendName);
                             if (!string.IsNullOrEmpty(extend))
                             {
-                                parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, false);
+                                parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, false);
                             }
 
                             //var extendAttributeName = ColumnsManager.GetExtendAttributeName(nameof(Content.ImageUrl));
@@ -417,7 +416,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             //if (!string.IsNullOrEmpty(extendValues))
                             //{
                             //    var index = 2;
-                            //    foreach (var extendValue in Utilities.GetStringList(extendValues))
+                            //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
                             //    {
                             //        var newExtendValue = extendValue;
                             //        if (index == num)
@@ -439,7 +438,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity));
+                        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity));
 
                         //第n条
                         var countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
@@ -449,7 +448,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
                             var extend = content.Get<string>(extendName);
 
-                            sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site,
+                            sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Site,
                                 extend, contextInfo.Attributes, contextInfo.IsStlEntity));
                         }
 
@@ -457,7 +456,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         //var extendValues = content.Get<string>(extendAttributeName);
                         //if (!string.IsNullOrEmpty(extendValues))
                         //{
-                        //    foreach (string extendValue in Utilities.GetStringList(extendValues))
+                        //    foreach (string extendValue in ListUtils.GetStringList(extendValues))
                         //    {
 
                         //        sbParsedContent.Append(await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
@@ -472,7 +471,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
-                            parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity);
+                            parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Site, content.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity);
                         }
                         else
                         {
@@ -480,7 +479,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var extend = content.Get<string>(extendName);
                             if (!string.IsNullOrEmpty(extend))
                             {
-                                parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Config, pageInfo.Site, extend, contextInfo.Attributes, contextInfo.IsStlEntity);
+                                parsedContent = await inputParser.GetVideoHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, contextInfo.IsStlEntity);
                             }
                         }
                     }
@@ -512,7 +511,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var inputParser = new InputParserManager(parseManager.PathManager);
 
                             //第一条
-                            sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                            sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
 
                             //第n条
                             var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
@@ -522,7 +521,7 @@ namespace SSCMS.Core.StlParser.StlElement
                                 var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
                                 var extend = content.Get<string>(extendName);
 
-                                sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site,
+                                sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Site,
                                     content.ChannelId, content.Id, extend, contextInfo.Attributes,
                                     contextInfo.InnerHtml,
                                     false, isLower, isUpper));
@@ -552,7 +551,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
+                                parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
                             }
                         }
                         else
@@ -561,7 +560,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                             if (num <= 1)
                             {
-                                parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -569,7 +568,7 @@ namespace SSCMS.Core.StlParser.StlElement
                                 var extend = content.Get<string>(extendName);
                                 if (!string.IsNullOrEmpty(extend))
                                 {
-                                    parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Config, pageInfo.Site,
+                                    parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Site,
                                         content.ChannelId, content.Id, extend, contextInfo.Attributes,
                                         contextInfo.InnerHtml, false, isLower, isUpper);
                                 }
@@ -585,7 +584,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.TagNames)))
                 {
-                    parsedContent = Utilities.ToString(content.TagNames);
+                    parsedContent = ListUtils.ToString(content.TagNames);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
                 {
@@ -598,7 +597,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (content.ContainsKey(type))
                     {
-                        if (!StringUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, type))
+                        if (!ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, type))
                         {
                             var relatedIdentities = databaseManager.TableStyleRepository.GetRelatedIdentities(channel);
                             var tableName = databaseManager.ChannelRepository.GetTableName(pageInfo.Site, channel);
@@ -608,7 +607,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var num = TranslateUtils.ToInt(no);
 
                             var inputParser = new InputParserManager(parseManager.PathManager);
-                            parsedContent = await inputParser.GetContentByTableStyleAsync(content, separator, pageInfo.Config, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(content, separator, pageInfo.Site, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
                             parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Extensions;
-using SSCMS.Utils;
+using SSCMS.Extensions;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -12,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -51,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             return new PreviewResult
             {
-                Url = _pathManager.GetContentPreviewUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
+                Url = _pathManager.GetPreviewContentUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
             };
 
             ////contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);

@@ -16,8 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Edit))
             {
                 return Unauthorized();
             }
@@ -32,11 +32,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var tagNames = await _contentTagRepository.GetTagNamesAsync(site.Id);
 
             var tableName = _channelRepository.GetTableName(site, channel);
-            var allStyles = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var allStyles = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
             var styles = allStyles
                 .Where(style =>
                     !string.IsNullOrEmpty(style.DisplayName) &&
-                    !StringUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, style.AttributeName))
+                    !ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, style.AttributeName))
                 .Select(x => new InputStyle(x));
 
             var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, site.Id);

@@ -83,7 +83,7 @@ namespace SSCMS.Core.Repositories
             return special != null ? special.Title : string.Empty;
         }
 
-        public async Task<List<int>> GetAllSpecialIdListAsync(int siteId)
+        public async Task<List<int>> GetAllSpecialIdsAsync(int siteId)
         {
             var specials = await GetSpecialsAsync(siteId);
             return specials.Select(x => x.Id).ToList();

@@ -72,7 +72,7 @@ namespace SSCMS.Core.Repositories
         public async Task DeleteAsync(int siteId)
         {
             var site = await GetAsync(siteId);
-            var list = await _channelRepository.GetChannelIdListAsync(siteId);
+            var list = await _channelRepository.GetChannelIdsAsync(siteId);
             await _tableStyleRepository.DeleteAsync(list, site.TableName);
 
             await _contentGroupRepository.DeleteAsync(siteId);
@@ -115,7 +115,7 @@ namespace SSCMS.Core.Repositories
             {
                 GetListKey()
             };
-            var siteIds = await GetSiteIdListAsync(parentId);
+            var siteIds = await GetSiteIdsAsync(parentId);
             foreach (var siteId in siteIds)
             {
                 cacheKeys.Add(GetEntityKey(siteId));
@@ -134,7 +134,7 @@ namespace SSCMS.Core.Repositories
             {
                 GetListKey()
             };
-            var siteIds = await GetSiteIdListAsync();
+            var siteIds = await GetSiteIdsAsync();
             foreach (var siteId in siteIds)
             {
                 cacheKeys.Add(GetEntityKey(siteId));

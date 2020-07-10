@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CacheManager.Core;
-using Datory.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -108,7 +107,7 @@ namespace SSCMS.Core.Utils
         public static string GetClassKey(Type type, params string[] values)
         {
             if (values == null || values.Length <= 0) return $"ss:{type.FullName}";
-            return $"ss:{type.FullName}:{Utilities.ToString(values, ":")}";
+            return $"ss:{type.FullName}:{ListUtils.ToString(values, ":")}";
         }
 
         public static string GetEntityKey(string tableName)
@@ -143,7 +142,7 @@ namespace SSCMS.Core.Utils
 
         public static string GetListKey(string tableName, string type, params string[] identities)
         {
-            return $"ss:{tableName}:list:{type}:{Utilities.ToString(identities, ":")}";
+            return $"ss:{tableName}:list:{type}:{ListUtils.ToString(identities, ":")}";
         }
 
         public static string GetCountKey(string tableName, int siteId)
@@ -163,7 +162,7 @@ namespace SSCMS.Core.Utils
 
         public static string GetCountKey(string tableName, int siteId, int channelId, params string[] identities)
         {
-            return $"ss:{tableName}:count:{siteId}:{channelId}:{Utilities.ToString(identities, ":")}";
+            return $"ss:{tableName}:count:{siteId}:{channelId}:{ListUtils.ToString(identities, ":")}";
         }
     }
 }

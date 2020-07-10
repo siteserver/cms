@@ -201,12 +201,12 @@ namespace SSCMS.Cli.Services
                 var table = new TableAdministratorsInRoles(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableChannel.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableChannel.OldTableNames, oldTableName))
             {
                 var table = new TableChannel(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableChannelGroup.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableChannelGroup.OldTableNames, oldTableName))
             {
                 var table = new TableChannelGroup(_databaseManager);
                 converter = table.Converter;
@@ -221,7 +221,7 @@ namespace SSCMS.Cli.Services
                 var table = new TableContentCheck(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableContentGroup.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableContentGroup.OldTableNames, oldTableName))
             {
                 var table = new TableContentGroup(_databaseManager);
                 converter = table.Converter;
@@ -245,12 +245,12 @@ namespace SSCMS.Cli.Services
                 var table = new TablePermissionsInRoles(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableRelatedField.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableRelatedField.OldTableNames, oldTableName))
             {
                 var table = new TableRelatedField(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableRelatedFieldItem.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableRelatedFieldItem.OldTableNames, oldTableName))
             {
                 var table = new TableRelatedFieldItem(_databaseManager);
                 converter = table.Converter;
@@ -260,17 +260,17 @@ namespace SSCMS.Cli.Services
                 var table = new TableRole(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableSite.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableSite.OldTableNames, oldTableName))
             {
                 var table = new TableSite(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableSiteLog.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableSiteLog.OldTableNames, oldTableName))
             {
                 var table = new TableSiteLog(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableSitePermissions.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableSitePermissions.OldTableNames, oldTableName))
             {
                 var table = new TableSitePermissions(_databaseManager);
                 converter = table.Converter;
@@ -285,12 +285,12 @@ namespace SSCMS.Cli.Services
                 var table = new TableContentTag(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableTemplate.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableTemplate.OldTableNames, oldTableName))
             {
                 var table = new TableTemplate(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
             {
                 var table = new TableTemplateLog(_databaseManager);
                 converter = table.Converter;
@@ -341,17 +341,17 @@ namespace SSCMS.Cli.Services
             {
                 converter = TableGovPublicIdentifierSeq.Converter;
             }
-            else if (StringUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
             {
                 var table = new TableGovPublicContent(_settingsManager);
                 converter = table.GetConverter(oldTableInfo.Columns);
             }
-            else if (StringUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
             {
                 var table = new TableGovInteractContent(_settingsManager);
                 converter = table.GetConverter(oldTableInfo.Columns);
             }
-            else if (StringUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
             {
                 var table = new TableJobsContent(_settingsManager);
                 converter = table.GetConverter(oldTableInfo.Columns);

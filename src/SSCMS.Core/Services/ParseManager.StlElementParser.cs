@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Context;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
-using SSCMS.Core.Utils.PluginImpls;
+using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -141,8 +142,9 @@ namespace SSCMS.Core.Services
                 }
                 else
                 {
-                    var parsers = OldPluginManager.GetParses();
-                    if (parsers.ContainsKey(elementName))
+                    var parsers = _pluginManager.GetExtensions<IPluginParse>();
+                    var parser = parsers?.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.ElementName, elementName));
+                    if (parser != null)
                     {
                         if (stlElementInfo.IsDynamic)
                         {
@@ -152,12 +154,8 @@ namespace SSCMS.Core.Services
                         {
                             try
                             {
-                                if (parsers.TryGetValue(elementName, out var func))
-                                {
-                                    var context = new PluginStlParseContext();
-                                    context.Load(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, PageInfo, ContextInfo);
-                                    parsedContent = func(context);
-                                }
+                                var context = new PluginParseStlContext(this, stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                                parsedContent = parser.Parse(context);
                             }
                             catch (Exception ex)
                             {
@@ -165,6 +163,52 @@ namespace SSCMS.Core.Services
                             }
                         }
                     }
+
+                    var parsersAsync = _pluginManager.GetExtensions<IPluginParseAsync>();
+                    var parserAsync = parsersAsync?.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.ElementName, elementName));
+                    if (parserAsync != null)
+                    {
+                        if (stlElementInfo.IsDynamic)
+                        {
+                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                var context = new PluginParseStlContext(this, stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                                parsedContent = await parserAsync.ParseAsync(context);
+                            }
+                            catch (Exception ex)
+                            {
+                                parsedContent = await AddStlErrorLogAsync(elementName, stlElement, ex);
+                            }
+                        }
+                    }
+                    //var parsers = OldPluginManager.GetParses();
+                    //if (parsers.ContainsKey(elementName))
+                    //{
+                    //    if (stlElementInfo.IsDynamic)
+                    //    {
+                    //        parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
+                    //    }
+                    //    else
+                    //    {
+                    //        try
+                    //        {
+                    //            if (parsers.TryGetValue(elementName, out var func))
+                    //            {
+                    //                var context = new PluginStlParseContext();
+                    //                context.Load(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, PageInfo, ContextInfo);
+                    //                parsedContent = func(context);
+                    //            }
+                    //        }
+                    //        catch (Exception ex)
+                    //        {
+                    //            parsedContent = await AddStlErrorLogAsync(elementName, stlElement, ex);
+                    //        }
+                    //    }
+                    //}
                 }
             }
 

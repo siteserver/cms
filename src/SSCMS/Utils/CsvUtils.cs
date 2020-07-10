@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Text;
-using Datory.Utils;
 
 namespace SSCMS.Utils
 {
@@ -23,7 +22,7 @@ namespace SSCMS.Utils
             {
                 foreach (var r in row)
                 {
-                    var value = r.Replace(@"""", @"""""");
+                    var value = StringUtils.Replace(r, @"""", @"""""");
                     builder.Append(@"""" + value + @"""").Append(",");
                 }
                 builder.Length -= 1;
@@ -44,12 +43,12 @@ namespace SSCMS.Utils
             var content = FileUtils.ReadText(filePath);
             if (!string.IsNullOrEmpty(content))
             {
-                valueList = Utilities.GetStringList(content, '\n');
+                valueList = ListUtils.GetStringList(content, '\n');
             }
 
             if (valueList.Count > 1)
             {
-                head = Utilities.GetStringList(valueList[0]);
+                head = ListUtils.GetStringList(valueList[0]);
                 valueList = valueList.GetRange(1, valueList.Count - 1);
             }
 
@@ -58,7 +57,7 @@ namespace SSCMS.Utils
                 var row = new List<string>();
 
                 var value = str.Replace(@"""""", @"""");
-                var list = Utilities.GetStringList(value);
+                var list = ListUtils.GetStringList(value);
 
                 if (list.Count != head.Count) continue;
                 foreach (var r in list)

@@ -25,6 +25,11 @@
       <el-badge type="warning" :value="disabledPlugins.length">已禁用</el-badge>
     </el-link>
   </el-menu-item>
+  <el-menu-item index="error" v-if="errorPlugins.length > 0">
+    <el-link :underline="false">
+      <el-badge type="danger" :value="errorPlugins.length">运行错误</el-badge>
+    </el-link>
+  </el-menu-item>
   <el-menu-item index="update" v-if="pageType == 'update' || updatePlugins.length > 0">
     <el-link :underline="false">
       <el-badge type="warning" :value="updatePlugins.length">发现新版本</el-badge>
@@ -36,26 +41,26 @@
 
   <div slot="header" class="clearfix">
     <span>{{getPageTitle()}}</span>
-    <el-button style="float: right; padding: 10px; margin-top: -8px;" type="warning" icon="el-icon-refresh" v-on:click="btnReloadClick">重新加载所有插件</el-button>
+    <el-button style="float: right; padding: 10px; margin-top: -8px;" type="warning" icon="el-icon-refresh" v-on:click="btnRestartClick">重新加载所有插件</el-button>
   </div>
 
-  <el-table v-if="pageType == 'enabled'" :data="enabledPlugins">
+  <el-table v-if="pageType == 'enabled' || pageType == 'disabled'" :data="plugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="getIconUrl(scope.row)" width="48" height="48">
       </template>
     </el-table-column>
-    <el-table-column label="插件Id">
+    <el-table-column label="插件Id" width="160">
       <template slot-scope="scope">
         <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{ scope.row.pluginId }}</el-link>
       </template>
     </el-table-column>
-    <el-table-column label="插件名称">
+    <el-table-column label="插件名称" width="220">
       <template slot-scope="scope">
         {{ scope.row.displayName }}
       </template>
     </el-table-column>
-    <el-table-column label="版本号">
+    <el-table-column label="版本号" width="80">
       <template slot-scope="scope">
         {{ scope.row.version }}
       </template>
@@ -69,65 +74,65 @@
       <template slot-scope="scope">
         <el-link
           :underline="false"
-          v-on:click="btnEnablePlugin(scope.row)"
+          v-on:click="btnDisablePlugin(scope.row)"
           type="primary">
-          {{ scope.row.isDisabled ? '启用' : '禁用' }}
+          {{ scope.row.disabled ? '启用' : '禁用' }}
         </el-link>
         <el-link
           :underline="false"
           type="danger"
           v-on:click="btnDeletePlugin(scope.row)">
-          删除插件
+          卸载插件
         </el-link>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == 'disabled'" :data="disabledPlugins">
+  <el-table v-if="pageType == 'error'" :data="plugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
-        <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+        <img :src="getIconUrl(scope.row)" width="48" height="48">
       </template>
     </el-table-column>
-    <el-table-column label="插件Id">
+    <el-table-column label="插件Id" width="160">
       <template slot-scope="scope">
-        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{ scope.row.id }}</el-link>
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{ scope.row.pluginId }}</el-link>
       </template>
     </el-table-column>
-    <el-table-column label="插件名称">
+    <el-table-column label="插件名称" width="220">
       <template slot-scope="scope">
         {{ scope.row.displayName }}
       </template>
     </el-table-column>
-    <el-table-column label="版本号">
+    <el-table-column label="版本号" width="80">
       <template slot-scope="scope">
         {{ scope.row.version }}
       </template>
     </el-table-column>
-    <el-table-column label="插件介绍">
+    <el-table-column label="错误说明">
       <template slot-scope="scope">
-        {{ scope.row.description }}
+        {{ scope.row.errorMessage }}
       </template>
     </el-table-column>
     <el-table-column label="操作" width="100">
       <template slot-scope="scope">
         <el-link
           :underline="false"
-          v-on:click="btnEnablePlugin(scope.row)"
+          v-on:click="btnDisablePlugin(scope.row)"
           type="primary">
-          {{ scope.row.isDisabled ? '启用' : '禁用' }}
+          {{ scope.row.disabled ? '启用' : '禁用' }}
         </el-link>
         <el-link
           :underline="false"
           type="danger"
           v-on:click="btnDeletePlugin(scope.row)">
-          删除插件
+          卸载插件
         </el-link>
       </template>
     </el-table-column>
   </el-table>
 
-  <el-table v-else-if="pageType == 'update'" :data="updatePlugins">
+  <el-table v-else-if="pageType == 'update'" :data="plugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
         <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
@@ -143,7 +148,7 @@
         {{ scope.row.displayName }}
       </template>
     </el-table-column>
-    <el-table-column label="已安装版本">
+    <el-table-column label="已安装版本" width="80">
       <template slot-scope="scope">
         {{ scope.row ? scope.row.version : '' }}
       </template>
@@ -186,6 +191,5 @@
 </el-card>
 
 @section Scripts{
-  <script src="/sitefiles/assets/js/cloud.js" type="text/javascript"></script>
   <script src="/sitefiles/assets/js/admin/plugins/manage.js" type="text/javascript"></script>
 }

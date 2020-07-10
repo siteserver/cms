@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -61,6 +62,13 @@ namespace SSCMS.Cli.Jobs
             if (string.IsNullOrEmpty(_userName))
             {
                 await WriteUtils.PrintErrorAsync("missing required options '--username'");
+                return;
+            }
+
+            if (!StringUtils.IsStrictName(_userName))
+            {
+                await WriteUtils.PrintErrorAsync(
+                    $@"Invalid username: ""{_userName}"", string does not match the pattern of ""{StringUtils.StrictNameRegex}""");
                 return;
             }
 

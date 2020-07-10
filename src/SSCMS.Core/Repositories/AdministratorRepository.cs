@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -97,7 +96,7 @@ namespace SSCMS.Core.Repositories
             var cacheKeys = GetCacheKeys(administrator);
 
             await _repository.UpdateAsync(Q
-                .Set(nameof(Administrator.SiteIds), Utilities.ToString(administrator.SiteIds))
+                .Set(nameof(Administrator.SiteIds), ListUtils.ToString(administrator.SiteIds))
                 .Where(nameof(Administrator.Id), administrator.Id)
                 .CachingRemove(cacheKeys.ToArray())
             );
@@ -107,26 +106,26 @@ namespace SSCMS.Core.Repositories
         {
             if (administrator == null || siteId <= 0) return null;
 
-            var siteIdListLatestAccessed = Utilities.GetIntList(administrator.SiteIds);
-            if (administrator.SiteId != siteId || siteIdListLatestAccessed.FirstOrDefault() != siteId)
+            var siteIdsLatestAccessed = ListUtils.GetIntList(administrator.SiteIds);
+            if (administrator.SiteId != siteId || siteIdsLatestAccessed.FirstOrDefault() != siteId)
             {
-                siteIdListLatestAccessed.Remove(siteId);
-                siteIdListLatestAccessed.Insert(0, siteId);
+                siteIdsLatestAccessed.Remove(siteId);
+                siteIdsLatestAccessed.Insert(0, siteId);
 
-                administrator.SiteIds = siteIdListLatestAccessed.Distinct().ToList();
+                administrator.SiteIds = siteIdsLatestAccessed.Distinct().ToList();
                 administrator.SiteId = siteId;
 
                 var cacheKeys = GetCacheKeys(administrator);
 
                 await _repository.UpdateAsync(Q
-                    .Set(nameof(Administrator.SiteIds), Utilities.ToString(administrator.SiteIds))
+                    .Set(nameof(Administrator.SiteIds), ListUtils.ToString(administrator.SiteIds))
                     .Set(nameof(Administrator.SiteId), administrator.SiteId)
                     .Where(nameof(Administrator.Id), administrator.Id)
                     .CachingRemove(cacheKeys.ToArray())
                 );
             }
 
-            return siteIdListLatestAccessed;
+            return siteIdsLatestAccessed;
         }
 
         private async Task ChangePasswordAsync(Administrator administrator, PasswordFormat passwordFormat, string passwordSalt, string password)
@@ -145,10 +144,10 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task LockAsync(IList<string> userNameList)
+        public async Task LockAsync(IList<string> userNames)
         {
             var cacheKeys = new List<string>();
-            foreach (var userName in userNameList)
+            foreach (var userName in userNames)
             {
                 var administrator = await GetByUserNameAsync(userName);
                 cacheKeys.AddRange(GetCacheKeys(administrator));
@@ -156,15 +155,15 @@ namespace SSCMS.Core.Repositories
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.Locked), true)
-                .WhereIn(nameof(Administrator.UserName), userNameList)
+                .WhereIn(nameof(Administrator.UserName), userNames)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
 
-        public async Task UnLockAsync(IList<string> userNameList)
+        public async Task UnLockAsync(IList<string> userNames)
         {
             var cacheKeys = new List<string>();
-            foreach (var userName in userNameList)
+            foreach (var userName in userNames)
             {
                 var administrator = await GetByUserNameAsync(userName);
                 cacheKeys.AddRange(GetCacheKeys(administrator));
@@ -173,7 +172,7 @@ namespace SSCMS.Core.Repositories
             await _repository.UpdateAsync(Q
                 .Set(nameof(Administrator.Locked), false)
                 .Set(nameof(Administrator.CountOfFailedLogin), 0)
-                .WhereIn(nameof(Administrator.UserName), userNameList)
+                .WhereIn(nameof(Administrator.UserName), userNames)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
@@ -202,10 +201,10 @@ namespace SSCMS.Core.Repositories
             }
             if (!string.IsNullOrEmpty(role))
             {
-                var userNameList = await _administratorsInRolesRepository.GetUsersInRoleAsync(role);
-                if (userNameList != null && userNameList.Any())
+                var userNames = await _administratorsInRolesRepository.GetUsersInRoleAsync(role);
+                if (userNames != null && userNames.Any())
                 {
-                    query.WhereIn(nameof(Administrator.UserName), userNameList);
+                    query.WhereIn(nameof(Administrator.UserName), userNames);
                 }
             }
 
@@ -236,10 +235,10 @@ namespace SSCMS.Core.Repositories
             }
             if (!string.IsNullOrEmpty(role))
             {
-                var userNameList = await _administratorsInRolesRepository.GetUsersInRoleAsync(role);
-                if (userNameList != null && userNameList.Any())
+                var userNames = await _administratorsInRolesRepository.GetUsersInRoleAsync(role);
+                if (userNames != null && userNames.Any())
                 {
-                    query.WhereIn(nameof(Administrator.UserName), userNameList);
+                    query.WhereIn(nameof(Administrator.UserName), userNames);
                 }
             }
 
@@ -261,12 +260,12 @@ namespace SSCMS.Core.Repositories
 
             query.Offset(offset).Limit(limit);
 
-            var dbList = await _repository.GetAllAsync(query);
+            var dbs = await _repository.GetAllAsync(query);
             var list = new List<Administrator>();
 
-            if (dbList != null)
+            if (dbs != null)
             {
-                foreach (var admin in dbList)
+                foreach (var admin in dbs)
                 {
                     if (admin != null)
                     {
@@ -293,14 +292,14 @@ namespace SSCMS.Core.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(Administrator.Mobile), mobile));
         }
 
-        public async Task<List<string>> GetUserNameListAsync()
+        public async Task<List<string>> GetUserNamesAsync()
         {
             return await _repository.GetAllAsync<string>(Q
                 .Select(nameof(Administrator.UserName))
             );
         }
 
-        public async Task<List<int>> GetUserIdListAsync()
+        public async Task<List<int>> GetUserIdsAsync()
         {
             return await _repository.GetAllAsync<int>(Q
                 .Select(nameof(Administrator.Id))
@@ -336,14 +335,16 @@ namespace SSCMS.Core.Repositories
             {
                 passwordSalt = GenerateSalt();
 
-                var des = new DesEncryptor
-                {
-                    InputString = password,
-                    EncryptKey = passwordSalt
-                };
-                des.DesEncrypt();
+                retVal = TranslateUtils.EncryptStringBySecretKey(password, passwordSalt);
 
-                retVal = des.OutString;
+                //var des = new DesEncryptor
+                //{
+                //    InputString = password,
+                //    EncryptKey = passwordSalt
+                //};
+                //des.DesEncrypt();
+
+                //retVal = des.OutString;
             }
             return retVal;
         }
@@ -476,7 +477,7 @@ namespace SSCMS.Core.Repositories
                 .Set(nameof(Administrator.CountOfLogin), administrator.CountOfLogin)
                 .Set(nameof(Administrator.CountOfFailedLogin), administrator.CountOfFailedLogin)
                 .Set(nameof(Administrator.Locked), administrator.Locked)
-                .Set(nameof(Administrator.SiteIds), Utilities.ToString(administrator.SiteIds))
+                .Set(nameof(Administrator.SiteIds), ListUtils.ToString(administrator.SiteIds))
                 .Set(nameof(Administrator.SiteId), administrator.SiteId)
                 .Set(nameof(Administrator.DisplayName), administrator.DisplayName)
                 .Set(nameof(Administrator.Mobile), administrator.Mobile)
@@ -582,14 +583,16 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                var des = new DesEncryptor
-                {
-                    InputString = password,
-                    DecryptKey = passwordSalt
-                };
-                des.DesDecrypt();
+                retVal = TranslateUtils.DecryptStringBySecretKey(password, passwordSalt);
 
-                retVal = des.OutString;
+                //var des = new DesEncryptor
+                //{
+                //    InputString = password,
+                //    DecryptKey = passwordSalt
+                //};
+                //des.DesDecrypt();
+
+                //retVal = des.OutString;
             }
             return retVal;
         }

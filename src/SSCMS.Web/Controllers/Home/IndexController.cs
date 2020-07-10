@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -55,6 +55,7 @@ namespace SSCMS.Web.Controllers.Home
 
                     children.Add(new Menu
                     {
+                        Id = menuInfo2.Id.ToString(),
                         Text = menuInfo2.Text,
                         IconClass = menuInfo2.IconClass,
                         Link = menuInfo2.Link,
@@ -64,6 +65,7 @@ namespace SSCMS.Web.Controllers.Home
 
                 menus.Add(new Menu
                 {
+                    Id = menuInfo1.Id.ToString(),
                     Text = menuInfo1.Text,
                     IconClass = menuInfo1.IconClass,
                     Link = menuInfo1.Link,

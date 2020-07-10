@@ -296,7 +296,7 @@ selObj.selectedIndex=0;
                 }
                 else
                 {
-                    var minContentInfoList = await databaseManager.ContentRepository.GetMinContentInfoListAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+                    var minContentInfoList = await databaseManager.ContentRepository.GetSummariesAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
                     if (minContentInfoList != null)
                     {

@@ -47,22 +47,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                 if (template.TemplateType == TemplateType.IndexPageTemplate)
                 {
-                    template.Set("url", _pathManager.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
+                    template.Set("url", await _pathManager.ParseSiteUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.ChannelTemplate)
                 {
-                    template.Set("channelIds", _channelRepository.GetChannelIdListByTemplateId(true, template.Id, channels));
+                    template.Set("channelIds", _channelRepository.GetChannelIdsByTemplateId(true, template.Id, channels));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.ContentTemplate)
                 {
-                    template.Set("channelIds", _channelRepository.GetChannelIdListByTemplateId(false, template.Id, channels));
+                    template.Set("channelIds", _channelRepository.GetChannelIdsByTemplateId(false, template.Id, channels));
                     templates.Add(template);
                 }
                 else if (template.TemplateType == TemplateType.FileTemplate)
                 {
-                    template.Set("url", _pathManager.ParseNavigationUrlAsync(site, template.CreatedFileFullName, false));
+                    template.Set("url", await _pathManager.ParseSiteUrlAsync(site, template.CreatedFileFullName, false));
                     templates.Add(template);
                 }
             }

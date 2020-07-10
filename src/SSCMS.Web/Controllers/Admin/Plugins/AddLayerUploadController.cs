@@ -1,12 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
+using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -17,34 +19,25 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
     [Route(Constants.ApiAdminPrefix)]
     public partial class AddLayerUploadController : ControllerBase
     {
-        private const string Route = "plugins/addLayerUpload";
-        private const string RouteUpload = "plugins/addLayerUpload/actions/upload";
+        private const string RouteActionsUpload = "plugins/addLayerUpload/actions/upload";
+        private const string RouteActionsOverride = "plugins/addLayerUpload/actions/override";
+        private const string RouteActionsRestart = "plugins/addLayerUpload/actions/restart";
 
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IPluginManager _pluginManager;
 
-        public AddLayerUploadController(IAuthManager authManager, IPathManager pathManager)
+        public AddLayerUploadController(IHostApplicationLifetime hostApplicationLifetime, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager)
         {
+            _hostApplicationLifetime = hostApplicationLifetime;
             _authManager = authManager;
             _pathManager = pathManager;
+            _pluginManager = pluginManager;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<BoolResult>> GetConfig()
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            return new BoolResult
-            {
-                Value = true
-            };
-        }
-
-        [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromForm]IFormFile file)
+        [HttpPost, Route(RouteActionsUpload)]
+        public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
@@ -58,53 +51,77 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             var fileName = Path.GetFileName(file.FileName);
 
-            string filePath = null;
-
-            var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
-            if (extendName == ".nupkg")
+            var sExt = PathUtils.GetExtension(fileName);
+            if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
             {
-                filePath = _pathManager.GetTemporaryFilesPath(fileName);
-                await _pathManager.UploadAsync(file, filePath);
+                return this.Error("插件包为Zip格式，请选择有效的文件上传");
             }
 
-            FileInfo fileInfo = null;
-            if (!string.IsNullOrEmpty(filePath))
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
+            FileUtils.DeleteFileIfExists(filePath);
+            await _pathManager.UploadAsync(file, filePath);
+
+            var tempPluginPath = _pathManager.GetTemporaryFilesPath(PathUtils.GetFileNameWithoutExtension(fileName));
+            DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(tempPluginPath);
+            ZipUtils.ExtractZip(filePath, tempPluginPath);
+
+            var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(tempPluginPath);
+            if (plugin == null)
             {
-                fileInfo = new FileInfo(filePath);
+                return this.Error(errorMessage);
             }
-            if (fileInfo != null)
+
+            DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
+
+            var oldPlugin = _pluginManager.GetPlugin(plugin.PluginId);
+
+            if (oldPlugin == null)
             {
-                return new UploadResult
-                {
-                    FileName = fileName,
-                    Length = fileInfo.Length,
-                    Ret = 1
-                };
+                var pluginPath = _pathManager.GetPluginPath(plugin.PluginId);
+                DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
+                DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
+                ZipUtils.ExtractZip(filePath, pluginPath);
             }
 
             return new UploadResult
             {
-                Ret = 0
+                OldPlugin = oldPlugin,
+                NewPlugin = plugin,
+                FileName = fileName
             };
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        [HttpPost, Route(RouteActionsOverride)]
+        public async Task<ActionResult<BoolResult>> Override([FromBody] OverrideRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }
 
-            foreach (var fileName in request.FileNames)
-            {
-                //var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
+            _pluginManager.UnInstall(request.PluginId);
 
-                //var importObject = new ImportObject(siteId, request.AdminName);
-                //importObject.ImportContentsByZipFile(channel, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+            var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+            var pluginPath = _pathManager.GetPluginPath(request.PluginId);
+            DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
+            ZipUtils.ExtractZip(filePath, pluginPath);
+
+            return new BoolResult
+            {
+                Value = true
+            };
+        }
+
+        [HttpPost, Route(RouteActionsRestart)]
+        public async Task<ActionResult<BoolResult>> Restart()
+        {
+            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
+            {
+                return Unauthorized();
             }
 
-            await _authManager.AddAdminLogAsync("安装离线插件", string.Empty);
+            _hostApplicationLifetime.StopApplication();
 
             return new BoolResult
             {

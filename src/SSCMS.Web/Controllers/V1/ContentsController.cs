@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.V1
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IOldPluginManager _oldPluginManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
@@ -35,11 +35,11 @@ namespace SSCMS.Web.Controllers.V1
         private readonly IErrorLogRepository _errorLogRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public ContentsController(IAuthManager authManager, ICreateManager createManager, IOldPluginManager pluginManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository, IContentCheckRepository contentCheckRepository)
+        public ContentsController(IAuthManager authManager, ICreateManager createManager, IOldPluginManager oldPluginManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
-            _pluginManager = pluginManager;
+            _oldPluginManager = oldPluginManager;
             _accessTokenRepository = accessTokenRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -55,15 +55,15 @@ namespace SSCMS.Web.Controllers.V1
             bool isAuth;
             if (request.SourceId == SourceManager.User)
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add);
+                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add);
             }
             else
             {
                 isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                          _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add) ||
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Add);
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add);
             }
             if (!isAuth) return Unauthorized();
 
@@ -80,11 +80,11 @@ namespace SSCMS.Web.Controllers.V1
             {
                 if (request.SourceId == SourceManager.User || _authManager.IsUser)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.CheckLevel1);
                 }
                 else if (_authManager.IsAdmin)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.CheckLevel1);
                 }
             }
 
@@ -106,7 +106,7 @@ namespace SSCMS.Web.Controllers.V1
 
             contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 
-            foreach (var plugin in _pluginManager.GetPlugins())
+            foreach (var plugin in _oldPluginManager.GetPlugins())
             {
                 try
                 {
@@ -137,15 +137,15 @@ namespace SSCMS.Web.Controllers.V1
             bool isAuth;
             if (request.SourceId == SourceManager.User)
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit);
+                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Edit);
             }
             else
             {
                 isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                          _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit) ||
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Edit) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.Edit);
+                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Edit);
             }
             if (!isAuth) return Unauthorized();
 
@@ -174,7 +174,7 @@ namespace SSCMS.Web.Controllers.V1
 
             await _contentRepository.UpdateAsync(site, channelInfo, content);
 
-            foreach (var plugin in _pluginManager.GetPlugins())
+            foreach (var plugin in _oldPluginManager.GetPlugins())
             {
                 try
                 {
@@ -202,12 +202,12 @@ namespace SSCMS.Web.Controllers.V1
         [HttpDelete, Route(RouteContent)]
         public async Task<ActionResult<Content>> Delete(int siteId, int channelId, int id)
         {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete);
+            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.Delete);
             var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                             _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete) ||
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.Delete) ||
                             _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete);
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.Delete);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);
@@ -216,12 +216,12 @@ namespace SSCMS.Web.Controllers.V1
             var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.Delete)) return Unauthorized();
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.Delete)) return Unauthorized();
 
             var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return NotFound();
 
-            await _contentRepository.DeleteAsync(_pluginManager, site, channel, id);
+            await _contentRepository.TrashContentAsync(site, channel, id, _authManager.AdminId);
 
             return content;
         }
@@ -230,12 +230,12 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteContent)]
         public async Task<ActionResult<Content>> Get(int siteId, int channelId, int id)
         {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View);
+            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.View);
             var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                             _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View) ||
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.View) ||
                             _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View);
+                            await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.View);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);
@@ -244,7 +244,7 @@ namespace SSCMS.Web.Controllers.V1
             var channelInfo = await _channelRepository.GetAsync(channelId);
             if (channelInfo == null) return NotFound();
 
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.SiteContentPermissions.View)) return Unauthorized();
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, AuthTypes.ContentPermissions.View)) return Unauthorized();
 
             var content = await _contentRepository.GetAsync(site, channelInfo, id);
             if (content == null) return NotFound();
@@ -258,12 +258,12 @@ namespace SSCMS.Web.Controllers.V1
         {
             var channelId = request.ChannelId ?? request.SiteId;
 
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.SiteContentPermissions.View);
+            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.ContentPermissions.View);
             var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
                             _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.SiteContentPermissions.View) ||
+                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.ContentPermissions.View) ||
                             _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.SiteContentPermissions.View);
+                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, AuthTypes.ContentPermissions.View);
             if (!isUserAuth && !isApiAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);

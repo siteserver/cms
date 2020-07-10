@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Datory.Utils;
 using McMaster.Extensions.CommandLineUtils;
 using SSCMS.Utils;
 
@@ -9,8 +8,8 @@ namespace SSCMS.Cli.Core
     {
         public static string GetSelect(string text, List<string> options)
         {
-            var option = Prompt.GetString($"{text}({Utilities.ToString(options)}):");
-            return StringUtils.ContainsIgnoreCase(options, option) ? option : GetSelect(text, options);
+            var option = Prompt.GetString($"{text}({ListUtils.ToString(options)}):");
+            return ListUtils.ContainsIgnoreCase(options, option) ? option : GetSelect(text, options);
         }
 
         public static string GetString(string text)

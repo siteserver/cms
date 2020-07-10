@@ -49,7 +49,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteContentPermissions.View))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var editorColumns = new List<ContentColumn>();
 
             var tableName = _channelRepository.GetTableName(site, channel);
-            var styleList = await _tableStyleRepository.GetContentStyleListAsync(channel, tableName);
+            var styleList = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
             foreach (var tableStyle in styleList)
             {
                 if (tableStyle.InputType == InputType.TextEditor)

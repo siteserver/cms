@@ -45,6 +45,18 @@ namespace SSCMS.Utils
             return retVal;
         }
 
+        private static string NormalizePath(string path)
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
+        }
+
+        public static bool IsEquals(string path1, string path2)
+        {
+            return NormalizePath(path1) == NormalizePath(path2);
+        }
+
         public static bool IsExtension(string ext, params string[] extensions)
         {
             return extensions.Any(extension => StringUtils.EqualsIgnoreCase(ext, extension));
@@ -74,6 +86,23 @@ namespace SSCMS.Utils
             return url.Substring(0, url.IndexOf("?", StringComparison.Ordinal));
         }
 
+        public static string GetUploadFileName(string filePath, bool isUploadChangeFileName)
+        {
+            if (isUploadChangeFileName)
+            {
+                return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
+            }
+
+            var fileName = GetFileNameWithoutExtension(filePath);
+            fileName = GetSafeFilename(fileName);
+            return $"{fileName}{GetExtension(filePath)}";
+        }
+
+        /// <summary>
+        /// including the period "."
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string GetExtension(string path)
         {
             var retVal = string.Empty;
@@ -178,7 +207,7 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(filePath))
                 return filePath;
             var invalidChars = new string(Path.GetInvalidPathChars());
-            string invalidReStr = $"[{Regex.Escape(invalidChars)}]";
+            var invalidReStr = $"[{Regex.Escape(invalidChars)}]";
             return Regex.Replace(filePath, invalidReStr, "");
         }
 

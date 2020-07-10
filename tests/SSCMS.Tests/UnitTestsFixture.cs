@@ -27,7 +27,7 @@ namespace SSCMS.Tests
                 .AddJsonFile("sscms.json")
                 .Build();
 
-            SettingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"), null);
+            SettingsManager = new SettingsManager(null, config, contentRootPath, PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory), null);
         }
     }
 }

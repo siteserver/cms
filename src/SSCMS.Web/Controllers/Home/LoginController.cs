@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -65,8 +65,8 @@ namespace SSCMS.Web.Controllers.Home
             user = await _userRepository.GetByUserNameAsync(userName);
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user
                 ); // 记录最后登录时间、失败次数清零
-            await _authManager.AddUserLogAsync("用户登录", string.Empty);
 
+            await _logRepository.AddUserLogAsync(user, "用户登录");
             var token = _authManager.AuthenticateUser(user, request.IsPersistent);
 
             return new LoginResult

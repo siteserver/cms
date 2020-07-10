@@ -60,7 +60,7 @@ namespace SSCMS.Web.Controllers.V1
                     Site = await siteRepository.GetSiteByIsRootAsync();
                     if (Site == null)
                     {
-                        var siteList = await siteRepository.GetSiteListAsync();
+                        var siteList = await siteRepository.GetSitesAsync();
                         if (siteList != null && siteList.Count > 0)
                         {
                             Site = siteList[0];

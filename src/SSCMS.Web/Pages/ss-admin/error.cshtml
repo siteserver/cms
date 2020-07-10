@@ -11,9 +11,9 @@
   </div>
   <div class="card-body">
     <blockquote class="blockquote mb-0">
-      <p style="word-wrap: break-word; font-size: 14px;" v-html="message" v-show="message"></p>
-      <p style="word-wrap: break-word; font-size: 14px;" v-html="stackTrace" v-show="stackTrace"></p>
-      <p style="word-wrap: break-word; font-size: 14px;" v-html="addDate" v-show="addDate"></p>
+      <p v-if="message" v-html="message" style="word-wrap: break-word; font-size: 14px;"></p>
+      <p v-if="stackTrace" v-html="stackTrace" style="word-wrap: break-word; font-size: 14px;"></p>
+      <p v-if="addDate" v-html="addDate" style="word-wrap: break-word; font-size: 14px;"></p>
     </blockquote>
   </div>
   <div class="card-footer text-muted">

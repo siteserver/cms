@@ -21,7 +21,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form ref="form" v-if="editorAttributeName" :model="form" size="small">
+<el-form ref="form" v-if="form.isOptions" :model="form" size="small">
   <el-form-item>
     <el-checkbox label="将图片显示在内容编辑器中" v-model="form.isEditor"></el-checkbox>
   </el-form-item>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
@@ -37,9 +36,9 @@ namespace SSCMS.Cli.Jobs
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },
                 { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
-                    v => _includes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _includes = v == null ? null : ListUtils.GetStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
                 { "max-rows=", "指定需要备份的表的最大行数",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
                 { "h|help",  "命令说明",
@@ -125,9 +124,9 @@ namespace SSCMS.Cli.Jobs
 
             foreach (var tableName in allTableNames)
             {
-                if (includes != null && !StringUtils.ContainsIgnoreCase(includes, tableName)) continue;
-                if (StringUtils.ContainsIgnoreCase(excludes, tableName)) continue;
-                if (StringUtils.ContainsIgnoreCase(tableNames, tableName)) continue;
+                if (includes != null && !ListUtils.ContainsIgnoreCase(includes, tableName)) continue;
+                if (ListUtils.ContainsIgnoreCase(excludes, tableName)) continue;
+                if (ListUtils.ContainsIgnoreCase(tableNames, tableName)) continue;
                 tableNames.Add(tableName);
             }
 

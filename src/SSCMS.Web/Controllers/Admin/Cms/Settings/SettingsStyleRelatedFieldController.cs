@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
+            return await _relatedFieldRepository.GetRelatedFieldsAsync(request.SiteId);
         }
 
         [HttpDelete, Route(Route)]
@@ -66,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _authManager.AddSiteLogAsync(request.SiteId, "删除联动字段");
 
-            return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
+            return await _relatedFieldRepository.GetRelatedFieldsAsync(request.SiteId);
         }
 
         [HttpPost, Route(Route)]
@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _authManager.AddSiteLogAsync(request.SiteId, "新增联动字段");
 
-            return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
+            return await _relatedFieldRepository.GetRelatedFieldsAsync(request.SiteId);
         }
 
         [HttpPut, Route(Route)]
@@ -98,7 +98,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _authManager.AddSiteLogAsync(request.SiteId, "编辑联动字段");
 
-            return await _relatedFieldRepository.GetRelatedFieldListAsync(request.SiteId);
+            return await _relatedFieldRepository.GetRelatedFieldsAsync(request.SiteId);
         }
 
         [HttpPost, Route(RouteImport)]
@@ -153,7 +153,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var fileName = await ExportObject.ExportRelatedFieldListAsync(_pathManager, _databaseManager, request.SiteId);
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var downloadUrl = _pathManager.GetRootUrlByPhysicalPath(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPath(filePath);
 
             return new StringResult
             {

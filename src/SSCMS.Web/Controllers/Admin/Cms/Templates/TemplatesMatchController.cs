@@ -60,8 +60,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 };
             });
 
-            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             return new GetResult
             {
@@ -169,8 +169,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 };
             });
 
-            var channelTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var contentTemplates = await _templateRepository.GetTemplateListByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
+            var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             return new GetResult
             {
@@ -183,8 +183,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private async Task CreateChannelTemplateAsync(Site site, CreateRequest request, int adminId)
         {
             var defaultChannelTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ChannelTemplate);
 
             foreach (var channelId in request.ChannelIds)
             {
@@ -218,7 +218,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                         DefaultTemplate = false
                     };
 
-                    if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                    if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
                     {
                         continue;
                     }
@@ -242,8 +242,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task CreateChannelChildrenTemplateAsync(Site site, CreateRequest request, int adminId)
         {
-            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
-            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ChannelTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ChannelTemplate);
             foreach (var channelId in request.ChannelIds)
             {
                 var nodeInfo = await _channelRepository.GetAsync(channelId);
@@ -260,7 +260,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     DefaultTemplate = false
                 };
 
-                if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
                 {
                     continue;
                 }
@@ -285,8 +285,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private async Task CreateContentTemplateAsync(Site site, CreateRequest request, int adminId)
         {
             var defaultContentTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ContentTemplate);
-            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ContentTemplate);
-            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ContentTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ContentTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ContentTemplate);
             foreach (var channelId in request.ChannelIds)
             {
                 var nodeInfo = await _channelRepository.GetAsync(channelId);
@@ -314,7 +314,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                         CreatedFileExtName = ".html",
                         DefaultTemplate = false
                     };
-                    if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                    if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
                     {
                         continue;
                     }
@@ -336,8 +336,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
         private async Task CreateContentChildrenTemplateAsync(Site site, CreateRequest request, int adminId)
         {
-            var relatedFileNameList = await _templateRepository.GetRelatedFileNameListAsync(request.SiteId, TemplateType.ContentTemplate);
-            var templateNameList = await _templateRepository.GetTemplateNameListAsync(request.SiteId, TemplateType.ContentTemplate);
+            var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ContentTemplate);
+            var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ContentTemplate);
             foreach (var channelId in request.ChannelIds)
             {
                 var nodeInfo = await _channelRepository.GetAsync(channelId);
@@ -354,7 +354,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     DefaultTemplate = false
                 };
 
-                if (StringUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
                 {
                     continue;
                 }

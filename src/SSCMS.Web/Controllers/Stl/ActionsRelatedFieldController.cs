@@ -7,7 +7,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
-    [Route(Constants.ApiStlPrefix)]
+    [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
     public partial class ActionsRelatedFieldController : ControllerBase
     {
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;

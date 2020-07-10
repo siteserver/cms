@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Extensions;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -42,7 +41,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.SiteChannelPermissions.Add);
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.ChannelPermissions.Add);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -58,7 +57,7 @@ namespace SSCMS.Web.Controllers.V1
 
             if (!string.IsNullOrEmpty(request.IndexName))
             {
-                var indexNameList = await _channelRepository.GetIndexNameListAsync(request.SiteId);
+                var indexNameList = await _channelRepository.GetIndexNamesAsync(request.SiteId);
                 if (indexNameList.Contains(request.IndexName))
                 {
                     return this.Error("栏目添加失败，栏目索引已存在！");
@@ -153,7 +152,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.SiteChannelPermissions.Edit);
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ChannelPermissions.Edit);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -176,7 +175,7 @@ namespace SSCMS.Web.Controllers.V1
             {
                 if (!channel.IndexName.Equals(request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
                 {
-                    var indexNameList = await _channelRepository.GetIndexNameListAsync(request.SiteId);
+                    var indexNameList = await _channelRepository.GetIndexNamesAsync(request.SiteId);
                     if (indexNameList.Contains(request.IndexName))
                     {
                         return this.Error("栏目属性修改失败，栏目索引已存在！");
@@ -195,7 +194,7 @@ namespace SSCMS.Web.Controllers.V1
 
             if (request.ContentRelatedPluginIds != null)
             {
-                channel.ContentRelatedPluginIds = Utilities.GetStringList(request.ContentRelatedPluginIds);
+                channel.ContentRelatedPluginIds = ListUtils.GetStringList(request.ContentRelatedPluginIds);
             }
 
             if (request.FilePath != null)
@@ -314,7 +313,7 @@ namespace SSCMS.Web.Controllers.V1
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
                          await _authManager.HasChannelPermissionsAsync(siteId, channelId,
-                             AuthTypes.SiteChannelPermissions.Delete);
+                             AuthTypes.ChannelPermissions.Delete);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);
@@ -324,7 +323,7 @@ namespace SSCMS.Web.Controllers.V1
             if (channel == null) return NotFound();
 
             var adminId = _authManager.AdminId;
-            await _contentRepository.RecycleAllAsync(site, channelId, adminId);
+            await _contentRepository.TrashContentsAsync(site, channelId, adminId);
             await _channelRepository.DeleteAsync(site, channelId, adminId);
 
             return channel;
@@ -358,7 +357,7 @@ namespace SSCMS.Web.Controllers.V1
             var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channelInfoList = await _channelRepository.GetChannelListAsync(siteId);
+            var channelInfoList = await _channelRepository.GetChannelsAsync(siteId);
 
             var dictInfoList = new List<IDictionary<string, object>>();
             foreach (var channelInfo in channelInfoList)

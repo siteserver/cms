@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Datory.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -61,7 +61,7 @@ namespace SSCMS.Core.Repositories
             }
             else
             {
-                roleNames += Utilities.ToString(roleNameList);
+                roleNames += ListUtils.ToString(roleNameList);
             }
             return roleNames;
         }

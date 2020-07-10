@@ -15,7 +15,7 @@ namespace SSCMS.Core.Repositories
                 .DefaultIfEmpty().Max();
         }
 
-        public async Task<List<RelatedFieldItem>> GetListAsync(int siteId, int relatedFieldId, int parentId)
+        public async Task<List<RelatedFieldItem>> GetRelatedFieldItemsAsync(int siteId, int relatedFieldId, int parentId)
         {
             var list = await GetAllAsync(siteId);
             return list.Where(x => x.RelatedFieldId == relatedFieldId && x.ParentId == parentId).OrderBy(x => x.Taxis).ToList();
@@ -31,7 +31,7 @@ namespace SSCMS.Core.Repositories
         {
             var list = new List<Cascade<int>>();
 
-            var items = await GetListAsync(siteId, relatedFieldId, parentId);
+            var items = await GetRelatedFieldItemsAsync(siteId, relatedFieldId, parentId);
 
             if (items != null && items.Any())
             {

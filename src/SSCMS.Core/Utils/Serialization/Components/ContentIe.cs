@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core.Collections;
 using SSCMS.Models;
@@ -144,8 +143,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     content.AddDate = TranslateUtils.ToDateTime(addDate);
                     content.AdminId = adminId;
                     content.LastEditAdminId = adminId;
-                    content.GroupNames = Utilities.GetStringList(groupNames);
-                    content.TagNames = Utilities.GetStringList(tagNames);
+                    content.GroupNames = ListUtils.GetStringList(groupNames);
+                    content.TagNames = ListUtils.GetStringList(tagNames);
                     content.Checked = isChecked;
                     content.CheckedLevel = checkedLevel;
                     content.Hits = hits;
@@ -165,7 +164,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channel, content.Title);
+                        var existsIDs = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channel, content.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (var id in existsIDs)
@@ -191,7 +190,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
                         if (!string.IsNullOrEmpty(tagNames))
                         {
-                            foreach (var tagName in Utilities.GetStringList(tagNames))
+                            foreach (var tagName in ListUtils.GetStringList(tagNames))
                             {
                                 await _databaseManager.ContentTagRepository.InsertAsync(_site.Id, tagName);
                             }
@@ -270,8 +269,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         UserId = userId,
                         SourceId = sourceId,
                         AddDate = TranslateUtils.ToDateTime(addDate),
-                        GroupNames = Utilities.GetStringList(groupNameCollection),
-                        TagNames = Utilities.GetStringList(tags),
+                        GroupNames = ListUtils.GetStringList(groupNameCollection),
+                        TagNames = ListUtils.GetStringList(tags),
                         Checked = isChecked,
                         CheckedLevel = checkedLevel,
                         Hits = hits,
@@ -300,7 +299,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = await _databaseManager.ContentRepository.GetIdListBySameTitleAsync(_site, channel, contentInfo.Title);
+                        var existsIDs = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channel, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (var id in existsIDs)
@@ -326,7 +325,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
                         if (!string.IsNullOrEmpty(tags))
                         {
-                            foreach (var tagName in Utilities.GetStringList(tags))
+                            foreach (var tagName in ListUtils.GetStringList(tags))
                             {
                                 await _databaseManager.ContentTagRepository.InsertAsync(_site.Id, tagName);
                             }
@@ -394,7 +393,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             foreach (string imageUrl in collection.Keys)
             {
                 var sourceFilePath = collection[imageUrl];
-                var destFilePath = _pathManager.MapPath(_siteContentDirectoryPath, imageUrl);
+                var destFilePath = _pathManager.ParsePath(_siteContentDirectoryPath, imageUrl);
                 DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
                 FileUtils.MoveFile(sourceFilePath, destFilePath, true);
             }
@@ -428,7 +427,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             foreach (string imageUrl in collection.Keys)
             {
                 var sourceFilePath = collection[imageUrl];
-                var destFilePath = _pathManager.MapPath(_siteContentDirectoryPath, imageUrl);
+                var destFilePath = _pathManager.ParsePath(_siteContentDirectoryPath, imageUrl);
                 DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
                 FileUtils.MoveFile(sourceFilePath, destFilePath, true);
             }
@@ -444,8 +443,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.ChannelId), "NodeId" }, content.ChannelId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.SiteId), "PublishmentSystemId" }, content.SiteId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Taxis), content.Taxis.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" }, Utilities.ToString(content.GroupNames));
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }, AtomUtility.Encrypt(Utilities.ToString(content.TagNames)));
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" }, ListUtils.ToString(content.GroupNames));
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }, AtomUtility.Encrypt(ListUtils.ToString(content.TagNames)));
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.SourceId), content.SourceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.ReferenceId), content.ReferenceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Checked), "IsChecked" }, content.Checked.ToString());
@@ -473,7 +472,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             foreach (var attributeName in content.ToDictionary().Keys)
             {
-                if (!StringUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, attributeName))
+                if (!ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, attributeName))
                 {
                     AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(content.Get<string>(attributeName)));
                 }

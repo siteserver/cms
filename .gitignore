@@ -14,10 +14,10 @@ src/SSCMS.Web/plugins/
 src/SSCMS.Web/.vs/
 src/SSCMS.Web/.vscode/
 src/SSCMS.Web/.config/
-src/SSCMS.Web/wwwroot/
 src/SSCMS.Web/version.txt
 sscms-all.sln
 
+*.ps1
 *.zip
 *.sql
 *.exe

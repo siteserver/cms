@@ -10,6 +10,8 @@ namespace SSCMS.Utils
     public static class PageUtils
     {
         public const char SeparatorChar = '/';
+        public const string DoubleSeparator = "//";
+        public const string SingleSeparator = "/";
         public const string UnClickableUrl = "javascript:;";
 
         public static string AddProtocolToUrl(string url)
@@ -102,21 +104,6 @@ namespace SSCMS.Utils
 
             var querystring = url.Substring(url.IndexOf("?", StringComparison.Ordinal) + 1);
             return TranslateUtils.ToNameValueCollection(querystring);
-        }
-
-        public static NameValueCollection GetQueryStringFilterXss(string url)
-        {
-            if (string.IsNullOrEmpty(url) || url.IndexOf("?", StringComparison.Ordinal) == -1) return new NameValueCollection();
-
-            var attributes = new NameValueCollection();
-            
-            var querystring = url.Substring(url.IndexOf("?", StringComparison.Ordinal) + 1);
-            var originals = TranslateUtils.ToNameValueCollection(querystring);
-            foreach (string key in originals.Keys)
-            {
-                attributes[key] = AttackUtils.FilterXss(originals[key]);
-            }
-            return attributes;
         }
 
         public static string Combine(params string[] urls)

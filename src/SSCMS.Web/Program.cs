@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +12,6 @@ namespace SSCMS.Web
     {
         public static void Main(string[] args)
         {
-            Console.Title = "SS CMS";
-
             InstallUtils.Init(Directory.GetCurrentDirectory());
 
             CreateHostBuilder(args).Build().Run();

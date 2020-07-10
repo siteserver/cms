@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
@@ -37,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             };
 
             var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetChannelStyleListAsync( channel))
+            foreach (var style in await _tableStyleRepository.GetChannelStylesAsync( channel))
             {
                 styles.Add(new InputStyle(style));
 
@@ -51,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 else if (style.InputType == InputType.CheckBox ||
                          style.InputType == InputType.SelectMultiple)
                 {
-                    var list = Utilities.GetStringList(channel.Get(style.AttributeName,
+                    var list = ListUtils.GetStringList(channel.Get(style.AttributeName,
                         string.Empty));
                     channel.Set(style.AttributeName, list);
                 }
@@ -69,7 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPut, Route(Route)]
         public async Task<ActionResult<List<int>>> Edit([FromBody] PutRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, AuthTypes.SiteChannelPermissions.Edit))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.Id, AuthTypes.ChannelPermissions.Edit))
             {
                 return Unauthorized();
             }
@@ -83,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var channel = await _channelRepository.GetAsync(request.Id);
-            if (!channel.IndexName.Equals(request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
+            if (!StringUtils.Equals(channel.IndexName, request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
             {
                 if (await _channelRepository.IsIndexNameExistsAsync(request.SiteId, request.IndexName))
                 {
@@ -91,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            if (!channel.FilePath.Equals(request.FilePath) && !string.IsNullOrEmpty(request.FilePath))
+            if (!StringUtils.Equals(channel.FilePath, request.FilePath) && !string.IsNullOrEmpty(request.FilePath))
             {
                 if (!DirectoryUtils.IsDirectoryNameCompliant(request.FilePath))
                 {
@@ -135,7 +134,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var styles = await _tableStyleRepository.GetChannelStyleListAsync(channel);
+            var styles = await _tableStyleRepository.GetChannelStylesAsync(channel);
             foreach (var style in styles)
             {
                 var inputType = style.InputType;
@@ -162,7 +161,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                          style.InputType == InputType.SelectMultiple)
                 {
                     var list = request.Get<IEnumerable<object>>(style.AttributeName);
-                    channel.Set(style.AttributeName, Utilities.ToString(list));
+                    channel.Set(style.AttributeName, ListUtils.ToString(list));
                 }
                 else
                 {

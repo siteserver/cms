@@ -7,7 +7,7 @@ namespace SSCMS.Repositories
 {
     public partial interface IRelatedFieldItemRepository
     {
-        Task<List<RelatedFieldItem>> GetListAsync(int siteId, int relatedFieldId, int parentId);
+        Task<List<RelatedFieldItem>> GetRelatedFieldItemsAsync(int siteId, int relatedFieldId, int parentId);
 
         Task<RelatedFieldItem> GetAsync(int siteId, int id);
 

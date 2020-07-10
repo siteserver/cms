@@ -4,10 +4,10 @@ using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var directoryNames = DirectoryUtils.GetDirectoryNames(sitePath);
 
             var directories = new List<string>();
-            var siteDirList = await _siteRepository.GetSiteDirListAsync(0);
+            var siteDirList = await _siteRepository.GetSiteDirsAsync(0);
             foreach (var directoryName in directoryNames)
             {
                 var isSiteDirectory = false;
@@ -189,7 +189,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             };
             var xmlPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath,
                 DirectoryUtils.SiteTemplates.FileMetadata);
-            Serializer.SaveAsXml(siteTemplateInfo, xmlPath);
+            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
 
             return new BoolResult
             {

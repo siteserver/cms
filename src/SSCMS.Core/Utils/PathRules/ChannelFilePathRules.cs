@@ -57,7 +57,7 @@ namespace SSCMS.Core.Utils.PathRules
                 };
 
             var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var styleInfoList = await _databaseManager.TableStyleRepository.GetChannelStyleListAsync(channelInfo);
+            var styleInfoList = await _databaseManager.TableStyleRepository.GetChannelStylesAsync(channelInfo);
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.InputType == InputType.Text)

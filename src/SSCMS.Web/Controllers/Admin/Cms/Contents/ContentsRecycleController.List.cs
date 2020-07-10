@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -24,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _oldPluginManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.RecycleContents);
 
             var pageContents = new List<Content>();

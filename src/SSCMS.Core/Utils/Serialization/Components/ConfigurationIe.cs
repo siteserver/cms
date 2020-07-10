@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -120,7 +119,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 "SettingsXml");
             if (!string.IsNullOrEmpty(json))
             {
-                var dict = Utilities.ToDictionary(json);
+                var dict = ListUtils.ToDictionary(json);
                 foreach (var o in dict)
                 {
                     _site.Set(o.Key, o.Value);
@@ -130,7 +129,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 "ExtendValues");
             if (!string.IsNullOrEmpty(json))
             {
-                var dict = Utilities.ToDictionary(json);
+                var dict = ListUtils.ToDictionary(json);
                 foreach (var o in dict)
                 {
                     _site.Set(o.Key, o.Value);

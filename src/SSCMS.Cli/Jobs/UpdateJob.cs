@@ -5,7 +5,7 @@ using Mono.Options;
 using Semver;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Core.Packaging;
+using SSCMS.Core.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;

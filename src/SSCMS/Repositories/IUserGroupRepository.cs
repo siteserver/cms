@@ -13,6 +13,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int groupId);
 
-        Task<List<UserGroup>> GetUserGroupListAsync();
+        Task<List<UserGroup>> GetUserGroupsAsync();
+
+        Task ClearCache();
     }
 }

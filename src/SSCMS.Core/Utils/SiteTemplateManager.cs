@@ -58,7 +58,7 @@ namespace SSCMS.Core.Utils
                 var metadataXmlFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
                 if (FileUtils.IsFileExists(metadataXmlFilePath))
                 {
-                    siteTemplateInfo = Serializer.ConvertFileToObject<SiteTemplateInfo>(metadataXmlFilePath);
+                    siteTemplateInfo = XmlUtils.ConvertFileToObject<SiteTemplateInfo>(metadataXmlFilePath);
                 }
 
                 if (siteTemplateInfo == null)

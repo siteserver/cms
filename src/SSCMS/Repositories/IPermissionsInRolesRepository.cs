@@ -11,6 +11,6 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(string roleName);
 
-        Task<List<string>> GetAppPermissionListAsync(IEnumerable<string> roles);
+        Task<List<string>> GetAppPermissionsAsync(IEnumerable<string> roles);
     }
 }

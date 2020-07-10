@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Dapper;
 using Datory;
 using SSCMS.Core.Utils;
@@ -262,10 +261,7 @@ namespace SSCMS.Core.Services
             //if (!string.IsNullOrEmpty(sortField) && addCustomSortInfo)
             //    SelectCommand += " ORDER BY " + SortField;
 
-            var cmdText = _settingsManager.Database.DatabaseType == DatabaseType.Oracle
-                ? $"SELECT COUNT(*) FROM ({sqlString})"
-                : $"SELECT COUNT(*) FROM ({sqlString}) AS T0";
-            return GetIntResult(cmdText);
+            return GetIntResult($"SELECT COUNT(*) FROM ({sqlString}) AS T0");
         }
 
         public string GetStlPageSqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
@@ -324,15 +320,6 @@ SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
-            }
-            else if (_settingsManager.Database.DatabaseType == DatabaseType.Oracle)
-            {
-                retVal = $@"
-SELECT * FROM (
-    SELECT * FROM (
-        SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} {orderString}
-    ) WHERE ROWNUM <= {recsToRetrieve} {orderStringReverse}
-) {orderString}";
             }
 
             //            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
@@ -506,12 +493,6 @@ SELECT * FROM (
                 retVal = limit == 0
                     ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
                     : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
-            }
-            else if (_settingsManager.Database.DatabaseType == DatabaseType.Oracle)
-            {
-                retVal = limit == 0
-                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
-                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
 
             return retVal;

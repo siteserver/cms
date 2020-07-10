@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Core.Extensions;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -24,12 +24,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ChannelsTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ChannelsTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             });
 
             var transSites = await _siteRepository.GetSelectsAsync();
-            var translateTypes = TranslateUtils.GetEnums<TranslateType>().Select(x => new Select<string>(x));
+            var translateTypes = ListUtils.GetEnums<TranslateType>().Select(x => new Select<string>(x));
 
             return new GetResult
             {

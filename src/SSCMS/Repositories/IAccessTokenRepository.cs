@@ -17,7 +17,7 @@ namespace SSCMS.Repositories
 
         Task<bool> IsTitleExistsAsync(string title);
 
-        Task<List<AccessToken>> GetAccessTokenListAsync();
+        Task<List<AccessToken>> GetAccessTokensAsync();
 
         Task<AccessToken> GetAsync(int id);
 

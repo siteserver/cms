@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -76,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Shared
                 }
 
                 isRapid = !isSelected && !isNotEquals;
-                rapidValues = Utilities.ToString(list);
+                rapidValues = ListUtils.ToString(list);
             }
 
             var form = new SubmitRequest

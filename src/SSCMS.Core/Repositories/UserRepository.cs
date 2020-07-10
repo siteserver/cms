@@ -245,14 +245,16 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                var des = new DesEncryptor
-                {
-                    InputString = password,
-                    EncryptKey = passwordSalt
-                };
-                des.DesEncrypt();
+                retVal = TranslateUtils.EncryptStringBySecretKey(password, passwordSalt);
 
-                retVal = des.OutString;
+                //var des = new DesEncryptor
+                //{
+                //    InputString = password,
+                //    EncryptKey = passwordSalt
+                //};
+                //des.DesEncrypt();
+
+                //retVal = des.OutString;
             }
             return retVal;
         }
@@ -270,14 +272,16 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                var des = new DesEncryptor
-                {
-                    InputString = password,
-                    DecryptKey = passwordSalt
-                };
-                des.DesDecrypt();
+                retVal = TranslateUtils.DecryptStringBySecretKey(password, passwordSalt);
 
-                retVal = des.OutString;
+                //var des = new DesEncryptor
+                //{
+                //    InputString = password,
+                //    DecryptKey = passwordSalt
+                //};
+                //des.DesDecrypt();
+
+                //retVal = des.OutString;
             }
             return retVal;
         }
@@ -324,10 +328,10 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task CheckAsync(IList<int> idList)
+        public async Task CheckAsync(IList<int> userIds)
         {
             var cacheKeys = new List<string>();
-            foreach (var userId in idList)
+            foreach (var userId in userIds)
             {
                 var user = await GetByUserIdAsync(userId);
                 cacheKeys.AddRange(GetCacheKeysToRemove(user));
@@ -335,15 +339,15 @@ namespace SSCMS.Core.Repositories
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.Checked), true)
-                .WhereIn(nameof(User.Id), idList)
+                .WhereIn(nameof(User.Id), userIds)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
 
-        public async Task LockAsync(IList<int> idList)
+        public async Task LockAsync(IList<int> userIds)
         {
             var cacheKeys = new List<string>();
-            foreach (var userId in idList)
+            foreach (var userId in userIds)
             {
                 var user = await GetByUserIdAsync(userId);
                 cacheKeys.AddRange(GetCacheKeysToRemove(user));
@@ -351,15 +355,15 @@ namespace SSCMS.Core.Repositories
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.Locked), true)
-                .WhereIn(nameof(User.Id), idList)
+                .WhereIn(nameof(User.Id), userIds)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
 
-        public async Task UnLockAsync(IList<int> idList)
+        public async Task UnLockAsync(IList<int> userIds)
         {
             var cacheKeys = new List<string>();
-            foreach (var userId in idList)
+            foreach (var userId in userIds)
             {
                 var user = await GetByUserIdAsync(userId);
                 cacheKeys.AddRange(GetCacheKeysToRemove(user));
@@ -368,7 +372,7 @@ namespace SSCMS.Core.Repositories
             await _repository.UpdateAsync(Q
                 .Set(nameof(User.Locked), false)
                 .Set(nameof(User.CountOfFailedLogin), 0)
-                .WhereIn(nameof(User.Id), idList)
+                .WhereIn(nameof(User.Id), userIds)
                 .CachingRemove(cacheKeys.ToArray())
             );
         }
@@ -409,7 +413,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(User.Mobile), mobile));
         }
 
-        public async Task<List<int>> GetIdListAsync(bool isChecked)
+        public async Task<List<int>> GetUserIdsAsync(bool isChecked)
         {
             return await _repository.GetAllAsync<int>(Q
                 .Where(nameof(User.Checked), isChecked)

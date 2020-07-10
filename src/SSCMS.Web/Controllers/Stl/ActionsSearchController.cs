@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Extensions;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.StlEntity;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -18,7 +18,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
-    [Route(Constants.ApiStlPrefix)]
+    [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
     public partial class ActionsSearchController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Stl
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, _pathManager.GetSearchExlcudeAttributeNames, form);
+                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, _pathManager.GetSearchExcludeAttributeNames, form);
 
                     var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager, request.PageNum, site.TableName, whereString);
                     var (pageCount, totalNum) = stlPageContents.GetPageCount();

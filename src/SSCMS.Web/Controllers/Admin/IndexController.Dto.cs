@@ -50,16 +50,6 @@ namespace SSCMS.Web.Controllers.Admin
             public Local Local { get; set; }
         }
 
-        public class CreateRequest
-        {
-            public string SessionId { get; set; }
-        }
-
-        public class DownloadRequest
-        {
-            public string Version { get; set; }
-        }
-
         public class SetLanguageRequest
         {
             public string Culture { get; set; }

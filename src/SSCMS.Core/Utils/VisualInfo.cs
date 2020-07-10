@@ -98,7 +98,7 @@ namespace SSCMS.Core.Utils
             {
                 visualInfo.Template = await databaseManager.TemplateRepository.GetFileTemplateAsync(visualInfo.Site.Id, fileTemplateId);
                 visualInfo.ContextType = ParseType.Undefined;
-                visualInfo.FilePath = await pathManager.MapPathAsync(visualInfo.Site, visualInfo.Template.CreatedFileFullName);
+                visualInfo.FilePath = await pathManager.ParseSitePathAsync(visualInfo.Site, visualInfo.Template.CreatedFileFullName);
             }
 
             return visualInfo;

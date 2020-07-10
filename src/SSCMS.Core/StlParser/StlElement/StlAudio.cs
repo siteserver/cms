@@ -95,27 +95,27 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = await parseManager.PathManager.ParseNavigationUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
+            playUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
 
             // 如果是实体标签，则只返回数字
             if (contextInfo.IsStlEntity)
             {
                 return playUrl;
             }
-            else
-            {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcMediaElement);
 
-                return $@"
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcMediaElement);
+
+            var url = parseManager.PathManager.GetSiteFilesUrl(Resources.MediaElement.Swf);
+
+            return $@"
 <audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
-    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"">
-        <param name=""movie"" value=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"" />
+    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{url}"">
+        <param name=""movie"" value=""{url}"" />
         <param name=""flashvars"" value=""controls=true&file={playUrl}"" />
     </object>
 </audio>
 ";
-            }
         }
     }
 }

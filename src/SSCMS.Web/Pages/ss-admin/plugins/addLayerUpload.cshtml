@@ -1,34 +1,36 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<div class="form-group">
-  <small class="help-block">请到<a :href="$urlCloud + '/plugins/'" target="_blank">官网下载</a>插件离线安装包并在此上传。</small>
-</div>
+<el-alert type="warning">
+  请在此上传zip格式的插件包，系统将自动解压并安装插件。
+</el-alert>
 
-<div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #00004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
-  点击上传插件安装包或者将文件拖拽到此区域
-</div>
+<div style="height:10px"></div>
 
-<div class="row">
-  <div class="col-sm-4 col-lg-3 col-xs-12" v-for="(file, index) in files">
-    <div class="card m-b-20">
-      <div class="card-body">
-        <p class="card-text">
-          {{ file.fileName }}
-          <br /> 大小：{{ Math.round(file.length/1024) + ' KB' }}
-        </p>
-        <a v-on:click="del(file)" href="javascript:;" class="card-link text-danger">删 除</a>
-      </div>
-    </div>
-  </div>
-</div>
+<el-upload
+  :drag="true"
+  :limit="1"
+  :action="uploadUrl"
+  :auto-upload="true"
+  :headers="{Authorization: 'Bearer ' + $token}"
+  :file-list="uploadList"
+  :before-upload="uploadBefore"
+  :on-progress="uploadProgress"
+  :on-success="uploadSuccess"
+  :on-error="uploadError"
+  :multiple="false">
+  <i class="el-icon-upload"></i>
+  <div class="el-upload__text">将插件包文件拖到此处，或 <em>点击上传</em></div>
+</el-upload>
 
-<hr />
+<div style="height: 10px"></div>
 
-<div class="text-right mr-1">
-  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">安 装</button>
-  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
-</div>
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
 
 @section Scripts{
 <script src="/sitefiles/assets/js/admin/plugins/addLayerUpload.js" type="text/javascript"></script> }

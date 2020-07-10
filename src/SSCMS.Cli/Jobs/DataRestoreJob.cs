@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Datory.Utils;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
@@ -41,9 +40,9 @@ namespace SSCMS.Cli.Jobs
                 { "c|config-file=", "指定配置文件Web.config路径或文件名",
                     v => _configFile = v },
                 { "includes=", "指定需要还原的表，多个表用英文逗号隔开，默认还原所有表",
-                    v => _includes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _includes = v == null ? null : ListUtils.GetStringList(v) },
                 { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : Utilities.GetStringList(v) },
+                    v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
                 { "data-only",  "仅恢复数据",
                     v => _dataOnly = v != null },
                 { "h|help",  "命令说明",

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using Datory.Utils;
 using SSCMS.Core.Utils.PluginImpls;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -320,7 +319,7 @@ namespace SSCMS.Core.Utils
 
             foreach (var column in columns)
             {
-                if (!StringUtils.ContainsIgnoreCase(CalculatedAttributes, column.AttributeName)) continue;
+                if (!ListUtils.ContainsIgnoreCase(CalculatedAttributes, column.AttributeName)) continue;
 
                 if (column.InputType == InputType.TextEditor)
                 {
@@ -353,9 +352,13 @@ namespace SSCMS.Core.Utils
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, CheckAdminId))
                 {
-                    var checkAdminName =
-                        await _databaseManager.AdministratorRepository.GetDisplayAsync(source.Get<int>(CheckAdminId));
-                    content.Set(CheckAdminName, checkAdminName);
+                    var checkedId = source.Get<int?>(CheckAdminId);
+                    if (checkedId.HasValue)
+                    {
+                        var checkAdminName =
+                            await _databaseManager.AdministratorRepository.GetDisplayAsync(checkedId.Value);
+                        content.Set(CheckAdminName, checkAdminName);
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))
                 {
@@ -416,7 +419,7 @@ namespace SSCMS.Core.Utils
 
             if (pageType == PageType.Contents)
             {
-                listColumns = Utilities.GetStringList(channel.ListColumns);
+                listColumns = ListUtils.GetStringList(channel.ListColumns);
                 if (listColumns.Count == 0)
                 {
                     listColumns.Add(nameof(Content.Title));
@@ -425,7 +428,7 @@ namespace SSCMS.Core.Utils
             }
             else if (pageType == PageType.SearchContents)
             {
-                listColumns = Utilities.GetStringList(site.SearchListColumns);
+                listColumns = ListUtils.GetStringList(site.SearchListColumns);
                 if (listColumns.Count == 0)
                 {
                     listColumns.Add(nameof(Content.Title));
@@ -434,7 +437,7 @@ namespace SSCMS.Core.Utils
             }
             else if (pageType == PageType.CheckContents)
             {
-                listColumns = Utilities.GetStringList(site.CheckListColumns);
+                listColumns = ListUtils.GetStringList(site.CheckListColumns);
                 if (listColumns.Count == 0)
                 {
                     listColumns.Add(nameof(Content.Title));
@@ -445,7 +448,7 @@ namespace SSCMS.Core.Utils
             }
             else if (pageType == PageType.RecycleContents)
             {
-                listColumns = Utilities.GetStringList(site.RecycleListColumns);
+                listColumns = ListUtils.GetStringList(site.RecycleListColumns);
                 if (listColumns.Count == 0)
                 {
                     listColumns.Add(nameof(Content.Title));
@@ -456,7 +459,7 @@ namespace SSCMS.Core.Utils
             var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleList = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStyleListAsync(channel, tableName));
+            var styleList = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName));
 
             styleList.Insert(0, new TableStyle
             {
@@ -480,13 +483,13 @@ namespace SSCMS.Core.Utils
                 }
                 else
                 {
-                    if (StringUtils.ContainsIgnoreCase(listColumns, style.AttributeName))
+                    if (ListUtils.ContainsIgnoreCase(listColumns, style.AttributeName))
                     {
                         column.IsList = true;
                     }
                 }
 
-                if (!StringUtils.ContainsIgnoreCase(UnSearchableAttributes, style.AttributeName))
+                if (!ListUtils.ContainsIgnoreCase(UnSearchableAttributes, style.AttributeName))
                 {
                     column.IsSearchable = true;
                 }
@@ -511,7 +514,7 @@ namespace SSCMS.Core.Utils
                             InputType = InputType.Text
                         };
 
-                        if (StringUtils.ContainsIgnoreCase(listColumns, attributeName))
+                        if (ListUtils.ContainsIgnoreCase(listColumns, attributeName))
                         {
                             column.IsList = true;
                         }
@@ -535,7 +538,7 @@ namespace SSCMS.Core.Utils
 
             foreach (var style in styleList)
             {
-                if (StringUtils.ContainsIgnoreCase(dontAddAttributes, style.AttributeName)) continue;
+                if (ListUtils.ContainsIgnoreCase(dontAddAttributes, style.AttributeName)) continue;
                 //var theValue = GetValueByForm(style, site, formCollection);
 
                 var theValue = formCollection[style.AttributeName] ?? string.Empty;

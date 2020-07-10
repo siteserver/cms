@@ -8,7 +8,7 @@ namespace SSCMS.Repositories
     {
         Task<Channel> ImportGetAsync(int channelId);
 
-        Task<List<string>> ImportGetIndexNameListAsync(int siteId);
+        Task<List<string>> ImportGetIndexNamesAsync(int siteId);
 
         Task<int> ImportGetCountAsync(int siteId, int parentId);
 

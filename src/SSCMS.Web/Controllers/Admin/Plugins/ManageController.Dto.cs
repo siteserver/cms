@@ -11,5 +11,16 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             public string Version { get; set; }
             public IEnumerable<IPlugin> AllPlugins { get; set; }
         }
+
+        public class DisableRequest
+        {
+            public string PluginId { get; set; }
+            public bool Disabled { get; set; }
+        }
+
+        public class DeleteRequest
+        {
+            public string PluginId { get; set; }
+        }
     }
 }
