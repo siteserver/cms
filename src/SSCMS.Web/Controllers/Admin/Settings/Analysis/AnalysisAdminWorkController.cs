@@ -60,7 +60,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
             //}
             if (siteId==0)
             {
-                var siteIdList = await _siteRepository.GetSiteIdListOrderByLevelAsync();
+                var siteIdList = await _siteRepository.GetSiteIdsOrderByLevelAsync();
                 if (siteIdList.Count>0)
                 {
                     siteId = siteIdList[0];

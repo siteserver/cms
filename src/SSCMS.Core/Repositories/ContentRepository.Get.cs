@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -81,14 +81,14 @@ namespace SSCMS.Core.Repositories
 SELECT AdminId as adminId, Count(AdminId) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON AdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
+AND {_administratorRepository.TableName}.LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
 GROUP BY AdminId
 Union
 SELECT LastEditAdminId as lastEditAdminId,0 as addCount, Count(LastEditAdminId) as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON LastEditAdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
-AND LastModifiedDate != AddDate
+AND {_administratorRepository.TableName}.LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
+AND {_administratorRepository.TableName}.LastModifiedDate != AddDate
 GROUP BY LastEditAdminId
 ) as tmp
 group by tmp.adminId";

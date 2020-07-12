@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -231,13 +231,13 @@ namespace SSCMS.Core.Repositories
 
         public async Task<DateTimeOffset> GetLastRemoveLogDateAsync()
         {
-            var addDate = await _repository.GetAsync<DateTime?>(Q
+            var CreatedDate = await _repository.GetAsync<DateTime?>(Q
                 .Select(nameof(Log.CreatedDate))
                 .Where(nameof(Log.Action), "清空数据库日志")
                 .OrderByDesc(nameof(Log.Id))
             );
 
-            return addDate ?? DateTime.MinValue;
+            return CreatedDate ?? DateTime.MinValue;
         }
 
         public Dictionary<DateTime, int> GetAdminLoginDictionaryByDate(DateTime dateFrom, DateTime dateTo, string xType, string actionType)
@@ -248,36 +248,36 @@ namespace SSCMS.Core.Repositories
             var builder = new StringBuilder();
             if (dateFrom > Constants.SqlMinValue)
             {
-                builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(Database.DatabaseType, dateFrom)}");
+                builder.Append($" AND CreatedDate >= {SqlUtils.GetComparableDate(Database.DatabaseType, dateFrom)}");
             }
             if (dateTo != Constants.SqlMinValue)
             {
-                builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(Database.DatabaseType, dateTo)}");
+                builder.Append($" AND CreatedDate < {SqlUtils.GetComparableDate(Database.DatabaseType, dateTo)}");
             }
 
             string sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
-    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "AddDate")} AS AddMonth, {SqlUtils.GetDatePartDay(Database.DatabaseType, "AddDate")} AS AddDay 
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreatedDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "CreatedDate")} AS AddMonth, {SqlUtils.GetDatePartDay(Database.DatabaseType, "CreatedDate")} AS AddDay 
     FROM siteserver_Log 
-    WHERE {SqlUtils.GetDateDiffLessThanDays(Database.DatabaseType, "AddDate", 30.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanDays(Database.DatabaseType, "CreatedDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth, AddDay ORDER BY AddNum DESC";//添加日统计
 
             if (analysisType == AnalysisType.Month)
             {
                 sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
-    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "AddDate")} AS AddMonth 
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreatedDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "CreatedDate")} AS AddMonth 
     FROM siteserver_Log 
-    WHERE {SqlUtils.GetDateDiffLessThanMonths(Database.DatabaseType, "AddDate", 12.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanMonths(Database.DatabaseType, "CreatedDate", 12.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth ORDER BY AddNum DESC";//添加月统计
             }
             else if (analysisType == AnalysisType.Year)
             {
                 sqlSelectTrackingDay = $@"
 SELECT COUNT(*) AS AddNum, AddYear FROM (
-    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "AddDate")} AS AddYear
+    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreatedDate")} AS AddYear
     FROM siteserver_Log
-    WHERE {SqlUtils.GetDateDiffLessThanYears(Database.DatabaseType, "AddDate", 10.ToString())} {builder}
+    WHERE {SqlUtils.GetDateDiffLessThanYears(Database.DatabaseType, "CreatedDate", 10.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear ORDER BY AddNum DESC
 ";//添加年统计
             }
@@ -353,9 +353,9 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
 //            string sqlSelectTrackingDay = $@"
 //SELECT COUNT(*) AS AddNum, UserName FROM (
-//    SELECT {SqlUtils.GetDatePartYear("AddDate")} AS AddYear, {SqlUtils.GetDatePartMonth("AddDate")} AS AddMonth, {SqlUtils.GetDatePartDay("AddDate")} AS AddDay, UserName 
+//    SELECT {SqlUtils.GetDatePartYear("CreatedDate")} AS AddYear, {SqlUtils.GetDatePartMonth("CreatedDate")} AS AddMonth, {SqlUtils.GetDatePartDay("CreatedDate")} AS AddDay, UserName 
 //    FROM siteserver_Log 
-//    WHERE {SqlUtils.GetDateDiffLessThanDays("AddDate", 30.ToString())} 
+//    WHERE {SqlUtils.GetDateDiffLessThanDays("CreatedDate", 30.ToString())} 
 //    {builder}
 //) DERIVEDTBL GROUP BY UserName ORDER BY AddNum DESC";//添加日统计
 
