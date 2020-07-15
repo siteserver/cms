@@ -14,6 +14,7 @@ using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Utils;
 using Serilog;
 using SSCMS.Cli.Abstractions;
+using SSCMS.Cli.Jobs;
 
 namespace SSCMS.Cli
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine($"Usage: sscms {CommandName}");
             Console.WriteLine("Summary: run sscms");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
@@ -48,7 +47,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var psi = new ProcessStartInfo("./sscms") { RedirectStandardOutput = true };
+            var psi = new ProcessStartInfo("./SSCMS.Web") { RedirectStandardOutput = true };
             var proc = Process.Start(psi);
             if (proc == null)
             {
@@ -57,9 +56,9 @@ namespace SSCMS.Cli.Jobs
             else
             {
                 Console.WriteLine("Starting SS CMS...");
-                Thread.Sleep(3000);
+                Thread.Sleep(5000);
 
-                OpenUrl("http://localhost:5000");
+                OpenUrl("http://localhost:5000/ss-admin/");
 
                 using var sr = proc.StandardOutput;
                 while (!sr.EndOfStream)

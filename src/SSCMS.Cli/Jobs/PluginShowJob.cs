@@ -30,7 +30,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName} <pluginId>");
+            Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
             Console.WriteLine("Summary: show plugin metadata");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);

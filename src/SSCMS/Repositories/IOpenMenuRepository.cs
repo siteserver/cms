@@ -13,6 +13,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int siteId, int menuId);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<List<OpenMenu>> GetOpenMenusAsync(int siteId);
 
         Task<OpenMenu> GetAsync(int siteId, int id);

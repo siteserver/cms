@@ -29,7 +29,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName} <pluginId>");
+            Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
             Console.WriteLine("Summary: unpublishes a plugin. Example plugin id: sscms.hits");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);

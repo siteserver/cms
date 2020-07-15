@@ -44,7 +44,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine($"Usage: sscms {CommandName}");
             Console.WriteLine("Summary: download sscms and save settings");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
@@ -151,7 +151,7 @@ namespace SSCMS.Cli.Jobs
             var isProtectData = ReadUtils.GetYesNo("Protect settings in sscms.json?");
             _settingsManager.SaveSettings(_isNightly, isProtectData, databaseType, databaseConnectionString, string.Empty);
 
-            await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run sscms-cli install sscms");
+            await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run sscms install sscms");
         }
     }
 }

@@ -26,7 +26,8 @@ jobs:
   - script: npm install
   - script: npm run build-osx-x64
   - script: dotnet build ./build-osx-x64/build.sln -c $(buildConfiguration)
-  - script: dotnet publish ./build-osx-x64/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true
+  - script: dotnet publish ./build-osx-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r osx-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64 /p:PublishTrimmed=true
+  - script: dotnet publish ./build-osx-x64/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64 /p:PublishTrimmed=true
   - script: npm run copy-osx-x64
   - task: ArchiveFiles@2
     inputs:
@@ -52,7 +53,8 @@ jobs:
   - script: npm install
   - script: npm run build-linux-x64
   - script: dotnet build ./build-linux-x64/build.sln -c $(buildConfiguration)
-  - script: dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true
+  - script: dotnet publish ./build-linux-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r linux-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64 /p:PublishTrimmed=true
+  - script: dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64 /p:PublishTrimmed=true
   - script: npm run copy-linux-x64
   - task: ArchiveFiles@2
     inputs:
@@ -84,7 +86,8 @@ jobs:
       restoreSolution: './build-win-x64/build.sln'
       feedsToUse: 'select'
   - script: dotnet build ./build-win-x64/build.sln -c $(buildConfiguration)
-  - script: dotnet publish ./build-win-x64/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true
+  - script: dotnet publish ./build-win-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r win-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishTrimmed=true
+  - script: dotnet publish ./build-win-x64/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64 /p:PublishTrimmed=true
   - script: npm run copy-win-x64
 
   - script: npm run build-win-x86
@@ -94,7 +97,8 @@ jobs:
       restoreSolution: './build-win-x86/build.sln'
       feedsToUse: 'select'
   - script: dotnet build ./build-win-x86/build.sln -c $(buildConfiguration)
-  - script: dotnet publish ./build-win-x86/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86 /p:PublishSingleFile=true /p:PublishTrimmed=true
+  - script: dotnet publish ./build-win-x86/src/SSCMS.Cli/SSCMS.Cli.csproj -r win-x86 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86 /p:PublishTrimmed=true
+  - script: dotnet publish ./build-win-x86/src/SSCMS.Web/SSCMS.Web.csproj -r win-x86 -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86 /p:PublishTrimmed=true
   - script: npm run copy-win-x86
   
   - task: ArchiveFiles@2

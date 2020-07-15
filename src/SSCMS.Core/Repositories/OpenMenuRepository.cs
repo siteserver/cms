@@ -47,6 +47,14 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(OpenMenu.SiteId), siteId)
+                .CachingRemove(GetCacheKey(siteId))
+            );
+        }
+
         public async Task<List<OpenMenu>> GetOpenMenusAsync(int siteId)
         {
             var infoList = await _repository.GetAllAsync(Q

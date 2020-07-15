@@ -82,6 +82,12 @@ namespace SSCMS.Cli
                     }
                 }
             }
+            else
+            {
+                isJobService = true;
+                commandName = "run";
+            }
+
             CommandName = commandName;
             CommandArgs = commandArgs.ToArray();
             CommandExtras = commandExtras.ToArray();
@@ -135,7 +141,7 @@ namespace SSCMS.Cli
             }
             else
             {
-                Console.WriteLine($"'{commandName}' is not a sscms-cli command. See 'sscms-cli --help'");
+                Console.WriteLine($"'{commandName}' is not a sscms command. See 'sscms --help'");
             }
         }
 

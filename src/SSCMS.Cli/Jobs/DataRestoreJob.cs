@@ -52,7 +52,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine($"Usage: sscms {CommandName}");
             Console.WriteLine("Summary: restore backup files to database");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);

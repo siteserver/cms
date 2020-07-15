@@ -38,7 +38,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine($"Usage: sscms {CommandName}");
             Console.WriteLine("Summary: creates a new plugin, includes configuration based on the specified parameters.");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);

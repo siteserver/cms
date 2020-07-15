@@ -48,7 +48,7 @@ namespace SSCMS.Cli.Jobs
 
         public void PrintUsage()
         {
-            Console.WriteLine($"Usage: sscms-cli {CommandName}");
+            Console.WriteLine($"Usage: sscms {CommandName}");
             Console.WriteLine("Summary: backup database to dist");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);

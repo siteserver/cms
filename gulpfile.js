@@ -202,16 +202,16 @@ gulp.task("copy-files", async function () {
 });
 
 gulp.task("copy-sscms-linux", async function () {
-  fs.copySync(publishDir + '/SSCMS.Web', publishDir + '/sscms');
-  fs.removeSync(publishDir + '/SSCMS.Web.pdb');
-  fs.removeSync(publishDir + '/SSCMS.Web');
+  fs.copySync(publishDir + '/SSCMS.Cli', publishDir + '/sscms');
+  fs.removeSync(publishDir + '/SSCMS.Cli.pdb');
+  fs.removeSync(publishDir + '/SSCMS.Cli');
   fs.removeSync(publishDir + '/web.config');
 });
 
 gulp.task("copy-sscms-win", async function () {
-  fs.copySync(publishDir + '/SSCMS.Web.exe', publishDir + '/sscms.exe');
-  fs.removeSync(publishDir + '/SSCMS.Web.pdb');
-  fs.removeSync(publishDir + '/SSCMS.Web.exe');
+  fs.copySync(publishDir + '/SSCMS.Cli.exe', publishDir + '/sscms.exe');
+  fs.removeSync(publishDir + '/SSCMS.Cli.pdb');
+  fs.removeSync(publishDir + '/SSCMS.Cli.exe');
 });
 
 gulp.task("copy-css", function () {
