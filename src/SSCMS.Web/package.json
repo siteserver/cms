@@ -3,7 +3,13 @@
     "siteTypes": {
       "site": {
         "text": "默认",
+        "iconClass": "ion-earth",
         "order": 1
+      },
+      "open": {
+        "text": "开放平台(微信公众号、小程序)",
+        "iconClass": "ion-navigate",
+        "order": 2
       }
     },
     "permissions": {
@@ -361,6 +367,31 @@
         "text": "生成进度查看",
         "type": "site",
         "order": 41
+      },
+      "open_index": {
+        "text": "平台首页",
+        "type": "open",
+        "order": 1
+      },
+      "open_account": {
+        "text": "平台账号配置",
+        "type": "open",
+        "order": 2
+      },
+      "open_library": {
+        "text": "素材管理",
+        "type": "open",
+        "order": 3
+      },
+      "open_keywords": {
+        "text": "关键词回复",
+        "type": "open",
+        "order": 4
+      },
+      "open_menus": {
+        "text": "自定义菜单",
+        "type": "open",
+        "order": 5
       },
       "channel_add": {
         "text": "添加栏目",
@@ -1172,6 +1203,46 @@
             "order": 7
           }
         }
+      },
+      "open_index": {
+        "text": "首页",
+        "type": "open",
+        "iconClass": "ion-home",
+        "link": "./open/",
+        "permissions": ["open_index"],
+        "order": 1
+      },
+      "open_account": {
+        "text": "平台账号配置",
+        "type": "open",
+        "iconClass": "ion-wrench",
+        "link": "./open/account",
+        "permissions": ["open_account"],
+        "order": 2
+      },
+      "open_library": {
+        "text": "素材管理",
+        "type": "open",
+        "iconClass": "ion-monitor",
+        "link": "./open/library",
+        "permissions": ["open_library"],
+        "order": 3
+      },
+      "open_keywords": {
+        "text": "关键词回复",
+        "type": "open",
+        "iconClass": "ion-chatbubbles",
+        "link": "./open/keywords",
+        "permissions": ["open_keywords"],
+        "order": 4
+      },
+      "open_menus": {
+        "text": "自定义菜单",
+        "type": "open",
+        "iconClass": "ion-navicon-round",
+        "link": "./open/menus",
+        "permissions": ["open_menus"],
+        "order": 5
       }
     }
   }

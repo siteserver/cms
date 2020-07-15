@@ -33,6 +33,8 @@ namespace SSCMS.Core.Services
         public ILibraryTextRepository LibraryTextRepository { get; }
         public ILibraryVideoRepository LibraryVideoRepository { get; }
         public ILogRepository LogRepository { get; }
+        public IOpenAccountRepository OpenAccountRepository { get; }
+        public IOpenMenuRepository OpenMenuRepository { get; }
         public IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
         public IPluginConfigRepository PluginConfigRepository { get; }
         public IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
@@ -42,6 +44,7 @@ namespace SSCMS.Core.Services
         public ISitePermissionsRepository SitePermissionsRepository { get; }
         public ISiteRepository SiteRepository { get; }
         public ISpecialRepository SpecialRepository { get; }
+        public IStatRepository StatRepository { get; }
         public ITableStyleRepository TableStyleRepository { get; }
         public ITemplateLogRepository TemplateLogRepository { get; }
         public ITemplateRepository TemplateRepository { get; }
@@ -49,7 +52,7 @@ namespace SSCMS.Core.Services
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
 
-        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryTextRepository libraryTextRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
+        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryTextRepository libraryTextRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IOpenAccountRepository openAccountRepository, IOpenMenuRepository openMenuRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
         {
             _settingsManager = settingsManager;
             AccessTokenRepository = accessTokenRepository;
@@ -70,6 +73,8 @@ namespace SSCMS.Core.Services
             LibraryTextRepository = libraryTextRepository;
             LibraryVideoRepository = libraryVideoRepository;
             LogRepository = logRepository;
+            OpenAccountRepository = openAccountRepository;
+            OpenMenuRepository = openMenuRepository;
             PermissionsInRolesRepository = permissionsInRolesRepository;
             PluginConfigRepository = pluginConfigRepository;
             RelatedFieldItemRepository = relatedFieldItemRepository;
@@ -79,6 +84,7 @@ namespace SSCMS.Core.Services
             SitePermissionsRepository = sitePermissionsRepository;
             SiteRepository = siteRepository;
             SpecialRepository = specialRepository;
+            StatRepository = statRepository;
             TableStyleRepository = tableStyleRepository;
             TemplateLogRepository = templateLogRepository;
             TemplateRepository = templateRepository;
@@ -109,6 +115,8 @@ namespace SSCMS.Core.Services
                 LibraryTextRepository,
                 LibraryVideoRepository,
                 LogRepository,
+                OpenAccountRepository,
+                OpenMenuRepository,
                 PermissionsInRolesRepository,
                 PluginConfigRepository,
                 RelatedFieldItemRepository,
@@ -118,6 +126,7 @@ namespace SSCMS.Core.Services
                 SitePermissionsRepository,
                 SiteRepository,
                 SpecialRepository,
+                StatRepository,
                 TableStyleRepository,
                 TemplateLogRepository,
                 TemplateRepository,
@@ -346,15 +355,10 @@ SELECT * FROM (
 
         public string GetSelectSqlString(string tableName, int totalNum, string columns, string whereString, string orderByString)
         {
-            return GetSelectSqlString(_settingsManager.Database.ConnectionString, tableName, totalNum, columns, whereString, orderByString);
+            return GetSelectSqlString(tableName, totalNum, columns, whereString, orderByString, string.Empty);
         }
 
-        private string GetSelectSqlString(string connectionString, string tableName, int totalNum, string columns, string whereString, string orderByString)
-        {
-            return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString, string.Empty);
-        }
-
-        private string GetSelectSqlString(string connectionString, string tableName, int totalNum, string columns, string whereString, string orderByString, string joinString)
+        private string GetSelectSqlString(string tableName, int totalNum, string columns, string whereString, string orderByString, string joinString)
         {
             if (!string.IsNullOrEmpty(whereString))
             {

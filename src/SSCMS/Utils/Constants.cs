@@ -16,6 +16,8 @@ namespace SSCMS.Utils
         public const string DefaultLanguage = "en";
         public const string DefaultLocalDbFileName = "database.sqlite";
         public const string EncryptStingIndicator = "0secret0";
+        public const string ActionsLoginSuccess = "LoginSuccess";
+        public const string ActionsLoginFailure = "LoginFailure";
 
         public const int AccessTokenExpireDays = 7;
 
@@ -24,6 +26,7 @@ namespace SSCMS.Utils
         public const string ApiPrefix = "/api";
         public const string ApiAdminPrefix = "/api/admin";
         public const string ApiHomePrefix = "/api/home";
+        public const string ApiOpenPrefix = "/api/open";
         public const string ApiV1Prefix = "/api/v1";
         public const string ApiStlPrefix = "/stl";
         public const string RoutePreview = "preview/{siteId}";

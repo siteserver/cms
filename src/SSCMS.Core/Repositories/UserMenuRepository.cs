@@ -61,49 +61,56 @@ namespace SSCMS.Core.Repositories
 
             var parentId = await InsertAsync(new UserMenu
             {
-                Text = "用户中心"
+                Text = "用户中心",
+                Taxis = 1
             });
 
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "修改资料",
-                IconClass = "fa fa-edit",
-                Link = "/home/profile/"
+                IconClass = "ion-edit",
+                Link = "/home/profile/",
+                Taxis = 1
             });
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "更改密码",
-                IconClass = "fa fa-lock",
-                Link = "/home/password/"
+                IconClass = "ion-locked",
+                Link = "/home/password/",
+                Taxis = 2
             });
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "退出系统",
-                IconClass = "fa fa-sign-out",
-                Link = "/home/logout/"
+                IconClass = "ion-log-out",
+                Link = "/home/logout/",
+                Taxis = 3
             });
 
             parentId = await InsertAsync(new UserMenu
             {
-                Text = "投稿中心"
+                Text = "投稿中心",
+                Taxis = 2
             });
 
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "新增稿件",
-                IconClass = "fa fa-plus",
-                Link = "/home/write/editor/"
+                IconClass = "ion-plus",
+                Link = "/home/write/editor/",
+                Taxis = 1
             });
             await InsertAsync(new UserMenu
             {
                 ParentId = parentId,
                 Text = "稿件管理",
-                IconClass = "fa fa-list",
-                Link = "/home/write/contents/"
+                IconClass = "ion-document-text",
+                Link = "/home/write/contents/",
+                Taxis = 2
             });
         }
     }

@@ -33,6 +33,7 @@ namespace SSCMS.Services
         ISitePermissionsRepository SitePermissionsRepository { get; }
         ISiteRepository SiteRepository { get; }
         ISpecialRepository SpecialRepository { get; }
+        IStatRepository StatRepository { get; }
         ITableStyleRepository TableStyleRepository { get; }
         ITemplateLogRepository TemplateLogRepository { get; }
         ITemplateRepository TemplateRepository { get; }

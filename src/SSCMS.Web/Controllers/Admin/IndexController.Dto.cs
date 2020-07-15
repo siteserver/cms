@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string Culture { get; set; }
             public List<GetPlugin> Plugins { get; set; }
             public IList<Menu> Menus { get; set; }
-            public string SiteType { get; set; }
+            public SiteType SiteType { get; set; }
             public string SiteUrl { get; set; }
             public string PreviewUrl { get; set; }
             public Local Local { get; set; }

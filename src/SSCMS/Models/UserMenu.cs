@@ -8,9 +8,6 @@ namespace SSCMS.Models
     public class UserMenu : Entity
     {
         [DataColumn]
-        public string SystemId { get; set; }
-
-        [DataColumn]
         public bool IsGroup { get; set; }
 
         [DataColumn]

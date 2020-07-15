@@ -1,6 +1,6 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 
-namespace SSCMS.Core.Utils
+namespace SSCMS.Utils
 {
 	public static class ZipUtils
 	{

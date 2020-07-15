@@ -127,9 +127,11 @@ namespace SSCMS.Web.Controllers.Admin
                         var theSite = await _siteRepository.GetAsync(siteId);
                         if (theSite == null) continue;
 
+                        var theSiteType = _pluginManager.GetSiteType(theSite.SiteType);
                         allSiteMenus.Add(new Menu
                         {
                             Id = $"site_switch_{theSite.Id}",
+                            IconClass = theSiteType.IconClass,
                             Link = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}",
                             Target = "_top",
                             Text = theSite.SiteName
@@ -188,7 +190,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Culture = culture,
                 Plugins = plugins,
                 Menus = menus,
-                SiteType = siteType.Id,
+                SiteType = siteType,
                 SiteUrl = siteUrl,
                 PreviewUrl = previewUrl,
                 Local = new Local

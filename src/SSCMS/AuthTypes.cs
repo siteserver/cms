@@ -21,6 +21,7 @@
         {
             public const string App = "app";
             public const string Site = "site";
+            public const string Open = "open";
             public const string Channel = "channel";
             public const string Content = "content";
         }
@@ -59,6 +60,15 @@
             public const string SettingsUtilitiesCache = "app_settings_utilitiesCache";
             public const string SettingsUtilitiesParameters = "app_settings_utilitiesParameters";
             public const string SettingsUtilitiesEncrypt = "app_settings_utilitiesEncrypt";
+        }
+
+        public static class OpenPermissions
+        {
+            public const string Index = "open_index";
+            public const string Account = "open_account";
+            public const string Library = "open_library";
+            public const string Keywords = "open_keywords";
+            public const string Menus = "open_menus";
         }
 
         public static class SitePermissions

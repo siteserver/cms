@@ -57,7 +57,7 @@ namespace SSCMS.Web.Controllers.Home
                 user = await _userRepository.GetByUserNameAsync(userName);
                 if (user != null)
                 {
-                    await _logRepository.AddUserLogAsync(user, "用户登录失败", "帐号或密码错误");
+                    await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginFailure, "帐号或密码错误");
                 }
                 return this.Error(errorMessage);
             }
@@ -66,7 +66,7 @@ namespace SSCMS.Web.Controllers.Home
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user
                 ); // 记录最后登录时间、失败次数清零
 
-            await _logRepository.AddUserLogAsync(user, "用户登录");
+            await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess);
             var token = _authManager.AuthenticateUser(user, request.IsPersistent);
 
             return new LoginResult

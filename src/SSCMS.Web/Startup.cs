@@ -18,8 +18,12 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Senparc.CO2NET;
+using Senparc.CO2NET.RegisterServices;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Services;
@@ -116,6 +120,7 @@ namespace SSCMS.Web
 
             services.AddRepositories(assemblies);
             services.AddServices();
+            services.AddOpenManager(_config);
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services
@@ -129,6 +134,7 @@ namespace SSCMS.Web
                     options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                     options.SerializerSettings.ContractResolver
                         = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
             services.Configure<RequestLocalizationOptions>(options =>
@@ -169,7 +175,7 @@ namespace SSCMS.Web
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IOptions<SenparcSetting> senparcSetting)
         {
             if (env.IsDevelopment())
             {
@@ -249,6 +255,15 @@ namespace SSCMS.Web
             //api.UseEndpoints(endpoints => { endpoints.MapControllerRoute("default", "{controller}/{action}/{id?}"); });
 
             app.UseRequestLocalization();
+
+            RegisterService.Start(senparcSetting.Value)
+
+                    //自动扫描自定义扩展缓存（二选一）
+                    .UseSenparcGlobal(true)
+
+                //指定自定义扩展缓存（二选一）
+                //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
+                ;
 
             app.UseOpenApi();
             app.UseSwaggerUi3();

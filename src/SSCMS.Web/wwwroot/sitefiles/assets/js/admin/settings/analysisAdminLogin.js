@@ -1,113 +1,79 @@
 ﻿var $url = '/settings/analysisAdminLogin';
 
+var now = new Date();
 var data = utils.init({
-  pageType: 'date',
-  dateX: null,
-  dateY: null,
-  nameX: null,
-  nameY: null,
-  formInline: {
-    dateFrom: '',
-    dateTo: '',
-    xType: 'Day'
+  form: {
+    dateFrom: utils.getQueryString('dateFrom') || utils.formatDate(new Date(now.setMonth(now.getMonth()-1))),
+    dateTo: utils.getQueryString('dateTo') || utils.formatDate(new Date()),
   },
-  chartOption:null
+  chartData: null
 });
 
 var methods = {
-  getConfig: function () {
+  apiGet: function() {
     var $this = this;
 
-    $api.post($url, this.formInline).then(function (response) {
+    utils.loading(this, true);
+    $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
-      $this.dateX = res.dateX;
-      $this.dateY = res.dateY;
-      $this.nameX = res.nameX;
-      $this.nameY = res.nameY;
-      $this.loadCharts();
-    }).catch(function (error) {
+      $this.chartData = {
+        labels: res.days,
+        datasets: [
+          {
+            label: "成功登录次数",
+            backgroundColor: "#00B19D",
+            data: res.successCount
+          },
+          {
+            label: "失败登录次数",
+            backgroundColor: "#f87979",
+            data: res.failureCount
+          }
+          
+        ]
+      };
+    })
+    .catch(function(error) {
       utils.error(error);
-    }).then(function () {
+    })
+    .then(function() {
       utils.loading($this, false);
     });
   },
 
   btnSearchClick() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, this.formInline).then(function (response) {
-      var res = response.data;
-
-      $this.dateX = res.dateX;
-      $this.dateY = res.dateY;
-      $this.nameX = res.nameX;
-      $this.nameY = res.nameY;
-      $this.loadCharts();
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  loadCharts: function () {
-    if (this.pageType === 'date') {
-      this.chartOption = {
-        tooltip: {
-          show: true
-        },
-        title: {
-          text: '按日期统计'
-        },
-        xAxis: [{
-          type: 'category',
-          data: this.dateX
-        }],
-        yAxis: [{
-          type: 'value'
-        }],
-        series: [{
-          "name": "登录次数",
-          "type": "line",
-          "data": this.dateY
-        }],
-        animationDuration: 2000
-      };
-    } else {
-      this.chartOption = {
-        tooltip: {
-          show: true
-        },
-        title: {
-          text: '按管理员统计'
-        },
-        xAxis: [{
-          type: 'category',
-          data: this.nameX
-        }],
-        yAxis: [{
-          type: 'value'
-        }],
-        series: [{
-          "name": "登录次数",
-          "type": "bar",
-          "data": this.nameY
-        }],
-        animationDuration: 2000
-      };
-    }
+    location.href = '?dateFrom=' + this.form.dateFrom + '&dateTo=' + this.form.dateTo;
   }
 };
 
-Vue.component('v-chart', VueECharts);
+Vue.component("line-chart", {
+  extends: VueChartJs.Line,
+  mounted: function() {
+    this.renderChart(
+      this.$root.chartData,
+      {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
+            }
+          ]
+        }
+      }
+    );
+  }
+});
 
 var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   }
 });

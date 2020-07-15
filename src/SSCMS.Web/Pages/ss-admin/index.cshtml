@@ -1,7 +1,6 @@
 @page
 @{ Layout = "_Layout"; }
 @section Styles{
-  <link href="/sitefiles/assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="/sitefiles/assets/css/menu.css" rel="stylesheet" type="text/css" />
 }
 
@@ -130,8 +129,8 @@
     <div v-if="!isCollapse">
       <div v-if="menu.id === $idSite">
         <el-link :underline="false" :href="siteUrl" target="_blank" style="margin-left: -15px;">
-          <span v-if="!isCollapse">访问站点</span>
-          <i class="fa fa-external-link"></i>
+          <i :class="siteType.iconClass"></i>
+          访问站点
         </el-link>
       </div>
       <div v-else>

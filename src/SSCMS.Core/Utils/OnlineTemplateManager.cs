@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using SSCMS.Utils;
 
@@ -17,7 +16,7 @@ namespace SSCMS.Core.Utils
 
             try
             {
-                var content = WebClientUtils.GetRemoteFileSource(UrlTemplatesXml, Encoding.UTF8);
+                var content = WebClientUtils.GetHtml(UrlTemplatesXml);
 
                 var document = XmlUtils.GetXmlDocument(content);
                 var rootNode = XmlUtils.GetXmlNode(document, "//siteTemplates");

@@ -5,10 +5,52 @@ var data = utils.init({
   groups: null,
   expandRowKeys: [],
   userMenu: null,
-  panel: false
+  defaultOpeneds: [],
+  defaultActive: null
 });
 
 var methods = {
+  btnSideMenuOpen: function(index) {
+    var userMenu = _.find(this.userMenus, function(x){
+      return x.id == index;
+    });
+    this.userMenu = _.assign({}, userMenu);
+    this.defaultActive = index;
+  },
+
+  btnSideMenuClick: function(val) {
+    var sideMenuIds = val + '';
+    var ids = sideMenuIds.split('/');
+    var menus = this.userMenus;
+    var menu = null;
+    var defaultOpeneds = [];
+
+    for (var i = 0; i < ids.length; i++) {
+      menu = _.find(menus, function(x){
+        return x.id == ids[i];
+      });
+      menus = menu.children;
+      defaultOpeneds.push(menu.id);
+    }
+    this.defaultOpeneds = defaultOpeneds;
+    
+    if (menu) {
+      this.btnMenuClick(menu);
+    }
+  },
+
+  btnMenuClick: function(menu) {
+    this.defaultActive = this.defaultOpeneds.join('/');
+    this.userMenu = _.assign({}, menu);
+  },
+
+  getIndex: function (level1, level2, level3) {
+    if (level3) return level1.id + '/' + level2.id + '/' + level3.id;
+    else if (level2) return level1.id + '/' + level2.id;
+    else if (level1) return level1.id;
+    return '';
+  },
+
   apiGet: function () {
     var $this = this;
 
@@ -18,12 +60,12 @@ var methods = {
 
       $this.userMenus = $this.getItems(res.userMenus);
       $this.groups = res.groups;
-      for (var i = 0; i < $this.userMenus.length; i++) {
-        var menu = $this.userMenus[i];
-        if (menu.children && menu.children.length > 0) {
-          $this.expandRowKeys.push(menu.id);
-        }
-      }
+      // for (var i = 0; i < $this.userMenus.length; i++) {
+      //   var menu = $this.userMenus[i];
+      //   if (menu.children && menu.children.length > 0) {
+      //     $this.expandRowKeys.push(menu.id);
+      //   }
+      // }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -43,6 +85,7 @@ var methods = {
       var res = response.data;
 
       $this.userMenus = $this.getItems(res.userMenus);
+      $this.userMenu = null;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -58,6 +101,7 @@ var methods = {
       var res = response.data;
 
       $this.userMenus = $this.getItems(res.userMenus);
+      $this.userMenu = null;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -74,8 +118,7 @@ var methods = {
 
       $this.userMenu = null;
       $this.userMenus = $this.getItems(res.userMenus);
-      $this.panel = false;
-      utils.success(userMenu.id === 0 ? '用户菜单添加成功！' : '用户菜单修改成功！');
+      utils.success(userMenu.id === 0 ? '用户菜单新增成功！' : '用户菜单修改成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -107,20 +150,14 @@ var methods = {
     return userMenus;
   },
 
-  getUserGroups: function (userMenu) {
-    if (userMenu.isGroup) {
-      var str = '';
-      _.forEach(this.groups, function (group) {
-        if (userMenu.groupIds.indexOf(group.id) !== -1) {
-          str += ', ' + group.groupName;
-        }
-      });
-      return str ? str.substr(2) : '';
-    }
-    return '所有用户组';
+  getCardTitle: function(){
+    if (this.userMenu.id !== 0) return '修改菜单';
+    return this.userMenu.parentId > 0 ? '新增下级菜单' : '新增一级菜单';
   },
 
-  btnAddClick: function (parentId) {
+  btnAddChildClick: function () {
+    var parentId = this.userMenu ? this.userMenu.id : 0;
+
     var taxis = 0;
     var parent = null;
     if (parentId > 0) {
@@ -134,7 +171,7 @@ var methods = {
           taxis = value.taxis;
         }
       });
-    } else {
+    } else if (parentId === 0) {
       _.forEach(this.userMenus, function (value) {
         if (value.taxis > taxis) {
           taxis = value.taxis;
@@ -144,7 +181,6 @@ var methods = {
 
     this.userMenu = {
       id: 0,
-      systemId: '',
       disabled: false,
       parentId: parentId,
       taxis: taxis + 1,
@@ -155,7 +191,32 @@ var methods = {
       isGroup: false,
       groupIds: []
     };
-    this.panel = true;
+
+    this.defaultActive = null;
+  },
+
+  btnAddFirstClick: function () {
+    var taxis = 0;
+    _.forEach(this.userMenus, function (value) {
+      if (value.taxis > taxis) {
+        taxis = value.taxis;
+      }
+    });
+
+    this.userMenu = {
+      id: 0,
+      disabled: false,
+      parentId: 0,
+      taxis: taxis + 1,
+      text: '',
+      link: '',
+      iconClass: '',
+      target: '',
+      isGroup: false,
+      groupIds: []
+    };
+
+    this.defaultActive = null;
   },
 
   btnResetClick: function () {
@@ -171,19 +232,14 @@ var methods = {
     });
   },
 
-  btnEditClick: function (userMenu) {
-    this.panel = true;
-    this.userMenu = userMenu;
-  },
-
-  btnDeleteClick: function (userMenu) {
+  btnDeleteClick: function () {
     var $this = this;
 
     utils.alertDelete({
       title: '删除用户菜单',
-      text: '此操作将删除用户菜单 ' + userMenu.text + '，确定吗？',
+      text: '此操作将删除用户菜单及其下级菜单，确定吗？',
       callback: function () {
-        $this.apiDelete(userMenu.id);
+        $this.apiDelete($this.userMenu.id);
       }
     });
   },
@@ -197,9 +253,9 @@ var methods = {
       }
     });
   },
-  
-  btnCancelClick: function () {
-    this.panel = false;
+
+  btnCancelClick: function() {
+    this.userMenu = null;
   }
 };
 

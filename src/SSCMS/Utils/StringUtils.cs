@@ -114,6 +114,22 @@ namespace SSCMS.Utils
             return isUppercase ? retVal.ToUpper() : retVal.ToLower();
         }
 
+        public static string GetRandomString(int length)
+        {
+            var str = string.Empty;
+            return GetRandomString(str, length);
+        }
+
+        private static string GetRandomString(string str, int length)
+        {
+            str += GetShortGuid();
+            if (str.Length >= length)
+            {
+                return str.Substring(0, length);
+            }
+            return GetRandomString(str, length);
+        }
+
         public static bool EqualsIgnoreCase(string a, string b)
         {
             if (a == b) return true;

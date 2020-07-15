@@ -913,7 +913,7 @@ namespace SSCMS.Core.Services
                 {
                     if (!FileUtils.IsFileExists(filePath))
                     {
-                        WebClientUtils.SaveRemoteFileToLocal(originalImageSrc, filePath);
+                        WebClientUtils.Download(originalImageSrc, filePath);
                         if (FileUtils.IsImage(PathUtils.GetExtension(fileName)))
                         {
                             await AddWaterMarkAsync(site, filePath);

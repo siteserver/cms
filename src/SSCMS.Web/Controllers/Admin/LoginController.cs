@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -25,8 +26,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IAdministratorRepository _administratorRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
         private readonly ILogRepository _logRepository;
+        private readonly IStatRepository _statRepository;
 
-        public LoginController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository)
+        public LoginController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository, IStatRepository statRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -35,6 +37,7 @@ namespace SSCMS.Web.Controllers.Admin
             _administratorRepository = administratorRepository;
             _dbCacheRepository = dbCacheRepository;
             _logRepository = logRepository;
+            _statRepository = statRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -76,6 +79,7 @@ namespace SSCMS.Web.Controllers.Admin
                     await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
                 }
 
+                await _statRepository.AddCount(StatType.AdminLoginFailure);
                 return this.Error(errorMessage);
             }
 
@@ -84,7 +88,8 @@ namespace SSCMS.Web.Controllers.Admin
 
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
 
-            await _logRepository.AddAdminLogAsync(administrator, "管理员登录");
+            await _statRepository.AddCount(StatType.AdminLoginSuccess);
+            await _logRepository.AddAdminLogAsync(administrator, Constants.ActionsLoginSuccess);
 
             var sessionId = StringUtils.Guid();
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);

@@ -2,20 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using SSCMS.Dto;
 
 namespace SSCMS.Utils
 {
     public static class TranslateUtils
     {
-        public static T Get<T>(object value, T defaultValue = default(T))
+        public static T Get<T>(object value, T defaultValue = default)
         {
             switch (value)
             {
@@ -35,11 +33,11 @@ namespace SSCMS.Utils
             }
         }
 
-        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue = default(T))
+        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue = default)
         {
-            if (string.IsNullOrEmpty(name)) return default(T);
+            if (string.IsNullOrEmpty(name)) return default;
 
-            return dict.TryGetValue(name, out var extendValue) ? Get<T>(extendValue, defaultValue) : default(T);
+            return dict.TryGetValue(name, out var extendValue) ? Get(extendValue, defaultValue) : default;
         }
 
         public static T ToEnum<T>(string value, T defaultValue) where T : struct
@@ -451,33 +449,53 @@ namespace SSCMS.Utils
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            var encryptor = new DesEncryptor
+            try
             {
-                InputString = inputString,
-                EncryptKey = secretKey
-            };
-            encryptor.DesEncrypt();
+                var encryptor = new DesEncryptor
+                {
+                    InputString = inputString,
+                    EncryptKey = secretKey
+                };
+                encryptor.DesEncrypt();
 
-            var retVal = encryptor.OutString;
-            retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+                var retVal = encryptor.OutString;
+                retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
 
-            return retVal + Constants.EncryptStingIndicator;
+                return retVal + Constants.EncryptStingIndicator;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return string.Empty;
         }
 
         public static string DecryptStringBySecretKey(string inputString, string secretKey)
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            inputString = inputString.Replace(Constants.EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
-
-            var encryptor = new DesEncryptor
+            try
             {
-                InputString = inputString,
-                DecryptKey = secretKey
-            };
-            encryptor.DesDecrypt();
+                inputString = inputString.Replace(Constants.EncryptStingIndicator, string.Empty).Replace("0add0", "+")
+                    .Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'")
+                    .Replace("0slash0", "/");
 
-            return encryptor.OutString;
+                var encryptor = new DesEncryptor
+                {
+                    InputString = inputString,
+                    DecryptKey = secretKey
+                };
+                encryptor.DesDecrypt();
+
+                return encryptor.OutString;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return string.Empty;
         }
     }
 }

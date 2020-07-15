@@ -1,5 +1,4 @@
-﻿using System;
-using Datory;
+﻿using Datory;
 using Datory.Annotations;
 
 namespace SSCMS.Models

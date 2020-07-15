@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Models;
@@ -25,11 +24,6 @@ namespace SSCMS.Repositories
         Task<int> GetUserLogsCountAsync(int userId, string keyword, string dateFrom, string dateTo);
 
         Task<List<Log>> GetUserLogsAsync(int userId, string keyword, string dateFrom, string dateTo, int offset, int limit);
-
-        Dictionary<DateTime, int> GetAdminLoginDictionaryByDate(DateTime dateFrom, DateTime dateTo, string xType, string actionType);
-
-        Task<Dictionary<string, int>> GetAdminLoginDictionaryByNameAsync(DateTime dateFrom, DateTime dateTo,
-            string actionType);
 
         Task<List<Log>> GetUserLogsAsync(int userId, int offset, int limit);
 

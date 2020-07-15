@@ -10,6 +10,9 @@ body, textarea {
   color: #909399;
   font-size: 12px;
 }
+.tips .el-link{
+  font-size: 12px;
+}
 .editable {
   padding: 0 5px;
   margin-top: -10px;

@@ -201,7 +201,7 @@ namespace SSCMS.Web.Controllers.V1
             var accessToken = _authManager.AuthenticateUser(user, request.IsPersistent);
 
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
-            await _logRepository.AddUserLogAsync(user, "用户登录", string.Empty);
+            await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess, string.Empty);
 
             return new LoginResult
             {
