@@ -120,7 +120,7 @@ namespace SSCMS.Core.Utils
         {
             if (!string.IsNullOrEmpty(val))
             {
-                val = val.Trim().ToLower();
+                val = StringUtils.TrimAndToLower(val);
                 if (val.EndsWith("y") || val.EndsWith("m") || val.EndsWith("d") || val.EndsWith("h"))
                 {
                     return true;
@@ -134,7 +134,7 @@ namespace SSCMS.Core.Utils
             var hours = 0;
             if (!string.IsNullOrEmpty(intWithUnitString))
             {
-                intWithUnitString = intWithUnitString.Trim().ToLower();
+                intWithUnitString = StringUtils.TrimAndToLower(intWithUnitString);
                 if (intWithUnitString.EndsWith("y"))
                 {
                     hours = 8760 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('y'));

@@ -46,12 +46,6 @@ namespace SSCMS.Models
         public string TenPayKey { get; set; }
 
         [DataColumn]
-        public string TenPayCertPath { get; set; }
-
-        [DataColumn]
-        public string TenPayCertSecret { get; set; }
-
-        [DataColumn]
         public string TenPayAuthorizeUrl { get; set; }
 
         [DataColumn]

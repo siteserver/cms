@@ -134,8 +134,6 @@ var methods = {
       allSitePermissions: allSitePermissions,
       checkedSitePermissions: checkedSitePermissions,
   
-
-  
       channelPermissions: channelPermissions,
       channelCheckAll: false,
       isChannelIndeterminate: true,
@@ -274,7 +272,8 @@ var methods = {
           siteId: site.id,
           channelIds: site.permissionInfo.checkedChannelIds,
           channelPermissions: site.permissionInfo.checkedChannelPermissions,
-          websitePermissions: _.union(site.permissionInfo.checkedSitePermissions),
+          contentPermissions: site.permissionInfo.checkedContentPermissions,
+          permissions: _.union(site.permissionInfo.checkedSitePermissions),
         });
       }
     }
@@ -284,7 +283,7 @@ var methods = {
       $api.put($url + '/' + this.roleId, {
         roleName: this.form.roleName,
         description: this.form.description,
-        generalPermissions: this.form.checkedPermissions,
+        appPermissions: this.form.checkedPermissions,
         sitePermissions: sitePermissions
       }).then(function (response) {
         var res = response.data;
@@ -303,7 +302,7 @@ var methods = {
       $api.post($url, {
         roleName: this.form.roleName,
         description: this.form.description,
-        generalPermissions: this.form.checkedPermissions,
+        appPermissions: this.form.checkedPermissions,
         sitePermissions: sitePermissions
       }).then(function (response) {
         var res = response.data;

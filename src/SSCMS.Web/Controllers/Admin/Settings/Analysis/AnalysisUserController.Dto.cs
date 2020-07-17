@@ -4,20 +4,24 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
     public partial class AnalysisUserController
     {
-        public class QueryRequest
+        public class GetRequest
         {
             public string DateFrom { get; set; }
-
             public string DateTo { get; set; }
-
-            public string XType { get; set; }
         }
 
-        public class QueryResult
+        public class GetStat
         {
-            public List<string> DateX { get; set; }
+            public string Date { get; set; }
+            public int Register { get; set; }
+            public int Login { get; set; }
+        }
 
-            public List<string> DateY { get; set; }
+        public class GetResult
+        {
+            public List<string> Days { get; set; }
+            public List<int> RegisterCount { get; set; }
+            public List<int> LoginCount { get; set; }
         }
     }
 }

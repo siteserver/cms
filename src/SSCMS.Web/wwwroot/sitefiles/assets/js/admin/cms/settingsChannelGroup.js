@@ -57,7 +57,7 @@ var methods = {
   btnEditClick: function (group) {
     utils.openLayer({
       title: '编辑栏目组',
-      url: utils.getSharedUrl('groupChannelLayerAdd', {
+      url: utils.getCommonUrl('groupChannelLayerAdd', {
         siteId: this.siteId,
         groupId: group.id
       }),
@@ -69,7 +69,7 @@ var methods = {
   btnAddClick: function () {
     utils.openLayer({
       title: '新增栏目组',
-      url: utils.getSharedUrl('groupChannelLayerAdd', {
+      url: utils.getCommonUrl('groupChannelLayerAdd', {
         siteId: this.siteId
       }),
       width: 500,

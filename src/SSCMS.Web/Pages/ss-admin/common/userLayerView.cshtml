@@ -1,0 +1,116 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<div
+  class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition"
+  style="width: 100%;"
+>
+  <div class="el-table__body-wrapper is-scrolling-none">
+    <table
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      class="el-table__body"
+      width="100%"
+    >
+      <colgroup>
+        <col width="180" />
+        <col />
+      </colgroup>
+      <tbody>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>用户Id</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.id }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>账号</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.userName }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>姓名</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.displayName }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>组别</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ groupName }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>创建时间</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.creationDate }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>最后登录时间</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.lastActivityDate }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>手机号码</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.mobile }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>电子邮箱</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ user.email }}</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="el-table__column-resize-proxy" style="display: none;"></div>
+</div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/common/userLayerView.js" type="text/javascript"></script>
+}

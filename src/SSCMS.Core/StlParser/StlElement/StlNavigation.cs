@@ -103,7 +103,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
-                if (type.ToLower().Equals(TypePreviousChannel.ToLower()) || type.ToLower().Equals(TypeNextChannel.ToLower()))
+                if (StringUtils.EqualsIgnoreCase(type, TypePreviousChannel) || StringUtils.EqualsIgnoreCase(type, TypeNextChannel))
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
@@ -136,7 +136,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                     }
                 }
-                else if (type.ToLower().Equals(TypePreviousContent.ToLower()) || type.ToLower().Equals(TypeNextContent.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(type, TypePreviousContent) || StringUtils.EqualsIgnoreCase(type, TypeNextContent))
                 {
                     if (contextInfo.ContentId != 0)
                     {
@@ -200,7 +200,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 var isSuccess = false;
                 parseManager.ContextInfo = contextInfo.Clone();
 
-                if (type.ToLower().Equals(TypePreviousChannel.ToLower()) || type.ToLower().Equals(TypeNextChannel.ToLower()))
+                if (StringUtils.EqualsIgnoreCase(type, TypePreviousChannel) || StringUtils.EqualsIgnoreCase(type, TypeNextChannel))
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
@@ -213,7 +213,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         parseManager.ContextInfo.ChannelId = siblingChannelId;
                     }
                 }
-                else if (type.ToLower().Equals(TypePreviousContent.ToLower()) || type.ToLower().Equals(TypeNextContent.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(type, TypePreviousContent) || StringUtils.EqualsIgnoreCase(type, TypeNextContent))
                 {
                     if (contextInfo.ContentId != 0)
                     {

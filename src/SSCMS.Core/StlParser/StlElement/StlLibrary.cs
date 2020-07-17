@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Datory;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -53,9 +54,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
-
-        public const string TypeText = nameof(LibraryType.Text);
-        public const string TypeImage = nameof(LibraryType.Image);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
@@ -140,18 +138,18 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var parsedContent = string.Empty;
 
-            if (StringUtils.EqualsIgnoreCase(type, TypeText))
+            if (StringUtils.EqualsIgnoreCase(type, LibraryType.Card.GetValue()))
             {
                 if (id > 0)
                 {
-                    parsedContent = await parseManager.DatabaseManager.LibraryTextRepository.GetContentByIdAsync(id);
+                    parsedContent = await parseManager.DatabaseManager.LibraryCardRepository.GetContentByIdAsync(id);
                 }
                 else if (!string.IsNullOrEmpty(title))
                 {
-                    parsedContent = await parseManager.DatabaseManager.LibraryTextRepository.GetContentByTitleAsync(title);
+                    parsedContent = await parseManager.DatabaseManager.LibraryCardRepository.GetContentByTitleAsync(title);
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(type, TypeImage))
+            else if (StringUtils.EqualsIgnoreCase(type, LibraryType.Image.GetValue()))
             {
                 if (id > 0)
                 {

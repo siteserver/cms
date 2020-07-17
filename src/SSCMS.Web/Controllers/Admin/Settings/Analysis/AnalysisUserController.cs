@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -19,118 +20,55 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         private const string Route = "settings/analysisUser";
 
         private readonly IAuthManager _authManager;
-        private readonly IUserRepository _userRepository;
+        private readonly IStatRepository _statRepository;
 
-        public AnalysisUserController(IAuthManager authManager, IUserRepository userRepository)
+        public AnalysisUserController(IAuthManager authManager, IStatRepository statRepository)
         {
             _authManager = authManager;
-            _userRepository = userRepository;
+            _statRepository = statRepository;
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAnalysisUser))
             {
                 return Unauthorized();
             }
 
-            var dateFrom = TranslateUtils.ToDateTime(request.DateFrom);
-            var dateTo = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);
-            var xType = TranslateUtils.ToEnum(request.XType, AnalysisType.Day);
+            var lowerDate = TranslateUtils.ToDateTime(request.DateFrom);
+            var higherDate = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);
 
-            var trackingDayDictionary = _userRepository.GetTrackingDictionary(dateFrom, dateTo, request.XType);
+            var registerStats = await _statRepository.GetStatsAsync(lowerDate, higherDate, StatType.UserRegister);
+            var loginStats = await _statRepository.GetStatsAsync(lowerDate, higherDate, StatType.UserLogin);
 
-            var count = 0;
-            var userNumDict = new Dictionary<int, int>();
-            var maxUserNum = 0;
-            if (xType == AnalysisType.Day)
+            var getStats = new List<GetStat>();
+            var totalDays = (higherDate - lowerDate).TotalDays;
+            for (var i = 0; i <= totalDays; i++)
             {
-                count = 30;
-            }
-            else if (xType == AnalysisType.Month)
-            {
-                count = 12;
-            }
-            else if (xType == AnalysisType.Year)
-            {
-                count = 10;
-            }
+                var date = lowerDate.AddDays(i).ToString("M-d");
 
-            var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-            for (var i = 0; i < count; i++)
-            {
-                var datetime = now.AddDays(-i);
-                if (xType == AnalysisType.Day)
-                {
-                    now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-                    datetime = now.AddDays(-i);
-                }
-                else if (xType == AnalysisType.Month)
-                {
-                    now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 0, 0, 0);
-                    datetime = now.AddMonths(-i);
-                }
-                else if (xType == AnalysisType.Year)
-                {
-                    now = new DateTime(DateTime.Now.Year, 1, 1, 0, 0, 0);
-                    datetime = now.AddYears(-i);
-                }
+                var register = registerStats.FirstOrDefault(x => x.CreatedDate.HasValue && x.CreatedDate.Value.ToString("M-d") == date);
+                var login  = loginStats.FirstOrDefault(x => x.CreatedDate.HasValue && x.CreatedDate.Value.ToString("M-d") == date);
 
-                var accessNum = 0;
-                if (trackingDayDictionary.ContainsKey(datetime))
+                getStats.Add(new GetStat
                 {
-                    accessNum = trackingDayDictionary[datetime];
-                }
-                userNumDict[count - i] = accessNum;
-                if (accessNum > maxUserNum)
-                {
-                    maxUserNum = accessNum;
-                }
+                    Date = date,
+                    Register = register?.Count ?? 0,
+                    Login = login?.Count ?? 0
+                });
             }
 
-            var result = new QueryResult
+            var days = getStats.Select(x => x.Date).ToList();
+            var registerCount = getStats.Select(x => x.Register).ToList();
+            var loginCount = getStats.Select(x => x.Login).ToList();
+
+            return new GetResult
             {
-                DateX = new List<string>(),
-                DateY = new List<string>()
+                Days = days,
+                RegisterCount = registerCount,
+                LoginCount = loginCount
             };
-
-            for (var i = 1; i <= count; i++)
-            {
-                result.DateX.Add(GetGraphicX(i, xType, count));
-                result.DateY.Add(GetGraphicY(i, userNumDict, count));
-            }
-
-            return result;
-        }
-
-        private string GetGraphicX(int index, AnalysisType xType, int count)
-        {
-            var xNum = 0;
-            var datetime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-            if (xType == AnalysisType.Day)
-            {
-                datetime = datetime.AddDays(-(count - index));
-                xNum = datetime.Day;
-            }
-            else if (xType == AnalysisType.Month)
-            {
-                datetime = datetime.AddMonths(-(count - index));
-                xNum = datetime.Month;
-            }
-            else if (xType == AnalysisType.Year)
-            {
-                datetime = datetime.AddYears(-(count - index));
-                xNum = datetime.Year;
-            }
-            return xNum.ToString();
-        }
-
-        private string GetGraphicY(int index, Dictionary<int, int> userNumDict, int count)
-        {
-            if (index <= 0 || index > count) return string.Empty;
-            var accessNum = userNumDict[index];
-            return accessNum.ToString();
         }
     }
 }

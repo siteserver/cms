@@ -68,7 +68,7 @@ namespace SSCMS.Core.Utils.Serialization
                 _caching.SetProcess(guid, $"导入站点文件夹: {siteTemplatePath}");
                 DirectoryUtils.MoveDirectory(siteTemplatePath, sitePath, isOverride);
             }
-            var siteTemplateMetadataPath = PathUtils.Combine(sitePath, DirectoryUtils.SiteTemplates.SiteTemplateMetadata);
+            var siteTemplateMetadataPath = PathUtils.Combine(sitePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteTemplateMetadata);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplateMetadataPath);
         }
 
@@ -561,7 +561,7 @@ namespace SSCMS.Core.Utils.Serialization
             foreach (var filePath in filePaths)
             {
                 var keyBuilder = new StringBuilder();
-                var fileName = PathUtils.GetFileName(filePath).ToLower().Replace(".xml", "");
+                var fileName = StringUtils.ToLower(PathUtils.GetFileName(filePath)).Replace(".xml", "");
                 var nums = fileName.Split('_');
                 foreach (var numStr in nums)
                 {

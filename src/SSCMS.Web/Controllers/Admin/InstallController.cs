@@ -68,10 +68,10 @@ namespace SSCMS.Web.Controllers.Admin
             var siteFilesWritable = false;
             try
             {
-                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName, "index.html");
+                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, "index.html");
                 FileUtils.WriteText(filePath, Constants.Html5Empty);
 
-                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFilesDirectoryName));
+                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName));
                 ioPermission.Demand();
 
                 siteFilesWritable = true;

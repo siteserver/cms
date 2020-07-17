@@ -52,8 +52,6 @@ namespace SSCMS.Web.Controllers.Admin.Open
             public string TenPayAppSecret { get; set; }
             public string TenPayMchId { get; set; }
             public string TenPayKey { get; set; }
-            public string TenPayCertPath { get; set; }
-            public string TenPayCertSecret { get; set; }
             public string TenPayAuthorizeUrl { get; set; }
             public string TenPayNotifyUrl { get; set; }
         }

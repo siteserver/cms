@@ -79,7 +79,7 @@ var methods = {
   btnEditClick: function (attributeName) {
     utils.openLayer({
       title: '编辑字段',
-      url: utils.getSharedUrl('tableStyleLayerEditor', {
+      url: utils.getCommonUrl('tableStyleLayerEditor', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
         attributeName: attributeName
@@ -90,7 +90,7 @@ var methods = {
   btnValidateClick: function (attributeName) {
     utils.openLayer({
       title: '设置验证规则',
-      url: utils.getSharedUrl('tableStyleLayerValidate', {
+      url: utils.getCommonUrl('tableStyleLayerValidate', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
         attributeName: attributeName
@@ -113,7 +113,7 @@ var methods = {
   btnAddClick: function () {
     utils.openLayer({
       title: '新增字段',
-      url: utils.getSharedUrl('tableStyleLayerEditor', {
+      url: utils.getCommonUrl('tableStyleLayerEditor', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities
       })
@@ -123,7 +123,7 @@ var methods = {
   btnAddMultipleClick: function () {
     utils.openLayer({
       title: '批量新增字段',
-      url: utils.getSharedUrl('tableStyleLayerAddMultiple', {
+      url: utils.getCommonUrl('tableStyleLayerAddMultiple', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities
       })

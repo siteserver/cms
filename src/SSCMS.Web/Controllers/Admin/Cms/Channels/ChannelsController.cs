@@ -211,11 +211,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定父栏目");
 
-            if (channel.ChannelName != request.ChannelName)
-            {
-                return this.Error("请检查您输入的栏目名称是否正确");
-            }
-
             var channelIdList = await _channelRepository.GetChannelIdsAsync(request.SiteId, request.ChannelId, ScopeType.All);
 
             if (request.DeleteFiles)

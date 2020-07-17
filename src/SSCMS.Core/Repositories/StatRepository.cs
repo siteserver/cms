@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -26,7 +25,7 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task AddCount(StatType statType, int siteId = 0)
+        public async Task AddCountAsync(StatType statType, int siteId = 0)
         {
             var lowerDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             var higherDate = lowerDate.AddDays(1);
@@ -54,9 +53,13 @@ namespace SSCMS.Core.Repositories
         public async Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate, StatType statType, int siteId = 0)
         {
             var query = Q
-                .Where(nameof(Stat.SiteId), siteId)
                 .Where(nameof(Stat.StatType), statType.GetValue())
                 .WhereBetween(nameof(Stat.CreatedDate), lowerDate, higherDate.AddDays(1));
+
+            if (siteId > 0)
+            {
+                query.Where(nameof(Stat.SiteId), siteId);
+            }
 
             return await _repository.GetAllAsync(query);
         }

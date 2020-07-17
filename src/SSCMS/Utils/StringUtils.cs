@@ -65,6 +65,11 @@ namespace SSCMS.Utils
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower();
         }
 
+        public static string ToUpper(string text)
+        {
+            return string.IsNullOrEmpty(text) ? string.Empty : text.ToUpper();
+        }
+
         public static string ToCamelCase(string str)
         {
             if (!string.IsNullOrEmpty(str) && str.Length > 1)

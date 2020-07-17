@@ -144,7 +144,7 @@ function stl_tab_{uniqueId}(tabName, no){{
                         {
                             if (attr == null) continue;
 
-                            var attributeName = attr.Name.ToLower();
+                            var attributeName = StringUtils.ToLower(attr.Name);
                             if (!StringUtils.EqualsIgnoreCase(attr.Name, "id") && !StringUtils.EqualsIgnoreCase(attr.Name, "onmouseover") && !StringUtils.EqualsIgnoreCase(attr.Name, "onclick"))
                             {
                                 attributes[attributeName] = attr.Value;

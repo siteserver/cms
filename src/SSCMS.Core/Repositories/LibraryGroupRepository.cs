@@ -52,7 +52,7 @@ namespace SSCMS.Core.Repositories
         {
             var list = await _repository.GetAllAsync(Q
                 .Where(nameof(LibraryGroup.LibraryType), type.GetValue())
-                .OrderByDesc(nameof(LibraryGroup.Id))
+                .OrderBy(nameof(LibraryGroup.Id))
                 .CachingGet(CacheKey(type))
             );
             return list.ToList();

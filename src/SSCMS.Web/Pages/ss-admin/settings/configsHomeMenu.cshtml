@@ -117,7 +117,7 @@
             { required: true, message: '请输入排序' },
             { type: 'number', message: '排序必须为数字' }
           ]">
-            <el-input v-model="userMenu.taxis"></el-input>
+            <el-input v-model.number="userMenu.taxis"></el-input>
           </el-form-item>
           <el-form-item label="状态" prop="disabled" :rules="{ required: true, message: '请选择状态' }">
             <el-radio v-model="userMenu.disabled" :label="false">启用</el-radio>

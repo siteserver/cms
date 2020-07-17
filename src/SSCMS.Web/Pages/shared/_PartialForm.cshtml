@@ -3,10 +3,10 @@
   <template v-if="style.inputType === 'Image'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'imageLayerUpload', attributeName: style.attributeName, no: 0})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: style.attributeName, no: 0})">
           上传
         </el-button>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'imageLayerSelect', attributeName: style.attributeName, no: 0, full: true})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'libraryLayerImageSelect', attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
         <el-button size="mini" type="info" plain v-if="form[_.lowerFirst(style.attributeName)]" v-on:click="btnPreviewClick(style.attributeName, 0)">
@@ -23,10 +23,10 @@
       </el-input>
       <template v-for="(n, i) in form[utils.getCountName(style.attributeName)]">
         <el-button-group>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'imageLayerUpload', attributeName: style.attributeName, no: n})">
+          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: style.attributeName, no: n})">
             上传
           </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'imageLayerSelect', attributeName: style.attributeName, no: n, full: true})">
+          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'libraryLayerImageSelect', attributeName: style.attributeName, no: n, full: true})">
             选择
           </el-button>
           <el-button size="mini" type="info" plain v-if="form[utils.getExtendName(style.attributeName, n)]" v-on:click="btnPreviewClick(style.attributeName, n)">
@@ -48,10 +48,10 @@
   <template v-else-if="style.inputType === 'File'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传附件', name: 'fileLayerUpload', attributeName: style.attributeName, no: 0})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传附件', name: 'formLayerFileUpload', attributeName: style.attributeName, no: 0})">
           上传
         </el-button>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'fileLayerSelect', attributeName: style.attributeName, no: 0, full: true})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'libraryLayerFileSelect', attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
         <el-button size="mini" type="info" plain v-on:click="btnExtendAddClick(style)">
@@ -65,10 +65,10 @@
       </el-input>
       <template v-for="(n, i) in form[utils.getCountName(style.attributeName)]">
         <el-button-group>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传附件', name: 'fileLayerUpload', attributeName: style.attributeName, no: n})">
+          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传附件', name: 'formLayerFileUpload', attributeName: style.attributeName, no: n})">
             上传
           </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'fileLayerSelect', attributeName: style.attributeName, no: n, full: true})">
+          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'libraryLayerFileSelect', attributeName: style.attributeName, no: n, full: true})">
             选择
           </el-button>
           <el-button size="mini" type="info" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
@@ -87,10 +87,10 @@
   <template v-else-if="style.inputType === 'Video'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传视频', name: 'videoLayerUpload', attributeName: style.attributeName, no: 0})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传视频', name: 'formLayerVideoUpload', attributeName: style.attributeName, no: 0})">
           上传
         </el-button>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'videoLayerSelect', attributeName: style.attributeName, no: 0, full: true})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'libraryLayerVideoSelect', attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
         <el-button size="mini" type="info" plain v-on:click="btnExtendAddClick(style)">
@@ -104,10 +104,10 @@
       </el-input>
       <template v-for="(n, i) in form[utils.getCountName(style.attributeName)]">
         <el-button-group>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传视频', name: 'videoLayerUpload', attributeName: style.attributeName, no: n})">
+          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传视频', name: 'formLayerVideoUpload', attributeName: style.attributeName, no: n})">
             上传
           </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'videoLayerSelect', attributeName: style.attributeName, no: n, full: true})">
+          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'libraryLayerVideoSelect', attributeName: style.attributeName, no: n, full: true})">
             选择
           </el-button>
           <el-button size="mini" type="info" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">

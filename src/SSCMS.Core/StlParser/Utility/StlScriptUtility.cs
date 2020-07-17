@@ -31,7 +31,7 @@ namespace SSCMS.Core.StlParser.Utility
                 if (string.IsNullOrEmpty(checkMethod))
                 {
                     return
-                        $"stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {isSuccessHide.ToString().ToLower()}, {isSuccessReload.ToString().ToLower()}, '{successTemplate}', '{failureTemplate}');return false;";
+                        $"stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {StringUtils.ToLower(isSuccessHide.ToString())}, {StringUtils.ToLower(isSuccessReload.ToString())}, '{successTemplate}', '{failureTemplate}');return false;";
                 }
                 else
                 {
@@ -41,7 +41,7 @@ namespace SSCMS.Core.StlParser.Utility
                         checkMethod = checkMethod + "()";
                     }
                     return
-                        $"if ({checkMethod})stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {isSuccessHide.ToString().ToLower()}, {isSuccessReload.ToString().ToLower()}, '{successTemplate}', '{failureTemplate}');return false;";
+                        $"if ({checkMethod})stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {StringUtils.ToLower(isSuccessHide.ToString())}, {StringUtils.ToLower(isSuccessReload.ToString())}, '{successTemplate}', '{failureTemplate}');return false;";
                 }
             }
 
@@ -50,7 +50,7 @@ namespace SSCMS.Core.StlParser.Utility
                 if (string.IsNullOrEmpty(checkMethod))
                 {
                     return
-                        $"stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {isSuccessHide.ToString().ToLower()}, {isSuccessReload.ToString().ToLower()}, '{successTemplate}', '{failureTemplate}', '{successCallback}', '{successArgument}');return false;";
+                        $"stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {StringUtils.ToLower(isSuccessHide.ToString())}, {StringUtils.ToLower(isSuccessReload.ToString())}, '{successTemplate}', '{failureTemplate}', '{successCallback}', '{successArgument}');return false;";
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace SSCMS.Core.StlParser.Utility
                         checkMethod = checkMethod + "()";
                     }
                     return
-                        $"if ({checkMethod})stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {isSuccessHide.ToString().ToLower()}, {isSuccessReload.ToString().ToLower()}, '{successTemplate}', '{failureTemplate}', '{successCallback}', '{successArgument}');return false;";
+                        $"if ({checkMethod})stlInputSubmit('{resultsPageUrl}', '{ajaxDivID}', {StringUtils.ToLower(isSuccessHide.ToString())}, {StringUtils.ToLower(isSuccessReload.ToString())}, '{successTemplate}', '{failureTemplate}', '{successCallback}', '{successArgument}');return false;";
                 }
             }
         }

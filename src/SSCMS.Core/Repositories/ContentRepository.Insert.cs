@@ -121,6 +121,8 @@ namespace SSCMS.Core.Repositories
             else
             {
                 await repository.InsertAsync(content, Q.CachingRemove(GetListKey(tableName, content.SiteId, content.ChannelId)));
+
+                await _statRepository.AddCountAsync(StatType.ContentAdd, content.SiteId);
             }
 
             return content.Id;

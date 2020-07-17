@@ -11,10 +11,7 @@ namespace SSCMS.Utils
     {
         public const string Plugins = "plugins";
         public const string Packages = "packages";
-
-        public const string BinDirectoryName = "Bin";
-        public const string HomeDirectoryName = "Home";
-        public const string SiteFilesDirectoryName = "sitefiles";
+        public const string BinDirectoryName = "bin";
 
         public static class PublishmentSytem
         {
@@ -25,28 +22,29 @@ namespace SSCMS.Utils
 
         public static class SiteFiles
         {
-            public const string Library = "Library";
-            public const string BackupFiles = "BackupFiles";
-            public const string TemporaryFiles = "TemporaryFiles";
+            public const string DirectoryName = "sitefiles";
+            public const string Library = "library";
+            public const string BackupFiles = "backupfiles";
+            public const string TemporaryFiles = "temporaryfiles";
             
-            public const string Home = "Home";
-            public const string Administrators = "Administrators";
-            public const string Users = "Users";
-        }
+            public const string Home = "home";
+            public const string Administrators = "administrators";
+            public const string Users = "users";
 
-        public static class SiteTemplates
-        {
-            public const string DirectoryName = "SiteTemplates";
-            //文件夹
-            public const string SiteTemplateMetadata = "SiteTemplateMetadata";      //存储频道模板元数据的文件夹名称
-            public const string SiteContent = "SiteContent";                        //频道内容导入导出临时文件夹名
-            public const string Table = "Table";                                    //辅助表导入导出临时文件夹名
-            public const string RelatedField = "RelatedField";                      //关联字段导入导出临时文件夹名
+            public static class SiteTemplates
+            {
+                public const string DirectoryName = "sitetemplates";
+                //文件夹
+                public const string SiteTemplateMetadata = "SiteTemplateMetadata";      //存储频道模板元数据的文件夹名称
+                public const string SiteContent = "SiteContent";                        //频道内容导入导出临时文件夹名
+                public const string Table = "Table";                                    //辅助表导入导出临时文件夹名
+                public const string RelatedField = "RelatedField";                      //关联字段导入导出临时文件夹名
 
-            //文件
-            public const string FileTemplate = "Template.xml";                      //序列化模板的文件名
-            public const string FileMetadata = "Metadata.xml";                      //频道模板元数据文件
-            public const string FileConfiguration = "Configuration.xml";            //站点配置
+                //文件
+                public const string FileTemplate = "Template.xml";                      //序列化模板的文件名
+                public const string FileMetadata = "Metadata.xml";                      //频道模板元数据文件
+                public const string FileConfiguration = "Configuration.xml";            //站点配置
+            }
         }
 
         public static void CreateDirectoryIfNotExists(string path)
@@ -61,17 +59,7 @@ namespace SSCMS.Utils
                 }
                 catch
                 {
-                    //Scripting.FileSystemObject fso = new Scripting.FileSystemObjectClass();
-                    //string[] directoryNames = directoryPath.Split('\\');
-                    //string thePath = directoryNames[0];
-                    //for (int i = 1; i < directoryNames.Length; i++)
-                    //{
-                    //    thePath = thePath + "\\" + directoryNames[i];
-                    //    if (StringUtils.Contains(thePath.ToLower(), ConfigUtils.Instance.PhysicalApplicationPath.ToLower()) && !IsDirectoryExists(thePath))
-                    //    {
-                    //        fso.CreateFolder(thePath);
-                    //    }
-                    //}                    
+                    // ignored
                 }
             }
         }
@@ -132,8 +120,8 @@ namespace SSCMS.Utils
         {
             if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path)) return false;
 
-            parentDirectoryPath = parentDirectoryPath.Trim().TrimEnd(Path.DirectorySeparatorChar).ToLower();
-            path = path.Trim().TrimEnd(Path.DirectorySeparatorChar).ToLower();
+            parentDirectoryPath = StringUtils.ToLower(parentDirectoryPath.Trim().TrimEnd(Path.DirectorySeparatorChar));
+            path = StringUtils.ToLower(path.Trim().TrimEnd(Path.DirectorySeparatorChar));
 
             return parentDirectoryPath == path || path.StartsWith(parentDirectoryPath);
         }

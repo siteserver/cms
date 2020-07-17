@@ -241,7 +241,7 @@ var methods = {
   btnEditAddGroupClick: function() {
     utils.openLayer({
       title: '新增栏目组',
-      url: utils.getSharedUrl('groupChannelLayerAdd', {siteId: this.siteId}),
+      url: utils.getCommonUrl('groupChannelLayerAdd', {siteId: this.siteId}),
       width: 500,
       height: 300
     });
@@ -392,7 +392,11 @@ var methods = {
     var $this = this;
     this.$refs.deleteForm.validate(function(valid) {
       if (valid) {
-        $this.apiDelete();
+        if ($this.deleteForm.channelName == $this.deleteForm.label) {
+          $this.apiDelete();
+        } else {
+          utils.error('请检查您输入的栏目名称是否正确');
+        }
       }
     });
   },
@@ -515,7 +519,7 @@ var methods = {
 
     utils.openLayer({
       title: options.title,
-      url: utils.getSharedUrl(options.name, query),
+      url: utils.getCommonUrl(options.name, query),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500

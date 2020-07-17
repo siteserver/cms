@@ -166,8 +166,8 @@ var utils = {
     return utils.getPageUrl("settings", name, query);
   },
 
-  getSharedUrl: function (name, query) {
-    return utils.getPageUrl("shared", name, query);
+  getCommonUrl: function (name, query) {
+    return utils.getPageUrl("common", name, query);
   },
 
   getPageUrl: function (prefix, name, query) {
@@ -408,7 +408,14 @@ var utils = {
 
       if (error.response && error.response.status === 500 || options && options.redirect) {
         var uuid = utils.uuid();
-        sessionStorage.setItem(uuid, message);
+
+        if (typeof message === 'string') {
+          sessionStorage.setItem(uuid, JSON.stringify({
+            message: message
+          }));
+        } else {
+          sessionStorage.setItem(uuid, message);
+        }
   
         if (options && options.redirect) {
           location.href = utils.getRootUrl("error", { uuid: uuid })
@@ -514,7 +521,6 @@ var utils = {
   getRules: function (rules) {
     var options = [
       { required: "字段为必填项" },
-      { numeric: "字段必须仅包含数字" },
       { email: "字段必须是有效的电子邮件" },
       { mobile: "字段必须是有效的手机号码" },
       { url: "字段必须是有效的url" },
@@ -550,22 +556,26 @@ var utils = {
             required: true,
             message: rule.message || options.required,
           });
-        } else if (ruleType === "numeric") {
-          array.push({
-            type: "numeric",
-            message: rule.message || options.numeric,
-          });
         } else if (ruleType === "email") {
-          array.push({ type: "email", message: rule.message || options.email });
+          array.push({ 
+            type: "email", 
+            message: rule.message || options.email 
+          });
         } else if (ruleType === "mobile") {
           array.push({
             validator: utils.validateMobile,
             message: rule.message || options.mobile
           });
         } else if (ruleType === "url") {
-          array.push({ type: "url", message: rule.message || options.url });
+          array.push({ 
+            type: "url", 
+            message: rule.message || options.url
+          });
         } else if (ruleType === "alpha") {
-          array.push({ type: "alpha", message: rule.message || options.alpha });
+          array.push({ 
+            type: "alpha", 
+            message: rule.message || options.alpha
+          });
         } else if (ruleType === "alphaDash") {
           array.push({
             type: "alphaDash",
@@ -612,21 +622,40 @@ var utils = {
             message: rule.message || options.excluded,
           });
         } else if (ruleType === "max") {
-          array.push({ type: "max", message: rule.message || options.max });
+          array.push({ 
+            type: "max", 
+            message: rule.message || options.max
+          });
         } else if (ruleType === "maxValue") {
           array.push({
             type: "maxValue",
             message: rule.message || options.maxValue,
           });
         } else if (ruleType === "min") {
-          array.push({ type: "min", message: rule.message || options.min });
+          array.push({ 
+            type: "min", 
+            message: rule.message || options.min 
+          });
         } else if (ruleType === "minValue") {
           array.push({
             type: "minValue",
             message: rule.message || options.minValue,
           });
-        } else if (ruleType === "regex") {
-          array.push({ type: "regex", message: rule.message || options.regex });
+        } else if (ruleType === "regex" && rule.value) {
+          var re = new RegExp(rule.value, "ig");
+          var message = rule.message || options.regex;
+          array.push({ 
+            validator: function (rule, value, callback) {
+              if (!value){
+                callback();
+              } else if (!re.test(value)){
+                callback(new Error(message));
+              } else {
+                callback()
+              }
+            },
+            message: message
+          });
         } else if (ruleType === "chinese") {
           array.push({
             type: "chinese",
@@ -638,7 +667,10 @@ var utils = {
             message: rule.message || options.currency,
           });
         } else if (ruleType === "zip") {
-          array.push({ type: "zip", message: rule.message || options.zip });
+          array.push({ 
+            type: "zip", 
+            message: rule.message || options.zip
+          });
         } else if (ruleType === "idCard") {
           array.push({
             type: "idCard",

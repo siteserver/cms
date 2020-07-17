@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -22,14 +23,16 @@ namespace SSCMS.Web.Controllers.Home
         private readonly IConfigRepository _configRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILogRepository _logRepository;
+        private readonly IStatRepository _statRepository;
 
-        public LoginController(ISettingsManager settingsManager, IAuthManager authManager, IConfigRepository configRepository, IUserRepository userRepository, ILogRepository logRepository)
+        public LoginController(ISettingsManager settingsManager, IAuthManager authManager, IConfigRepository configRepository, IUserRepository userRepository, ILogRepository logRepository, IStatRepository statRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _configRepository = configRepository;
             _userRepository = userRepository;
             _logRepository = logRepository;
+            _statRepository = statRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -66,6 +69,7 @@ namespace SSCMS.Web.Controllers.Home
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user
                 ); // 记录最后登录时间、失败次数清零
 
+            await _statRepository.AddCountAsync(StatType.UserLogin);
             await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess);
             var token = _authManager.AuthenticateUser(user, request.IsPersistent);
 

@@ -70,6 +70,12 @@
       <el-form-item label="商户号(MchId)" prop="tenPayMchId" :rules="{ required: true, message: '请输入商户号' }">
         <el-input v-model="account.tenPayMchId" placeholder="请输入商户号"></el-input>
       </el-form-item>
+      <el-form-item label="商户支付密钥(Key)" prop="tenPayKey" :rules="{ required: true, message: '请输入商户支付密钥' }">
+        <el-input v-model="account.tenPayKey" placeholder="商户支付密钥"></el-input>
+        <div class="tips">
+          商户支付密钥请参考微信商户开户邮件设置
+        </div>
+      </el-form-item>
       <el-form-item label="支付授权目录" prop="tenPayAuthorizeUrl" :rules="{ required: true, message: '请输入地址，以http(s)开头' }">
         <el-input v-model="account.tenPayAuthorizeUrl" placeholder="请输入地址，以http(s)开头"></el-input>
         <div class="tips">

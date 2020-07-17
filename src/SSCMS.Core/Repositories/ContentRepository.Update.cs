@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 
@@ -43,6 +44,8 @@ namespace SSCMS.Core.Repositories
                 .CachingRemove(GetListKey(repository.TableName, content.SiteId, content.ChannelId))
                 .CachingRemove(GetEntityKey(repository.TableName, content.Id))
             );
+
+            await _statRepository.AddCountAsync(StatType.ContentEdit, content.SiteId);
         }
 
         public async Task SetAutoPageContentToSiteAsync(IOldPluginManager pluginManager,  Site site)

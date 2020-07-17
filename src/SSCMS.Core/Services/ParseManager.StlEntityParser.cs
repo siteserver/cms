@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using SSCMS.Core.StlParser.StlEntity;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Parse;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -82,7 +83,7 @@ namespace SSCMS.Core.Services
             var type = StlEntityType.Undefined;
             if (!string.IsNullOrEmpty(stlEntity))
             {
-                stlEntity = stlEntity.Trim().ToLower();
+                stlEntity = StringUtils.ToLower(stlEntity).Trim();
 
                 if (stlEntity.StartsWith("{stl."))
                 {

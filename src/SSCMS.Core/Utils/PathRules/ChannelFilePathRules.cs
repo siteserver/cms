@@ -163,12 +163,12 @@ namespace SSCMS.Core.Utils.PathRules
                 else if (StringUtils.EqualsIgnoreCase(element, LowerChannelName))
                 {
                     if (node == null) node = await _databaseManager.ChannelRepository.GetAsync(channelId);
-                    value = node.ChannelName.ToLower();
+                    value = StringUtils.ToLower(node.ChannelName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, LowerChannelIndex))
                 {
                     if (node == null) node = await _databaseManager.ChannelRepository.GetAsync(channelId);
-                    value = node.IndexName.ToLower();
+                    value = StringUtils.ToLower(node.IndexName);
                 }
                 else
                 {
@@ -186,7 +186,7 @@ namespace SSCMS.Core.Utils.PathRules
 
                     if (isLower)
                     {
-                        value = value.ToLower();
+                        value = StringUtils.ToLower(value);
                     }
                 }
 

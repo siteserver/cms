@@ -110,7 +110,7 @@ namespace SSCMS.Core.Utils.Office
                             if (settings.IsClearImages || string.IsNullOrEmpty(settings.ImageDirectoryPath)) return null;
                             DirectoryUtils.CreateDirectoryIfNotExists(settings.ImageDirectoryPath);
 
-                            var extension = imageInfo.ContentType.Split('/')[1].ToLower();
+                            var extension = StringUtils.ToLower(imageInfo.ContentType.Split('/')[1]);
                             ImageFormat imageFormat = null;
                             if (extension == "png")
                                 imageFormat = ImageFormat.Png;
@@ -180,8 +180,6 @@ namespace SSCMS.Core.Utils.Office
                     var style = htmlDoc.DocumentNode.SelectSingleNode("//style").OuterHtml;
                     var body = htmlDoc.DocumentNode.SelectSingleNode("//body").InnerHtml;
 
-                    // var style = HtmlToWmlConverter.CleanUpCss((string)htmlElement.Descendants().FirstOrDefault(d => d.Name.LocalName.ToLower() == "style"));
-
                     content = $"{style}{Environment.NewLine}{body}";
 
                     if (settings.IsSaveHtml && !string.IsNullOrEmpty(settings.HtmlDirectoryPath) && DirectoryUtils.IsDirectoryExists(settings.HtmlDirectoryPath))
@@ -242,7 +240,7 @@ namespace SSCMS.Core.Utils.Office
 
             var html = ReadAsXElement(sourceHtmlFi);
 
-            var usedAuthorCss = HtmlToWmlConverter.CleanUpCss((string)html.Descendants().FirstOrDefault(d => d.Name.LocalName.ToLower() == "style"));
+            var usedAuthorCss = HtmlToWmlConverter.CleanUpCss((string)html.Descendants().FirstOrDefault(d => StringUtils.ToLower(d.Name.LocalName) == "style"));
             File.WriteAllText(destCssFi.FullName, usedAuthorCss);
 
             var settings = HtmlToWmlConverter.GetDefaultSettings();

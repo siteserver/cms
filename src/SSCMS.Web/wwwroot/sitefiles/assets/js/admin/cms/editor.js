@@ -39,7 +39,7 @@ var methods = {
 
   insertEditor: function(attributeName, html)
   {
-    if (!attributeName) attributeName = 'Content';
+    if (!attributeName) attributeName = 'Body';
     if (html)
     {
       UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
@@ -109,6 +109,29 @@ var methods = {
       var res = response.data;
 
       $this.closeAndRedirect();
+    })
+    .catch(function(error) {
+      utils.error(error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  apiPreview: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/preview', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.isPreviewSaving = false;
+      window.open(res.url);
     })
     .catch(function(error) {
       utils.error(error);
@@ -212,10 +235,6 @@ var methods = {
       for (var i = 0; i < $this.styles.length; i++) {
         var style = $this.styles[i];
         if (style.inputType === 'TextEditor') {
-          // var editor = new FroalaEditor('textarea#' + style.attributeName, {
-          //   language: 'zh_cn',
-          //   heightMin: 350
-          // });
           var editor = UE.getEditor(style.attributeName, {
             allowDivTransToP: false,
             maximumWords: 99999999
@@ -224,7 +243,7 @@ var methods = {
           editor.ready(function () {
             editor.addListener("contentChange", function () {
               var style = $this.styles[this.styleIndex];
-              $this.form[style.attributeName] = this.getContent();
+              $this.form[_.lowerFirst(style.attributeName)] = this.getContent();
             });
           });
         }
@@ -252,13 +271,16 @@ var methods = {
       query.no = options.no;
     }
 
-    utils.openLayer({
+    var args = {
       title: options.title,
-      url: utils.getSharedUrl(options.name, query),
-      full: options.full,
-      width: options.width ? options.width : 700,
-      height: options.height ? options.height : 500
-    });
+      url: utils.getCommonUrl(options.name, query)
+    };
+    if (!options.full) {
+      args.width = options.width ? options.width : 700;
+      args.height = options.height ? options.height : 500;
+    }
+
+    utils.openLayer(args);
   },
 
   handleTranslationClose: function(name) {
@@ -268,23 +290,51 @@ var methods = {
   },
 
   btnSaveClick: function() {
+    var $this = this;
+
     if (UE) {
       $.each(UE.instants, function (index, editor) {
         editor.sync();
       });
     }
+    
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        if ($this.contentId === 0) {
+          $this.apiInsert();
+        } else {
+          $this.apiUpdate();
+        }
+      } else {
+        utils.error('保存失败，请检查表单值是否正确');
+      }
+    });
+  },
 
-    if (this.contentId === 0) {
-      this.apiInsert();
-    } else {
-      this.apiUpdate();
+  btnPreviewClick: function() {
+    var $this = this;
+
+    if (this.isPreviewSaving) return;
+
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
     }
+    
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiPreview();
+      } else {
+        utils.error('预览失败，请检查表单值是否正确');
+      }
+    });
   },
 
   btnGroupAddClick: function() {
     utils.openLayer({
       title: '新增内容组',
-      url: utils.getSharedUrl('groupContentLayerAdd', {siteId: this.siteId}),
+      url: utils.getCommonUrl('groupContentLayerAdd', {siteId: this.siteId}),
       width: 500,
       height: 300
     });
@@ -299,37 +349,6 @@ var methods = {
       }),
       width: 620,
       height: 400
-    });
-  },
-
-  btnPreviewClick: function() {
-    if (!this.styles[0].value) return;
-    if (this.isPreviewSaving) return;
-
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-      });
-    }
-
-    var $this = this;
-    utils.loading(this, true);
-    $api.post($url + '/actions/preview', {
-      siteId: this.siteId,
-      channelId: this.channelId,
-      contentId: this.contentId,
-      content: this.form
-    }).then(function(response) {
-      var res = response.data;
-
-      $this.isPreviewSaving = false;
-      window.open(res.url);
-    })
-    .catch(function(error) {
-      utils.error(error);
-    })
-    .then(function() {
-      utils.loading($this, false);
     });
   },
 

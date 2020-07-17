@@ -136,7 +136,7 @@ namespace SSCMS.Core.Utils.PathRules
                     var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
                     if (nodeInfo != null)
                     {
-                        value = nodeInfo.ChannelName.ToLower();
+                        value = StringUtils.ToLower(nodeInfo.ChannelName);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelIndex))
@@ -152,7 +152,7 @@ namespace SSCMS.Core.Utils.PathRules
                     var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
                     if (nodeInfo != null)
                     {
-                        value = nodeInfo.IndexName.ToLower();
+                        value = StringUtils.ToLower(nodeInfo.IndexName);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, Year) || StringUtils.EqualsIgnoreCase(element, Month) || StringUtils.EqualsIgnoreCase(element, Day) || StringUtils.EqualsIgnoreCase(element, Hour) || StringUtils.EqualsIgnoreCase(element, Minute) || StringUtils.EqualsIgnoreCase(element, Second))
@@ -218,7 +218,7 @@ namespace SSCMS.Core.Utils.PathRules
                     value = content.Get<string>(attributeName);
                     if (isLower)
                     {
-                        value = value.ToLower();
+                        value = StringUtils.ToLower(value);
                     }
                 }
 

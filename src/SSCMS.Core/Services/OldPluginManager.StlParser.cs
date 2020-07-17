@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SSCMS.Context;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -16,7 +17,7 @@ namespace SSCMS.Core.Services
                 {
                     foreach (var elementName in plugin.StlElementsToParse.Keys)
                     {
-                        elementsToParse[elementName.ToLower()] = plugin.StlElementsToParse[elementName];
+                        elementsToParse[StringUtils.ToLower(elementName)] = plugin.StlElementsToParse[elementName];
                     }
                 }
             }

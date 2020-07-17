@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.V1
                 return NotFound();
             }
 
-            var elementName = $"stl:{request.ElementName.ToLower()}";
+            var elementName = $"stl:{StringUtils.ToLower(request.ElementName)}";
 
             object value = null;
 

@@ -22,12 +22,12 @@ var methods = {
         datasets: [
           {
             label: "成功登录次数",
-            backgroundColor: "#00B19D",
+            backgroundColor: "#67C23A",
             data: res.successCount
           },
           {
             label: "失败登录次数",
-            backgroundColor: "#f87979",
+            backgroundColor: "#F56C6C",
             data: res.failureCount
           }
           

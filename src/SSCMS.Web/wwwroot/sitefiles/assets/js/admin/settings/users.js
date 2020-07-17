@@ -42,7 +42,7 @@ var methods = {
   btnViewClick: function(userId) {
     utils.openLayer({
       title: '查看资料',
-      url: utils.getSharedUrl('userLayerView', {userId: userId})
+      url: utils.getCommonUrl('userLayerView', {userId: userId})
     });
   },
 

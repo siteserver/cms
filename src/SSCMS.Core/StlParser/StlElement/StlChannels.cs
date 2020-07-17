@@ -64,27 +64,27 @@ namespace SSCMS.Core.StlParser.StlElement
             var taxisType = TaxisType.OrderByTaxis;
             if (!string.IsNullOrEmpty(orderValue))
             {
-                if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
+                if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderDefault))
                 {
                     taxisType = TaxisType.OrderByTaxis;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderBack))
                 {
                     taxisType = TaxisType.OrderByTaxisDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderAddDate))
                 {
                     taxisType = TaxisType.OrderByAddDateDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderAddDateBack))
                 {
                     taxisType = TaxisType.OrderByAddDate;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHits))
                 {
                     taxisType = TaxisType.OrderByHits;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderRandom))
                 {
                     taxisType = TaxisType.OrderByRandom;
                 }
@@ -96,7 +96,6 @@ namespace SSCMS.Core.StlParser.StlElement
         protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Channel>> channels)
         {
             var pageInfo = parseManager.PageInfo;
-            var contextInfo = parseManager.ContextInfo;
 
             if (channels == null || channels.Count == 0) return string.Empty;
 

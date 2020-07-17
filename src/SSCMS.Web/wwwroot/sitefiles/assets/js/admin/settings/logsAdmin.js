@@ -48,7 +48,7 @@ var methods = {
   btnAdminView: function(adminId) {
     utils.openLayer({
       title: '管理员查看',
-      url: utils.getSharedUrl('adminLayerView', {
+      url: utils.getCommonUrl('adminLayerView', {
         adminId: adminId
       })
     })

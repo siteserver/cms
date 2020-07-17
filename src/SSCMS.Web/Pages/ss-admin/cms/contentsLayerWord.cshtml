@@ -26,8 +26,8 @@
 
 <el-form ref="form" :model="form" label-width="100px" size="small">
   <el-form-item label="内容标题">
-    <el-radio v-model="form.isFirstLineTitle" :label="false">将Word第一行作为标题</el-radio>
-    <el-radio v-model="form.isFirstLineTitle" :label="true">将文件名称作为标题</el-radio>
+    <el-radio v-model="form.isFirstLineTitle" :label="true">将Word第一行作为标题</el-radio>
+    <el-radio v-model="form.isFirstLineTitle" :label="false">将文件名称作为标题</el-radio>
   </el-form-item>
   <el-form-item label="导入设置">
     <el-checkbox label="清除格式" v-model="form.isClearFormat"></el-checkbox>

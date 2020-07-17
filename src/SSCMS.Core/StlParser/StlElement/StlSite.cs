@@ -203,11 +203,11 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var inputType = InputType.Text;
 
-            if (type.ToLower().Equals(TypeSiteName.ToLower()))
+            if (StringUtils.EqualsIgnoreCase(type, TypeSiteName))
             {
                 parsedContent = pageInfo.Site.SiteName;
             }
-            else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeSiteUrl))
             {
                 parsedContent = await parseManager.PathManager.GetWebUrlAsync(pageInfo.Site);
             }

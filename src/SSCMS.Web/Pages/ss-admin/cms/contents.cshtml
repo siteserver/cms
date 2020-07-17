@@ -36,6 +36,11 @@
     .el-input-group {
       width: 350px;
     }
+
+    .disabled {
+      color: #bcc0c7;
+      cursor: not-allowed;
+    }
   </style>
 }
 
@@ -60,8 +65,8 @@
       :highlight-current="true"
       :filter-node-method="filterNode"
       :expand-on-click-node="false"
-      v-on:node-click="handleChannelClick">
-      <span slot-scope="{ node, data }">
+      v-on:node-click="btnChannelClick">
+      <span slot-scope="{ node, data }" :class="{disabled: node.disabled}">
         <el-link :underline="false" :type="permissions && channelId === data.value ? 'primary' : 'info'" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank"><i class="el-icon-link"></i></el-link>
         <span :class="permissions && channelId === data.value ? 'el-link el-link--primary' : ''">{{ node.label }} ({{ data.count }})</span>
       </span>

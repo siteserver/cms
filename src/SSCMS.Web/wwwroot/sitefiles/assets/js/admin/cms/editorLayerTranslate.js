@@ -98,11 +98,12 @@ var methods = {
 
   btnSubmitClick: function () {
     var $this = this;
-      this.$refs.form.validate(function(valid) {
-        if (valid) {
-          $this.apiSubmit();
-        }
-      });
+    
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
+      }
+    });
   },
 
   btnCancelClick: function () {

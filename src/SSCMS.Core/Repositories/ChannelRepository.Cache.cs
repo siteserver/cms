@@ -97,13 +97,15 @@ namespace SSCMS.Core.Repositories
             {
                 extra = await func(summary);
             }
+
+            if (extra == null) return null;
+
             var cascade = new Cascade<int>
             {
                 Value = summary.Id,
                 Label = summary.ChannelName,
                 Children = await GetCascadeChildrenAsync(site, summary.Id, func)
             };
-            if (extra == null) return cascade;
 
             var dict = TranslateUtils.ToDictionary(extra);
             foreach (var o in dict)
@@ -124,7 +126,11 @@ namespace SSCMS.Core.Repositories
                 if (cache == null) continue;
                 if (cache.ParentId == parentId)
                 {
-                    list.Add(await GetCascadeAsync(site, cache, func));
+                    var cascade = await GetCascadeAsync(site, cache, func);
+                    if (cascade != null)
+                    {
+                        list.Add(cascade);
+                    }
                 }
             }
 
@@ -283,8 +289,8 @@ namespace SSCMS.Core.Repositories
 
         private void GetParentIdsRecursive(List<ChannelSummary> summaries, List<int> list, int channelId)
         {
-            var summary = summaries.First(x => x.Id == channelId);
-            if (summary.ParentId > 0)
+            var summary = summaries.FirstOrDefault(x => x.Id == channelId);
+            if (summary != null && summary.ParentId > 0)
             {
                 list.Add(summary.ParentId);
                 GetParentIdsRecursive(summaries, list, summary.ParentId);
@@ -437,7 +443,7 @@ namespace SSCMS.Core.Repositories
             return retVal;
         }
 
-        private async Task<string> GetParentsPathAsync(int siteId, int channelId)
+        private async Task<string> GetParentsPathAsync(int channelId)
         {
             var retVal = string.Empty;
             var channel = await GetAsync(channelId);
@@ -450,7 +456,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<int> GetTopLevelAsync(int siteId, int channelId)
         {
-            var parentsPath = await GetParentsPathAsync(siteId, channelId);
+            var parentsPath = await GetParentsPathAsync(channelId);
             return string.IsNullOrEmpty(parentsPath) ? 0 : parentsPath.Split(',').Length;
         }
 

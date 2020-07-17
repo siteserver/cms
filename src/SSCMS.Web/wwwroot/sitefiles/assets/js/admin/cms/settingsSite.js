@@ -115,7 +115,7 @@ var methods = {
 
     utils.openLayer({
       title: options.title,
-      url: utils.getSharedUrl(options.name, query),
+      url: utils.getCommonUrl(options.name, query),
       width: options.full ? 0 : 700,
       height: options.full ? 0 : 500
     });

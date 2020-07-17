@@ -37,6 +37,7 @@ using System.Text;
 using System.Xml.XPath;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Utils;
 using SSCMS.Core.Utils.Serialization.MvpXml;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 {
@@ -94,9 +95,9 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 		/// <param name="mode">The <see cref="Mode"/> of the <see cref="AtomContent"/>.</param>
 		public AtomContent(string content, MediaType type, Mode mode)
 		{
-			this.Content = content;
-			this.Type = type;
-			this.Mode = mode;
+			Content = content;
+			Type = type;
+			Mode = mode;
 		}
 
 		#endregion Constructors
@@ -115,24 +116,24 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 		/// </summary>
 		protected internal override void WriteStartElement()
 		{
-			this.Buffer.AppendFormat("<{0}", this.LocalName);
+			Buffer.AppendFormat("<{0}", LocalName);
 
-			if((this.Type == MediaType.UnknownType) ||
-				(this.Type == MediaType.ApplicationAtomXml) ||
-				(this.Type == MediaType.ApplicationXAtomXml))
-				this.Type = DefaultValues.MediaType;
+			if((Type == MediaType.UnknownType) ||
+				(Type == MediaType.ApplicationAtomXml) ||
+				(Type == MediaType.ApplicationXAtomXml))
+				Type = DefaultValues.MediaType;
 			
-			this.WriteAttribute("xml:base", this.XmlBase, false, null);
+			WriteAttribute("xml:base", XmlBase, false, null);
 
-			if(this.Type != DefaultValues.MediaType)
-				this.WriteAttribute("type", Utils.Utils.ParseMediaType(this.Type), false, null);
+			if(Type != DefaultValues.MediaType)
+				WriteAttribute("type", Utils.Utils.ParseMediaType(Type), false, null);
 
-			if(this.Type != MediaType.MultipartAlternative)
-				if(this.Mode != DefaultValues.Mode)
-					this.WriteAttribute("mode", this.Mode.ToString().ToLower(), false, null);
+			if(Type != MediaType.MultipartAlternative)
+				if(Mode != DefaultValues.Mode)
+					WriteAttribute("mode", StringUtils.ToLower(Mode.ToString()), false, null);
 
-			this.WriteAttribute("xml:lang", Utils.Utils.ParseLanguage(this.XmlLang), false, null);
-			this.Buffer.Append(">");
+			WriteAttribute("xml:lang", Utils.Utils.ParseLanguage(XmlLang), false, null);
+			Buffer.Append(">");
 		}
 
 		#endregion
@@ -149,7 +150,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			XPathNodeIterator iter = nav.SelectDescendants(XPathNodeType.Element, true);
 			while(iter.MoveNext())
 			{
-				string name = iter.Current.Name.ToLower();
+				string name = StringUtils.ToLower(iter.Current.Name);
 				int idx = name.IndexOf(":");
 				if(idx != -1)
 					name = name.Split(new char[] {':'}, 2)[1];
@@ -183,7 +184,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			iter = nav.Select("@*");
 			do
 			{
-				switch(iter.Current.Name.ToLower())
+				switch(StringUtils.ToLower(iter.Current.Name))
 				{
 					case "type":
 						contentElement.Type = Utils.Utils.ParseMediaType(
@@ -192,7 +193,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 
 					case "mode":
 					{
-						switch(iter.Current.Value.ToLower())
+						switch(StringUtils.ToLower(iter.Current.Value))
 						{
 							case "escaped":
 								contentElement.Mode = Mode.Escaped;

@@ -79,7 +79,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             }
 
             var filePath = file.FileName;
-            var fileExtName = PathUtils.GetExtension(filePath).ToLower();
+            var fileExtName = StringUtils.ToLower(PathUtils.GetExtension(filePath));
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
             var localFileName = _pathManager.GetUploadFileName(site, filePath);
             var path = PathUtils.Combine(localDirectoryPath, localFileName);
@@ -129,7 +129,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             {
                 if (string.IsNullOrEmpty(filePath)) continue;
 
-                var fileExtName = PathUtils.GetExtension(filePath).ToLower();
+                var fileExtName = StringUtils.ToLower(PathUtils.GetExtension(filePath));
                 var fileName = _pathManager.GetUploadFileName(site, filePath);
 
                 var directoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);

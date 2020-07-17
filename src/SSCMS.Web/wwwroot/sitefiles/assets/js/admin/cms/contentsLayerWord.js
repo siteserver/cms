@@ -70,10 +70,10 @@ var methods = {
   },
 
   uploadBefore(file) {
-    var re = /(\.doc|\.docx|\.wps)$/i;
+    var re = /(\.docx)$/i;
     if(!re.exec(file.name))
     {
-      utils.error('文件只能是 Word 格式，请选择有效的文件上传!');
+      utils.error('文件只能是以.docx结尾的 Word 格式，请选择有效的文件上传!');
       return false;
     }
     return true;

@@ -54,6 +54,7 @@ var methods = {
       }
     }).then(function (response) {
       var res = response.data;
+
       if (res.value) {
         utils.addTab('首页', utils.getRootUrl('dashboard'));
 
@@ -82,7 +83,7 @@ var methods = {
             sideMenuIds.push(ids[i]);
           }
         }
-        if (!$this.menu) {
+        if (!$this.menu && $this.menus.length > 0) {
           $this.menu = $this.menus[0];
         }
 
@@ -108,8 +109,7 @@ var methods = {
   },
 
   apiCache: function() {
-    var $this = this;
-
+    if (this.siteId === 0) return;
     $api.post($url + '/actions/cache', {
       siteId: this.siteId
     }).then(function (response) {
@@ -121,18 +121,16 @@ var methods = {
   },
 
   ready: function () {
-    var $this = this;
-
-    window.onresize = $this.winResize;
+    window.onresize = this.winResize;
     window.onresize();
 
-    $this.apiCache();
+    this.apiCache();
 
-    if ($this.isSuperAdmin) {
-      $this.getUpdates();
+    if (this.isSuperAdmin) {
+      this.getUpdates();
     }
 
-    utils.loading($this, false);
+    utils.loading(this, false);
   },
 
   getUpdates: function () {
@@ -248,13 +246,11 @@ var methods = {
   },
 
   btnTopMenuClick: function (menu) {
+    if (!menu) return;
     if (menu.children && menu.children.length > 0) {
-      for(var i = 0; i < menu.children.length; i++) {
-        var child = menu.children[i];
-        if (child.children) {
-          this.defaultOpeneds = [child.id];
-          break;
-        }
+      var first = menu.children[0];
+      if (first.children) {
+        this.defaultOpeneds = [first.id];
       }
     } else {
       this.btnMenuClick(menu);

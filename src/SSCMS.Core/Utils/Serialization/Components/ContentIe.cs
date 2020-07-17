@@ -290,7 +290,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     var attributes = AtomUtility.GetDcElementNameValueCollection(entry.AdditionalElements);
                     foreach (string attributeName in attributes.Keys)
                     {
-                        if (!contentInfo.ContainsKey(attributeName.ToLower()))
+                        if (!contentInfo.ContainsKey(StringUtils.ToLower(attributeName)))
                         {
                             contentInfo.Set(attributeName, AtomUtility.Decrypt(attributes[attributeName]));
                         }

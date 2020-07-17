@@ -8,7 +8,7 @@
       },
       "open": {
         "text": "开放平台(微信公众号、小程序)",
-        "iconClass": "ion-navigate",
+        "iconClass": "ion-chatbubbles",
         "order": 2
       }
     },
@@ -98,8 +98,8 @@
         "type": "app",
         "order": 17
       },
-      "app_settings_analysisAdminWork": {
-        "text": "管理员工作统计",
+      "app_settings_analysisSiteContent": {
+        "text": "站点内容统计",
         "type": "app",
         "order": 18
       },
@@ -188,7 +188,7 @@
         "type": "site",
         "order": 5
       },
-      "site_libraryText": {
+      "site_libraryCard": {
         "text": "图文素材管理",
         "type": "site",
         "order": 6
@@ -203,170 +203,175 @@
         "type": "site",
         "order": 8
       },
+      "site_libraryAudio": {
+        "text": "音频素材管理",
+        "type": "site",
+        "order": 9
+      },
       "site_libraryFile": {
         "text": "文件素材管理",
         "type": "site",
-        "order": 9
+        "order": 10
       },
       "site_contentsRecycle": {
         "text": "内容回收站",
         "type": "site",
-        "order": 10
+        "order": 11
       },
       "site_templates": {
         "text": "模板管理",
         "type": "site",
-        "order": 11
+        "order": 12
       },
       "site_specials": {
         "text": "专题管理",
         "type": "site",
-        "order": 12
+        "order": 13
       },
       "site_templatesMatch": {
         "text": "匹配模板",
         "type": "site",
-        "order": 13
+        "order": 14
       },
       "site_templatesAssets": {
         "text": "资源文件管理",
         "type": "site",
-        "order": 14
+        "order": 15
       },
       "site_templatesPreview": {
         "text": "模板在线解析",
         "type": "site",
-        "order": 15
+        "order": 16
       },
       "site_templatesReference": {
         "text": "模板语言参考",
         "type": "site",
-        "order": 16
+        "order": 17
       },
       "site_settingsSite": {
         "text": "站点设置",
         "type": "site",
-        "order": 17
+        "order": 18
       },
       "site_settingsContent": {
         "text": "内容设置",
         "type": "site",
-        "order": 18
+        "order": 19
       },
       "site_settingsChannelGroup": {
         "text": "栏目组管理",
         "type": "site",
-        "order": 19
+        "order": 20
       },
       "site_settingsContentGroup": {
         "text": "内容组管理",
         "type": "site",
-        "order": 20
+        "order": 21
       },
       "site_settingsContentTag": {
         "text": "内容标签管理",
         "type": "site",
-        "order": 21
+        "order": 22
       },
       "site_settingsStyleContent": {
         "text": "内容字段设置",
         "type": "site",
-        "order": 22
+        "order": 23
       },
       "site_settingsStyleChannel": {
         "text": "栏目字段设置",
         "type": "site",
-        "order": 23
+        "order": 24
       },
       "site_settingsStyleSite": {
         "text": "站点字段设置",
         "type": "site",
-        "order": 24
+        "order": 25
       },
       "site_settingsStyleRelatedField": {
         "text": "联动字段设置",
         "type": "site",
-        "order": 25
+        "order": 26
       },
       "site_settingsCrossSiteTrans": {
         "text": "跨站转发审核设置",
         "type": "site",
-        "order": 26
+        "order": 27
       },
       "site_settingsCrossSiteTransChannels": {
         "text": "跨站转发栏目设置",
         "type": "site",
-        "order": 27
+        "order": 28
       },
       "site_settingsCreateRule": {
         "text": "页面命名规则",
         "type": "site",
-        "order": 28
+        "order": 29
       },
       "site_settingsCreate": {
         "text": "页面生成设置",
         "type": "site",
-        "order": 29
+        "order": 30
       },
       "site_settingsCreateTrigger": {
         "text": "页面生成触发器",
         "type": "site",
-        "order": 30
+        "order": 31
       },
       "site_settingsUploadImage": {
         "text": "图片上传设置",
         "type": "site",
-        "order": 31
+        "order": 32
       },
       "site_settingsUploadVideo": {
         "text": "视频上传设置",
         "type": "site",
-        "order": 32
+        "order": 33
       },
       "site_settingsUploadFile": {
         "text": "附件上传设置",
         "type": "site",
-        "order": 33
+        "order": 34
       },
       "site_settingsWaterMark": {
         "text": "图片水印设置",
         "type": "site",
-        "order": 34
+        "order": 35
       },
       "site_createIndex": {
         "text": "生成首页",
         "type": "site",
-        "order": 35
+        "order": 36
       },
       "site_createChannels": {
         "text": "生成栏目页",
         "type": "site",
-        "order": 36
+        "order": 37
       },
       "site_createContents": {
         "text": "生成内容页",
         "type": "site",
-        "order": 37
+        "order": 38
       },
       "site_createFiles": {
         "text": "生成文件页",
         "type": "site",
-        "order": 38
+        "order": 39
       },
       "site_createSpecials": {
         "text": "生成专题",
         "type": "site",
-        "order": 39
+        "order": 40
       },
       "site_createAll": {
         "text": "一键生成",
         "type": "site",
-        "order": 40
+        "order": 41
       },
       "site_createStatus": {
         "text": "生成进度查看",
         "type": "site",
-        "order": 41
+        "order": 42
       },
       "open_index": {
         "text": "平台首页",
@@ -378,20 +383,40 @@
         "type": "open",
         "order": 2
       },
-      "open_library": {
-        "text": "素材管理",
+      "open_libraryCard": {
+        "text": "图文消息素材管理",
         "type": "open",
         "order": 3
+      },
+      "open_libraryImage": {
+        "text": "图片素材管理",
+        "type": "open",
+        "order": 4
+      },
+      "open_libraryVideo": {
+        "text": "视频素材管理",
+        "type": "open",
+        "order": 5
+      },
+      "open_libraryAudio": {
+        "text": "音频素材管理",
+        "type": "open",
+        "order": 6
+      },
+      "open_libraryFile": {
+        "text": "文件素材管理",
+        "type": "open",
+        "order": 7
       },
       "open_keywords": {
         "text": "关键词回复",
         "type": "open",
-        "order": 4
+        "order": 8
       },
       "open_menus": {
         "text": "自定义菜单",
         "type": "open",
-        "order": 5
+        "order": 9
       },
       "channel_add": {
         "text": "添加栏目",
@@ -526,7 +551,7 @@
           "app_settings_userStyle",
           "app_settings_userConfig",
           "app_settings_analysisAdminLogin",
-          "app_settings_analysisAdminWork",
+          "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
           "app_settings_logSite",
           "app_settings_logAdmin",
@@ -672,7 +697,7 @@
             "text": "统计图表",
             "permissions": [
               "app_settings_analysisAdminLogin",
-              "app_settings_analysisAdminWork",
+              "app_settings_analysisSiteContent",
               "app_settings_analysisUser"
             ],
             "iconClass": "ion-podium",
@@ -684,10 +709,10 @@
                 "permissions": ["app_settings_analysisAdminLogin"],
                 "order": 1
               },
-              "app_settings_analysisAdminWork": {
-                "text": "管理员工作统计",
-                "link": "./settings/analysisAdminWork/",
-                "permissions": ["app_settings_analysisAdminWork"],
+              "app_settings_analysisSiteContent": {
+                "text": "站点内容统计",
+                "link": "./settings/analysisSiteContent/",
+                "permissions": ["app_settings_analysisSiteContent"],
                 "order": 2
               },
               "app_settings_analysisUser": {
@@ -814,9 +839,10 @@
           "site_contentsSearch",
           "site_channelsTranslate",
           "site_contentsCheck",
-          "site_libraryText",
+          "site_libraryCard",
           "site_libraryImage",
           "site_libraryVideo",
+          "site_libraryAudio",
           "site_libraryFile",
           "site_contentsRecycle"
         ],
@@ -857,36 +883,43 @@
           "site_library": {
             "text": "素材库管理",
             "permissions": [
-              "site_libraryText",
+              "site_libraryCard",
               "site_libraryImage",
               "site_libraryVideo",
+              "site_libraryAudio",
               "site_libraryFile"
             ],
             "order": 6,
             "menus": {
-              "site_libraryText": {
-                "text": "图文素材管理",
-                "link": "./cms/libraryText/",
-                "permissions": ["site_libraryText"],
+              "site_libraryCard": {
+                "text": "图文消息管理",
+                "link": "./common/libraryCard/",
+                "permissions": ["site_libraryCard"],
                 "order": 1
               },
               "site_libraryImage": {
-                "text": "图片素材管理",
-                "link": "./cms/libraryImage/",
+                "text": "图片管理",
+                "link": "./common/libraryImage/",
                 "permissions": ["site_libraryImage"],
                 "order": 2
               },
               "site_libraryVideo": {
-                "text": "视频素材管理",
-                "link": "./cms/libraryVideo/",
+                "text": "视频管理",
+                "link": "./common/libraryVideo/",
                 "permissions": ["site_libraryVideo"],
                 "order": 3
               },
-              "site_libraryFile": {
-                "text": "文件素材管理",
-                "link": "./cms/libraryFile/",
-                "permissions": ["site_libraryFile"],
+              "site_libraryAudio": {
+                "text": "音频管理",
+                "link": "./common/libraryAudio/",
+                "permissions": ["site_libraryAudio"],
                 "order": 4
+              },
+              "site_libraryFile": {
+                "text": "文件管理",
+                "link": "./common/libraryFile/",
+                "permissions": ["site_libraryFile"],
+                "order": 5
               }
             }
           },
@@ -1224,14 +1257,51 @@
         "text": "素材管理",
         "type": "open",
         "iconClass": "ion-monitor",
-        "link": "./open/library",
-        "permissions": ["open_library"],
-        "order": 3
+        "permissions": [
+          "open_libraryCard",
+          "open_libraryImage",
+          "open_libraryVideo",
+          "open_libraryAudio",
+          "open_libraryFile"
+        ],
+        "order": 3,
+        "menus": {
+          "open_libraryCard": {
+            "text": "图文消息管理",
+            "link": "./common/libraryCard/",
+            "permissions": ["open_libraryCard"],
+            "order": 1
+          },
+          "open_libraryImage": {
+            "text": "图片管理",
+            "link": "./common/libraryImage/",
+            "permissions": ["open_libraryImage"],
+            "order": 2
+          },
+          "open_libraryVideo": {
+            "text": "视频管理",
+            "link": "./common/libraryVideo/",
+            "permissions": ["open_libraryVideo"],
+            "order": 3
+          },
+          "open_libraryAudio": {
+            "text": "音频管理",
+            "link": "./common/libraryAudio/",
+            "permissions": ["open_libraryAudio"],
+            "order": 4
+          },
+          "open_libraryFile": {
+            "text": "文件管理",
+            "link": "./common/libraryFile/",
+            "permissions": ["open_libraryFile"],
+            "order": 5
+          }
+        }
       },
       "open_keywords": {
         "text": "关键词回复",
         "type": "open",
-        "iconClass": "ion-chatbubbles",
+        "iconClass": "ion-chatbox-working",
         "link": "./open/keywords",
         "permissions": ["open_keywords"],
         "order": 4

@@ -26,7 +26,7 @@ namespace SSCMS.Core.Utils
 
         public static ImageFormat GetImageFormat(string imagePath)
         {
-            var extName = PathUtils.GetExtension(imagePath).ToLower();
+            var extName = StringUtils.ToLower(PathUtils.GetExtension(imagePath));
             switch (extName)
             {
                 case ".bmp":

@@ -79,7 +79,7 @@ namespace SSCMS.Web.Controllers.Admin
                     await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
                 }
 
-                await _statRepository.AddCount(StatType.AdminLoginFailure);
+                await _statRepository.AddCountAsync(StatType.AdminLoginFailure);
                 return this.Error(errorMessage);
             }
 
@@ -88,7 +88,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
 
-            await _statRepository.AddCount(StatType.AdminLoginSuccess);
+            await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
             await _logRepository.AddAdminLogAsync(administrator, Constants.ActionsLoginSuccess);
 
             var sessionId = StringUtils.Guid();

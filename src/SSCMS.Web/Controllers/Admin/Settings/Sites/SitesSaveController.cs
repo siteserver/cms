@@ -172,7 +172,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
-            var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
+            var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
 
             var caching = new CacheUtils(_cacheManager);
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
@@ -188,7 +188,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 Description = request.Description
             };
             var xmlPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath,
-                DirectoryUtils.SiteTemplates.FileMetadata);
+                DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
             XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
 
             return new BoolResult

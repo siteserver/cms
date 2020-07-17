@@ -211,13 +211,14 @@ var methods = {
   },
 
   btnEditClick: function(content) {
+    if (!permissions.isEdit) return;
     utils.addTab('编辑内容', this.getEditUrl(content));
   },
 
   btnAdminClick: function(adminId) {
     utils.openLayer({
       title: "管理员查看",
-      url: utils.getSharedUrl(adminLayerView, {adminId: adminId}),
+      url: utils.getCommonUrl(adminLayerView, {adminId: adminId}),
       width: 550,
       height: 450
     });
@@ -298,6 +299,7 @@ var methods = {
   },
 
   btnContentStateClick: function(contentId) {
+    if (!permissions.isEdit) return;
     utils.openLayer({
       title: "查看审核状态",
       url: utils.getCmsUrl('contentsLayerState', {
@@ -310,6 +312,7 @@ var methods = {
   },
 
   btnMenuClick: function(menu, content) {
+    if (!permissions.isEdit) return;
     var url = utils.addQuery(menu.link, {
       siteId: this.siteId,
       channelId: content.channelId,
@@ -346,7 +349,8 @@ var methods = {
     return '';
   },
 
-  handleChannelClick: function(data) {
+  btnChannelClick: function(data) {
+    if (data.disabled) return;
     this.channelId = data.value;
     this.apiList(data.value, 1);
   },

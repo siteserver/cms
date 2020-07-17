@@ -805,8 +805,8 @@ namespace SSCMS.Core.Services
 
         public async Task<Site> GetSiteAsync(string path)
         {
-            var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = _settingsManager.WebRootPath.ToLower().Trim(' ', '/', '\\');
+            var directoryPath = StringUtils.ToLower(DirectoryUtils.GetDirectoryPath(path)).Trim(' ', '/', '\\');
+            var applicationPath = StringUtils.ToLower(_settingsManager.WebRootPath).Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
@@ -821,7 +821,7 @@ namespace SSCMS.Core.Services
                 }
                 else
                 {
-                    if (Contains(directoryDir, site.SiteDir.ToLower()))
+                    if (Contains(directoryDir, StringUtils.ToLower(site.SiteDir)))
                     {
                         return site;
                     }
@@ -834,8 +834,8 @@ namespace SSCMS.Core.Services
         public async Task<string> GetSiteDirAsync(string path)
         {
             var siteDir = string.Empty;
-            var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = _settingsManager.WebRootPath.ToLower().Trim(' ', '/', '\\');
+            var directoryPath = StringUtils.ToLower(DirectoryUtils.GetDirectoryPath(path)).Trim(' ', '/', '\\');
+            var applicationPath = StringUtils.ToLower(_settingsManager.WebRootPath).Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty)
             {
@@ -847,7 +847,7 @@ namespace SSCMS.Core.Services
             {
                 if (site?.Root != false) continue;
 
-                if (Contains(directoryDir, site.SiteDir.ToLower()))
+                if (Contains(directoryDir, StringUtils.ToLower(site.SiteDir)))
                 {
                     siteDir = site.SiteDir;
                 }
@@ -933,19 +933,19 @@ namespace SSCMS.Core.Services
         public string GetTemporaryFilesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
+            return PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
         }
 
         public string GetSiteTemplatesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedPath);
+            return PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, relatedPath);
         }
 
         public string GetSiteTemplateMetadataPath(string siteTemplatePath, string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteTemplateMetadata, relatedPath);
+            return PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteTemplateMetadata, relatedPath);
         }
 
         public async Task<string> GetChannelFilePathRuleAsync(Site site, int channelId)
@@ -1136,7 +1136,7 @@ namespace SSCMS.Core.Services
             return PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.BinDirectoryName, relatedPath);
         }
 
-        public string PhysicalSiteFilesPath => PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName);
+        public string PhysicalSiteFilesPath => PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName);
 
         public string GetLibraryFilePath(string virtualUrl)
         {
@@ -1281,8 +1281,8 @@ namespace SSCMS.Core.Services
 
         public bool IsSystemDirectory(string directoryName)
         {
-            return StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.HomeDirectoryName) ||
-                   StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFilesDirectoryName);
+            return StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.Home) ||
+                   StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName);
         }
 
         public async Task AddWaterMarkAsync(Site site, string imagePath)

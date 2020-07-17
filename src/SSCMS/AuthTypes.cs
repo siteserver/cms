@@ -47,7 +47,7 @@
             public const string SettingsUsersStyle = "app_settings_usersStyle";
             public const string SettingsUsersConfig = "app_settings_usersConfig";
             public const string SettingsAnalysisAdminLogin = "app_settings_analysisAdminLogin";
-            public const string SettingsAnalysisAdminWork = "app_settings_analysisAdminWork";
+            public const string SettingsAnalysisSiteContent = "app_settings_analysisSiteContent";
             public const string SettingsAnalysisUser = "app_settings_analysisUser";
             public const string SettingsLogsSite = "app_settings_logsSite";
             public const string SettingsLogsAdmin = "app_settings_logsAdmin";
@@ -66,7 +66,11 @@
         {
             public const string Index = "open_index";
             public const string Account = "open_account";
-            public const string Library = "open_library";
+            public const string LibraryCard = "open_libraryCard";
+            public const string LibraryImage = "open_libraryImage";
+            public const string LibraryVideo = "open_libraryVideo";
+            public const string LibraryAudio = "open_libraryAudio";
+            public const string LibraryFile = "open_libraryFile";
             public const string Keywords = "open_keywords";
             public const string Menus = "open_menus";
         }
@@ -78,9 +82,10 @@
             public const string ContentsSearch = "site_contentsSearch";
             public const string ChannelsTranslate = "site_channelsTranslate";
             public const string ContentsCheck = "site_contentsCheck";
-            public const string LibraryText = "site_libraryText";
+            public const string LibraryCard = "site_libraryCard";
             public const string LibraryImage = "site_libraryImage";
             public const string LibraryVideo = "site_libraryVideo";
+            public const string LibraryAudio = "site_libraryAudio";
             public const string LibraryFile = "site_libraryFile";
             public const string ContentsRecycle = "site_contentsRecycle";
             public const string Templates = "site_templates";

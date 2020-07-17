@@ -173,6 +173,7 @@ namespace SSCMS.Core.Repositories
             var deletedNum = await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), site.Id)
                 .WhereIn(nameof(Channel.Id), idList)
+                .CachingRemove(GetListKey(site.Id))
             );
 
             if (channelEntity.ParentId != 0)
@@ -180,6 +181,7 @@ namespace SSCMS.Core.Repositories
                 await _repository.DecrementAsync(nameof(Channel.Taxis), Q
                     .Where(nameof(Channel.SiteId), channelEntity.SiteId)
                     .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
+                    .CachingRemove(GetListKey(site.Id))
                 , deletedNum);
             }
 
@@ -187,6 +189,7 @@ namespace SSCMS.Core.Repositories
             {
                 await _repository.DecrementAsync(nameof(Channel.ChildrenCount), Q
                         .WhereIn(nameof(Channel.Id), ListUtils.GetIntList(channelEntity.ParentsPath))
+                        .CachingRemove(GetListKey(site.Id))
                     , deletedNum);
             }
         }
@@ -196,6 +199,7 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), siteId)
                 .OrWhere(nameof(Channel.Id), siteId)
+                .CachingRemove(GetListKey(siteId))
             );
         }
 

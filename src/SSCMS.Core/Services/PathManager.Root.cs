@@ -28,7 +28,7 @@ namespace SSCMS.Core.Services
 
         public string GetSiteTemplatesUrl(string relatedUrl)
         {
-            return GetRootUrl(DirectoryUtils.SiteFilesDirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
+            return GetRootUrl(DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, relatedUrl);
         }
 
         public string ParseUrl(string virtualUrl)
@@ -91,7 +91,7 @@ namespace SSCMS.Core.Services
 
         public string GetSiteFilesUrl(params string[] paths)
         {
-            return GetRootUrl(DirectoryUtils.SiteFilesDirectoryName, PageUtils.Combine(paths));
+            return GetRootUrl(DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths));
         }
 
         public string GetAdministratorUploadUrl(int userId, params string[] paths)
@@ -148,7 +148,7 @@ namespace SSCMS.Core.Services
 
         public string GetSiteFilesPath(params string[] paths)
         {
-            var path = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName, PathUtils.Combine(paths));
+            var path = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, PathUtils.Combine(paths));
             return path;
         }
 
@@ -253,21 +253,21 @@ namespace SSCMS.Core.Services
         {
             return $@"
 {{
-    {StlSearch.IsAllSites.ToLower()}: {isAllSites.ToString().ToLower()},
-    {StlSearch.SiteName.ToLower()}: '{siteName}',
-    {StlSearch.SiteDir.ToLower()}: '{siteDir}',
-    {StlSearch.SiteIds.ToLower()}: '{siteIds}',
-    {StlSearch.ChannelIndex.ToLower()}: '{channelIndex}',
-    {StlSearch.ChannelName.ToLower()}: '{channelName}',
-    {StlSearch.ChannelIds.ToLower()}: '{channelIds}',
-    {StlSearch.Type.ToLower()}: '{type}',
-    {StlSearch.Word.ToLower()}: '{word}',
-    {StlSearch.DateAttribute.ToLower()}: '{dateAttribute}',
-    {StlSearch.DateFrom.ToLower()}: '{dateFrom}',
-    {StlSearch.DateTo.ToLower()}: '{dateTo}',
-    {StlSearch.Since.ToLower()}: '{since}',
-    {StlSearch.PageNum.ToLower()}: {pageNum},
-    {StlSearch.IsHighlight.ToLower()}: {isHighlight.ToString().ToLower()},
+    {StringUtils.ToLower(StlSearch.IsAllSites)}: {StringUtils.ToLower(isAllSites.ToString())},
+    {StringUtils.ToLower(StlSearch.SiteName)}: '{siteName}',
+    {StringUtils.ToLower(StlSearch.SiteDir)}: '{siteDir}',
+    {StringUtils.ToLower(StlSearch.SiteIds)}: '{siteIds}',
+    {StringUtils.ToLower(StlSearch.ChannelIndex)}: '{channelIndex}',
+    {StringUtils.ToLower(StlSearch.ChannelName)}: '{channelName}',
+    {StringUtils.ToLower(StlSearch.ChannelIds)}: '{channelIds}',
+    {StringUtils.ToLower(StlSearch.Type)}: '{type}',
+    {StringUtils.ToLower(StlSearch.Word)}: '{word}',
+    {StringUtils.ToLower(StlSearch.DateAttribute)}: '{dateAttribute}',
+    {StringUtils.ToLower(StlSearch.DateFrom)}: '{dateFrom}',
+    {StringUtils.ToLower(StlSearch.DateTo)}: '{dateTo}',
+    {StringUtils.ToLower(StlSearch.Since)}: '{since}',
+    {StringUtils.ToLower(StlSearch.PageNum)}: {pageNum},
+    {StringUtils.ToLower(StlSearch.IsHighlight)}: {StringUtils.ToLower(isHighlight.ToString())},
     siteid: '{siteId}',
     ajaxdivid: '{ajaxDivId}',
     template: '{_settingsManager.Encrypt(template)}',
@@ -276,21 +276,21 @@ namespace SSCMS.Core.Services
 
         public List<string> GetSearchExcludeAttributeNames => new List<string>
         {
-            StlSearch.IsAllSites.ToLower(),
-            StlSearch.SiteName.ToLower(),
-            StlSearch.SiteDir.ToLower(),
-            StlSearch.SiteIds.ToLower(),
-            StlSearch.ChannelIndex.ToLower(),
-            StlSearch.ChannelName.ToLower(),
-            StlSearch.ChannelIds.ToLower(),
-            StlSearch.Type.ToLower(),
-            StlSearch.Word.ToLower(),
-            StlSearch.DateAttribute.ToLower(),
-            StlSearch.DateFrom.ToLower(),
-            StlSearch.DateTo.ToLower(),
-            StlSearch.Since.ToLower(),
-            StlSearch.PageNum.ToLower(),
-            StlSearch.IsHighlight.ToLower(),
+            StringUtils.ToLower(StlSearch.IsAllSites),
+            StringUtils.ToLower(StlSearch.SiteName),
+            StringUtils.ToLower(StlSearch.SiteDir),
+            StringUtils.ToLower(StlSearch.SiteIds),
+            StringUtils.ToLower(StlSearch.ChannelIndex),
+            StringUtils.ToLower(StlSearch.ChannelName),
+            StringUtils.ToLower(StlSearch.ChannelIds),
+            StringUtils.ToLower(StlSearch.Type),
+            StringUtils.ToLower(StlSearch.Word),
+            StringUtils.ToLower(StlSearch.DateAttribute),
+            StringUtils.ToLower(StlSearch.DateFrom),
+            StringUtils.ToLower(StlSearch.DateTo),
+            StringUtils.ToLower(StlSearch.Since),
+            StringUtils.ToLower(StlSearch.PageNum),
+            StringUtils.ToLower(StlSearch.IsHighlight),
             "siteid",
             "ajaxdivid",
             "template",

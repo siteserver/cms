@@ -47,6 +47,7 @@ using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements.DublinCore;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core.Collections;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Utils;
 using SSCMS.Core.Utils.Serialization.MvpXml;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 {
@@ -518,7 +519,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			
 			do
 			{
-				string name = iter.Current.Name.ToLower();
+				string name = StringUtils.ToLower(iter.Current.Name);
 				int idx = name.IndexOf(":");
 				if(idx != -1)
 					name = name.Split(new char[] {':'}, 2)[0];
@@ -551,7 +552,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 						XPathNodeIterator attrIterator = nav.Select("@*");
 						while(attrIterator.MoveNext())
 						{
-							if(attrIterator.Current.Name.ToLower() == "version")
+							if(StringUtils.ToLower(attrIterator.Current.Name) == "version")
 							{
 								if(attrIterator.Current.Value != DefaultValues.AtomVersion)
 								{
@@ -643,7 +644,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			iter = iter.Current.Select("@*");
 			do
 			{
-				switch(iter.Current.Name.ToLower())
+				switch(StringUtils.ToLower(iter.Current.Name))
 				{
 					case "href":
 						try

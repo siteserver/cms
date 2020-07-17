@@ -277,7 +277,7 @@ namespace SSCMS.Core.Utils.Serialization
                 Description = description
             };
 
-            var xmlPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileMetadata);
+            var xmlPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
             XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
         }
 

@@ -160,15 +160,15 @@ namespace SSCMS.Core.StlParser.StlElement
                 return parsedContent;
             }
 
-            if (type.ToLower().Equals(TypeSiteName.ToLower()))
+            if (StringUtils.EqualsIgnoreCase(type, TypeSiteName))
             {
                 parsedContent = pageInfo.Site.SiteName;
             }
-            else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeSiteUrl))
             {
                 parsedContent = await parseManager.PathManager.GetWebUrlAsync(pageInfo.Site);
             }
-            else if (type.ToLower().Equals(TypeDate.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
                 {
@@ -179,7 +179,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
             }
-            else if (type.ToLower().Equals(TypeDateOfTraditional.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeDateOfTraditional))
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring"))
                 {

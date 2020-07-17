@@ -175,13 +175,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return this.Error("站点模板压缩包为zip格式，请选择有效的文件上传!");
             }
             var directoryName = PathUtils.GetFileNameWithoutExtension(file.FileName);
-            var directoryPath = _pathManager.GetSiteFilesPath(PathUtils.Combine(DirectoryUtils.SiteTemplates.DirectoryName, directoryName));
+            var directoryPath = _pathManager.GetSiteFilesPath(PathUtils.Combine(DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, directoryName));
             if (DirectoryUtils.IsDirectoryExists(directoryPath))
             {
                 return this.Error($"站点模板导入失败，文件夹{directoryName}已存在");
             }
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
-            var filePath = _pathManager.GetSiteFilesPath(PathUtils.Combine(DirectoryUtils.SiteTemplates.DirectoryName, file.FileName));
+            var filePath = _pathManager.GetSiteFilesPath(PathUtils.Combine(DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, file.FileName));
             
             FileUtils.DeleteFileIfExists(filePath);
 

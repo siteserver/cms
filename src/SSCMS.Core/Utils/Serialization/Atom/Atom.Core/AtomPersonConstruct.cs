@@ -35,6 +35,7 @@
 using System;
 using System.Xml.XPath;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 {
@@ -192,7 +193,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			
 			while(iter.MoveNext())
 			{
-				string name = iter.Current.Name.ToLower();
+				string name = StringUtils.ToLower(iter.Current.Name);
 				int idx = name.IndexOf(":");
 				if(idx != -1)
 					name = name.Split(new char[] {':'}, 2)[1];

@@ -23,7 +23,7 @@
     
     window.UEDITOR_CONFIG = {
         UEDITOR_HOME_URL: utils.getAssetsUrl('lib/ueditor/'),
-        serverUrl: $apiUrl + "/shared/editor?siteId=" + utils.getQueryInt("siteId"),
+        serverUrl: $apiUrl + "/common/editor?siteId=" + utils.getQueryInt("siteId"),
         toolbars: [
             ["fullscreen",
                 "source",

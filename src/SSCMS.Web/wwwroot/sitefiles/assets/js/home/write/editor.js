@@ -242,7 +242,7 @@ var methods = {
 
     utils.openLayer({
       title: options.title,
-      url: utils.getSharedUrl(options.name, query),
+      url: utils.getCommonUrl(options.name, query),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500
@@ -272,7 +272,7 @@ var methods = {
   btnGroupAddClick: function() {
     utils.openLayer({
       title: '新增内容组',
-      url: utils.getSharedUrl('groupContentLayerAdd', {siteId: this.siteId}),
+      url: utils.getCommonUrl('groupContentLayerAdd', {siteId: this.siteId}),
       width: 500,
       height: 300
     });

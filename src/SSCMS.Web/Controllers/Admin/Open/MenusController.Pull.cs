@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Open
     public partial class MenusController
     {
         [HttpPost, Route(RouteActionsPull)]
-        public async Task<ActionResult<List<MenuFull_RootButton>>> Pull([FromBody] SiteRequest request)
+        public async Task<ActionResult<OpenMenusResult>> Pull([FromBody] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.OpenPermissions.Menus))
             {
@@ -41,13 +41,15 @@ namespace SSCMS.Web.Controllers.Admin.Open
             var json = result.menu.button.ToJson();
             var buttons = TranslateUtils.JsonDeserialize<List<MenuFull_RootButton>>(json);
 
+            var firstTaxis = 1;
             foreach (var button in buttons)
             {
+
                 var first = new OpenMenu
                 {
                     SiteId = request.SiteId,
                     ParentId = 0,
-                    Taxis = 0,
+                    Taxis = firstTaxis++,
                     Text = button.name,
                     MenuType = TranslateUtils.ToEnum(button.type, OpenMenuType.View),
                     Key = button.key,
@@ -59,13 +61,14 @@ namespace SSCMS.Web.Controllers.Admin.Open
                 var menuId = await _openMenuRepository.InsertAsync(first);
                 if (button.sub_button != null && button.sub_button.Count > 0)
                 {
+                    var childTaxis = 1;
                     foreach (var sub in button.sub_button)
                     {
                         var child = new OpenMenu
                         {
                             SiteId = request.SiteId,
                             ParentId = menuId,
-                            Taxis = 0,
+                            Taxis = childTaxis++,
                             Text = sub.name,
                             MenuType = TranslateUtils.ToEnum(sub.type, OpenMenuType.View),
                             Key = sub.key,
@@ -79,14 +82,12 @@ namespace SSCMS.Web.Controllers.Admin.Open
                 }
             }
 
-            return buttons;
+            var openMenus = await _openMenuRepository.GetOpenMenusAsync(request.SiteId);
 
-            //foreach (var firstButton in result.menu.button)
-            //{
-            //    var btn = (MenuFull_RootButton) firstButton;
-            //}
-
-            //return result;
+            return new OpenMenusResult
+            {
+                OpenMenus = openMenus
+            };
         }
     }
 }

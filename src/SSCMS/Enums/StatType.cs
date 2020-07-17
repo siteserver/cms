@@ -18,8 +18,6 @@ namespace SSCMS.Enums
         [DataEnum(DisplayName = "内容新增")]
         ContentAdd,
         [DataEnum(DisplayName = "内容编辑")]
-        ContentEdit,
-        [DataEnum(DisplayName = "内容删除")]
-        ContentDelete
+        ContentEdit
     }
 }

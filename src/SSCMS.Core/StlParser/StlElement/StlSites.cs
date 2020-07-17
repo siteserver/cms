@@ -9,6 +9,7 @@ using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -45,23 +46,23 @@ namespace SSCMS.Core.StlParser.StlElement
             var taxisType = TaxisType.OrderByTaxis;
             if (!string.IsNullOrEmpty(orderValue))
             {
-                if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
+                if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderDefault))
                 {
                     taxisType = TaxisType.OrderByTaxis;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderBack))
                 {
                     taxisType = TaxisType.OrderByTaxisDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderAddDate))
                 {
                     taxisType = TaxisType.OrderByAddDateDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderAddDateBack))
                 {
                     taxisType = TaxisType.OrderByAddDate;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderRandom))
                 {
                     taxisType = TaxisType.OrderByRandom;
                 }

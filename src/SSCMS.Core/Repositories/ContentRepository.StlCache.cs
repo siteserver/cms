@@ -39,22 +39,22 @@ namespace SSCMS.Core.Repositories
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Top)} = {isTop.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Top)} = {StringUtils.ToLower(isTop.ToString())} ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Recommend)} = {isRecommend.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Recommend)} = {StringUtils.ToLower(isRecommend.ToString())} ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Hot)} = {isHot.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Hot)} = {StringUtils.ToLower(isHot.ToString())} ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Color)} = {isColor.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Color)} = {StringUtils.ToLower(isColor.ToString())} ");
             }
 
             var databaseType = _settingsManager.Database.DatabaseType;
@@ -151,22 +151,22 @@ namespace SSCMS.Core.Repositories
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Top)} = {isTop.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Top)} = {StringUtils.ToLower(isTop.ToString())} ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Recommend)} = {isRecommend.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Recommend)} = {StringUtils.ToLower(isRecommend.ToString())} ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Hot)} = {isHot.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Hot)} = {StringUtils.ToLower(isHot.ToString())} ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {nameof(Content.Color)} = {isColor.ToString().ToLower()} ");
+                whereBuilder.Append($" AND {nameof(Content.Color)} = {StringUtils.ToLower(isColor.ToString())} ");
             }
 
             var databaseType = _settingsManager.Database.DatabaseType;
@@ -336,7 +336,7 @@ namespace SSCMS.Core.Repositories
             var whereString = $"WHERE {nameof(Content.ChannelId)} = {channelId}";
             if (isCheckedOnly)
             {
-                whereString += $" AND {nameof(Content.Checked)} = {true.ToString().ToLower()}";
+                whereString += $" AND {nameof(Content.Checked)} = {StringUtils.ToLower(true.ToString())}";
             }
             var sqlString = SqlUtils.ToTopSqlString(Database.DatabaseType, tableName, "Id", whereString, orderByString, 1);
 
@@ -372,11 +372,6 @@ namespace SSCMS.Core.Repositories
                        .WhereTrue(nameof(Content.Checked))
                        .Where(nameof(Content.Taxis), "<", taxis)
                    ) + 1;
-
-            //var sqlString =
-            //    $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {nameof(Content.Checked)} = {true.ToString().ToLower()} AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
-
-            //return _databaseRepository.GetIntResult(sqlString) + 1;
         }
 
         private List<ContentSummary> GetStlDataSourceByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
@@ -411,12 +406,6 @@ namespace SSCMS.Core.Repositories
                        .WhereTrue(nameof(Content.Checked))
                        .WhereNotNullOrEmpty(nameof(Content.ImageUrl))
                    ) + 1;
-
-            //var tableName = await _siteRepository.GetTableNameAsync(siteId);
-            //var sqlString =
-            //    $"SELECT COUNT(*) FROM {tableName} WHERE {ContentAttribute.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {nameof(Content.Checked)} = {true.ToString().ToLower()} AND {ContentAttribute.SourceId} != {SourceManager.Preview}";
-
-            //return _databaseRepository.GetIntResult(sqlString);
         }
     }
 }

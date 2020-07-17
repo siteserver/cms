@@ -260,8 +260,8 @@ namespace SSCMS.Core.Utils
                 {
                     var url = _pathManager.GetSiteFilesUrl(Resources.BrPlayer.Swf);
                     retVal = $@"
-<embed src=""{url}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
-                        .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
+<embed src=""{url}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={StringUtils.ToLower(true
+                        .ToString())}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
             }
@@ -291,11 +291,11 @@ namespace SSCMS.Core.Utils
 
                 if (isLower)
                 {
-                    innerHtml = innerHtml.ToLower();
+                    innerHtml = StringUtils.ToLower(innerHtml);
                 }
                 if (isUpper)
                 {
-                    innerHtml = innerHtml.ToUpper();
+                    innerHtml = StringUtils.ToUpper(innerHtml);
                 }
 
                 retVal = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{innerHtml}</a>";
@@ -322,11 +322,11 @@ namespace SSCMS.Core.Utils
 
                 if (isLower)
                 {
-                    innerHtml = innerHtml.ToLower();
+                    innerHtml = StringUtils.ToLower(innerHtml);
                 }
                 if (isUpper)
                 {
-                    innerHtml = innerHtml.ToUpper();
+                    innerHtml = StringUtils.ToUpper(innerHtml);
                 }
 
                 retVal = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{innerHtml}</a>";

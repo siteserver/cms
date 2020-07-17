@@ -102,47 +102,47 @@ namespace SSCMS.Core.StlParser.Utility
             var orderByString = string.Empty;
             if (!string.IsNullOrEmpty(orderValue))
             {
-                if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
+                if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderDefault))
                 {
                     taxisType = TaxisType.OrderByTaxisDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderBack))
                 {
                     taxisType = TaxisType.OrderByTaxis;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderAddDate))
                 {
                     taxisType = TaxisType.OrderByAddDateDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderAddDateBack))
                 {
                     taxisType = TaxisType.OrderByAddDate;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastModifiedDate.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderLastModifiedDate))
                 {
                     taxisType = TaxisType.OrderByLastModifiedDateDesc;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastModifiedDateBack.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderLastModifiedDateBack))
                 {
                     taxisType = TaxisType.OrderByLastModifiedDate;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHits))
                 {
                     taxisType = TaxisType.OrderByHits;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByDay.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHitsByDay))
                 {
                     taxisType = TaxisType.OrderByHitsByDay;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByWeek.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHitsByWeek))
                 {
                     taxisType = TaxisType.OrderByHitsByWeek;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByMonth.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHitsByMonth))
                 {
                     taxisType = TaxisType.OrderByHitsByMonth;
                 }
-                else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
+                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderRandom))
                 {
                     taxisType = TaxisType.OrderByRandom;
                 }

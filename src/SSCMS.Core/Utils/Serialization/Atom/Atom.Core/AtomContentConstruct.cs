@@ -37,6 +37,7 @@ using System.Text;
 using System.Xml.XPath;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Utils;
 using SSCMS.Core.Utils.Serialization.MvpXml;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 {
@@ -109,10 +110,10 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 		/// <param name="mode">The <see cref="Mode"/> of the <see cref="AtomContentConstruct"/>.</param>
 		public AtomContentConstruct(string localName, string content, MediaType type, Mode mode)
 		{
-			this.LocalName = localName;
-			this.Content = content;
-			this.Type = type;
-			this.Mode = mode;
+			LocalName = localName;
+			Content = content;
+			Type = type;
+			Mode = mode;
 		}
 
 		#endregion Constructors
@@ -162,21 +163,21 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 		/// <returns>The string representation of <see cref="AtomContentConstruct"/> class.</returns>
 		public override string ToString()
 		{
-			this.WriteStartElement();
+			WriteStartElement();
 
-			if(this.Content.Length == 0)
+			if(Content.Length == 0)
 				throw new RequiredElementNotFoundException("The content cannot be empty.");
 
-			if(this.Mode == Mode.Escaped)
-				this.Content = Utils.Utils.Escape(this.Content);
+			if(Mode == Mode.Escaped)
+				Content = Utils.Utils.Escape(Content);
 
 			
-			this.Buffer.Append(this.Content);
+			Buffer.Append(Content);
 	
-			this.WriteEndElement();
+			WriteEndElement();
 
-			string output = this.Buffer.ToString();
-			this.Buffer.Length = 0;
+			string output = Buffer.ToString();
+			Buffer.Length = 0;
 
 			return output;
 		}
@@ -190,21 +191,21 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 		/// </summary>
 		protected internal override void WriteStartElement()
 		{
-			this.Buffer.AppendFormat("<{0}", this.LocalName);
+			Buffer.AppendFormat("<{0}", LocalName);
 
-			if((this.Type == MediaType.UnknownType) ||
-				(this.Type == MediaType.ApplicationAtomXml) ||
-				(this.Type == MediaType.ApplicationXAtomXml))
-				this.Type = DefaultValues.MediaType;
+			if((Type == MediaType.UnknownType) ||
+				(Type == MediaType.ApplicationAtomXml) ||
+				(Type == MediaType.ApplicationXAtomXml))
+				Type = DefaultValues.MediaType;
 
-			if(this.Type != DefaultValues.MediaType)
-				this.WriteAttribute("type", Utils.Utils.ParseMediaType(this.Type), false, null);
+			if(Type != DefaultValues.MediaType)
+				WriteAttribute("type", Utils.Utils.ParseMediaType(Type), false, null);
 
-			if(this.Mode != DefaultValues.Mode)
-				this.WriteAttribute("mode", this.Mode.ToString().ToLower(), false, null);
-			this.WriteAttribute("xml:lang", Utils.Utils.ParseLanguage(this.XmlLang), false, null);
+			if(Mode != DefaultValues.Mode)
+				WriteAttribute("mode", StringUtils.ToLower(Mode.ToString()), false, null);
+			WriteAttribute("xml:lang", Utils.Utils.ParseLanguage(XmlLang), false, null);
 
-			this.Buffer.Append(">");
+			Buffer.Append(">");
 		}
 
 		/// <summary>
@@ -212,8 +213,8 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 		/// </summary>
 		protected internal override void WriteEndElement()
 		{
-			this.Buffer.AppendFormat("</{0}>", this.LocalName);
-			this.Buffer.Append(Environment.NewLine);
+			Buffer.AppendFormat("</{0}>", LocalName);
+			Buffer.Append(Environment.NewLine);
 		}
 
 		#endregion
@@ -230,7 +231,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			XPathNodeIterator iter = nav.SelectDescendants(XPathNodeType.Element, true);
 			while(iter.MoveNext())
 			{
-				string name = iter.Current.Name.ToLower();
+				string name = StringUtils.ToLower(iter.Current.Name);
 				int idx = name.IndexOf(":");
 				if(idx != -1)
 					name = name.Split(new char[] {':'}, 2)[1];
@@ -260,7 +261,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			iter = nav.Select("@*");
 			do
 			{
-				switch(iter.Current.Name.ToLower())
+				switch(StringUtils.ToLower(iter.Current.Name))
 				{
 					case "type":
 						contentElement.Type = Utils.Utils.ParseMediaType(
@@ -269,7 +270,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 
 					case "mode":
 					{
-						switch(iter.Current.Value.ToLower())
+						switch(StringUtils.ToLower(iter.Current.Value))
 						{
 							case "escaped":
 								contentElement.Mode = Mode.Escaped;

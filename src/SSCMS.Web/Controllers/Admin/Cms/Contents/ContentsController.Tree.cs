@@ -22,14 +22,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
 
+            var enabledChannelIds = await _authManager.GetChannelIdsAsync(site.Id);
+            var visibleChannelIds = await _authManager.GetVisibleChannelIdsAsync(enabledChannelIds);
+
             var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
+                var visible = visibleChannelIds.Contains(summary.Id);
+                var disabled = !enabledChannelIds.Contains(summary.Id);
                 var current = await _contentRepository.GetSummariesAsync(site, summary);
 
-                //var count = await _contentRepository.GetCountAsync(site, summary);
+                if (!visible) return null;
+
                 return new
                 {
-                    current.Count
+                    current.Count,
+                    Disabled = disabled
                 };
             });
 

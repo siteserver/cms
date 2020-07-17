@@ -79,22 +79,6 @@ namespace SSCMS.Core.Services
                 redisConnectionStringValue = Encrypt(redisConnectionString, SecurityKey);
             }
 
-//            var json = $@"
-//{{
-//  ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
-//  ""IsProtectData"": {isProtectData.ToString().ToLower()},
-//  ""SecurityKey"": ""{SecurityKey}"",
-//  ""Database"": {{
-//    ""Type"": ""{type}"",
-//    ""ConnectionString"": ""{databaseConnectionStringValue}""
-//  }},
-//  ""Redis"": {{
-//    ""ConnectionString"": ""{redisConnectionStringValue}""
-//  }}
-//}}";
-
-//            await FileUtils.WriteTextAsync(path, json.Trim());
-
             InstallUtils.SaveSettings(ContentRootPath, isNightlyUpdate, isProtectData, SecurityKey, type,
                 databaseConnectionStringValue, redisConnectionStringValue);
         }

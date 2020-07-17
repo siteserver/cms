@@ -69,7 +69,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             var fileName = Path.GetFileName(file.FileName);
 
-            var fileExtName = PathUtils.GetExtension(fileName).ToLower();
+            var fileExtName = StringUtils.ToLower(PathUtils.GetExtension(fileName));
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
             var localFileName = _pathManager.GetUploadFileName(site, fileName);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);

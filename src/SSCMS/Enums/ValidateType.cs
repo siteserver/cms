@@ -11,8 +11,6 @@ namespace SSCMS.Enums
         None,
         [DataEnum(DisplayName = "字段为必填项")]
         Required,
-        [DataEnum(DisplayName = "字段必须仅包含数字")]
-        Numeric,
         [DataEnum(DisplayName = "字段必须是有效的电子邮件")]
         Email,
         [DataEnum(DisplayName = "字段必须是有效的手机号码")]

@@ -11,8 +11,8 @@ namespace SSCMS.Core.Utils
 
             var json = $@"
 {{
-  ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
-  ""IsProtectData"": {isProtectData.ToString().ToLower()},
+  ""IsNightlyUpdate"": {StringUtils.ToLower(isNightlyUpdate.ToString())},
+  ""IsProtectData"": {StringUtils.ToLower(isProtectData.ToString())},
   ""SecurityKey"": ""{securityKey}"",
   ""Database"": {{
     ""Type"": ""{databaseType}"",

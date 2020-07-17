@@ -35,6 +35,7 @@
 using System;
 using System.Xml.XPath;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 {
@@ -209,7 +210,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 
 			while(iter.MoveNext())
 			{
-				switch(iter.Current.Name.ToLower())
+				switch(StringUtils.ToLower(iter.Current.Name))
 				{
 					case "link":
 						try
@@ -225,7 +226,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			iter = nav.Select("@*");
 			do
 			{
-				switch(iter.Current.Name.ToLower())
+				switch(StringUtils.ToLower(iter.Current.Name))
 				{
 					case "rel":
 						linkElement.Rel = Utils.Utils.ParseRelationship(iter.Current.Value);

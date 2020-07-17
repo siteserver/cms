@@ -7,6 +7,9 @@ namespace SSCMS.Models
     public class LibraryFile : Entity
     {
         [DataColumn]
+        public int SiteId { get; set; }
+
+        [DataColumn]
         public string Title { get; set; }
 
         [DataColumn]

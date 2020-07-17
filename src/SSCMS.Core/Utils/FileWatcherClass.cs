@@ -16,7 +16,7 @@ namespace SSCMS.Core.Utils
 
         public FileWatcherClass(ISettingsManager settingsManager, string cacheName)
         {
-            _cacheFilePath = PathUtils.Combine(settingsManager.WebRootPath, DirectoryUtils.SiteFilesDirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
+            _cacheFilePath = PathUtils.Combine(settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
 
             FileDependency();
         }

@@ -9,7 +9,6 @@
     
     <el-menu
       :default-openeds="defaultOpeneds"
-      :default-active="defaultActive"
       :unique-opened="false"
       class="el-menu-vertical-demo"
       background-color="#545c64"
@@ -104,7 +103,7 @@
             { required: true, message: '请输入排序' },
             { type: 'number', message: '排序必须为数字' }
           ]">
-            <el-input v-model="openMenu.taxis"></el-input>
+            <el-input v-model.number="openMenu.taxis"></el-input>
           </el-form-item>
       
           <el-divider></el-divider>

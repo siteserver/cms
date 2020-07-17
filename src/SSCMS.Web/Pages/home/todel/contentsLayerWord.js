@@ -48,7 +48,7 @@ var methods = {
     var uploader = new Uploader({
       url: $uploadUrl + '/actions/upload?siteId=' + $this.siteId + '&channelId=' + $this.channelId + '&userToken=' + utils.getToken(),
       target: document.getElementById("drop-area"),
-      allows: ".doc,.docx",
+      allows: ".docx",
       on: {
         add: function (task) {
           if (task.disabled) {

@@ -223,7 +223,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 type = nameof(StlParserUtility.Title);
             }
-            type = type.ToLower();
+            type = StringUtils.ToLower(type);
 
             var parsedContent = string.Empty;
 
@@ -241,39 +241,39 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             var inputType = InputType.Text;
 
-            if (type.Equals(nameof(Channel.Id).ToLower()))
+            if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Id)))
             {
                 parsedContent = channelId.ToString();
             }
-            else if (type.Equals(nameof(Channel.SiteId).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.SiteId)))
             {
                 parsedContent = channel.SiteId.ToString();
             }
-            else if (type.Equals(nameof(Channel.ContentModelPluginId).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ContentModelPluginId)))
             {
                 parsedContent = channel.ContentModelPluginId;
             }
-            else if (type.Equals(nameof(Channel.ContentRelatedPluginIds).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ContentRelatedPluginIds)))
             {
                 parsedContent = ListUtils.ToString(channel.ContentRelatedPluginIds);
             }
-            else if (type.Equals(nameof(Channel.ParentId).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ParentId)))
             {
                 parsedContent = channel.ParentId.ToString();
             }
-            else if (type.Equals(nameof(Channel.ParentsPath).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ParentsPath)))
             {
                 parsedContent = channel.ParentsPath;
             }
-            else if (type.Equals(nameof(Channel.ParentsCount).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ParentsCount)))
             {
                 parsedContent = channel.ParentsCount.ToString();
             }
-            else if (type.Equals(nameof(Channel.ChildrenCount).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ChildrenCount)))
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
-            else if (type.Equals(nameof(Channel.IndexName).ToLower()) || type.Equals(nameof(Channel.IndexName).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.IndexName)) || StringUtils.EqualsIgnoreCase(type, nameof(Channel.IndexName)))
             {
                 parsedContent = channel.IndexName;
 
@@ -287,26 +287,26 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
-            else if (type.Equals(nameof(Channel.GroupNames).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.GroupNames)))
             {
                 parsedContent = ListUtils.ToString(channel.GroupNames);
             }
-            else if (type.Equals(nameof(Channel.Taxis).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Taxis)))
             {
                 parsedContent = channel.Taxis.ToString();
             }
-            else if (type.Equals(nameof(Channel.AddDate).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.AddDate)))
             {
                 inputType = InputType.DateTime;
                 parsedContent = DateUtils.Format(channel.AddDate, formatString);
             }
-            else if (type.Equals(nameof(Channel.ImageUrl).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ImageUrl)))
             {
                 inputType = InputType.Image;
                 var inputParser = new InputParserManager(parseManager.PathManager);
                 parsedContent = await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsStlEntity); // contextInfo.IsStlEntity = true 表示实体标签
             }
-            else if (type.Equals(nameof(Channel.Content).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Content)))
             {
                 parsedContent = await parseManager.PathManager.DecodeTextEditorAsync(pageInfo.Site, channel.Content, pageInfo.IsLocal);
 
@@ -325,43 +325,43 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
-            else if (type.Equals(nameof(Channel.FilePath).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.FilePath)))
             {
                 parsedContent = channel.FilePath;
             }
-            else if (type.Equals(nameof(Channel.ChannelFilePathRule).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ChannelFilePathRule)))
             {
                 parsedContent = channel.ChannelFilePathRule;
             }
-            else if (type.Equals(nameof(Channel.ContentFilePathRule).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ContentFilePathRule)))
             {
                 parsedContent = channel.ContentFilePathRule;
             }
-            else if (type.Equals(nameof(Channel.LinkUrl).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.LinkUrl)))
             {
                 parsedContent = channel.LinkUrl;
             }
-            else if (type.Equals(nameof(Channel.LinkType).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.LinkType)))
             {
                 parsedContent = channel.LinkType.GetValue();
             }
-            else if (type.Equals(nameof(Channel.ChannelTemplateId).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ChannelTemplateId)))
             {
                 parsedContent = channel.ChannelTemplateId.ToString();
             }
-            else if (type.Equals(nameof(Channel.ContentTemplateId).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ContentTemplateId)))
             {
                 parsedContent = channel.ContentTemplateId.ToString();
             }
-            else if (type.Equals(nameof(Channel.Keywords).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Keywords)))
             {
                 parsedContent = channel.Keywords;
             }
-            else if (type.Equals(nameof(Channel.Description).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Description)))
             {
                 parsedContent = channel.Description;
             }
-            else if (type.Equals(StlParserUtility.Title.ToLower()) || type.Equals(nameof(Channel.ChannelName).ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.Title) || StringUtils.EqualsIgnoreCase(type, nameof(Channel.ChannelName)))
             {
                 parsedContent = channel.ChannelName;
 
@@ -380,7 +380,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
                 }
             }
-            else if (type.Equals(StlParserUtility.PageContent.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.PageContent))
             {
                 if (contextInfo.IsInnerElement || pageInfo.Template.TemplateType != TemplateType.ChannelTemplate)
                 {
@@ -411,16 +411,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.Key, type, contextInfo);
                 parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
             }
-            else if (type.Equals(StlParserUtility.CountOfChannels.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfChannels))
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
-            else if (type.Equals(StlParserUtility.CountOfContents.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfContents))
             {
                 var count = await databaseManager.ContentRepository.GetCountAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();
             }
-            else if (type.Equals(StlParserUtility.CountOfImageContents.ToLower()))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfImageContents))
             { 
                 var count = await databaseManager.ContentRepository.GetCountCheckedImageAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();

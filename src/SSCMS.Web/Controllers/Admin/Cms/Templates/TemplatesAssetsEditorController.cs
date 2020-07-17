@@ -43,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             {
                 content = await FileUtils.ReadTextAsync(filePath);
             }
-            var extName = PathUtils.GetExtension(filePath).ToLower();
+            var extName = StringUtils.ToLower(PathUtils.GetExtension(filePath));
             var path = string.Empty;
 
             if (StringUtils.EqualsIgnoreCase(extName, ".html"))

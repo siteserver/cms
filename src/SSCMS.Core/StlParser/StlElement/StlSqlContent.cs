@@ -107,7 +107,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
-                    type = value.ToLower();
+                    type = StringUtils.ToLower(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, LeftText))
                 {

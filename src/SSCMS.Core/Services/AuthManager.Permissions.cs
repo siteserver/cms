@@ -63,16 +63,64 @@ namespace SSCMS.Core.Services
             {
                 var dict = await GetSitePermissionDictAsync();
 
-                foreach (var siteId in dict.Keys)
+                foreach (var siteId in dict.Keys.Where(siteId => !siteIdList.Contains(siteId)))
                 {
-                    if (!siteIdList.Contains(siteId))
-                    {
-                        siteIdList.Add(siteId);
-                    }
+                    siteIdList.Add(siteId);
                 }
             }
 
             return siteIdList;
+        }
+
+        public async Task<List<int>> GetChannelIdsAsync(int siteId)
+        {
+            if (await IsSiteAdminAsync(siteId))
+            {
+                return await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
+            }
+
+            var siteChannelIdList = new List<int>();
+            var dict = await GetChannelPermissionDictAsync();
+            foreach (var dictKey in dict.Keys)
+            {
+                var kvp = ParsePermissionDictKey(dictKey);
+                if (kvp.Key == siteId)
+                {
+                    var theChannelId = kvp.Value;
+
+                    var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId, theChannelId, ScopeType.All);
+
+                    foreach (var channelId in channelIdList)
+                    {
+                        if (!siteChannelIdList.Contains(channelId))
+                        {
+                            siteChannelIdList.Add(channelId);
+                        }
+                    }
+                }
+            }
+
+            return siteChannelIdList;
+        }
+
+        public async Task<List<int>> GetVisibleChannelIdsAsync(List<int> channelIdsWithPermissions)
+        {
+            var visibleChannelIds = new List<int>();
+            foreach (var enabledChannelId in channelIdsWithPermissions)
+            {
+                var enabledChannel = await _databaseManager.ChannelRepository.GetAsync(enabledChannelId);
+                var parentIds = ListUtils.GetIntList(enabledChannel.ParentsPath);
+                foreach (var parentId in parentIds.Where(parentId => !visibleChannelIds.Contains(parentId)))
+                {
+                    visibleChannelIds.Add(parentId);
+                }
+                if (!visibleChannelIds.Contains(enabledChannelId))
+                {
+                    visibleChannelIds.Add(enabledChannelId);
+                }
+            }
+
+            return visibleChannelIds;
         }
 
         public async Task<List<int>> GetChannelIdsAsync(int siteId, params string[] permissions)

@@ -21,8 +21,6 @@ namespace SSCMS.Web.Controllers.Admin.Open
             account.TenPayAppSecret = request.TenPayAppSecret;
             account.TenPayMchId = request.TenPayMchId;
             account.TenPayKey = request.TenPayKey;
-            account.TenPayCertPath = request.TenPayCertPath;
-            account.TenPayCertSecret = request.TenPayCertSecret;
             account.TenPayAuthorizeUrl = request.TenPayAuthorizeUrl;
             account.TenPayNotifyUrl = request.TenPayNotifyUrl;
 

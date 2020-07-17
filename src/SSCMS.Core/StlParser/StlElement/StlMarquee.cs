@@ -61,7 +61,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Direction))
                 {
-                    if (value.ToLower().Equals(DirectionHorizontal.ToLower()))
+                    if (StringUtils.EqualsIgnoreCase(value, DirectionHorizontal))
                     {
                         direction = DirectionHorizontal;
                     }

@@ -64,7 +64,10 @@ var methods = {
       siteId: this.siteId,
       tenPayAppId: this.account.tenPayAppId,
       tenPayAppSecret: this.account.tenPayAppSecret,
-      tenPayMchId: this.account.tenPayMchId
+      tenPayMchId: this.account.tenPayMchId,
+      tenPayKey: this.account.tenPayKey,
+      tenPayAuthorizeUrl: this.account.tenPayAuthorizeUrl,
+      tenPayNotifyUrl: this.account.tenPayNotifyUrl
     }).then(function (response) {
       var res = response.data;
 

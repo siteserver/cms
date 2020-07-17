@@ -70,9 +70,9 @@ namespace SSCMS.Core.StlParser.StlEntity
                     }
                 }
                 
-                if (attributeName.ToLower().StartsWith("up") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
+                if (StringUtils.StartsWithIgnoreCase(attributeName, "up") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
                 {
-                    if (attributeName.ToLower().StartsWith("up."))
+                    if (StringUtils.StartsWithIgnoreCase(attributeName, "up."))
                     {
                         upLevel = 1;
                     }
@@ -84,9 +84,9 @@ namespace SSCMS.Core.StlParser.StlEntity
                     topLevel = -1;
                     attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
-                else if (attributeName.ToLower().StartsWith("top") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
+                else if (StringUtils.StartsWithIgnoreCase(attributeName, "top") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
                 {
-                    if (attributeName.ToLower().StartsWith("top."))
+                    if (StringUtils.StartsWithIgnoreCase(attributeName, "top."))
                     {
                         topLevel = 1;
                     }

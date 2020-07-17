@@ -27,10 +27,11 @@ namespace SSCMS.Core.Services
         public IContentTagRepository ContentTagRepository { get; }
         public IDbCacheRepository DbCacheRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
+        public ILibraryAudioRepository LibraryAudioRepository { get; }
+        public ILibraryCardRepository LibraryCardRepository { get; }
         public ILibraryFileRepository LibraryFileRepository { get; }
         public ILibraryGroupRepository LibraryGroupRepository { get; }
         public ILibraryImageRepository LibraryImageRepository { get; }
-        public ILibraryTextRepository LibraryTextRepository { get; }
         public ILibraryVideoRepository LibraryVideoRepository { get; }
         public ILogRepository LogRepository { get; }
         public IOpenAccountRepository OpenAccountRepository { get; }
@@ -52,7 +53,7 @@ namespace SSCMS.Core.Services
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
 
-        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryTextRepository libraryTextRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IOpenAccountRepository openAccountRepository, IOpenMenuRepository openMenuRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
+        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryAudioRepository libraryAudioRepository, ILibraryCardRepository libraryCardRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IOpenAccountRepository openAccountRepository, IOpenMenuRepository openMenuRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
         {
             _settingsManager = settingsManager;
             AccessTokenRepository = accessTokenRepository;
@@ -67,10 +68,11 @@ namespace SSCMS.Core.Services
             ContentTagRepository = contentTagRepository;
             DbCacheRepository = dbCacheRepository;
             ErrorLogRepository = errorLogRepository;
+            LibraryAudioRepository = libraryAudioRepository;
+            LibraryCardRepository = libraryCardRepository;
             LibraryFileRepository = libraryFileRepository;
             LibraryGroupRepository = libraryGroupRepository;
             LibraryImageRepository = libraryImageRepository;
-            LibraryTextRepository = libraryTextRepository;
             LibraryVideoRepository = libraryVideoRepository;
             LogRepository = logRepository;
             OpenAccountRepository = openAccountRepository;
@@ -109,10 +111,11 @@ namespace SSCMS.Core.Services
                 ContentTagRepository,
                 DbCacheRepository,
                 ErrorLogRepository,
+                LibraryAudioRepository,
+                LibraryCardRepository,
                 LibraryFileRepository,
                 LibraryGroupRepository,
                 LibraryImageRepository,
-                LibraryTextRepository,
                 LibraryVideoRepository,
                 LogRepository,
                 OpenAccountRepository,
@@ -261,7 +264,7 @@ namespace SSCMS.Core.Services
 
         public int GetPageTotalCount(string sqlString)
         {
-            var temp = sqlString.ToLower();
+            var temp = StringUtils.ToLower(sqlString);
             var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
             if (pos > -1)
                 sqlString = sqlString.Substring(0, pos);
@@ -277,7 +280,7 @@ namespace SSCMS.Core.Services
         {
             var retVal = string.Empty;
 
-            var temp = sqlString.ToLower();
+            var temp = StringUtils.ToLower(sqlString);
             var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
             if (pos > -1)
                 sqlString = sqlString.Substring(0, pos);

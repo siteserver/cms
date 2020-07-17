@@ -228,7 +228,7 @@
     show-overflow-tooltip
     label="状态">
     <template slot-scope="scope">
-      <el-link size="mini" :underline="false" v-on:click.stop.native="btnContentStateClick(scope.row.id)" :type="(scope.row.checked ? 'primary' : 'danger')">
+      <el-link :disabled="!permissions.isEdit" size="mini" :underline="false" v-on:click.stop.native="btnContentStateClick(scope.row.id)" :type="(scope.row.checked ? 'primary' : 'danger')">
         {{ scope.row.state }}
       </el-link>
     </template>
@@ -243,7 +243,7 @@
     min-width="80"
     show-overflow-tooltip>
     <template slot-scope="scope">
-      <el-link v-if="menus" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">
+      <el-link v-if="menus" :disabled="!permissions.isEdit" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">
         <i v-if="menu.iconClass" :class="menu.iconClass"></i>
         {{ menu.text }}
       </el-link>
@@ -255,7 +255,7 @@
     align="center"
     width="60">
     <template slot-scope="scope">
-      <el-link size="mini" :underline="false" v-on:click.stop.native="btnEditClick(scope.row)" type="primary">编辑</el-link>
+      <el-link :disabled="!permissions.isEdit" size="mini" :underline="false" v-on:click.stop.native="btnEditClick(scope.row)" type="primary">编辑</el-link>
     </template>
   </el-table-column>
 </el-table>

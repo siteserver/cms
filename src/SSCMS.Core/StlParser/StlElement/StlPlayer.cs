@@ -172,7 +172,7 @@ namespace SSCMS.Core.StlParser.StlElement
 <div id='{ajaxElementId}'></div>
 <script type='text/javascript'>
 	jwplayer('{ajaxElementId}').setup({{
-        autostart: {isAutoPlay.ToString().ToLower()},
+        autostart: {StringUtils.ToLower(isAutoPlay.ToString())},
 		file: ""{playUrl}"",
 		width: ""{width}"",
 		height: ""{height}"",
@@ -199,7 +199,7 @@ namespace SSCMS.Core.StlParser.StlElement
 <script language=""javascript"">
     flowplayer(""player_{ajaxElementId}"", ""{swfUrl}"", {{
         clip:  {{
-            autoPlay: {isAutoPlay.ToString().ToLower()}
+            autoPlay: {StringUtils.ToLower(isAutoPlay.ToString())}
         }}
     }});
 </script>

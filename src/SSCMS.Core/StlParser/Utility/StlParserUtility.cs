@@ -78,8 +78,9 @@ namespace SSCMS.Core.StlParser.Utility
             var exists = false;
             foreach (var label in list)
             {
-                if (label.ToLower().StartsWith($"<{stlElementName.ToLower()} ") || label.ToLower().StartsWith(
-                        $"<{stlElementName.ToLower()}>"))
+                if (StringUtils.StartsWithIgnoreCase(label, $"<{stlElementName} ") || StringUtils.StartsWithIgnoreCase(
+                    label,
+                    $"<{stlElementName}>"))
                 {
                     exists = true;
                     break;
@@ -137,8 +138,9 @@ namespace SSCMS.Core.StlParser.Utility
             var stlElement = string.Empty;
             foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
             {
-                if (labelWithDisplayModeEnNameAndChannelId.ToLower().StartsWith($"<{stlElementName.ToLower()} ") || labelWithDisplayModeEnNameAndChannelId.ToLower().StartsWith(
-                        $"<{stlElementName.ToLower()}>"))
+                if (StringUtils.StartsWithIgnoreCase(labelWithDisplayModeEnNameAndChannelId, $"<{stlElementName} ") ||
+                    StringUtils.StartsWithIgnoreCase(labelWithDisplayModeEnNameAndChannelId,
+                        $"<{stlElementName}>"))
                 {
                     stlElement = labelWithDisplayModeEnNameAndChannelId;
                     break;
@@ -178,7 +180,7 @@ namespace SSCMS.Core.StlParser.Utility
         public static bool IsStlEntityInclude(string content)
         {
             if (content == null) return false;
-            content = content.ToLower();
+            content = StringUtils.ToLower(content);
             return content.Contains('}') && (content.IndexOf("{stl:", StringComparison.Ordinal) != -1 || content.IndexOf("{stl.", StringComparison.Ordinal) != -1 || content.IndexOf("{content.", StringComparison.Ordinal) != -1 || content.IndexOf("{channel.", StringComparison.Ordinal) != -1);
         }
 
@@ -335,7 +337,7 @@ namespace SSCMS.Core.StlParser.Utility
 
                     if (!string.IsNullOrEmpty(name))
                     {
-                        retVal = new StlElementInfo(name.ToLower(), attributesIgnoreCase, outerHtml, innerHtml);
+                        retVal = new StlElementInfo(StringUtils.ToLower(name), attributesIgnoreCase, outerHtml, innerHtml);
                     }
                 }
             }

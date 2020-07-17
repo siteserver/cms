@@ -83,7 +83,7 @@ namespace SSCMS.Core.Utils
 
         public static string GetTemplateUrl(string name)
         {
-            return $"https://www.siteserver.cn/templates/t-{name.ToLower()}/index.html";
+            return $"https://www.siteserver.cn/templates/t-{StringUtils.ToLower(name)}/index.html";
         }
 
         public static string GetDownloadUrl(string name)

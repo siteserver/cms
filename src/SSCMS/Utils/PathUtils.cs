@@ -156,7 +156,7 @@ namespace SSCMS.Utils
 
         public static string GetSafeFilename(string filename)
         {
-            if (string.IsNullOrEmpty(filename)) return StringUtils.GetShortGuid().ToLower();
+            if (string.IsNullOrEmpty(filename)) return StringUtils.ToLower(StringUtils.GetShortGuid());
 
             return string.Join("_", filename.Split(GetInvalidChars()));
         }
@@ -247,7 +247,7 @@ namespace SSCMS.Utils
                 uploadDirectoryName = "specials";
             }
 
-            return $"/{DirectoryUtils.SiteFilesDirectoryName}/{DirectoryUtils.SiteFiles.Library}/{uploadDirectoryName}/{DateTime.Now.Year}/{DateTime.Now.Month}";
+            return $"/{DirectoryUtils.SiteFiles.DirectoryName}/{DirectoryUtils.SiteFiles.Library}/{uploadDirectoryName}/{DateTime.Now.Year}/{DateTime.Now.Month}";
         }
 
         public static string GetLibraryVirtualFilePath(UploadType uploadType, string fileName)

@@ -204,7 +204,7 @@ namespace SSCMS.Core.Utils.Office
             var nameValueCollection = new NameValueCollection();
             foreach (var style in styleList)
             {
-                nameValueCollection[style.DisplayName] = style.AttributeName.ToLower();
+                nameValueCollection[style.DisplayName] = StringUtils.ToLower(style.AttributeName);
             }
 
             var attributeNames = new List<string>();

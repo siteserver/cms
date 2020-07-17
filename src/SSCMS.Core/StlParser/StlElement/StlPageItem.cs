@@ -413,7 +413,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = text + pageBuilder;
                 }
-                else if (type.ToLower().Equals(TypePageSelect.ToLower()))//页跳转
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页跳转
                 {
                     var selectAttributes = new NameValueCollection();
                     if (!string.IsNullOrEmpty(textClass))
@@ -526,15 +526,15 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = isHyperlink ? pageUrl : PageUtils.UnClickableUrl;
                 }
-                else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
+                else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentPageIndex))//当前页索引
                 {
                     parsedContent = Convert.ToString(currentPageIndex + 1);
                 }
-                else if (type.ToLower().Equals(TypeTotalPageNum.ToLower()))//总页数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalPageNum))//总页数
                 {
                     parsedContent = Convert.ToString(pageCount);
                 }
-                else if (type.ToLower().Equals(TypeTotalNum.ToLower()))//总内容数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     parsedContent = Convert.ToString(totalNum);
                 }
@@ -747,24 +747,24 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                 }
 
-                else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
+                else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentPageIndex))//当前页索引
                 {
                     var currentPageHtml = text + Convert.ToString(currentPageIndex + 1);
                     isAddSpan = true;
                     parsedContent = currentPageHtml;
                 }
-                else if (type.ToLower().Equals(TypeTotalPageNum.ToLower()))//总页数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalPageNum))//总页数
                 {
                     var currentPageHtml = text + Convert.ToString(pageCount);
                     isAddSpan = true;
                     parsedContent = currentPageHtml;
                 }
-                else if (type.ToLower().Equals(TypeTotalNum.ToLower()))//总内容数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     isAddSpan = true;
                     parsedContent = text + Convert.ToString(totalNum);
                 }
-                else if (type.ToLower().Equals(TypePageNavigation.ToLower()))//页导航
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageNavigation))//页导航
                 {
                     var leftText = "[";
                     var rightText = "]";
@@ -908,7 +908,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = text + pageBuilder;
                 }
-                else if (type.ToLower().Equals(TypePageSelect.ToLower()))//页跳转
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页跳转
                 {
                     var selectAttributes = new NameValueCollection();
                     if (!string.IsNullOrEmpty(textClass))
@@ -1001,15 +1001,15 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = isHyperlink ? $"javascript:{clickString}" : PageUtils.UnClickableUrl;
                 }
-                else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
+                else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentPageIndex))//当前页索引
                 {
                     parsedContent = Convert.ToString(currentPageIndex + 1);
                 }
-                else if (type.ToLower().Equals(TypeTotalPageNum.ToLower()))//总页数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalPageNum))//总页数
                 {
                     parsedContent = Convert.ToString(pageCount);
                 }
-                else if (type.ToLower().Equals(TypeTotalNum.ToLower()))//总内容数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     parsedContent = Convert.ToString(totalNum);
                 }
@@ -1225,24 +1225,24 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                     }
                 }
-                else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
+                else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentPageIndex))//当前页索引
                 {
                     var currentPageHtml = text + Convert.ToString(currentPageIndex + 1);
                     isAddSpan = true;
                     parsedContent = currentPageHtml;
                 }
-                else if (type.ToLower().Equals(TypeTotalPageNum.ToLower()))//总页数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalPageNum))//总页数
                 {
                     var currentPageHtml = text + Convert.ToString(pageCount);
                     isAddSpan = true;
                     parsedContent = currentPageHtml;
                 }
-                else if (type.ToLower().Equals(TypeTotalNum.ToLower()))//总内容数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     isAddSpan = true;
                     parsedContent = text + Convert.ToString(totalNum);
                 }
-                else if (type.ToLower().Equals(TypePageNavigation.ToLower()))//页导航
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageNavigation))//页导航
                 {
                     var leftText = "[";
                     var rightText = "]";
@@ -1385,7 +1385,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = text + pageBuilder;
                 }
-                else if (type.ToLower().Equals(TypePageSelect.ToLower()))//页跳转
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页跳转
                 {
                     var selectAttributes = new NameValueCollection();
                     if (!string.IsNullOrEmpty(textClass))
@@ -1472,15 +1472,15 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = isHyperlink ? $"javascript:{jsMethod}" : PageUtils.UnClickableUrl;
                 }
-                else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
+                else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentPageIndex))//当前页索引
                 {
                     parsedContent = Convert.ToString(currentPageIndex + 1);
                 }
-                else if (type.ToLower().Equals(TypeTotalPageNum.ToLower()))//总页数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalPageNum))//总页数
                 {
                     parsedContent = Convert.ToString(pageCount);
                 }
-                else if (type.ToLower().Equals(TypeTotalNum.ToLower()))//总内容数
+                else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     parsedContent = Convert.ToString(totalNum);
                 }

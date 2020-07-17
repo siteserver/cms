@@ -1,82 +1,79 @@
 ﻿var $url = '/settings/analysisUser';
 
+var now = new Date();
 var data = utils.init({
-  dateX: null,
-  dateY: null,
-  formInline: {
-    dateFrom: '',
-    dateTo: '',
-    xType: 'Day'
+  form: {
+    dateFrom: utils.getQueryString('dateFrom') || utils.formatDate(new Date(now.setMonth(now.getMonth()-1))),
+    dateTo: utils.getQueryString('dateTo') || utils.formatDate(new Date()),
   },
-  chartOption:null
+  chartData: null
 });
 
 var methods = {
-  getConfig: function () {
+  apiGet: function() {
     var $this = this;
 
-    $api.post($url, this.formInline).then(function (response) {
+    utils.loading(this, true);
+    $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
-      $this.dateX = res.dateX;
-      $this.dateY = res.dateY;
-      $this.loadCharts();
-    }).catch(function (error) {
+      $this.chartData = {
+        labels: res.days,
+        datasets: [
+          {
+            label: "用户注册数",
+            backgroundColor: "#409EFF",
+            data: res.registerCount
+          },
+          {
+            label: "用户登录数",
+            backgroundColor: "#67C23A",
+            data: res.loginCount
+          }
+          
+        ]
+      };
+    })
+    .catch(function(error) {
       utils.error(error);
-    }).then(function () {
+    })
+    .then(function() {
       utils.loading($this, false);
     });
   },
 
   btnSearchClick() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, this.formInline).then(function (response) {
-      var res = response.data;
-
-      $this.dateX = res.dateX;
-      $this.dateY = res.dateY;
-      $this.loadCharts();
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  loadCharts: function () {
-    this.chartOption = {
-      tooltip: {
-        show: true
-      },
-      title: {
-        text: '用户注册量'
-      },
-      xAxis: [{
-        type: 'category',
-        data: this.dateX
-      }],
-      yAxis: [{
-        type: 'value'
-      }],
-      series: [{
-        "name": "登录次数",
-        "type": "line",
-        "data": this.dateY
-      }],
-      animationDuration: 2000
-    };
+    location.href = '?dateFrom=' + this.form.dateFrom + '&dateTo=' + this.form.dateTo;
   }
 };
 
-Vue.component('v-chart', VueECharts);
+Vue.component("line-chart", {
+  extends: VueChartJs.Line,
+  mounted: function() {
+    this.renderChart(
+      this.$root.chartData,
+      {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
+            }
+          ]
+        }
+      }
+    );
+  }
+});
 
 var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   }
 });

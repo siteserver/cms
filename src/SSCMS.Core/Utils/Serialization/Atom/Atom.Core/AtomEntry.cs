@@ -42,6 +42,7 @@ using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements.DublinCore;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core.Collections;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 {
@@ -502,7 +503,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			
 			while(iter.MoveNext())
 			{
-				string name = iter.Current.Name.ToLower();
+				string name = StringUtils.ToLower(iter.Current.Name);
 				int idx = name.IndexOf(":");
 				if (idx != -1)
 					name = name.Split(new char[] { ':' }, 2)[0];
@@ -615,7 +616,7 @@ namespace SSCMS.Core.Utils.Serialization.Atom.Atom.Core
 			iter = iter.Current.Select("@*");
 			do
 			{
-				switch(iter.Current.Name.ToLower())
+				switch(StringUtils.ToLower(iter.Current.Name))
 				{
 					case "href":
 						try

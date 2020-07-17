@@ -178,11 +178,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 parsedContent = PathUtils.RemoveExtension(PageUtils.GetFileNameFromUrl(fileUrl));
                 if (isLower)
                 {
-                    parsedContent = parsedContent.ToLower();
+                    parsedContent = StringUtils.ToLower(parsedContent);
                 }
                 if (isUpper)
                 {
-                    parsedContent = parsedContent.ToUpper();
+                    parsedContent = StringUtils.ToUpper(parsedContent);
                 }
             }
             else if (isFileType)
@@ -191,11 +191,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 parsedContent = PathUtils.GetExtension(filePath).Trim('.');
                 if (isLower)
                 {
-                    parsedContent = parsedContent.ToLower();
+                    parsedContent = StringUtils.ToLower(parsedContent);
                 }
                 if (isUpper)
                 {
-                    parsedContent = parsedContent.ToUpper();
+                    parsedContent = StringUtils.ToUpper(parsedContent);
                 }
             }
             else if (isFileSize)

@@ -60,7 +60,7 @@ var methods = {
   btnUserView: function(userId) {
     utils.openLayer({
       title: '用户查看',
-      url: utils.getSharedUrl('userLayerView', {
+      url: utils.getCommonUrl('userLayerView', {
         userId: userId
       })
     })

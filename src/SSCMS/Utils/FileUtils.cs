@@ -275,7 +275,7 @@ namespace SSCMS.Utils
             {
                 using (var stream = File.OpenRead(filePath))
                 {
-                    return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "‌​").ToLower();
+                    return StringUtils.ToLower(BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "‌​"));
                 }
             }
         }
@@ -403,7 +403,7 @@ namespace SSCMS.Utils
             var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
-                fileExtName = fileExtName.ToLower().Trim();
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
                 if (!fileExtName.StartsWith("."))
                 {
                     fileExtName = "." + fileExtName;
@@ -421,7 +421,7 @@ namespace SSCMS.Utils
             var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
-                fileExtName = fileExtName.ToLower().Trim();
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
                 if (!fileExtName.StartsWith("."))
                 {
                     fileExtName = "." + fileExtName;
@@ -444,7 +444,7 @@ namespace SSCMS.Utils
             var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
-                fileExtName = fileExtName.ToLower().Trim();
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
                 if (!fileExtName.StartsWith("."))
                 {
                     fileExtName = "." + fileExtName;
@@ -462,7 +462,7 @@ namespace SSCMS.Utils
             var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
-                fileExtName = fileExtName.ToLower().Trim();
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
                 if (!fileExtName.StartsWith("."))
                 {
                     fileExtName = "." + fileExtName;
@@ -480,7 +480,7 @@ namespace SSCMS.Utils
             var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
-                fileExtName = fileExtName.ToLower().Trim();
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
                 if (!fileExtName.StartsWith("."))
                 {
                     fileExtName = "." + fileExtName;
@@ -498,7 +498,7 @@ namespace SSCMS.Utils
             var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
-                fileExtName = fileExtName.ToLower().Trim();
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
                 if (!fileExtName.StartsWith("."))
                 {
                     fileExtName = "." + fileExtName;

@@ -241,15 +241,6 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(rawUrl)) return string.Empty;
 
             var fileName = string.Empty;
-            //if (rawUrl.ToLower().StartsWith("http://"))
-            //{
-            //    rawUrl = rawUrl.Substring("http://".Length);
-            //}
-            //if (rawUrl.IndexOf("?") != -1)
-            //{
-            //    int index = rawUrl.IndexOf("?");
-            //    rawUrl = rawUrl.Remove(index, rawUrl.Length - index);
-            //}
             rawUrl = RemoveProtocolFromUrl(rawUrl);
             rawUrl = GetUrlWithoutQueryString(rawUrl);
             if (rawUrl.IndexOf("/", StringComparison.Ordinal) != -1 && !rawUrl.EndsWith("/"))

@@ -231,7 +231,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
-                            if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
+                            if (StringUtils.EndsWithIgnoreCase(imageUrl, ".jpg") || StringUtils.EndsWithIgnoreCase(imageUrl, ".jpeg") || StringUtils.EndsWithIgnoreCase(imageUrl, ".png") || StringUtils.EndsWithIgnoreCase(imageUrl, ".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
@@ -239,20 +239,6 @@ namespace SSCMS.Core.StlParser.StlElement
                             }
                         }
                     }
-
-                    //foreach (var dataItem in dataSource)
-                    //{
-                    //    var contentInfo = new BackgroundContentInfo(dataItem);
-                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
-                    //    {
-                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
-                    //        {
-                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.Site, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl)));
-                    //        }
-                    //    }
-                    //}
 
                     if (string.IsNullOrEmpty(bgColor))
                     {
@@ -320,7 +306,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
-                            if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
+                            if (StringUtils.EndsWithIgnoreCase(imageUrl, ".jpg") || StringUtils.EndsWithIgnoreCase(imageUrl, ".jpeg") || StringUtils.EndsWithIgnoreCase(imageUrl, ".png") || StringUtils.EndsWithIgnoreCase(imageUrl, ".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
@@ -328,20 +314,6 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             }
                         }
                     }
-
-                    //foreach (var dataItem in dataSource)
-                    //{
-                    //    var contentInfo = new BackgroundContentInfo(dataItem);
-                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
-                    //    {
-                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
-                    //        {
-                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.Site, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl)));
-                    //        }
-                    //    }
-                    //}
 
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     var paramBuilder = new StringBuilder();
@@ -504,8 +476,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
                             //这里使用png图片不管用
-                            //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
-                            if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg"))
+                            if (StringUtils.EndsWithIgnoreCase(imageUrl, ".jpg") || StringUtils.EndsWithIgnoreCase(imageUrl, ".jpeg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
                                 navigationUrls.Add(PageUtils.UrlEncode(await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contentInfo, pageInfo.IsLocal)));
@@ -513,22 +484,6 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             }
                         }
                     }
-
-                    //foreach (var dataItem in dataSource)
-                    //{
-                    //    var contentInfo = new BackgroundContentInfo(dataItem);
-                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
-                    //    {
-                    //        //这里使用png图片不管用
-                    //        //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
-                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg"))
-                    //        {
-                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.Site, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.Site, contentInfo.ImageUrl)));
-                    //        }
-                    //    }
-                    //}
 
                     if (string.IsNullOrEmpty(bgColor))
                     {

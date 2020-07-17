@@ -92,7 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var fileName = Path.GetFileName(file.FileName);
 
-            var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal)).ToLower();
+            var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal));
             if (!StringUtils.EqualsIgnoreCase(extendName, ".zip") && !StringUtils.EqualsIgnoreCase(extendName, ".csv") && !StringUtils.EqualsIgnoreCase(extendName, ".txt"))
             {
                 return this.Error("请选择有效的文件上传!");

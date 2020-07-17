@@ -48,14 +48,14 @@ namespace SSCMS.Core.Utils.Serialization
 
             await exportObject.ExportFilesToSiteAsync(siteTemplatePath, true, null, null, true);
 
-            var siteContentDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.SiteContent);
+            var siteContentDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, true, true, new List<int>());
 
-            var templateFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
+            var templateFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteFiles.SiteTemplates.FileTemplate);
             await exportObject.ExportTemplatesAsync(templateFilePath);
-            var tableDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Table);
+            var tableDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteFiles.SiteTemplates.Table);
             await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
-            var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
+            var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteFiles.SiteTemplates.FileConfiguration);
             await exportObject.ExportConfigurationAsync(configurationFilePath);
             exportObject.ExportMetadata(site.SiteName, await pathManager.GetWebUrlAsync(site), string.Empty, string.Empty, metadataPath);
 
@@ -77,7 +77,7 @@ namespace SSCMS.Core.Utils.Serialization
 
                 ZipUtils.ExtractZip(path, siteTemplatePath);
             }
-            var siteTemplateMetadataPath = PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteTemplateMetadata);
+            var siteTemplateMetadataPath = PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteTemplateMetadata);
 
             if (isDeleteChannels)
             {
@@ -108,18 +108,18 @@ namespace SSCMS.Core.Utils.Serialization
             await importObject.ImportFilesAsync(siteTemplatePath, isOverride, guid);
 
             //导入模板
-            var templateFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
+            var templateFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteFiles.SiteTemplates.FileTemplate);
             await importObject.ImportTemplatesAsync(templateFilePath, isOverride, adminId, guid);
 
             //导入辅助表
-            var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
+            var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteFiles.SiteTemplates.Table);
 
             //导入站点设置
-            var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
+            var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteFiles.SiteTemplates.FileConfiguration);
             await importObject.ImportConfigurationAsync(configurationFilePath, guid);
 
             //导入栏目及内容
-            var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);
+            var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
             await importObject.ImportChannelsAndContentsAsync(0, siteContentDirectoryPath, isOverride, guid);
 
             //导入表样式及清除缓存
