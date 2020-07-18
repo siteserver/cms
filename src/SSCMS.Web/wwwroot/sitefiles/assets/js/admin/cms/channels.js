@@ -517,13 +517,15 @@ var methods = {
       query.contentId = options.contentId;
     }
 
-    utils.openLayer({
+    var args = {
       title: options.title,
-      url: utils.getCommonUrl(options.name, query),
-      full: options.full,
-      width: options.width ? options.width : 700,
-      height: options.height ? options.height : 500
-    });
+      url: utils.getCommonUrl(options.name, query)
+    };
+    if (!options.full) {
+      args.width = options.width ? options.width : 700;
+      args.height = options.height ? options.height : 500;
+    }
+    utils.openLayer(args);
   },
 };
 

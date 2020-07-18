@@ -29,7 +29,23 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
 
         public class UpdateRequest : SiteRequest
         {
+            public int Id { get; set; }
             public string Title { get; set; }
+            public int GroupId { get; set; }
+        }
+
+        public class DeleteRequest : SiteRequest
+        {
+            public int Id { get; set; }
+        }
+
+        public class DeleteGroupRequest : SiteRequest
+        {
+            public int Id { get; set; }
+        }
+
+        public class PullRequest : SiteRequest
+        {
             public int GroupId { get; set; }
         }
     }

@@ -211,7 +211,7 @@ var methods = {
   },
 
   btnEditClick: function(content) {
-    if (!permissions.isEdit) return;
+    if (!this.permissions.isEdit) return;
     utils.addTab('编辑内容', this.getEditUrl(content));
   },
 
@@ -299,7 +299,7 @@ var methods = {
   },
 
   btnContentStateClick: function(contentId) {
-    if (!permissions.isEdit) return;
+    if (!this.permissions.isEdit) return;
     utils.openLayer({
       title: "查看审核状态",
       url: utils.getCmsUrl('contentsLayerState', {
@@ -312,7 +312,7 @@ var methods = {
   },
 
   btnMenuClick: function(menu, content) {
-    if (!permissions.isEdit) return;
+    if (!this.permissions.isEdit) return;
     var url = utils.addQuery(menu.link, {
       siteId: this.siteId,
       channelId: content.channelId,

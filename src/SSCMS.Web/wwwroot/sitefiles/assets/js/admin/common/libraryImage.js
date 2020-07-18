@@ -1,4 +1,6 @@
 ﻿var $url = '/common/library/image';
+var $urlActionsDeleteGroup = '/common/library/image/actions/deleteGroup';
+var $urlActionsPull = '/common/library/image/actions/pull';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -16,7 +18,7 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
-    groupId: 0,
+    groupId: -utils.getQueryInt("siteId"),
     page: 1,
     perPage: 24
   }
@@ -32,7 +34,9 @@ var methods = {
     this.form.page = page;
 
     utils.loading(this, true);
-    $api.post($url + '/list', this.form).then(function (response) {
+    $api.get($url, {
+      params: this.form
+    }).then(function (response) {
       var res = response.data;
 
       $this.groups = res.groups;
@@ -52,9 +56,10 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url + '/groups/' + this.form.groupId, {
+    $api.delete($urlActionsDeleteGroup, {
       data: {
-        siteId: this.siteId
+        siteId: this.siteId,
+        id: this.form.groupId
       }
     }).then(function (response) {
       var res = response.data;
@@ -70,14 +75,34 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url + '/' + library.id, {
+    $api.delete($url, {
       data: {
-        siteId: this.siteId
+        siteId: this.siteId,
+        id: library.id
       }
     }).then(function (response) {
       var res = response.data;
 
       $this.items.splice($this.items.indexOf(library), 1);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiPull: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlActionsPull, {
+      siteId: this.siteId,
+      groupId: this.form.groupId
+    }).then(function (response) {
+      var res = response.data;
+
+      utils.success('公众号图片素材拉取成功！');
+      $this.apiList(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -124,7 +149,7 @@ var methods = {
     library.isSelectGroups = false;
 
     var $this = this;
-    $api.put($url + '/' + library.id, library).then(function (response) {
+    $api.put($url, library).then(function (response) {
       var res = response.data;
 
       utils.success('转移分组成功');
@@ -148,8 +173,7 @@ var methods = {
     if (library.title === this.renameTitle) return false;
     library.title = this.renameTitle;
 
-    var $this = this;
-    $api.put($url + '/' + library.id, library).then(function (response) {
+    $api.put($url, library).then(function (response) {
       var res = response.data;
 
       utils.success('编辑名称成功');
@@ -167,7 +191,9 @@ var methods = {
     this.form.page = 1;
 
     utils.loading(this, true);
-    $api.post($url + '/list', this.form).then(function (response) {
+    $api.get($url, {
+      params: this.form
+    }).then(function (response) {
       var res = response.data;
 
       $this.groups = res.groups;
@@ -185,6 +211,18 @@ var methods = {
 
   btnDropdownClick: function(command) {
     this.pageType = command;
+  },
+
+  btnPullClick: function() {
+    var $this = this;
+    
+    utils.alertWarning({
+      title: '拉取公众号图片素材',
+      text: '此操作将拉取公众号图片素材，确认吗？',
+      callback: function () {
+        $this.apiPull();
+      }
+    });
   },
 
   btnGroupAddClick: function() {

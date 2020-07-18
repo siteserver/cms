@@ -36,15 +36,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<QueryResult>> List([FromQuery]QueryRequest request)
+        [HttpPost, Route(Route)]
+        public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
         {
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
-            groups.Insert(0, new LibraryGroup
-            {
-                Id = 0,
-                GroupName = "全部图片"
-            });
             var count = await _libraryImageRepository.GetCountAsync(request.GroupId, request.Keyword);
             var items = await _libraryImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
 

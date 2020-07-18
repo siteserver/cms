@@ -7,9 +7,6 @@ namespace SSCMS.Models
     public class LibraryCard : Entity
     {
         [DataColumn]
-        public int SiteId { get; set; }
-
-        [DataColumn]
         public string Title { get; set; }
 
         [DataColumn]

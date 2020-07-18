@@ -113,12 +113,15 @@ var methods = {
       query.no = options.no;
     }
 
-    utils.openLayer({
+    var args = {
       title: options.title,
-      url: utils.getCommonUrl(options.name, query),
-      width: options.full ? 0 : 700,
-      height: options.full ? 0 : 500
-    });
+      url: utils.getCommonUrl(options.name, query)
+    };
+    if (!options.full) {
+      args.width = options.width ? options.width : 700;
+      args.height = options.height ? options.height : 500;
+    }
+    utils.openLayer(args);
   },
 
   btnPreviewClick: function(attributeName, n) {

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using Senparc.Weixin.MP;
+using Senparc.Weixin.MP.AdvancedAPIs;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Extensions;
@@ -20,44 +22,42 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
     public partial class ImageController : ControllerBase
     {
         private const string Route = "common/library/image";
-        private const string RouteId = "common/library/image/{id}";
-        private const string RouteList = "common/library/image/list";
-        private const string RouteGroupId = "common/library/image/groups/{id}";
+        private const string RouteActionsDeleteGroup = "common/library/image/actions/deleteGroup";
+        private const string RouteActionsPull = "common/library/image/actions/pull";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IOpenManager _openManager;
         private readonly ISiteRepository _siteRepository;
         private readonly ILibraryGroupRepository _libraryGroupRepository;
         private readonly ILibraryImageRepository _libraryImageRepository;
+        private readonly IOpenAccountRepository _openAccountRepository;
 
-        public ImageController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository)
+        public ImageController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IOpenManager openManager, ISiteRepository siteRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, IOpenAccountRepository openAccountRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
+            _openManager = openManager;
             _siteRepository = siteRepository;
             _libraryGroupRepository = libraryGroupRepository;
             _libraryImageRepository = libraryImageRepository;
+            _openAccountRepository = openAccountRepository;
         }
 
-        [HttpPost, Route(RouteList)]
-        public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
+        [HttpGet, Route(Route)]
+        public async Task<ActionResult<QueryResult>> Get([FromQuery]QueryRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(req.SiteId,
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
             {
                 return Unauthorized();
             }
 
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
-            groups.Insert(0, new LibraryGroup
-            {
-                Id = 0,
-                GroupName = "全部图片"
-            });
-            var count = await _libraryImageRepository.GetCountAsync(req.GroupId, req.Keyword);
-            var items = await _libraryImageRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
+            var count = await _libraryImageRepository.GetCountAsync(request.GroupId, request.Keyword);
+            var items = await _libraryImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
 
             return new QueryResult
             {
@@ -112,8 +112,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             return library;
         }
 
-        [HttpPut, Route(RouteId)]
-        public async Task<ActionResult<LibraryImage>> Update([FromRoute]int id, [FromBody] UpdateRequest request)
+        [HttpPut, Route(Route)]
+        public async Task<ActionResult<LibraryImage>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
@@ -121,7 +121,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 return Unauthorized();
             }
 
-            var lib = await _libraryImageRepository.GetAsync(id);
+            var lib = await _libraryImageRepository.GetAsync(request.Id);
             lib.Title = request.Title;
             lib.GroupId = request.GroupId;
             await _libraryImageRepository.UpdateAsync(lib);
@@ -129,8 +129,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             return lib;
         }
 
-        [HttpDelete, Route(RouteId)]
-        public async Task<ActionResult<BoolResult>> Delete([FromRoute] int id, [FromBody] SiteRequest request)
+        [HttpDelete, Route(Route)]
+        public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
@@ -138,7 +138,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 return Unauthorized();
             }
 
-            await _libraryImageRepository.DeleteAsync(id);
+            await _libraryImageRepository.DeleteAsync(request.Id);
 
             return new BoolResult
             {
@@ -146,8 +146,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             };
         }
 
-        [HttpDelete, Route(RouteGroupId)]
-        public async Task<ActionResult<BoolResult>> DeleteGroup([FromRoute] int id, [FromBody]SiteRequest request)
+        [HttpDelete, Route(RouteActionsDeleteGroup)]
+        public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody] DeleteGroupRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
@@ -155,7 +155,43 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 return Unauthorized();
             }
 
-            await _libraryGroupRepository.DeleteAsync(LibraryType.Image, id);
+            await _libraryGroupRepository.DeleteAsync(LibraryType.Image, request.Id);
+
+            return new BoolResult
+            {
+                Value = true
+            };
+        }
+
+        [HttpPost, Route(RouteActionsPull)]
+        public async Task<ActionResult<BoolResult>> Pull([FromBody] PullRequest request)
+        {
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
+                AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+            {
+                return Unauthorized();
+            }
+
+            var account = await _openAccountRepository.GetBySiteIdAsync(request.SiteId);
+            var (success, token, errorMessage) = _openManager.GetWxAccessToken(account.WxAppId, account.WxAppSecret);
+            if (!success)
+            {
+                return this.Error(errorMessage);
+            }
+
+            var count = await MediaApi.GetMediaCountAsync(token);
+            var list = await MediaApi.GetOthersMediaListAsync(token, UploadMediaFileType.image, 0, count.image_count);
+
+            foreach (var image in list.item)
+            {
+                var library = new LibraryImage
+                {
+                    GroupId = request.GroupId,
+                    Title = image.name,
+                    Url = image.url
+                };
+                await _libraryImageRepository.InsertAsync(library);
+            }
 
             return new BoolResult
             {

@@ -17,7 +17,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
         public class SubmitRequest : Options
         {
             public int SiteId { get; set; }
-            public bool IsOptions { get; set; }
             public List<string> FilePaths { get; set; }
         }
 

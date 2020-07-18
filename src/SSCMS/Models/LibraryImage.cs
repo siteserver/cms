@@ -7,9 +7,6 @@ namespace SSCMS.Models
     public class LibraryImage : Entity
     {
         [DataColumn]
-        public int SiteId { get; set; }
-
-        [DataColumn]
         public string Title { get; set; }
 
         [DataColumn]

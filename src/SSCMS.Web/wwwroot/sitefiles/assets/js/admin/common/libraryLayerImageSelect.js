@@ -1,7 +1,7 @@
 ﻿var $url = '/common/library/layerImageSelect';
 
 var data = utils.init({
-  siteId: utils.getQueryInt('siteId'),
+  siteId: utils.getQueryInt("siteId"),
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
   pageType: 'card',
@@ -9,18 +9,15 @@ var data = utils.init({
   groups: null,
   count: null,
   items: null,
-  urlList: null,
-  renameId: 0,
-  renameTitle: '',
-  deleteId: 0,
   selectedGroupId: 0,
   
   form: {
+    siteId: utils.getQueryInt("siteId"),
     keyword: '',
-    groupId: 0,
+    groupId: -utils.getQueryInt("siteId"),
     page: 1,
     perPage: 24
-  },
+  }
 });
 
 var methods = {
@@ -33,17 +30,12 @@ var methods = {
     this.form.page = page;
 
     utils.loading(this, true);
-    $api.get($url, {
-      params: this.form
-    }).then(function (response) {
+    $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = res.items;
-      $this.urlList = _.map($this.items, function (item) {
-        return item.imageUrl;
-      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -51,18 +43,13 @@ var methods = {
     });
   },
 
-  getGroupName: function() {
-    var $this = this;
-    if (this.form.groupId > 0) {
-      var group = _.find(this.groups, function(o) { return o.id === $this.form.groupId; });
-      return group.groupName;
-    }
-    return '';
+  getLinkUrl: function(libraryType) {
+    return utils.getCmsUrl('library' + libraryType, {siteId: this.siteId})
   },
 
   btnSelectClick: function(library) {
     var $this = this;
-
+  
     utils.loading(this, true);
     $api.post($url + '/actions/select', {
       siteId: this.siteId,
@@ -70,7 +57,7 @@ var methods = {
     })
     .then(function(response) {
       var res = response.data;
-
+  
       $this.insert(res.value);
       utils.closeLayer();
     })
@@ -93,22 +80,14 @@ var methods = {
     this.form.page = 1;
 
     utils.loading(this, true);
-    $api.get($url, {
-      params: this.form
-    }).then(function (response) {
+    $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = res.items;
-      $this.urlList = _.map($this.items, function (item) {
-        return item.imageUrl;
-      });
     }).catch(function (error) {
-      $this.$notify.error({
-          title: '错误',
-          message: error.message
-        });
+      utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });

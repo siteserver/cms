@@ -9,7 +9,6 @@ var data = utils.init({
   dialogVisible: false,
   form: {
     siteId: utils.getQueryInt('siteId'),
-    isOptions: false,
     isEditor: false,
     isLibrary: true,
     isThumb: false,
@@ -44,7 +43,6 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.form.isOptions = true;
       $this.form.isEditor = res.isEditor;
       $this.form.isLibrary = res.isLibrary;
       $this.form.isThumb = res.isThumb;
@@ -139,10 +137,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId;
-    if (this.form.siteId && this.editorAttributeName) {
-      this.apiGet();
-    } else {
-      utils.loading(this, false);
-    }
+    this.apiGet();
   }
 });

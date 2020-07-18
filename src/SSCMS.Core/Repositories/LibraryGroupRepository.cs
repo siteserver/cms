@@ -13,10 +13,12 @@ namespace SSCMS.Core.Repositories
     public class LibraryGroupRepository : ILibraryGroupRepository
     {
         private readonly Repository<LibraryGroup> _repository;
+        private readonly ISiteRepository _siteRepository;
 
-        public LibraryGroupRepository(ISettingsManager settingsManager)
+        public LibraryGroupRepository(ISettingsManager settingsManager, ISiteRepository siteRepository)
         {
             _repository = new Repository<LibraryGroup>(settingsManager.Database, settingsManager.Redis);
+            _siteRepository = siteRepository;
         }
 
         public IDatabase Database => _repository.Database;
@@ -50,12 +52,30 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<LibraryGroup>> GetAllAsync(LibraryType type)
         {
+            var groups = new List<LibraryGroup>
+            {
+                new LibraryGroup
+                {
+                    Id = 0,
+                    GroupName = "全部"
+                }
+            };
+
+            var sites = await _siteRepository.GetSitesAsync();
+            groups.AddRange(sites.Select(site => new LibraryGroup
+            {
+                Id = -site.Id, 
+                GroupName = site.SiteName
+            }));
+
             var list = await _repository.GetAllAsync(Q
                 .Where(nameof(LibraryGroup.LibraryType), type.GetValue())
                 .OrderBy(nameof(LibraryGroup.Id))
                 .CachingGet(CacheKey(type))
             );
-            return list.ToList();
+
+            groups.AddRange(list);
+            return groups;
         }
 
         public async Task<LibraryGroup> GetAsync(int groupId)

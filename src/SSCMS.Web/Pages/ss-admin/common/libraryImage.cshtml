@@ -37,7 +37,7 @@
           <el-tag
             v-for="group in groups"
             :key="group.id"
-            type="info"
+            type="success"
             style="cursor: pointer; margin: 0 3px 6px 0;"
             v-on:click="btnGroupClick(group.id)"
             :effect="form.groupId === group.id ? 'dark' : 'plain'">
@@ -46,12 +46,12 @@
          
         </el-form-item>
 
-        <el-form-item v-if="form.groupId">
+        <el-form-item v-if="form.groupId > 0">
           <el-button-group>
-            <el-button size="small" plain v-if="form.groupId" v-on:click="btnGroupEditClick" type="primary">
+            <el-button size="small" plain v-on:click="btnGroupEditClick" type="primary">
               <i class="el-icon-edit"></i>
             </el-button>
-            <el-button size="small" plain v-if="form.groupId" v-on:click="btnGroupDeleteClick" type="primary">
+            <el-button size="small" plain v-on:click="btnGroupDeleteClick" type="primary">
               <i class="el-icon-delete"></i>
             </el-button>
             <el-button size="small" plain v-on:click="btnGroupAddClick" type="primary">
@@ -93,6 +93,11 @@
         点击上传
       </el-button>
     </el-upload>
+
+    <el-button v-on:click="btnPullClick" size="small" type="primary">
+      <i class="el-icon-download"></i>
+      拉 取
+    </el-button>
   </el-col>
 </el-row>
 
@@ -125,16 +130,16 @@
                 <el-tag
                   title="移动分组"
                   v-for="group in groups"
-                  v-if="group.id > 0"
+                  v-if="group.id !== 0"
                   :key="group.id"
-                  type="info"
+                  type="success"
                   style="cursor: pointer; margin: 0 3px 6px 0;"
                   v-on:click="btnSelectGroupClick(group.id)"
                   :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
                   {{ group.groupName }}
                 </el-tag>
-                <hr />
-                <el-button size="small" v-on:click="btnSelectGroupSubmit(o)" type="info">确 定</el-button>
+                <el-divider></el-divider>
+                <el-button size="small" v-on:click="btnSelectGroupSubmit(o)" type="primary">确 定</el-button>
                 <el-button size="small" v-on:click="o.isSelectGroups = false;">取 消</el-button>
               </div>
               <el-button slot="reference" v-on:click="o.isSelectGroups = true; selectedGroupId = o.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px; color: #9B9B9B;">移动分组</el-button>
@@ -188,16 +193,16 @@
               <el-tag
                 title="移动分组"
                 v-for="group in groups"
-                v-if="group.id > 0"
+                v-if="group.id !== 0"
                 :key="group.id"
-                type="info"
+                type="success"
                 style="cursor: pointer; margin: 0 3px 6px 0;"
                 v-on:click="btnSelectGroupClick(group.id)"
                 :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
                 {{ group.groupName }}
               </el-tag>
-              <hr />
-              <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="info">确 定</el-button>
+              <el-divider></el-divider>
+              <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="primary">确 定</el-button>
               <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
             </div>
             <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px">移动分组</el-button>

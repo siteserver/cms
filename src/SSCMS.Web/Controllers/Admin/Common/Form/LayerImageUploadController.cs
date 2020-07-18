@@ -102,7 +102,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                 var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
 
-                if (request.IsOptions && request.IsLibrary)
+                if (request.IsLibrary)
                 {
                     var libraryFileName = PathUtils.GetLibraryFileName(fileName);
                     var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
@@ -115,6 +115,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                     var library = new LibraryImage
                     {
+                        GroupId = -request.SiteId,
                         Title = fileName,
                         Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName)
                     };
@@ -122,7 +123,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                     await _libraryImageRepository.InsertAsync(library);
                 }
                 
-                if (request.IsOptions && request.IsThumb)
+                if (request.IsThumb)
                 {
                     var localSmallFileName = Constants.SmallImageAppendix + fileName;
                     var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
@@ -162,28 +163,25 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 }
             }
 
-            if (request.IsOptions)
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageUploadController)), new Options
             {
-                var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageUploadController)), new Options
-                {
-                    IsEditor = true,
-                    IsLibrary = true,
-                    IsThumb = false,
-                    ThumbWidth = 1024,
-                    ThumbHeight = 1024,
-                    IsLinkToOriginal = true,
-                });
+                IsEditor = true,
+                IsLibrary = true,
+                IsThumb = false,
+                ThumbWidth = 1024,
+                ThumbHeight = 1024,
+                IsLinkToOriginal = true,
+            });
 
-                options.IsEditor = request.IsEditor;
-                options.IsLibrary = request.IsLibrary;
-                options.IsThumb = request.IsThumb;
-                options.ThumbWidth = request.ThumbWidth;
-                options.ThumbHeight = request.ThumbHeight;
-                options.IsLinkToOriginal = request.IsLinkToOriginal;
-                site.Set(nameof(LayerImageUploadController), TranslateUtils.JsonSerialize(options));
+            options.IsEditor = request.IsEditor;
+            options.IsLibrary = request.IsLibrary;
+            options.IsThumb = request.IsThumb;
+            options.ThumbWidth = request.ThumbWidth;
+            options.ThumbHeight = request.ThumbHeight;
+            options.IsLinkToOriginal = request.IsLinkToOriginal;
+            site.Set(nameof(LayerImageUploadController), TranslateUtils.JsonSerialize(options));
 
-                await _siteRepository.UpdateAsync(site);
-            }
+            await _siteRepository.UpdateAsync(site);
 
             return result;
         }

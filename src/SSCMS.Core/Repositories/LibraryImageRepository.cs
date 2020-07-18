@@ -41,7 +41,7 @@ namespace SSCMS.Core.Repositories
         {
             var query = Q.NewQuery();
 
-            if (groupId > 0)
+            if (groupId != 0)
             {
                 query.Where(nameof(LibraryImage.GroupId), groupId);
             }
@@ -60,7 +60,7 @@ namespace SSCMS.Core.Repositories
                 .OrderByDesc(nameof(LibraryImage.Id))
                 .ForPage(page, perPage);
 
-            if (groupId > 0)
+            if (groupId != 0)
             {
                 query.Where(nameof(LibraryImage.GroupId), groupId);
             }
