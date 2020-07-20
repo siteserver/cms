@@ -6,16 +6,16 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AccountController : ControllerBase
     {
-        private const string Route = "open/account";
-        private const string RouteWx = "open/account/wx";
-        private const string RouteTenPay = "open/account/tenPay";
+        private const string Route = "cms/open/account";
+        private const string RouteWx = "cms/open/account/wx";
+        private const string RouteTenPay = "cms/open/account/tenPay";
 
         private readonly IAuthManager _authManager;
         private readonly IOpenAccountRepository _openAccountRepository;

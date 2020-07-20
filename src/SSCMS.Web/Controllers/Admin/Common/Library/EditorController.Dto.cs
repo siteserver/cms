@@ -1,4 +1,5 @@
 ﻿using SSCMS.Dto;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Common.Library
 {
@@ -6,7 +7,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
     {
         public class GetRequest : SiteRequest
         {
-            public int Id { get; set; }
+            public int LibraryId { get; set; }
+        }
+
+        public class GetResult
+        {
+            public LibraryCard Library { get; set; }
         }
 
         public class CreateRequest : SiteRequest
@@ -19,12 +25,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
 
             public string Summary { get; set; }
 
-            public string Content { get; set; }
+            public string Body { get; set; }
         }
 
         public class UpdateRequest : SiteRequest
         {
-            public int Id { get; set; }
+            public int LibraryId { get; set; }
 
             public string Title { get; set; }
 
@@ -32,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
 
             public string Summary { get; set; }
 
-            public string Content { get; set; }
+            public string Body { get; set; }
         }
     }
 }

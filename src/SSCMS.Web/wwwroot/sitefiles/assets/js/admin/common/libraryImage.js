@@ -4,11 +4,11 @@ var $urlActionsPull = '/common/library/image/actions/pull';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
-  pageType: 'card',
-
+  showType: 'card',
   groups: null,
   count: null,
   items: null,
+  isOpen: false,
   urlList: null,
   renameId: 0,
   renameTitle: '',
@@ -42,6 +42,7 @@ var methods = {
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = res.items;
+      $this.isOpen = res.isOpen;
       $this.urlList = _.map($this.items, function (item) {
         return item.url;
       });
@@ -83,7 +84,8 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.items.splice($this.items.indexOf(library), 1);
+      utils.success('图片素材删除成功！');
+      $this.apiList(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -208,11 +210,7 @@ var methods = {
       utils.loading($this, false);
     });
   },
-
-  btnDropdownClick: function(command) {
-    this.pageType = command;
-  },
-
+  
   btnPullClick: function() {
     var $this = this;
     

@@ -142,11 +142,11 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (id > 0)
                 {
-                    parsedContent = await parseManager.DatabaseManager.LibraryCardRepository.GetContentByIdAsync(id);
+                    parsedContent = await parseManager.DatabaseManager.LibraryCardRepository.GetBodyByIdAsync(id);
                 }
                 else if (!string.IsNullOrEmpty(title))
                 {
-                    parsedContent = await parseManager.DatabaseManager.LibraryCardRepository.GetContentByTitleAsync(title);
+                    parsedContent = await parseManager.DatabaseManager.LibraryCardRepository.GetBodyByTitleAsync(title);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, LibraryType.Image.GetValue()))

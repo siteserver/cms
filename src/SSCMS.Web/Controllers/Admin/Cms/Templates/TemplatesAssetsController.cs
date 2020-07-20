@@ -18,9 +18,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string Route = "cms/templates/templatesAssets";
         private const string RouteConfig = "cms/templates/templatesAssets/actions/config";
 
-        private const string ExtInclude = ".html";
-        private const string ExtCss = ".css";
-        private const string ExtJs = ".js";
+        private const string ExtInclude = "html";
+        private const string ExtCss = "css";
+        private const string ExtJs = "js";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

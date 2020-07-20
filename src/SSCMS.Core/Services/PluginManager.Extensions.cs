@@ -21,6 +21,7 @@ namespace SSCMS.Core.Services
             return siteType ?? new SiteType
             {
                 Id = AuthTypes.Resources.Site,
+                IconClass = "ion-earth",
                 Text = "默认"
             };
         }

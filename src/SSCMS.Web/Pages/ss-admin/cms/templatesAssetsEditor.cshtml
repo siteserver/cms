@@ -17,7 +17,7 @@
   <el-form-item label="文件路径" prop="path">
     <el-input v-model="form.path" style="width: 450px;" placeholder="请输入文件路径">
       <template slot="prepend">{{getFileTypeDir()}}</template>
-      <template slot="append">{{extName}}</template>
+      <template slot="append">.{{extName}}</template>
     </el-input>
     <div class="tips">路径以/分隔，请勿包含文件后缀</div>
   </el-form-item>

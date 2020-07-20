@@ -26,12 +26,9 @@ namespace SSCMS.Core.Repositories
             var site = await _repository.GetAsync(siteId, Q
                 .CachingGet(GetEntityKey(siteId))
             );
-            if (site != null)
+            if (site != null && string.IsNullOrEmpty(site.SiteType))
             {
-                if (string.IsNullOrEmpty(site.SiteType))
-                {
-                    site.SiteType = AuthTypes.Resources.Site;
-                }
+                site.SiteType = AuthTypes.Resources.Site;
             }
 
             return site;

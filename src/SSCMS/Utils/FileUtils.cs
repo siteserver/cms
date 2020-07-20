@@ -62,16 +62,22 @@ namespace SSCMS.Utils
 	        return text;
 	    }
 
-        public static async Task WriteTextAsync(string filePath, string content)
-        {
-            await WriteTextAsync(filePath, content, Encoding.UTF8);
-        }
-
-        public static async Task WriteTextAsync(string filePath, string content, Encoding encoding)
+        public static async Task WriteStreamAsync(string filePath, MemoryStream stream)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-            var encodedText = encoding.GetBytes(content);
+            var encodedText = stream.ToArray();
+
+            await using var sourceStream = new FileStream(filePath,
+                FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, useAsync: true);
+            await sourceStream.WriteAsync(encodedText, 0, encodedText.Length);
+        }
+
+        public static async Task WriteTextAsync(string filePath, string content)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+
+            var encodedText = Encoding.UTF8.GetBytes(content);
 
             using var sourceStream = new FileStream(filePath,
                 FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, useAsync: true);

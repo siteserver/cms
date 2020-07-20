@@ -260,6 +260,15 @@ namespace SSCMS.Utils
             return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
         }
 
+        public static string GetLibraryFileNameByExtName(string extName)
+        {
+            if (!extName.StartsWith("."))
+            {
+                extName = "." + extName;
+            }
+            return $"{StringUtils.GetShortGuid(false)}{extName}";
+        }
+
         public static string GetOsUserProfileDirectoryPath(params string[] paths)
         {
             return Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".sscms",

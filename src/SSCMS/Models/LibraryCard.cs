@@ -7,10 +7,13 @@ namespace SSCMS.Models
     public class LibraryCard : Entity
     {
         [DataColumn]
-        public string Title { get; set; }
+        public string MediaId { get; set; }
 
         [DataColumn]
         public int GroupId { get; set; }
+
+        [DataColumn]
+        public string Title { get; set; }
 
         [DataColumn]
         public string ImageUrl { get; set; }
@@ -19,6 +22,6 @@ namespace SSCMS.Models
         public string Summary { get; set; }
 
         [DataColumn(Text = true)]
-        public string Content { get; set; }
+        public string Body { get; set; }
     }
 }

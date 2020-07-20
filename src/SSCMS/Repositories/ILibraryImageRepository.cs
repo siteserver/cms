@@ -22,5 +22,7 @@ namespace SSCMS.Repositories
         Task<string> GetUrlByIdAsync(int id);
 
         Task<string> GetUrlByTitleAsync(string title);
+
+        Task<bool> IsExistsAsync(string mediaId);
     }
 }

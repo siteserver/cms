@@ -7,10 +7,13 @@ namespace SSCMS.Models
     public class LibraryImage : Entity
     {
         [DataColumn]
-        public string Title { get; set; }
+        public string MediaId { get; set; }
 
         [DataColumn]
         public int GroupId { get; set; }
+
+        [DataColumn]
+        public string Title { get; set; }
 
         [DataColumn]
         public string Url { get; set; }

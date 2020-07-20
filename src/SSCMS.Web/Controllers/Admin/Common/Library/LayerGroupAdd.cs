@@ -35,12 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 AuthTypes.SitePermissions.LibraryImage,
                 AuthTypes.SitePermissions.LibraryVideo,
                 AuthTypes.SitePermissions.LibraryAudio,
-                AuthTypes.SitePermissions.LibraryFile,
-                AuthTypes.OpenPermissions.LibraryCard,
-                AuthTypes.OpenPermissions.LibraryImage,
-                AuthTypes.OpenPermissions.LibraryVideo,
-                AuthTypes.OpenPermissions.LibraryAudio,
-                AuthTypes.OpenPermissions.LibraryFile))
+                AuthTypes.SitePermissions.LibraryFile))
             {
                 return Unauthorized();
             }
@@ -61,12 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 AuthTypes.SitePermissions.LibraryImage,
                 AuthTypes.SitePermissions.LibraryVideo,
                 AuthTypes.SitePermissions.LibraryAudio,
-                AuthTypes.SitePermissions.LibraryFile,
-                AuthTypes.OpenPermissions.LibraryCard,
-                AuthTypes.OpenPermissions.LibraryImage,
-                AuthTypes.OpenPermissions.LibraryVideo,
-                AuthTypes.OpenPermissions.LibraryAudio,
-                AuthTypes.OpenPermissions.LibraryFile))
+                AuthTypes.SitePermissions.LibraryFile))
             {
                 return Unauthorized();
             }
@@ -98,12 +88,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 AuthTypes.SitePermissions.LibraryImage,
                 AuthTypes.SitePermissions.LibraryVideo,
                 AuthTypes.SitePermissions.LibraryAudio,
-                AuthTypes.SitePermissions.LibraryFile,
-                AuthTypes.OpenPermissions.LibraryCard,
-                AuthTypes.OpenPermissions.LibraryImage,
-                AuthTypes.OpenPermissions.LibraryVideo,
-                AuthTypes.OpenPermissions.LibraryAudio,
-                AuthTypes.OpenPermissions.LibraryFile))
+                AuthTypes.SitePermissions.LibraryFile))
             {
                 return Unauthorized();
             }

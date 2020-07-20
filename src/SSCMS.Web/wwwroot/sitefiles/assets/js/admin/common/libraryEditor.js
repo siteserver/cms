@@ -1,82 +1,70 @@
 ﻿var $url = "/common/library/editor";
 var $urlUpload = $apiUrl + "/common/library/editor/actions/upload?siteId=" + utils.getQueryInt("siteId");
 
-function insertHtml(html)
-{
-    if (html)
-    {
-      var editor = new FroalaEditor('textarea#content');
-      editor.html.insert(html);
-    }
-}
-
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
-  textId: utils.getQueryInt("textId"),
   mainHeight: '',
   isSettings: true,
   activeNames: ['0', '1'],
 
-  title: null,
-  content: null,
-  imageUrl: null,
-  summary: null,
+  form: {
+    libraryId: utils.getQueryInt("libraryId"),
+    title: null,
+    body: null,
+    imageUrl: null,
+    summary: null
+  },
   editor: null,
 });
 
 var methods = {
-  getConfig: function() {
-    var $this = this;
-
-    if ($this.textId === 0) {
-      utils.loading($this, false);
-      $this.loadEditor();
-      return;
-    }
-
-    window.onresize = $this.winResize;
-    window.onresize();
-
-    $api
-      .get($url + '/' + $this.textId, {
-        params: {
-          siteId: $this.siteId
-        }
-      })
-      .then(function(response) {
-        var res = response.data;
-
-        $this.loadEditor(res);
-      })
-      .catch(function(error) {
-        utils.error(error);
-      })
-      .then(function() {
-        utils.loading($this, false);
-      });
+  insertHtml: function(html) {
+    if (!html) return;
+    UE.getEditor('body', {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
 
-  loadEditor: function(res) {
-    if (res) {
-      this.title = res.title;
-      this.content = res.content;
-      this.imageUrl = res.imageUrl;
-      this.summary = res.summary;
-    }
-
+  apiGet: function() {
     var $this = this;
 
-    setTimeout(function () {
-      $this.editor = new FroalaEditor('textarea#content', {
-        language: 'zh_cn',
-        heightMin: 390,
-        toolbarButtons: [['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript'], ['fontFamily', 'fontSize', 'textColor', 'backgroundColor'], ['inlineClass', 'inlineStyle', 'clearFormatting']]
-      });
-    }, 100);
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        libraryId: this.form.libraryId,
+        siteId: this.siteId
+      }
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.form.title = res.library.title;
+      $this.form.body = res.library.body;
+      $this.form.imageUrl = res.library.imageUrl;
+      $this.form.summary = res.library.summary;
+
+      setTimeout(function () {
+        var editor = UE.getEditor('body', {
+          allowDivTransToP: false,
+          maximumWords: 99999999
+        });
+        editor.ready(function () {
+          editor.addListener("contentChange", function () {
+            $this.form.body = this.getContent();
+          });
+        });
+
+        window.onresize = $this.winResize;
+        window.onresize();
+      }, 100);
+    })
+    .catch(function(error) {
+      utils.error(error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
   },
 
   winResize: function () {
-    this.mainHeight = ($(window).height() - 85) + 'px';
+    this.mainHeight = ($(window).height() - 52) + 'px';
   },
 
   btnLayerClick: function(options) {
@@ -90,31 +78,13 @@ var methods = {
     });
   },
 
-  btnCancelClick: function() {
-    utils.closeLayer();
-  },
-
   btnSaveClick: function() {
-    this.content = this.editor.html.get(true);
+    this.form.body = this.editor.html.get(true);
     var $this = this;
 
-    if (!this.title) {
-      utils.error('标题不能为空!');
-      return;
-    }
-    if (!this.content) {
-      utils.error('正文不能为空!');
-      return;
-    }
-
     utils.loading(this, true);
-    if (this.textId === 0) {
-      $api.post($url, {
-        title: this.title,
-        content: this.content,
-        imageUrl: this.imageUrl,
-        summary: this.summary
-      })
+    if (this.form.libraryId === 0) {
+      $api.post($url, this.form)
       .then(function(response) {
         var res = response.data;
 
@@ -127,9 +97,10 @@ var methods = {
         utils.loading($this, false);
       });
     } else {
-      $api.put($url + '/' + this.textId, {
+      $api.put($url, {
+        libraryId: this.form.libraryId,
         title: this.title,
-        content: this.content,
+        body: this.body,
         imageUrl: this.imageUrl,
         summary: this.summary
       })
@@ -145,6 +116,10 @@ var methods = {
         utils.loading($this, false);
       });
     }
+  },
+
+  btnPreviewClick: function() {
+
   },
 
   uploadBefore(file) {
@@ -184,6 +159,10 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function() {
-    this.getConfig();
+    if (this.form.libraryId === 0) {
+      utils.loading(this, false);
+    } else {
+      this.apiGet();
+    }
   }
 });

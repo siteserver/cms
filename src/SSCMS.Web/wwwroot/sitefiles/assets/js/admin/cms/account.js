@@ -1,6 +1,6 @@
-var $url = '/open/account';
-var $urlWx = '/open/account/wx';
-var $urlTenPay = '/open/account/tenPay';
+var $url = '/cms/open/account';
+var $urlWx = '/cms/open/account/wx';
+var $urlTenPay = '/cms/open/account/tenPay';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),

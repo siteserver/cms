@@ -19,8 +19,8 @@ namespace SSCMS.Repositories
 
         Task<LibraryCard> GetAsync(int libraryId);
 
-        Task<string> GetContentByIdAsync(int id);
+        Task<string> GetBodyByIdAsync(int id);
 
-        Task<string> GetContentByTitleAsync(string title);
+        Task<string> GetBodyByTitleAsync(string title);
     }
 }

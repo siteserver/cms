@@ -20,7 +20,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
     public partial class EditorController : ControllerBase
     {
         private const string Route = "common/library/editor";
-        private const string RouteId = "common/library/editor/{id}";
         private const string RouteUpload = "common/library/editor/actions/upload";
 
         private readonly ISettingsManager _settingsManager;
@@ -36,23 +35,28 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             _libraryTextRepository = libraryTextRepository;
         }
 
-        [HttpGet, Route(RouteId)]
-        public async Task<ActionResult<LibraryCard>> Get([FromBody]GetRequest request)
+        [HttpGet, Route(Route)]
+        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryCard, AuthTypes.OpenPermissions.LibraryCard))
+                AuthTypes.SitePermissions.LibraryCard))
             {
                 return Unauthorized();
             }
 
-            return await _libraryTextRepository.GetAsync(request.Id);
+            var library = await _libraryTextRepository.GetAsync(request.LibraryId);
+
+            return new GetResult
+            {
+                Library = library
+            };
         }
 
         [HttpPost, Route(Route)]
         public async Task<ActionResult<LibraryCard>> Create([FromBody] CreateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryCard, AuthTypes.OpenPermissions.LibraryCard))
+                AuthTypes.SitePermissions.LibraryCard))
             {
                 return Unauthorized();
             }
@@ -61,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             {
                 return this.Error("请填写图文标题");
             }
-            if (string.IsNullOrEmpty(request.Content))
+            if (string.IsNullOrEmpty(request.Body))
             {
                 return this.Error("请填写图文正文");
             }
@@ -72,7 +76,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
                 GroupId = request.GroupId,
                 ImageUrl = request.ImageUrl,
                 Summary = request.Summary,
-                Content = request.Content
+                Body = request.Body
             };
 
             library.Id = await _libraryTextRepository.InsertAsync(library);
@@ -80,18 +84,18 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             return library;
         }
 
-        [HttpPut, Route(RouteId)]
+        [HttpPut, Route(Route)]
         public async Task<ActionResult<LibraryCard>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryCard, AuthTypes.OpenPermissions.LibraryCard))
+                AuthTypes.SitePermissions.LibraryCard))
             {
                 return Unauthorized();
             }
 
-            var lib = await _libraryTextRepository.GetAsync(request.Id);
+            var lib = await _libraryTextRepository.GetAsync(request.LibraryId);
             lib.Title = request.Title;
-            lib.Content = request.Content;
+            lib.Body = request.Body;
             lib.ImageUrl = request.ImageUrl;
             lib.Summary = request.Summary;
             await _libraryTextRepository.UpdateAsync(lib);
@@ -103,7 +107,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<StringResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryCard, AuthTypes.OpenPermissions.LibraryCard))
+                AuthTypes.SitePermissions.LibraryCard))
             {
                 return Unauthorized();
             }

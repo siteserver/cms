@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     public partial class AccountController
     {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Open
         [HttpPost, Route(RouteWx)]
         public async Task<ActionResult<BoolResult>> WxSubmit([FromBody] WxSubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.OpenPermissions.Account))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Account))
             {
                 return Unauthorized();
             }

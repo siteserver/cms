@@ -1,6 +1,6 @@
-﻿var $url = '/open/menus';
-var $urlActionsPull = '/open/menus/actions/pull';
-var $urlActionsPush = '/open/menus/actions/push';
+﻿var $url = '/cms/open/menus';
+var $urlActionsPull = '/cms/open/menus/actions/pull';
+var $urlActionsPush = '/cms/open/menus/actions/push';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),

@@ -44,19 +44,20 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 content = await FileUtils.ReadTextAsync(filePath);
             }
             var extName = StringUtils.ToLower(PathUtils.GetExtension(filePath));
+            extName = StringUtils.ReplaceStartsWith(extName, ".", string.Empty);
             var path = string.Empty;
 
-            if (StringUtils.EqualsIgnoreCase(extName, ".html"))
+            if (StringUtils.EqualsIgnoreCase(extName, "html"))
             {
                 path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsIncludeDir,
                     string.Empty), request.FileName);
             }
-            else if (StringUtils.EqualsIgnoreCase(extName, ".css"))
+            else if (StringUtils.EqualsIgnoreCase(extName, "css"))
             {
                 path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsCssDir,
                     string.Empty), request.FileName);
             }
-            else if (StringUtils.EqualsIgnoreCase(extName, ".js"))
+            else if (StringUtils.EqualsIgnoreCase(extName, "js"))
             {
                 path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsJsDir,
                     string.Empty), request.FileName);

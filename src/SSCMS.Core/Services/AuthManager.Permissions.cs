@@ -365,8 +365,9 @@ namespace SSCMS.Core.Services
                 foreach (var siteId in siteIdList)
                 {
                     var site = await _databaseManager.SiteRepository.GetAsync(siteId);
+                    var siteType = _pluginManager.GetSiteType(site.SiteType).Id;
                     var sitePermissions = _permissions
-                        .Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType))
+                        .Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType))
                         .Select(permission => permission.Id).ToList();
 
                     sitePermissionDict[siteId] = sitePermissions;

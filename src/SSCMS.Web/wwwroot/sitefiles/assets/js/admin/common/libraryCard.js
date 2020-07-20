@@ -154,7 +154,7 @@ var methods = {
   },
 
   btnUpdateClick: function(library) {
-    utils.addTab('修改图文消息', this.getEditorUrl() + '&textId=' + library.id);
+    utils.addTab('修改图文消息', this.getEditorUrl() + '&libraryId=' + library.id);
   },
 
   btnSelectGroupClick: function (groupId) {

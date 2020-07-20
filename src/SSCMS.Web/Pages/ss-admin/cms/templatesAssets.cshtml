@@ -5,23 +5,15 @@
   <el-aside width="100px">
     <el-tabs v-model="fileType" tab-position="left" style="height: 100%;" v-on:tab-click="reload">
       <el-tab-pane label="全部" name="All"></el-tab-pane>
-      <el-tab-pane label="包含文件" name=".html"></el-tab-pane>
-      <el-tab-pane label="样式文件" name=".css"></el-tab-pane>
-      <el-tab-pane label="脚本文件" name=".js"></el-tab-pane>
+      <el-tab-pane label="包含文件" name="html"></el-tab-pane>
+      <el-tab-pane label="样式文件" name="css"></el-tab-pane>
+      <el-tab-pane label="脚本文件" name="js"></el-tab-pane>
     </el-tabs>
   </el-aside>
 
   <el-container>
     <el-main>
       <el-form :inline="true" size="small">
-        <el-form-item label="文件类型">
-          <el-select v-model="fileType" v-on:change="reload" placeholder="请选择">
-            <el-option label="<全部>" value="All"></el-option>
-            <el-option label="包含文件" value=".html"></el-option>
-            <el-option label="样式文件" value=".css"></el-option>
-            <el-option label="脚本文件" value=".js"></el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="文件夹路径" prop="directoryPaths">
           <el-cascader
             v-model="directoryPaths"
@@ -45,9 +37,9 @@
               新增文件<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command=".html">新增包含文件</el-dropdown-item>
-              <el-dropdown-item command=".css">新增样式文件</el-dropdown-item>
-              <el-dropdown-item command=".js">新增脚本文件</el-dropdown-item>
+              <el-dropdown-item command="html">新增包含文件</el-dropdown-item>
+              <el-dropdown-item command="css">新增样式文件</el-dropdown-item>
+              <el-dropdown-item command="js">新增脚本文件</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-form-item>
@@ -94,13 +86,13 @@
       <el-divider></el-divider>
       <div style="height: 10px"></div>
 
-      <el-button size="small" type="primary" v-on:click="btnAddClick('.html')">
+      <el-button v-if="fileType == 'All' || fileType == 'html'" size="small" type="primary" v-on:click="btnAddClick('html')">
         新增包含文件
       </el-button>
-      <el-button size="small" type="primary" v-on:click="btnAddClick('.css')">
+      <el-button v-if="fileType == 'All' || fileType == 'css'" size="small" type="primary" v-on:click="btnAddClick('css')">
         新增样式文件
       </el-button>
-      <el-button size="small" type="primary" v-on:click="btnAddClick('.js')">
+      <el-button v-if="fileType == 'All' || fileType == 'js'" size="small" type="primary" v-on:click="btnAddClick('js')">
         新增脚本文件
       </el-button>
       <el-button size="small" type="primary" v-on:click="btnConfigClick">

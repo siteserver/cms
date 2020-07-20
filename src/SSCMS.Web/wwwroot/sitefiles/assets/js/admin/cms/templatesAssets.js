@@ -92,11 +92,11 @@ var methods = {
   },
 
   getFileType: function(fileType) {
-    if (fileType === '.html') {
+    if (fileType === 'html') {
       return '包含文件';
-    } else if (fileType === '.css') {
+    } else if (fileType === 'css') {
       return '样式文件';
-    } else if (fileType === '.js') {
+    } else if (fileType === 'js') {
       return '脚本文件';
     }
     return '';

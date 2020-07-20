@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Open;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     public partial class AccountController
     {
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] int siteId)
         {
-            if (!await _authManager.HasSitePermissionsAsync(siteId, AuthTypes.OpenPermissions.Account))
+            if (!await _authManager.HasSitePermissionsAsync(siteId, AuthTypes.SitePermissions.Account))
             {
                 return Unauthorized();
             }

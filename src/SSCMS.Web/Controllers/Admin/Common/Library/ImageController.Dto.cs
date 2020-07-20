@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             public IEnumerable<LibraryGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<LibraryImage> Items { get; set; }
+            public bool IsOpen { get; set; }
         }
 
         public class CreateRequest : SiteRequest

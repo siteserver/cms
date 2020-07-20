@@ -9,16 +9,16 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class MenusController : ControllerBase
     {
-        private const string Route = "open/menus";
-        private const string RouteActionsPull = "open/menus/actions/pull";
-        private const string RouteActionsPush = "open/menus/actions/push";
+        private const string Route = "cms/open/menus";
+        private const string RouteActionsPull = "cms/open/menus/actions/pull";
+        private const string RouteActionsPush = "cms/open/menus/actions/push";
 
         private readonly IAuthManager _authManager;
         private readonly IOpenAccountRepository _openAccountRepository;

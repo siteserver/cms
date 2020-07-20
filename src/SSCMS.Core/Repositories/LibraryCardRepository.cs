@@ -77,18 +77,18 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAsync(libraryId);
         }
 
-        public async Task<string> GetContentByIdAsync(int id)
+        public async Task<string> GetBodyByIdAsync(int id)
         {
             return await _repository.GetAsync<string>(Q
-                .Select(nameof(LibraryCard.Content))
+                .Select(nameof(LibraryCard.Body))
                 .Where(nameof(LibraryCard.Id), id)
             );
         }
 
-        public async Task<string> GetContentByTitleAsync(string title)
+        public async Task<string> GetBodyByTitleAsync(string title)
         {
             return await _repository.GetAsync<string>(Q
-                .Select(nameof(LibraryCard.Content))
+                .Select(nameof(LibraryCard.Body))
                 .Where(nameof(LibraryCard.Title), title)
             );
         }

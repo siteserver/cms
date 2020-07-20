@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<NameTitle>> Upload([FromQuery]SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryCard, AuthTypes.OpenPermissions.LibraryCard))
+                AuthTypes.SitePermissions.LibraryCard))
             {
                 return Unauthorized();
             }
@@ -69,7 +69,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryCard, AuthTypes.OpenPermissions.LibraryCard))
+                AuthTypes.SitePermissions.LibraryCard))
             {
                 return Unauthorized();
             }

@@ -52,8 +52,6 @@ namespace SSCMS.Utils
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
 
-        public const string AdminLogin = "后台管理员登录";
-
         public static string GetSessionIdCacheKey(int userId)
         {
             return $"SESSION-ID-{userId}";

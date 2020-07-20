@@ -46,8 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         [HttpPost, Route(RouteList)]
         public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
         {
-            if (!await _authManager.HasSitePermissionsAsync(req.SiteId,
-                    AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+            if (!await _authManager.HasSitePermissionsAsync(req.SiteId, AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }
@@ -74,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<LibraryAudio>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }
@@ -119,7 +118,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<LibraryAudio>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }
@@ -136,7 +135,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }
@@ -153,7 +152,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult> ActionsDownload([FromQuery]DownloadRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                  return Unauthorized();
             }
@@ -167,7 +166,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<LibraryGroup>> CreateGroup([FromBody] GroupRequest group)
         {
             if (!await _authManager.HasSitePermissionsAsync(group.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }
@@ -186,7 +185,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<LibraryGroup>> RenameGroup([FromQuery]int id, [FromBody] GroupRequest group)
         {
             if (!await _authManager.HasSitePermissionsAsync(group.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }
@@ -202,7 +201,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody]DeleteGroupRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryAudio, AuthTypes.OpenPermissions.LibraryAudio))
+                AuthTypes.SitePermissions.LibraryAudio))
             {
                 return Unauthorized();
             }

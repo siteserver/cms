@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -50,9 +51,16 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<QueryResult>> Get([FromQuery]QueryRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+                AuthTypes.SitePermissions.LibraryImage))
             {
                 return Unauthorized();
+            }
+
+            var isOpen = false;
+            var account = await _openAccountRepository.GetBySiteIdAsync(request.SiteId);
+            if (account.WxConnected)
+            {
+                isOpen = true;
             }
 
             var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
@@ -63,7 +71,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             {
                 Groups = groups,
                 Count = count,
-                Items = items
+                Items = items,
+                IsOpen = isOpen
             };
         }
 
@@ -71,7 +80,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<LibraryImage>> Create([FromQuery]CreateRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+                AuthTypes.SitePermissions.LibraryImage))
             {
                 return Unauthorized();
             }
@@ -116,7 +125,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<LibraryImage>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+                AuthTypes.SitePermissions.LibraryImage))
             {
                 return Unauthorized();
             }
@@ -133,10 +142,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+                AuthTypes.SitePermissions.LibraryImage))
             {
                 return Unauthorized();
             }
+
+            var library = await _libraryImageRepository.GetAsync(request.Id);
+            var filePath = _pathManager.GetLibraryFilePath(library.Url);
+            FileUtils.DeleteFileIfExists(filePath);
 
             await _libraryImageRepository.DeleteAsync(request.Id);
 
@@ -150,7 +163,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody] DeleteGroupRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+                    AuthTypes.SitePermissions.LibraryImage))
             {
                 return Unauthorized();
             }
@@ -167,7 +180,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public async Task<ActionResult<BoolResult>> Pull([FromBody] PullRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage, AuthTypes.OpenPermissions.LibraryImage))
+                AuthTypes.SitePermissions.LibraryImage))
             {
                 return Unauthorized();
             }
@@ -184,12 +197,30 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
 
             foreach (var image in list.item)
             {
+                if (await _libraryImageRepository.IsExistsAsync(image.media_id)) continue;
+
+                await using var ms = new MemoryStream();
+                await MediaApi.GetForeverMediaAsync(token, image.media_id, ms);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                var extName = image.url.Substring(image.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+
+                var libraryFileName = PathUtils.GetLibraryFileNameByExtName(extName);
+                var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
+
+                var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
+                var filePath = PathUtils.Combine(directoryPath, libraryFileName);
+
+                await FileUtils.WriteStreamAsync(filePath, ms);
+
                 var library = new LibraryImage
                 {
                     GroupId = request.GroupId,
                     Title = image.name,
-                    Url = image.url
+                    Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName),
+                    MediaId = image.media_id
                 };
+
                 await _libraryImageRepository.InsertAsync(library);
             }
 

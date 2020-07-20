@@ -10,14 +10,14 @@ using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     public partial class MenusController
     {
         [HttpPost, Route(RouteActionsPull)]
         public async Task<ActionResult<OpenMenusResult>> Pull([FromBody] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.OpenPermissions.Menus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Menus))
             {
                 return Unauthorized();
             }

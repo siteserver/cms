@@ -19,6 +19,7 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      width: 235px;
     }
     .avatar-uploader .el-upload:hover {
       border-color: #409EFF;
@@ -26,14 +27,14 @@
     .avatar-uploader-icon {
       font-size: 28px;
       color: #8c939d;
-      width: 240px;
-      height: 240px;
-      line-height: 240px;
+      width: 235px;
+      height: 235px;
+      line-height: 235px;
       text-align: center;
     }
     .avatar {
-      width: 240px;
-      height: 240px;
+      width: 235px;
+      height: 235px;
       display: block;
     }
     .el-icon-picture-outline {
@@ -45,54 +46,60 @@
 }
 
 <el-row>
-  <el-col align="right" :span="24">
-    <el-button size="medium" v-on:click="btnCancelClick">取 消</el-button>
-    <el-button size="medium" v-on:click="btnSaveClick" type="success">保 存</el-button>
-    <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : ''" v-on:click="isSettings = !isSettings"></el-button>
+  <el-col :span="12">
+    <el-button size="small" v-on:click="getWordSpliter();return false;">提取标签</el-button>
+    <el-button size="small" v-on:click="detection_Content();return false;">敏感词检测</el-button>
+    
+  </el-col>
+  <el-col align="right" :span="12">
+    <el-button size="small" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+    <el-button size="small" v-on:click="btnPreviewClick" type="info">预 览</el-button>
+    <el-button size="small" icon="el-icon-setting" circle :type="isSettings ? 'info' : ''" v-on:click="isSettings = !isSettings"></el-button>
   </el-col>
 </el-row>
 
 <el-divider></el-divider>
 
-<el-container style="padding-top: 0; padding-bottom: 0; overflow:auto;" :style="{height: mainHeight}">
-  <el-main style="padding-top: 0;">
+<el-container style="padding-top: 0; padding-bottom: 0; overflow:hidden;" :style="{height: mainHeight}">
+  <el-main style="padding: 0; margin: 0">
+    <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
 
-    <el-row>
-      <el-col :span="4">
-        <label>
-          标题
-          <span class="text-danger">*</span>
-          
-        </label>
-      </el-col>
-      <el-col :span="20" style="text-align: right">
-        
-      </el-col>
-    </el-row>
-    <el-row class="mb-3">
-      <el-input v-model="title" size="medium" autosize type="text" name="title"
-          data-vv-as="标题" v-validate="'required'"></el-input>
-    </el-row>
+      <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="80px">
+        <el-form-item label="标题" prop="title" :rules="{ required: true, message: '请输入标题' }">
+          <el-input
+            v-model="form.title"
+            size="small"
+            placeholder="请输入标题">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="正文" prop="body" :rules="{ required: true, message: '请输入正文' }">
+          <el-button-group style="margin-bottom: 2px;">
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', attributeName: style.attributeName})">
+              导入Word
+            </el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图片', name: 'editorLayerImage', attributeName: style.attributeName})">
+              插入图片
+            </el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入视频', name: 'editorLayerVideo', attributeName: style.attributeName})">
+              插入视频
+            </el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入音频', name: 'editorLayerAudio', attributeName: style.attributeName})">
+              插入音频
+            </el-button>
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入附件', name: 'editorLayerFile', attributeName: style.attributeName})">
+              插入附件
+            </el-button>
+          </el-button-group>
+          <textarea
+            id="body"
+            name="body"
+            v-html="form.body"
+            style="width: 100%;">
+          </textarea>
+        </el-form-item>
+      </el-form>
 
-    <el-row>
-      <el-col :span="4">
-        <label>
-          正文
-          <span class="text-danger">*</span>
-        </label>
-      </el-col>
-      <el-col :span="20" style="text-align: right">
-        <el-button-group style="margin-top: -2px;">
-          <el-button size="mini" v-on:click="btnLayerClick({title: '导入Word', name: 'Word', attributeName: 'content'})">导入Word</el-button>
-          <el-button size="mini" v-on:click="btnLayerClick({title: '插入图片', name: 'Image', attributeName: 'content'})">插入图片</el-button>
-          <el-button size="mini" v-on:click="btnLayerClick({title: '插入视频', name: 'Video', attributeName: 'content'})">插入视频</el-button>
-        </el-button-group>
-      </el-col>
-    </el-row>
-    <el-row class="mb-3">
-      <textarea v-model="content" style="width: 100%" id="content" name="content" data-vv-as="正文" v-validate="'required'"></textarea>
-    </el-row>
-    
+    </el-scrollbar>
   </el-main>
   <el-aside v-if="isSettings" width="280px">
     <el-tabs type="border-card">
@@ -111,7 +118,7 @@
               :on-error="uploadError">
               <el-image 
                 class="avatar"
-                :src="imageUrl">
+                :src="form.imageUrl">
                 <div slot="error" class="image-slot">
                   <i class="el-icon-picture-outline"></i>
                 </div>
@@ -125,7 +132,7 @@
               type="textarea"
               :rows="5"
               placeholder="请输入内容"
-              v-model="summary">
+              v-model="form.summary">
             </el-input>
           </el-collapse-item>
         </el-collapse>

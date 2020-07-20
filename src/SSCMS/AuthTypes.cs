@@ -21,7 +21,6 @@
         {
             public const string App = "app";
             public const string Site = "site";
-            public const string Open = "open";
             public const string Channel = "channel";
             public const string Content = "content";
         }
@@ -62,19 +61,6 @@
             public const string SettingsUtilitiesEncrypt = "app_settings_utilitiesEncrypt";
         }
 
-        public static class OpenPermissions
-        {
-            public const string Index = "open_index";
-            public const string Account = "open_account";
-            public const string LibraryCard = "open_libraryCard";
-            public const string LibraryImage = "open_libraryImage";
-            public const string LibraryVideo = "open_libraryVideo";
-            public const string LibraryAudio = "open_libraryAudio";
-            public const string LibraryFile = "open_libraryFile";
-            public const string Keywords = "open_keywords";
-            public const string Menus = "open_menus";
-        }
-
         public static class SitePermissions
         {
             public const string Contents = "site_contents";
@@ -82,12 +68,15 @@
             public const string ContentsSearch = "site_contentsSearch";
             public const string ChannelsTranslate = "site_channelsTranslate";
             public const string ContentsCheck = "site_contentsCheck";
+            public const string ContentsRecycle = "site_contentsRecycle";
+            public const string Account = "site_account";
             public const string LibraryCard = "site_libraryCard";
             public const string LibraryImage = "site_libraryImage";
             public const string LibraryVideo = "site_libraryVideo";
             public const string LibraryAudio = "site_libraryAudio";
             public const string LibraryFile = "site_libraryFile";
-            public const string ContentsRecycle = "site_contentsRecycle";
+            public const string Keywords = "site_keywords";
+            public const string Menus = "site_menus";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";
             public const string TemplatesMatch = "site_templatesMatch";

@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     public partial class MenusController
     {
         [HttpPost, Route(Route)]
         public async Task<ActionResult<OpenMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.OpenPermissions.Menus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Menus))
             {
                 return Unauthorized();
             }

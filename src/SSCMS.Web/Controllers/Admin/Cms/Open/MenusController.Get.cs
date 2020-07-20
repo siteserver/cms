@@ -6,14 +6,14 @@ using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     public partial class MenusController
     {
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.OpenPermissions.Menus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Menus))
             {
                 return Unauthorized();
             }

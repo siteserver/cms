@@ -92,5 +92,12 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(LibraryImage.Title), title)
             );
         }
+
+        public async Task<bool> IsExistsAsync(string mediaId)
+        {
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(LibraryImage.MediaId), mediaId)
+            );
+        }
     }
 }

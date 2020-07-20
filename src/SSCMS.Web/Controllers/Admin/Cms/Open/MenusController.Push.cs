@@ -9,14 +9,14 @@ using Senparc.Weixin.MP.Entities.Menu;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 
-namespace SSCMS.Web.Controllers.Admin.Open
+namespace SSCMS.Web.Controllers.Admin.Cms.Open
 {
     public partial class MenusController
     {
         [HttpPost, Route(RouteActionsPush)]
         public async Task<ActionResult<BoolResult>> Push([FromBody] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.OpenPermissions.Menus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Menus))
             {
                 return Unauthorized();
             }
