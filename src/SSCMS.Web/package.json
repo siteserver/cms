@@ -853,31 +853,31 @@
             "menus": {
               "site_libraryCard": {
                 "text": "图文消息管理",
-                "link": "./common/libraryCard/",
+                "link": "./cms/libraryCard/",
                 "permissions": ["site_libraryCard"],
                 "order": 1
               },
               "site_libraryImage": {
                 "text": "图片管理",
-                "link": "./common/libraryImage/",
+                "link": "./cms/libraryImage/",
                 "permissions": ["site_libraryImage"],
                 "order": 2
               },
               "site_libraryVideo": {
                 "text": "视频管理",
-                "link": "./common/libraryVideo/",
+                "link": "./cms/libraryVideo/",
                 "permissions": ["site_libraryVideo"],
                 "order": 3
               },
               "site_libraryAudio": {
                 "text": "音频管理",
-                "link": "./common/libraryAudio/",
+                "link": "./cms/libraryAudio/",
                 "permissions": ["site_libraryAudio"],
                 "order": 4
               },
               "site_libraryFile": {
                 "text": "文件管理",
-                "link": "./common/libraryFile/",
+                "link": "./cms/libraryFile/",
                 "permissions": ["site_libraryFile"],
                 "order": 5
               }

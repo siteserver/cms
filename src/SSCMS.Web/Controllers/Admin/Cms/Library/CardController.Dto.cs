@@ -2,9 +2,9 @@
 using SSCMS.Dto;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
-    public partial class VideoController
+    public partial class CardController
     {
         public class QueryRequest
         {
@@ -19,17 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         {
             public IEnumerable<LibraryGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<LibraryVideo> Items { get; set; }
-        }
-
-        public class CreateRequest : SiteRequest
-        {
-            public int GroupId { get; set; }
-        }
-
-        public class DownloadRequest : SiteRequest
-        {
-            public int LibraryId { get; set; }
+            public IEnumerable<LibraryCard> Items { get; set; }
         }
 
         public class GroupRequest
@@ -38,10 +28,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             public string Name { get; set; }
         }
 
-        public class UpdateRequest : SiteRequest
+        public class CreateRequest : SiteRequest
         {
-            public int Id { get; set; }
-            public string Title { get; set; }
             public int GroupId { get; set; }
         }
 

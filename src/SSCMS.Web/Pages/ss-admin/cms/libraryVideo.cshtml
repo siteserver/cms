@@ -65,6 +65,7 @@
     <el-upload
       :action="getUploadUrl()"
       :headers="{Authorization: 'Bearer ' + $token}"
+      :before-upload="uploadBefore"
       :on-progress="uploadProgress"
       :on-success="uploadSuccess"
       :on-error="uploadError"
@@ -155,4 +156,4 @@
 </el-dialog>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/admin/common/libraryAudio.js" type="text/javascript"></script> }
+<script src="/sitefiles/assets/js/admin/cms/libraryVideo.js" type="text/javascript"></script> }

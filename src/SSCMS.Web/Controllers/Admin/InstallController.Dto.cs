@@ -10,18 +10,13 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public bool Forbidden { get; set; }
             public string Version { get; set; }
-
-            public string TargetFramework { get; set; }
-
+            public string FrameworkDescription { get; set; }
+            public string OSDescription { get; set; }
             public string ContentRootPath { get; set; }
             public string WebRootPath { get; set; }
-
             public bool RootWritable { get; set; }
-
             public bool SiteFilesWritable { get; set; }
-
             public List<Select<string>> DatabaseTypes { get; set; }
-
             public string AdminUrl { get; set; }
         }
 

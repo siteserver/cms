@@ -1,8 +1,7 @@
-﻿var $url = '/common/library/card';
+﻿var $url = '/cms/library/file';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
-  pageType: 'card',
   drawer: false,
   isGroupForm: false,
   groupForm: {
@@ -41,7 +40,7 @@ var methods = {
       $this.count = res.count;
       $this.items = res.items;
       $this.urlList = _.map($this.items, function (item) {
-        return item.imageUrl;
+        return item.url;
       });
     }).catch(function (error) {
       utils.error(error);
@@ -115,15 +114,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        id: library.id
-      }
-    }).then(function (response) {
+    $api.delete($url + '/' + library.id).then(function (response) {
       var res = response.data;
 
-      utils.success('图文消息素材删除成功!');
       $this.items.splice($this.items.indexOf(library), 1);
     }).catch(function (error) {
       utils.error(error);
@@ -132,8 +125,8 @@ var methods = {
     });
   },
 
-  getEditorUrl: function() {
-    return utils.getCommonUrl('libraryEditor', {siteId: this.siteId});
+  getLinkUrl: function(libraryType) {
+    return utils.getCmsUrl('library' + libraryType, {siteId: this.siteId})
   },
 
   getGroupName: function() {
@@ -146,15 +139,24 @@ var methods = {
   },
 
   getUploadUrl: function() {
-    return $apiUrl + $url + '?siteId=' + this.siteId + '&groupId=' + this.form.groupId
+    return $apiUrl + $url + '?siteId=' + this.siteId + '&groupId=' + this.form.groupId;
   },
 
-  btnCreateClick: function() {
-    utils.addTab('创建图文消息', this.getEditorUrl());
+  btnDownloadClick: function(library) {
+    window.open($apiUrl + $url + '/' + this.siteId + '/' + library.id + '/' + encodeURIComponent(library.title) + '.' + library.type.toLowerCase());
   },
 
-  btnUpdateClick: function(library) {
-    utils.addTab('修改图文消息', this.getEditorUrl() + '&libraryId=' + library.id);
+  btnTitleClick: function(library) {
+    var $this = this;
+    this.renameId = library.id;
+    this.renameTitle = library.title;
+    setTimeout(function() {
+      var el = $this.$refs['renameInput' + library.id][0];
+      if (el) {
+        el.focus();
+        el.select();
+      }
+    }, 100);
   },
 
   btnSelectGroupClick: function (groupId) {
@@ -216,7 +218,7 @@ var methods = {
       $this.count = res.count;
       $this.items = res.items;
       $this.urlList = _.map($this.items, function (item) {
-        return item.imageUrl;
+        return item.url;
       });
     }).catch(function (error) {
       $this.$notify.error({
@@ -226,10 +228,6 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
-  },
-
-  btnDropdownClick: function(command) {
-    this.pageType = command;
   },
 
   btnCreateGroupClick: function() {
@@ -249,7 +247,7 @@ var methods = {
 
     utils.alertDelete({
       title: '删除分组',
-      text: '仅删除分组，不删除图片，组内图片将自动归入未分组',
+      text: '仅删除分组，不删除文件，组内文件将自动归入未分组',
       callback: function () {
         $this.apiDeleteGroup();
       }
@@ -291,16 +289,6 @@ var methods = {
   btnPageClick: function(val) {
     utils.loading(this, true);
     this.apiList(val);
-  },
-
-  uploadBefore(file) {
-    var re = /(\.docx)$/i;
-    if(!re.exec(file.name))
-    {
-      utils.error('文件只能是以.docx结尾的 Word 格式，请选择有效的文件上传!');
-      return false;
-    }
-    return true;
   },
 
   uploadProgress: function() {

@@ -1,5 +1,4 @@
 {
-  "Urls": "http://*:5000",
   "IsNightlyUpdate": false,
   "IsProtectData": false,
   "SecurityKey": "",

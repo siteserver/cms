@@ -2,9 +2,9 @@
 using SSCMS.Dto;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
-    public partial class FileController
+    public partial class VideoController
     {
         public class QueryRequest
         {
@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         {
             public IEnumerable<LibraryGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<LibraryFile> Items { get; set; }
+            public IEnumerable<LibraryVideo> Items { get; set; }
         }
 
         public class CreateRequest : SiteRequest
@@ -41,18 +41,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public class UpdateRequest : SiteRequest
         {
             public int Id { get; set; }
-
             public string Title { get; set; }
-
             public int GroupId { get; set; }
         }
 
         public class DeleteRequest : SiteRequest
-        {
-            public int Id { get; set; }
-        }
-
-        public class DeleteGroupRequest : SiteRequest
         {
             public int Id { get; set; }
         }

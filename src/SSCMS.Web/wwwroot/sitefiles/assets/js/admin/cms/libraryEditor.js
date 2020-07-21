@@ -1,5 +1,5 @@
-﻿var $url = "/common/library/editor";
-var $urlUpload = $apiUrl + "/common/library/editor/actions/upload?siteId=" + utils.getQueryInt("siteId");
+﻿var $url = "/cms/library/editor";
+var $urlUpload = $apiUrl + "/cms/library/editor/actions/upload?siteId=" + utils.getQueryInt("siteId");
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),

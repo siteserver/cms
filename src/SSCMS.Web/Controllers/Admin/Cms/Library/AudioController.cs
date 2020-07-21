@@ -12,19 +12,19 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AudioController : ControllerBase
     {
-        private const string Route = "common/library/audio";
-        private const string RouteId = "common/library/audio/{id:int}";
-        private const string RouteDownload = "common/library/audio/{siteId}/{libraryId}/{fileName}";
-        private const string RouteList = "common/library/audio/list";
-        private const string RouteGroups = "common/library/audio/groups";
-        private const string RouteGroupId = "common/library/audio/groups/{id}";
+        private const string Route = "cms/library/audio";
+        private const string RouteId = "cms/library/audio/{id:int}";
+        private const string RouteDownload = "cms/library/audio/{siteId}/{libraryId}/{fileName}";
+        private const string RouteList = "cms/library/audio/list";
+        private const string RouteGroups = "cms/library/audio/groups";
+        private const string RouteGroupId = "cms/library/audio/groups/{id}";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

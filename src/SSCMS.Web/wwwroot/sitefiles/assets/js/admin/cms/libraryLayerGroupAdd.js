@@ -1,4 +1,4 @@
-﻿var $url = '/common/library/layerGroupAdd';
+﻿var $url = '/cms/library/layerGroupAdd';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),

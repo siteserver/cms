@@ -2,9 +2,9 @@
 using SSCMS.Dto;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
-    public partial class AudioController
+    public partial class FileController
     {
         public class QueryRequest
         {
@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         {
             public IEnumerable<LibraryGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<LibraryAudio> Items { get; set; }
+            public IEnumerable<LibraryFile> Items { get; set; }
         }
 
         public class CreateRequest : SiteRequest

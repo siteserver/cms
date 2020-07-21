@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
+using System.Runtime.InteropServices;
 using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,13 +26,10 @@ namespace SSCMS.Core.Services
             {
                 Version = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
                     .InformationalVersion;
-
-                if (entryAssembly
-                    .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
-                    .SingleOrDefault() is TargetFrameworkAttribute targetFrameworkAttribute)
-                {
-                    TargetFramework = targetFrameworkAttribute.FrameworkName;
-                }
+                FrameworkDescription = RuntimeInformation.FrameworkDescription;
+                OSDescription = RuntimeInformation.OSDescription;
+                Containerized = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != null;
+                CPUCores = Environment.ProcessorCount;
             }
         }
 
@@ -45,7 +41,10 @@ namespace SSCMS.Core.Services
         public string ContentRootPath { get; }
         public string WebRootPath { get; }
         public string Version { get; }
-        public string TargetFramework { get; }
+        public string FrameworkDescription { get; }
+        public string OSDescription { get; }
+        public bool Containerized { get; }
+        public int CPUCores { get; }
         public bool IsNightlyUpdate => _config.GetValue(nameof(IsNightlyUpdate), false);
         public bool IsProtectData => _config.GetValue(nameof(IsProtectData), false);
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));

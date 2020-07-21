@@ -1,11 +1,12 @@
 ﻿var $url = '/settings/utilitiesParameters';
 
 var data = utils.init({
-  parameters: null
+  environments: null,
+  settings: null
 });
 
 var methods = {
-  getConfig: function () {
+  apiGet: function () {
     var $this = this;
 
     $api.get($url).then(function (response) {
@@ -16,8 +17,10 @@ var methods = {
         server = '命令行';
       }
 
-      $this.parameters = res;
-      $this.parameters.splice(0, 0, {
+      $this.environments = res.environments;
+      $this.settings = res.settings;
+
+      $this.environments.splice(0, 0, {
         key: '进程管理器',
         value: server
       });
@@ -34,6 +37,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   }
 });

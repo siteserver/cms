@@ -8,7 +8,10 @@ namespace SSCMS.Services
         string ContentRootPath { get; }
         string WebRootPath { get; }
         string Version { get; }
-        string TargetFramework { get; }
+        string FrameworkDescription { get; }
+        string OSDescription { get; }
+        bool Containerized { get; }
+        int CPUCores { get; }
         bool IsNightlyUpdate { get; }
         bool IsProtectData { get; }
         string SecurityKey { get; }

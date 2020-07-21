@@ -62,6 +62,11 @@ namespace SSCMS.Utils
 	        return text;
 	    }
 
+        public static string[] ReadAllLines(string filePath)
+        {
+            return File.ReadAllLines(filePath);
+        }
+
         public static async Task WriteStreamAsync(string filePath, MemoryStream stream)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);

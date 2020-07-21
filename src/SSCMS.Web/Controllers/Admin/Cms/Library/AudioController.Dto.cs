@@ -2,9 +2,9 @@
 using SSCMS.Dto;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
-    public partial class ImageController
+    public partial class AudioController
     {
         public class QueryRequest
         {
@@ -19,8 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         {
             public IEnumerable<LibraryGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<LibraryImage> Items { get; set; }
-            public bool IsOpen { get; set; }
+            public IEnumerable<LibraryAudio> Items { get; set; }
         }
 
         public class CreateRequest : SiteRequest
@@ -28,10 +27,23 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             public int GroupId { get; set; }
         }
 
+        public class DownloadRequest : SiteRequest
+        {
+            public int LibraryId { get; set; }
+        }
+
+        public class GroupRequest
+        {
+            public int SiteId { get; set; }
+            public string Name { get; set; }
+        }
+
         public class UpdateRequest : SiteRequest
         {
             public int Id { get; set; }
+
             public string Title { get; set; }
+
             public int GroupId { get; set; }
         }
 
@@ -43,11 +55,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         public class DeleteGroupRequest : SiteRequest
         {
             public int Id { get; set; }
-        }
-
-        public class PullRequest : SiteRequest
-        {
-            public int GroupId { get; set; }
         }
     }
 }

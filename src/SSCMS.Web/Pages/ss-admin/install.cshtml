@@ -63,8 +63,9 @@
       class="headerless"
       :data="[
         {key: '服务器域名', value: location.host},
-        {key: 'SSCMS 版本', value: version},
-        {key: '.NET 版本', value: targetFramework},
+        {key: 'SSCMS 版本', value: 'SSCMS ' + version},
+        {key: '.NET Core 版本', value: frameworkDescription},
+        {key: 'OS 版本', value: osDescription},
         {key: '系统根目录', value: contentRootPath},
         {key: '网站根目录', value: webRootPath}
       ]"

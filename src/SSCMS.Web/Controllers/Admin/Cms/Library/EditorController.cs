@@ -12,15 +12,15 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class EditorController : ControllerBase
     {
-        private const string Route = "common/library/editor";
-        private const string RouteUpload = "common/library/editor/actions/upload";
+        private const string Route = "cms/library/editor";
+        private const string RouteUpload = "cms/library/editor/actions/upload";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

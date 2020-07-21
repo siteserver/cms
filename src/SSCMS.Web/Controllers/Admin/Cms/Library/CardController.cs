@@ -12,17 +12,17 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class CardController : ControllerBase
     {
-        private const string Route = "common/library/card";
-        private const string RouteList = "common/library/card/list";
-        private const string RouteGroups = "common/library/card/groups";
-        private const string RouteGroupId = "common/library/card/groups/{id}";
+        private const string Route = "cms/library/card";
+        private const string RouteList = "cms/library/card/list";
+        private const string RouteGroups = "cms/library/card/groups";
+        private const string RouteGroupId = "cms/library/card/groups/{id}";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

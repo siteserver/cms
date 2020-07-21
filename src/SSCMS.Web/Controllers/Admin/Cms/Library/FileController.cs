@@ -12,19 +12,19 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class FileController : ControllerBase
     {
-        private const string Route = "common/library/file";
-        private const string RouteId = "common/library/file/{id:int}";
-        private const string RouteDownload = "common/library/file/{siteId}/{libraryId}/{fileName}";
-        private const string RouteList = "common/library/file/list";
-        private const string RouteGroups = "common/library/file/groups";
-        private const string RouteGroupId = "common/library/file/groups/{id}";
+        private const string Route = "cms/library/file";
+        private const string RouteId = "cms/library/file/{id:int}";
+        private const string RouteDownload = "cms/library/file/{siteId}/{libraryId}/{fileName}";
+        private const string RouteList = "cms/library/file/list";
+        private const string RouteGroups = "cms/library/file/groups";
+        private const string RouteGroupId = "cms/library/file/groups/{id}";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

@@ -1,4 +1,4 @@
-﻿var $url = '/common/library/audio';
+﻿var $url = '/cms/library/audio';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),

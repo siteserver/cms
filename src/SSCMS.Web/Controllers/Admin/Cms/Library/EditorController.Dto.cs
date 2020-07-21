@@ -1,7 +1,7 @@
 ﻿using SSCMS.Dto;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     public partial class EditorController
     {

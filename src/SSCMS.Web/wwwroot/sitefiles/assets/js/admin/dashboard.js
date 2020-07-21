@@ -6,7 +6,11 @@ var data = utils.init({
   updateDate: null,
   unCheckedList: null,
   unCheckedListTotalCount: 0,
-  adminWelcomeHtml: null
+  adminWelcomeHtml: null,
+  frameworkDescription: null,
+  osDescription: null,
+  containerized: null,
+  cpuCores: null
 });
 
 var methods = {
@@ -20,7 +24,12 @@ var methods = {
       $this.version = res.version;
       $this.lastActivityDate = res.lastActivityDate;
       $this.updateDate = res.updateDate;
-      $this.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SS CMS 管理后台';
+      $this.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SSCMS 管理后台';
+
+      $this.frameworkDescription = res.frameworkDescription;
+      $this.osDescription = res.osDescription;
+      $this.containerized = res.containerized;
+      $this.cpuCores = res.cpuCores;
 
       $this.getUnCheckedList();
     }).catch(function (error) {

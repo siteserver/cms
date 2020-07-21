@@ -15,16 +15,16 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ImageController : ControllerBase
     {
-        private const string Route = "common/library/image";
-        private const string RouteActionsDeleteGroup = "common/library/image/actions/deleteGroup";
-        private const string RouteActionsPull = "common/library/image/actions/pull";
+        private const string Route = "cms/library/image";
+        private const string RouteActionsDeleteGroup = "cms/library/image/actions/deleteGroup";
+        private const string RouteActionsPull = "cms/library/image/actions/pull";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

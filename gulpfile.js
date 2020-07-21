@@ -11,7 +11,7 @@ const runSequence = require('gulp4-run-sequence');
 
 var os = '';
 
-const version = process.env.PRODUCTVERSION;
+const version = process.env.PRODUCTVERSION ? (process.env.PRODUCTVERSION + '-') : '';
 const timestamp = (new Date()).getTime();
 let publishDir = '';
 let htmlDict = {};
@@ -139,7 +139,7 @@ gulp.task('build-clean', function(){
 
 gulp.task("build-osx-x64", async function () {
   os = 'osx-x64';
-  console.log("build version: " + version + "-" + os);
+  console.log("build version: " + version + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -152,7 +152,7 @@ gulp.task("build-osx-x64", async function () {
 
 gulp.task("build-linux-x64", async function () {
   os = 'linux-x64';
-  console.log("build version: " + version + "-" + os);
+  console.log("build version: " + version + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -165,7 +165,7 @@ gulp.task("build-linux-x64", async function () {
 
 gulp.task("build-win-x64", async function () {
   os = 'win-x64';
-  console.log("build version: " + version + "-" + os);
+  console.log("build version: " + version + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -178,7 +178,7 @@ gulp.task("build-win-x64", async function () {
 
 gulp.task("build-win-x86", async function () {
   os = 'win-x86';
-  console.log("build version: " + version + "-" + os);
+  console.log("build version: " + version + os);
   return runSequence(
       "build-src",
       "build-os",
@@ -245,7 +245,7 @@ gulp.task("copy-js", function () {
 
 gulp.task("copy-osx-x64", async function (callback) {
   os = 'osx-x64';
-  publishDir = './publish/sscms-' + version + '-' + os;
+  publishDir = './publish/sscms-' + version + os;
   console.log("publish dir: " + publishDir);
 
   return runSequence(
@@ -258,7 +258,7 @@ gulp.task("copy-osx-x64", async function (callback) {
 
 gulp.task("copy-linux-x64", async function (callback) {
   os = 'linux-x64';
-  publishDir = './publish/sscms-' + version + '-' + os;
+  publishDir = './publish/sscms-' + version + os;
   console.log("publish dir: " + publishDir);
 
   return runSequence(
@@ -271,7 +271,7 @@ gulp.task("copy-linux-x64", async function (callback) {
 
 gulp.task("copy-win-x64", async function (callback) {
   os = 'win-x64';
-  publishDir = './publish/sscms-' + version + '-' + os;
+  publishDir = './publish/sscms-' + version + os;
   console.log("publish dir: " + publishDir);
 
   return runSequence(
@@ -284,7 +284,7 @@ gulp.task("copy-win-x64", async function (callback) {
 
 gulp.task("copy-win-x86", async function (callback) {
   os = 'win-x86';
-  publishDir = './publish/sscms-' + version + '-' + os;
+  publishDir = './publish/sscms-' + version + os;
   console.log("publish dir: " + publishDir);
 
   return runSequence(

@@ -9,14 +9,14 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LayerGroupAddController : ControllerBase
     {
-        private const string Route = "common/library/layerGroupAdd";
+        private const string Route = "cms/library/layerGroupAdd";
 
         private readonly IAuthManager _authManager;
         private readonly ILibraryGroupRepository _libraryGroupRepository;

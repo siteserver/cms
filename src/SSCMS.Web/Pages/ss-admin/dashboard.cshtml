@@ -10,9 +10,19 @@
   </style>
 }
 
-<div style="margin: 0 10px;">
+<div style="margin: 10px;">
 
-  <h4 class="page-title mt-4 mb-4" v-html="adminWelcomeHtml"></h4>
+  <div class="pb-3 pt-3">
+            
+    <div class="text-center">
+      <h3 v-html="adminWelcomeHtml"></h3>
+
+      <p class="text-muted text-nowrap m-b-10">SSCMS {{ version }}</p>
+      <p class="text-muted text-nowrap m-b-10">{{ frameworkDescription }}</p>
+      <p class="text-muted text-nowrap m-b-10">{{ osDescription }}</p>
+    </div>
+    
+  </div>
 
   <div class="row text-center">
 

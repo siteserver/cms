@@ -12,19 +12,19 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class VideoController : ControllerBase
     {
-        private const string Route = "common/library/video";
-        private const string RouteId = "common/library/video/{id:int}";
-        private const string RouteDownload = "common/library/video/{siteId}/{libraryId}/{fileName}";
-        private const string RouteList = "common/library/video/list";
-        private const string RouteGroups = "common/library/video/groups";
-        private const string RouteGroupId = "common/library/video/groups/{id}";
+        private const string Route = "cms/library/video";
+        private const string RouteId = "cms/library/video/{id:int}";
+        private const string RouteDownload = "cms/library/video/{siteId}/{libraryId}/{fileName}";
+        private const string RouteList = "cms/library/video/list";
+        private const string RouteGroups = "cms/library/video/groups";
+        private const string RouteGroupId = "cms/library/video/groups/{id}";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpPost, Route(RouteList)]
-        public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
+        public async Task<ActionResult<VideoController.QueryResult>> List([FromBody]VideoController.QueryRequest req)
         {
             if (!await _authManager.HasSitePermissionsAsync(req.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
             var count = await _libraryVideoRepository.GetCountAsync(req.GroupId, req.Keyword);
             var items = await _libraryVideoRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
 
-            return new QueryResult
+            return new VideoController.QueryResult
             {
                 Groups = groups,
                 Count = count,
@@ -71,7 +71,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<LibraryVideo>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<LibraryVideo>> Create([FromQuery] VideoController.CreateRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -116,7 +116,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpPut, Route(RouteId)]
-        public async Task<ActionResult<LibraryVideo>> Update([FromBody]UpdateRequest request)
+        public async Task<ActionResult<LibraryVideo>> Update([FromBody]VideoController.UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -133,7 +133,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpDelete, Route(RouteId)]
-        public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
+        public async Task<ActionResult<BoolResult>> Delete([FromBody]VideoController.DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -150,7 +150,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpGet, Route(RouteDownload)]
-        public async Task<ActionResult> Download([FromQuery]DownloadRequest request)
+        public async Task<ActionResult> Download([FromQuery]VideoController.DownloadRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -164,7 +164,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpPost, Route(RouteGroups)]
-        public async Task<ActionResult<LibraryGroup>> CreateGroup([FromBody] GroupRequest group)
+        public async Task<ActionResult<LibraryGroup>> CreateGroup([FromBody] VideoController.GroupRequest group)
         {
             if (!await _authManager.HasSitePermissionsAsync(group.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -183,7 +183,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpPut, Route(RouteGroupId)]
-        public async Task<ActionResult<LibraryGroup>> RenameGroup([FromQuery]int id, [FromBody] GroupRequest group)
+        public async Task<ActionResult<LibraryGroup>> RenameGroup([FromQuery]int id, [FromBody] VideoController.GroupRequest group)
         {
             if (!await _authManager.HasSitePermissionsAsync(group.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))
@@ -199,7 +199,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Library
         }
 
         [HttpDelete, Route(RouteGroupId)]
-        public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody]DeleteRequest request)
+        public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody]VideoController.DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     AuthTypes.SitePermissions.LibraryVideo))

@@ -84,7 +84,8 @@ namespace SSCMS.Web.Controllers.Admin
             var result = new GetResult
             {
                 Version = _settingsManager.Version,
-                TargetFramework = _settingsManager.TargetFramework,
+                FrameworkDescription = _settingsManager.FrameworkDescription,
+                OSDescription = _settingsManager.OSDescription,
                 ContentRootPath = _settingsManager.ContentRootPath,
                 WebRootPath = _settingsManager.WebRootPath,
                 RootWritable = rootWritable,

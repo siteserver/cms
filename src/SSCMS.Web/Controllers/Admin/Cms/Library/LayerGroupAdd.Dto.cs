@@ -3,7 +3,7 @@ using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Library
+namespace SSCMS.Web.Controllers.Admin.Cms.Library
 {
     public partial class LayerGroupAddController
     {
