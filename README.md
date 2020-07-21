@@ -64,37 +64,73 @@ SSCMS 基于 .NET Core，能够以最低的成本、最少的人力投入在最�
 ```code
 │ sscms.sln                  Visual Studio 项目文件
 │
-├─src/SS.CMS.Abstractions      接口、基础类
-├─src/SS.CMS                   CMS核心代码
+├─src/SS.CMS                   接口、基础类
 ├─src/SS.CMS.Cli               命令行工具
-├─src/SS.CMS.Web               .NET CORE 控制器
-└─tests                         测试库
+├─src/SS.CMS.Core              CMS核心代码
+├─src/SS.CMS.Web               CMS App
+└─tests                        测试
 ```
 
 ## 发布跨平台版本
 
-Window(64 位)：
+### Window(64 位)：
 
 ```
-dotnet publish ./src/SSCMS/SSCMS.csproj -r win-x64 --configuration Release -o dist/sscms-win-x64 /p:PublishSingleFile=true
+npm install
+npm run build-win-x64
+dotnet build ./build-win-x64/build.sln -c Release
+dotnet publish ./build-win-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r win-x64 -c Release -o ./publish/sscms-win-x64 /p:PublishTrimmed=true
+dotnet publish ./build-win-x64/src/SSCMS.Web/SSCMS.Web.csproj -r win-x64 -c Release -o ./publish/sscms-win-x64 /p:PublishTrimmed=true
+npm run copy-win-x64
 ```
 
-Window(32 位)：
+> Note: 进入文件夹 `./publish/sscms-win-x64` 获取最终发布版本
+
+### Window(32 位)：
 
 ```
-dotnet publish ./src/SSCMS/SSCMS.csproj -r win-x86 --configuration Release -o dist/sscms-win-x86 /p:PublishSingleFile=true
+npm install
+npm run build-win-x32
+dotnet build ./build-win-x32/build.sln -c Release
+dotnet publish ./build-win-x32/src/SSCMS.Cli/SSCMS.Cli.csproj -r win-x32 -c Release -o ./publish/sscms-win-x32 /p:PublishTrimmed=true
+dotnet publish ./build-win-x32/src/SSCMS.Web/SSCMS.Web.csproj -r win-x32 -c Release -o ./publish/sscms-win-x32 /p:PublishTrimmed=true
+npm run copy-win-x32
 ```
 
-Linux：
+> Note: 进入文件夹 `./publish/sscms-win-x32` 获取最终发布版本
+
+### Linux：
 
 ```
-dotnet publish ./src/SSCMS/SSCMS.csproj -r linux-x64 --configuration Release -o dist/sscms-linux-x64 /p:PublishSingleFile=true
+npm install
+npm run build-linux-x64
+dotnet build ./build-linux-x64/build.sln -c Release
+dotnet publish ./build-linux-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r linux-x64 -c Release -o ./publish/sscms-linux-x64 /p:PublishTrimmed=true
+dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 -c Release -o ./publish/sscms-linux-x64 /p:PublishTrimmed=true
+npm run copy-linux-x64
 ```
 
-MacOS：
+> Note: 进入文件夹 `./publish/sscms-linux-x64` 获取最终发布版本
+
+### MacOS：
 
 ```
-dotnet publish ./src/SSCMS/SSCMS.csproj -r osx-x64 --configuration Release -o dist/sscms-osx-x64 /p:PublishSingleFile=true
+npm install
+npm run build-osx-x64
+dotnet build ./build-osx-x64/build.sln -c Release
+dotnet publish ./build-osx-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r osx-x64 -c Release -o ./publish/sscms-osx-x64 /p:PublishTrimmed=true
+dotnet publish ./build-osx-x64/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 -c Release -o ./publish/sscms-osx-x64 /p:PublishTrimmed=true
+npm run copy-osx-x64
+```
+
+> Note: 进入文件夹 `./publish/sscms-osx-x64` 获取最终发布版本
+
+## 在 Docker 中运行
+
+###  运行最新版本
+```sh
+docker pull sscms/core:latest
+docker run -it --rm -p 5000:80 --name sscms sscms/core:latest
 ```
 
 ## 贡献代码

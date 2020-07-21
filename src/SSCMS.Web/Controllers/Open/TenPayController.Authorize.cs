@@ -12,9 +12,6 @@ namespace SSCMS.Web.Controllers.Open
 {
     public partial class TenPayController
     {
-        /// <summary>
-        /// 获取用户的OpenId
-        /// </summary>
         //[HttpGet, Route(Route)]
         //public async Task<ActionResult<RedirectResult>> Authorize([FromRoute] int siteId, [FromQuery] GetRequest request)
         //{

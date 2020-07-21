@@ -105,11 +105,11 @@
         </el-image>
 
         <div style="padding: 14px;">
-          <el-input v-if="renameId === o.id" size="small" :ref="'renameInput' + o.id" v-model="renameTitle" v-on:blur="rename(o)" v-on:keyup.enter.native="rename(o)" placeholder="标题"></el-input>
+          <el-input v-if="renameId === o.id" size="small" :ref="'renameInput' + o.id" v-model="renameTitle" v-on:blur="btnRenameClick(o)" v-on:keyup.enter.native="btnRenameClick(o)" placeholder="标题"></el-input>
           <div v-else v-on:click="btnTitleClick(o)" style="cursor: pointer; height: 22px; font-size: 14px; overflow: hidden;">{{ o.title }}</div>
           
-          <div class="bottom clearfix mt-2">
-            <el-button v-on:click="btnTitleClick(o)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px; color: #9B9B9B;">重命名</el-button>
+          <div class="bottom clearfix" style="margin-top: 5px;">
+            <el-link style="font-size: 12px;" :underline="false" v-on:click="btnTitleClick(o)" type="primary" icon="el-icon-edit">重命名</el-link>
             <el-popover
               v-if="groups.length > 1"
               placement="right"
@@ -132,9 +132,9 @@
                 <el-button size="small" v-on:click="btnSelectGroupSubmit(o)" type="primary">确 定</el-button>
                 <el-button size="small" v-on:click="o.isSelectGroups = false;">取 消</el-button>
               </div>
-              <el-button slot="reference" v-on:click="o.isSelectGroups = true; selectedGroupId = o.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px; color: #9B9B9B;">移动分组</el-button>
+              <el-link style="font-size: 12px;" :underline="false" slot="reference" v-on:click="o.isSelectGroups = true; selectedGroupId = o.groupId" type="primary" icon="el-icon-right">移动分组</el-link>
             </el-popover>
-            <el-button v-on:click="btnDeleteClick(o)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px; color: #9B9B9B;">删除</el-button>
+            <el-link style="font-size: 12px;" :underline="false" v-on:click="btnDeleteClick(o)" type="primary" icon="el-icon-delete">删除</el-link>
           </div>
         </div>
       </el-card>
@@ -161,8 +161,8 @@
     </el-table-column>
     <el-table-column label="标题">
       <template slot-scope="scope">
-        <el-input v-if="renameId === scope.row.id" size="small" :ref="'renameInput' + scope.row.id" v-model="renameTitle" v-on:blur="rename(scope.row)" v-on:keyup.enter.native="rename(scope.row)" placeholder="标题"></el-input>
-        <div v-else v-on:click="btnTitleClick(scope.row)" style="cursor: pointer; height: 22px; overflow: hidden; font-size: 14px;">{{ scope.row.title }}</div>
+        <el-input v-if="renameId === scope.row.id" size="small" :ref="'renameInput' + scope.row.id" v-model="renameTitle" v-on:blur="btnRenameClick(scope.row)" v-on:keyup.enter.native="btnRenameClick(scope.row)" placeholder="标题"></el-input>
+        <el-link :underline="false" v-else v-on:click="btnTitleClick(scope.row)" style="cursor: pointer; height: 22px; overflow: hidden; font-size: 14px;" type="primary">{{ scope.row.title }}</el-link>
       </template>
     </el-table-column>
     <el-table-column
@@ -170,34 +170,35 @@
       label="创建时间"
       width="220">
     </el-table-column>
-    <el-table-column label="操作" width="250">
+    <el-table-column label="操作" width="300">
       <template slot-scope="scope">
-          <el-button v-on:click="btnTitleClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">重命名</el-button>
-          <el-popover
-            v-if="groups.length > 1"
-            placement="right"
-            width="400"
-            v-model="scope.row.isSelectGroups"
-            trigger="click">
-            <div>
-              <el-tag
-                title="移动分组"
-                v-for="group in groups"
-                v-if="group.id !== 0"
-                :key="group.id"
-                type="success"
-                style="cursor: pointer; margin: 0 3px 6px 0;"
-                v-on:click="btnSelectGroupClick(group.id)"
-                :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
-                {{ group.groupName }}
-              </el-tag>
-              <el-divider></el-divider>
-              <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="primary">确 定</el-button>
-              <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
-            </div>
-            <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px">移动分组</el-button>
-          </el-popover>
-          <el-button v-on:click="btnDeleteClick(scope.row)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px">删除</el-button>
+        <el-button v-on:click="btnDownloadClick(scope.row)" type="text" size="mini" icon="el-icon-download" style="margin: 0 5px">下载</el-button>
+        <el-button v-on:click="btnTitleClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">重命名</el-button>
+        <el-popover
+          v-if="groups.length > 1"
+          placement="right"
+          width="400"
+          v-model="scope.row.isSelectGroups"
+          trigger="click">
+          <div>
+            <el-tag
+              title="移动分组"
+              v-for="group in groups"
+              v-if="group.id !== 0"
+              :key="group.id"
+              type="success"
+              style="cursor: pointer; margin: 0 3px 6px 0;"
+              v-on:click="btnSelectGroupClick(group.id)"
+              :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
+              {{ group.groupName }}
+            </el-tag>
+            <el-divider></el-divider>
+            <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="primary">确 定</el-button>
+            <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
+          </div>
+          <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px">移动分组</el-button>
+        </el-popover>
+        <el-button v-on:click="btnDeleteClick(scope.row)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px">删除</el-button>
       </template>
     </el-table-column>
   </el-table>

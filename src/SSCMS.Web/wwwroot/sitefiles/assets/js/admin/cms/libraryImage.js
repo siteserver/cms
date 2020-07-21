@@ -1,6 +1,7 @@
 ﻿var $url = '/cms/library/image';
 var $urlActionsDeleteGroup = '/cms/library/image/actions/deleteGroup';
 var $urlActionsPull = '/cms/library/image/actions/pull';
+var $urlActionsDownload = '/cms/library/image/actions/download';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -147,24 +148,33 @@ var methods = {
   },
 
   btnSelectGroupSubmit: function(library) {
-    library.groupId = this.selectedGroupId;
-    library.isSelectGroups = false;
-
     var $this = this;
-    $api.put($url, library).then(function (response) {
+
+    utils.loading(this, true);
+    $api.put($url, {
+      id: library.id,
+      siteId: this.siteId,
+      groupId: this.selectedGroupId,
+      title: library.title
+    }).then(function (response) {
       var res = response.data;
 
       utils.success('转移分组成功');
-
+      library.groupId = $this.selectedGroupId;
+      library.isSelectGroups = false;
       if ($this.selectedGroupId !== $this.form.groupId && $this.form.groupId !== 0) {
         $this.btnSearchClick();
       }
     }).catch(function (error) {
       utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 
-  rename: function(library) {
+  btnRenameClick: function(library) {
+    var $this = this;
+
     if (this.renameId === 0) return;
     if (!this.renameTitle) {
       utils.error('名称不能为空');
@@ -173,14 +183,22 @@ var methods = {
     
     this.renameId = 0;
     if (library.title === this.renameTitle) return false;
-    library.title = this.renameTitle;
 
-    $api.put($url, library).then(function (response) {
+    utils.loading(this, true);
+    $api.put($url, {
+      id: library.id,
+      siteId: this.siteId,
+      groupId: library.groupId,
+      title: this.renameTitle
+    }).then(function (response) {
       var res = response.data;
 
       utils.success('编辑名称成功');
+      library.title = $this.renameTitle;
     }).catch(function (error) {
       utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
     });
 
     return false;
@@ -246,6 +264,10 @@ var methods = {
       width: 400,
       height: 260
     });
+  },
+
+  btnDownloadClick: function(library) {
+    window.open($apiUrl + $urlActionsDownload + '?siteId=' + this.siteId + '&id=' + library.id + '&access_token=' + $token);
   },
 
   btnGroupDeleteClick: function () {

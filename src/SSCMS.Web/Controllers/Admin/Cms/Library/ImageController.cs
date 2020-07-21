@@ -1,15 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using Senparc.Weixin.MP;
-using Senparc.Weixin.MP.AdvancedAPIs;
 using SSCMS.Dto;
-using SSCMS.Enums;
-using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -25,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
         private const string Route = "cms/library/image";
         private const string RouteActionsDeleteGroup = "cms/library/image/actions/deleteGroup";
         private const string RouteActionsPull = "cms/library/image/actions/pull";
+        private const string RouteActionsDownload = "cms/library/image/actions/download";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
@@ -47,187 +41,53 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Library
             _openAccountRepository = openAccountRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<QueryResult>> Get([FromQuery]QueryRequest request)
+        public class QueryRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage))
-            {
-                return Unauthorized();
-            }
-
-            var isOpen = false;
-            var account = await _openAccountRepository.GetBySiteIdAsync(request.SiteId);
-            if (account.WxConnected)
-            {
-                isOpen = true;
-            }
-
-            var groups = await _libraryGroupRepository.GetAllAsync(LibraryType.Image);
-            var count = await _libraryImageRepository.GetCountAsync(request.GroupId, request.Keyword);
-            var items = await _libraryImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
-
-            return new QueryResult
-            {
-                Groups = groups,
-                Count = count,
-                Items = items,
-                IsOpen = isOpen
-            };
+            public int SiteId { get; set; }
+            public string Keyword { get; set; }
+            public int GroupId { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<LibraryImage>> Create([FromQuery]CreateRequest request, [FromForm] IFormFile file)
+        public class QueryResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            var library = new LibraryImage
-            {
-                GroupId = request.GroupId
-            };
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var fileName = Path.GetFileName(file.FileName);
-
-            var extName = PathUtils.GetExtension(fileName);
-            if (!_pathManager.IsImageExtensionAllowed(site, extName))
-            {
-                return this.Error("此图片格式已被禁止上传，请转换格式后上传!");
-            }
-
-            var libraryFileName = PathUtils.GetLibraryFileName(fileName);
-            var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
-            
-            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-            var filePath = PathUtils.Combine(directoryPath, libraryFileName);
-
-            await _pathManager.UploadAsync(file, filePath);
-
-            library.Title = fileName;
-            library.Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName);
-
-            library.Id = await _libraryImageRepository.InsertAsync(library);
-
-            return library;
+            public IEnumerable<LibraryGroup> Groups { get; set; }
+            public int Count { get; set; }
+            public IEnumerable<LibraryImage> Items { get; set; }
+            public bool IsOpen { get; set; }
         }
 
-        [HttpPut, Route(Route)]
-        public async Task<ActionResult<LibraryImage>> Update([FromBody] UpdateRequest request)
+        public class CreateRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage))
-            {
-                return Unauthorized();
-            }
-
-            var lib = await _libraryImageRepository.GetAsync(request.Id);
-            lib.Title = request.Title;
-            lib.GroupId = request.GroupId;
-            await _libraryImageRepository.UpdateAsync(lib);
-
-            return lib;
+            public int GroupId { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
+        public class UpdateRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage))
-            {
-                return Unauthorized();
-            }
-
-            var library = await _libraryImageRepository.GetAsync(request.Id);
-            var filePath = _pathManager.GetLibraryFilePath(library.Url);
-            FileUtils.DeleteFileIfExists(filePath);
-
-            await _libraryImageRepository.DeleteAsync(request.Id);
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public int GroupId { get; set; }
         }
 
-        [HttpDelete, Route(RouteActionsDeleteGroup)]
-        public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody] DeleteGroupRequest request)
+        public class DeleteRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.LibraryImage))
-            {
-                return Unauthorized();
-            }
-
-            await _libraryGroupRepository.DeleteAsync(LibraryType.Image, request.Id);
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public int Id { get; set; }
         }
 
-        [HttpPost, Route(RouteActionsPull)]
-        public async Task<ActionResult<BoolResult>> Pull([FromBody] PullRequest request)
+        public class DeleteGroupRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.LibraryImage))
-            {
-                return Unauthorized();
-            }
+            public int Id { get; set; }
+        }
 
-            var account = await _openAccountRepository.GetBySiteIdAsync(request.SiteId);
-            var (success, token, errorMessage) = _openManager.GetWxAccessToken(account.WxAppId, account.WxAppSecret);
-            if (!success)
-            {
-                return this.Error(errorMessage);
-            }
+        public class PullRequest : SiteRequest
+        {
+            public int GroupId { get; set; }
+        }
 
-            var count = await MediaApi.GetMediaCountAsync(token);
-            var list = await MediaApi.GetOthersMediaListAsync(token, UploadMediaFileType.image, 0, count.image_count);
-
-            foreach (var image in list.item)
-            {
-                if (await _libraryImageRepository.IsExistsAsync(image.media_id)) continue;
-
-                await using var ms = new MemoryStream();
-                await MediaApi.GetForeverMediaAsync(token, image.media_id, ms);
-                ms.Seek(0, SeekOrigin.Begin);
-
-                var extName = image.url.Substring(image.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
-
-                var libraryFileName = PathUtils.GetLibraryFileNameByExtName(extName);
-                var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
-
-                var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                var filePath = PathUtils.Combine(directoryPath, libraryFileName);
-
-                await FileUtils.WriteStreamAsync(filePath, ms);
-
-                var library = new LibraryImage
-                {
-                    GroupId = request.GroupId,
-                    Title = image.name,
-                    Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName),
-                    MediaId = image.media_id
-                };
-
-                await _libraryImageRepository.InsertAsync(library);
-            }
-
-            return new BoolResult
-            {
-                Value = true
-            };
+        public class DownloadRequest : SiteRequest
+        {
+            public int Id { get; set; }
         }
     }
 }
