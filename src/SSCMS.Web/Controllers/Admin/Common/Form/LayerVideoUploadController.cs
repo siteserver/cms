@@ -25,13 +25,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
-        private readonly ILibraryVideoRepository _libraryVideoRepository;
+        private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public LayerVideoUploadController(IPathManager pathManager, ISiteRepository siteRepository, ILibraryVideoRepository libraryVideoRepository)
+        public LayerVideoUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _pathManager = pathManager;
             _siteRepository = siteRepository;
-            _libraryVideoRepository = libraryVideoRepository;
+            _materialVideoRepository = materialVideoRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -97,22 +97,22 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                 if (request.IsLibrary)
                 {
-                    var libraryFileName = PathUtils.GetLibraryFileName(fileName);
-                    var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
+                    var materialFileName = PathUtils.GetMaterialFileName(fileName);
+                    var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
 
                     var directoryPath = _pathManager.ParsePath(virtualDirectoryPath);
-                    var libraryFilePath = PathUtils.Combine(directoryPath, libraryFileName);
-                    DirectoryUtils.CreateDirectoryIfNotExists(libraryFilePath);
+                    var materialFilePath = PathUtils.Combine(directoryPath, materialFileName);
+                    DirectoryUtils.CreateDirectoryIfNotExists(materialFilePath);
 
-                    FileUtils.CopyFile(filePath, libraryFilePath, true);
+                    FileUtils.CopyFile(filePath, materialFilePath, true);
 
-                    var library = new LibraryVideo
+                    var video = new MaterialVideo
                     {
                         Title = fileName,
-                        Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName)
+                        Url = PageUtils.Combine(virtualDirectoryPath, materialFileName)
                     };
 
-                    await _libraryVideoRepository.InsertAsync(library);
+                    await _materialVideoRepository.InsertAsync(video);
                 }
 
 

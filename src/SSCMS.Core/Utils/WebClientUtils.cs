@@ -24,12 +24,12 @@ namespace SSCMS.Core.Utils
 			}
 		}
 
-        public static bool Download(string remoteUrl, string localFileName)
+        public static bool Download(string remoteUrl, string filePath)
 		{
 			try
             {
                 using var client = new WebClient();
-                client.DownloadFile(remoteUrl, localFileName);
+                client.DownloadFile(remoteUrl, filePath);
             }
 			catch
 			{

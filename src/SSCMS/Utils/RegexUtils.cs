@@ -16,6 +16,7 @@ namespace SSCMS.Utils
 
         public static List<string> GetOriginalImageSrcs(string html)
         {
+            html = StringUtils.Replace(html, " data-src=", " src=");
             const string regex = "(img|input)[^><]*\\s+src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))";
             return GetContents("url", regex, html);
         }

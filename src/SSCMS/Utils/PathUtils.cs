@@ -222,7 +222,7 @@ namespace SSCMS.Utils
             return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
         }
 
-        public static string GetLibraryVirtualDirectoryPath(UploadType uploadType)
+        public static string GetMaterialVirtualDirectoryPath(UploadType uploadType)
         {
             var uploadDirectoryName = string.Empty;
 
@@ -250,17 +250,17 @@ namespace SSCMS.Utils
             return $"/{DirectoryUtils.SiteFiles.DirectoryName}/{DirectoryUtils.SiteFiles.Library}/{uploadDirectoryName}/{DateTime.Now.Year}/{DateTime.Now.Month}";
         }
 
-        public static string GetLibraryVirtualFilePath(UploadType uploadType, string fileName)
+        public static string GetMaterialVirtualFilePath(UploadType uploadType, string fileName)
         {
-            return GetLibraryVirtualDirectoryPath(uploadType) + "/" + fileName;
+            return GetMaterialVirtualDirectoryPath(uploadType) + "/" + fileName;
         }
 
-        public static string GetLibraryFileName(string filePath)
+        public static string GetMaterialFileName(string filePath)
         {
             return $"{StringUtils.GetShortGuid(false)}{GetExtension(filePath)}";
         }
 
-        public static string GetLibraryFileNameByExtName(string extName)
+        public static string GetMaterialFileNameByExtName(string extName)
         {
             if (!extName.StartsWith("."))
             {

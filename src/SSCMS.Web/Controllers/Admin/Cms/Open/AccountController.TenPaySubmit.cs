@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
         [HttpPost, Route(RouteTenPay)]
         public async Task<ActionResult<BoolResult>> TenPaySubmit([FromBody] TenPaySubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Account))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.OpenAccount))
             {
                 return Unauthorized();
             }

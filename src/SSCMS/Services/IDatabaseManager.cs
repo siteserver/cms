@@ -18,12 +18,12 @@ namespace SSCMS.Services
         IContentTagRepository ContentTagRepository { get; }
         IDbCacheRepository DbCacheRepository { get; }
         IErrorLogRepository ErrorLogRepository { get; }
-        ILibraryAudioRepository LibraryAudioRepository { get; }
-        ILibraryCardRepository LibraryCardRepository { get; }
-        ILibraryFileRepository LibraryFileRepository { get; }
-        ILibraryGroupRepository LibraryGroupRepository { get; }
-        ILibraryImageRepository LibraryImageRepository { get; }
-        ILibraryVideoRepository LibraryVideoRepository { get; }
+        IMaterialAudioRepository MaterialAudioRepository { get; }
+        IMaterialArticleRepository MaterialArticleRepository { get; }
+        IMaterialFileRepository MaterialFileRepository { get; }
+        IMaterialGroupRepository MaterialGroupRepository { get; }
+        IMaterialImageRepository MaterialImageRepository { get; }
+        IMaterialVideoRepository MaterialVideoRepository { get; }
         ILogRepository LogRepository { get; }
         IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
         IPluginConfigRepository PluginConfigRepository { get; }

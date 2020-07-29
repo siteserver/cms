@@ -143,6 +143,18 @@ namespace SSCMS.Utils
             return a.Equals(b, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool Contains(string content, string val)
+        {
+            if (string.IsNullOrEmpty(content) || string.IsNullOrEmpty(val)) return false;
+            return content == val || content.Contains(val);
+        }
+
+        public static bool ContainsIgnoreCase(string content, string val)
+        {
+            if (string.IsNullOrEmpty(content) || string.IsNullOrEmpty(val)) return false;
+            return content == val || content.Contains(val, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static bool Equals(string a, string b)
         {
             return string.IsNullOrEmpty(a) ? string.IsNullOrEmpty(b) : string.Equals(a, b);

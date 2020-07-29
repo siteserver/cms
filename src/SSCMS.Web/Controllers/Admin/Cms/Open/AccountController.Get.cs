@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] int siteId)
         {
-            if (!await _authManager.HasSitePermissionsAsync(siteId, AuthTypes.SitePermissions.Account))
+            if (!await _authManager.HasSitePermissionsAsync(siteId, AuthTypes.SitePermissions.OpenAccount))
             {
                 return Unauthorized();
             }

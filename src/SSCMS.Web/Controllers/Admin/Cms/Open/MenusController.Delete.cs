@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<OpenMenusResult>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Menus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.OpenMenus))
             {
                 return Unauthorized();
             }

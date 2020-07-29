@@ -81,8 +81,8 @@ namespace SSCMS.Core.StlParser.Model
                 typeof(StlItemTemplate)
             },
             {
-                StlLibrary.ElementName,
-                typeof(StlLibrary)
+                StlMaterial.ElementName,
+                typeof(StlMaterial)
             },
             {
                 StlLoading.ElementName,

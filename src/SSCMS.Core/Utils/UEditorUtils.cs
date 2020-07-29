@@ -94,7 +94,7 @@ namespace SSCMS.Core.Utils
             {
                 retVal = retVal.Replace($"<img {StlPlayer.EditorPlaceHolder} ", $"<{StlPlayer.ElementName} ");
                 retVal = retVal.Replace($"<img {StlAudio.EditorPlaceHolder} ", $"<{StlAudio.ElementName} ");
-                retVal = retVal.Replace($"<img {StlLibrary.EditorPlaceHolder} ", $"<{StlLibrary.ElementName} ");
+                retVal = retVal.Replace($"<img {StlMaterial.EditorPlaceHolder} ", $"<{StlMaterial.ElementName} ");
             }
             return retVal;
         }
@@ -106,7 +106,7 @@ namespace SSCMS.Core.Utils
             {
                 retVal = retVal.Replace($"<{StlPlayer.ElementName} ", $"<img {StlPlayer.EditorPlaceHolder} ");
                 retVal = retVal.Replace($"<{StlAudio.ElementName} ", $"<img {StlAudio.EditorPlaceHolder} ");
-                retVal = retVal.Replace($"<{StlLibrary.ElementName} ", $"<img {StlLibrary.EditorPlaceHolder} ");
+                retVal = retVal.Replace($"<{StlMaterial.ElementName} ", $"<img {StlMaterial.EditorPlaceHolder} ");
             }
             return retVal;
         }

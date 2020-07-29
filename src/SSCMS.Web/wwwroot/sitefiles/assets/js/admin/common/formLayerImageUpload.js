@@ -3,7 +3,7 @@
 var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
-  editorAttributeName: parent.$vue.getEditorAttributeName && parent.$vue.getEditorAttributeName(),
+  editorAttributeName: utils.getQueryString('editorAttributeName'),
   uploadUrl: null,
   dialogImageUrl: '',
   dialogVisible: false,
@@ -20,15 +20,18 @@ var data = utils.init({
 });
 
 var methods = {
-  insert: function(no, result) {
-    parent.$vue.insertText(this.attributeName, no, result.imageVirtualUrl);
-    if (this.editorAttributeName && this.form.isEditor) {
+  parentInsert: function(no, result) {
+    var vue = parent.$vue;
+    if (vue.runFormLayerImageUploadText) {
+      vue.runFormLayerImageUploadText(this.attributeName, no, result.imageVirtualUrl, result.imageUrl);
+    }
+    if (vue.runFormLayerImageUploadEditor && this.editorAttributeName && this.form.isEditor) {
       var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
       if (result.previewUrl) {
         var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
         html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
       }
-      parent.$vue.insertEditor(this.editorAttributeName, html);
+      vue.runFormLayerImageUploadEditor(this.editorAttributeName, html);
     }
   },
 
@@ -68,7 +71,7 @@ var methods = {
       if (res && res.length > 0) {
         for (var i = 0; i < res.length; i++) {
           var result = res[i];
-          $this.insert($this.no + i, result);
+          $this.parentInsert($this.no + i, result);
         }
       }
       

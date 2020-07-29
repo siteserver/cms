@@ -9,15 +9,13 @@ var data = utils.init({
 });
 
 var methods = {
-  insertEditor: function(attributeName, html)
+  runFormLayerImageUploadText: function(attributeName, html)
   {
-    if (html)
-    {
-      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
-    }
+    if (!html) return;
+    UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
 
-  insertText: function(attributeName, no, text) {
+  runFormLayerImageUploadEditor: function(attributeName, no, text) {
     var count = this.form[utils.getCountName(attributeName)];
     if (count < no) {
       this.form[utils.getCountName(attributeName)] = no;

@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
         [HttpPost, Route(Route)]
         public async Task<ActionResult<OpenMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Menus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.OpenMenus))
             {
                 return Unauthorized();
             }

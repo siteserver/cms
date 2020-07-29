@@ -1088,9 +1088,19 @@ namespace SSCMS.Core.Services
             return contentLength <= site.VideoUploadTypeMaxSize * 1024;
         }
 
+        public bool IsAudioExtensionAllowed(Site site, string fileExtension)
+        {
+            return PathUtils.IsFileExtensionAllowed(site.AudioUploadExtensions, fileExtension);
+        }
+
+        public bool IsAudioSizeAllowed(Site site, int contentLength)
+        {
+            return contentLength <= site.AudioUploadTypeMaxSize * 1024;
+        }
+
         public bool IsFileExtensionAllowed(Site site, string fileExtension)
         {
-            var typeCollection = site.FileUploadExtensions + "," + site.ImageUploadExtensions + "," + site.VideoUploadExtensions;
+            var typeCollection = site.FileUploadExtensions + "," + site.ImageUploadExtensions + "," + site.VideoUploadExtensions + "," + site.AudioUploadExtensions;
             return PathUtils.IsFileExtensionAllowed(typeCollection, fileExtension);
         }
 
@@ -1105,11 +1115,18 @@ namespace SSCMS.Core.Services
             {
                 return IsImageExtensionAllowed(site, fileExtension);
             }
-            else if (uploadType == UploadType.Video)
+
+            if (uploadType == UploadType.Video)
             {
                 return IsVideoExtensionAllowed(site, fileExtension);
             }
-            else if (uploadType == UploadType.File)
+
+            if (uploadType == UploadType.Audio)
+            {
+                return IsAudioExtensionAllowed(site, fileExtension);
+            }
+
+            if (uploadType == UploadType.File)
             {
                 return IsFileExtensionAllowed(site, fileExtension);
             }
@@ -1118,14 +1135,24 @@ namespace SSCMS.Core.Services
 
         public bool IsUploadSizeAllowed(UploadType uploadType, Site site, int contentLength)
         {
-            switch (uploadType)
+            if (uploadType == UploadType.Image)
             {
-                case UploadType.Image:
-                    return IsImageSizeAllowed(site, contentLength);
-                case UploadType.Video:
-                    return IsVideoSizeAllowed(site, contentLength);
-                case UploadType.File:
-                    return IsFileSizeAllowed(site, contentLength);
+                return IsImageSizeAllowed(site, contentLength);
+            }
+
+            if (uploadType == UploadType.Video)
+            {
+                return IsVideoSizeAllowed(site, contentLength);
+            }
+
+            if (uploadType == UploadType.Audio)
+            {
+                return IsAudioSizeAllowed(site, contentLength);
+            }
+
+            if (uploadType == UploadType.File)
+            {
+                return IsFileSizeAllowed(site, contentLength);
             }
             return false;
         }
@@ -1137,11 +1164,6 @@ namespace SSCMS.Core.Services
         }
 
         public string PhysicalSiteFilesPath => PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName);
-
-        public string GetLibraryFilePath(string virtualUrl)
-        {
-            return PathUtils.Combine(_settingsManager.WebRootPath, virtualUrl);
-        }
 
         public async Task DeleteSiteFilesAsync(Site site)
         {

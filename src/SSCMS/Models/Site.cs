@@ -207,6 +207,12 @@ namespace SSCMS.Models
 
         public DateFormatType AudioUploadDateFormatString { get; set; } = DateFormatType.Month;
 
+        public bool IsAudioUploadChangeFileName { get; set; } = true;
+
+        public string AudioUploadExtensions { get; set; } = ".mp3,.wma,.wav,.amr,.m4a";
+
+        public int AudioUploadTypeMaxSize { get; set; } = 307200;
+
         public string VideoUploadDirectoryName { get; set; } = "upload/videos";
 
         public DateFormatType VideoUploadDateFormatString { get; set; } = DateFormatType.Month;

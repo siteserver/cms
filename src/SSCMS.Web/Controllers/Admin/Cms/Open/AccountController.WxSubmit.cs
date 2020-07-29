@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
         [HttpPost, Route(RouteWx)]
         public async Task<ActionResult<BoolResult>> WxSubmit([FromBody] WxSubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Account))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.OpenAccount))
             {
                 return Unauthorized();
             }

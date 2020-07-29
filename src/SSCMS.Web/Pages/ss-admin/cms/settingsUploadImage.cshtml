@@ -1,6 +1,8 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
+<div style="height: 10px;"></div>
+
 <el-form size="small" ref="form" :model="form" label-width="280px">
 
   <el-form-item label="图片上传文件夹" prop="imageUploadDirectoryName" :rules="{ required: true, message: '请输入图片上传文件夹' }">

@@ -21,7 +21,7 @@
       <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: 'imageUrl', no: 0})">
         上传
       </el-button>
-      <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'libraryLayerImageSelect', attributeName: 'imageUrl', no: 0, full: true})">
+      <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: 'imageUrl', no: 0, full: true})">
         选择
       </el-button>
       <el-button size="mini" type="info" plain v-if="form.imageUrl" v-on:click="btnPreviewClick('imageUrl')">

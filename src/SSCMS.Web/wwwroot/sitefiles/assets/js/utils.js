@@ -187,12 +187,33 @@ var utils = {
     return url;
   },
 
-  getCountName(attributeName) {
+  getCountName: function(attributeName) {
     return _.camelCase(attributeName + "Count");
   },
 
-  getExtendName(attributeName, n) {
+  getExtendName: function(attributeName, n) {
     return _.camelCase(n ? attributeName + n : attributeName);
+  },
+
+  pad: function(num) {
+    var s = num+"";
+    while (s.length < 2) s = "0" + s;
+    return s;
+  },
+
+  getFriendlyDate: function(date) {
+    if (Object.prototype.toString.call(date) !== '[object Date]') {
+      date = new Date(date);
+    }
+    var delta = Math.round((new Date() - date) / 1000);
+    var minute = 60, hour = minute * 60, day = hour * 24;
+    if (delta < day) {
+      return utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes());
+    }
+    if (delta < day * 2) {
+      return '昨天 ' + utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes());
+    }
+    return utils.pad(date.getMonth() + 1) + '月' + utils.pad(date.getDate()) + '日';
   },
 
   getRootVue: function() {
@@ -218,7 +239,12 @@ var utils = {
 
   openTab: function(name) {
     var $this = utils.getRootVue();
-    $this.tabName = name;
+    var index = $this.tabs.findIndex(function(tab) {
+      return tab.name == name;
+    });
+    if (index !== -1) {
+      $this.tabName = name;
+    }
   },
 
   addTab: function(title, url) {

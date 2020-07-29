@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Globalization;
+using FluentScheduler;
+using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -23,11 +26,11 @@ namespace SSCMS.Web.Controllers
         [HttpGet, Route(Route)]
         public string Get()
         {
-            _taskManager.Queue(async token =>
-            {
-                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "test.txt");
-                await FileUtils.WriteTextAsync(filePath, "my name");
-            });
+            //_taskManager.Queue(async cancel =>
+            //{
+            //    var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "test.txt");
+            //    await FileUtils.WriteTextAsync(filePath, "my name");
+            //});
 
             return "pong";
         }

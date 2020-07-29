@@ -126,7 +126,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                 if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
                 var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                var (title, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                var (title, imageUrl, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
 
                 if (string.IsNullOrEmpty(title)) continue;
 
@@ -147,6 +147,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                 contentInfo.LoadDict(dict);
 
                 contentInfo.Title = title;
+                contentInfo.ImageUrl = imageUrl;
                 contentInfo.Body = content;
 
                 contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);

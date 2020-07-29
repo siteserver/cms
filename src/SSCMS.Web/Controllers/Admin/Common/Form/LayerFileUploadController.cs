@@ -25,13 +25,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
-        private readonly ILibraryFileRepository _libraryFileRepository;
+        private readonly IMaterialFileRepository _materialFileRepository;
 
-        public LayerFileUploadController(IPathManager pathManager, ISiteRepository siteRepository, ILibraryFileRepository libraryFileRepository)
+        public LayerFileUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialFileRepository materialFileRepository)
         {
             _pathManager = pathManager;
             _siteRepository = siteRepository;
-            _libraryFileRepository = libraryFileRepository;
+            _materialFileRepository = materialFileRepository;
         }
 
         [HttpGet, Route(Route)]
@@ -97,22 +97,22 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                 if (request.IsLibrary)
                 {
-                    var libraryFileName = PathUtils.GetLibraryFileName(fileName);
-                    var virtualDirectoryPath = PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image);
+                    var materialFileName = PathUtils.GetMaterialFileName(fileName);
+                    var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
 
                     var directoryPath = _pathManager.ParsePath(virtualDirectoryPath);
-                    var libraryFilePath = PathUtils.Combine(directoryPath, libraryFileName);
-                    DirectoryUtils.CreateDirectoryIfNotExists(libraryFilePath);
+                    var materialFilePath = PathUtils.Combine(directoryPath, materialFileName);
+                    DirectoryUtils.CreateDirectoryIfNotExists(materialFilePath);
 
-                    FileUtils.CopyFile(filePath, libraryFilePath, true);
+                    FileUtils.CopyFile(filePath, materialFilePath, true);
 
-                    var library = new LibraryFile
+                    var file = new MaterialFile
                     {
                         Title = fileName,
-                        Url = PageUtils.Combine(virtualDirectoryPath, libraryFileName)
+                        Url = PageUtils.Combine(virtualDirectoryPath, materialFileName)
                     };
 
-                    await _libraryFileRepository.InsertAsync(library);
+                    await _materialFileRepository.InsertAsync(file);
                 }
 
 

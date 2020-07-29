@@ -35,6 +35,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
 
         public class OpenMenusResult
         {
+            public bool Success { get; set; }
+            public string ErrorMessage { get; set; }
             public List<OpenMenu> OpenMenus { get; set; }
         }
 
@@ -60,6 +62,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Open
             public string AppId { get; set; }
             public string PagePath { get; set; }
             public string MediaId { get; set; }
+        }
+
+        public class PushResult
+        {
+            public bool Success { get; set; }
+            public string ErrorMessage { get; set; }
         }
     }
 }

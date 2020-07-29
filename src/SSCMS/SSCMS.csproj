@@ -15,7 +15,7 @@
     <PackageTags>SSCMS;SiteServer;CMS;Plugin</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

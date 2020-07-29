@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -58,8 +59,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     CheckedLevel = site.CheckContentDefaultLevel
                 };
             }
-
-            //await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
 
             return new GetResult
             {

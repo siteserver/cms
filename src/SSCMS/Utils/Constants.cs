@@ -57,6 +57,7 @@ namespace SSCMS.Utils
             return $"SESSION-ID-{userId}";
         }
 
+        public const char Newline = '\n';//换行
         public const string ReturnAndNewline = "\r\n";//回车换行
         public const string Html5Empty = @"<html><head><meta charset=""utf-8""><meta http-equiv=""cache-control"" content=""max-age=0"" /><meta http-equiv=""cache-control"" content=""no-cache"" /><meta http-equiv=""expires"" content=""0"" /><meta http-equiv=""expires"" content=""Tue, 01 Jan 1980 1:00:00 GMT"" /><meta http-equiv=""pragma"" content=""no-cache"" /></head><body></body></html>";
 

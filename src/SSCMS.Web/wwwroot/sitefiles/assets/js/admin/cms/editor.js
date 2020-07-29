@@ -27,32 +27,20 @@ var data = utils.init({
 });
 
 var methods = {
-  getEditorAttributeName: function() {
-    for (var i = 0; i < this.styles.length; i++) {
-      var style = this.styles[i];
-      if (style.inputType === 'TextEditor') {
-        return style.attributeName;
-      }
-    }
-    return null;
-  },
-
-  insertEditor: function(attributeName, html)
-  {
-    if (!attributeName) attributeName = 'Body';
-    if (html)
-    {
-      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
-    }
-  },
-
-  insertText: function(attributeName, no, text) {
+  runFormLayerImageUploadText: function(attributeName, no, text) {
     var count = this.form[utils.getCountName(attributeName)];
     if (count && count < no) {
       this.form[utils.getCountName(attributeName)] = no;
     }
     this.form[utils.getExtendName(attributeName, no)] = text;
     this.form = _.assign({}, this.form);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html)
+  {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
 
   addTranslation: function(transSiteId, transChannelId, transType, name) {
@@ -72,7 +60,9 @@ var methods = {
   apiGet: function() {
     var $this = this;
 
-    window.onresize = $this.winResize;
+    window.onresize = function() {
+      $this.mainHeight = ($(window).height() - 70) + 'px';
+    };
     window.onresize();
 
     $api.get($url, {
@@ -85,7 +75,65 @@ var methods = {
     .then(function(response) {
       var res = response.data;
 
-      $this.loadEditor(res);
+      $this.site = res.site;
+      $this.channel = res.channel;
+      $this.groupNames = res.groupNames;
+      $this.tagNames = res.tagNames;
+      $this.checkedLevels = res.checkedLevels;
+      
+      $this.siteOptions = res.siteOptions;
+      $this.channelOptions = res.channelOptions;
+
+      $this.styles = res.styles;
+      $this.form = _.assign({}, res.content);
+      if ($this.form.checked) {
+        $this.form.checkedLevel = $this.site.checkContentLevel;
+      }
+      if ($this.form.top || $this.form.recommend || $this.form.hot || $this.form.color) {
+        $this.collapseSettings.push('attributes');
+      }
+      if ($this.form.groupNames && $this.form.groupNames.length > 0) {
+        $this.collapseSettings.push('groupNames');
+      } else {
+        $this.form.groupNames = [];
+      }
+      if ($this.form.tagNames && $this.form.tagNames.length > 0) {
+        $this.collapseSettings.push('tagNames');
+      } else {
+        $this.form.tagNames = [];
+      }
+      if ($this.form.linkUrl) {
+        $this.collapseSettings.push('linkUrl');
+      }
+
+      for (var i = 0; i < $this.styles.length; i++) {
+        var style = $this.styles[i];
+        if (style.inputType !== 'Image' && style.inputType !== 'File' && style.inputType !== 'Video') continue;
+        
+        var count = $this.form[utils.getCountName(style.attributeName)];
+        if (!count){
+          $this.form[utils.getCountName(style.attributeName)] = 0;
+        }
+      }
+
+      setTimeout(function () {
+        for (var i = 0; i < $this.styles.length; i++) {
+          var style = $this.styles[i];
+          if (style.inputType === 'TextEditor') {
+            var editor = UE.getEditor(style.attributeName, {
+              allowDivTransToP: false,
+              maximumWords: 99999999
+            });
+            editor.styleIndex = i;
+            editor.ready(function () {
+              editor.addListener("contentChange", function () {
+                var style = $this.styles[this.styleIndex];
+                $this.form[_.lowerFirst(style.attributeName)] = this.getContent();
+              });
+            });
+          }
+        }
+      }, 100);
     })
     .catch(function(error) {
       utils.error(error);
@@ -177,95 +225,19 @@ var methods = {
     utils.openTab(this.tabName);
   },
 
-  loadEditor: function(res) {
-    this.site = res.site;
-    this.channel = res.channel;
-    this.groupNames = res.groupNames;
-    this.tagNames = res.tagNames;
-    this.checkedLevels = res.checkedLevels;
-    
-    this.siteOptions = res.siteOptions;
-    this.channelOptions = res.channelOptions;
-    // this.styles = [];
-    // this.content = res.content;
-    // for (let i = 0; i < res.styles.length; i++) {
-    //   var style = res.styles[i];
-    //   if (this.contentId) {
-    //     style.value = this.content[_.camelCase(style.attributeName)];
-    //   } else {
-    //     style.value = style.defaultValue || '';
-    //   }
-    //   this.styles.push(style);
-    // }
-
-    this.styles = res.styles;
-    this.form = _.assign({}, res.content);
-    if (this.form.checked) {
-      this.form.checkedLevel = this.site.checkContentLevel;
-    }
-    if (this.form.top || this.form.recommend || this.form.hot || this.form.color) {
-      this.collapseSettings.push('attributes');
-    }
-    if (this.form.groupNames && this.form.groupNames.length > 0) {
-      this.collapseSettings.push('groupNames');
-    } else {
-      this.form.groupNames = [];
-    }
-    if (this.form.tagNames && this.form.tagNames.length > 0) {
-      this.collapseSettings.push('tagNames');
-    } else {
-      this.form.tagNames = [];
-    }
-    if (this.form.linkUrl) {
-      this.collapseSettings.push('linkUrl');
-    }
-
-    for (var i = 0; i < this.styles.length; i++) {
-      var style = this.styles[i];
-      if (style.inputType !== 'Image' && style.inputType !== 'File' && style.inputType !== 'Video') continue;
-      
-      var count = this.form[utils.getCountName(style.attributeName)];
-      if (!count){
-        this.form[utils.getCountName(style.attributeName)] = 0;
-      }
-    }
-
-    var $this = this;
-    setTimeout(function () {
-      for (var i = 0; i < $this.styles.length; i++) {
-        var style = $this.styles[i];
-        if (style.inputType === 'TextEditor') {
-          var editor = UE.getEditor(style.attributeName, {
-            allowDivTransToP: false,
-            maximumWords: 99999999
-          });
-          editor.styleIndex = i;
-          editor.ready(function () {
-            editor.addListener("contentChange", function () {
-              var style = $this.styles[this.styleIndex];
-              $this.form[_.lowerFirst(style.attributeName)] = this.getContent();
-            });
-          });
-        }
-      }
-    }, 100);
-  },
-
-  winResize: function () {
-    this.mainHeight = ($(window).height() - 52) + 'px';
-  },
-
   btnLayerClick: function(options) {
+    console.log(options);
     var query = {
       siteId: this.siteId,
-      channelId: this.channelId
+      channelId: this.channelId,
+      editorAttributeName: 'Body'
     };
 
-    if (options.attributeName) {
-      query.attributeName = options.attributeName;
-    }
     if (options.contentId) {
       query.contentId = options.contentId;
+    }
+    if (options.attributeName) {
+      query.attributeName = options.attributeName;
     }
     if (options.no) {
       query.no = options.no;
@@ -329,6 +301,10 @@ var methods = {
         utils.error('预览失败，请检查表单值是否正确');
       }
     });
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
   },
 
   btnGroupAddClick: function() {

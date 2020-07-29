@@ -33,7 +33,7 @@ namespace SSCMS.Core.Utils.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static async Task<(string title, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath, string docsFileTitle)
+        public static async Task<(string title, string imageUrl, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath, string docsFileTitle)
         {
             string imageDirectoryPath;
             string imageDirectoryUrl;
@@ -45,8 +45,8 @@ namespace SSCMS.Core.Utils.Office
             else
             {
                 var fileName = PathUtils.GetFileName(docsFilePath);
-                imageDirectoryPath = PathUtils.Combine(pathManager.WebRootPath, PathUtils.GetLibraryVirtualDirectoryPath(UploadType.Image));
-                imageDirectoryUrl = PathUtils.GetLibraryVirtualFilePath(UploadType.Image, fileName);
+                imageDirectoryPath = PathUtils.Combine(pathManager.WebRootPath, PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image));
+                imageDirectoryUrl = PathUtils.GetMaterialVirtualFilePath(UploadType.Image, fileName);
             }
 
             var settings = new ConverterSettings
@@ -62,7 +62,7 @@ namespace SSCMS.Core.Utils.Office
                 IsSaveHtml = false
             };
 
-            var (title, body) = ConvertToHtml(docsFilePath, settings);
+            var (title, imageUrl, body) = ConvertToHtml(docsFilePath, settings);
 
             FileUtils.DeleteFileIfExists(docsFilePath);
 
@@ -76,12 +76,13 @@ namespace SSCMS.Core.Utils.Office
                 title = docsFileTitle;
             }
 
-            return (title, body);
+            return (title, imageUrl, body);
         }
 
-        public static (string title, string body) ConvertToHtml(string docxFilePath, ConverterSettings settings)
+        public static (string title, string imageUrl, string body) ConvertToHtml(string docxFilePath, ConverterSettings settings)
         {
             var title = string.Empty;
+            var imageUrl = string.Empty;
             string content;
             var fi = new FileInfo(docxFilePath);
 
@@ -149,6 +150,10 @@ namespace SSCMS.Core.Utils.Office
                                 return null;
                             }
                             var imageSource = PageUtils.Combine(settings.ImageDirectoryUrl, imageFileName);
+                            if (string.IsNullOrEmpty(imageUrl))
+                            {
+                                imageUrl = imageSource;
+                            }
 
                             var img = new XElement(Xhtml.img,
                                 new XAttribute(NoNamespace.src, imageSource),
@@ -227,7 +232,7 @@ namespace SSCMS.Core.Utils.Office
                 content = HtmlUtils.ClearFontFamily(content);
             }
 
-            return (title, content);
+            return (title, imageUrl, content);
         }
 
         public static void ConvertToDocx(string file, string destinationDir)

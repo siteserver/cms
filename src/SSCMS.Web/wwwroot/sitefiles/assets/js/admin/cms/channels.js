@@ -36,25 +36,23 @@ var data = utils.init({
 });
 
 var methods = {
+  runFormLayerImageUploadEditor: function(attributeName, html)
+  {
+    if (!html) return;
+    this.editEditor.cmd.do('insertHTML', html);
+  },
+
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.editChannel[attributeName] = text;
+    this.editChannel = _.assign({}, this.editChannel);
+  },
+  
   setRuleText: function(rule, isChannel) {
     if (isChannel) {
       this.editChannel.channelFilePathRule = rule;
     } else {
       this.editChannel.contentFilePathRule = rule;
     }
-  },
-
-  insertEditor: function(attributeName, html)
-  {
-    if (html)
-    {
-      this.editEditor.cmd.do('insertHTML', html);
-    }
-  },
-
-  insertText: function(attributeName, no, text) {
-    this.editChannel[attributeName] = text;
-    this.editChannel = _.assign({}, this.editChannel);
   },
 
   updateGroups: function(res, message) {

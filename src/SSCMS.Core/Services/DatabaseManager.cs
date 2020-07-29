@@ -27,13 +27,15 @@ namespace SSCMS.Core.Services
         public IContentTagRepository ContentTagRepository { get; }
         public IDbCacheRepository DbCacheRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
-        public ILibraryAudioRepository LibraryAudioRepository { get; }
-        public ILibraryCardRepository LibraryCardRepository { get; }
-        public ILibraryFileRepository LibraryFileRepository { get; }
-        public ILibraryGroupRepository LibraryGroupRepository { get; }
-        public ILibraryImageRepository LibraryImageRepository { get; }
-        public ILibraryVideoRepository LibraryVideoRepository { get; }
         public ILogRepository LogRepository { get; }
+        public IMaterialArticleRepository MaterialArticleRepository { get; }
+        public IMaterialAudioRepository MaterialAudioRepository { get; }
+        public IMaterialFileRepository MaterialFileRepository { get; }
+        public IMaterialGroupRepository MaterialGroupRepository { get; }
+        public IMaterialImageRepository MaterialImageRepository { get; }
+        public IMaterialMessageRepository MaterialMessageRepository { get; }
+        public IMaterialMessageItemRepository MaterialMessageItemRepository { get; }
+        public IMaterialVideoRepository MaterialVideoRepository { get; }
         public IOpenAccountRepository OpenAccountRepository { get; }
         public IOpenMenuRepository OpenMenuRepository { get; }
         public IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
@@ -53,7 +55,7 @@ namespace SSCMS.Core.Services
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
 
-        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILibraryAudioRepository libraryAudioRepository, ILibraryCardRepository libraryCardRepository, ILibraryFileRepository libraryFileRepository, ILibraryGroupRepository libraryGroupRepository, ILibraryImageRepository libraryImageRepository, ILibraryVideoRepository libraryVideoRepository, ILogRepository logRepository, IOpenAccountRepository openAccountRepository, IOpenMenuRepository openMenuRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
+        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILogRepository logRepository, IMaterialArticleRepository materialArticleRepository, IMaterialAudioRepository materialAudioRepository, IMaterialFileRepository materialFileRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, IMaterialMessageRepository materialMessageRepository, IMaterialMessageItemRepository materialMessageItemRepository, IMaterialVideoRepository materialVideoRepository, IOpenAccountRepository openAccountRepository, IOpenMenuRepository openMenuRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
         {
             _settingsManager = settingsManager;
             AccessTokenRepository = accessTokenRepository;
@@ -68,13 +70,15 @@ namespace SSCMS.Core.Services
             ContentTagRepository = contentTagRepository;
             DbCacheRepository = dbCacheRepository;
             ErrorLogRepository = errorLogRepository;
-            LibraryAudioRepository = libraryAudioRepository;
-            LibraryCardRepository = libraryCardRepository;
-            LibraryFileRepository = libraryFileRepository;
-            LibraryGroupRepository = libraryGroupRepository;
-            LibraryImageRepository = libraryImageRepository;
-            LibraryVideoRepository = libraryVideoRepository;
             LogRepository = logRepository;
+            MaterialArticleRepository = materialArticleRepository;
+            MaterialAudioRepository = materialAudioRepository;
+            MaterialFileRepository = materialFileRepository;
+            MaterialGroupRepository = materialGroupRepository;
+            MaterialImageRepository = materialImageRepository;
+            MaterialMessageRepository = materialMessageRepository;
+            MaterialMessageItemRepository = materialMessageItemRepository;
+            MaterialVideoRepository = materialVideoRepository;
             OpenAccountRepository = openAccountRepository;
             OpenMenuRepository = openMenuRepository;
             PermissionsInRolesRepository = permissionsInRolesRepository;
@@ -111,13 +115,15 @@ namespace SSCMS.Core.Services
                 ContentTagRepository,
                 DbCacheRepository,
                 ErrorLogRepository,
-                LibraryAudioRepository,
-                LibraryCardRepository,
-                LibraryFileRepository,
-                LibraryGroupRepository,
-                LibraryImageRepository,
-                LibraryVideoRepository,
                 LogRepository,
+                MaterialArticleRepository,
+                MaterialAudioRepository,
+                MaterialFileRepository,
+                MaterialGroupRepository,
+                MaterialImageRepository,
+                MaterialMessageRepository,
+                MaterialMessageItemRepository,
+                MaterialVideoRepository,
                 OpenAccountRepository,
                 OpenMenuRepository,
                 PermissionsInRolesRepository,
