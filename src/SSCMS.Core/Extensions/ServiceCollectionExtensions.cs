@@ -114,7 +114,7 @@ namespace SSCMS.Core.Extensions
         public static void AddOpenManager(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSenparcGlobalServices(configuration);
-            services.AddScoped<IOpenManager, OpenManager>();
+            services.AddScoped<IWxManager, WxManager>();
         }
     }
 }

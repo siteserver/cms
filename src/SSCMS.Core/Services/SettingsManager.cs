@@ -10,7 +10,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
-    public class SettingsManager : ISettingsManager
+    public partial class SettingsManager : ISettingsManager
     {
         private readonly IServiceCollection _services;
         private readonly IConfiguration _config;
@@ -38,6 +38,7 @@ namespace SSCMS.Core.Services
             return _services.BuildServiceProvider();
         }
 
+        public IConfiguration Configuration { get; set; }
         public string ContentRootPath { get; }
         public string WebRootPath { get; }
         public string Version { get; }

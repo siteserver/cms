@@ -23,13 +23,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IOpenManager _openManager;
+        private readonly IWxManager _openManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
-        private readonly IOpenAccountRepository _openAccountRepository;
+        private readonly IWxAccountRepository _openAccountRepository;
 
-        public VideoController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IOpenManager openManager, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, IOpenAccountRepository openAccountRepository)
+        public VideoController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager openManager, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, IWxAccountRepository openAccountRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

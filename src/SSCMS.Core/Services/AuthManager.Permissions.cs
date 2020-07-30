@@ -173,7 +173,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsConsoleAdministrator(roles))
             {
                 appPermissions.AddRange(_permissions
-                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.App))
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.App))
                     .Select(permission => permission.Id));
             }
             else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
@@ -365,9 +365,9 @@ namespace SSCMS.Core.Services
                 foreach (var siteId in siteIdList)
                 {
                     var site = await _databaseManager.SiteRepository.GetAsync(siteId);
-                    var siteType = _pluginManager.GetSiteType(site.SiteType).Id;
+                    var siteType = _settingsManager.GetSiteType(site.SiteType).Id;
                     var sitePermissions = _permissions
-                        .Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType))
+                        .Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType))
                         .Select(permission => permission.Id).ToList();
 
                     sitePermissionDict[siteId] = sitePermissions;
@@ -394,7 +394,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
                 var allContentPermissionList = _permissions
-                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel))
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel))
                     .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();
@@ -424,7 +424,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
                 var allContentPermissionList = _permissions
-                    .Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel))
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel))
                     .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();

@@ -22,7 +22,7 @@ var data = utils.init({
   parentIds: [0],
   form: {
     guid: null,
-    siteType: 'site',
+    siteType: null,
     createType: utils.getQueryString('createType'),
     createTemplateId: utils.getQueryString('createTemplateId'),
     siteName: '',

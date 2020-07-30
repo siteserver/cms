@@ -70,6 +70,16 @@
         <el-input v-model="editForm.siteDir"></el-input>
         <div class="tips">修改文件夹名称将在服务器中变更站点对应的文件夹路径，只允许包含字母、数字、下划线、中划线及小数点</div>
       </el-form-item>
+      <el-form-item label="站点类型" prop="siteType" :rules="{ required: true, message: '请选择站点类型' }">
+        <el-select v-model="editForm.siteType" placeholder="请选择站点类型">
+          <el-option
+            v-for="siteType in siteTypes"
+            :key="siteType.id"
+            :label="siteType.text"
+            :value="siteType.id"></el-option>
+        </el-select>
+        <div class="tips">不同的站点类型拥有独立的表结构与管理菜单</div>
+      </el-form-item>
       <el-form-item v-if="!editForm.root" label="上级站点">
         <el-select v-model="editForm.parentId" placeholder="请选择上级站点">
           <el-option label="<无上级站点>" :value="0"></el-option>

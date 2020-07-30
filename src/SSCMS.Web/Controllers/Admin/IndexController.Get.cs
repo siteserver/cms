@@ -91,7 +91,7 @@ namespace SSCMS.Web.Controllers.Admin
                 });
             }
 
-            var allMenus = _pluginManager.GetMenus();
+            var allMenus = _settingsManager.GetMenus();
 
             var menus = new List<Menu>();
             var siteType = new SiteType();
@@ -99,7 +99,7 @@ namespace SSCMS.Web.Controllers.Admin
             var previewUrl = string.Empty;
             if (site != null)
             {
-                siteType = _pluginManager.GetSiteType(site.SiteType);
+                siteType = _settingsManager.GetSiteType(site.SiteType);
                 if (await _authManager.HasSitePermissionsAsync(site.Id))
                 {
                     var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
@@ -107,8 +107,11 @@ namespace SSCMS.Web.Controllers.Admin
                     {
                         Id = IdSite,
                         Text = site.SiteName,
-                        Type = siteType.Id,
-                        Children = new List<Menu>(allMenus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, siteType.Id)))
+                        Type = new List<string>
+                        {
+                            siteType.Id
+                        },
+                        Children = new List<Menu>(allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType.Id)))
                     };
 
                     var query = new NameValueCollection { { "siteId", site.Id.ToString() } };
@@ -131,7 +134,7 @@ namespace SSCMS.Web.Controllers.Admin
                             var theSite = await _siteRepository.GetAsync(siteId);
                             if (theSite == null) continue;
 
-                            var theSiteType = _pluginManager.GetSiteType(theSite.SiteType);
+                            var theSiteType = _settingsManager.GetSiteType(theSite.SiteType);
                             allSiteMenus.Add(new Menu
                             {
                                 Id = $"site_switch_{theSite.Id}",
@@ -171,7 +174,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var appPermissions = await _authManager.GetAppPermissionsAsync();
-            var appMenus = allMenus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
+            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
             foreach (var appMenu in appMenus)
             {
                 appMenu.Children = GetChildren(appMenu, appPermissions);

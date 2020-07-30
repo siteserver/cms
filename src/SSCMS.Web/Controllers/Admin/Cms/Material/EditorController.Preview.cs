@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var (success, token, errorMessage) = await _openManager.GetWxAccessTokenAsync(request.SiteId);
+            var (success, token, errorMessage) = await _openManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
                 var mediaId = await _openManager.PushMaterialAsync(token, MaterialType.Message, request.MessageId);

@@ -21,7 +21,7 @@ namespace SSCMS.Configuration
         /// <summary>
         /// 获取或设置资源类型。
         /// </summary>
-        public string Type { get; set; }
+        public IList<string> Type { get; set; }
 
         /// <summary>
         /// 获取或设置菜单的显示图片CSS类。

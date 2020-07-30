@@ -20,9 +20,15 @@
         public static class Resources
         {
             public const string App = "app";
-            public const string Site = "site";
             public const string Channel = "channel";
             public const string Content = "content";
+        }
+
+        public static class SiteTypes
+        {
+            public const string Web = "web";
+            public const string Wx = "wx";
+            public const string Document = "document";
         }
 
         public static class AppPermissions
@@ -72,10 +78,6 @@
             public const string MaterialVideo = "site_materialVideo";
             public const string MaterialAudio = "site_materialAudio";
             public const string MaterialFile = "site_materialFile";
-            public const string OpenAccount = "site_openAccount";
-            public const string OpenKeywords = "site_openKeywords";
-            public const string OpenMenus = "site_openMenus";
-            public const string OpenSend = "site_openSend";
             public const string ChannelsTranslate = "site_channelsTranslate";
             public const string ContentsRecycle = "site_contentsRecycle";
             public const string Templates = "site_templates";
@@ -110,6 +112,12 @@
             public const string CreateSpecials = "site_createSpecials";
             public const string CreateAll = "site_createAll";
             public const string CreateStatus = "site_createStatus";
+
+            public const string WxAccount = "site_wxAccount";
+            public const string WxKeywords = "site_wxKeywords";
+            public const string WxMenus = "site_wxMenus";
+            public const string WxUsers = "site_wxUsers";
+            public const string WxSend = "site_wxSend";
         }
 
         public static class ChannelPermissions

@@ -24,7 +24,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly ISettingsManager _settingsManager;
-        private readonly IPluginManager _pluginManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
@@ -34,11 +33,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IPluginManager pluginManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
-            _pluginManager = pluginManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
@@ -72,7 +70,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 Label = "<无上级站点>"
             });
 
-            var siteTypes = _pluginManager.GetSiteTypes();
+            var siteTypes = _settingsManager.GetSiteTypes();
 
             return new GetResult
             {
@@ -123,7 +121,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             channelInfo.ContentModelPluginId = string.Empty;
 
             var tableName = string.Empty;
-            if (request.SiteType == AuthTypes.Resources.Site)
+            if (StringUtils.EqualsIgnoreCase(request.SiteType, AuthTypes.SiteTypes.Web) || StringUtils.EqualsIgnoreCase(request.SiteType, AuthTypes.SiteTypes.Wx))
             {
                 if (request.TableRule == TableRule.Choose)
                 {

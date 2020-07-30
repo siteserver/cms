@@ -14,17 +14,15 @@ namespace SSCMS.Core.Services
     {
         private readonly ClaimsPrincipal _principal;
         private readonly ISettingsManager _settingsManager;
-        private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly List<Permission> _permissions;
 
-        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager)
+        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _principal = context.HttpContext.User;
             _settingsManager = settingsManager;
-            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
-            _permissions = pluginManager.GetPermissions();
+            _permissions = _settingsManager.GetPermissions();
         }
 
         private Administrator _admin;

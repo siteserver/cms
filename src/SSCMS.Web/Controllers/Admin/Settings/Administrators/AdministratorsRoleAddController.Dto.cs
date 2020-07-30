@@ -69,7 +69,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             if (await _authManager.IsSuperAdminAsync())
             {
-                foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType)))
+                foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, site.SiteType)))
                 {
                     sitePermissions.Add(new Option
                     {
@@ -89,7 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 //    });
                 //}
 
-                var channelPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel));
+                var channelPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel));
                 foreach (var permission in channelPermissionList)
                 {
                     channelPermissions.Add(new Option
@@ -100,7 +100,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     });
                 }
 
-                var contentPermissionList = allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Content));
+                var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content));
                 foreach (var permission in contentPermissionList)
                 {
                     if (permission.Id == AuthTypes.ContentPermissions.CheckLevel1)
@@ -154,7 +154,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     var websitePermissionList = await _authManager.GetSitePermissionsAsync(siteId);
                     foreach (var websitePermission in websitePermissionList)
                     {
-                        foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, site.SiteType)))
+                        foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, site.SiteType)))
                         {
                             if (permission.Id == websitePermission)
                             {
@@ -185,7 +185,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var channelPermissionList = await _authManager.GetChannelPermissionsAsync(siteId);
                 foreach (var channelPermission in channelPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Channel)))
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel)))
                     {
                         if (permission.Id == channelPermission)
                         {
@@ -202,7 +202,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var contentPermissionList = await _authManager.GetContentPermissionsAsync(siteId);
                 foreach (var contentPermission in contentPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Content)))
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content)))
                     {
                         if (permission.Id == contentPermission)
                         {

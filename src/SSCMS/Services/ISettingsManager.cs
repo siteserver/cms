@@ -1,10 +1,12 @@
 ﻿using System;
 using Datory;
+using Microsoft.Extensions.Configuration;
 
 namespace SSCMS.Services
 {
-    public interface ISettingsManager
+    public partial interface ISettingsManager
     {
+        IConfiguration Configuration { get; set; }
         string ContentRootPath { get; }
         string WebRootPath { get; }
         string Version { get; }

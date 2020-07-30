@@ -26,7 +26,7 @@ namespace SSCMS.Utils
         public const string ApiPrefix = "/api";
         public const string ApiAdminPrefix = "/api/admin";
         public const string ApiHomePrefix = "/api/home";
-        public const string ApiOpenPrefix = "/api/open";
+        public const string ApiWxPrefix = "/api/wx";
         public const string ApiV1Prefix = "/api/v1";
         public const string ApiStlPrefix = "/stl";
         public const string RoutePreview = "preview/{siteId}";

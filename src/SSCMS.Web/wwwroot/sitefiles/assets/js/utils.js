@@ -158,6 +158,10 @@ var utils = {
     return utils.getPageUrl("cms", name, query);
   },
 
+  getWxUrl: function (name, query) {
+    return utils.getPageUrl("wx", name, query);
+  },
+
   getPluginsUrl: function (name, query) {
     return utils.getPageUrl("plugins", name, query);
   },

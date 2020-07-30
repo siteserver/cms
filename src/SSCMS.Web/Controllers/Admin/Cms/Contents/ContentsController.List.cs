@@ -60,9 +60,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
             var total = summaries.Count;
 
-            var allMenus = _pluginManager.GetMenus();
-            var contentPermissions = await _authManager.GetContentPermissionsAsync(request.SiteId, request.ChannelId);
-            var contentMenus = allMenus.Where(x => StringUtils.EqualsIgnoreCase(x.Type, AuthTypes.Resources.Content)).ToList();
+            var allMenus = _settingsManager.GetMenus();
+            //var contentPermissions = await _authManager.GetContentPermissionsAsync(request.SiteId, request.ChannelId);
+            var contentMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content)).ToList();
             //foreach (var appMenu in appMenus)
             //{
             //    appMenu.Children = GetChildren(appMenu, appPermissions);

@@ -60,7 +60,7 @@ namespace SSCMS.Core.Services
             {
                 builder.AddConfiguration(configuration);
             }
-            Configuration = builder.Build();
+            _settingsManager.Configuration = builder.Build();
         }
 
         public IPlugin Current
@@ -71,8 +71,6 @@ namespace SSCMS.Core.Services
                 return assembly == null ? null : NetCorePlugins.FirstOrDefault(x => x.Assembly.FullName == assembly.FullName);
             }
         }
-
-        public IConfiguration Configuration { get; private set; }
 
         public List<IPlugin> Plugins { get; private set; }
 

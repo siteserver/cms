@@ -1,0 +1,155 @@
+@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px"></div>
+
+<div v-if="!success">
+  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>
+
+<el-tabs v-else type="border-card">
+  <el-tab-pane label="已关注">
+
+    <el-row>
+      <el-col :span="12">
+        <el-form :inline="true" :model="form" size="mini">
+          <el-form-item label="用户昵称">
+            <el-input v-model="form.keyword" placeholder="请输入关键字"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col class="commands" align="right" :span="12">
+    
+        <el-button v-on:click="btnAddClick" size="small" plain type="primary">
+          <i class="el-icon-plus"></i>
+          新建标签
+        </el-button>
+      </el-col>
+    </el-row>
+
+    <el-container>
+      
+      <el-container>
+        <el-main>
+    
+          <el-table :data="users" style="width: 100%">
+            <el-table-column label="头像">
+              <template slot-scope="scope">
+                <el-link
+                  :underline="false"
+                  v-on:click="btnEditClick(scope.row)"
+                  type="primary">
+                  {{ scope.row.templateName }}
+                  <el-tag size="mini" type="danger" v-if="scope.row.defaultTemplate">
+                    默认
+                  </el-tag>
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="nickname" label="昵称"> </el-table-column>
+            <el-table-column label="生成文件名">
+              <template slot-scope="scope">
+                <el-link
+                  v-if="scope.row.templateType == 'IndexPageTemplate' || scope.row.templateType == 'FileTemplate'"
+                  :underline="false"
+                  :href="scope.row.url"
+                  target="_blank"
+                  type="primary">
+                  {{ scope.row.createdFileFullName }}
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="useCount" width="80" align="center" label="使用次数">
+            </el-table-column>
+            <el-table-column label="模板类型" width="80">
+              <template slot-scope="scope">
+                {{ getTemplateType(scope.row.templateType) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="270">
+              <template slot-scope="scope">
+                <el-link
+                  :underline="false"
+                  v-on:click="btnEditClick(scope.row)"
+                  type="primary">
+                  编辑
+                </el-link>
+                <el-link
+                  :underline="false"
+                  :disabled="scope.row.defaultTemplate || scope.row.templateType === 'FileTemplate'"
+                  v-on:click="btnDefaultClick(scope.row)"
+                  type="primary">
+                  设为默认
+                </el-link>
+                <el-link
+                  :underline="false"
+                  :disabled="scope.row.defaultTemplate"
+                  type="danger"
+                  v-on:click="btnDeleteClick(scope.row)">
+                  删除
+                </el-link>
+              </template>
+            </el-table-column>
+          </el-table>
+    
+          <div style="height: 10px"></div>
+          <el-divider></el-divider>
+          <div style="height: 10px"></div>
+    
+          <el-button
+            size="small"
+            type="primary"
+            v-on:click="btnAddClick('IndexPageTemplate')">
+            新增首页模板
+          </el-button>
+          <el-button
+            size="small"
+            type="primary"
+            v-on:click="btnAddClick('ChannelTemplate')">
+            新增栏目模板
+          </el-button>
+          <el-button
+            size="small"
+            type="primary"
+            v-on:click="btnAddClick('ContentTemplate')">
+            新增内容模板
+          </el-button>
+          <el-button
+            size="small"
+            type="primary"
+            v-on:click="btnAddClick('FileTemplate')">
+            新增单页模板
+          </el-button>
+        </el-main>
+      </el-container>
+
+      <el-aside width="200px">
+        <el-tabs v-model="tagId" tab-position="right" style="height: 100%;" v-on:tab-click="">
+          <el-tab-pane label="全部用户" :name="0"></el-tab-pane>
+          <el-tab-pane
+            v-for="tag in tags"
+            :key="tag.id"
+            :label="tag.name + '(' + tag.count + ')'"
+            :name="tag.id">
+          </el-tab-pane>
+        </el-tabs>
+      </el-aside>
+
+    </el-container>
+    
+  </el-tab-pane>
+  <el-tab-pane label="黑名单">
+    
+  </el-tab-pane>
+</el-tabs>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/users.js" type="text/javascript"></script>
+}

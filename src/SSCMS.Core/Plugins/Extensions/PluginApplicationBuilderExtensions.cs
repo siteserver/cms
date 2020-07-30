@@ -58,7 +58,7 @@ namespace SSCMS.Core.Plugins.Extensions
 
             var database = settingsManager.Database;
 
-            var tables = pluginManager.GetTables();
+            var tables = settingsManager.GetTables();
             foreach (var table in tables.Where(table => !string.IsNullOrEmpty(table.Id)))
             {
                 List<TableColumn> columns;

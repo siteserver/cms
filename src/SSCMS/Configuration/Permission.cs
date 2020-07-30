@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SSCMS.Configuration
 {
     public class Permission
@@ -15,7 +17,7 @@ namespace SSCMS.Configuration
         /// <summary>
         /// 获取或设置资源类型。
         /// </summary>
-        public string Type { get; set; }
+        public IList<string> Type { get; set; }
 
         /// <summary>
         /// 获取或设置权限的排序。

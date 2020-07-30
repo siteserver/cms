@@ -28,7 +28,7 @@ namespace SSCMS.Core.Repositories
             );
             if (site != null && string.IsNullOrEmpty(site.SiteType))
             {
-                site.SiteType = AuthTypes.Resources.Site;
+                site.SiteType = AuthTypes.SiteTypes.Web;
             }
 
             return site;

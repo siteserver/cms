@@ -23,13 +23,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IOpenManager _openManager;
+        private readonly IWxManager _openManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialAudioRepository _materialAudioRepository;
-        private readonly IOpenAccountRepository _openAccountRepository;
+        private readonly IWxAccountRepository _openAccountRepository;
 
-        public AudioController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IOpenManager openManager, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialAudioRepository materialAudioRepository, IOpenAccountRepository openAccountRepository)
+        public AudioController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager openManager, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialAudioRepository materialAudioRepository, IWxAccountRepository openAccountRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

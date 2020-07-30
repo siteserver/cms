@@ -32,7 +32,7 @@ var methods = {
     var siteType = this.siteTypes.find(function(x) {
       return x.id === siteType;
     });
-    return siteType ? siteType.text : '默认';
+    return siteType ? siteType.text : '网站';
   },
 
   apiGet: function () {
@@ -105,6 +105,7 @@ var methods = {
       siteId: site.id,
       root: site.root,
       siteName: site.siteName,
+      siteType: site.siteType,
       siteDir: site.siteDir,
       parentId: site.parentId,
       taxis: site.taxis,

@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
             var isOpen = false;
             var account = await _openAccountRepository.GetBySiteIdAsync(request.SiteId);
-            if (account.WxConnected)
+            if (account.MpConnected)
             {
                 isOpen = true;
             }
