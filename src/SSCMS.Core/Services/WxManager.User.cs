@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Senparc.Weixin;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.AdvancedAPIs.User;
+using SSCMS.Core.Utils;
+using SSCMS.Models;
+using SSCMS.Utils;
 using SSCMS.Wx;
 
 namespace SSCMS.Core.Services
@@ -20,35 +25,74 @@ namespace SSCMS.Core.Services
                 }).ToList();
         }
 
-        public async Task<List<WxUser>> GetUsersAsync(string token)
+        public async Task<List<string>> GetUserOpenIdsAsync(string token)
         {
-            var users = new List<WxUser>();
-            string nextOpenId = null;
-            while (true)
+            var cacheKey = CacheUtils.GetClassKey(typeof(WxManager), token);
+            var openIds = _openIdCacheManager.Get(cacheKey);
+            if (openIds == null)
             {
-                nextOpenId = await LoadUsersAsync(users, token, nextOpenId);
-                if (string.IsNullOrEmpty(nextOpenId)) break;
+                openIds = new List<string>();
+                string nextOpenId = null;
+                while (true)
+                {
+                    nextOpenId = await LoadUserOpenIdsAsync(openIds, token, nextOpenId);
+                    if (string.IsNullOrEmpty(nextOpenId)) break;
+                }
+
+                _openIdCacheManager.AddOrUpdateAbsolute(cacheKey, openIds, 30);
+            }
+
+            return openIds;
+        }
+
+        public async Task<List<WxUser>> GetUsersAsync(string token, List<string> openIds)
+        {
+            var cacheKey = CacheUtils.GetClassKey(typeof(WxManager), ListUtils.ToString(openIds));
+            var users = _userCacheManager.Get(cacheKey);
+            if (users == null)
+            {
+                users = new List<WxUser>();
+                var num = TranslateUtils.Ceiling(openIds.Count, 100);
+                for (var i = 0; i < num; i++)
+                {
+                    var pageOpenIds = openIds.Skip(i * 100).Take(100);
+
+                    var userList = pageOpenIds.Select(openId => new BatchGetUserInfoData
+                        {
+                            openid = openId,
+                            LangEnum = Language.zh_CN
+                        })
+                        .ToList();
+                    var userResult = await UserApi.BatchGetUserInfoAsync(token, userList);
+                    users.AddRange(userResult.user_info_list.Select(GetWxUser));
+                }
+
+                users = users.OrderByDescending(x => x.SubscribeTime).ToList();
+
+                _userCacheManager.AddOrUpdateAbsolute(cacheKey, users, 30);
             }
 
             return users;
         }
 
-        private async Task<string> LoadUsersAsync(List<WxUser> users, string token, string nextOpenId)
+        public async Task<WxUser> GetUserAsync(string token, string openId)
         {
-            var openIdResult = await UserApi.GetAsync(token, nextOpenId);
-            var userList = openIdResult.data.openid.Select(openId => new BatchGetUserInfoData
-                {
-                    openid = openId
-                })
-                .ToList();
+            if (string.IsNullOrEmpty(openId)) return null;
 
-            var userResult = await UserApi.BatchGetUserInfoAsync(token, userList);
-            users.AddRange(userResult.user_info_list.Select(GetOpenUser));
+            var userResult = await UserApi.InfoAsync(token, openId);
 
-            return users.Count != openIdResult.total ? openIdResult.next_openid : null;
+            return GetWxUser(userResult);
         }
 
-        private WxUser GetOpenUser(UserInfoJson json)
+        private async Task<string> LoadUserOpenIdsAsync(List<string> openIds, string token, string nextOpenId)
+        {
+            var openIdResult = await UserApi.GetAsync(token, nextOpenId);
+            openIds.AddRange(openIdResult.data.openid);
+
+            return openIds.Count != openIdResult.total ? openIdResult.next_openid : null;
+        }
+
+        private static WxUser GetWxUser(UserInfoJson json)
         {
             return new WxUser
             {
@@ -61,15 +105,26 @@ namespace SSCMS.Core.Services
                 Province = json.province,
                 Country = json.country,
                 HeadImgUrl = json.headimgurl,
-                SubscribeTime = json.subscribe_time,
+                SubscribeTime = GetDateTimeWithTimeStamp(json.subscribe_time),
                 UnionId = json.unionid,
                 Remark = json.remark,
                 GroupId = json.groupid,
-                TagIdList = json.tagid_list,
+                TagIdList = ListUtils.GetIntList(json.tagid_list),
                 SubscribeScene = json.subscribe_scene,
                 QrScene = json.qr_scene,
                 QrSceneStr = json.qr_scene_str
             };
+        }
+
+        /// <summary>
+        /// 时间戳转换为datetime
+        /// </summary>
+        /// <param name="timeStamp">微信接口返回时间戳</param>
+        /// <returns></returns>
+        private static DateTime GetDateTimeWithTimeStamp(long timeStamp)
+        {
+            var startTime = new DateTime(1970, 1, 1); // 当地时区
+            return startTime.AddMilliseconds(timeStamp * 1000);
         }
     }
 }

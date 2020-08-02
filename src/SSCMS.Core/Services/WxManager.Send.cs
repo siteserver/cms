@@ -18,15 +18,15 @@ namespace SSCMS.Core.Services
                 null, StringUtils.Trim(wxName));
         }
 
-        public async Task SendAsync(string token, MaterialType materialType, string value, bool isToAll, string tagId, bool isTiming, DateTime runOnceAt)
+        public async Task SendAsync(string token, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? runOnceAt)
         {
-            if (isTiming)
+            if (runOnceAt.HasValue)
             {
                 JobManager.AddJob(async () =>
                 {
                     await GroupMessageApi.SendGroupMessageByTagIdAsync(token, tagId, value,
                         GetGroupMessageType(materialType), isToAll);
-                }, s => s.ToRunOnceAt(runOnceAt));
+                }, s => s.ToRunOnceAt(runOnceAt.Value));
             }
             else
             {

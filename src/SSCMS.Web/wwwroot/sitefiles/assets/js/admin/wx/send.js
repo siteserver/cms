@@ -21,8 +21,8 @@ var data = utils.init({
     materialType: 'Message',
     materialId: 0,
     text: null,
-    isToAll: false,
-    tagId: null,
+    isToAll: true,
+    tagId: 0,
     isTiming: false,
     isToday: true,
     hour: 0,
@@ -55,8 +55,8 @@ var methods = {
     utils.loading(this, true);
     $api.get($url, {
       params: {
-        messageId: this.messageId,
-        siteId: this.siteId
+        siteId: this.siteId,
+        messageId: this.messageId
       }
     }).then(function(response) {
       var res = response.data;
@@ -79,8 +79,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form)
-    .then(function(response) {
+    $api.post($url, this.form).then(function(response) {
       var res = response.data;
       
       $this.sended = true;
@@ -162,7 +161,7 @@ var methods = {
   btnSelectClick: function() {
     utils.openLayer({
       title: '选择素材',
-      url: utils.getWxUrl("sendLayer" + this.form.materialType, {
+      url: utils.getWxUrl("layer" + this.form.materialType, {
         siteId: this.siteId
        })
     });
@@ -211,7 +210,7 @@ var methods = {
 
   btnPreviewClick: function() {
     if (!this.isSubmit()) {
-      utils.error('请选择需要群发的消息!');
+      utils.error('请选择或输入需要发送的消息!');
       return;
     }
 
@@ -220,7 +219,7 @@ var methods = {
 
   btnSubmitClick: function () {
     if (!this.isSubmit()) {
-      utils.error('请选择需要群发的消息!');
+      utils.error('请选择或输入需要发送的消息!');
       return;
     }
     

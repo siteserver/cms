@@ -1,4 +1,4 @@
-﻿var $url = '/wx/sendLayerVideo';
+﻿var $url = '/wx/layerVideo';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),

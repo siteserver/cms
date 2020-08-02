@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
@@ -26,14 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
-                var list = await _wxManager.GetUserTags(token);
-                tags = list.Select(tag =>
-                    new WxUserTag
-                    {
-                        Id = tag.Id,
-                        Name = tag.Name,
-                        Count = tag.Count
-                    });
+                tags = await _wxManager.GetUserTagsAsync(token);
                 if (request.MessageId > 0)
                 {
                     message = await _materialMessageRepository.GetAsync(request.MessageId);

@@ -107,6 +107,7 @@ var utils = {
 
   toInt: function (val) {
     if (!val) return 0;
+    if (typeof val === 'number') return val;
     return parseInt(val, 10) || 0;
   },
 

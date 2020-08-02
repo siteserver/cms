@@ -324,12 +324,12 @@
   
   <el-form ref="form" :inline="true" status-icon :model="form" size="small">
     <el-form-item label="群发对象">
-      <el-select v-model="form.isToAll" placeholder="请选择">
-        <el-option label="全部用户" :value="false"></el-option>
-        <el-option label="按标签选择" :value="true"></el-option>
+      <el-select  v-model="form.isToAll" placeholder="请选择">
+        <el-option label="全部用户" :value="true"></el-option>
+        <el-option label="按标签选择" :value="false"></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item v-if="form.isToAll" label="标签" prop="tagId" :rules="{ required: true, message: '请选择标签' }">
+    <el-form-item v-if="!form.isToAll" label="标签" prop="tagId" :rules="{ required: true, message: '请选择标签' }">
       <el-select v-model="form.tagId" placeholder="请选择">
         <el-option
           v-for="tag in tags"
@@ -340,13 +340,13 @@
       </el-select>
     </el-form-item>
     <div></div>
-    <el-form-item label="群发时间">
+    <el-form-item label="发送时间">
       <el-select v-model="form.isTiming" v-on:change="loadTiming" placeholder="请选择">
         <el-option label="立即发送" :value="false"></el-option>
         <el-option label="定时发送" :value="true"></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item v-if="form.isTiming" label="发送时间">
+    <el-form-item v-if="form.isTiming">
       <el-select v-model="form.isToday" v-on:change="loadTiming" placeholder="请选择" style="width: 100px">
         <el-option label="今天" :value="true"></el-option>
         <el-option label="明天" :value="false"></el-option>

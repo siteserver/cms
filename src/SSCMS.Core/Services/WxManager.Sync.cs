@@ -272,7 +272,7 @@ namespace SSCMS.Core.Services
 
             if (result == null) return;
 
-            await _openMenuRepository.DeleteAllAsync(siteId);
+            await _wxMenuRepository.DeleteAllAsync(siteId);
 
             var json = result.menu.button.ToJson();
             var buttons = TranslateUtils.JsonDeserialize<List<MenuFull_RootButton>>(json);
@@ -294,7 +294,7 @@ namespace SSCMS.Core.Services
                     PagePath = button.pagepath,
                     MediaId = button.media_id
                 };
-                var menuId = await _openMenuRepository.InsertAsync(first);
+                var menuId = await _wxMenuRepository.InsertAsync(first);
                 if (button.sub_button != null && button.sub_button.Count > 0)
                 {
                     var childTaxis = 1;
@@ -313,7 +313,7 @@ namespace SSCMS.Core.Services
                             PagePath = sub.pagepath,
                             MediaId = sub.media_id
                         };
-                        await _openMenuRepository.InsertAsync(child);
+                        await _wxMenuRepository.InsertAsync(child);
                     }
                 }
             }
@@ -329,7 +329,7 @@ namespace SSCMS.Core.Services
                 }
             };
 
-            var openMenus = await _openMenuRepository.GetMenusAsync(siteId);
+            var openMenus = await _wxMenuRepository.GetMenusAsync(siteId);
 
             foreach (var firstMenu in openMenus.Where(x => x.ParentId == 0))
             {

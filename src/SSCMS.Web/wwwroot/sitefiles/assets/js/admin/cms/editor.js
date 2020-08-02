@@ -110,10 +110,7 @@ var methods = {
         var style = $this.styles[i];
         if (style.inputType !== 'Image' && style.inputType !== 'File' && style.inputType !== 'Video') continue;
         
-        var count = $this.form[utils.getCountName(style.attributeName)];
-        if (!count){
-          $this.form[utils.getCountName(style.attributeName)] = 0;
-        }
+        $this.form[utils.getCountName(style.attributeName)] = utils.toInt($this.form[utils.getCountName(style.attributeName)]);
       }
 
       setTimeout(function () {

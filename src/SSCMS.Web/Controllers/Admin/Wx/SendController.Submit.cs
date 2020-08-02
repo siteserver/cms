@@ -24,26 +24,27 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return this.Error(errorMessage);
             }
 
-            var runOnceAt = DateTime.Now;
+            DateTime? runOnceAt = null;
             if (request.IsTiming)
             {
-                runOnceAt = new DateTime(runOnceAt.Year, runOnceAt.Month, runOnceAt.Day, request.Hour, request.Minute, 0);
+                var dateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, request.Hour, request.Minute, 0);
                 if (!request.IsToday)
                 {
-                    runOnceAt = runOnceAt.AddDays(1);
+                    dateTime = dateTime.AddDays(1);
                 }
+                runOnceAt = dateTime;
             }
 
             if (request.MaterialType == MaterialType.Text)
             {
                 await _wxManager.SendAsync(token, request.MaterialType, request.Text, request.IsToAll,
-                    request.TagId.ToString(), request.IsTiming, runOnceAt);
+                    request.TagId.ToString(), runOnceAt);
             }
             else
             {
                 var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId);
                 await _wxManager.SendAsync(token, request.MaterialType, mediaId, request.IsToAll,
-                    request.TagId.ToString(), request.IsTiming, runOnceAt);
+                    request.TagId.ToString(), runOnceAt);
             }
 
             return new BoolResult

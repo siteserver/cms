@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +37,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IOldPluginManager _oldPluginManager;
-        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -46,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -54,7 +52,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             _createManager = createManager;
             _databaseManager = databaseManager;
             _oldPluginManager = oldPluginManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;

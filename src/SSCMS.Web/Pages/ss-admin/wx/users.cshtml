@@ -1,5 +1,12 @@
 @page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-tabs--right .el-tabs__header.is-right{
+      width: 98%;
+    }
+  </style>
+}
 
 <div style="height: 10px"></div>
 
@@ -38,101 +45,93 @@
       
       <el-container>
         <el-main>
+
+          <el-button size="small" plain type="primary" :disabled="!isChecked" v-on:click="">
+            打标签
+          </el-button>
+          <el-button size="small" plain type="primary" :disabled="!isChecked" v-on:click="">
+            加入黑名单
+          </el-button>
+
+          <div style="height: 10px"></div>
+          <el-divider></el-divider>
     
-          <el-table :data="users" style="width: 100%">
-            <el-table-column label="头像">
+          <el-table
+            :data="users"
+            ref="multipleTable"
+            row-key="openId"
+            stripe
+            :row-class-name="tableRowClassName"
+            v-on:selection-change="handleSelectionChange"
+            v-on:row-click="toggleSelection"
+            style="width: 100%">
+            <el-table-column type="selection" width="45" align="center"></el-table-column>
+            <el-table-column
+              label="头像" width="80">
               <template slot-scope="scope">
-                <el-link
-                  :underline="false"
-                  v-on:click="btnEditClick(scope.row)"
-                  type="primary">
-                  {{ scope.row.templateName }}
-                  <el-tag size="mini" type="danger" v-if="scope.row.defaultTemplate">
-                    默认
-                  </el-tag>
+                <el-avatar :size="36" :src="scope.row.headImgUrl"></el-avatar>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="昵称">
+              <template slot-scope="scope">
+                <el-link :underline="false" type="primary">
+                  {{getUserTitle(scope.row)}}
+                  <br v-if="scope.row.tagIdList && scope.row.tagIdList.length > 0" />
+                  {{ getUserTags(scope.row) }}
                 </el-link>
               </template>
             </el-table-column>
-            <el-table-column prop="nickname" label="昵称"> </el-table-column>
-            <el-table-column label="生成文件名">
+            <el-table-column
+              prop="city"
+              width="120"
+              label="城市">
+            </el-table-column>
+            <el-table-column
+              width="120"
+              label="关注时间">
               <template slot-scope="scope">
-                <el-link
-                  v-if="scope.row.templateType == 'IndexPageTemplate' || scope.row.templateType == 'FileTemplate'"
-                  :underline="false"
-                  :href="scope.row.url"
-                  target="_blank"
-                  type="primary">
-                  {{ scope.row.createdFileFullName }}
-                </el-link>
+                {{utils.formatDate(scope.row.subscribeTime)}}
               </template>
             </el-table-column>
-            <el-table-column prop="useCount" width="80" align="center" label="使用次数">
-            </el-table-column>
-            <el-table-column label="模板类型" width="80">
+            <el-table-column
+              width="120"
+              label="来源">
               <template slot-scope="scope">
-                {{ getTemplateType(scope.row.templateType) }}
+                {{formatSubscribeScene(scope.row.subscribeScene)}}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="270">
+            <el-table-column label="操作" width="120">
               <template slot-scope="scope">
-                <el-link
-                  :underline="false"
-                  v-on:click="btnEditClick(scope.row)"
-                  type="primary">
-                  编辑
-                </el-link>
-                <el-link
-                  :underline="false"
-                  :disabled="scope.row.defaultTemplate || scope.row.templateType === 'FileTemplate'"
-                  v-on:click="btnDefaultClick(scope.row)"
-                  type="primary">
-                  设为默认
-                </el-link>
-                <el-link
-                  :underline="false"
-                  :disabled="scope.row.defaultTemplate"
-                  type="danger"
-                  v-on:click="btnDeleteClick(scope.row)">
-                  删除
-                </el-link>
+                <el-button-group>
+                  <el-button size="mini" v-on:click="btnEditClick(scope.row)">
+                    修改备注
+                  </el-button>
+                </el-button-group>
               </template>
             </el-table-column>
           </el-table>
+
+          <div style="text-align: center; margin-top: 15px">
+            <el-pagination
+              v-on:current-change="btnPageClick"
+              :current-page="form.page"
+              :page-size="form.perPage"
+              layout="total, prev, pager, next, jumper"
+              :total="count">
+            </el-pagination>
+          </div>
     
           <div style="height: 10px"></div>
           <el-divider></el-divider>
           <div style="height: 10px"></div>
     
-          <el-button
-            size="small"
-            type="primary"
-            v-on:click="btnAddClick('IndexPageTemplate')">
-            新增首页模板
-          </el-button>
-          <el-button
-            size="small"
-            type="primary"
-            v-on:click="btnAddClick('ChannelTemplate')">
-            新增栏目模板
-          </el-button>
-          <el-button
-            size="small"
-            type="primary"
-            v-on:click="btnAddClick('ContentTemplate')">
-            新增内容模板
-          </el-button>
-          <el-button
-            size="small"
-            type="primary"
-            v-on:click="btnAddClick('FileTemplate')">
-            新增单页模板
-          </el-button>
         </el-main>
       </el-container>
 
       <el-aside width="200px">
-        <el-tabs v-model="tagId" tab-position="right" style="height: 100%;" v-on:tab-click="">
-          <el-tab-pane label="全部用户" :name="0"></el-tab-pane>
+        <el-tabs v-model="form.tagId" tab-position="right" style="height: 100%;" v-on:tab-click="btnSearchClick">
+          <el-tab-pane :label="'全部用户' + '(' + total + ')'" :name="0"></el-tab-pane>
           <el-tab-pane
             v-for="tag in tags"
             :key="tag.id"

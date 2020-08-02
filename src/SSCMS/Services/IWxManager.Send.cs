@@ -8,7 +8,6 @@ namespace SSCMS.Services
     {
         Task SendPreviewAsync(string token, MaterialType materialType, string value, string wxName);
 
-        Task SendAsync(string token, MaterialType materialType, string value, bool isToAll, string tagId,
-            bool isTiming, DateTime runOnceAt);
+        Task SendAsync(string token, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? sendAt = null);
     }
 }

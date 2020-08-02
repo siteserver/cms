@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
@@ -125,10 +123,7 @@ namespace SSCMS.Core.Repositories
             var config = await _configRepository.GetAsync();
             if (config.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                var cacheManager = await _repository.GetCacheManagerAsync();
-                var value = new CacheItem<object>(GetIpAddressCacheKey(ipAddress), true, ExpirationMode.Sliding, TimeSpan.FromMinutes(config.UserRegistrationMinMinutes));
-
-                cacheManager.AddOrUpdate(value, _ => value);
+                _cacheManager.AddOrUpdateSliding(GetIpAddressCacheKey(ipAddress), true, config.UserRegistrationMinMinutes);
             }
         }
 

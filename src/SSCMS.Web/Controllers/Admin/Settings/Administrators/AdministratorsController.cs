@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

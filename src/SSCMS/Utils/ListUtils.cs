@@ -53,17 +53,22 @@ namespace SSCMS.Utils
             return GetEnums<T>().Select(x => new Select<string>(x));
         }
 
-        public static string ToString(IEnumerable<string> collection, string separator = ",")
+        public static string ToString(string[] collection, string separator = ",")
+        {
+            return collection != null && collection.Length > 0 ? string.Join(separator, collection) : string.Empty;
+        }
+
+        public static string ToString(List<string> collection, string separator = ",")
         {
             return Utilities.ToString(collection, separator);
         }
 
-        public static string ToString(IEnumerable<int> collection, string separator = ",")
+        public static string ToString(List<int> collection, string separator = ",")
         {
             return Utilities.ToString(collection, separator);
         }
 
-        public static string ToString(IEnumerable<object> collection, string separator = ",")
+        public static string ToString(List<object> collection, string separator = ",")
         {
             return Utilities.ToString(collection, separator);
         }

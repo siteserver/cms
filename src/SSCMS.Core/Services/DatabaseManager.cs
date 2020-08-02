@@ -36,8 +36,6 @@ namespace SSCMS.Core.Services
         public IMaterialMessageRepository MaterialMessageRepository { get; }
         public IMaterialMessageItemRepository MaterialMessageItemRepository { get; }
         public IMaterialVideoRepository MaterialVideoRepository { get; }
-        public IWxAccountRepository OpenAccountRepository { get; }
-        public IWxMenuRepository OpenMenuRepository { get; }
         public IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
         public IPluginConfigRepository PluginConfigRepository { get; }
         public IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
@@ -54,8 +52,14 @@ namespace SSCMS.Core.Services
         public IUserGroupRepository UserGroupRepository { get; }
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
+        public IWxAccountRepository WxAccountRepository { get; }
+        public IWxMenuRepository WxMenuRepository { get; }
+        public IWxReplyKeywordRepository WxReplyKeywordRepository { get; }
+        public IWxReplyMessageRepository WxReplyMessageRepository { get; }
+        public IWxReplyRuleRepository WxReplyRuleRepository { get; }
+        public IWxUserRepository WxUserRepository { get; }
 
-        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILogRepository logRepository, IMaterialArticleRepository materialArticleRepository, IMaterialAudioRepository materialAudioRepository, IMaterialFileRepository materialFileRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, IMaterialMessageRepository materialMessageRepository, IMaterialMessageItemRepository materialMessageItemRepository, IMaterialVideoRepository materialVideoRepository, IWxAccountRepository openAccountRepository, IWxMenuRepository openMenuRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository)
+        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelGroupRepository channelGroupRepository, IChannelRepository channelRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILogRepository logRepository, IMaterialArticleRepository materialArticleRepository, IMaterialAudioRepository materialAudioRepository, IMaterialFileRepository materialFileRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, IMaterialMessageRepository materialMessageRepository, IMaterialMessageItemRepository materialMessageItemRepository, IMaterialVideoRepository materialVideoRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository, IWxAccountRepository wxAccountRepository, IWxMenuRepository wxMenuRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository, IWxUserRepository wxUserRepository)
         {
             _settingsManager = settingsManager;
             AccessTokenRepository = accessTokenRepository;
@@ -79,8 +83,6 @@ namespace SSCMS.Core.Services
             MaterialMessageRepository = materialMessageRepository;
             MaterialMessageItemRepository = materialMessageItemRepository;
             MaterialVideoRepository = materialVideoRepository;
-            OpenAccountRepository = openAccountRepository;
-            OpenMenuRepository = openMenuRepository;
             PermissionsInRolesRepository = permissionsInRolesRepository;
             PluginConfigRepository = pluginConfigRepository;
             RelatedFieldItemRepository = relatedFieldItemRepository;
@@ -97,6 +99,12 @@ namespace SSCMS.Core.Services
             UserGroupRepository = userGroupRepository;
             UserMenuRepository = userMenuRepository;
             UserRepository = userRepository;
+            WxAccountRepository = wxAccountRepository;
+            WxMenuRepository = wxMenuRepository;
+            WxReplyKeywordRepository = wxReplyKeywordRepository;
+            WxReplyMessageRepository = wxReplyMessageRepository;
+            WxReplyRuleRepository = wxReplyRuleRepository;
+            WxUserRepository = wxUserRepository;
         }
 
         public List<IRepository> GetAllRepositories()
@@ -124,8 +132,6 @@ namespace SSCMS.Core.Services
                 MaterialMessageRepository,
                 MaterialMessageItemRepository,
                 MaterialVideoRepository,
-                OpenAccountRepository,
-                OpenMenuRepository,
                 PermissionsInRolesRepository,
                 PluginConfigRepository,
                 RelatedFieldItemRepository,
@@ -141,7 +147,13 @@ namespace SSCMS.Core.Services
                 TemplateRepository,
                 UserGroupRepository,
                 UserMenuRepository,
-                UserRepository
+                UserRepository,
+                WxAccountRepository,
+                WxMenuRepository,
+                WxReplyKeywordRepository,
+                WxReplyMessageRepository,
+                WxReplyRuleRepository,
+                WxUserRepository
             };
 
             return list;

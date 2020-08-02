@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CacheManager.Core;
 using Datory;
 using SSCMS.Enums;
 using SSCMS.Models;

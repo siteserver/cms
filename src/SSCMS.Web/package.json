@@ -383,7 +383,7 @@
         "type": ["wx"],
         "order": 44
       },
-      "site_wxKeywords": {
+      "site_wxReply": {
         "text": "关键词回复",
         "type": ["wx"],
         "order": 45
@@ -922,7 +922,7 @@
         "type": ["wx"],
         "permissions": [
           "site_wxAccount",
-          "site_wxKeywords",
+          "site_wxReply",
           "site_wxMenus",
           "site_wxUsers",
           "site_wxSend"
@@ -937,11 +937,11 @@
             "permissions": ["site_wxAccount"],
             "order": 1
           },
-          "site_wxKeywords": {
+          "site_wxReply": {
             "text": "关键词回复",
             "type": ["wx"],
-            "link": "./wx/keywords",
-            "permissions": ["site_wxKeywords"],
+            "link": "./wx/reply",
+            "permissions": ["site_wxReply"],
             "order": 2
           },
           "site_wxMenus": {

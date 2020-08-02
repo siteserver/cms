@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Senparc.Weixin;
 using Senparc.Weixin.Exceptions;
@@ -6,6 +7,7 @@ using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.Containers;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -15,18 +17,22 @@ namespace SSCMS.Core.Services
     public partial class WxManager : IWxManager
     {
         private readonly ISettingsManager _settingsManager;
-        private readonly IWxAccountRepository _openAccountRepository;
-        private readonly IWxMenuRepository _openMenuRepository;
+        private readonly ICacheManager<List<string>> _openIdCacheManager;
+        private readonly ICacheManager<List<WxUser>> _userCacheManager;
+        private readonly IWxAccountRepository _wxAccountRepository;
+        private readonly IWxMenuRepository _wxMenuRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
         private readonly IMaterialAudioRepository _materialAudioRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public WxManager(ISettingsManager settingsManager, IWxAccountRepository openAccountRepository, IWxMenuRepository openMenuRepository, IMaterialMessageRepository materialMessageRepository, IMaterialImageRepository materialImageRepository, IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
+        public WxManager(ISettingsManager settingsManager, ICacheManager<List<string>> openIdCacheManager, ICacheManager<List<WxUser>> userCacheManager, IWxAccountRepository wxAccountRepository, IWxMenuRepository wxMenuRepository, IMaterialMessageRepository materialMessageRepository, IMaterialImageRepository materialImageRepository, IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _settingsManager = settingsManager;
-            _openAccountRepository = openAccountRepository;
-            _openMenuRepository = openMenuRepository;
+            _openIdCacheManager = openIdCacheManager;
+            _userCacheManager = userCacheManager;
+            _wxAccountRepository = wxAccountRepository;
+            _wxMenuRepository = wxMenuRepository;
             _materialMessageRepository = materialMessageRepository;
             _materialImageRepository = materialImageRepository;
             _materialAudioRepository = materialAudioRepository;
@@ -35,7 +41,7 @@ namespace SSCMS.Core.Services
 
         public async Task<(bool, string, string)> GetAccessTokenAsync(int siteId)
         {
-            var account = await _openAccountRepository.GetBySiteIdAsync(siteId);
+            var account = await _wxAccountRepository.GetBySiteIdAsync(siteId);
             if (string.IsNullOrEmpty(account.MpAppId) || string.IsNullOrEmpty(account.MpAppSecret))
             {
                 return (false, null, "微信公众号AppId及AppSecret未设置，请到平台账号配置中设置");

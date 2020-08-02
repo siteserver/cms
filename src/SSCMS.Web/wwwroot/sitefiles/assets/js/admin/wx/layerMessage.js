@@ -1,11 +1,11 @@
-﻿var $url = '/wx/sendLayerImage';
+﻿var $url = '/wx/layerMessage';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   showType: 'card',
   groups: null,
   count: null,
-  images: null,
+  messages: null,
   urlList: null,
   
   form: {
@@ -30,8 +30,8 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.images = res.images;
-      $this.urlList = _.map($this.images, function (item) {
+      $this.messages = res.messages;
+      $this.urlList = _.map($this.messages, function (item) {
         return item.thumbUrl;
       });
     }).catch(function (error) {
@@ -50,8 +50,8 @@ var methods = {
     return '';
   },
 
-  btnImageClick: function(image) {
-    parent.$vue.runOpenSendLayerSelect(image);
+  btnMessageClick: function(message) {
+    parent.$vue.runOpenSendLayerSelect(message);
     utils.closeLayer();
   },
 
@@ -69,8 +69,8 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.images = res.images;
-      $this.urlList = _.map($this.images, function (item) {
+      $this.messages = res.messages;
+      $this.urlList = _.map($this.messages, function (item) {
         return item.url;
       });
     }).catch(function (error) {
@@ -90,12 +90,12 @@ var methods = {
     this.apiList(val);
   },
 
-  getFriendlyContent: function(image) {
-    if (image.items.length === 1) {
-      return image.items[0].title;
+  getFriendlyContent: function(message) {
+    if (message.items.length === 1) {
+      return message.items[0].title;
     }
     var i = 1;
-    var contents = image.items.map(function(item) {
+    var contents = message.items.map(function(item) {
       return i++ + '. ' + item.title;
     });
     return contents.join('<br />');

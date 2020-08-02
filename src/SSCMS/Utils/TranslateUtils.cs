@@ -103,6 +103,11 @@ namespace SSCMS.Utils
             return boolean;
         }
 
+        public static int Ceiling(int numerator, int denominator)
+        {
+            return Convert.ToInt32(Math.Ceiling((double) numerator / denominator));
+        }
+
         public static DateTime ToDateTime(string dateTimeStr)
         {
             var datetime = Constants.SqlMinValue;

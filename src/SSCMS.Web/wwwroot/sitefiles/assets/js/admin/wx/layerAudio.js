@@ -1,12 +1,11 @@
-﻿var $url = '/wx/sendLayerMessage';
+﻿var $url = '/wx/layerAudio';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   showType: 'card',
   groups: null,
   count: null,
-  messages: null,
-  urlList: null,
+  audios: null,
   
   form: {
     siteId: utils.getQueryInt("siteId"),
@@ -30,10 +29,7 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.messages = res.messages;
-      $this.urlList = _.map($this.messages, function (item) {
-        return item.thumbUrl;
-      });
+      $this.audios = res.audios;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -50,8 +46,8 @@ var methods = {
     return '';
   },
 
-  btnMessageClick: function(message) {
-    parent.$vue.runOpenSendLayerSelect(message);
+  btnAudioClick: function(audio) {
+    parent.$vue.runOpenSendLayerSelect(audio);
     utils.closeLayer();
   },
 
@@ -69,10 +65,7 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.messages = res.messages;
-      $this.urlList = _.map($this.messages, function (item) {
-        return item.url;
-      });
+      $this.audios = res.audios;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -88,17 +81,6 @@ var methods = {
   btnPageClick: function(val) {
     utils.loading(this, true);
     this.apiList(val);
-  },
-
-  getFriendlyContent: function(message) {
-    if (message.items.length === 1) {
-      return message.items[0].title;
-    }
-    var i = 1;
-    var contents = message.items.map(function(item) {
-      return i++ + '. ' + item.title;
-    });
-    return contents.join('<br />');
   },
 
   btnCancelClick: function () {

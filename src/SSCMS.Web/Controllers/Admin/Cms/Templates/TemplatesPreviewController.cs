@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using CacheManager.Core;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -80,8 +78,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
-            var cacheItem = new CacheItem<string>(CacheKey, request.Content, ExpirationMode.Sliding, TimeSpan.FromHours(1));
-            _cacheManager.AddOrUpdate(cacheItem, _ => request.Content);
+            _cacheManager.AddOrUpdateSliding(CacheKey, request.Content, 60);
+
+            //var cacheItem = new CacheItem<string>(CacheKey, request.Content, ExpirationMode.Sliding, TimeSpan.FromHours(1));
+            //_cacheManager.AddOrUpdate(cacheItem, _ => request.Content);
 
             return new BoolResult
             {
@@ -117,8 +117,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 }
             }
 
-            var cacheItem = new CacheItem<string>(CacheKey, request.Content, ExpirationMode.Sliding, TimeSpan.FromHours(1));
-            _cacheManager.AddOrUpdate(cacheItem, _ => request.Content);
+            _cacheManager.AddOrUpdateSliding(CacheKey, request.Content, 60);
+
+            //var cacheItem = new CacheItem<string>(CacheKey, request.Content, ExpirationMode.Sliding, TimeSpan.FromHours(1));
+            //_cacheManager.AddOrUpdate(cacheItem, _ => request.Content);
 
             var templateInfo = new Template
             {

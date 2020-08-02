@@ -105,7 +105,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 else if (inputType == InputType.CheckBox || 
                     style.InputType == InputType.SelectMultiple)
                 {
-                    var list = request.Get<IEnumerable<object>>(style.AttributeName);
+                    var list = request.Get<List<object>>(style.AttributeName);
                     site.Set(style.AttributeName, ListUtils.ToString(list));
                 }
                 else

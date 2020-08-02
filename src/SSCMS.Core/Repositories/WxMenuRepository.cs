@@ -26,17 +26,17 @@ namespace SSCMS.Core.Repositories
 
         private string GetCacheKey(int siteId) => CacheUtils.GetListKey(_repository.TableName, siteId);
 
-        public async Task<int> InsertAsync(WxMenu openMenu)
+        public async Task<int> InsertAsync(WxMenu menu)
         {
-            return await _repository.InsertAsync(openMenu, Q
-                .CachingRemove(GetCacheKey(openMenu.SiteId))
+            return await _repository.InsertAsync(menu, Q
+                .CachingRemove(GetCacheKey(menu.SiteId))
             );
         }
 
-        public async Task UpdateAsync(WxMenu openMenu)
+        public async Task UpdateAsync(WxMenu menu)
         {
-            await _repository.UpdateAsync(openMenu, Q
-                .CachingRemove(GetCacheKey(openMenu.SiteId))
+            await _repository.UpdateAsync(menu, Q
+                .CachingRemove(GetCacheKey(menu.SiteId))
             );
         }
 
@@ -57,12 +57,12 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<WxMenu>> GetMenusAsync(int siteId)
         {
-            var infoList = await _repository.GetAllAsync(Q
+            var list = await _repository.GetAllAsync(Q
+                .Where(nameof(WxReplyKeyword.SiteId), siteId)
                 .CachingGet(GetCacheKey(siteId))
             );
-            var list = infoList.ToList();
 
-            return list.OrderBy(openMenu => openMenu.Taxis == 0 ? int.MaxValue : openMenu.Taxis).ToList();
+            return list.OrderBy(menu => menu.Taxis == 0 ? int.MaxValue : menu.Taxis).ToList();
         }
 
         public async Task<WxMenu> GetAsync(int siteId, int id)

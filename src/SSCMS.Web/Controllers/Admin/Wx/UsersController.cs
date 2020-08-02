@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -15,18 +17,25 @@ namespace SSCMS.Web.Controllers.Admin.Wx
     public partial class UsersController : ControllerBase
     {
         private const string Route = "wx/users";
-        private const string RouteWx = "wx/users/wx";
-        private const string RouteTenPay = "wx/users/tenPay";
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
-        private readonly IWxAccountRepository _wxAccountRepository;
+        private readonly IWxUserRepository _wxUserRepository;
 
-        public UsersController(IAuthManager authManager, IWxManager wxManager, IWxAccountRepository wxAccountRepository)
+        public UsersController(IAuthManager authManager, IWxManager wxManager, IWxUserRepository wxUserRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
-            _wxAccountRepository = wxAccountRepository;
+            _wxUserRepository = wxUserRepository;
+        }
+
+        public class GetRequest : SiteRequest
+        {
+            public bool Init { get; set; }
+            public int TagId { get; set; }
+            public string Keyword { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
         }
 
         public class GetResult
@@ -34,29 +43,9 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             public bool Success { get; set; }
             public string ErrorMessage { get; set; }
             public IEnumerable<WxUserTag> Tags { get; set; }
+            public int Total { get; set; }
+            public int Count { get; set; }
             public IEnumerable<WxUser> Users { get; set; }
-        }
-
-        public class WxSubmitRequest
-        {
-            public int SiteId { get; set; }
-            public string WxAppId { get; set; }
-            public string WxAppSecret { get; set; }
-            public string WxUrl { get; set; }
-            public string WxToken { get; set; }
-            public bool WxIsEncrypt { get; set; }
-            public string WxEncodingAESKey { get; set; }
-        }
-
-        public class TenPaySubmitRequest
-        {
-            public int SiteId { get; set; }
-            public string TenPayAppId { get; set; }
-            public string TenPayAppSecret { get; set; }
-            public string TenPayMchId { get; set; }
-            public string TenPayKey { get; set; }
-            public string TenPayAuthorizeUrl { get; set; }
-            public string TenPayNotifyUrl { get; set; }
         }
     }
 }

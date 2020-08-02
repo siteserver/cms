@@ -1,6 +1,5 @@
 ﻿using System;
-using System.IO;
-using CacheManager.Core;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -18,37 +17,6 @@ namespace SSCMS.Core.Utils
             public int Total { get; set; }
             public int Current { get; set; }
             public string Message { get; set; }
-        }
-
-        public static void SetFileContent(ICacheManager<object> cacheManager, object value, string filePath)
-        {
-            if (string.IsNullOrEmpty(filePath)) return;
-            var directoryPath = DirectoryUtils.GetDirectoryPath(filePath);
-            var fileName = PathUtils.GetFileName(filePath);
-            var watcher = new FileSystemWatcher
-            {
-                Filter = fileName,
-                Path = directoryPath,
-                EnableRaisingEvents = true
-            };
-
-            var cacheKey = GetPathKey(filePath);
-
-            watcher.Changed += (sender, e) =>
-            {
-                cacheManager.Remove(cacheKey);
-            };
-            watcher.Renamed += (sender, e) =>
-            {
-                cacheManager.Remove(cacheKey);
-            };
-            watcher.Deleted += (sender, e) =>
-            {
-                cacheManager.Remove(cacheKey);
-            };
-
-            var cacheItem = new CacheItem<object>(cacheKey, value, ExpirationMode.Sliding, TimeSpan.FromHours(12));
-            cacheManager.AddOrUpdate(cacheItem, _ => value);
         }
 
         private static string GetProcessCacheKey(string guid)
@@ -79,9 +47,7 @@ namespace SSCMS.Core.Utils
                 process.Message = message;
             }
 
-            var cacheItem = new CacheItem<Process>(cacheKey, process, ExpirationMode.Sliding, TimeSpan.FromHours(1));
-
-            _cacheManager.AddOrUpdate(cacheItem, _ => process);
+            _cacheManager.AddOrUpdateSliding(cacheKey, process, 60);
 
             //CacheUtils.InsertHours(guid, cache, 1);
         }

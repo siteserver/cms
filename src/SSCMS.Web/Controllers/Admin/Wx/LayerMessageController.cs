@@ -12,19 +12,19 @@ namespace SSCMS.Web.Controllers.Admin.Wx
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class SendLayerImageController : ControllerBase
+    public partial class LayerMessageController : ControllerBase
     {
-        private const string Route = "wx/sendLayerImage";
+        private const string Route = "wx/layerMessage";
 
         private readonly IAuthManager _authManager;
         private readonly IMaterialGroupRepository _materialGroupRepository;
-        private readonly IMaterialImageRepository _materialImageRepository;
+        private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public SendLayerImageController(IAuthManager authManager, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository)
+        public LayerMessageController(IAuthManager authManager, IMaterialGroupRepository materialGroupRepository, IMaterialMessageRepository materialMessageRepository)
         {
             _authManager = authManager;
             _materialGroupRepository = materialGroupRepository;
-            _materialImageRepository = materialImageRepository;
+            _materialMessageRepository = materialMessageRepository;
         }
 
         public class QueryRequest
@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         {
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<MaterialImage> Images { get; set; }
+            public IEnumerable<MaterialMessage> Messages { get; set; }
         }
     }
 }

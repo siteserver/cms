@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public async Task<ActionResult<BoolResult>> Preview([FromBody] PreviewRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage))
+                AuthTypes.SitePermissions.WxSend))
             {
                 return Unauthorized();
             }

@@ -12,19 +12,19 @@ namespace SSCMS.Web.Controllers.Admin.Wx
     [OpenApiIgnore]
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class SendLayerVideoController : ControllerBase
+    public partial class LayerAudioController : ControllerBase
     {
-        private const string Route = "wx/sendLayerVideo";
+        private const string Route = "wx/layerAudio";
 
         private readonly IAuthManager _authManager;
         private readonly IMaterialGroupRepository _materialGroupRepository;
-        private readonly IMaterialVideoRepository _materialVideoRepository;
+        private readonly IMaterialAudioRepository _materialAudioRepository;
 
-        public SendLayerVideoController(IAuthManager authManager, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository)
+        public LayerAudioController(IAuthManager authManager, IMaterialGroupRepository materialGroupRepository, IMaterialAudioRepository materialAudioRepository)
         {
             _authManager = authManager;
             _materialGroupRepository = materialGroupRepository;
-            _materialVideoRepository = materialVideoRepository;
+            _materialAudioRepository = materialAudioRepository;
         }
 
         public class QueryRequest
@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         {
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<MaterialVideo> Videos { get; set; }
+            public IEnumerable<MaterialAudio> Audios { get; set; }
         }
     }
 }

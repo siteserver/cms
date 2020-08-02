@@ -114,7 +114,7 @@ namespace SSCMS.Core.Services
         {
             try
             {
-                var content = _cacheManager.Get<string>(CacheUtils.GetPathKey(filePath));
+                var content = _cacheManager.Get(CacheUtils.GetPathKey(filePath));
                 if (content != null) return content;
 
                 if (FileUtils.IsFileExists(filePath))
@@ -122,7 +122,7 @@ namespace SSCMS.Core.Services
                     content = FileUtils.ReadText(filePath, Encoding.UTF8);
                 }
 
-                CacheUtils.SetFileContent(_cacheManager, content, filePath);
+                _cacheManager.AddOrUpdateFileWatcher(filePath, content);
                 return content;
             }
             catch

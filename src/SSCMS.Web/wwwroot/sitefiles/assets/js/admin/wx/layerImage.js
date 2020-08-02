@@ -1,11 +1,12 @@
-﻿var $url = '/wx/sendLayerAudio';
+﻿var $url = '/wx/layerImage';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   showType: 'card',
   groups: null,
   count: null,
-  audios: null,
+  images: null,
+  urlList: null,
   
   form: {
     siteId: utils.getQueryInt("siteId"),
@@ -29,7 +30,10 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.audios = res.audios;
+      $this.images = res.images;
+      $this.urlList = _.map($this.images, function (item) {
+        return item.thumbUrl;
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -46,8 +50,8 @@ var methods = {
     return '';
   },
 
-  btnAudioClick: function(audio) {
-    parent.$vue.runOpenSendLayerSelect(audio);
+  btnImageClick: function(image) {
+    parent.$vue.runOpenSendLayerSelect(image);
     utils.closeLayer();
   },
 
@@ -65,7 +69,10 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.audios = res.audios;
+      $this.images = res.images;
+      $this.urlList = _.map($this.images, function (item) {
+        return item.url;
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -81,6 +88,17 @@ var methods = {
   btnPageClick: function(val) {
     utils.loading(this, true);
     this.apiList(val);
+  },
+
+  getFriendlyContent: function(image) {
+    if (image.items.length === 1) {
+      return image.items[0].title;
+    }
+    var i = 1;
+    var contents = image.items.map(function(item) {
+      return i++ + '. ' + item.title;
+    });
+    return contents.join('<br />');
   },
 
   btnCancelClick: function () {
