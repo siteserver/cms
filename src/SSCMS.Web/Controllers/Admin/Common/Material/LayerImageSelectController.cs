@@ -54,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         public async Task<ActionResult<StringResult>> Select([FromBody]SelectRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var image = await _materialImageRepository.GetAsync(request.LibraryId);
+            var image = await _materialImageRepository.GetAsync(request.MaterialId);
 
             var materialFilePath = PathUtils.Combine(_settingsManager.WebRootPath, image.Url);
             if (!FileUtils.IsFileExists(materialFilePath))

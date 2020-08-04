@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 
         public class SelectRequest : SiteRequest
         {
-            public int LibraryId { get; set; }
+            public int MaterialId { get; set; }
         }
     }
 }

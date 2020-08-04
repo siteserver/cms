@@ -62,8 +62,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 }
             }
 
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+
             return new GetResult
             {
+                SiteUrl = StringUtils.TrimEndSlash(siteUrl),
                 Site = site,
                 Styles = styles
             };

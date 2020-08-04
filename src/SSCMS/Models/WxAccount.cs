@@ -31,6 +31,12 @@ namespace SSCMS.Models
         public string MpEncodingAESKey { get; set; }
 
         [DataColumn]
+        public int MpReplyBeAddedMessageId { get; set; }
+
+        [DataColumn]
+        public int MpReplyAutoMessageId { get; set; }
+
+        [DataColumn]
         public bool TenPayConnected { get; set; }
 
         [DataColumn]

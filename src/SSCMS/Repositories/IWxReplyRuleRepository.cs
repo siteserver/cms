@@ -13,7 +13,9 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int ruleId);
 
-        Task<List<WxReplyRule>> GetRulesAsync(int siteId);
+        Task<int> GetCount(int siteId, string keyword);
+
+        Task<List<WxReplyRule>> GetRulesAsync(int siteId, string keyword, int page, int perPage);
 
         Task<WxReplyRule> GetAsync(int ruleId);
     }

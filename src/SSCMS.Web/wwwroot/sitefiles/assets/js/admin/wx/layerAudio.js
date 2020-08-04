@@ -47,7 +47,7 @@ var methods = {
   },
 
   btnAudioClick: function(audio) {
-    parent.$vue.runOpenSendLayerSelect(audio);
+    parent.$vue.runLayerAudio(audio);
     utils.closeLayer();
   },
 

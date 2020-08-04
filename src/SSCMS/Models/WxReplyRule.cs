@@ -1,4 +1,5 @@
-﻿using Datory;
+﻿using System.Collections.Generic;
+using Datory;
 using Datory.Annotations;
 
 namespace SSCMS.Models
@@ -14,5 +15,11 @@ namespace SSCMS.Models
 
         [DataColumn]
         public bool Random { get; set; }
+
+        [DataIgnore]
+        public List<WxReplyKeyword> Keywords { get; set; }
+
+        [DataIgnore]
+        public List<WxReplyMessage> Messages { get; set; }
     }
 }

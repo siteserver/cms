@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Enums;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
@@ -30,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                     ruleName = rule.RuleName;
                     random = rule.Random;
                     keywords = await _wxReplyKeywordRepository.GetKeywordsAsync(request.SiteId, request.RuleId);
-                    messages = await _wxReplyMessageRepository.GetMessagesAsync(request.SiteId, request.RuleId);
+                    messages = await _wxManager.GetMessagesAsync(request.SiteId, request.RuleId);
                 }
             }
 

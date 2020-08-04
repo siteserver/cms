@@ -1,7 +1,10 @@
-﻿@page
+@page
 @{ Layout = "_Layout"; }
 @section Styles{
   <style>
+    .el-tabs--right .el-tabs__header.is-right{
+      width: 98%;
+    }
     .cover-uploader {
       border-color: #00B19D;
     }
@@ -121,21 +124,22 @@
     </div>
   </div>
 </div>
-<div v-else-if="sended">
-  <div role="alert" class="el-alert el-alert--success is-light" style="padding: 30px">
-    <div class="el-alert__content">
-      <p class="el-alert__description" style="font-size: 14px;">恭喜，消息群发成功</p>
-    </div>
-  </div>
-</div>
 <div v-else>
+
   <el-tabs type="border-card" v-model="form.materialType" v-on:tab-click="btnTabClick">
+    <el-tab-pane name="Text">
+      <span slot="label"><i class="el-icon-chat-line-round"></i> 文字</span>
+  
+      <div id="text1"></div>
+      <div class="editor__text" id="text2"></div>
+      
+    </el-tab-pane>
     <el-tab-pane name="Message">
       <span slot="label"><i class="el-icon-notebook-2"></i> 图文消息</span>
       
-      <div v-if="form.materialId && message">
+      <div v-if="form.materialId && items">
         <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">
-          <template v-for="(item, index) in message.items" :key="index">
+          <template v-for="(item, index) in items" :key="index">
             <div v-if="index === 0" class="thumb">
               <div class="cover" :style="{backgroundImage: 'url(' + item.thumbUrl + ')'}">
                 <div class="text">{{(item.title || '标题')}}</div>
@@ -182,16 +186,9 @@
       </div>
   
     </el-tab-pane>
-    <el-tab-pane name="Text">
-      <span slot="label"><i class="el-icon-chat-line-round"></i> 文字</span>
-
-      <div id="text1"></div>
-      <div class="editor__text" id="text2"></div>
-      
-    </el-tab-pane>
     <el-tab-pane name="Image">
       <span slot="label"><i class="el-icon-picture"></i> 图片</span>
-
+  
       <div v-if="form.materialId && image">
         <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">
           <el-image 
@@ -232,14 +229,14 @@
               <strong>上传图片</strong>
             </el-link>
           </el-upload>
-
+  
         </div>
       </div>
       
     </el-tab-pane>
     <el-tab-pane name="Audio">
       <span slot="label"><i class="el-icon-headset"></i> 音频</span>
-
+  
       <div v-if="form.materialId && audio">
         <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">  
           <div style="padding: 14px;">
@@ -272,14 +269,14 @@
               <strong>上传音频</strong>
             </el-link>
           </el-upload>
-
+  
         </div>
       </div>
   
     </el-tab-pane>
     <el-tab-pane name="Video">
       <span slot="label"><i class="el-icon-video-play"></i> 视频</span>
-
+  
       <div v-if="form.materialId && video">
         <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">  
           <div style="padding: 14px;">
@@ -312,102 +309,21 @@
               <strong>上传视频</strong>
             </el-link>
           </el-upload>
-
+  
         </div>
       </div>
   
     </el-tab-pane>
   </el-tabs>
   
-  <div style="height: 25px"></div>
-  
-  <el-form ref="form" :inline="true" status-icon :model="form" size="small">
-    <el-form-item label="群发对象">
-      <el-select  v-model="form.isToAll" placeholder="请选择">
-        <el-option label="全部用户" :value="true"></el-option>
-        <el-option label="按标签选择" :value="false"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item v-if="!form.isToAll" label="标签" prop="tagId" :rules="{ required: true, message: '请选择标签' }">
-      <el-select v-model="form.tagId" placeholder="请选择">
-        <el-option
-          v-for="tag in tags"
-          :key="tag.id"
-          :label="tag.name + '(' + tag.count + ')'"
-          :value="tag.id">
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <div></div>
-    <el-form-item label="发送时间">
-      <el-select v-model="form.isTiming" v-on:change="loadTiming" placeholder="请选择">
-        <el-option label="立即发送" :value="false"></el-option>
-        <el-option label="定时发送" :value="true"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item v-if="form.isTiming">
-      <el-select v-model="form.isToday" v-on:change="loadTiming" placeholder="请选择" style="width: 100px">
-        <el-option label="今天" :value="true"></el-option>
-        <el-option label="明天" :value="false"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item v-if="form.isTiming">
-      <el-select v-model="form.hour" v-on:change="loadTiming" placeholder="请选择" style="width: 100px">
-        <el-option
-          v-for="hour in hours"
-          :key="hour.value"
-          :label="hour.label"
-          :value="hour.value">
-        </el-option>
-      </el-select>
-      时
-    </el-form-item>
-    <el-form-item v-if="form.isTiming">
-      <el-select v-model="form.minute" placeholder="请选择" style="width: 100px">
-        <el-option
-          v-for="minute in minutes"
-          :key="minute.value"
-          :label="minute.label"
-          :value="minute.value">
-        </el-option>
-      </el-select>
-      分
-    </el-form-item>
-  </el-form>
-  
-  <el-divider></el-divider>
-  
-  <el-row align="center" style="text-align: center; padding-top:10px">
-    <el-button size="small" v-on:click="btnPreviewClick" type="default">预 览</el-button>
-    <el-button size="small" v-on:click="btnSubmitClick" type="primary">群 发</el-button>
+  <el-row align="center" style="text-align: center; padding-top:15px">
+    <el-button size="small" v-on:click="btnSubmitClick" type="primary">保 存</el-button>
+    <el-button :disabled="form.id === 0" size="small" v-on:click="btnDeleteClick" type="default">删除回复</el-button>
   </el-row>
-  
-  <el-dialog
-    title="发送预览"
-    :visible.sync="previewDialog"
-    width="60%"
-    center>
-  
-    <el-form ref="previewForm" :model="previewForm" label-position="top" size="small">
-      <el-form-item label="微信号(关注公众号后，才能接收图文消息预览)" prop="wxNames" :rules="{ required: true, message: '请输入微信号' }">
-        <el-input
-          type="textarea"
-          :rows="wxNamesCount"
-          v-model="previewForm.wxNames"
-          placeholder="可输入多个微信号，按回车键分割"></el-input>
-      </el-form-item>
-    </el-form>
-    <div class="tips">预览功能仅用于公众号查看文章效果，不适用于公众传播，预览链接会在短期内失效</div>
-  
-    <span slot="footer" class="dialog-footer">
-      <el-button size="small" type="primary" v-on:click="btnPreviewSubmitClick">确 定</el-button>
-      <el-button size="small" v-on:click="previewDialog = false">取 消</el-button>
-    </span>
-  </el-dialog>
 
 </div>
 
 @section Scripts{
   <script src="/sitefiles/assets/lib/wangEditor/wangEditor.min.js" type="text/javascript"></script>
-  <script src="/sitefiles/assets/js/admin/wx/send.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/wx/replyMessage.js" type="text/javascript"></script>
 }

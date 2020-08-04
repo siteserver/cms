@@ -51,7 +51,7 @@ var methods = {
   },
 
   btnImageClick: function(image) {
-    parent.$vue.runOpenSendLayerSelect(image);
+    parent.$vue.runLayerImage(image);
     utils.closeLayer();
   },
 

@@ -23,14 +23,22 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
         private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
         private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
+        private readonly IMaterialMessageRepository _materialMessageRepository;
+        private readonly IMaterialImageRepository _materialImageRepository;
+        private readonly IMaterialAudioRepository _materialAudioRepository;
+        private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public ReplyAddController(IAuthManager authManager, IWxManager wxManager, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository)
+        public ReplyAddController(IAuthManager authManager, IWxManager wxManager, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository, IMaterialMessageRepository materialMessageRepository, IMaterialImageRepository materialImageRepository, IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
             _wxReplyKeywordRepository = wxReplyKeywordRepository;
             _wxReplyMessageRepository = wxReplyMessageRepository;
             _wxReplyRuleRepository = wxReplyRuleRepository;
+            _materialMessageRepository = materialMessageRepository;
+            _materialImageRepository = materialImageRepository;
+            _materialAudioRepository = materialAudioRepository;
+            _materialVideoRepository = materialVideoRepository;
         }
 
         public class GetRequest : SiteRequest

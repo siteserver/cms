@@ -115,6 +115,8 @@
 
             public const string WxAccount = "site_wxAccount";
             public const string WxReply = "site_wxReply";
+            public const string WxReplyAuto = "site_wxReplyAuto";
+            public const string WxReplyBeAdded = "site_wxReplyBeAdded";
             public const string WxMenus = "site_wxMenus";
             public const string WxUsers = "site_wxUsers";
             public const string WxSend = "site_wxSend";

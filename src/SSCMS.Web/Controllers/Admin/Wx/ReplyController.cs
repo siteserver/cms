@@ -20,19 +20,21 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
-        private readonly IWxUserRepository _wxUserRepository;
+        private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
+        private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
+        private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
 
-        public ReplyController(IAuthManager authManager, IWxManager wxManager, IWxUserRepository wxUserRepository)
+        public ReplyController(IAuthManager authManager, IWxManager wxManager, IWxReplyRuleRepository wxReplyRuleRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
-            _wxUserRepository = wxUserRepository;
+            _wxReplyRuleRepository = wxReplyRuleRepository;
+            _wxReplyKeywordRepository = wxReplyKeywordRepository;
+            _wxReplyMessageRepository = wxReplyMessageRepository;
         }
 
         public class GetRequest : SiteRequest
         {
-            public bool Init { get; set; }
-            public int TagId { get; set; }
             public string Keyword { get; set; }
             public int Page { get; set; }
             public int PerPage { get; set; }
@@ -42,10 +44,22 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         {
             public bool Success { get; set; }
             public string ErrorMessage { get; set; }
-            public IEnumerable<WxUserTag> Tags { get; set; }
-            public int Total { get; set; }
+            public IEnumerable<WxReplyRule> Rules { get; set; }
             public int Count { get; set; }
-            public IEnumerable<WxUser> Users { get; set; }
+        }
+
+        public class DeleteRequest : SiteRequest
+        {
+            public int RuleId { get; set; }
+            public string Keyword { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
+        }
+
+        public class DeleteResult
+        {
+            public IEnumerable<WxReplyRule> Rules { get; set; }
+            public int Count { get; set; }
         }
     }
 }

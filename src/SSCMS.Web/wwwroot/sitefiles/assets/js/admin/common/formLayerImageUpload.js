@@ -23,7 +23,7 @@ var methods = {
   parentInsert: function(no, result) {
     var vue = parent.$vue;
     if (vue.runFormLayerImageUploadText) {
-      vue.runFormLayerImageUploadText(this.attributeName, no, result.imageVirtualUrl, result.imageUrl);
+      vue.runFormLayerImageUploadText(this.attributeName, no, result.imageVirtualUrl);
     }
     if (vue.runFormLayerImageUploadEditor && this.editorAttributeName && this.form.isEditor) {
       var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';

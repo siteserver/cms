@@ -2,6 +2,7 @@
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
+  siteUrl: null,
   pageType: null,
   form: null,
   styles: null,
@@ -9,18 +10,27 @@ var data = utils.init({
 });
 
 var methods = {
-  runFormLayerImageUploadText: function(attributeName, html)
+  runFormLayerImageUploadText: function(attributeName, no, imageUrl) {
+    var count = this.form[utils.getCountName(attributeName)];
+    if (count < no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = imageUrl;
+    this.form = _.assign({}, this.form);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html)
   {
     if (!html) return;
     UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
 
-  runFormLayerImageUploadEditor: function(attributeName, no, text) {
+  runMaterialLayerImageSelect: function(attributeName, no, imageUrl) {
     var count = this.form[utils.getCountName(attributeName)];
     if (count < no) {
       this.form[utils.getCountName(attributeName)] = no;
     }
-    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form[utils.getExtendName(attributeName, no)] = imageUrl;
     this.form = _.assign({}, this.form);
   },
   
@@ -35,6 +45,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      $this.siteUrl = res.siteUrl;
       $this.loadEditor(res);
     }).catch(function (error) {
       utils.error(error);
@@ -124,7 +135,7 @@ var methods = {
 
   btnPreviewClick: function(attributeName, n) {
     var imageUrl = n ? this.form[utils.getExtendName(attributeName, n)] : this.form[attributeName];
-    window.open(imageUrl);
+    window.open(utils.getUrl(this.siteUrl, imageUrl));
   },
 
   apiSubmit: function () {

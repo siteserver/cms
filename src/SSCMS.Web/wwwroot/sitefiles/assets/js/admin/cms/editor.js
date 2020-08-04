@@ -223,7 +223,6 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
-    console.log(options);
     var query = {
       siteId: this.siteId,
       channelId: this.channelId,

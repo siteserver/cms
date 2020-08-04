@@ -1,4 +1,5 @@
-﻿using Datory;
+﻿using System.Collections.Generic;
+using Datory;
 using Datory.Annotations;
 using SSCMS.Enums;
 
@@ -21,5 +22,17 @@ namespace SSCMS.Models
 
         [DataColumn]
         public string Text { get; set; }
+
+        [DataIgnore]
+        public List<MaterialMessageItem> Items { get; set; }
+
+        [DataIgnore]
+        public MaterialImage Image { get; set; }
+
+        [DataIgnore]
+        public MaterialAudio Audio { get; set; }
+
+        [DataIgnore]
+        public MaterialVideo Video { get; set; }
     }
 }

@@ -21,18 +21,29 @@ namespace SSCMS.Core.Services
         private readonly ICacheManager<List<WxUser>> _userCacheManager;
         private readonly IWxAccountRepository _wxAccountRepository;
         private readonly IWxMenuRepository _wxMenuRepository;
+        private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
+        private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
+        private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
         private readonly IMaterialAudioRepository _materialAudioRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public WxManager(ISettingsManager settingsManager, ICacheManager<List<string>> openIdCacheManager, ICacheManager<List<WxUser>> userCacheManager, IWxAccountRepository wxAccountRepository, IWxMenuRepository wxMenuRepository, IMaterialMessageRepository materialMessageRepository, IMaterialImageRepository materialImageRepository, IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
+        public WxManager(ISettingsManager settingsManager, ICacheManager<List<string>> openIdCacheManager,
+            ICacheManager<List<WxUser>> userCacheManager, IWxAccountRepository wxAccountRepository,
+            IWxMenuRepository wxMenuRepository, IWxReplyRuleRepository wxReplyRuleRepository,
+            IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository,
+            IMaterialMessageRepository materialMessageRepository, IMaterialImageRepository materialImageRepository,
+            IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _settingsManager = settingsManager;
             _openIdCacheManager = openIdCacheManager;
             _userCacheManager = userCacheManager;
             _wxAccountRepository = wxAccountRepository;
             _wxMenuRepository = wxMenuRepository;
+            _wxReplyRuleRepository = wxReplyRuleRepository;
+            _wxReplyKeywordRepository = wxReplyKeywordRepository;
+            _wxReplyMessageRepository = wxReplyMessageRepository;
             _materialMessageRepository = materialMessageRepository;
             _materialImageRepository = materialImageRepository;
             _materialAudioRepository = materialAudioRepository;

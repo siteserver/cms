@@ -206,6 +206,10 @@ var utils = {
     return s;
   },
 
+  getUrl: function(siteUrl, url) {
+    return (siteUrl || '/') + _.trimStart(_.trimStart(_.trimStart(url, '~'), '@'), '/');
+  },
+
   getFriendlyDate: function(date) {
     if (Object.prototype.toString.call(date) !== '[object Date]') {
       date = new Date(date);

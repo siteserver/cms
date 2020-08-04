@@ -3,14 +3,11 @@ var $url = '/wx/reply';
 var data = utils.init({
   success: false,
   errorMessage: null,
-  tags: null,
-  total: null,
+  rules: null,
   count: null,
-  users: null,
   multipleSelection: [],
   form: {
     siteId: utils.getQueryInt('siteId'),
-    tagId: 0,
     keyword: null,
     page: 1,
     perPage: 20
@@ -30,10 +27,8 @@ var methods = {
 
       $this.success = res.success;
       $this.errorMessage = res.errorMessage;
-      $this.tags = res.tags;
-      $this.total = res.total;
+      $this.rules = res.rules;
       $this.count = res.count;
-      $this.users = res.users;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -41,31 +36,25 @@ var methods = {
     });
   },
 
-  getUserTitle: function(user) {
-    if (user.remark) return user.remark + '(' + user.nickname + ')';
-    return user.nickname;
+  apiDelete: function (ruleId) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.delete($url, {
+      data: Object.assign({ruleId: ruleId}, this.form)
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.rules = res.rules;
+      $this.count = res.count;
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
-  getUserTags: function(user) {
-    if (user.tagIdList && user.tagIdList.length > 0) {
-      var retVal = [];
-      for (var i = 0; i < user.tagIdList.length; i++) {
-        var tagId = user.tagIdList[i];
-        var tag = this.tags.find(function(x) {
-          return x.id === tagId;
-        });
-        if (tag && tag.name) retVal.push(tag.name);
-      }
-      return retVal.join(',');
-    }
-    return '';
-  },
-
-  btnViewClick: function() {
-
-  },
-
-  btnSearchClick() {
+  btnSearchClick: function() {
     this.apiGet(1);
   },
 
@@ -73,26 +62,51 @@ var methods = {
     this.apiGet(val);
   },
 
-  btnEditClick: function (type) {
-    
+  btnEditClick: function (rule) {
+    utils.addTab('编辑回复', utils.getWxUrl('replyAdd', {
+      siteId: this.form.siteId,
+      ruleId: rule.id,
+      tabName: utils.getTabName()
+    }));
   },
 
   btnAddClick: function () {
     utils.addTab('添加回复', utils.getWxUrl('replyAdd', {
-      siteId: this.form.siteId
+      siteId: this.form.siteId,
+      tabName: utils.getTabName()
     }));
   },
 
-  formatSubscribeScene: function(subscribeScene) {
-    if (subscribeScene === 'ADD_SCENE_SEARCH') return '公众号搜索';
-    if (subscribeScene === 'ADD_SCENE_ACCOUNT_MIGRATION') return '公众号迁移';
-    if (subscribeScene === 'ADD_SCENE_PROFILE_CARD') return '名片分享';
-    if (subscribeScene === 'ADD_SCENE_QR_CODE') return '扫描二维码';
-    if (subscribeScene === 'ADD_SCENEPROFILE_LINK') return '图文页内名称点击';
-    if (subscribeScene === 'ADD_SCENE_PROFILE_ITEM') return '图文页右上角菜单';
-    if (subscribeScene === 'ADD_SCENE_PAID') return '支付后关注';
-    if (subscribeScene === 'ADD_SCENE_OTHERS') return '其他';
-    return '其他';
+  btnDeleteClick: function(rule) {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '删除关键词回复',
+      text: '此操作将删除关键词回复，确定吗？',
+      callback: function () {
+        $this.apiDelete(rule.id);
+      }
+    });
+  },
+
+  getMaterialType: function (materialType) {
+    if (materialType === 'Message') return '图文消息';
+    if (materialType === 'Image') return '图片';
+    if (materialType === 'Audio') return '音频';
+    if (materialType === 'Video') return '视频';
+    if (materialType === 'Text') return '文字';
+    return '';
+  },
+
+  getKeywords: function (keywords) {
+    if (!keywords) return '';
+    return keywords.map(function (x) { return x.text; }).join(', ');
+  },
+
+  getMessages: function (messages) {
+    var $this = this;
+    if (!messages) return '';
+    return messages.map(function (x) { return $this.getMaterialType(x.materialType); }).join(', ');
   }
 };
 
@@ -100,20 +114,6 @@ var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
-  computed: {
-    isChecked: function() {
-      return this.multipleSelection.length > 0;
-    },
-
-    openIds: function() {
-      var retVal = [];
-      for (var i = 0; i < this.multipleSelection.length; i++) {
-        var content = this.multipleSelection[i];
-        retVal.push(content.openId);
-      }
-      return retVal;
-    },
-  },
   created: function () {
     this.apiGet(1);
   }

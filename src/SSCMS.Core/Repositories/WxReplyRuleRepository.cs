@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Core.Utils;
@@ -39,10 +40,20 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(ruleId);
         }
 
-        public async Task<List<WxReplyRule>> GetRulesAsync(int siteId)
+        public async Task<int> GetCount(int siteId, string keyword)
+        {
+            return await _repository.CountAsync(Q
+                .WhereLike(nameof(WxReplyRule.RuleName), $"%{keyword}%")
+                .Where(nameof(WxReplyRule.SiteId), siteId)
+            );
+        }
+
+        public async Task<List<WxReplyRule>> GetRulesAsync(int siteId, string keyword, int page, int perPage)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(WxReplyRule.SiteId), siteId)
+                .WhereLike(nameof(WxReplyRule.RuleName), $"%{keyword}%")
+                .ForPage(page, perPage)
                 .OrderByDesc(nameof(WxReplyRule.Id))
             );
         }

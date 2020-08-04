@@ -16,5 +16,7 @@ namespace SSCMS.Repositories
         Task DeleteAllAsync(int siteId, int ruleId);
 
         Task<List<WxReplyMessage>> GetMessagesAsync(int siteId, int ruleId);
+
+        Task<WxReplyMessage> GetMessageAsync(int siteId, int messageId);
     }
 }

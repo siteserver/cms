@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 }
 
                 await _wxAccountRepository.SetAsync(account);
-                await _authManager.AddAdminLogAsync("修改微信公众号设置");
+                await _authManager.AddSiteLogAsync(request.SiteId, "修改微信公众号设置");
             }
 
             return new MpSubmitResult

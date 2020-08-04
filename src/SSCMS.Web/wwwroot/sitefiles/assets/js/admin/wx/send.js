@@ -35,18 +35,24 @@ var data = utils.init({
 });
 
 var methods = {
-  runOpenSendLayerSelect: function(material) {
-    this.form.materialId = material.id;
+  runLayerMessage: function(message) {
+    this.form.materialId = message.id;
+    this.message = message;
+  },
 
-    if (this.form.materialType === 'Message') {
-      this.message = material;
-    } else if (this.form.materialType === 'Image') {
-      this.image = material;
-    } else if (this.form.materialType === 'Audio') {
-      this.audio = material;
-    } else if (this.form.materialType === 'Video') {
-      this.video = material;
-    }
+  runLayerImage: function(image) {
+    this.form.materialId = image.id;
+    this.image = image;
+  },
+
+  runLayerAudio: function(audio) {
+    this.form.materialId = audio.id;
+    this.audio = audio;
+  },
+
+  runLayerVideo: function(video) {
+    this.form.materialId = video.id;
+    this.video = video;
   },
   
   apiGet: function() {

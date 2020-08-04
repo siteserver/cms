@@ -51,7 +51,7 @@ var methods = {
   },
 
   btnMessageClick: function(message) {
-    parent.$vue.runOpenSendLayerSelect(message);
+    parent.$vue.runLayerMessage(message);
     utils.closeLayer();
   },
 

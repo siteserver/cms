@@ -9,24 +9,48 @@ var data = utils.init({
   form: {
     ruleName: null,
     random: true,
-    keywords: null,
     messages: null
-  }
+  },
+  keywords: [],
+  messages: []
 });
 
 var methods = {
-  runOpenSendLayerSelect: function(material) {
-    this.form.materialId = material.id;
+  runLayerMessage: function(message) {
+    this.messages.push({
+      materialType: 'Message',
+      materialId: message.id,
+      items: message.items,
+      lastModifiedDate: message.lastModifiedDate
+    });
+    this.form.messages = true;
+  },
 
-    if (this.form.materialType === 'Message') {
-      this.message = material;
-    } else if (this.form.materialType === 'Image') {
-      this.image = material;
-    } else if (this.form.materialType === 'Audio') {
-      this.audio = material;
-    } else if (this.form.materialType === 'Video') {
-      this.video = material;
-    }
+  runLayerImage: function(image) {
+    this.messages.push({
+      materialType: 'Image',
+      materialId: image.id,
+      image: image
+    });
+    this.form.messages = true;
+  },
+
+  runLayerAudio: function(audio) {
+    this.messages.push({
+      materialType: 'Audio',
+      materialId: audio.id,
+      audio: audio
+    });
+    this.form.messages = true;
+  },
+
+  runLayerVideo: function(video) {
+    this.messages.push({
+      materialType: 'Video',
+      materialId: video.id,
+      video: video
+    });
+    this.form.messages = true;
   },
   
   apiGet: function() {
@@ -45,15 +69,11 @@ var methods = {
       $this.errorMessage = res.errorMessage;
       $this.form.ruleName = res.ruleName;
       $this.form.random = res.random;
-      $this.form.keywords = res.keywords;
-      $this.form.messages = res.messages;
-
-      if (!$this.form.keywords) {
-        $this.form.keywords = [{
-          exact: false,
-          text: null
-        }];
-      }
+      $this.keywords = res.keywords || [{
+        exact: false,
+        text: null
+      }];
+      $this.messages = res.messages || [];
     })
     .catch(function(error) {
       utils.error(error);
@@ -72,8 +92,8 @@ var methods = {
       ruleId: this.ruleId,
       ruleName: this.form.ruleName,
       random: this.form.random,
-      keywords: this.form.keywords,
-      messages: this.form.messages
+      keywords: this.keywords,
+      messages: this.messages
     }).then(function(response) {
       var res = response.data;
       
@@ -101,18 +121,41 @@ var methods = {
     });
   },
 
-  btnRemoveClick: function() {
-    
+  btnAppendClick: function() {
+    this.keywords.push({
+      id: 0,
+      exact: false,
+      text: null
+    });
+  },
+
+  btnRemoveKeywordClick: function(index) {
+    this.keywords.splice(index, 1);
+  },
+
+  btnRemoveMessageClick: function() {
+    this.messages.splice(this.messages.length - 1, 1);
+    this.form.messages = this.messages.length === 0 ? null : true;
   },
 
   btnSubmitClick: function () {
     var $this = this;
 
-    this.$refs.form.validate(function(valid) {
-      if (valid) {
-        $this.apiSubmit();
-      }
+    var forms = [this.$refs.rule1, this.$refs.rule2, this.$refs.rule3];
+    this.keywords.forEach(function(x, index){
+      forms.push($this.$refs.keywords[index]);
     });
+
+    var validAll = true;
+    forms.forEach(function(x){
+      x.validate(function(valid) {
+        validAll = validAll && valid;
+      });
+    });
+
+    if (validAll) {
+      this.apiSubmit();
+    }
   },
 
   btnCloseClick: function() {

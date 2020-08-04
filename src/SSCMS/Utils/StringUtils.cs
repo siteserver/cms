@@ -48,6 +48,12 @@ namespace SSCMS.Utils
             return Trim(text, '/');
         }
 
+        public static string TrimEndSlash(string text)
+        {
+            if (string.IsNullOrEmpty(text) || text.Length == 1) return text;
+            return TrimEnd(text, "/");
+        }
+
         public static string TrimEnd(string text, string end)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;

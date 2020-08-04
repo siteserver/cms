@@ -9,6 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     {
         public class GetResult
         {
+            public string SiteUrl { get; set; }
             public Site Site { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
         }

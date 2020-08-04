@@ -22,7 +22,7 @@ var data = utils.init({
 
 var methods = {
   insert: function(imageUrl) {
-    parent.$vue.insertText(this.attributeName, this.no, imageUrl);
+    parent.$vue.runMaterialLayerImageSelect(this.attributeName, this.no, imageUrl);
   },
 
   apiList: function (page) {
