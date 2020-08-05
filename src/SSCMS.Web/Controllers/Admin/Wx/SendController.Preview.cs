@@ -28,16 +28,16 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             {
                 foreach (var wxName in ListUtils.GetStringList(request.WxNames, Constants.Newline))
                 {
-                    await _wxManager.SendPreviewAsync(token, request.MaterialType, request.Text, wxName);
+                    await _wxManager.PreviewSendAsync(token, request.MaterialType, request.Text, wxName);
                 }
             }
             else
             {
-                var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId);
+                var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId, false);
 
                 foreach (var wxName in ListUtils.GetStringList(request.WxNames, Constants.Newline))
                 {
-                    await _wxManager.SendPreviewAsync(token, request.MaterialType, mediaId, wxName);
+                    await _wxManager.PreviewSendAsync(token, request.MaterialType, mediaId, wxName);
                 }
             }
 

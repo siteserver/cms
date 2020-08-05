@@ -160,7 +160,7 @@ var methods = {
     if (this.form.materialType === 'Text') {
       setTimeout(function () {
         $this.loadEditor();
-      }, 100)
+      }, 100);
     }
   },
 

@@ -26,6 +26,19 @@ var methods = {
     this.form.messages = true;
   },
 
+  runLayerText: function(text, index) {
+    if (index) {
+      this.messages[parseInt(index)].text = text;
+    } else {
+      this.messages.push({
+        materialType: 'Text',
+        text: text
+      });
+    }
+    
+    this.form.messages = true;
+  },
+
   runLayerImage: function(image) {
     this.messages.push({
       materialType: 'Image',
@@ -112,11 +125,12 @@ var methods = {
     });
   },
 
-  btnSelectClick: function(key) {
+  btnSelectClick: function(key, index) {
     utils.openLayer({
-      title: '选择回复消息',
+      title: '回复消息',
       url: utils.getWxUrl("layer" + key, {
-        siteId: this.siteId
+        siteId: this.siteId,
+        index: index || ''
        })
     });
   },
@@ -133,8 +147,8 @@ var methods = {
     this.keywords.splice(index, 1);
   },
 
-  btnRemoveMessageClick: function() {
-    this.messages.splice(this.messages.length - 1, 1);
+  btnRemoveMessageClick: function(index) {
+    this.messages.splice(index, 1);
     this.form.messages = this.messages.length === 0 ? null : true;
   },
 

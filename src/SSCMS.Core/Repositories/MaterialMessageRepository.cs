@@ -204,6 +204,11 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public Task UpdateAsync(int messageId, string mediaId, string url)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var message = await GetAsync(id);

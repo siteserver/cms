@@ -129,9 +129,8 @@
   <el-tabs type="border-card" v-model="form.materialType" v-on:tab-click="btnTabClick">
     <el-tab-pane name="Text">
       <span slot="label"><i class="el-icon-chat-line-round"></i> 文字</span>
-  
-      <div id="text1"></div>
-      <div class="editor__text" id="text2"></div>
+
+      <el-input type="textarea" :rows="10" v-model="form.text"></el-input>
       
     </el-tab-pane>
     <el-tab-pane name="Message">
@@ -324,6 +323,5 @@
 </div>
 
 @section Scripts{
-  <script src="/sitefiles/assets/lib/wangEditor/wangEditor.min.js" type="text/javascript"></script>
   <script src="/sitefiles/assets/js/admin/wx/replyMessage.js" type="text/javascript"></script>
 }

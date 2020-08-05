@@ -4,7 +4,7 @@ var $urlTenPay = '/wx/account/tenPay';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
-  defaultMpUrl: null,
+  mpUrl: null,
   defaultTenPayAuthorizeUrl: null,
   defaultTenPayNotifyUrl: null,
   account: null,
@@ -25,7 +25,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.defaultMpUrl = res.defaultMpUrl;
+      $this.mpUrl = res.mpUrl;
       $this.defaultTenPayAuthorizeUrl = res.defaultTenPayAuthorizeUrl;
       $this.defaultTenPayNotifyUrl = res.defaultTenPayNotifyUrl;
       $this.account = res.account;
@@ -88,7 +88,7 @@ var methods = {
 
   btnResetClick: function (type) {
     if (type === 'mpUrl') {
-      this.mpForm.mpUrl = this.defaultMpUrl;
+      this.mpForm.mpUrl = this.mpUrl;
     } else if (type === 'tenPayAuthorizeUrl') {
       this.tenPayForm.tenPayAuthorizeUrl = this.defaultTenPayAuthorizeUrl;
     } else if (type === 'tenPayNotifyUrl') {

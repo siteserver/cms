@@ -30,6 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
+            public string MpUrl { get; set; }
             public string DefaultTenPayAuthorizeUrl { get; set; }
             public string DefaultTenPayNotifyUrl { get; set; }
             public WxAccount Account { get; set; }

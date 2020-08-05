@@ -16,14 +16,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var (success, token, errorMessage) = await _openManager.GetAccessTokenAsync(request.SiteId);
+            var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
-                var mediaId = await _openManager.PushMaterialAsync(token, MaterialType.Message, request.MessageId);
+                var mediaId = await _wxManager.PushMaterialAsync(token, MaterialType.Message, request.MessageId, false);
 
                 foreach (var wxName in ListUtils.GetStringList(request.WxNames, Constants.Newline))
                 {
-                    await _openManager.SendPreviewAsync(token, MaterialType.Message, mediaId, wxName);
+                    await _wxManager.PreviewSendAsync(token, MaterialType.Message, mediaId, wxName);
                 }
             }
 

@@ -41,6 +41,10 @@ namespace SSCMS.Models
         [DataColumn]
         public string ThumbUrl { get; set; }
 
+        /// <summary>素材的URL</summary>
+        [DataColumn]
+        public string Url { get; set; }
+
         /// <summary>是否打开评论，0不打开，1打开</summary>
         [DataColumn]
         public CommentType CommentType { get; set; }

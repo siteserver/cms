@@ -51,6 +51,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<WxReplyMessage>> GetMessagesAsync(int siteId, int ruleId)
         {
+            if (ruleId == 0) return new List<WxReplyMessage>();
             var allMessages = await GetAllAsync(siteId);
             return allMessages.Where(x => x.RuleId == ruleId).ToList();
         }

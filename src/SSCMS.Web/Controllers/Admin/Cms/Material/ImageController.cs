@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialImage> Items { get; set; }
-            public bool IsOpen { get; set; }
+            public string SiteType { get; set; }
         }
 
         public class CreateRequest : SiteRequest

@@ -16,6 +16,9 @@ namespace SSCMS.Models
         public string Title { get; set; }
 
         [DataColumn]
+        public string Description { get; set; }
+
+        [DataColumn]
         public string FileType { get; set; }
 
         [DataColumn]

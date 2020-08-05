@@ -17,18 +17,7 @@ namespace SSCMS.Web.Controllers.Wx
 
             if (account != null && CheckSignature.Check(postModel.Signature, postModel.Timestamp, postModel.Nonce, account.MpToken))
             {
-                if (!account.MpConnected)
-                {
-                    account.MpConnected = true;
-                    await _wxAccountRepository.SetAsync(account);
-                }
                 return echostr; //返回随机字符串则表示验证通过
-            }
-
-            if (account != null && account.MpConnected)
-            {
-                account.MpConnected = false;
-                await _wxAccountRepository.SetAsync(account);
             }
 
             return "failed:" + postModel.Signature;

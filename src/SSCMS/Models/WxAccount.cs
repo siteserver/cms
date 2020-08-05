@@ -10,16 +10,10 @@ namespace SSCMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
-        public bool MpConnected { get; set; }
-
-        [DataColumn]
         public string MpAppId { get; set; }
 
         [DataColumn]
         public string MpAppSecret { get; set; }
-
-        [DataColumn]
-        public string MpUrl { get; set; }
 
         [DataColumn]
         public string MpToken { get; set; }

@@ -8,7 +8,7 @@ var data = utils.init({
   groups: null,
   count: null,
   items: null,
-  isOpen: false,
+  siteType: null,
   urlList: null,
   renameId: 0,
   renameTitle: '',
@@ -42,7 +42,7 @@ var methods = {
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = res.items;
-      $this.isOpen = res.isOpen;
+      $this.siteType = res.siteType;
       $this.urlList = _.map($this.items, function (item) {
         return item.url;
       });

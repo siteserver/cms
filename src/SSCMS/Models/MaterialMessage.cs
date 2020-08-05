@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
-using SSCMS.Enums;
 
 namespace SSCMS.Models
 {

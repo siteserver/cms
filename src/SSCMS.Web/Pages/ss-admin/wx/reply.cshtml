@@ -163,6 +163,9 @@
                   </el-card>
                 </div>
               </div>
+              <div v-else-if="message.materialType === 'Text' && message.text" style="padding: 20px 10px;">
+                <span style="white-space: pre;">{{ message.text }}</span>
+              </div>
               <div v-else-if="message.materialType === 'Image' && message.materialId">
                 <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">
                   <el-image 

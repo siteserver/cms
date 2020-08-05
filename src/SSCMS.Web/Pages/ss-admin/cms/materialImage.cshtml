@@ -43,7 +43,7 @@
       </el-button>
     </el-upload>
 
-    <el-button v-if="isOpen" v-on:click="btnPullClick" size="small" plain type="primary">
+    <el-button v-if="siteType === 'wx'" v-on:click="btnPullClick" size="small" plain type="primary">
       <i class="el-icon-download"></i>
       拉 取
     </el-button>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SSCMS.Enums;
 
 namespace SSCMS.Services
@@ -8,7 +7,7 @@ namespace SSCMS.Services
     {
         Task PullMaterialAsync(string token, MaterialType materialType, int groupId);
 
-        Task<string> PushMaterialAsync(string token, MaterialType materialType, int materialId);
+        Task<string> PushMaterialAsync(string token, MaterialType materialType, int materialId, bool syncUrl);
 
         Task PullMenuAsync(string token, int siteId);
 

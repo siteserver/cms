@@ -19,14 +19,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private const string RouteActionsPreview = "cms/material/editor/actions/preview";
 
         private readonly IAuthManager _authManager;
-        private readonly IWxManager _openManager;
+        private readonly IWxManager _wxManager;
         private readonly IWxAccountRepository _openAccountRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public EditorController(IAuthManager authManager, IWxManager openManager, IWxAccountRepository openAccountRepository, IMaterialMessageRepository materialMessageRepository)
+        public EditorController(IAuthManager authManager, IWxManager wxManager, IWxAccountRepository openAccountRepository, IMaterialMessageRepository materialMessageRepository)
         {
             _authManager = authManager;
-            _openManager = openManager;
+            _wxManager = wxManager;
             _openAccountRepository = openAccountRepository;
             _materialMessageRepository = materialMessageRepository;
         }

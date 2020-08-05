@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using FluentScheduler;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Services;
@@ -31,6 +30,12 @@ namespace SSCMS.Web.Controllers
             //    var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "test.txt");
             //    await FileUtils.WriteTextAsync(filePath, "my name");
             //});
+
+            _taskManager.RunOnceAt(async () =>
+            {
+                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "test.txt");
+                await FileUtils.WriteTextAsync(filePath, DateTime.Now.ToString(CultureInfo.InvariantCulture));
+            }, DateTime.Now.AddSeconds(10));
 
             return "pong";
         }

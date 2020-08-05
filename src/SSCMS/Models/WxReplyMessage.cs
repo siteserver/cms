@@ -24,6 +24,9 @@ namespace SSCMS.Models
         public string Text { get; set; }
 
         [DataIgnore]
+        public string MediaId { get; set; }
+
+        [DataIgnore]
         public List<MaterialMessageItem> Items { get; set; }
 
         [DataIgnore]

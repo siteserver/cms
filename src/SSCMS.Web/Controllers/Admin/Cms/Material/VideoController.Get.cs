@@ -15,12 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var isOpen = false;
-            var account = await _openAccountRepository.GetBySiteIdAsync(request.SiteId);
-            if (account.MpConnected)
-            {
-                isOpen = true;
-            }
+            var site = await _siteRepository.GetAsync(request.SiteId);
 
             var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Video);
             var count = await _materialVideoRepository.GetCountAsync(request.GroupId, request.Keyword);
@@ -31,7 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 Groups = groups,
                 Count = count,
                 Items = items,
-                IsOpen = isOpen
+                SiteType = site.SiteType
             };
         }
     }

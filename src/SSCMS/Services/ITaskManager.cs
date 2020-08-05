@@ -10,5 +10,7 @@ namespace SSCMS.Services
 
         Task<Func<CancellationToken, Task>> DequeueAsync(
             CancellationToken cancellationToken);
+
+        void RunOnceAt(Action job, DateTime dateTime);
     }
 }

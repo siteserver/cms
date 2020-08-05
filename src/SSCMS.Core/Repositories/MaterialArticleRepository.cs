@@ -44,6 +44,15 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task UpdateUrlAsync(int id, string url)
+        {
+            await _repository.UpdateAsync(Q
+                .Set(nameof(MaterialArticle.Url), url)
+                .Where(nameof(MaterialArticle.Id), id)
+                .CachingRemove(CacheKey)
+            );
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var article = await GetAsync(id);

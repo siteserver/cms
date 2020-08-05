@@ -73,10 +73,6 @@ var methods = {
         $this.audio = res.message.audio;
         $this.video = res.message.video;
       }
-
-      setTimeout(function () {
-        $this.loadEditor();
-      }, 100);
       
     }).catch(function (error) {
       utils.error(error);
@@ -151,36 +147,6 @@ var methods = {
     } else if (tab.name === 'Video') {
       this.runLayerVideo(this.video);
     }
-  },
-
-  loadEditor: function () {
-    var $this = this;
-
-    var E = window.wangEditor;
-    this.editEditor = new E('#text1', '#text2');
-    this.editEditor.customConfig.menus = [
-      'head',  // 标题
-      'bold',  // 粗体
-      'fontSize',  // 字号
-      'fontName',  // 字体
-      'italic',  // 斜体
-      'underline',  // 下划线
-      'strikeThrough',  // 删除线
-      'foreColor',  // 文字颜色
-      'backColor',  // 背景颜色
-      'link',  // 插入链接
-      'list',  // 列表
-      'justify',  // 对齐方式
-      'quote',  // 引用
-      'table',  // 表格
-      'undo',  // 撤销
-      'redo'  // 重复
-    ];
-    this.editEditor.customConfig.onchange = function (html) {
-      $this.form.text = html;
-    };
-    this.editEditor.create();
-    this.editEditor.txt.html(this.form.text);
   },
 
   btnSelectClick: function() {

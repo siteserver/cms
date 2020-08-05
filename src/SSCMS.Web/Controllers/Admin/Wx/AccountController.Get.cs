@@ -29,8 +29,11 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 account.TenPayNotifyUrl = defaultTenPayNotifyUrl;
             }
 
+            var mpUrl = Request.Scheme + "://" + PageUtils.Combine(Request.Host.Host, Constants.ApiWxPrefix, Controllers.Wx.IndexController.Route.Replace("{siteId}", siteId.ToString()));
+
             return new GetResult
             {
+                MpUrl = mpUrl,
                 DefaultTenPayAuthorizeUrl = defaultTenPayAuthorizeUrl,
                 DefaultTenPayNotifyUrl = defaultTenPayNotifyUrl,
                 Account = account

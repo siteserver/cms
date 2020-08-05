@@ -44,6 +44,9 @@ namespace SSCMS.Models
         public string ThumbUrl { get; set; }
 
         [DataIgnore]
+        public string Url { get; set; }
+
+        [DataIgnore]
         public CommentType CommentType { get; set; }
     }
 }

@@ -51,11 +51,11 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<WxReplyKeyword>> GetKeywordsAsync(int siteId, int ruleId)
         {
-            var allKeywords = await GetAllAsync(siteId);
+            var allKeywords = await GetKeywordsAsync(siteId);
             return allKeywords.Where(x => x.RuleId == ruleId).ToList();
         }
 
-        private async Task<List<WxReplyKeyword>> GetAllAsync(int siteId)
+        public async Task<List<WxReplyKeyword>> GetKeywordsAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(nameof(WxReplyKeyword.SiteId), siteId)

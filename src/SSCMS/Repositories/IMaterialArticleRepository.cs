@@ -11,6 +11,8 @@ namespace SSCMS.Repositories
 
         Task<bool> UpdateAsync(MaterialArticle article);
 
+        Task UpdateUrlAsync(int id, string url);
+
         Task<bool> DeleteAsync(int id);
 
         Task<int> GetCountAsync(int groupId, string keyword, List<int> articleIds = null);

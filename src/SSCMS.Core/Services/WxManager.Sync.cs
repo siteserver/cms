@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using FluentScheduler;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.AdvancedAPIs;
@@ -100,6 +99,7 @@ namespace SSCMS.Core.Services
                                 Digest = item.digest,
                                 ShowCoverPic = item.show_cover_pic == "1",
                                 ThumbUrl = imageUrl,
+                                Url = item.url,
                                 CommentType = commentType
                             });
                         }
@@ -220,7 +220,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task<string> PushMaterialAsync(string token, MaterialType materialType, int materialId)
+        public async Task<string> PushMaterialAsync(string token, MaterialType materialType, int materialId, bool syncUrl)
         {
             string mediaId = null;
 
@@ -259,6 +259,16 @@ namespace SSCMS.Core.Services
                     foreach (var news in newsList)
                     {
                         await MediaApi.UpdateForeverNewsAsync(token, message.MediaId, index++, news);
+                    }
+                }
+
+                if (syncUrl)
+                {
+                    var media = await MediaApi.GetForeverNewsAsync(token, mediaId);
+                    for (var i = 0; i < message.Items.Count; i++)
+                    {
+                        var item = media.news_item[i];
+                        await _materialArticleRepository.UpdateUrlAsync(message.Items[i].MaterialId, item.url);
                     }
                 }
             }

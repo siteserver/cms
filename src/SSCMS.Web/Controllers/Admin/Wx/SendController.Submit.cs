@@ -37,13 +37,13 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             if (request.MaterialType == MaterialType.Text)
             {
-                await _wxManager.SendAsync(token, request.MaterialType, request.Text, request.IsToAll,
+                await _wxManager.MassSendAsync(token, request.MaterialType, request.Text, request.IsToAll,
                     request.TagId.ToString(), runOnceAt);
             }
             else
             {
-                var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId);
-                await _wxManager.SendAsync(token, request.MaterialType, mediaId, request.IsToAll,
+                var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId, true);
+                await _wxManager.MassSendAsync(token, request.MaterialType, mediaId, request.IsToAll,
                     request.TagId.ToString(), runOnceAt);
             }
 

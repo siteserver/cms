@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentScheduler;
 using SSCMS.Services;
 
 namespace SSCMS.Core.Services
@@ -30,6 +31,11 @@ namespace SSCMS.Core.Services
             _workItems.TryDequeue(out var workItem);
 
             return workItem;
+        }
+
+        public void RunOnceAt(Action job, DateTime dateTime)
+        {
+            JobManager.AddJob(job, s => s.ToRunOnceAt(dateTime));
         }
     }
 }

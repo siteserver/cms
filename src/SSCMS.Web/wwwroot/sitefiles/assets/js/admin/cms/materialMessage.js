@@ -8,7 +8,7 @@ var data = utils.init({
   groups: null,
   count: null,
   messages: null,
-  isOpen: false,
+  siteType: null,
   urlList: null,
   renameId: 0,
   renameTitle: '',
@@ -42,7 +42,7 @@ var methods = {
       $this.groups = res.groups;
       $this.count = res.count;
       $this.messages = res.messages;
-      $this.isOpen = res.isOpen;
+      $this.siteType = res.siteType;
       $this.urlList = _.map($this.messages, function (item) {
         return item.thumbUrl;
       });

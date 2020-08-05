@@ -23,8 +23,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 account.MpAppId = request.MpAppId;
                 account.MpAppSecret = request.MpAppSecret;
 
-                account.MpUrl = Request.Scheme + "://" + PageUtils.Combine(Request.Host.Host, Constants.ApiWxPrefix, Controllers.Wx.IndexController.Route.Replace("{siteId}", request.SiteId.ToString()));
-
                 if (string.IsNullOrEmpty(account.MpToken))
                 {
                     account.MpToken = StringUtils.GetRandomString(32);
