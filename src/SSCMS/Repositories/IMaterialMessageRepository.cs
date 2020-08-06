@@ -15,6 +15,8 @@ namespace SSCMS.Repositories
 
         Task UpdateAsync(int messageId, int groupId);
 
+        Task UpdateMediaIdAsync(int id, string mediaId);
+
         Task<bool> DeleteAsync(int id);
 
         Task<int> GetCountAsync(int groupId, string keyword);

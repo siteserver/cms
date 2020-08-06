@@ -15,21 +15,13 @@ namespace SSCMS.Core.Repositories
     {
         private readonly Repository<MaterialMessage> _repository;
         private readonly IMaterialArticleRepository _materialArticleRepository;
-        private readonly IMaterialImageRepository _materialImageRepository;
-        private readonly IMaterialVideoRepository _materialVideoRepository;
-        private readonly IMaterialAudioRepository _materialAudioRepository;
-        private readonly IMaterialFileRepository _materialFileRepository;
         private readonly IMaterialMessageItemRepository _materialMessageItemRepository;
 
-        public MaterialMessageRepository(ISettingsManager settingsManager, IMaterialArticleRepository materialArticleRepository, IMaterialImageRepository materialImageRepository, IMaterialVideoRepository materialVideoRepository, IMaterialAudioRepository materialAudioRepository, IMaterialFileRepository materialFileRepository, IMaterialMessageItemRepository materialMessageItemRepository)
+        public MaterialMessageRepository(ISettingsManager settingsManager, IMaterialArticleRepository materialArticleRepository, IMaterialMessageItemRepository materialMessageItemRepository)
         {
             _repository = new Repository<MaterialMessage>(settingsManager.Database, settingsManager.Redis);
             CacheKey = CacheUtils.GetListKey(_repository.TableName);
             _materialArticleRepository = materialArticleRepository;
-            _materialImageRepository = materialImageRepository;
-            _materialVideoRepository = materialVideoRepository;
-            _materialAudioRepository = materialAudioRepository;
-            _materialFileRepository = materialFileRepository;
             _materialMessageItemRepository = materialMessageItemRepository;
         }
 
@@ -139,9 +131,9 @@ namespace SSCMS.Core.Repositories
             return messageId;
         }
 
-        public async Task UpdateAsync(int messageId, int groupId, List<MaterialMessageItem> items)
+        public async Task UpdateAsync(int id, int groupId, List<MaterialMessageItem> items)
         {
-            await _materialMessageItemRepository.DeleteAllAsync(messageId);
+            await _materialMessageItemRepository.DeleteAllAsync(id);
 
             var taxis = 1;
             foreach (var item in items)
@@ -181,7 +173,7 @@ namespace SSCMS.Core.Repositories
 
                 await _materialMessageItemRepository.InsertAsync(new MaterialMessageItem
                 {
-                    MessageId = messageId,
+                    MessageId = id,
                     MaterialType = MaterialType.Article,
                     MaterialId = materialId,
                     Taxis = taxis++
@@ -190,23 +182,27 @@ namespace SSCMS.Core.Repositories
 
             await _repository.UpdateAsync(Q
                 .Set(nameof(MaterialMessage.GroupId), groupId)
-                .Where(nameof(MaterialMessage.Id), messageId)
+                .Where(nameof(MaterialMessage.Id), id)
                 .CachingRemove(CacheKey)
             );
         }
 
-        public async Task UpdateAsync(int messageId, int groupId)
+        public async Task UpdateAsync(int id, int groupId)
         {
             await _repository.UpdateAsync(Q
                 .Set(nameof(MaterialMessage.GroupId), groupId)
-                .Where(nameof(MaterialMessage.Id), messageId)
+                .Where(nameof(MaterialMessage.Id), id)
                 .CachingRemove(CacheKey)
             );
         }
 
-        public Task UpdateAsync(int messageId, string mediaId, string url)
+        public async Task UpdateMediaIdAsync(int id, string mediaId)
         {
-            throw new System.NotImplementedException();
+            await _repository.UpdateAsync(Q
+                .Set(nameof(MaterialMessage.MediaId), mediaId)
+                .Where(nameof(MaterialMessage.Id), id)
+                .CachingRemove(CacheKey)
+            );
         }
 
         public async Task<bool> DeleteAsync(int id)

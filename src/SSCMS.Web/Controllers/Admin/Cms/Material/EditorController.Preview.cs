@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
@@ -19,10 +20,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
-                var mediaId = await _wxManager.PushMaterialAsync(token, MaterialType.Message, request.MessageId, false);
-
                 foreach (var wxName in ListUtils.GetStringList(request.WxNames, Constants.Newline))
                 {
+                    var mediaId = await _wxManager.PushMaterialAsync(token, MaterialType.Message, request.MaterialId);
+                    if (string.IsNullOrEmpty(mediaId))
+                    {
+                        return this.Error("操作失败，素材未能上传");
+                    }
                     await _wxManager.PreviewSendAsync(token, MaterialType.Message, mediaId, wxName);
                 }
             }

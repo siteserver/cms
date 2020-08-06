@@ -14,9 +14,9 @@ namespace SSCMS.Core.Services
 {
     public partial class WxManager
     {
-        public async Task<List<WxUserTag>> GetUserTagsAsync(string token)
+        public async Task<List<WxUserTag>> GetUserTagsAsync(string accessTokenOrAppId)
         {
-            return (await UserTagApi.GetAsync(token)).tags.Select(tag =>
+            return (await UserTagApi.GetAsync(accessTokenOrAppId)).tags.Select(tag =>
                 new WxUserTag
                 {
                     Id = tag.id,
@@ -25,9 +25,9 @@ namespace SSCMS.Core.Services
                 }).ToList();
         }
 
-        public async Task<List<string>> GetUserOpenIdsAsync(string token)
+        public async Task<List<string>> GetUserOpenIdsAsync(string accessTokenOrAppId)
         {
-            var cacheKey = CacheUtils.GetClassKey(typeof(WxManager), token);
+            var cacheKey = CacheUtils.GetClassKey(typeof(WxManager), accessTokenOrAppId);
             var openIds = _openIdCacheManager.Get(cacheKey);
             if (openIds == null)
             {
@@ -35,7 +35,7 @@ namespace SSCMS.Core.Services
                 string nextOpenId = null;
                 while (true)
                 {
-                    nextOpenId = await LoadUserOpenIdsAsync(openIds, token, nextOpenId);
+                    nextOpenId = await LoadUserOpenIdsAsync(accessTokenOrAppId, openIds, nextOpenId);
                     if (string.IsNullOrEmpty(nextOpenId)) break;
                 }
 
@@ -45,7 +45,7 @@ namespace SSCMS.Core.Services
             return openIds;
         }
 
-        public async Task<List<WxUser>> GetUsersAsync(string token, List<string> openIds)
+        public async Task<List<WxUser>> GetUsersAsync(string accessTokenOrAppId, List<string> openIds)
         {
             var cacheKey = CacheUtils.GetClassKey(typeof(WxManager), ListUtils.ToString(openIds));
             var users = _userCacheManager.Get(cacheKey);
@@ -63,7 +63,7 @@ namespace SSCMS.Core.Services
                             LangEnum = Language.zh_CN
                         })
                         .ToList();
-                    var userResult = await UserApi.BatchGetUserInfoAsync(token, userList);
+                    var userResult = await UserApi.BatchGetUserInfoAsync(accessTokenOrAppId, userList);
                     users.AddRange(userResult.user_info_list.Select(GetWxUser));
                 }
 
@@ -75,18 +75,18 @@ namespace SSCMS.Core.Services
             return users;
         }
 
-        public async Task<WxUser> GetUserAsync(string token, string openId)
+        public async Task<WxUser> GetUserAsync(string accessTokenOrAppId, string openId)
         {
             if (string.IsNullOrEmpty(openId)) return null;
 
-            var userResult = await UserApi.InfoAsync(token, openId);
+            var userResult = await UserApi.InfoAsync(accessTokenOrAppId, openId);
 
             return GetWxUser(userResult);
         }
 
-        private async Task<string> LoadUserOpenIdsAsync(List<string> openIds, string token, string nextOpenId)
+        private async Task<string> LoadUserOpenIdsAsync(string accessTokenOrAppId, List<string> openIds, string nextOpenId)
         {
-            var openIdResult = await UserApi.GetAsync(token, nextOpenId);
+            var openIdResult = await UserApi.GetAsync(accessTokenOrAppId, nextOpenId);
             openIds.AddRange(openIdResult.data.openid);
 
             return openIds.Count != openIdResult.total ? openIdResult.next_openid : null;

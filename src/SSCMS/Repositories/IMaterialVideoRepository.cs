@@ -11,6 +11,8 @@ namespace SSCMS.Repositories
 
         Task<bool> UpdateAsync(MaterialVideo video);
 
+        Task UpdateMediaIdAsync(int id, string mediaId);
+
         Task<bool> DeleteAsync(int id);
 
         Task<int> GetCountAsync(int groupId, string keyword);

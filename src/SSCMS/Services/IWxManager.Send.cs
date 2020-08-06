@@ -7,9 +7,9 @@ namespace SSCMS.Services
 {
     public partial interface IWxManager
     {
-        Task PreviewSendAsync(string token, MaterialType materialType, string value, string wxName);
+        Task PreviewSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, string wxName);
 
-        Task MassSendAsync(string token, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? sendAt = null);
+        Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? sendAt = null);
 
         Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message, bool delay = true);
 

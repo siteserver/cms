@@ -5,6 +5,7 @@ using Senparc.Weixin.MP.Entities;
 using Senparc.Weixin.MP.Entities.Request;
 using Senparc.Weixin.MP.MessageHandlers;
 using SSCMS.Models;
+using SSCMS.Repositories;
 using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Wx
@@ -15,10 +16,12 @@ namespace SSCMS.Web.Controllers.Wx
         {
             private readonly WxAccount _wxAccount;
             private readonly IWxManager _wxManager;
+            private readonly IWxChatRepository _wxChatRepository;
 
-            public CustomMessageHandler(IWxManager wxManager, WxAccount account, Stream inputStream, PostModel postModel, int maxRecordCount = 0, bool onlyAllowEncryptMessage = false) : base(inputStream, postModel, maxRecordCount, onlyAllowEncryptMessage)
+            public CustomMessageHandler(IWxManager wxManager, IWxChatRepository wxChatRepository, WxAccount account, Stream inputStream, PostModel postModel, int maxRecordCount = 0, bool onlyAllowEncryptMessage = false) : base(inputStream, postModel, maxRecordCount, onlyAllowEncryptMessage)
             {
                 _wxManager = wxManager;
+                _wxChatRepository = wxChatRepository;
                 _wxAccount = account;
             }
 
@@ -29,6 +32,13 @@ namespace SSCMS.Web.Controllers.Wx
             /// <returns></returns>
             public override async Task<IResponseMessageBase> OnTextRequestAsync(RequestMessageText requestMessage)
             {
+                await _wxChatRepository.InsertAsync(new WxChat
+                {
+                    OpenId = requestMessage.FromUserName,
+                    IsReply = false,
+                    Text = requestMessage.Content
+                });
+
                 var messages = await _wxManager.GetMessagesAsync(_wxAccount.SiteId, requestMessage.Content, _wxAccount.MpReplyAutoMessageId);
                 foreach (var message in messages)
                 {

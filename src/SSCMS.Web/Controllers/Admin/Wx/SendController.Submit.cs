@@ -42,7 +42,11 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             }
             else
             {
-                var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId, true);
+                var mediaId = await _wxManager.PushMaterialAsync(token, request.MaterialType, request.MaterialId);
+                if (string.IsNullOrEmpty(mediaId))
+                {
+                    return this.Error("操作失败，素材未能上传");
+                }
                 await _wxManager.MassSendAsync(token, request.MaterialType, mediaId, request.IsToAll,
                     request.TagId.ToString(), runOnceAt);
             }

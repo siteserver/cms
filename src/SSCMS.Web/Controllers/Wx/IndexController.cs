@@ -14,12 +14,14 @@ namespace SSCMS.Web.Controllers.Wx
 
         private readonly IWxManager _wxManager;
         private readonly IWxAccountRepository _wxAccountRepository;
+        private readonly IWxChatRepository _wxChatRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public IndexController(IWxManager wxManager, IWxAccountRepository wxAccountRepository, IErrorLogRepository errorLogRepository)
+        public IndexController(IWxManager wxManager, IWxAccountRepository wxAccountRepository, IWxChatRepository wxChatRepository, IErrorLogRepository errorLogRepository)
         {
             _wxManager = wxManager;
             _wxAccountRepository = wxAccountRepository;
+            _wxChatRepository = wxChatRepository;
             _errorLogRepository = errorLogRepository;
         }
     }

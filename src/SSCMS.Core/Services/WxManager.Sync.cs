@@ -19,21 +19,21 @@ namespace SSCMS.Core.Services
 {
     public partial class WxManager
     {
-        public async Task PullMaterialAsync(string token, MaterialType materialType, int groupId)
+        public async Task PullMaterialAsync(string accessTokenOrAppId, MaterialType materialType, int groupId)
         {
-            var count = await MediaApi.GetMediaCountAsync(token);
+            var count = await MediaApi.GetMediaCountAsync(accessTokenOrAppId);
             if (materialType == MaterialType.Message)
             {
                 if (count.news_count > 0)
                 {
-                    var newsList = await MediaApi.GetNewsMediaListAsync(token, 0, count.news_count);
+                    var newsList = await MediaApi.GetNewsMediaListAsync(accessTokenOrAppId, 0, count.news_count);
                     newsList.item.Reverse();
 
                     foreach (var message in newsList.item)
                     {
                         if (await _materialMessageRepository.IsExistsAsync(message.media_id)) continue;
 
-                        //var news = await MediaApi.GetForeverNewsAsync(token, message.media_id);
+                        //var news = await MediaApi.GetForeverNewsAsync(accessTokenOrAppId, message.media_id);
                         var messageItems = new List<MaterialMessageItem>();
                         foreach (var item in message.content.news_item)
                         {
@@ -41,7 +41,7 @@ namespace SSCMS.Core.Services
                             if (!string.IsNullOrEmpty(item.thumb_media_id) && !string.IsNullOrEmpty(item.thumb_url))
                             {
                                 await using var ms = new MemoryStream();
-                                await MediaApi.GetForeverMediaAsync(token, item.thumb_media_id, ms);
+                                await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, item.thumb_media_id, ms);
                                 ms.Seek(0, SeekOrigin.Begin);
 
                                 var extName = "png";
@@ -112,14 +112,14 @@ namespace SSCMS.Core.Services
             {
                 if (count.image_count > 0)
                 {
-                    var list = await MediaApi.GetOthersMediaListAsync(token, UploadMediaFileType.image, 0, count.image_count);
+                    var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.image, 0, count.image_count);
 
                     foreach (var image in list.item)
                     {
                         if (await _materialImageRepository.IsExistsAsync(image.media_id)) continue;
 
                         await using var ms = new MemoryStream();
-                        await MediaApi.GetForeverMediaAsync(token, image.media_id, ms);
+                        await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, image.media_id, ms);
                         ms.Seek(0, SeekOrigin.Begin);
 
                         var extName = image.url.Substring(image.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
@@ -148,14 +148,14 @@ namespace SSCMS.Core.Services
             {
                 if (count.voice_count > 0)
                 {
-                    var list = await MediaApi.GetOthersMediaListAsync(token, UploadMediaFileType.voice, 0, count.voice_count);
+                    var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.voice, 0, count.voice_count);
 
                     foreach (var voice in list.item)
                     {
                         if (await _materialAudioRepository.IsExistsAsync(voice.media_id)) continue;
 
                         await using var ms = new MemoryStream();
-                        await MediaApi.GetForeverMediaAsync(token, voice.media_id, ms);
+                        await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, voice.media_id, ms);
                         ms.Seek(0, SeekOrigin.Begin);
 
                         var extName = voice.url.Substring(voice.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
@@ -185,14 +185,14 @@ namespace SSCMS.Core.Services
             {
                 if (count.video_count > 0)
                 {
-                    var list = await MediaApi.GetOthersMediaListAsync(token, UploadMediaFileType.video, 0, count.video_count);
+                    var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.video, 0, count.video_count);
 
                     foreach (var video in list.item)
                     {
                         if (await _materialVideoRepository.IsExistsAsync(video.media_id)) continue;
 
                         await using var ms = new MemoryStream();
-                        await MediaApi.GetForeverMediaAsync(token, video.media_id, ms);
+                        await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, video.media_id, ms);
                         ms.Seek(0, SeekOrigin.Begin);
 
                         var extName = video.url.Substring(video.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
@@ -220,7 +220,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task<string> PushMaterialAsync(string token, MaterialType materialType, int materialId, bool syncUrl)
+        public async Task<string> PushMaterialAsync(string accessTokenOrAppId, MaterialType materialType, int materialId)
         {
             string mediaId = null;
 
@@ -250,25 +250,69 @@ namespace SSCMS.Core.Services
                 mediaId = message.MediaId;
                 if (string.IsNullOrEmpty(mediaId))
                 {
-                    var result = await MediaApi.UploadNewsAsync(token, 10000, newsList.ToArray());
+                    var result = await MediaApi.UploadNewsAsync(accessTokenOrAppId, 10000, newsList.ToArray());
                     mediaId = result.media_id;
+                    await _materialMessageRepository.UpdateMediaIdAsync(materialId, mediaId);
                 }
                 else
                 {
                     var index = 0;
                     foreach (var news in newsList)
                     {
-                        await MediaApi.UpdateForeverNewsAsync(token, message.MediaId, index++, news);
+                        await MediaApi.UpdateForeverNewsAsync(accessTokenOrAppId, message.MediaId, index++, news);
                     }
                 }
 
-                if (syncUrl)
+                // sync article url
+                var media = await MediaApi.GetForeverNewsAsync(accessTokenOrAppId, mediaId);
+                for (var i = 0; i < message.Items.Count; i++)
                 {
-                    var media = await MediaApi.GetForeverNewsAsync(token, mediaId);
-                    for (var i = 0; i < message.Items.Count; i++)
+                    var item = media.news_item[i];
+                    await _materialArticleRepository.UpdateUrlAsync(message.Items[i].MaterialId, item.url);
+                }
+            }
+            else if (materialType == MaterialType.Image)
+            {
+                var image = await _materialImageRepository.GetAsync(materialId);
+                mediaId = image.MediaId;
+                if (string.IsNullOrEmpty(mediaId))
+                {
+                    var filePath = _pathManager.ParsePath(image.Url);
+                    if (FileUtils.IsFileExists(filePath))
                     {
-                        var item = media.news_item[i];
-                        await _materialArticleRepository.UpdateUrlAsync(message.Items[i].MaterialId, item.url);
+                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath);
+                        mediaId = result.media_id;
+                        await _materialImageRepository.UpdateMediaIdAsync(materialId, mediaId);
+                    }
+                }
+            }
+            else if (materialType == MaterialType.Audio)
+            {
+                var audio = await _materialAudioRepository.GetAsync(materialId);
+                mediaId = audio.MediaId;
+                if (string.IsNullOrEmpty(mediaId))
+                {
+                    var filePath = _pathManager.ParsePath(audio.Url);
+                    if (FileUtils.IsFileExists(filePath))
+                    {
+                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath);
+                        mediaId = result.media_id;
+                        await _materialAudioRepository.UpdateMediaIdAsync(materialId, mediaId);
+                    }
+                }
+            }
+            else if (materialType == MaterialType.Video)
+            {
+                var video = await _materialVideoRepository.GetAsync(materialId);
+                mediaId = video.MediaId;
+                if (string.IsNullOrEmpty(mediaId))
+                {
+                    var filePath = _pathManager.ParsePath(video.Url);
+                    if (FileUtils.IsFileExists(filePath))
+                    {
+                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath);
+                        mediaId = result.media_id;
+                        await _materialVideoRepository.UpdateMediaIdAsync(materialId, mediaId);
                     }
                 }
             }
@@ -276,9 +320,9 @@ namespace SSCMS.Core.Services
             return mediaId;
         }
 
-        public async Task PullMenuAsync(string token, int siteId)
+        public async Task PullMenuAsync(string accessTokenOrAppId, int siteId)
         {
-            var result = CommonApi.GetMenu(token);
+            var result = CommonApi.GetMenu(accessTokenOrAppId);
 
             if (result == null) return;
 
@@ -329,7 +373,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task PushMenuAsync(string token, int siteId)
+        public async Task PushMenuAsync(string accessTokenOrAppId, int siteId)
         {
             var resultFull = new GetMenuResultFull
             {
@@ -366,7 +410,7 @@ namespace SSCMS.Core.Services
             }
 
             var buttonGroup = CommonApi.GetMenuFromJsonResult(resultFull, new ButtonGroup()).menu;
-            var result = CommonApi.CreateMenu(token, buttonGroup);
+            var result = CommonApi.CreateMenu(accessTokenOrAppId, buttonGroup);
 
             if (result.errmsg != "ok")
             {

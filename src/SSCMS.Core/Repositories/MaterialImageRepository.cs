@@ -44,6 +44,15 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task UpdateMediaIdAsync(int id, string mediaId)
+        {
+            await _repository.UpdateAsync(Q
+                .Set(nameof(MaterialImage.MediaId), mediaId)
+                .Where(nameof(MaterialImage.Id), id)
+                .CachingRemove(CacheKey)
+            );
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var image = await GetAsync(id);

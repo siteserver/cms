@@ -10,36 +10,50 @@ namespace SSCMS.Core.Services
     ////群发媒体文件时传入mediaId,群发文本消息时传入content,群发卡券时传入cardId
     public partial class WxManager
     {
-        public async Task PreviewSendAsync(string token, MaterialType materialType, string value, string wxName)
+        public async Task PreviewSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, string wxName)
         {
             if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(wxName)) return;
             
-            await GroupMessageApi.SendGroupMessagePreviewAsync(token, GetGroupMessageType(materialType), value,
+            await GroupMessageApi.SendGroupMessagePreviewAsync(accessTokenOrAppId, GetGroupMessageType(materialType), value,
                 null, StringUtils.Trim(wxName));
         }
 
-        public async Task MassSendAsync(string token, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? runOnceAt)
+        public async Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? runOnceAt)
         {
             if (runOnceAt.HasValue)
             {
                 _taskManager.RunOnceAt(async () =>
                 {
-                    await GroupMessageApi.SendGroupMessageByTagIdAsync(token, tagId, value,
+                    await GroupMessageApi.SendGroupMessageByTagIdAsync(accessTokenOrAppId, tagId, value,
                         GetGroupMessageType(materialType), isToAll);
                 }, runOnceAt.Value);
             }
             else
             {
-                await GroupMessageApi.SendGroupMessageByTagIdAsync(token, tagId, value,
+                await GroupMessageApi.SendGroupMessageByTagIdAsync(accessTokenOrAppId, tagId, value,
                     GetGroupMessageType(materialType), isToAll);
             }
         }
 
         public async Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message, bool delay = true)
         {
+            await _wxChatRepository.InsertAsync(new WxChat
+            {
+                OpenId = openId,
+                IsReply = true,
+                ReplyMessageId = message.Id,
+                Text = message.Text
+            });
+
+            var mediaId = message.MediaId;
+            if (message.MaterialType != MaterialType.Text && string.IsNullOrEmpty(mediaId))
+            {
+                mediaId = await PushMaterialAsync(accessTokenOrAppId, message.MaterialType, message.MaterialId);
+            }
+
             if (message.MaterialType == MaterialType.Message)
             {
-                await CustomSendMpNewsAsync(accessTokenOrAppId, openId, message.MediaId, delay);
+                await CustomSendMpNewsAsync(accessTokenOrAppId, openId, mediaId, delay);
             }
             else if (message.MaterialType == MaterialType.Text)
             {
@@ -47,15 +61,15 @@ namespace SSCMS.Core.Services
             }
             else if (message.MaterialType == MaterialType.Image)
             {
-                await CustomSendImageAsync(accessTokenOrAppId, openId, message.MediaId, delay);
+                await CustomSendImageAsync(accessTokenOrAppId, openId, mediaId, delay);
             }
             else if (message.MaterialType == MaterialType.Audio)
             {
-                await CustomSendAudioAsync(accessTokenOrAppId, openId, message.MediaId, delay);
+                await CustomSendAudioAsync(accessTokenOrAppId, openId, mediaId, delay);
             }
             else if (message.MaterialType == MaterialType.Video)
             {
-                await CustomSendVideoAsync(accessTokenOrAppId, openId, message.MediaId, message.Video.Title, message.Video.Description, delay);
+                await CustomSendVideoAsync(accessTokenOrAppId, openId, mediaId, message.Video.Title, message.Video.Description, delay);
             }
         }
 

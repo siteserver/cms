@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Senparc.CO2NET.AspNet.HttpUtility;
-using Senparc.NeuChar.MessageHandlers;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.Entities.Request;
 
@@ -32,7 +31,7 @@ namespace SSCMS.Web.Controllers.Wx
             {
                 var cancellationToken = new CancellationToken(); //给异步方法使用
 
-                var messageHandler = new CustomMessageHandler(_wxManager, account, Request.GetRequestMemoryStream(), postModel, 10);
+                var messageHandler = new CustomMessageHandler(_wxManager, _wxChatRepository, account, Request.GetRequestMemoryStream(), postModel, 10);
 
                 messageHandler.SaveRequestMessageLog(); //记录 Request 日志（可选）
 

@@ -408,10 +408,15 @@
         "type": ["wx"],
         "order": 49
       },
+      "site_wxChat": {
+        "text": "消息管理",
+        "type": ["wx"],
+        "order": 50
+      },
       "site_wxSend": {
         "text": "群发消息",
         "type": ["wx"],
-        "order": 50
+        "order": 51
       },
       "channel_add": {
         "text": "添加栏目",
@@ -937,6 +942,7 @@
           "site_wxReplyBeAdded",
           "site_wxMenus",
           "site_wxUsers",
+          "site_wxChat",
           "site_wxSend"
         ],
         "iconClass": "ion-chatbubbles",
@@ -987,19 +993,26 @@
             "permissions": ["site_wxMenus"],
             "order": 3
           },
+          "site_wxChat": {
+            "text": "消息管理",
+            "type": ["wx"],
+            "link": "./wx/chat",
+            "permissions": ["site_wxChat"],
+            "order": 4
+          },
           "site_wxUsers": {
             "text": "用户管理",
             "type": ["wx"],
             "link": "./wx/users",
             "permissions": ["site_wxUsers"],
-            "order": 4
+            "order": 5
           },
           "site_wxSend": {
             "text": "群发消息",
             "type": ["wx"],
             "link": "./wx/send",
             "permissions": ["site_wxSend"],
-            "order": 5
+            "order": 6
           }
         }
       },

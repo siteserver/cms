@@ -7,12 +7,12 @@ namespace SSCMS.Services
 {
     public partial interface IWxManager
     {
-        Task<List<WxUserTag>> GetUserTagsAsync(string token);
+        Task<List<WxUserTag>> GetUserTagsAsync(string accessTokenOrAppId);
 
-        Task<List<string>> GetUserOpenIdsAsync(string token);
+        Task<List<string>> GetUserOpenIdsAsync(string accessTokenOrAppId);
 
-        Task<List<WxUser>> GetUsersAsync(string token, List<string> openIds);
+        Task<List<WxUser>> GetUsersAsync(string accessTokenOrAppId, List<string> openIds);
 
-        Task<WxUser> GetUserAsync(string token, string openId);
+        Task<WxUser> GetUserAsync(string accessTokenOrAppId, string openId);
     }
 }

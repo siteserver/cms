@@ -17,39 +17,41 @@ namespace SSCMS.Core.Services
     public partial class WxManager : IWxManager
     {
         private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
         private readonly ITaskManager _taskManager;
         private readonly ICacheManager<List<string>> _openIdCacheManager;
         private readonly ICacheManager<List<WxUser>> _userCacheManager;
         private readonly IWxAccountRepository _wxAccountRepository;
         private readonly IWxMenuRepository _wxMenuRepository;
+        private readonly IWxChatRepository _wxChatRepository;
         private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
         private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
         private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
-        private readonly IMaterialMessageItemRepository _materialMessageItemRepository;
         private readonly IMaterialArticleRepository _materialArticleRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
         private readonly IMaterialAudioRepository _materialAudioRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public WxManager(ISettingsManager settingsManager, ITaskManager taskManager, ICacheManager<List<string>> openIdCacheManager,
+        public WxManager(ISettingsManager settingsManager, IPathManager pathManager, ITaskManager taskManager, ICacheManager<List<string>> openIdCacheManager,
             ICacheManager<List<WxUser>> userCacheManager, IWxAccountRepository wxAccountRepository,
-            IWxMenuRepository wxMenuRepository, IWxReplyRuleRepository wxReplyRuleRepository,
+            IWxMenuRepository wxMenuRepository, IWxChatRepository wxChatRepository, IWxReplyRuleRepository wxReplyRuleRepository,
             IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository,
-            IMaterialMessageRepository materialMessageRepository, IMaterialMessageItemRepository materialMessageItemRepository, IMaterialArticleRepository materialArticleRepository, IMaterialImageRepository materialImageRepository,
+            IMaterialMessageRepository materialMessageRepository, IMaterialArticleRepository materialArticleRepository, IMaterialImageRepository materialImageRepository,
             IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _settingsManager = settingsManager;
+            _pathManager = pathManager;
             _taskManager = taskManager;
             _openIdCacheManager = openIdCacheManager;
             _userCacheManager = userCacheManager;
             _wxAccountRepository = wxAccountRepository;
             _wxMenuRepository = wxMenuRepository;
+            _wxChatRepository = wxChatRepository;
             _wxReplyRuleRepository = wxReplyRuleRepository;
             _wxReplyKeywordRepository = wxReplyKeywordRepository;
             _wxReplyMessageRepository = wxReplyMessageRepository;
             _materialMessageRepository = materialMessageRepository;
-            _materialMessageItemRepository = materialMessageItemRepository;
             _materialArticleRepository = materialArticleRepository;
             _materialImageRepository = materialImageRepository;
             _materialAudioRepository = materialAudioRepository;
