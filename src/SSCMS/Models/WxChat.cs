@@ -1,5 +1,6 @@
 ﻿using Datory;
 using Datory.Annotations;
+using SSCMS.Enums;
 
 namespace SSCMS.Models
 {
@@ -16,7 +17,13 @@ namespace SSCMS.Models
         public bool IsReply { get; set; }
 
         [DataColumn]
-        public int ReplyMessageId { get; set; }
+        public bool IsStar { get; set; }
+
+        [DataColumn]
+        public MaterialType MaterialType { get; set; }
+
+        [DataColumn]
+        public int MaterialId { get; set; }
 
         [DataColumn]
         public string Text { get; set; }

@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -24,12 +23,30 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private string GetCacheKey(int siteId) => CacheUtils.GetListKey(_repository.TableName, siteId);
-
-        public async Task<int> InsertAsync(WxChat chat)
+        public async Task<bool> UserAdd(WxChat chat)
         {
-            return await _repository.InsertAsync(chat, Q
-                .CachingRemove(GetCacheKey(chat.SiteId))
+            var isSession = await _repository.ExistsAsync(Q
+                .Where(nameof(WxChat.SiteId), chat.SiteId)
+                .Where(nameof(WxChat.OpenId), chat.OpenId)
+                .Where(nameof(WxChat.IsReply), true)
+                .WhereDate(nameof(WxChat.CreatedDate), ">", DateTime.Now.AddDays(-1))
+            );
+
+            await _repository.InsertAsync(chat);
+            return isSession;
+        }
+
+        public async Task ReplyAdd(WxChat chat)
+        {
+            await _repository.InsertAsync(chat);
+        }
+
+        public async Task Star(int siteId, int chatId, bool star)
+        {
+            await _repository.UpdateAsync(Q.
+                Set(nameof(WxChat.IsStar), star)
+                .Where(nameof(WxChat.SiteId), siteId)
+                .Where(nameof(WxChat.Id), chatId)
             );
         }
 
@@ -37,7 +54,6 @@ namespace SSCMS.Core.Repositories
         {
             await _repository.DeleteAsync(Q
                 .Where(nameof(WxChat.Id), chatId)
-                .CachingRemove(GetCacheKey(siteId))
             );
         }
 
@@ -46,29 +62,52 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(Q
                 .Where(nameof(WxChat.SiteId), siteId)
                 .Where(nameof(WxChat.OpenId), openId)
-                .CachingRemove(GetCacheKey(siteId))
             );
         }
 
-        public async Task<List<WxChat>> GetChatsAsync(int siteId, string openId)
+        public async Task<List<WxChat>> GetChatsAsyncByOpenId(int siteId, string openId)
         {
             if (string.IsNullOrEmpty(openId)) return new List<WxChat>();
-            var allMessages = await GetAllAsync(siteId);
-            return allMessages.Where(x => x.OpenId == openId).ToList();
-        }
-
-        public async Task<WxChat> GetMessageAsync(int siteId, int chatId)
-        {
-            var allMessages = await GetAllAsync(siteId);
-            return allMessages.FirstOrDefault(x => x.Id == chatId);
-        }
-
-        private async Task<List<WxChat>> GetAllAsync(int siteId)
-        {
             return await _repository.GetAllAsync(Q
-                .Where(nameof(WxReplyKeyword.SiteId), siteId)
-                .CachingGet(GetCacheKey(siteId))
+                .Where(nameof(WxChat.SiteId), siteId)
+                .Where(nameof(WxChat.OpenId), openId)
+                .OrderByDesc(nameof(WxChat.Id))
             );
+        }
+
+        public async Task<int> GetCountAsync(int siteId, bool star, string keyword)
+        {
+            var query = Q
+                .Where(nameof(WxChat.SiteId), siteId)
+                .Where(nameof(WxChat.IsReply), false);
+            if (star)
+            {
+                query.Where(nameof(WxChat.IsStar), true);
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query.WhereLike(nameof(WxChat.Text), $"%{keyword}%");
+            }
+            return await _repository.CountAsync(query);
+        }
+
+        public async Task<List<WxChat>> GetChatsAsync(int siteId, bool star, string keyword, int page, int perPage)
+        {
+            var query = Q
+                .Where(nameof(WxChat.SiteId), siteId)
+                .Where(nameof(WxChat.IsReply), false)
+                .ForPage(page, perPage)
+                .OrderByDesc(nameof(WxChat.Id));
+            if (star)
+            {
+                query.Where(nameof(WxChat.IsStar), true);
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query.WhereLike(nameof(WxChat.Text), $"%{keyword}%");
+            }
+
+            return await _repository.GetAllAsync(query);
         }
     }
 }

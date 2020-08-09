@@ -32,17 +32,18 @@ namespace SSCMS.Web.Controllers.Wx
             /// <returns></returns>
             public override async Task<IResponseMessageBase> OnTextRequestAsync(RequestMessageText requestMessage)
             {
-                await _wxChatRepository.InsertAsync(new WxChat
+                var isSession = await _wxChatRepository.UserAdd(new WxChat
                 {
+                    SiteId = _wxAccount.SiteId,
                     OpenId = requestMessage.FromUserName,
                     IsReply = false,
                     Text = requestMessage.Content
                 });
 
-                var messages = await _wxManager.GetMessagesAsync(_wxAccount.SiteId, requestMessage.Content, _wxAccount.MpReplyAutoMessageId);
+                var messages = await _wxManager.GetMessagesAsync(_wxAccount.SiteId, requestMessage.Content, isSession ? 0 : _wxAccount.MpReplyAutoMessageId);
                 foreach (var message in messages)
                 {
-                    await _wxManager.CustomSendAsync(_wxAccount.MpAppId, requestMessage.FromUserName, message, false);
+                    await _wxManager.CustomSendAsync(_wxAccount.MpAppId, requestMessage.FromUserName, message);
                 }
 
                 return new SuccessResponseMessage();
@@ -213,7 +214,7 @@ namespace SSCMS.Web.Controllers.Wx
                 var message = await _wxManager.GetMessageAsync(_wxAccount.SiteId, _wxAccount.MpReplyBeAddedMessageId);
                 if (message != null)
                 {
-                    await _wxManager.CustomSendAsync(_wxAccount.MpAppId, requestMessage.FromUserName, message, false);
+                    await _wxManager.CustomSendAsync(_wxAccount.MpAppId, requestMessage.FromUserName, message);
                 }
 
                 return new SuccessResponseMessage();

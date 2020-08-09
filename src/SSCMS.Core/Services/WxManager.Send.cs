@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Datory;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -35,110 +36,125 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message, bool delay = true)
+        public async Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message)
         {
-            await _wxChatRepository.InsertAsync(new WxChat
-            {
-                OpenId = openId,
-                IsReply = true,
-                ReplyMessageId = message.Id,
-                Text = message.Text
-            });
-
-            var mediaId = message.MediaId;
-            if (message.MaterialType != MaterialType.Text && string.IsNullOrEmpty(mediaId))
-            {
-                mediaId = await PushMaterialAsync(accessTokenOrAppId, message.MaterialType, message.MaterialId);
-            }
-
             if (message.MaterialType == MaterialType.Message)
             {
-                await CustomSendMpNewsAsync(accessTokenOrAppId, openId, mediaId, delay);
+                await CustomSendMessageAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
             else if (message.MaterialType == MaterialType.Text)
             {
-                await CustomSendTextAsync(accessTokenOrAppId, openId, message.Text, delay);
+                await CustomSendTextAsync(accessTokenOrAppId, openId, message.SiteId, message.Text);
             }
             else if (message.MaterialType == MaterialType.Image)
             {
-                await CustomSendImageAsync(accessTokenOrAppId, openId, mediaId, delay);
+                await CustomSendImageAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
             else if (message.MaterialType == MaterialType.Audio)
             {
-                await CustomSendAudioAsync(accessTokenOrAppId, openId, mediaId, delay);
+                await CustomSendAudioAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
             else if (message.MaterialType == MaterialType.Video)
             {
-                await CustomSendVideoAsync(accessTokenOrAppId, openId, mediaId, message.Video.Title, message.Video.Description, delay);
+                await CustomSendVideoAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
         }
 
-        public async Task CustomSendMpNewsAsync(string accessTokenOrAppId, string openId, string mediaId, bool delay = true)
+        public async Task CustomSendTextAsync(string accessTokenOrAppId, string openId, int siteId, string text)
         {
-            if (delay)
+            await _wxChatRepository.ReplyAdd(new WxChat
             {
-                _taskManager.RunOnceAt(async () => { await CustomApi.SendMpNewsAsync(accessTokenOrAppId, openId, mediaId); },
-                    DateTime.Now.AddSeconds(5));
-            }
-            else
-            {
-                await CustomApi.SendMpNewsAsync(accessTokenOrAppId, openId, mediaId);
-            }
+                SiteId = siteId,
+                OpenId = openId,
+                IsReply = true,
+                MaterialType = MaterialType.Text,
+                MaterialId = 0,
+                Text = text
+            });
+
+            await CustomApi.SendTextAsync(accessTokenOrAppId, openId, text);
         }
 
-        public async Task CustomSendTextAsync(string accessTokenOrAppId, string openId, string content, bool delay = true)
+        public async Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
         {
-            if (delay)
+            if (string.IsNullOrEmpty(mediaId))
             {
-                _taskManager.RunOnceAt(async () => { await CustomApi.SendTextAsync(accessTokenOrAppId, openId, content); },
-                    DateTime.Now.AddSeconds(5));
+                mediaId = await PushMaterialAsync(accessTokenOrAppId, MaterialType.Message, materialId);
             }
-            else
+
+            await _wxChatRepository.ReplyAdd(new WxChat
             {
-                await CustomApi.SendTextAsync(accessTokenOrAppId, openId, content);
-            }
+                SiteId = siteId,
+                OpenId = openId,
+                IsReply = true,
+                MaterialType = MaterialType.Message,
+                MaterialId = materialId,
+                Text = MaterialType.Message.GetDisplayName()
+            });
+
+            await CustomApi.SendMpNewsAsync(accessTokenOrAppId, openId, mediaId);
         }
 
-        public async Task CustomSendImageAsync(string accessTokenOrAppId, string openId, string mediaId, bool delay = true)
+        public async Task CustomSendImageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
         {
-            if (delay)
+            if (string.IsNullOrEmpty(mediaId))
             {
-                _taskManager.RunOnceAt(
-                    async () => { await CustomApi.SendImageAsync(accessTokenOrAppId, openId, mediaId); },
-                    DateTime.Now.AddSeconds(5));
+                mediaId = await PushMaterialAsync(accessTokenOrAppId, MaterialType.Image, materialId);
             }
-            else
+
+            await _wxChatRepository.ReplyAdd(new WxChat
             {
-                await CustomApi.SendImageAsync(accessTokenOrAppId, openId, mediaId);
-            }
+                SiteId = siteId,
+                OpenId = openId,
+                IsReply = true,
+                MaterialType = MaterialType.Image,
+                MaterialId = materialId,
+                Text = MaterialType.Image.GetDisplayName()
+            });
+
+            await CustomApi.SendImageAsync(accessTokenOrAppId, openId, mediaId);
         }
 
-        public async Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, string mediaId, bool delay = true)
+        public async Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
         {
-            if (delay)
+            if (string.IsNullOrEmpty(mediaId))
             {
-                _taskManager.RunOnceAt(
-                    async () => { await CustomApi.SendVoiceAsync(accessTokenOrAppId, openId, mediaId); },
-                    DateTime.Now.AddSeconds(5));
+                mediaId = await PushMaterialAsync(accessTokenOrAppId, MaterialType.Audio, materialId);
             }
-            else
+
+            await _wxChatRepository.ReplyAdd(new WxChat
             {
-                await CustomApi.SendVoiceAsync(accessTokenOrAppId, openId, mediaId);
-            }
+                SiteId = siteId,
+                OpenId = openId,
+                IsReply = true,
+                MaterialType = MaterialType.Audio,
+                MaterialId = materialId,
+                Text = MaterialType.Audio.GetDisplayName()
+            });
+
+            await CustomApi.SendVoiceAsync(accessTokenOrAppId, openId, mediaId);
         }
 
-        public async Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, string mediaId, string title, string description, bool delay = true)
+        public async Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
         {
-            if (delay)
+            if (string.IsNullOrEmpty(mediaId))
             {
-                _taskManager.RunOnceAt(
-                    async () => { await CustomApi.SendVideoAsync(accessTokenOrAppId, openId, mediaId, title, description); },
-                    DateTime.Now.AddSeconds(5));
+                mediaId = await PushMaterialAsync(accessTokenOrAppId, MaterialType.Video, materialId);
             }
-            else
+
+            var video = await _materialVideoRepository.GetAsync(materialId);
+
+            await _wxChatRepository.ReplyAdd(new WxChat
             {
-                await CustomApi.SendVideoAsync(accessTokenOrAppId, openId, mediaId, title, description);
-            }
+                SiteId = siteId,
+                OpenId = openId,
+                IsReply = true,
+                MaterialType = MaterialType.Video,
+                MaterialId = materialId,
+                Text = MaterialType.Video.GetDisplayName()
+            });
+
+            await CustomApi.SendVideoAsync(accessTokenOrAppId, openId, mediaId, video.Title, video.Description);
         }
     }
 }

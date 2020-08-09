@@ -11,17 +11,17 @@ namespace SSCMS.Services
 
         Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? sendAt = null);
 
-        Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message, bool delay = true);
+        Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message);
 
-        Task CustomSendMpNewsAsync(string accessTokenOrAppId, string openId, string mediaId, bool delay = true);
+        Task CustomSendTextAsync(string accessTokenOrAppId, string openId, int siteId, string text);
 
-        Task CustomSendTextAsync(string accessTokenOrAppId, string openId, string content, bool delay = true);
+        Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId);
 
-        Task CustomSendImageAsync(string accessTokenOrAppId, string openId, string mediaId, bool delay = true);
+        Task CustomSendImageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId);
 
-        Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, string mediaId, bool delay = true);
+        Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId);
 
-        Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, string mediaId, string title,
-            string description, bool delay = true);
+        Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId,
+            string mediaId);
     }
 }

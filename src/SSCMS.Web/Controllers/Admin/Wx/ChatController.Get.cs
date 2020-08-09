@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
-using SSCMS.Wx;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -17,33 +16,26 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            List<WxUserTag> tags = null;
-            var total = 0;
+            List<WxChat> chats = null;
             var count = 0;
-            List<WxUser> users = null;
+            var users = new List<WxUser>();
 
             var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
-                if (request.Init)
-                {
-                    var openIds = await _wxManager.GetUserOpenIdsAsync(token);
-                    var dbOpenIds = await _wxUserRepository.GetAllOpenIds(request.SiteId);
+                count = await _wxChatRepository.GetCountAsync(request.SiteId, request.Star, request.Keyword);
+                chats = await _wxChatRepository.GetChatsAsync(request.SiteId, request.Star, request.Keyword, request.Page, request.PerPage);
 
-                    var inserts = openIds.Where(openId => !dbOpenIds.Contains(openId)).ToList();
-                    var deletes = dbOpenIds.Where(dbOpenId => !openIds.Contains(dbOpenId)).ToList();
-                    foreach (var wxUser in await _wxManager.GetUsersAsync(token, inserts))
-                    {
-                        await _wxUserRepository.InsertAsync(request.SiteId, wxUser);
-                    }
-                    await _wxUserRepository.DeleteAllAsync(request.SiteId, deletes);
+                var openIds = chats.Select(x => x.OpenId).Distinct().ToList();
+                var dbOpenIds = await _wxUserRepository.GetAllOpenIds(request.SiteId);
+
+                var inserts = openIds.Where(openId => !dbOpenIds.Contains(openId)).ToList();
+                foreach (var wxUser in await _wxManager.GetUsersAsync(token, inserts))
+                {
+                    await _wxUserRepository.InsertAsync(request.SiteId, wxUser);
                 }
 
-                tags = await _wxManager.GetUserTagsAsync(token);
-                List<string> pageOpenIds;
-                (total, count, pageOpenIds) = await _wxUserRepository.GetPageOpenIds(request.SiteId, request.TagId, request.Keyword, request.Page,
-                    request.PerPage);
-                users = await _wxManager.GetUsersAsync(token, pageOpenIds);
+                users = await _wxManager.GetUsersAsync(token, openIds);
                 await _wxUserRepository.UpdateAllAsync(request.SiteId, users);
             }
 
@@ -51,8 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             {
                 Success = success,
                 ErrorMessage = errorMessage,
-                Tags = tags,
-                Total = total,
+                Chats = chats,
                 Count = count,
                 Users = users
             };

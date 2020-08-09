@@ -7,7 +7,6 @@ using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.Containers;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
-using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -19,8 +18,6 @@ namespace SSCMS.Core.Services
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly ITaskManager _taskManager;
-        private readonly ICacheManager<List<string>> _openIdCacheManager;
-        private readonly ICacheManager<List<WxUser>> _userCacheManager;
         private readonly IWxAccountRepository _wxAccountRepository;
         private readonly IWxMenuRepository _wxMenuRepository;
         private readonly IWxChatRepository _wxChatRepository;
@@ -33,8 +30,7 @@ namespace SSCMS.Core.Services
         private readonly IMaterialAudioRepository _materialAudioRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public WxManager(ISettingsManager settingsManager, IPathManager pathManager, ITaskManager taskManager, ICacheManager<List<string>> openIdCacheManager,
-            ICacheManager<List<WxUser>> userCacheManager, IWxAccountRepository wxAccountRepository,
+        public WxManager(ISettingsManager settingsManager, IPathManager pathManager, ITaskManager taskManager, IWxAccountRepository wxAccountRepository,
             IWxMenuRepository wxMenuRepository, IWxChatRepository wxChatRepository, IWxReplyRuleRepository wxReplyRuleRepository,
             IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository,
             IMaterialMessageRepository materialMessageRepository, IMaterialArticleRepository materialArticleRepository, IMaterialImageRepository materialImageRepository,
@@ -43,8 +39,6 @@ namespace SSCMS.Core.Services
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _taskManager = taskManager;
-            _openIdCacheManager = openIdCacheManager;
-            _userCacheManager = userCacheManager;
             _wxAccountRepository = wxAccountRepository;
             _wxMenuRepository = wxMenuRepository;
             _wxChatRepository = wxChatRepository;

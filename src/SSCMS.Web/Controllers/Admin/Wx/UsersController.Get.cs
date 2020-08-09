@@ -25,26 +25,36 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
-                if (request.Init)
+                if (request.IsBlock)
                 {
-                    var openIds = await _wxManager.GetUserOpenIdsAsync(token);
-                    var dbOpenIds = await _wxUserRepository.GetAllOpenIds(request.SiteId);
-
-                    var inserts = openIds.Where(openId => !dbOpenIds.Contains(openId)).ToList();
-                    var deletes = dbOpenIds.Where(dbOpenId => !openIds.Contains(dbOpenId)).ToList();
-                    foreach (var wxUser in await _wxManager.GetUsersAsync(token, inserts))
-                    {
-                        await _wxUserRepository.InsertAsync(request.SiteId, wxUser);
-                    }
-                    await _wxUserRepository.DeleteAllAsync(request.SiteId, deletes);
+                    var openIds = await _wxManager.GetUserOpenIdsAsync(token, request.IsBlock);
+                    count = openIds.Count;
+                    var pageOpenIds = openIds.Skip((request.Page - 1) * request.PerPage).Take(request.PerPage).ToList();
+                    users = await _wxManager.GetUsersAsync(token, pageOpenIds);
+                    await _wxUserRepository.UpdateAllAsync(request.SiteId, users);
                 }
+                else
+                {
+                    if (request.Init)
+                    {
+                        var openIds = await _wxManager.GetUserOpenIdsAsync(token, false);
+                        var dbOpenIds = await _wxUserRepository.GetAllOpenIds(request.SiteId);
 
-                tags = await _wxManager.GetUserTagsAsync(token);
-                List<string> pageOpenIds;
-                (total, count, pageOpenIds) = await _wxUserRepository.GetPageOpenIds(request.SiteId, request.TagId, request.Keyword, request.Page,
-                    request.PerPage);
-                users = await _wxManager.GetUsersAsync(token, pageOpenIds);
-                await _wxUserRepository.UpdateAllAsync(request.SiteId, users);
+                        var inserts = openIds.Where(openId => !dbOpenIds.Contains(openId)).ToList();
+                        var deletes = dbOpenIds.Where(dbOpenId => !openIds.Contains(dbOpenId)).ToList();
+                        foreach (var wxUser in await _wxManager.GetUsersAsync(token, inserts))
+                        {
+                            await _wxUserRepository.InsertAsync(request.SiteId, wxUser);
+                        }
+                        await _wxUserRepository.DeleteAllAsync(request.SiteId, deletes);
+                    }
+
+                    tags = await _wxManager.GetUserTagsAsync(token);
+                    List<string> pageOpenIds;
+                    (total, count, pageOpenIds) = await _wxUserRepository.GetPageOpenIds(request.SiteId, request.TagId, request.Keyword, request.Page, request.PerPage);
+                    users = await _wxManager.GetUsersAsync(token, pageOpenIds);
+                    await _wxUserRepository.UpdateAllAsync(request.SiteId, users);
+                }
             }
 
             return new GetResult
