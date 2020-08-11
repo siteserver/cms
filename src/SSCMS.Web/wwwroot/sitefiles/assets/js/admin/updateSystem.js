@@ -38,7 +38,7 @@ var methods = {
 
       $this.newCms = res.cms;
       $this.newCms.current = $this.version;
-      $this.isShouldUpdate = utils.compareVersion($this.version, $this.newCms.version) == -1;
+      $this.isShouldUpdate = cloud.compareVersion($this.version, $this.newCms.version) == -1;
       utils.loading($this, false);
     });
   },

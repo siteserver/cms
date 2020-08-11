@@ -144,7 +144,7 @@ var methods = {
       var plugins = res.plugins;
 
       if (cms) {
-        if (utils.compareVersion($this.version, cms.version) === -1) {
+        if (cloud.compareVersion($this.version, cms.version) === -1) {
           $this.newCms = {
             current: $this.version,
             version: cms.version,
@@ -163,7 +163,7 @@ var methods = {
         if (installedPlugins.length == 1) {
           var installed = installedPlugins[0];
           if (installed.version) {
-            if (utils.compareVersion(installed.version, plugin.version) == -1) {
+            if (cloud.compareVersion(installed.version, plugin.version) == -1) {
               $this.newPlugins.push({
                 pluginId: plugin.pluginId,
                 displayName: installed.displayName,

@@ -70,7 +70,7 @@
         <a href="javascript:;" v-on:click="btnSelectClick(o)">
           <el-image 
             style="width: 100%; min-height: 120px; max-height:220px;"
-            :src="o.imageUrl">
+            :src="o.thumbUrl">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>
             </div>
@@ -92,7 +92,7 @@
       width="130">
       <template slot-scope="scope">
         <a href="javascript:;" v-on:click="btnSelectClick(scope.row)">
-          <img :src="scope.row.imageUrl" style="max-height: 120px; max-width: 120px;"/>
+          <img :src="scope.row.thumbUrl" style="max-height: 120px; max-width: 120px;"/>
         </a>
       </template>
     </el-table-column>

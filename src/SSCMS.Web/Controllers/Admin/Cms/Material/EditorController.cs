@@ -20,14 +20,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
-        private readonly IWxAccountRepository _openAccountRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public EditorController(IAuthManager authManager, IWxManager wxManager, IWxAccountRepository openAccountRepository, IMaterialMessageRepository materialMessageRepository)
+        public EditorController(IAuthManager authManager, IWxManager wxManager, IMaterialMessageRepository materialMessageRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
-            _openAccountRepository = openAccountRepository;
             _materialMessageRepository = materialMessageRepository;
         }
 

@@ -9,7 +9,7 @@
         <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[_.lowerFirst(style.attributeName)] ? false : true" v-on:click="btnPreviewClick(style.attributeName, 0)">
+        <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[_.lowerFirst(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
           预览
         </el-button>
         <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
@@ -29,7 +29,7 @@
           <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: style.attributeName, no: n, full: true})">
             选择
           </el-button>
-          <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnPreviewClick(style.attributeName, n)">
+          <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, n)">
             预览
           </el-button>
           <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
@@ -150,7 +150,7 @@
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入附件', name: 'editorLayerFile', attributeName: style.attributeName})">
           插入附件
         </el-button>
-        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图文', name: 'editorLayerText', attributeName: style.attributeName, full: true})">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图文', name: 'editorLayerArticle', attributeName: style.attributeName, full: true})">
           插入图文
         </el-button>
       </el-button-group>

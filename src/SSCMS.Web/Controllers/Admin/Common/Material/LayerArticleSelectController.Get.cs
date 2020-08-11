@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Cms.Material
+namespace SSCMS.Web.Controllers.Admin.Common.Material
 {
-    public partial class LayerArticlesController
+    public partial class LayerArticleSelectController
     {
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)

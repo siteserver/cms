@@ -37,11 +37,28 @@ namespace SSCMS.Core.Plugins
 
             var dllPath = Path.GetDirectoryName(assemblyPath);
             var assemblyFiles = Directory.GetFiles(dllPath, "*.dll", SearchOption.TopDirectoryOnly);
+            var extensionType = typeof(IPluginExtension);
             foreach (var assemblyFile in assemblyFiles)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(assemblyFile);
 
                 if (assemblyNames.Any(x => StringUtils.EqualsIgnoreCase(x, assemblyName))) continue;
+
+                var isValidAssembly = false;
+                foreach (var exportedType in assembly.GetExportedTypes())
+                {
+                    if (extensionType.IsAssignableFrom(exportedType) &&
+                        exportedType.GetTypeInfo().IsClass)
+                    {
+                        isValidAssembly = true;
+                        break;
+                    }
+                }
+
+                if (!isValidAssembly)
+                {
+                    throw new Exception("未找到集成IPluginExtension接口的实现");
+                }
 
                 AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
                 assemblyNames.Add(assemblyName);

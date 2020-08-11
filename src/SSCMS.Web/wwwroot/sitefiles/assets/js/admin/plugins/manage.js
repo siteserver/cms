@@ -72,7 +72,7 @@ var methods = {
             installedPlugin.updatePlugin = releaseInfo;
 
             if (installedPlugin && installedPlugin.version) {
-              if (utils.compareVersion(installedPlugin.version, releaseInfo.version) == -1) {
+              if (cloud.compareVersion(installedPlugin.version, releaseInfo.version) == -1) {
                 $this.updatePlugins.push(installedPlugin);
                 $this.updatePluginIds.push(installedPlugin.pluginId);
               }

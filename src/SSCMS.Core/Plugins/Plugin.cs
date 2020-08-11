@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using SSCMS.Plugins;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Plugins

@@ -1,12 +1,7 @@
-﻿using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Core.Utils.Office;
-using SSCMS.Dto;
-using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -32,67 +27,21 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             _siteRepository = siteRepository;
         }
 
-        [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<NameTitle>> Upload([FromQuery]SiteRequest request, [FromForm] IFormFile file)
+        public class SubmitRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage))
-            {
-                return Unauthorized();
-            }
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var title = PathUtils.GetFileNameWithoutExtension(file.FileName);
-            var fileName = PathUtils.GetUploadFileName(file.FileName, true);
-
-            var sExt = PathUtils.GetExtension(fileName);
-            if (!StringUtils.EqualsIgnoreCase(sExt, ".doc") && !StringUtils.EqualsIgnoreCase(sExt, ".docx") && !StringUtils.EqualsIgnoreCase(sExt, ".wps"))
-            {
-                return this.Error("文件只能是 Word 格式，请选择有效的文件上传!");
-            }
-
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            await _pathManager.UploadAsync(file, filePath);
-
-            return new NameTitle
-            {
-                FileName = fileName,
-                Title = title
-            };
+            public int SiteId { get; set; }
+            public bool IsClearFormat { get; set; }
+            public bool IsFirstLineIndent { get; set; }
+            public bool IsClearFontSize { get; set; }
+            public bool IsClearFontFamily { get; set; }
+            public bool IsClearImages { get; set; }
+            public List<NameTitle> Files { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
+        public class NameTitle
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return this.Error("无法确定内容对应的站点");
-
-            var builder = new StringBuilder();
-            foreach (var file in request.Files)
-            {
-                if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
-
-                var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                var (_, _, wordContent) = await WordManager.GetWordAsync(_pathManager, site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
-                wordContent = await _pathManager.DecodeTextEditorAsync(site, wordContent, true);
-                builder.Append(wordContent);
-                FileUtils.DeleteFileIfExists(filePath);
-            }
-
-            return new StringResult
-            {
-                Value = builder.ToString()
-            };
+            public string FileName { get; set; }
+            public string Title { get; set; }
         }
     }
 }

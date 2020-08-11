@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         {
             public Content Content { get; set; }
             public Site Site { get; set; }
+            public string SiteUrl { get; set; }
             public Channel Channel { get; set; }
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }

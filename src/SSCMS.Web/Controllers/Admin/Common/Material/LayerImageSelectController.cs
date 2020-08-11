@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Dto;
-using SSCMS.Enums;
-using SSCMS.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -34,46 +33,24 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             _siteRepository = siteRepository;
         }
 
-
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
+        public class QueryRequest
         {
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Image);
-            var count = await _materialImageRepository.GetCountAsync(request.GroupId, request.Keyword);
-            var items = await _materialImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
-
-            return new QueryResult
-            {
-                Groups = groups,
-                Count = count,
-                Items = items
-            };
+            public string Keyword { get; set; }
+            public int GroupId { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
         }
 
-        [HttpPost, Route(RouteSelect)]
-        public async Task<ActionResult<StringResult>> Select([FromBody]SelectRequest request)
+        public class QueryResult
         {
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            var image = await _materialImageRepository.GetAsync(request.MaterialId);
+            public IEnumerable<MaterialGroup> Groups { get; set; }
+            public int Count { get; set; }
+            public IEnumerable<MaterialImage> Items { get; set; }
+        }
 
-            var materialFilePath = PathUtils.Combine(_settingsManager.WebRootPath, image.Url);
-            if (!FileUtils.IsFileExists(materialFilePath))
-            {
-                return this.Error("图片文件不存在，请重新选择");
-            }
-
-            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
-            var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, materialFilePath));
-
-            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            FileUtils.CopyFile(materialFilePath, filePath);
-
-            var imageUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
-
-            return new StringResult
-            {
-                Value = imageUrl
-            };
+        public class SelectRequest : SiteRequest
+        {
+            public int MaterialId { get; set; }
         }
     }
 }

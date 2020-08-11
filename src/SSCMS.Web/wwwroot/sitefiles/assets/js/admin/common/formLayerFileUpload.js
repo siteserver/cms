@@ -14,7 +14,9 @@ var data = utils.init({
 
 var methods = {
   insert: function(no, result) {
-    parent.$vue.insertText(this.attributeName, no, result.fileVirtualUrl);
+    if (parent.$vue.runFormLayerFileUpload) {
+      parent.$vue.runFormLayerFileUpload(this.attributeName, no, result.fileVirtualUrl);
+    }
   },
 
   apiGet: function() {

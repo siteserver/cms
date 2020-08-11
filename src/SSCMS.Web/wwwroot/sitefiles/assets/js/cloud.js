@@ -1,6 +1,6 @@
 var cloud = _.extend(axios.create({
-  baseURL: 'https://api.sscms.com/v7',
-  // baseURL: 'http://localhost:81/v7',
+  // baseURL: 'https://api.sscms.com/v7',
+  baseURL: 'http://localhost:81/v7',
   headers: {
     Authorization: "Bearer " + localStorage.getItem('ss_cloud_access_token'),
   },
@@ -71,5 +71,56 @@ var cloud = _.extend(axios.create({
       version: version,
       pluginIds: pluginIds
     });
+  },
+
+  compareVersion: function (currentVersion, newVersion, options) {
+    var v1 = (currentVersion || "").split("-")[0];
+    var v2 = (newVersion || "").split("-")[0];
+    // var v1 = (currentVersion || '').replace(/[^0-9\.]+/g, ".");
+    // var v2 = (newVersion || '').replace(/[^0-9\.]+/g, ".");
+
+    var lexicographical = options && options.lexicographical,
+      zeroExtend = options && options.zeroExtend,
+      v1parts = v1.split("."),
+      v2parts = v2.split(".");
+
+    function isValidPart(x) {
+      return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
+    }
+
+    if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+      return NaN;
+    }
+
+    if (zeroExtend) {
+      while (v1parts.length < v2parts.length) v1parts.push("0");
+      while (v2parts.length < v1parts.length) v2parts.push("0");
+    }
+
+    if (!lexicographical) {
+      v1parts = v1parts.map(Number);
+      v2parts = v2parts.map(Number);
+    }
+
+    for (var i = 0; i < v1parts.length; ++i) {
+      if (v2parts.length == i) {
+        return 1;
+      }
+
+      if (v1parts[i] == v2parts[i]) {
+        continue;
+      } else if (v1parts[i] > v2parts[i]) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+
+    if (v1parts.length != v2parts.length) {
+      return -1;
+    }
+
+    //1 >, -1 <, 0 ==
+    return 0;
   },
 });

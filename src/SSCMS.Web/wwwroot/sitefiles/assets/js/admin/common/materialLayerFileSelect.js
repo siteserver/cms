@@ -24,7 +24,9 @@ var data = utils.init({
 
 var methods = {
   insert: function(fileUrl) {
-    parent.$vue.insertText(this.attributeName, this.no, fileUrl);
+    if (parent.$vue.runMaterialLayerFileSelect) {
+      parent.$vue.runMaterialLayerFileSelect(this.attributeName, this.no, fileUrl);
+    }
   },
 
   apiList: function (page) {

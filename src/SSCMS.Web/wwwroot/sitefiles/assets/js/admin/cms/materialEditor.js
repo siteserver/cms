@@ -231,7 +231,7 @@ var methods = {
 
       utils.openLayer({
         title: '选择图文',
-        url: utils.getCmsUrl('materialLayerArticles', {
+        url: utils.getCommonUrl('materialLayerArticleSelect', {
           siteId: this.siteId,
           articleIds: articleIds
         })
@@ -252,7 +252,7 @@ var methods = {
 
       utils.openLayer({
         title: '选择图文',
-        url: utils.getCmsUrl('materialLayerArticles', {
+        url: utils.getCommonUrl('materialLayerArticleSelect', {
           siteId: this.siteId,
           itemId: item.id,
           articleIds: articleIds

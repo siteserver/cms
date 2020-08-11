@@ -13,6 +13,7 @@ var data = utils.init({
   collapseMore: ['translations'],
 
   site: null,
+  siteUrl: null,
   channel: null,
   groupNames: null,
   tagNames: null,
@@ -28,6 +29,38 @@ var data = utils.init({
 
 var methods = {
   runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
     var count = this.form[utils.getCountName(attributeName)];
     if (count && count < no) {
       this.form[utils.getCountName(attributeName)] = no;
@@ -36,8 +69,7 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
-  runFormLayerImageUploadEditor: function(attributeName, html)
-  {
+  insertEditor: function(attributeName, html) {
     if (!attributeName) attributeName = 'Body';
     if (!html) return;
     UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
@@ -76,6 +108,7 @@ var methods = {
       var res = response.data;
 
       $this.site = res.site;
+      $this.siteUrl = res.siteUrl;
       $this.channel = res.channel;
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
@@ -338,11 +371,12 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
-  btnExtendPreviewClick: function(style, no) {
-    var count = this.form[utils.getCountName(style.attributeName)];
+  btnExtendPreviewClick: function(attributeName, no) {
+    var count = this.form[utils.getCountName(attributeName)];
     var data = [];
     for (var i = 0; i <= count; i++) {
-      var imageUrl = this.form[utils.getExtendName(style.attributeName, i)];
+      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
+      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
       data.push({
         "src": imageUrl
       });

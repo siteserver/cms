@@ -1,4 +1,4 @@
-﻿var $url = '/cms/material/layerArticles';
+﻿var $url = '/common/material/layerArticleSelect';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),

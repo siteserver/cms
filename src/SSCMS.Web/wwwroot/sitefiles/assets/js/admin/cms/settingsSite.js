@@ -113,6 +113,25 @@ var methods = {
     this.form[utils.getExtendName(style.attributeName, no)] = '';
   },
 
+  btnExtendPreviewClick: function(attributeName, no) {
+    var count = this.form[utils.getCountName(attributeName)];
+    var data = [];
+    for (var i = 0; i <= count; i++) {
+      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
+      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
+      data.push({
+        "src": imageUrl
+      });
+    }
+    layer.photos({
+      photos: {
+        "start": no,
+        "data": data
+      }
+      ,anim: 5
+    });
+  },
+
   btnLayerClick: function(options) {
     var query = {
       siteId: this.siteId,
@@ -131,11 +150,6 @@ var methods = {
       args.height = options.height ? options.height : 500;
     }
     utils.openLayer(args);
-  },
-
-  btnPreviewClick: function(attributeName, n) {
-    var imageUrl = n ? this.form[utils.getExtendName(attributeName, n)] : this.form[attributeName];
-    window.open(utils.getUrl(this.siteUrl, imageUrl));
   },
 
   apiSubmit: function () {

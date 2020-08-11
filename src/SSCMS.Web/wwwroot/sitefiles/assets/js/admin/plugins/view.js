@@ -41,7 +41,7 @@ var methods = {
         $this.cloudUser = res.user;
 
         if ($this.localPlugin) {
-          $this.isShouldUpdate = utils.compareVersion($this.localPlugin.version, $this.cloudRelease.version) == -1;
+          $this.isShouldUpdate = cloud.compareVersion($this.localPlugin.version, $this.cloudRelease.version) == -1;
         }
       }).catch(function (error) {
         utils.error(error);

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
-using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -60,10 +59,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 };
             }
 
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+
             return new GetResult
             {
                 Content = content,
                 Site = site,
+                SiteUrl = StringUtils.TrimEndSlash(siteUrl),
                 Channel = channel,
                 GroupNames = groupNames,
                 TagNames = tagNames,
