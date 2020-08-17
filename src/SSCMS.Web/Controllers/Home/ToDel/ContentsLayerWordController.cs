@@ -114,8 +114,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return NotFound();
 
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var styleList = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
+            var styles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
             var adminId = _authManager.AdminId;
             var userId = _authManager.UserId;
@@ -130,7 +129,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
 
                 if (string.IsNullOrEmpty(title)) continue;
 
-                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styleList, new NameValueCollection(), ColumnsManager.MetadataAttributes.Value);
+                var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styles, new NameValueCollection(), ColumnsManager.MetadataAttributes.Value);
 
                 var contentInfo = new Content
                 {

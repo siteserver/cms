@@ -502,6 +502,10 @@ var utils = {
     }
   },
 
+  scrollTop: function () {
+    document.documentElement.scrollTop = document.body.scrollTop = 0;
+  },
+
   closeLayer: function (reload) {
     if (reload) {
       parent.location.reload();

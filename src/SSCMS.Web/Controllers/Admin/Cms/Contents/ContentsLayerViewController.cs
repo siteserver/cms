@@ -77,18 +77,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var editorColumns = new List<ContentColumn>();
 
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var styleList = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
-            foreach (var tableStyle in styleList)
+            var styles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
+            foreach (var tableStyle in styles)
             {
-                if (tableStyle.InputType == InputType.TextEditor)
+                if (tableStyle.InputType != InputType.TextEditor) continue;
+
+                editorColumns.Add(new ContentColumn
                 {
-                    editorColumns.Add(new ContentColumn
-                    {
-                        AttributeName = tableStyle.AttributeName,
-                        DisplayName = tableStyle.DisplayName
-                    });
-                }
+                    AttributeName = tableStyle.AttributeName,
+                    DisplayName = tableStyle.DisplayName
+                });
             }
 
             return new GetResult

@@ -31,10 +31,9 @@ namespace SSCMS.Core.Utils.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName));
+            var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
 
-            foreach (var style in styleList)
+            foreach (var style in styles)
             {
                 if (displayAttributes.Contains(style.AttributeName))
                 {
@@ -55,7 +54,7 @@ namespace SSCMS.Core.Utils.Office
                 {
                     var row = new List<string>();
 
-                    foreach (var style in styleList)
+                    foreach (var style in styles)
                     {
                         if (displayAttributes.Contains(style.AttributeName))
                         {
@@ -199,10 +198,9 @@ namespace SSCMS.Core.Utils.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleList = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName));
+            var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
             var nameValueCollection = new NameValueCollection();
-            foreach (var style in styleList)
+            foreach (var style in styles)
             {
                 nameValueCollection[style.DisplayName] = StringUtils.ToLower(style.AttributeName);
             }

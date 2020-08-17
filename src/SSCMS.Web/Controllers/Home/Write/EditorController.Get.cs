@@ -31,8 +31,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(site.Id);
             var tagNames = await _contentTagRepository.GetTagNamesAsync(site.Id);
 
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var allStyles = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
+            var allStyles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
             var styles = allStyles
                 .Where(style =>
                     !string.IsNullOrEmpty(style.DisplayName) &&

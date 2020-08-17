@@ -1,15 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Datory;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Core.Utils.Serialization;
-using SSCMS.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -44,168 +38,30 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             _tableStyleRepository = tableStyleRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleContent))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var styles = new List<Style>();
-            foreach (var style in await _tableStyleRepository.GetContentStylesAsync(channel, tableName))
-            {
-                
-                styles.Add(new Style
-                {
-                    Id = style.Id,
-                    AttributeName = style.AttributeName,
-                    DisplayName = style.DisplayName,
-                    InputType = style.InputType.GetDisplayName(),
-                    Rules = TranslateUtils.JsonDeserialize<IEnumerable<InputStyleRule>>(style.RuleValues),
-                    Taxis = style.Taxis,
-                    IsSystem = style.RelatedIdentity != request.ChannelId
-                });
-            }
-
-            Cascade<int> cascade = null;
-            if (request.ChannelId == request.SiteId)
-            {
-                cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
-                {
-                    var count = await _contentRepository.GetCountAsync(site, summary);
-                    return new
-                    {
-                        Count = count
-                    };
-                });
-            }
-
-            return new GetResult
-            {
-                Styles = styles,
-                TableName = tableName,
-                RelatedIdentities = _tableStyleRepository.GetRelatedIdentities(channel),
-                Channels = cascade
-            };
+            public IEnumerable<Select<string>> InputTypes { get; set; }
+            public string TableName { get; set; }
+            public string RelatedIdentities { get; set; }
+            public List<TableStyle> Styles { get; set; }
+            public Cascade<int> Channels { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<ObjectResult<List<Style>>>> Delete([FromBody] DeleteRequest request)
+        public class DeleteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleContent))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            var tableName = _channelRepository.GetTableName(site, channel);
-
-            await _tableStyleRepository.DeleteAsync(request.ChannelId, tableName, request.AttributeName);
-
-            var styles = new List<Style>();
-            foreach (var style in await _tableStyleRepository.GetContentStylesAsync(channel, tableName))
-            {
-                styles.Add(new Style
-                {
-                    Id = style.Id,
-                    AttributeName = style.AttributeName,
-                    DisplayName = style.DisplayName,
-                    InputType = style.InputType.GetDisplayName(),
-                    Rules = TranslateUtils.JsonDeserialize<IEnumerable<InputStyleRule>>(style.RuleValues),
-                    Taxis = style.Taxis,
-                    IsSystem = style.RelatedIdentity != request.ChannelId
-                });
-            }
-
-            return new ObjectResult<List<Style>>
-            {
-                Value = styles
-            };
+            public int SiteId { get; set; }
+            public int ChannelId { get; set; }
+            public string AttributeName { get; set; }
         }
 
-        [HttpPost, Route(RouteImport)]
-        public async Task<ActionResult<BoolResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
+        public class ImportRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleContent))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var fileName = Path.GetFileName(file.FileName);
-
-            var sExt = PathUtils.GetExtension(fileName);
-            if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
-            {
-                return this.Error("导入文件为 Zip 格式，请选择有效的文件上传");
-            }
-
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            await _pathManager.UploadAsync(file, filePath);
-
-            var tableName = _channelRepository.GetTableName(site, channel);
-
-            var directoryPath = await ImportObject.ImportTableStyleByZipFileAsync(_pathManager, _databaseManager, tableName, _tableStyleRepository.GetRelatedIdentities(channel), filePath);
-
-            FileUtils.DeleteFileIfExists(filePath);
-            DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "导入站点字段");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public int ChannelId { get; set; }
         }
 
-        [HttpPost, Route(RouteExport)]
-        public async Task<ActionResult<StringResult>> Export([FromBody] ChannelRequest request)
+        public class DeleteResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleContent))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            var tableName = _channelRepository.GetTableName(site, channel);
-
-            var fileName =
-                await ExportObject.ExportRootSingleTableStyleAsync(_pathManager, _databaseManager, request.SiteId, tableName,
-                    _tableStyleRepository.GetRelatedIdentities(channel));
-
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            var downloadUrl = _pathManager.GetRootUrlByPath(filePath);
-
-            return new StringResult
-            {
-                Value = downloadUrl
-            };
+            public List<TableStyle> Styles { get; set; }
         }
     }
 }

@@ -82,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            await _tableStyleRepository.DeleteAsync(0, _userRepository.TableName, request.AttributeName);
+            await _tableStyleRepository.DeleteAsync(_userRepository.TableName, 0, request.AttributeName);
 
             var allAttributes = _userRepository.TableColumns.Select(x => x.AttributeName).ToList();
 

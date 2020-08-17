@@ -3,7 +3,7 @@
 var data = utils.init({
   tableName: utils.getQueryString('tableName'),
   attributeName: utils.getQueryString('attributeName'),
-  relatedIdentities: utils.getQueryIntList('relatedIdentities'),
+  relatedIdentities: utils.getQueryString('relatedIdentities'),
   inputTypes: null,
   form: null
 });
@@ -49,7 +49,14 @@ var methods = {
       var res = response.data;
 
       utils.closeLayer();
-      parent.$vue.apiList();
+      if ($this.attributeName !== '') {
+        utils.success('字段编辑成功!');
+      } else {
+        utils.success('字段新增成功!');
+      }
+      if (parent.$vue.runTableStyleLayerEditor) {
+        parent.$vue.runTableStyleLayerEditor();
+      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

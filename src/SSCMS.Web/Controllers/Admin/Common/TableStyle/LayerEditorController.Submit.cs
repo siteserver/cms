@@ -1,58 +1,55 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
 {
     public partial class LayerEditorController
     {
-        public class GetRequest
+        [HttpPost, Route(Route)]
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            public string TableName { get; set; }
-            public string AttributeName { get; set; }
-            public List<int> RelatedIdentities { get; set; }
-        }
+            var relatedIdentities = ListUtils.GetIntList(request.RelatedIdentities);
+            var styleDatabase =
+                await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, relatedIdentities) ??
+                new Models.TableStyle();
 
-        public class GetResult
-        {
-            public IEnumerable<KeyValuePair<InputType, string>> InputTypes { get; set; }
-            public SubmitRequest Form { get; set; }
-        }
+            bool isSuccess;
+            string errorMessage;
 
-        public class SubmitRequest
-        {
-            public string TableName { get; set; }
-            public string AttributeName { get; set; }
-            public List<int> RelatedIdentities { get; set; }
-            public bool IsRapid { get; set; }
-            public string RapidValues { get; set; }
+            //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
+            if (styleDatabase.Id == 0 && styleDatabase.RelatedIdentity == 0 || styleDatabase.RelatedIdentity != relatedIdentities[0])
+            {
+                (isSuccess, errorMessage) = await InsertTableStyleAsync(request);
+                await _authManager.AddAdminLogAsync("添加表单显示样式", $"字段名:{request.AttributeName}");
+            }
+            //数据库中有此项的表样式
+            else
+            {
+                (isSuccess, errorMessage) = await UpdateTableStyleAsync(styleDatabase, request);
+                await _authManager.AddAdminLogAsync("修改表单显示样式", $"字段名:{request.AttributeName}");
+            }
 
-            public int Taxis { get; set; }
+            if (!isSuccess)
+            {
+                return this.Error(errorMessage);
+            }
 
-            public string DisplayName { get; set; }
-
-            public string HelpText { get; set; }
-
-            public InputType InputType { get; set; }
-
-            public string DefaultValue { get; set; }
-
-            public bool Horizontal { get; set; }
-
-            public List<InputStyleItem> Items { get; set; }
-
-            public int Height { get; set; }
-
-            public string CustomizeLeft { get; set; }
-
-            public string CustomizeRight { get; set; }
+            return new BoolResult
+            {
+                Value = true
+            };
         }
 
         private async Task<(bool Success, string ErrorMessage)> InsertTableStyleAsync(SubmitRequest request)
         {
-            var relatedIdentity = request.RelatedIdentities[0];
+            var relatedIdentities = ListUtils.GetIntList(request.RelatedIdentities);
+            var relatedIdentity = relatedIdentities[0];
 
             if (string.IsNullOrEmpty(request.AttributeName))
             {
@@ -64,7 +61,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 return (false, $@"显示样式添加失败：字段名""{request.AttributeName}""已存在");
             }
 
-            var style = await _databaseManager.IsAttributeNameExistsAsync(request.TableName, request.AttributeName) ? await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, request.RelatedIdentities) : new Models.TableStyle();
+            var style = await _databaseManager.IsAttributeNameExistsAsync(request.TableName, request.AttributeName) ? await _tableStyleRepository.GetTableStyleAsync(request.TableName, request.AttributeName, relatedIdentities) : new Models.TableStyle();
 
             style.RelatedIdentity = relatedIdentity;
             style.TableName = request.TableName;
@@ -123,7 +120,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 style.CustomizeRight = request.CustomizeRight;
             }
 
-            await _tableStyleRepository.InsertAsync(request.RelatedIdentities, style);
+            await _tableStyleRepository.InsertAsync(relatedIdentities, style);
 
             return (true, string.Empty);
         }

@@ -2,7 +2,7 @@
 
 var data = utils.init({
   tableName: utils.getQueryString('tableName'),
-  relatedIdentities: utils.getQueryIntList('relatedIdentities'),
+  relatedIdentities: utils.getQueryString('relatedIdentities'),
   inputTypes: null,
   form: {
     styles: []
@@ -43,7 +43,9 @@ var methods = {
       var res = response.data;
 
       utils.closeLayer();
-      parent.$vue.apiList();
+      if (parent.$vue.runTableStyleLayerAddMultiple) {
+        parent.$vue.runTableStyleLayerAddMultiple();
+      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

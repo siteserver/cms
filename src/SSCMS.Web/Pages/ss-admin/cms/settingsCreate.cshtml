@@ -52,7 +52,10 @@
       <el-radio :label="false">不包含</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="翻页中生成的静态页面最大数（页）" prop="createStaticMaxPage" :rules="{ required: true, message: '请输入翻页中生成的静态页面最大数' }">
+  <el-form-item label="翻页中生成的静态页面最大数（页）" prop="createStaticMaxPage" :rules="[
+    { required: true, message: '请输入翻页中生成的静态页面最大数' },
+    { type: 'number', message: '翻页中生成的静态页面最大数必须为数字值'}
+  ]">
     <el-input v-model.number="form.createStaticMaxPage" placeholder="请输入翻页中生成的静态页面最大数"></el-input>
     <div class="tips">设置翻页中生成的静态页面最大数，剩余页面将动态获取；设置为0代表将静态页面全部生成</div>
   </el-form-item>
@@ -75,7 +78,11 @@
     <div class="tips">若启用此选项，系统将不再生成所选添加时间之前的内容页</div>
   </el-form-item>
   <el-form-item label="生成内容添加日期限制" v-if="form.isCreateStaticContentByAddDate" prop="createStaticContentAddDate" :rules="{ required: true, message: '请输入生成内容添加日期限制' }">
-    <el-input v-model="form.createStaticContentAddDate" placeholder="请输入生成内容添加日期限制"></el-input>
+    <el-date-picker
+      v-model="form.createStaticContentAddDate"
+      type="date"
+      placeholder="请选择生成内容添加日期限制">
+    </el-date-picker>
     <div class="tips">在此设置内容添加日期，此日期之前的内容页将不再生成</div>
   </el-form-item>
 

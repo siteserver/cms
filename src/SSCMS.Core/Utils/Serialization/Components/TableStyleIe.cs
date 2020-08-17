@@ -104,7 +104,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await databaseManager.TableStyleRepository.GetStylesAsync(tableName, relatedIdentities);
+            var styleInfoList = await databaseManager.TableStyleRepository.GetTableStylesAsync(tableName, relatedIdentities);
             foreach (var tableStyle in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyle.AttributeName + ".xml");
@@ -118,7 +118,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await databaseManager.TableStyleRepository.GetStylesAsync(tableName, relatedIdentities);
+            var styleInfoList = await databaseManager.TableStyleRepository.GetTableStylesAsync(tableName, relatedIdentities);
             foreach (var tableStyle in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyle.AttributeName + ".xml");
@@ -179,7 +179,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
                 if (await databaseManager.TableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName))
                 {
-                    await databaseManager.TableStyleRepository.DeleteAsync(relatedIdentity, tableName, attributeName);
+                    await databaseManager.TableStyleRepository.DeleteAsync(tableName, relatedIdentity, attributeName);
                 }
                 await databaseManager.TableStyleRepository.InsertAsync(relatedIdentities, styleInfo);
             }

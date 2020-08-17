@@ -14,8 +14,7 @@ namespace SSCMS.Core.Services
         {
             content = content.Clone<Content>();
 
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var tableStyles = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
+            var tableStyles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
             foreach (var style in tableStyles)
             {
                 if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)
@@ -54,8 +53,7 @@ namespace SSCMS.Core.Services
         {
             content = content.Clone<Content>();
 
-            var tableName = _channelRepository.GetTableName(site, channel);
-            var tableStyles = await _tableStyleRepository.GetContentStylesAsync(channel, tableName);
+            var tableStyles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
             foreach (var style in tableStyles)
             {
                 if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)

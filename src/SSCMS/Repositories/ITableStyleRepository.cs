@@ -13,8 +13,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAllAsync(string tableName);
 
-        Task DeleteAsync(int relatedIdentity, string tableName, string attributeName);
+        Task DeleteAllAsync(string tableName, List<int> relatedIdentities);
 
-        Task DeleteAsync(List<int> relatedIdentities, string tableName);
+        Task DeleteAsync(string tableName, int relatedIdentity, string attributeName);
     }
 }

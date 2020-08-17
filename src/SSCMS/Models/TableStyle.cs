@@ -42,6 +42,12 @@ namespace SSCMS.Models
         [DataIgnore]
         public List<InputStyleItem> Items { get; set; }
 
+        [DataIgnore]
+        public List<InputStyleRule> Rules { get; set; }
+
+        [DataIgnore]
+        public bool IsSystem { get; set; }
+
         public string ItemValues { get; set; }
 
         public string RuleValues { get; set; }

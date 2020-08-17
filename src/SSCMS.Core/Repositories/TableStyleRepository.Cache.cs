@@ -12,7 +12,7 @@ namespace SSCMS.Core.Repositories
 {
     public partial class TableStyleRepository
     {
-        public async Task<List<TableStyle>> GetStylesAsync(string tableName, List<int> relatedIdentities)
+        public async Task<List<TableStyle>> GetTableStylesAsync(string tableName, List<int> relatedIdentities, List<string> excludeAttributeNames = null)
         {
             var allAttributeNames = new List<string>();
             var styleList = new List<TableStyle>();
@@ -34,9 +34,9 @@ namespace SSCMS.Core.Repositories
                 }
             }
 
-            var userTableName = new Repository<User>(_repository.Database).TableName;
-            var channelTableName = new Repository<Channel>(_repository.Database).TableName;
-            var siteTableName = new Repository<Site>(_repository.Database).TableName;
+            var userTableName = _userRepository.TableName;
+            var channelTableName = _channelRepository.TableName;
+            var siteTableName = _siteRepository.TableName;
 
             if (tableName == userTableName || tableName == channelTableName || tableName == siteTableName)
             {
@@ -65,6 +65,10 @@ namespace SSCMS.Core.Repositories
             else
             {
                 var excludeAttributeNameList = ColumnsManager.MetadataAttributes.Value;
+                if (excludeAttributeNames != null)
+                {
+                    excludeAttributeNameList.AddRange(excludeAttributeNames);
+                }
 
                 var  list = await _repository.Database.GetTableColumnsAsync(tableName);
                 if (excludeAttributeNameList != null && excludeAttributeNameList.Count > 0)
@@ -91,28 +95,29 @@ namespace SSCMS.Core.Repositories
         public async Task<List<TableStyle>> GetSiteStylesAsync(int siteId)
         {
             var relatedIdentities = GetRelatedIdentities(siteId);
-            var siteTableName = new Repository<Site>(_repository.Database).TableName;
-            return await GetStylesAsync(siteTableName, relatedIdentities);
+            var siteTableName = _siteRepository.TableName;
+            return await GetTableStylesAsync(siteTableName, relatedIdentities);
         }
 
         public async Task<List<TableStyle>> GetChannelStylesAsync(Channel channel)
         {
             var relatedIdentities = GetRelatedIdentities(channel);
-            var channelTableName = new Repository<Channel>(_repository.Database).TableName;
-            return await GetStylesAsync(channelTableName, relatedIdentities);
+            var channelTableName = _channelRepository.TableName;
+            return await GetTableStylesAsync(channelTableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyle>> GetContentStylesAsync(Channel channel, string tableName)
+        public async Task<List<TableStyle>> GetContentStylesAsync(Site site, Channel channel)
         {
+            var tableName = _channelRepository.GetTableName(site, channel);
             var relatedIdentities = GetRelatedIdentities(channel);
-            return await GetStylesAsync(tableName, relatedIdentities);
+            return await GetTableStylesAsync(tableName, relatedIdentities);
         }
 
         public async Task<List<TableStyle>> GetUserStylesAsync()
         {
             var relatedIdentities = EmptyRelatedIdentities;
-            var userTableName = new Repository<User>(_repository.Database).TableName;
-            return await GetStylesAsync(userTableName, relatedIdentities);
+            var userTableName = _userRepository.TableName;
+            return await GetTableStylesAsync(userTableName, relatedIdentities);
         }
 
         //relatedIdentities从大到小，最后是0
@@ -130,9 +135,9 @@ namespace SSCMS.Core.Repositories
                 return style;
             }
 
-            var userTableName = new Repository<User>(_repository.Database).TableName;
-            var channelTableName = new Repository<Channel>(_repository.Database).TableName;
-            var siteTableName = new Repository<Site>(_repository.Database).TableName;
+            var userTableName = _userRepository.TableName;
+            var channelTableName = _channelRepository.TableName;
+            var siteTableName = _siteRepository.TableName;
 
             if (tableName == userTableName || tableName == channelTableName || tableName == siteTableName)
             {
@@ -216,7 +221,7 @@ namespace SSCMS.Core.Repositories
 
         private async Task<int> GetMaxTaxisAsync(string tableName, List<int> relatedIdentities)
         {
-            var list = await GetStylesAsync(tableName, relatedIdentities);
+            var list = await GetTableStylesAsync(tableName, relatedIdentities);
             if (list != null && list.Count > 0)
             {
                 return list.Max(x => x.Taxis);

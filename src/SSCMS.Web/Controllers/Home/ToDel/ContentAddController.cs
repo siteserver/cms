@@ -115,8 +115,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                         ChannelName = await _channelRepository.GetChannelNameNavigationAsync(siteInfo.Id, channelInfo.Id)
                     };
 
-                    var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
-                    styles = await _tableStyleRepository.GetContentStylesAsync(channelInfo, tableName);
+                    styles = await _tableStyleRepository.GetContentStylesAsync(siteInfo, channelInfo);
 
                     var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, siteInfo, siteInfo.Id);
                     checkedLevels = CheckManager.GetCheckedLevels(siteInfo, userIsChecked, userCheckedLevel, true);

@@ -458,16 +458,15 @@ namespace SSCMS.Core.Utils
             var pluginIds = _pluginManager.GetContentPluginIds(channel);
             var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
-            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleList = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName));
+            var styles = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
 
-            styleList.Insert(0, new TableStyle
+            styles.Insert(0, new TableStyle
             {
                 AttributeName = Sequence,
                 DisplayName = "序号"
             });
 
-            foreach (var style in styleList)
+            foreach (var style in styles)
             {
                 if (string.IsNullOrEmpty(style.DisplayName) || style.InputType == InputType.TextEditor) continue;
 

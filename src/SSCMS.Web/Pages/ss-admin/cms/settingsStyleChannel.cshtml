@@ -14,20 +14,6 @@
     </el-cascader>
     <span class="tips">下级栏目的字段默认继承上级栏目的字段，设置字段时请先选择合适的栏目</span>
   </el-form-item>
-  <el-form-item>
-    <el-dropdown
-    v-on:command="btnCommandClick">
-    <el-button size="medium" type="text" :underline="false">
-      操作 <i class="el-icon-arrow-down el-icon--right"></i>
-    </el-button>
-    <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="Add">新增字段</el-dropdown-item>
-      <el-dropdown-item command="AddMultiple">批量新增字段</el-dropdown-item>
-      <el-dropdown-item command="Import">导 入</el-dropdown-item>
-      <el-dropdown-item command="Export">导 出</el-dropdown-item>
-    </el-dropdown-menu>
-  </el-dropdown>
-  </el-form-item>
 </el-form>
 
 <el-table :data="styles" style="width: 100%">
@@ -38,7 +24,11 @@
   </el-table-column>
   <el-table-column label="字段名" prop="attributeName"></el-table-column>
   <el-table-column label="显示名称" prop="displayName"></el-table-column>
-  <el-table-column label="提交类型" prop="inputType"></el-table-column>
+  <el-table-column label="提交类型" width="120">
+    <template slot-scope="scope">
+      {{ getInputType(scope.row.inputType) }}
+    </template>
+  </el-table-column>
   <el-table-column label="验证规则">
     <template slot-scope="scope">
       <el-link
@@ -72,28 +62,16 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnAddClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
   新增字段
 </el-button>
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnAddMultipleClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-folder-add" v-on:click="btnAddMultipleClick">
   批量新增字段
 </el-button>
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnImportClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
   导 入
 </el-button>
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnExportClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-download" v-on:click="btnExportClick">
   导 出
 </el-button>
 

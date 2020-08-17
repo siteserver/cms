@@ -32,6 +32,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 await _pathManager.DeleteSiteFilesAsync(site);
             }
             await _authManager.AddAdminLogAsync("删除站点", $"站点:{site.SiteName}");
+
+            var list = await _channelRepository.GetChannelIdsAsync(request.SiteId);
+            await _tableStyleRepository.DeleteAllAsync(site.TableName, list);
+            await _contentGroupRepository.DeleteAsync(request.SiteId);
+            await _contentTagRepository.DeleteAsync(request.SiteId);
+            await _channelRepository.DeleteAllAsync(request.SiteId);
+
             await _siteRepository.DeleteAsync(request.SiteId);
 
             var siteIdList = await _siteRepository.GetSiteIdsAsync(0);

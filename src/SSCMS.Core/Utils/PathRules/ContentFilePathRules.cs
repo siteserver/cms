@@ -60,15 +60,13 @@ namespace SSCMS.Core.Utils.PathRules
                 };
 
             var channel = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var tableName = _databaseManager.ChannelRepository.GetTableName(site, channel);
-            var styleInfoList = await _databaseManager.TableStyleRepository.GetContentStylesAsync(channel, tableName);
-            foreach (var styleInfo in styleInfoList)
+            var styles = await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel);
+            foreach (var style in styles)
             {
-                if (styleInfo.InputType == InputType.Text)
-                {
-                    dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
-                    dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");
-                }
+                if (style.InputType != InputType.Text) continue;
+
+                dictionary.Add($@"{{@{StringUtils.LowerFirst(style.AttributeName)}}}", style.DisplayName);
+                dictionary.Add($@"{{@lower{style.AttributeName}}}", style.DisplayName + "(小写)");
             }
 
             return dictionary;

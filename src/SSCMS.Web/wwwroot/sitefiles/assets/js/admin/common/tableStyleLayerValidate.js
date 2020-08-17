@@ -3,7 +3,7 @@
 var data = utils.init({
   tableName: utils.getQueryString('tableName'),
   attributeName: utils.getQueryString('attributeName'),
-  relatedIdentities: utils.getQueryIntList('relatedIdentities'),
+  relatedIdentities: utils.getQueryString('relatedIdentities'),
   options: null,
   rules: [],
 
@@ -47,7 +47,9 @@ var methods = {
       var res = response.data;
 
       utils.closeLayer();
-      parent.$vue.apiList();
+      if (parent.$vue.runTableStyleLayerValidate) {
+        parent.$vue.runTableStyleLayerValidate();
+      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

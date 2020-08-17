@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -536,26 +534,6 @@ namespace SSCMS.Core.Repositories
             //}
 
             return ListUtils.ToString(channelNames, " > ");
-        }
-
-        public async Task<List<InputStyle>> GetInputStylesAsync(Site site, Channel channel)
-        {
-            var items = new List<InputStyle>();
-
-            var tableName = GetTableName(site, channel);
-            var styleList = ColumnsManager.GetContentListStyles(await _tableStyleRepository.GetContentStylesAsync(channel, tableName));
-
-            foreach (var style in styleList)
-            {
-                var listitem = new InputStyle
-                {
-                    DisplayName = style.DisplayName,
-                    AttributeName = style.AttributeName
-                };
-                items.Add(listitem);
-            }
-
-            return items;
         }
 
         public async Task<bool> IsAncestorOrSelfAsync(int siteId, int parentId, int childId)

@@ -17,13 +17,11 @@ namespace SSCMS.Core.Repositories
     public partial class ChannelRepository : IChannelRepository
     {
         private readonly Repository<Channel> _repository;
-        private readonly ITableStyleRepository _tableStyleRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public ChannelRepository(ISettingsManager settingsManager, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository)
+        public ChannelRepository(ISettingsManager settingsManager, ITemplateRepository templateRepository)
         {
             _repository = new Repository<Channel>(settingsManager.Database, settingsManager.Redis);
-            _tableStyleRepository = tableStyleRepository;
             _templateRepository = templateRepository;
         }
 

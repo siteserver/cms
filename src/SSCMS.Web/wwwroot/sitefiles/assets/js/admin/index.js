@@ -268,8 +268,10 @@ var methods = {
       menu = _.find(menus, function(x){
         return x.id == ids[i];
       });
-      menus = menu.children;
-      defaultOpeneds.push(menu.id);
+      if (menu) {
+        menus = menu.children;
+        defaultOpeneds.push(menu.id);
+      }
     }
     this.defaultOpeneds = defaultOpeneds;
     

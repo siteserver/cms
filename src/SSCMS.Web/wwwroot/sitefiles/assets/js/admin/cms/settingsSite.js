@@ -19,8 +19,7 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
-  runFormLayerImageUploadEditor: function(attributeName, html)
-  {
+  runFormLayerImageUploadEditor: function(attributeName, html) {
     if (!html) return;
     UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
@@ -97,7 +96,6 @@ var methods = {
           });
         }
       }
-
     }, 100);
   },
 

@@ -14,10 +14,16 @@ namespace SSCMS.Core.Repositories
     public partial class TableStyleRepository : ITableStyleRepository
     {
         private readonly Repository<TableStyle> _repository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IUserRepository _userRepository;
 
-        public TableStyleRepository(ISettingsManager settingsManager)
+        public TableStyleRepository(ISettingsManager settingsManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository)
         {
             _repository = new Repository<TableStyle>(settingsManager.Database, settingsManager.Redis);
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
+            _userRepository = userRepository;
         }
 
         public IDatabase Database => _repository.Database;
@@ -36,6 +42,11 @@ namespace SSCMS.Core.Repositories
             if (style?.Items != null)
             {
                 style.ItemValues = TranslateUtils.JsonSerialize(style.Items);
+            }
+
+            if (style?.Rules != null)
+            {
+                style.RuleValues = TranslateUtils.JsonSerialize(style.Rules);
             }
         }
 
@@ -72,23 +83,23 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task DeleteAsync(int relatedIdentity, string tableName, string attributeName)
-        {
-            await _repository.DeleteAsync(Q
-                .Where(nameof(TableStyle.RelatedIdentity), relatedIdentity)
-                .Where(nameof(TableStyle.TableName), tableName)
-                .Where(nameof(TableStyle.AttributeName), attributeName)
-                .CachingRemove(GetCacheKey(tableName))
-            );
-        }
-
-        public async Task DeleteAsync(List<int> relatedIdentities, string tableName)
+        public async Task DeleteAllAsync(string tableName, List<int> relatedIdentities)
         {
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
             await _repository.DeleteAsync(Q
                 .WhereIn(nameof(TableStyle.RelatedIdentity), relatedIdentities)
                 .Where(nameof(TableStyle.TableName), tableName)
+                .CachingRemove(GetCacheKey(tableName))
+            );
+        }
+
+        public async Task DeleteAsync(string tableName, int relatedIdentity, string attributeName)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(TableStyle.RelatedIdentity), relatedIdentity)
+                .Where(nameof(TableStyle.TableName), tableName)
+                .Where(nameof(TableStyle.AttributeName), attributeName)
                 .CachingRemove(GetCacheKey(tableName))
             );
         }

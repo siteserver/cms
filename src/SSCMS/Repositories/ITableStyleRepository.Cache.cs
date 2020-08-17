@@ -6,13 +6,13 @@ namespace SSCMS.Repositories
 {
     public partial interface ITableStyleRepository
     {
-        Task<List<TableStyle>> GetStylesAsync(string tableName, List<int> relatedIdentities);
+        Task<List<TableStyle>> GetTableStylesAsync(string tableName, List<int> relatedIdentities, List<string> excludeAttributeNames = null);
 
         Task<List<TableStyle>> GetSiteStylesAsync(int siteId);
 
         Task<List<TableStyle>> GetChannelStylesAsync(Channel channel);
 
-        Task<List<TableStyle>> GetContentStylesAsync(Channel channel, string tableName);
+        Task<List<TableStyle>> GetContentStylesAsync(Site site, Channel channel);
 
         Task<List<TableStyle>> GetUserStylesAsync();
 

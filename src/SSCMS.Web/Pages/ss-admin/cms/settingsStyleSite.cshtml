@@ -11,7 +11,11 @@
   </el-table-column>
   <el-table-column label="字段名" prop="attributeName"></el-table-column>
   <el-table-column label="显示名称" prop="displayName"></el-table-column>
-  <el-table-column label="提交类型" prop="inputType"></el-table-column>
+  <el-table-column label="提交类型" width="120">
+    <template slot-scope="scope">
+      {{ getInputType(scope.row.inputType) }}
+    </template>
+  </el-table-column>
   <el-table-column label="验证规则">
     <template slot-scope="scope">
       <el-link
@@ -45,34 +49,19 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnAddClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
   新增字段
 </el-button>
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnAddMultipleClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-folder-add" v-on:click="btnAddMultipleClick">
   批量新增字段
 </el-button>
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnImportClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
   导 入
 </el-button>
-<el-button
-  size="small"
-  type="primary"
-  v-on:click="btnExportClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-download" v-on:click="btnExportClick">
   导 出
 </el-button>
-<el-button
-  size="small"
-  v-if="returnUrl"
-  v-on:click="btnReturnClick">
+<el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-left" v-if="returnUrl" v-on:click="btnReturnClick">
   返 回
 </el-button>
 

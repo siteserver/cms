@@ -5,9 +5,10 @@ var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   returnUrl: utils.getQueryString('returnUrl'),
   urlUpload: null,
-  styles: null,
+  inputTypes: null,
   tableName: null,
   relatedIdentities: null,
+  styles: null,
 
   uploadPanel: false,
   uploadLoading: false,
@@ -15,7 +16,19 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function (message) {
+  runTableStyleLayerAddMultiple: function() {
+    this.apiGet();
+  },
+
+  runTableStyleLayerEditor: function() {
+    this.apiGet();
+  },
+
+  runTableStyleLayerValidate: function() {
+    this.apiGet();
+  },
+
+  apiGet: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -26,18 +39,16 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.styles = res.styles;
+      $this.inputTypes = res.inputTypes;
       $this.tableName = res.tableName;
       $this.relatedIdentities = res.relatedIdentities;
+      $this.styles = res.styles;
 
       $this.urlUpload = $apiUrl + $urlImport + '?siteId=' + $this.siteId;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
-      if (message) {
-        utils.success(message);
-      }
     });
   },
 
@@ -59,6 +70,13 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  getInputType: function (inputType) {
+    var val = this.inputTypes.find(function (x) {
+      return x.value === inputType;
+    });
+    return val ? val.label : '文本输入框';
   },
 
   getRules: function(rules) {
@@ -100,18 +118,6 @@ var methods = {
         $this.apiDelete(attributeName);
       }
     });
-  },
-
-  btnCommandClick: function(command){
-    if (command === 'Add') {
-      this.btnAddClick();
-    } else if (command === 'AddMultiple') {
-      this.btnAddMultipleClick();
-    } else if (command === 'Import') {
-      this.btnImportClick();
-    } else if (command === 'Export') {
-      this.btnExportClick();
-    }
   },
 
   btnAddClick: function () {
@@ -157,7 +163,8 @@ var methods = {
   uploadSuccess: function(res, file) {
     this.uploadList = [];
     this.uploadPanel = false;
-    this.apiList('字段导入成功！');
+    utils.success('字段导入成功！');
+    this.apiGet();
   },
 
   uploadError: function(err) {
@@ -190,6 +197,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.apiList();
+    this.apiGet();
   }
 });
