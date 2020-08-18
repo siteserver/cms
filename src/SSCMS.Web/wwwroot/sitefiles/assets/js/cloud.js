@@ -45,6 +45,8 @@ var cloud = _.extend(axios.create({
     }).catch(function (error) {
       if (error.response && error.response.status === 404) {
         utils.error('找不到资源，请重试或者检查计算机是否能够连接外网');
+      } else {
+        throw error;
       }
     });
   },

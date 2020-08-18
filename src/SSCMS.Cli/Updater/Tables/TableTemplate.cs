@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SSCMS;
 using SSCMS.Services;
 
 namespace SSCMS.Cli.Updater.Tables

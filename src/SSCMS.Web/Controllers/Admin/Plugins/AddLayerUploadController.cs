@@ -1,14 +1,7 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
-using SSCMS.Core.Plugins;
-using SSCMS.Core.Utils;
-using SSCMS.Dto;
-using SSCMS.Extensions;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -36,97 +29,17 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             _pluginManager = pluginManager;
         }
 
-        [HttpPost, Route(RouteActionsUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
+        public class UploadResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var fileName = Path.GetFileName(file.FileName);
-
-            var sExt = PathUtils.GetExtension(fileName);
-            if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
-            {
-                return this.Error("插件包为Zip格式，请选择有效的文件上传");
-            }
-
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            FileUtils.DeleteFileIfExists(filePath);
-            await _pathManager.UploadAsync(file, filePath);
-
-            var tempPluginPath = _pathManager.GetTemporaryFilesPath(PathUtils.GetFileNameWithoutExtension(fileName));
-            DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(tempPluginPath);
-            ZipUtils.ExtractZip(filePath, tempPluginPath);
-
-            var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(tempPluginPath);
-            if (plugin == null)
-            {
-                return this.Error(errorMessage);
-            }
-
-            DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
-
-            var oldPlugin = _pluginManager.GetPlugin(plugin.PluginId);
-
-            if (oldPlugin == null)
-            {
-                var pluginPath = _pathManager.GetPluginPath(plugin.PluginId);
-                DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
-                DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-                ZipUtils.ExtractZip(filePath, pluginPath);
-            }
-
-            return new UploadResult
-            {
-                OldPlugin = oldPlugin,
-                NewPlugin = plugin,
-                FileName = fileName
-            };
+            public IPlugin OldPlugin { set; get; }
+            public IPlugin NewPlugin { set; get; }
+            public string FileName { set; get; }
         }
 
-        [HttpPost, Route(RouteActionsOverride)]
-        public async Task<ActionResult<BoolResult>> Override([FromBody] OverrideRequest request)
+        public class OverrideRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            _pluginManager.UnInstall(request.PluginId);
-
-            var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
-            var pluginPath = _pathManager.GetPluginPath(request.PluginId);
-            DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-            ZipUtils.ExtractZip(filePath, pluginPath);
-
-            return new BoolResult
-            {
-                Value = true
-            };
-        }
-
-        [HttpPost, Route(RouteActionsRestart)]
-        public async Task<ActionResult<BoolResult>> Restart()
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            _hostApplicationLifetime.StopApplication();
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string PluginId { set; get; }
+            public string FileName { set; get; }
         }
     }
 }

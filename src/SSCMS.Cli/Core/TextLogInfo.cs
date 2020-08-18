@@ -1,5 +1,4 @@
 ﻿using System;
-using SSCMS;
 using SSCMS.Utils;
 
 namespace SSCMS.Cli.Core

@@ -167,31 +167,46 @@ var methods = {
     });
   },
 
-  btnDisablePlugin: function (plugin) {
-    var $this = this;
-    var text = plugin.disabled ? '启用' : '禁用';
+  btnMenuClick: function(index) {
+    var ids = index.split(':');
+    var plugin = this.plugins.find(function (x) { return x.pluginId === ids[0]; });
+    if (!plugin) return;
 
-    utils.alertDelete({
-      title: text + '插件',
-      text: '此操作将会' + text + '“' + plugin.displayName + '”，确认吗？',
-      button: plugin.disabled ? '确认启用' : '确认禁用',
-      callback: function () {
-        $this.apiDisable(plugin);
-      }
-    });
-  },
-
-  btnDeletePlugin: function (plugin) {
+    var command = ids[1];
     var $this = this;
 
-    utils.alertDelete({
-      title: '卸载插件',
-      text: '此操作将会卸载插件“' + plugin.displayName + '”，确认吗？',
-      button: '确认卸载',
-      callback: function() {
-        $this.apiDelete(plugin);
-      }
-    });
+    if (command === 'config') {
+      utils.addTab('插件配置：' + plugin.pluginId, utils.getPluginsUrl('config', {pluginId: plugin.pluginId}));
+    } else if (command === 'enable') {
+      utils.alertDelete({
+        title: '启用插件',
+        text: '此操作将会启用“' + plugin.displayName + '”，确认吗？',
+        button: '确认启用',
+        callback: function () {
+          $this.apiDisable(plugin);
+        }
+      });
+    } else if (command === 'disable') {
+      utils.alertDelete({
+        title: '禁用插件',
+        text: '此操作将会禁用“' + plugin.displayName + '”，确认吗？',
+        button: '确认禁用',
+        callback: function () {
+          $this.apiDisable(plugin);
+        }
+      });
+    } else if (command === 'uninstall') {
+      utils.alertDelete({
+        title: '卸载插件',
+        text: '此操作将会卸载插件“' + plugin.displayName + '”，确认吗？',
+        button: '确认卸载',
+        callback: function() {
+          $this.apiDelete(plugin);
+        }
+      });
+    }
+
+    return false;
   },
 
   btnNavSelect: function(key) {

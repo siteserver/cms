@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SSCMS.Cli.Models
+﻿namespace SSCMS.Cli.Models
 {
     public class Config
     {

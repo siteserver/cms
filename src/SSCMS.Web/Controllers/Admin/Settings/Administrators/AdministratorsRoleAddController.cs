@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Dto;
-using SSCMS.Extensions;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -43,210 +42,257 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _permissionsInRolesRepository = permissionsInRolesRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public class Option
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
+            public string Name { get; set; }
+
+            public string Text { get; set; }
+
+            public bool Selected { get; set; }
+        }
+
+        public class GetRequest
+        {
+            public int RoleId { get; set; }
+        }
+
+        public class GetResult
+        {
+            public Role Role { get; set; }
+            public List<Option> Permissions { get; set; }
+            public List<Site> Sites { get; set; }
+            public List<int> CheckedSiteIds { get; set; }
+            public List<SitePermissionsResult> SitePermissionsList { get; set; }
+        }
+
+        public class SitePermissionsResult
+        {
+            public int SiteId { get; set; }
+            public List<Option> SitePermissions { get; set; }
+            public List<Option> ChannelPermissions { get; set; }
+            public List<Option> ContentPermissions { get; set; }
+            public Channel Channel { get; set; }
+            public List<int> CheckedChannelIds { get; set; }
+        }
+
+        public class RoleRequest
+        {
+            public string RoleName { get; set; }
+            public string Description { get; set; }
+            public List<string> AppPermissions { get; set; }
+            public List<SitePermissions> SitePermissions { get; set; }
+        }
+
+        private async Task<SitePermissionsResult> GetSitePermissionsObjectAsync(List<Permission> allPermissions, int roleId, int siteId)
+        {
+            SitePermissions sitePermissionsInfo = null;
+            if (roleId > 0)
             {
-                return Unauthorized();
+                var roleInfo = await _roleRepository.GetRoleAsync(roleId);
+                sitePermissionsInfo = await _sitePermissionsRepository.GetAsync(roleInfo.RoleName, siteId);
             }
+            if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
-            var sitePermissionsList = new List<SitePermissions>();
-            var permissionList = new List<string>();
-            Role role = null;
+            var site = await _siteRepository.GetAsync(siteId);
+            if (site == null) return null;
 
-            if (request.RoleId > 0)
+            var sitePermissions = new List<Option>();
+            var channelPermissions = new List<Option>();
+            var contentPermissions = new List<Option>();
+
+            if (await _authManager.IsSuperAdminAsync())
             {
-                role = await _roleRepository.GetRoleAsync(request.RoleId);
-                sitePermissionsList =
-                    await _sitePermissionsRepository.GetAllAsync(role.RoleName);
-                permissionList =
-                    await _permissionsInRolesRepository.GetAppPermissionsAsync(new[] { role.RoleName });
-            }
-
-            var permissions = new List<Option>();
-            var appPermissions = await _authManager.GetAppPermissionsAsync();
-
-            var allPermissions = _settingsManager.GetPermissions();
-
-            var allAppPermissions = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.App));
-
-            foreach (var permission in allAppPermissions)
-            {
-                if (appPermissions.Contains(permission.Id))
+                foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, site.SiteType)))
                 {
-                    permissions.Add(new Option
+                    sitePermissions.Add(new Option
                     {
                         Name = permission.Id,
                         Text = permission.Text,
-                        Selected = ListUtils.ContainsIgnoreCase(permissionList, permission.Id)
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
+                    });
+                }
+
+                //foreach (var permission in permissions.WebsitePluginPermissions)
+                //{
+                //    pluginPermissions.Add(new Permission
+                //    {
+                //        Name = permission.Name,
+                //        Text = permission.Text,
+                //        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                //    });
+                //}
+
+                var channelPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel));
+                foreach (var permission in channelPermissionList)
+                {
+                    channelPermissions.Add(new Option
+                    {
+                        Name = permission.Id,
+                        Text = permission.Text,
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
+                    });
+                }
+
+                var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content));
+                foreach (var permission in contentPermissionList)
+                {
+                    if (permission.Id == AuthTypes.ContentPermissions.CheckLevel1)
+                    {
+                        if (site.CheckContentLevel < 1)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel2)
+                    {
+                        if (site.CheckContentLevel < 2)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel3)
+                    {
+                        if (site.CheckContentLevel < 3)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel4)
+                    {
+                        if (site.CheckContentLevel < 4)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel5)
+                    {
+                        if (site.CheckContentLevel < 5)
+                        {
+                            continue;
+                        }
+                    }
+
+                    contentPermissions.Add(new Option
+                    {
+                        Name = permission.Id,
+                        Text = permission.Text,
+                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
                     });
                 }
             }
-
-            var siteList = new List<Site>();
-            var checkedSiteIdList = new List<int>();
-            foreach (var permissionSiteId in await _authManager.GetSiteIdsAsync())
+            else
             {
-                if (!await _authManager.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) ||
-                    !await _authManager.HasSitePermissionsAsync(permissionSiteId)) continue;
-
-                var listOne =
-                    await _authManager.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
-                var listTwo = await _authManager.GetSitePermissionsAsync(permissionSiteId);
-                if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
+                if (await _authManager.HasSitePermissionsAsync(siteId))
                 {
-                    siteList.Add(await _siteRepository.GetAsync(permissionSiteId));
+                    var websitePermissionList = await _authManager.GetSitePermissionsAsync(siteId);
+                    foreach (var websitePermission in websitePermissionList)
+                    {
+                        foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, site.SiteType)))
+                        {
+                            if (permission.Id == websitePermission)
+                            {
+                                sitePermissions.Add(new Option
+                                {
+                                    Name = permission.Id,
+                                    Text = permission.Text,
+                                    Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, permission.Id)
+                                });
+                            }
+                        }
+
+                        //foreach (var permission in instance.WebsitePluginPermissions)
+                        //{
+                        //    if (permission.Name == websitePermission)
+                        //    {
+                        //        pluginPermissions.Add(new Permission
+                        //        {
+                        //            Name = permission.Name,
+                        //            Text = permission.Text,
+                        //            Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
+                        //        });
+                        //    }
+                        //}
+                    }
+                }
+
+                var channelPermissionList = await _authManager.GetChannelPermissionsAsync(siteId);
+                foreach (var channelPermission in channelPermissionList)
+                {
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel)))
+                    {
+                        if (permission.Id == channelPermission)
+                        {
+                            channelPermissions.Add(new Option
+                            {
+                                Name = permission.Id,
+                                Text = permission.Text,
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
+                            });
+                        }
+                    }
+                }
+
+                var contentPermissionList = await _authManager.GetContentPermissionsAsync(siteId);
+                foreach (var contentPermission in contentPermissionList)
+                {
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content)))
+                    {
+                        if (permission.Id == contentPermission)
+                        {
+                            if (contentPermission == AuthTypes.ContentPermissions.CheckLevel1)
+                            {
+                                if (site.CheckContentLevel < 1) continue;
+                            }
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel2)
+                            {
+                                if (site.CheckContentLevel < 2) continue;
+                            }
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel3)
+                            {
+                                if (site.CheckContentLevel < 3) continue;
+                            }
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel4)
+                            {
+                                if (site.CheckContentLevel < 4) continue;
+                            }
+                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel5)
+                            {
+                                if (site.CheckContentLevel < 5) continue;
+                            }
+
+                            contentPermissions.Add(new Option
+                            {
+                                Name = permission.Id,
+                                Text = permission.Text,
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ContentPermissions, permission.Id)
+                            });
+                        }
+                    }
                 }
             }
 
-            foreach (var sitePermissions in sitePermissionsList)
+            var channelInfo = await _channelRepository.GetAsync(siteId);
+            channelInfo.Children = await _channelRepository.GetChildrenAsync(siteId, siteId);
+            var checkedChannelIdList = new List<int>();
+            if (sitePermissionsInfo.ChannelIds != null)
             {
-                checkedSiteIdList.Add(sitePermissions.SiteId);
-            }
-
-            var list = new List<SitePermissionsResult>();
-            foreach (var siteId in checkedSiteIdList)
-            {
-                var result = await GetSitePermissionsObjectAsync(allPermissions, request.RoleId, siteId);
-                if (result != null)
+                foreach (var i in sitePermissionsInfo.ChannelIds)
                 {
-                    list.Add(result);
+                    if (!checkedChannelIdList.Contains(i))
+                    {
+                        checkedChannelIdList.Add(i);
+                    }
                 }
             }
 
-            return new GetResult
+            return new SitePermissionsResult
             {
-                Role = role,
-                Permissions = permissions,
-                Sites = siteList,
-                CheckedSiteIds = checkedSiteIdList,
-                SitePermissionsList = list
-            };
-        }
-
-        [HttpGet, Route(RouteSiteId)]
-        public async Task<ActionResult<SitePermissionsResult>> GetSitePermissions([FromRoute]int siteId, [FromQuery]GetRequest request)
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
-            {
-                return Unauthorized();
-            }
-
-            var allPermissions = _settingsManager.GetPermissions();
-            return await GetSitePermissionsObjectAsync(allPermissions, request.RoleId, siteId);
-        }
-
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> InsertRole([FromBody]RoleRequest request)
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
-            {
-                return Unauthorized();
-            }
-
-            if (_roleRepository.IsPredefinedRole(request.RoleName))
-            {
-                return this.Error($"角色添加失败，{request.RoleName}为系统角色！");
-            }
-            if (await _roleRepository.IsRoleExistsAsync(request.RoleName))
-            {
-                return this.Error("角色名称已存在，请更换角色名称！");
-            }
-
-            await _roleRepository.InsertRoleAsync(new Role
-            {
-                RoleName = request.RoleName,
-                CreatorUserName = _authManager.AdminName,
-                Description = request.Description
-            });
-
-            if (request.AppPermissions != null && request.AppPermissions.Count > 0)
-            {
-                var permissionsInRolesInfo = new PermissionsInRoles
-                {
-                    Id = 0,
-                    RoleName = request.RoleName,
-                    AppPermissions = request.AppPermissions
-                };
-                await _permissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
-            }
-
-            if (request.SitePermissions != null && request.SitePermissions.Count > 0)
-            {
-                foreach (var sitePermissionsInfo in request.SitePermissions)
-                {
-                    sitePermissionsInfo.RoleName = request.RoleName;
-                    await _sitePermissionsRepository.InsertAsync(sitePermissionsInfo);
-                }
-            }
-
-            _cacheManager.Clear();
-
-            await _authManager.AddAdminLogAsync("新增管理员角色", $"角色名称:{request.RoleName}");
-
-            return new BoolResult
-            {
-                Value = true
-            };
-        }
-
-        [HttpPut, Route(RouteRoleId)]
-        public async Task<ActionResult<BoolResult>> UpdateRole([FromRoute]int roleId, [FromBody]RoleRequest request)
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
-            {
-                return Unauthorized();
-            }
-
-            var roleInfo = await _roleRepository.GetRoleAsync(roleId);
-            if (roleInfo.RoleName != request.RoleName)
-            {
-                if (_roleRepository.IsPredefinedRole(request.RoleName))
-                {
-                    return this.Error($"角色添加失败，{request.RoleName}为系统角色！");
-                }
-                if (await _roleRepository.IsRoleExistsAsync(request.RoleName))
-                {
-                    return this.Error("角色名称已存在，请更换角色名称！");
-                }
-            }
-
-            await _permissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
-            await _sitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
-
-            if (request.AppPermissions != null && request.AppPermissions.Count > 0)
-            {
-                var permissionsInRolesInfo = new PermissionsInRoles
-                {
-                    Id = 0,
-                    RoleName = request.RoleName,
-                    AppPermissions = request.AppPermissions
-                };
-                await _permissionsInRolesRepository.InsertAsync(permissionsInRolesInfo);
-            }
-
-            if (request.SitePermissions != null && request.SitePermissions.Count > 0)
-            {
-                foreach (var sitePermissionsInfo in request.SitePermissions)
-                {
-                    sitePermissionsInfo.RoleName = request.RoleName;
-                    await _sitePermissionsRepository.InsertAsync(sitePermissionsInfo);
-                }
-            }
-
-            roleInfo.RoleName = request.RoleName;
-            roleInfo.Description = request.Description;
-
-            await _roleRepository.UpdateRoleAsync(roleInfo);
-
-            _cacheManager.Clear();
-
-            await _authManager.AddAdminLogAsync("修改管理员角色", $"角色名称:{request.RoleName}");
-
-            return new BoolResult
-            {
-                Value = true
+                SiteId = siteId,
+                SitePermissions = sitePermissions,
+                ChannelPermissions = channelPermissions,
+                ContentPermissions = contentPermissions,
+                Channel = channelInfo,
+                CheckedChannelIds = checkedChannelIdList
             };
         }
     }

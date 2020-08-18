@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
-using SSCMS.Dto;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -33,74 +31,22 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             _pluginManager = pluginManager;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            return new GetResult
-            {
-                IsNightly = _settingsManager.IsNightlyUpdate,
-                Version = _settingsManager.Version
-            };
+            public bool IsNightly { get; set; }
+            public string Version { get; set; }
         }
 
-        [HttpPost, Route(RouteActionsDownload)]
-        public async Task<ActionResult<BoolResult>> Download([FromBody]DownloadRequest request)
+        public class DownloadRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            _pluginManager.Install(request.PluginId, request.Version);
-
-            await _authManager.AddAdminLogAsync("安装插件", $"插件:{request.PluginId}");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string PluginId { get; set; }
+            public string Version { get; set; }
         }
 
-        [HttpPost, Route(RouteActionsUpdate)]
-        public async Task<ActionResult<BoolResult>> Update([FromBody]UploadRequest request)
+        public class UploadRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            var idWithVersion = $"{request.PluginId}.{request.Version}";
-            //if (!_pluginManager.UpdatePackage(idWithVersion, TranslateUtils.ToEnum(request.PackageType, PackageType.Library), out var errorMessage))
-            //{
-            //    return this.Error(errorMessage);
-            //}
-
-            return new BoolResult
-            {
-                Value = true
-            };
-        }
-
-        [HttpPost, Route(RouteActionsRestart)]
-        public async Task<ActionResult<BoolResult>> Restart()
-        {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
-            {
-                return Unauthorized();
-            }
-
-            
-            _hostApplicationLifetime.StopApplication();
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string PluginId { get; set; }
+            public string Version { get; set; }
         }
     }
 }

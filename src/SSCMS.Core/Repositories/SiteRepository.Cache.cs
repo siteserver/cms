@@ -372,6 +372,30 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
+        private async Task<Cascade<int>> GetCascadeAsync(SiteSummary summary, Func<SiteSummary, object> func = null)
+        {
+            object extra = null;
+            if (func != null)
+            {
+                extra = func(summary);
+            }
+            var cascade = new Cascade<int>
+            {
+                Value = summary.Id,
+                Label = summary.SiteName,
+                Children = await GetCascadeChildrenAsync(summary.Id, func)
+            };
+            if (extra == null) return cascade;
+
+            var dict = TranslateUtils.ToDictionary(extra);
+            foreach (var o in dict)
+            {
+                cascade[o.Key] = o.Value;
+            }
+
+            return cascade;
+        }
+
         private async Task<Cascade<int>> GetCascadeAsync(SiteSummary summary, Func<SiteSummary, Task<object>> func = null)
         {
             object extra = null;
@@ -394,6 +418,25 @@ namespace SSCMS.Core.Repositories
             }
 
             return cascade;
+        }
+
+        public async Task<List<Cascade<int>>> GetCascadeChildrenAsync(int parentId,
+            Func<SiteSummary, object> func)
+        {
+            var list = new List<Cascade<int>>();
+
+            var summaries = await GetSummariesAsync(parentId);
+            foreach (var summary in summaries)
+            {
+                if (summary == null || summary.Id == 0) continue;
+                var site = await GetCascadeAsync(summary, func);
+                if (site != null)
+                {
+                    list.Add(site);
+                }
+            }
+
+            return list;
         }
 
         public async Task<List<Cascade<int>>> GetCascadeChildrenAsync(int parentId, Func<SiteSummary, Task<object>> func = null)

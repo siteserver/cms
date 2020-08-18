@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using RestSharp;
-using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -22,7 +21,7 @@ namespace SSCMS.Core.Plugins
         public static class Api
         {
             //private const string Host = "https://api.sscms.com";
-            private const string Host = "https://localhost:81";
+            private const string Host = "http://localhost:81";
 
             public static string GetCliUrl(string relatedUrl)
             {

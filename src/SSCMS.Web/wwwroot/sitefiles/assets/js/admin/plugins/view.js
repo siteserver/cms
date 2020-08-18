@@ -44,7 +44,7 @@ var methods = {
           $this.isShouldUpdate = cloud.compareVersion($this.localPlugin.version, $this.cloudRelease.version) == -1;
         }
       }).catch(function (error) {
-        utils.error(error);
+        console.log(error);
       }).then(function () {
         utils.loading($this, false);
       });
@@ -66,7 +66,7 @@ var methods = {
       var text = plugin.disabled ? '启用' : '禁用';
       utils.alertSuccess({
         title: '插件' + text + '成功',
-        text: '插件' + text + '成功，系统需要重载页面',
+        text: '插件' + text + '成功，系统需要重新加载',
         callback: function() {
           window.top.location.reload(true);
         }
@@ -142,7 +142,7 @@ var methods = {
     if (this.localPlugin && this.localPlugin.homepage) {
       return this.localPlugin.homepage;
     }
-    return cloud.getPluginsUrl('/plugin.html?id=' + this.pluginId);
+    return cloud.getPluginsUrl('plugin.html?id=' + this.pluginId);
   },
 
   getIconUrl: function () {

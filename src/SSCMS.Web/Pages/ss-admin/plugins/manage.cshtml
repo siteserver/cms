@@ -70,20 +70,43 @@
         {{ scope.row.description }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" width="100">
+    <el-table-column label="操作" width="60">
       <template slot-scope="scope">
-        <el-link
-          :underline="false"
-          v-on:click="btnDisablePlugin(scope.row)"
-          type="primary">
-          {{ scope.row.disabled ? '启用' : '禁用' }}
-        </el-link>
-        <el-link
-          :underline="false"
-          type="danger"
-          v-on:click="btnDeletePlugin(scope.row)">
-          卸载插件
-        </el-link>
+
+        <el-popover
+          placement="bottom"
+          width="200"
+          trigger="click">
+
+          <el-menu
+            v-on:select="btnMenuClick"
+            class="el-menu-vertical-demo">
+            <el-menu-item v-if="scope.row.disabled" :index="scope.row.pluginId + ':enable'">
+              <i class="el-icon-check"></i>
+              <span slot="title">启用</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':config'">
+              <i class="el-icon-setting"></i>
+              <span slot="title">配置</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':disable'">
+              <i class="el-icon-close"></i>
+              <span slot="title">禁用</span>
+            </el-menu-item>
+            <el-menu-item :index="scope.row.pluginId + ':uninstall'">
+              <i class="el-icon-delete"></i>
+              <span slot="title">卸载插件</span>
+            </el-menu-item>
+          </el-menu>
+
+          <el-link
+            slot="reference"
+            :underline="false"
+            type="default">
+            <i class="el-icon-setting" style="font-size: 22px;"></i>
+          </el-link>
+        </el-popover>
+        
       </template>
     </el-table-column>
   </el-table>
@@ -114,20 +137,43 @@
         {{ scope.row.errorMessage }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" width="100">
+    <el-table-column label="操作" width="60">
       <template slot-scope="scope">
-        <el-link
-          :underline="false"
-          v-on:click="btnDisablePlugin(scope.row)"
-          type="primary">
-          {{ scope.row.disabled ? '启用' : '禁用' }}
-        </el-link>
-        <el-link
-          :underline="false"
-          type="danger"
-          v-on:click="btnDeletePlugin(scope.row)">
-          卸载插件
-        </el-link>
+        
+        <el-popover
+          placement="bottom"
+          width="200"
+          trigger="click">
+
+          <el-menu
+            v-on:select="btnMenuClick"
+            class="el-menu-vertical-demo">
+            <el-menu-item v-if="scope.row.disabled" :index="scope.row.pluginId + ':enable'">
+              <i class="el-icon-check"></i>
+              <span slot="title">启用</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':config'">
+              <i class="el-icon-setting"></i>
+              <span slot="title">配置</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':disable'">
+              <i class="el-icon-close"></i>
+              <span slot="title">禁用</span>
+            </el-menu-item>
+            <el-menu-item :index="scope.row.pluginId + ':uninstall'">
+              <i class="el-icon-delete"></i>
+              <span slot="title">卸载插件</span>
+            </el-menu-item>
+          </el-menu>
+
+          <el-link
+            slot="reference"
+            :underline="false"
+            type="default">
+            <i class="el-icon-setting" style="font-size: 22px;"></i>
+          </el-link>
+        </el-popover>
+        
       </template>
     </el-table-column>
   </el-table>

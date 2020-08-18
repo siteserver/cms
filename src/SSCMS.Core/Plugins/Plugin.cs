@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Plugins
@@ -84,6 +85,13 @@ namespace SSCMS.Core.Plugins
         public string Main => Configuration[nameof(Main)];
 
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
+
+        public bool IsAllSites => Configuration.GetValue(nameof(IsAllSites), true);
+
+        public IEnumerable<int> SiteIds => Configuration.GetSection(nameof(SiteIds)).Get<int[]>();
+
+        public IEnumerable<SiteConfig> SiteConfigs => Configuration.GetSection(nameof(SiteConfigs)).Get<SiteConfig[]>();
+
         public bool Success { get; set; }
         public string ErrorMessage { get; set; }
 

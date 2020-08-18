@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Senparc.CO2NET.Helpers;
 using Senparc.CO2NET.Helpers.BaiduMap;
 using Senparc.CO2NET.Helpers.GoogleMap;

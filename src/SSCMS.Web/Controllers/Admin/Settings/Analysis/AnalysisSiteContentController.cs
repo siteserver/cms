@@ -31,55 +31,26 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
             _statRepository = statRepository;
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
+        public class GetRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAnalysisSiteContent))
-            {
-                return Unauthorized();
-            }
+            public int SiteId { get; set; }
+            public string DateFrom { get; set; }
+            public string DateTo { get; set; }
+        }
 
-            var lowerDate = TranslateUtils.ToDateTime(request.DateFrom);
-            var higherDate = TranslateUtils.ToDateTime(request.DateTo, DateTime.Now);
+        public class GetStat
+        {
+            public string Date { get; set; }
+            public int Add { get; set; }
+            public int Edit { get; set; }
+        }
 
-            var sites = await _siteRepository.GetCascadeChildrenAsync(0);
-            sites.Insert(0, new Cascade<int>
-            {
-                Value = 0,
-                Label = "<所有站点>"
-            });
-
-            var addStats = await _statRepository.GetStatsAsync(lowerDate, higherDate, StatType.ContentAdd, request.SiteId);
-            var editStats = await _statRepository.GetStatsAsync(lowerDate, higherDate, StatType.ContentEdit, request.SiteId);
-
-            var getStats = new List<GetStat>();
-            var totalDays = (higherDate - lowerDate).TotalDays;
-            for (var i = 0; i <= totalDays; i++)
-            {
-                var date = lowerDate.AddDays(i).ToString("M-d");
-
-                var add = addStats.FirstOrDefault(x => x.CreatedDate.HasValue && x.CreatedDate.Value.ToString("M-d") == date);
-                var edit = editStats.FirstOrDefault(x => x.CreatedDate.HasValue && x.CreatedDate.Value.ToString("M-d") == date);
-
-                getStats.Add(new GetStat
-                {
-                    Date = date,
-                    Add = add?.Count ?? 0,
-                    Edit = edit?.Count ?? 0
-                });
-            }
-
-            var days = getStats.Select(x => x.Date).ToList();
-            var addCount = getStats.Select(x => x.Add).ToList();
-            var editCount = getStats.Select(x => x.Edit).ToList();
-
-            return new GetResult
-            {
-                Sites = sites,
-                Days = days,
-                AddCount = addCount,
-                EditCount = editCount
-            };
+        public class GetResult
+        {
+            public List<Cascade<int>> Sites { get; set; }
+            public List<string> Days { get; set; }
+            public List<int> AddCount { get; set; }
+            public List<int> EditCount { get; set; }
         }
     }
 }

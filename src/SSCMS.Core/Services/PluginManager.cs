@@ -27,7 +27,7 @@ namespace SSCMS.Core.Services
 
         public void Load()
         {
-            Plugins = new List<IPlugin>();
+            var plugins = new List<Plugin>();
             var configurations = new List<IConfiguration>
             {
                 _config
@@ -42,6 +42,13 @@ namespace SSCMS.Core.Services
                 if (!StringUtils.IsStrictName(plugin.Publisher) || !StringUtils.IsStrictName(plugin.Name)) continue;
                 if (Path.GetFileName(folderPath) != plugin.PluginId) continue;
 
+                plugins.Add(plugin);
+                
+            }
+
+            Plugins = new List<IPlugin>();
+            foreach (var plugin in plugins.OrderBy(x => x.Taxis == 0 ? int.MaxValue : x.Taxis))
+            {
                 Plugins.Add(plugin);
                 if (!plugin.Disabled)
                 {

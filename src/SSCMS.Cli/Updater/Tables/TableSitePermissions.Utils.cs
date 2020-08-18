@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SSCMS;
 using SSCMS.Models;
 
 namespace SSCMS.Cli.Updater.Tables

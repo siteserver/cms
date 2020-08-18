@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using SSCMS.Dto;
 
 namespace SSCMS
 {
@@ -25,6 +26,9 @@ namespace SSCMS
         public string Homepage { get; }
         public string Main { get; }
         public bool Disabled { get; }
+        public bool IsAllSites { get; }
+        public IEnumerable<int> SiteIds { get; }
+        public IEnumerable<SiteConfig> SiteConfigs { get; }
         public bool Success { get; }
         public string ErrorMessage { get; }
         public int Taxis { get; }

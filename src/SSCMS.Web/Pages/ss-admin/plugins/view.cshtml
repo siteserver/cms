@@ -33,6 +33,10 @@
     #plugin-content {
       padding: 5px 25px 30px;
     }
+    .el-tabs__item {
+      width: 120px;
+      text-align: center;
+    }
   </style>
 }
 
@@ -85,10 +89,10 @@
 
       <div class="summary">
         <template v-if="localPlugin">
-          <el-button v-on:click="btnDisablePlugin(localPlugin)" type="warning" size="small">
+          <el-button v-on:click="btnDisablePlugin(localPlugin)" type="warning" plain size="small">
             {{ localPlugin.disabled ? '启用' : '禁用' }}
           </el-button>
-          <el-button v-on:click="btnDeletePlugin(localPlugin)" type="danger" size="small">
+          <el-button v-on:click="btnDeletePlugin(localPlugin)" type="danger" plain size="small">
             卸载插件
           </el-button>
         </template>
