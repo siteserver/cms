@@ -4,18 +4,17 @@ using System.Threading.Tasks;
 using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
-using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
     public partial class DatabaseManager
     {
-        public async Task<(bool success, string errorMessage)> InstallAsync(IOldPluginManager pluginManager, string userName, string password, string email, string mobile)
+        public async Task<(bool success, string errorMessage)> InstallAsync(string userName, string password, string email, string mobile)
         {
             try
             {
-                await SyncDatabaseAsync(pluginManager);
+                await SyncDatabaseAsync();
 
                 var administrator = new Administrator
                 {
@@ -53,7 +52,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task SyncDatabaseAsync(IOldPluginManager pluginManager)
+        public async Task SyncDatabaseAsync()
         {
             var repositories = GetAllRepositories();
 
@@ -77,14 +76,14 @@ namespace SSCMS.Core.Services
                 await ConfigRepository.InsertAsync(config);
             }
 
-            await SyncContentTablesAsync(pluginManager);
+            await SyncContentTablesAsync();
 
             await UpdateConfigVersionAsync();
         }
 
-        public async Task SyncContentTablesAsync(IOldPluginManager pluginManager)
+        public async Task SyncContentTablesAsync()
         {
-            var tableNameList = await SiteRepository.GetAllTableNamesAsync(pluginManager);
+            var tableNameList = await SiteRepository.GetAllTableNamesAsync();
 
             foreach (var tableName in tableNameList)
             {

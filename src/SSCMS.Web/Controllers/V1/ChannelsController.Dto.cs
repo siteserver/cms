@@ -34,7 +34,6 @@ namespace SSCMS.Web.Controllers.V1
             public string ChannelName { get; set; }
             public string IndexName { get; set; }
             public string ContentModelPluginId { get; set; }
-            public string ContentRelatedPluginIds { get; set; }
             public string FilePath { get; set; }
             public string ChannelFilePathRule { get; set; }
             public string ContentFilePathRule { get; set; }

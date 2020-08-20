@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Dto;
@@ -17,7 +18,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ContentsLayerWordController : ControllerBase
     {
@@ -45,8 +46,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+                    Types.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -71,8 +72,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+                    Types.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -105,8 +106,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<ObjectResult<List<int>>>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+                    Types.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }

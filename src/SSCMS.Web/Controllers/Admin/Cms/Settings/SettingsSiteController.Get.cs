@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsSite))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsSite))
             {
                 return Unauthorized();
             }

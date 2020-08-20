@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
+using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -12,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ConfigController : ControllerBase
     {
@@ -46,10 +48,16 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             public List<Cascade<int>> Sites { get; set; }
         }
 
+        public class GetChannelsRequest : SiteRequest
+        {
+            public string PluginId { get; set; }
+        }
+
         public class GetChannelsResult
         {
             public string SiteName { get; set; }
             public Channel Channel { get; set; }
+            public SiteConfig SiteConfig { get; set; }
         }
 
         public class SubmitChannelsRequest

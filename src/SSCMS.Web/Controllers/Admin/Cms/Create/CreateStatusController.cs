@@ -1,17 +1,16 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using SSCMS.Dto;
+using SSCMS.Configuration;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public class CreateStatusController : ControllerBase
+    public partial class CreateStatusController : ControllerBase
     {
         private const string Route = "cms/create/createStatus";
         private const string RouteActionsCancel = "cms/create/createStatus/actions/cancel";
@@ -23,38 +22,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         {
             _authManager = authManager;
             _createManager = createManager;
-        }
-
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<ObjectResult<CreateTaskSummary>>> Get([FromQuery] SiteRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateStatus))
-            {
-                return Unauthorized();
-            }
-
-            var summary = _createManager.GetTaskSummary(request.SiteId);
-
-            return new ObjectResult<CreateTaskSummary>
-            {
-                Value = summary
-            };
-        }
-
-        [HttpPost, Route(RouteActionsCancel)]
-        public async Task<ActionResult<BoolResult>> Cancel([FromBody] SiteRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.CreateStatus))
-            {
-                return Unauthorized();
-            }
-
-            _createManager.ClearAllTask(request.SiteId);
-
-            return new BoolResult
-            {
-                Value = true
-            };
         }
     }
 }

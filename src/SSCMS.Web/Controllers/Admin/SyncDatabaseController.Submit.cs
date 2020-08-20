@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin
             //    return Unauthorized();
             //}
 
-            await _databaseManager.SyncDatabaseAsync(_pluginManager);
+            await _databaseManager.SyncDatabaseAsync();
 
             return new SubmitResult
             {

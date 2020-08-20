@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix)]
     public partial class ProfileController : ControllerBase
     {

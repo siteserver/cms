@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -11,21 +12,19 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsContentController : ControllerBase
     {
         private const string Route = "cms/settings/settingsContent";
 
         private readonly IAuthManager _authManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SettingsContentController(IAuthManager authManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IContentRepository contentRepository)
+        public SettingsContentController(IAuthManager authManager, ISiteRepository siteRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
         }
@@ -33,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<Site>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsContent))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsContent))
             {
                 return Unauthorized();
             }
@@ -46,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsContent))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsContent))
             {
                 return Unauthorized();
             }
@@ -82,7 +81,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             if (isReCalculate)
             {
-                await _contentRepository.SetAutoPageContentToSiteAsync(_pluginManager, site);
+                await _contentRepository.SetAutoPageContentToSiteAsync(site);
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, "修改内容设置");

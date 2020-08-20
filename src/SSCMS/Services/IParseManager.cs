@@ -11,7 +11,6 @@ namespace SSCMS.Services
         ISettingsManager SettingsManager { get; }
         IPathManager PathManager { get; }
         IDatabaseManager DatabaseManager { get; }
-        IOldPluginManager OldPluginManager { get; }
         ParsePage PageInfo { get; set; }
         ParseContext ContextInfo { get; set; }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
@@ -14,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentsLayerCheckController : ControllerBase
     {
@@ -40,7 +41,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.CheckLevel1))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1))
             {
                 return Unauthorized();
             }
@@ -67,7 +68,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
             var allChannels =
-                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, AuthTypes.ContentPermissions.Add);
+                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, Types.ContentPermissions.Add);
 
             return new GetResult
             {
@@ -81,7 +82,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.CheckLevel1))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1))
             {
                 return Unauthorized();
             }

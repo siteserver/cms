@@ -5,6 +5,7 @@ using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UtilitiesParametersController : ControllerBase
     {
@@ -33,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUtilitiesParameters))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUtilitiesParameters))
             {
                 return Unauthorized();
             }

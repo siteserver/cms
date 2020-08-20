@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Semver;
+using SSCMS.Configuration;
+using SSCMS.Plugins;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Plugins

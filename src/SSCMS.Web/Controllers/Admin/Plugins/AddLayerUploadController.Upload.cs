@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Plugins;
 using SSCMS.Extensions;
 using SSCMS.Utils;
@@ -12,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

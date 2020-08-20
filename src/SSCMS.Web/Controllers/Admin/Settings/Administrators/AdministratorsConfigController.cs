@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -10,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsConfigController : ControllerBase
     {
@@ -28,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsConfig))
             {
                 return Unauthorized();
             }
@@ -44,7 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsConfig))
             {
                 return Unauthorized();
             }

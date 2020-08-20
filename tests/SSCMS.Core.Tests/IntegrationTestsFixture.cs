@@ -6,6 +6,7 @@ using System.Reflection;
 using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SSCMS.Configuration;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Services;
@@ -50,8 +51,7 @@ namespace SSCMS.Core.Tests
                 }
             }
             var databaseManager = Provider.GetService<IDatabaseManager>();
-            var pluginManager = Provider.GetService<IOldPluginManager>();
-            databaseManager.SyncDatabaseAsync(pluginManager).GetAwaiter().GetResult();
+            databaseManager.SyncDatabaseAsync().GetAwaiter().GetResult();
 
             //var (_, repositories) = databaseRepository.GetAllRepositories(cache, settingsManager);
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Dto;
 using SSCMS.Extensions;
@@ -16,7 +17,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UsersController : ControllerBase
     {
@@ -30,16 +31,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
 
-        public UsersController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
+        public UsersController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
         }
@@ -47,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResults>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -68,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -86,7 +85,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -164,7 +163,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(RouteExport)]
         public async Task<ActionResult> Export()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -172,7 +171,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             const string fileName = "users.csv";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
+            var excelObject = new ExcelObject(_databaseManager, _pathManager);
             await excelObject.CreateExcelFileForUsersAsync(filePath, null);
 
             return this.Download(filePath);
@@ -181,7 +180,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteCheck)]
         public async Task<ActionResult<BoolResult>> Check([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -202,7 +201,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -225,7 +224,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteUnLock)]
         public async Task<ActionResult<BoolResult>> UnLock([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }

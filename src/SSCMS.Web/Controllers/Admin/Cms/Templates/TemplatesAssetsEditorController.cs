@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -9,7 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesAssetsEditorController : ControllerBase
     {
@@ -29,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] FileRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
             {
                 return Unauthorized();
             }
@@ -74,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<ContentResult>> Add([FromBody] ContentRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
             {
                 return Unauthorized();
             }
@@ -88,7 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ContentResult>> Edit([FromBody] ContentRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
             {
                 return Unauthorized();
             }

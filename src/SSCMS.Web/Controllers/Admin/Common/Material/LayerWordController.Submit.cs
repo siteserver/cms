@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Dto;
 using SSCMS.Extensions;
@@ -14,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         public async Task<ActionResult<StringResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage))
+                Types.SitePermissions.MaterialMessage))
             {
                 return Unauthorized();
             }

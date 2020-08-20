@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -15,7 +16,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsCrossSiteTransChannelsController : ControllerBase
     {
@@ -41,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsCrossSiteTransChannels))
+                    Types.SitePermissions.SettingsCrossSiteTransChannels))
             {
                 return Unauthorized();
             }
@@ -94,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsCrossSiteTransChannels))
+                    Types.SitePermissions.SettingsCrossSiteTransChannels))
             {
                 return Unauthorized();
             }
@@ -214,7 +215,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsCrossSiteTransChannels))
+                    Types.SitePermissions.SettingsCrossSiteTransChannels))
             {
                 return Unauthorized();
             }

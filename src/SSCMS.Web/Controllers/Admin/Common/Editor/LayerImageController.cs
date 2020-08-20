@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
@@ -16,7 +17,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Common.Editor
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LayerImageController : ControllerBase
     {

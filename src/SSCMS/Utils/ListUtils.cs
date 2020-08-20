@@ -8,6 +8,11 @@ namespace SSCMS.Utils
 {
     public static class ListUtils
     {
+        public static T FirstOrDefault<T>(IEnumerable<T> list, Func<T, bool> predicate)
+        {
+            return list == null ? default : list.FirstOrDefault(predicate);
+        }
+
         public static bool Contains(string strCollection, int inInt)
         {
             return Contains(GetIntList(strCollection), inInt);

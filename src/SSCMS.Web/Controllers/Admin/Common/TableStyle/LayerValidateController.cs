@@ -11,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LayerValidateController : ControllerBase
     {

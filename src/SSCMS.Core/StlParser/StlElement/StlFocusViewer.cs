@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
@@ -212,7 +213,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
             var channelId = await dataManager.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = await databaseManager.ContentRepository.GetSummariesAsync(parseManager.DatabaseManager, parseManager.OldPluginManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = await databaseManager.ContentRepository.GetSummariesAsync(parseManager.DatabaseManager, pageInfo.Site, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {

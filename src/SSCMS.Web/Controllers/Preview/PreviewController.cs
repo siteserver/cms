@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;

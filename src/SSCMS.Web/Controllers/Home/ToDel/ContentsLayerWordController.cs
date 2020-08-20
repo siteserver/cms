@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Dto;
@@ -18,7 +19,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentsLayerWordController : ControllerBase
     {
@@ -47,7 +48,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -71,7 +72,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -103,7 +104,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }

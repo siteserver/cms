@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -13,21 +14,19 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsAccessTokensController : ControllerBase
     {
         private const string Route = "settings/administratorsAccessTokens";
 
         private readonly IAuthManager _authManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public AdministratorsAccessTokensController(IAuthManager authManager, IOldPluginManager pluginManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
+        public AdministratorsAccessTokensController(IAuthManager authManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository)
         {
             _authManager = authManager;
-            _pluginManager = pluginManager;
             _accessTokenRepository = accessTokenRepository;
             _administratorRepository = administratorRepository;
         }
@@ -35,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -61,13 +60,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 Constants.ScopeStl
             };
 
-            foreach (var plugin in _pluginManager.GetPlugins())
-            {
-                if (plugin.IsApiAuthorization)
-                {
-                    scopes.Add(plugin.PluginId);
-                }
-            }
+            //foreach (var plugin in _pluginManager.EnabledPlugins)
+            //{
+            //    scopes.Add(plugin.PluginId);
+            //}
 
             var tokens = await _accessTokenRepository.GetAccessTokensAsync();
 
@@ -83,7 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<TokensResult>> Delete([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -100,7 +96,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<TokensResult>> Submit([FromBody] AccessToken itemObj)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }

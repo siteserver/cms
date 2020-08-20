@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils.PathRules;
 using SSCMS.Dto;
 using SSCMS.Extensions;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsCreateRuleLayerSetController : ControllerBase
     {
@@ -36,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ObjectResult<List<KeyValuePair<string, string>>>>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsCreateRule))
+                    Types.SitePermissions.SettingsCreateRule))
             {
                 return Unauthorized();
             }

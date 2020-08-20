@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 
@@ -28,7 +29,7 @@ namespace SSCMS.Core.Repositories
             );
             if (site != null && string.IsNullOrEmpty(site.SiteType))
             {
-                site.SiteType = AuthTypes.SiteTypes.Web;
+                site.SiteType = Types.SiteTypes.Web;
             }
 
             return site;

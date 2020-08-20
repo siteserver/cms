@@ -8,8 +8,6 @@ var data = utils.init({
   groupNames: [],
   channelTemplates: [],
   contentTemplates: [],
-  contentPlugins: [],
-  relatedPlugins: [],
 
   channelIds: [],
 
@@ -76,8 +74,6 @@ var methods = {
       $this.groupNames = res.groupNames;
       $this.channelTemplates = res.channelTemplates;
       $this.contentTemplates = res.contentTemplates;
-      $this.contentPlugins = res.contentPlugins;
-      $this.relatedPlugins = res.relatedPlugins;
       $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
 
       if (message) {

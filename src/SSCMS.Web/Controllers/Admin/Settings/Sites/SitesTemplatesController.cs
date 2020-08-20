@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Extensions;
@@ -14,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTemplatesController : ControllerBase
     {
@@ -27,21 +28,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
 
-        public SitesTemplatesController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager)
+        public SitesTemplatesController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
         }
 
         private async Task<ListResult> GetListResultAsync()
         {
             var caching = new CacheUtils(_cacheManager);
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
+            var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
             var siteTemplateInfoList = new List<SiteTemplateInfo>();
             foreach (var siteTemplate in siteTemplates)
@@ -68,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var siteTemplateUrl = StringUtils.TrimSlash(_pathManager.GetSiteTemplatesUrl(string.Empty));
             var siteAddPermission =
-                await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd);
 
             return new ListResult
             {
@@ -82,7 +81,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> GetList()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -93,7 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteZip)]
         public async Task<ActionResult<StringResult>> Zip([FromBody]ZipRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -116,7 +115,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUnZip)]
         public async Task<ActionResult<ListResult>> UnZip([FromBody]UnZipRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
@@ -134,13 +133,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }
 
             var caching = new CacheUtils(_cacheManager);
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
+            var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
 
             if (!string.IsNullOrEmpty(request.DirectoryName))
             {
@@ -162,7 +161,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<ListResult>> Upload([FromForm]IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }

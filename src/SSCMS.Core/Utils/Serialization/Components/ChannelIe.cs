@@ -35,8 +35,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
             {
                 channel.ContentModelPluginId = contentModelPluginId;
             }
-            var contentRelatedPluginIdList = ListUtils.GetStringList(AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentRelatedPluginIds)));
-            channel.ContentRelatedPluginIds = contentRelatedPluginIdList;
             channel.ParentId = parentId;
             var indexName = AtomUtility.GetDcElementContent(additionalElements, new List<string> { nameof(Channel.IndexName), "NodeIndexName" });
             if (!string.IsNullOrEmpty(indexName) && indexNameList.IndexOf(indexName) == -1)
@@ -79,7 +77,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.ChannelName), "NodeName" }, channel.ChannelName);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Channel.SiteId), "PublishmentSystemId" }, channel.SiteId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ContentModelPluginId), channel.ContentModelPluginId);
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ContentRelatedPluginIds), ListUtils.ToString(channel.ContentRelatedPluginIds));
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ParentId), channel.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ParentsPath), channel.ParentsPath);
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ParentsCount), channel.ParentsCount.ToString());

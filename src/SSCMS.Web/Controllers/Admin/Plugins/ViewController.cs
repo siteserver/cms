@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
+using SSCMS.Configuration;
+using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ViewController : ControllerBase
     {

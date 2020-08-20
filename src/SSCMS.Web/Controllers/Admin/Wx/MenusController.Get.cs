@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.WxMenus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.WxMenus))
             {
                 return Unauthorized();
             }

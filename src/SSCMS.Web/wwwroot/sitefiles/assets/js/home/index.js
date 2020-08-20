@@ -4,7 +4,6 @@ var $sidebarWidth = 200;
 var $collapseWidth = 60;
 
 var data = utils.init({
-  defaultPageUrl: null,
   homeLogoUrl: null,
   homeTitle: null,
   menus: [],
@@ -37,7 +36,6 @@ var methods = {
       if (res.user) {
 
         $this.user = res.user;
-        $this.defaultPageUrl = res.defaultPageUrl || utils.getRootUrl('dashboard');
 
         $this.homeLogoUrl = res.homeLogoUrl || utils.getAssetsUrl('images/logo.png');
         $this.homeTitle = res.homeTitle || '用户中心';

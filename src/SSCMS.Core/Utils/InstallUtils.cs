@@ -1,4 +1,5 @@
 ﻿using Datory;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils

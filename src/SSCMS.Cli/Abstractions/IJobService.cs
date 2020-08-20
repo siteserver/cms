@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SSCMS.Plugins;
 
 namespace SSCMS.Cli.Abstractions
 {
@@ -6,6 +7,6 @@ namespace SSCMS.Cli.Abstractions
     {
         string CommandName { get; }
         void PrintUsage();
-        Task ExecuteAsync(IJobContext context);
+        Task ExecuteAsync(IPluginJobContext context);
     }
 }

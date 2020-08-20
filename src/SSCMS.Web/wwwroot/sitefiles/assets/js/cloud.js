@@ -1,6 +1,6 @@
 var cloud = _.extend(axios.create({
-  // baseURL: 'https://api.sscms.com/v7',
-  baseURL: 'http://localhost:81/v7',
+  baseURL: 'https://api.sscms.com/v7',
+  // baseURL: 'http://localhost:81/v7',
   headers: {
     Authorization: "Bearer " + localStorage.getItem('ss_cloud_access_token'),
   },

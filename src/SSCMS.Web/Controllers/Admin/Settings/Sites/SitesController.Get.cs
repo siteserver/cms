@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -8,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -43,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
-            var tableNames = await _siteRepository.GetSiteTableNamesAsync(_oldPluginManager);
+            var tableNames = await _siteRepository.GetSiteTableNamesAsync();
 
             return new GetResult
             {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -651,11 +652,11 @@ namespace SSCMS.Core.Utils
 
             var isChecked = false;
             var checkedLevel = 0;
-			if (await authManager.HasContentPermissionsAsync(site.Id, channelId, AuthTypes.ContentPermissions.CheckLevel5))
+			if (await authManager.HasContentPermissionsAsync(site.Id, channelId, Types.ContentPermissions.CheckLevel5))
 			{
 				isChecked = true;
 			}
-			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, AuthTypes.ContentPermissions.CheckLevel4))
+			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, Types.ContentPermissions.CheckLevel4))
 			{
 				if (site.CheckContentLevel <= 4)
 				{
@@ -666,7 +667,7 @@ namespace SSCMS.Core.Utils
 					checkedLevel = 4;
 				}
 			}
-			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, AuthTypes.ContentPermissions.CheckLevel3))
+			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, Types.ContentPermissions.CheckLevel3))
 			{
 				if (site.CheckContentLevel <= 3)
 				{
@@ -677,7 +678,7 @@ namespace SSCMS.Core.Utils
 					checkedLevel = 3;
 				}
 			}
-			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, AuthTypes.ContentPermissions.CheckLevel2))
+			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, Types.ContentPermissions.CheckLevel2))
 			{
 				if (site.CheckContentLevel <= 2)
 				{
@@ -688,7 +689,7 @@ namespace SSCMS.Core.Utils
 					checkedLevel = 2;
 				}
 			}
-			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, AuthTypes.ContentPermissions.CheckLevel1))
+			else if (await authManager.HasContentPermissionsAsync(site.Id, channelId, Types.ContentPermissions.CheckLevel1))
 			{
 				if (site.CheckContentLevel <= 1)
 				{

@@ -48,11 +48,11 @@ namespace SSCMS.Core.Repositories
             await _statRepository.AddCountAsync(StatType.ContentEdit, content.SiteId);
         }
 
-        public async Task SetAutoPageContentToSiteAsync(IOldPluginManager pluginManager,  Site site)
+        public async Task SetAutoPageContentToSiteAsync(Site site)
         {
             if (!site.IsAutoPageInTextEditor) return;
 
-            var tableNames = await _siteRepository.GetAllTableNamesAsync(pluginManager);
+            var tableNames = await _siteRepository.GetAllTableNamesAsync();
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);

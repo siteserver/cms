@@ -397,17 +397,6 @@
           <el-option v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.templateName" :value="contentTemplate.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="内容模型插件" v-if="contentPlugins && contentPlugins.length > 0">
-        <el-select v-model="editChannel.contentModelPluginId" placeholder="请选择内容模型插件">
-          <el-option label="<默认>" value=""></el-option>
-          <el-option v-for="contentPlugin in contentPlugins" :key="contentPlugin.id" :label="contentPlugin.title" :value="contentPlugin.id"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="内容关联插件" v-if="relatedPlugins && relatedPlugins.length > 0">
-        <el-checkbox-group v-model="editChannel.contentRelatedPluginIdList">
-          <el-checkbox v-for="relatedPlugin in relatedPlugins" :key="relatedPlugin.id" :label="relatedPlugin.title" :value="relatedPlugin.id" name="contentRelatedPluginIdList"></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
       <el-form-item label="外部链接">
         <el-input v-model="editChannel.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
       </el-form-item>

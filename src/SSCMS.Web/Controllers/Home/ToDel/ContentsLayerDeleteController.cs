@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Repositories;
@@ -12,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentsLayerDeleteController : ControllerBase
     {
@@ -36,7 +37,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Delete))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Delete))
             {
                 return Unauthorized();
             }
@@ -68,7 +69,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Delete))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Delete))
             {
                 return Unauthorized();
             }

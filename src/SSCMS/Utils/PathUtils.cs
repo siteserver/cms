@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 
 namespace SSCMS.Utils

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public async Task<ActionResult<MaterialVideo>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialVideo))
+                Types.SitePermissions.MaterialVideo))
             {
                 return Unauthorized();
             }

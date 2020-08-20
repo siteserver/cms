@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using SSCMS.Configuration;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Models;
 using SSCMS.Utils;

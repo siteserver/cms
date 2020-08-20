@@ -109,7 +109,6 @@ namespace SSCMS.Core.Extensions
             services.AddScoped<ICreateManager, CreateManager>();
             services.AddScoped<IDatabaseManager, DatabaseManager>();
             services.AddScoped<IParseManager, ParseManager>();
-            services.AddScoped<IOldPluginManager, OldPluginManager>();
         }
 
         public static void AddOpenManager(this IServiceCollection services, IConfiguration configuration)

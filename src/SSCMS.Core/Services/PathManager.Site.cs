@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.PathRules;
 using SSCMS.Dto;

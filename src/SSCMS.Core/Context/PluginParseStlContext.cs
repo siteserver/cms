@@ -1,5 +1,5 @@
 ﻿using System.Collections.Specialized;
-using SSCMS.Context;
+using SSCMS.Parse;
 using SSCMS.Services;
 
 namespace SSCMS.Core.Context

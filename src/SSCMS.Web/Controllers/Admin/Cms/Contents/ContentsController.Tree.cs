@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 
@@ -12,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<TreeResult>> Tree([FromBody]TreeRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Contents))
+                    Types.SitePermissions.Contents))
             {
                 return Unauthorized();
             }

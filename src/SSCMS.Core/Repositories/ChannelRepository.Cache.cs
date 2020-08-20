@@ -400,8 +400,8 @@ namespace SSCMS.Core.Repositories
 
         public async Task<bool> IsExistsAsync(int channelId)
         {
-            var nodeInfo = await GetAsync(channelId);
-            return nodeInfo != null;
+            var channel = await GetAsync(channelId);
+            return channel != null;
         }
 
         public async Task<string> GetTableNameAsync(Site site, int channelId)
@@ -411,17 +411,23 @@ namespace SSCMS.Core.Repositories
 
         public string GetTableName(Site site, IChannelSummary channel)
         {
-            return channel != null ? GetTableName(site, channel.ContentModelPluginId) : string.Empty;
+            return channel != null ? GetTableName(site, channel.TableName) : string.Empty;
         }
 
-        private string GetTableName(Site site, string contentModelPluginId)
+        private string GetTableName(Site site, string tableName)
         {
-            return string.IsNullOrEmpty(contentModelPluginId) ? site.TableName : contentModelPluginId;
+            if (string.IsNullOrEmpty(tableName))
+            {
+                return site.TableName;
+            }
+
+            var tableNames = _settingsManager.GetContentTableNames();
+            return ListUtils.ContainsIgnoreCase(tableNames, tableName) ? tableName : site.TableName;
         }
 
-        public bool IsContentModelPlugin(Site site, Channel node)
+        public bool IsContentModelPlugin(Site site, Channel channel)
         {
-            return !string.IsNullOrEmpty(node.ContentModelPluginId);
+            return !string.IsNullOrEmpty(channel.TableName);
         }
 
         public async Task<List<string>> GetGroupNamesAsync(int channelId)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -24,16 +25,14 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
         }

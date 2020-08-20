@@ -17,14 +17,12 @@ namespace SSCMS.Cli.Services
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
 
-        public DataRestoreService(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager, IOldPluginManager pluginManager)
+        public DataRestoreService(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager)
         {
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
         }
 
         public async Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
@@ -109,7 +107,7 @@ namespace SSCMS.Cli.Services
             if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                await _databaseManager.SyncContentTablesAsync(_pluginManager);
+                await _databaseManager.SyncContentTablesAsync();
                 await _configRepository.UpdateConfigVersionAsync(_settingsManager.Version);
             }
         }

@@ -10,6 +10,7 @@ namespace SSCMS.Models
         public string ParentsPath { get; set; }
         public string IndexName { get; set; }
         public string ContentModelPluginId { get; set; }
+        public string TableName { get; set; }
         public int Taxis { get; set; }
         public DateTime? AddDate { get; set; }
     }

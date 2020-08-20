@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
+using SSCMS.Configuration;
 using SSCMS.Services;
 using SSCMS.Utils;
 

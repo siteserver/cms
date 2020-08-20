@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -9,7 +10,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesLayerSelectController : ControllerBase
     {
@@ -17,21 +18,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SitesLayerSelectController(IAuthManager authManager, IPathManager pathManager, IOldPluginManager pluginManager, ISiteRepository siteRepository)
+        public SitesLayerSelectController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
         }
 
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -43,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
-            var tableNames = await _siteRepository.GetSiteTableNamesAsync(_pluginManager);
+            var tableNames = await _siteRepository.GetSiteTableNamesAsync();
 
             return new GetResult
             {

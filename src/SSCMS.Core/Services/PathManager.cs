@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;

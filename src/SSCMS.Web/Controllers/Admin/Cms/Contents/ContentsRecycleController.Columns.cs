@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
@@ -11,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<BoolResult>> Columns([FromBody] ColumnsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.ContentsRecycle))
+                    Types.SitePermissions.ContentsRecycle))
             {
                 return Unauthorized();
             }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Dto;
 using SSCMS.Services;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesReferenceController : ControllerBase
     {
@@ -29,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<List<Element>>> List([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesReference))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesReference))
             {
                 return Unauthorized();
             }
@@ -57,7 +58,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<List<Field>>> ListFields([FromBody]FieldsRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.TemplatesReference))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesReference))
             {
                 return Unauthorized();
             }

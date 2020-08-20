@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Models;
-using SSCMS.Services;
 
 namespace SSCMS.Repositories
 {
@@ -10,7 +9,7 @@ namespace SSCMS.Repositories
 
         Task UpdateAsync(Content content);
 
-        Task SetAutoPageContentToSiteAsync(IOldPluginManager pluginManager, Site site);
+        Task SetAutoPageContentToSiteAsync(Site site);
 
         Task UpdateArrangeTaxisAsync(Site site, Channel channel, string attributeName, bool isDesc);
 

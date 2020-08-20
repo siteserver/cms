@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage))
+                Types.SitePermissions.MaterialMessage))
             {
                 return Unauthorized();
             }

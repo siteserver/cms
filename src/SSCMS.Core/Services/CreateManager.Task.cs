@@ -111,7 +111,7 @@ namespace SSCMS.Core.Services
             lock (LockObject)
             {
                 var pendingTasks = new List<CreateTask>();
-                foreach (var createTaskInfo in PendingTasks)
+                foreach (var createTaskInfo in PendingTasks.ToArray())
                 {
                     if (createTaskInfo.SiteId != siteId)
                     {
@@ -132,7 +132,7 @@ namespace SSCMS.Core.Services
             var filesCount = 0;
             var specialsCount = 0;
 
-            foreach (var taskInfo in PendingTasks)
+            foreach (var taskInfo in PendingTasks.ToArray())
             {
                 if (taskInfo.SiteId != siteId) continue;
                 

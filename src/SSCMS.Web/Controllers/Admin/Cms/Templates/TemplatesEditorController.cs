@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -11,7 +12,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class TemplatesEditorController : ControllerBase
     {
@@ -36,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Default([FromQuery] TemplateRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -66,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Add([FromBody] Template request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -80,7 +81,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPut, Route(Route)]
         public async Task<ActionResult<GetResult>> Edit([FromBody] Template request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
@@ -94,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<BoolResult>> Create([FromBody] TemplateRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
             {
                 return Unauthorized();
             }

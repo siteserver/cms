@@ -18,16 +18,14 @@ namespace SSCMS.Core.Utils.Serialization
     public class ImportObject
     {
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
         private readonly Site _site;
         private readonly int _adminId;
 
-        public ImportObject(IPathManager pathManager, IOldPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, int adminId)
+        public ImportObject(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, int adminId)
         {
             _pathManager = pathManager;
-            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
             _caching = caching;
             _site = site;
@@ -253,7 +251,7 @@ namespace SSCMS.Core.Utils.Serialization
         public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
+            var excelObject = new ExcelObject(_databaseManager, _pathManager);
             var contentInfoList = await excelObject.GetContentsByCsvFileAsync(csvFilePath, _site, channelInfo);
             contentInfoList.Reverse();
 
@@ -320,7 +318,7 @@ namespace SSCMS.Core.Utils.Serialization
 
         public async Task<List<int>> ImportContentsByCsvFileAsync(Channel channel, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
-            var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
+            var excelObject = new ExcelObject(_databaseManager, _pathManager);
             var contentInfoList = await excelObject.GetContentsByCsvFileAsync(csvFilePath, _site, channel);
             contentInfoList.Reverse();
 

@@ -1,4 +1,4 @@
-﻿using SSCMS.Context;
+﻿using SSCMS.Parse;
 
 namespace SSCMS.Plugins
 {

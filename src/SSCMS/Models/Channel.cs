@@ -19,7 +19,7 @@ namespace SSCMS.Models
         public string ContentModelPluginId { get; set; }
 
         [DataColumn]
-        public List<string> ContentRelatedPluginIds { get; set; }
+        public string TableName { get; set; }
 
         [DataColumn]
         public int ParentId { get; set; }

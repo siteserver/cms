@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
-        [Authorize(Roles = AuthTypes.Roles.Administrator)]
+        [Authorize(Roles = Types.Roles.Administrator)]
         [HttpPost, Route(RouteActionsSetLanguage)]
         public ActionResult<BoolResult> SetLanguage([FromBody]SetLanguageRequest request)
         {

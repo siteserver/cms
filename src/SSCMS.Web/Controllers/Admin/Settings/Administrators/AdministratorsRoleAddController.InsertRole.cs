@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -11,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> InsertRole([FromBody] RoleRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }

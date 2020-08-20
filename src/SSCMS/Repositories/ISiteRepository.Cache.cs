@@ -31,11 +31,11 @@ namespace SSCMS.Repositories
 
         Task<List<int>> GetSiteIdsAsync(int parentId);
 
-        Task<List<string>> GetSiteTableNamesAsync(IOldPluginManager pluginManager);
+        Task<List<string>> GetSiteTableNamesAsync();
 
-        Task<List<string>> GetAllTableNamesAsync(IOldPluginManager pluginManager);
+        Task<List<string>> GetAllTableNamesAsync();
 
-        Task<List<string>> GetTableNamesAsync(IOldPluginManager pluginManager, Site site);
+        Task<List<string>> GetTableNamesAsync(Site site);
 
         Task<int> GetIdByIsRootAsync();
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsLayerProfileController : ControllerBase
     {
@@ -36,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         {
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
-                !await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -61,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
-                !await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }
@@ -91,7 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
-                !await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

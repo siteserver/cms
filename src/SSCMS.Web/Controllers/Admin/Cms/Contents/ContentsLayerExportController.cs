@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Core.Utils.Serialization;
@@ -18,7 +19,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class ContentsLayerExportController : ControllerBase
     {
@@ -28,18 +29,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerExportController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerExportController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -48,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -59,7 +58,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
@@ -76,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -89,10 +88,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-            var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var contentInfoList = new List<Content>();
             var calculatedContentInfoList = new List<Content>();
@@ -142,7 +139,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                             }
 
                             contentInfoList.Add(contentInfo);
-                            calculatedContentInfoList.Add(await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns, pluginColumns));
+                            calculatedContentInfoList.Add(await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns));
                         }
                     }
                 }
@@ -177,7 +174,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     }
 
                     contentInfoList.Add(contentInfo);
-                    calculatedContentInfoList.Add(await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns, pluginColumns));
+                    calculatedContentInfoList.Add(await columnsManager.CalculateContentListAsync(sequence++, site, request.ChannelId, contentInfo, columns));
                 }
             }
 
@@ -190,7 +187,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
                     var caching = new CacheUtils(_cacheManager);
-                    var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
+                    var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
                     contentInfoList.Reverse();
                     if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
                     {
@@ -204,7 +201,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     var fileName = $"{channel.ChannelName}.csv";
                     var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                    var excelObject = new ExcelObject(_databaseManager, _pluginManager, _pathManager);
+                    var excelObject = new ExcelObject(_databaseManager, _pathManager);
                     await excelObject.CreateExcelFileForContentsAsync(filePath, site, channel, calculatedContentInfoList, exportColumnNames);
                     downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                 }

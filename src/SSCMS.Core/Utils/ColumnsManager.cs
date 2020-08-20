@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using SSCMS.Core.Utils.PluginImpls;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -14,13 +14,11 @@ namespace SSCMS.Core.Utils
     public class ColumnsManager
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
 
-        public ColumnsManager(IDatabaseManager databaseManager, IOldPluginManager pluginManager, IPathManager pathManager)
+        public ColumnsManager(IDatabaseManager databaseManager, IPathManager pathManager)
         {
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _pathManager = pathManager;
         }
 
@@ -308,7 +306,7 @@ namespace SSCMS.Core.Utils
             return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
-        public async Task<Content> CalculateContentListAsync(int sequence, Site site, int currentChannelId, Content source, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public async Task<Content> CalculateContentListAsync(int sequence, Site site, int currentChannelId, Content source, List<ContentColumn> columns)
         {
             if (source == null) return null;
 
@@ -367,39 +365,37 @@ namespace SSCMS.Core.Utils
                 }
             }
 
-            if (pluginColumns != null)
-            {
-                foreach (var pluginId in pluginColumns.Keys)
-                {
-                    var contentColumns = pluginColumns[pluginId];
-                    if (contentColumns == null || contentColumns.Count == 0) continue;
+            //if (pluginColumns != null)
+            //{
+            //    foreach (var pluginId in pluginColumns.Keys)
+            //    {
+            //        var contentColumns = pluginColumns[pluginId];
+            //        if (contentColumns == null || contentColumns.Count == 0) continue;
 
-                    foreach (var columnName in contentColumns.Keys)
-                    {
-                        var attributeName = $"{pluginId}:{columnName}";
-                        if (columns.All(x => x.AttributeName != attributeName)) continue;
+            //        foreach (var columnName in contentColumns.Keys)
+            //        {
+            //            var attributeName = $"{pluginId}:{columnName}";
+            //            if (columns.All(x => x.AttributeName != attributeName)) continue;
 
-                        try
-                        {
-                            var func = contentColumns[columnName];
-                            var value = func(new ContentContextImpl
-                            {
-                                SiteId = source.SiteId,
-                                ChannelId = source.ChannelId,
-                                ContentId = source.Id
-                            });
+            //            try
+            //            {
+            //                var func = contentColumns[columnName];
+            //                var value = func(new ContentContextImpl
+            //                {
+            //                    SiteId = source.SiteId,
+            //                    ChannelId = source.ChannelId,
+            //                    ContentId = source.Id
+            //                });
 
-                            content.Set(attributeName, value);
-                        }
-                        catch (Exception ex)
-                        {
-                            await _databaseManager.ErrorLogRepository.AddErrorLogAsync(pluginId, ex);
-                        }
-                    }
-                }
-            }
-
-            
+            //                content.Set(attributeName, value);
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                await _databaseManager.ErrorLogRepository.AddErrorLogAsync(pluginId, ex);
+            //            }
+            //        }
+            //    }
+            //}
 
             return content;
         }
@@ -455,8 +451,8 @@ namespace SSCMS.Core.Utils
                 }
             }
 
-            var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
+            //var pluginIds = _pluginManager.GetContentPluginIds(channel);
+            //var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
 
             var styles = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
 
@@ -496,32 +492,32 @@ namespace SSCMS.Core.Utils
                 columns.Add(column);
             }
 
-            if (pluginColumns != null)
-            {
-                foreach (var pluginId in pluginColumns.Keys)
-                {
-                    var contentColumns = pluginColumns[pluginId];
-                    if (contentColumns == null || contentColumns.Count == 0) continue;
+            //if (pluginColumns != null)
+            //{
+            //    foreach (var pluginId in pluginColumns.Keys)
+            //    {
+            //        var contentColumns = pluginColumns[pluginId];
+            //        if (contentColumns == null || contentColumns.Count == 0) continue;
 
-                    foreach (var columnName in contentColumns.Keys)
-                    {
-                        var attributeName = $"{pluginId}:{columnName}";
-                        var column = new ContentColumn
-                        {
-                            AttributeName = attributeName,
-                            DisplayName = $"{columnName}({pluginId})",
-                            InputType = InputType.Text
-                        };
+            //        foreach (var columnName in contentColumns.Keys)
+            //        {
+            //            var attributeName = $"{pluginId}:{columnName}";
+            //            var column = new ContentColumn
+            //            {
+            //                AttributeName = attributeName,
+            //                DisplayName = $"{columnName}({pluginId})",
+            //                InputType = InputType.Text
+            //            };
 
-                        if (ListUtils.ContainsIgnoreCase(listColumns, attributeName))
-                        {
-                            column.IsList = true;
-                        }
+            //            if (ListUtils.ContainsIgnoreCase(listColumns, attributeName))
+            //            {
+            //                column.IsList = true;
+            //            }
 
-                        columns.Add(column);
-                    }
-                }
-            }
+            //            columns.Add(column);
+            //        }
+            //    }
+            //}
 
             return columns;
         }

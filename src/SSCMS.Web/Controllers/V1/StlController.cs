@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = AuthTypes.Roles.Api)]
+    [Authorize(Roles = Types.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class StlController : ControllerBase
     {

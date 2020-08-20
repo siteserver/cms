@@ -17,7 +17,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UsersStyleController : ControllerBase
     {
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsersStyle))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsersStyle))
             {
                 return Unauthorized();
             }
@@ -77,7 +77,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsersStyle))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsersStyle))
             {
                 return Unauthorized();
             }
@@ -110,7 +110,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -147,7 +147,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(RouteExport)]
         public async Task<ActionResult> Export()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -161,7 +161,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteReset)]
         public async Task<ActionResult<ResetResult>> Reset()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsersStyle))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsersStyle))
             {
                 return Unauthorized();
             }

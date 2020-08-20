@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Extensions;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
@@ -10,11 +11,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public async Task<ActionResult<UpdateResult>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage,
-                AuthTypes.SitePermissions.MaterialImage,
-                AuthTypes.SitePermissions.MaterialVideo,
-                AuthTypes.SitePermissions.MaterialAudio,
-                AuthTypes.SitePermissions.MaterialFile))
+                Types.SitePermissions.MaterialMessage,
+                Types.SitePermissions.MaterialImage,
+                Types.SitePermissions.MaterialVideo,
+                Types.SitePermissions.MaterialAudio,
+                Types.SitePermissions.MaterialFile))
             {
                 return Unauthorized();
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -12,7 +13,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = AuthTypes.Roles.Api)]
+    [Authorize(Roles = Types.Roles.Api)]
     [Route(Constants.ApiV1Prefix)]
     public partial class ChannelsController : ControllerBase
     {
@@ -41,7 +42,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, AuthTypes.ChannelPermissions.Add);
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Types.ChannelPermissions.Add);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -50,9 +51,7 @@ namespace SSCMS.Web.Controllers.V1
             var channelInfo = new Channel
             {
                 SiteId = request.SiteId,
-                ParentId = request.ParentId,
-                ContentModelPluginId = request.ContentModelPluginId,
-                ContentRelatedPluginIds = request.ContentRelatedPluginIds
+                ParentId = request.ParentId
             };
 
             if (!string.IsNullOrEmpty(request.IndexName))
@@ -152,7 +151,7 @@ namespace SSCMS.Web.Controllers.V1
         {
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ChannelPermissions.Edit);
+                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Types.ChannelPermissions.Edit);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -190,11 +189,6 @@ namespace SSCMS.Web.Controllers.V1
                 {
                     channel.ContentModelPluginId = request.ContentModelPluginId;
                 }
-            }
-
-            if (request.ContentRelatedPluginIds != null)
-            {
-                channel.ContentRelatedPluginIds = ListUtils.GetStringList(request.ContentRelatedPluginIds);
             }
 
             if (request.FilePath != null)
@@ -313,7 +307,7 @@ namespace SSCMS.Web.Controllers.V1
             var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
                          _authManager.IsAdmin &&
                          await _authManager.HasChannelPermissionsAsync(siteId, channelId,
-                             AuthTypes.ChannelPermissions.Delete);
+                             Types.ChannelPermissions.Delete);
             if (!isAuth) return Unauthorized();
 
             var site = await _siteRepository.GetAsync(siteId);

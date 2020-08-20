@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -10,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentsLayerAttributesController : ControllerBase
     {
@@ -32,7 +33,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Edit))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit))
             {
                 return Unauthorized();
             }

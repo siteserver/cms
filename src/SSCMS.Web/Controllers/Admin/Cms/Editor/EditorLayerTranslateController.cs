@@ -4,6 +4,7 @@ using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -12,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class EditorLayerTranslateController : ControllerBase
     {
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -55,7 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -63,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, AuthTypes.ContentPermissions.Add);
+            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, Types.ContentPermissions.Add);
 
             var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
@@ -88,7 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Extensions;
@@ -15,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         public async Task<ActionResult<UploadResult>> UploadVideo([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialVideo))
+                Types.SitePermissions.MaterialVideo))
             {
                 return Unauthorized();
             }

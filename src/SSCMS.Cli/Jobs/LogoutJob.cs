@@ -4,6 +4,7 @@ using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Models;
+using SSCMS.Plugins;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -37,7 +38,7 @@ namespace SSCMS.Cli.Jobs
             Console.WriteLine();
         }
 
-        public async Task ExecuteAsync(IJobContext context)
+        public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 

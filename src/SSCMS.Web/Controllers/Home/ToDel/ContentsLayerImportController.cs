@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
@@ -16,7 +17,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentsLayerImportController : ControllerBase
     {
@@ -27,17 +28,15 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerImportController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerImportController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
         }
@@ -45,7 +44,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -69,7 +68,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -112,7 +111,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -137,7 +136,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                     if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
+                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
                     await importObject.ImportContentsByZipFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
                 }
             }
@@ -151,7 +150,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                     if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
+                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
                     await importObject.ImportContentsByCsvFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
                 }
             }
@@ -163,7 +162,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                     if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
-                    var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, caching, site, adminId);
+                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
                     await importObject.ImportContentsByTxtFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
                 }
             }

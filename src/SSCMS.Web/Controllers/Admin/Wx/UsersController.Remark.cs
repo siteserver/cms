@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
@@ -9,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpPost, Route(RouteActionsRemark)]
         public async Task<ActionResult<BoolResult>> Remark([FromBody] RemarkRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.WxUsers))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.WxUsers))
             {
                 return Unauthorized();
             }

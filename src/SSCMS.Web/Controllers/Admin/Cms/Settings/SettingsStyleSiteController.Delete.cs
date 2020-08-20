@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.SettingsStyleSite))
+                Types.SitePermissions.SettingsStyleSite))
             {
                 return Unauthorized();
             }

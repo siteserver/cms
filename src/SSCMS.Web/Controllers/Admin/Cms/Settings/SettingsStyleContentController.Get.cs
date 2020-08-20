@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleContent))
+                    Types.SitePermissions.SettingsStyleContent))
             {
                 return Unauthorized();
             }

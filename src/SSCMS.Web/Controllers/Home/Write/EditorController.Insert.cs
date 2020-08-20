@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 
@@ -11,8 +12,8 @@ namespace SSCMS.Web.Controllers.Home.Write
         public async Task<ActionResult<BoolResult>> Insert([FromBody] SaveRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.Add))
+                    Types.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
             {
                 return Unauthorized();
             }

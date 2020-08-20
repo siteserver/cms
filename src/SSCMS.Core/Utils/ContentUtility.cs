@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Plugins;

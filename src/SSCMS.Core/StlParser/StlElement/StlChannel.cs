@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
@@ -252,10 +253,6 @@ namespace SSCMS.Core.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ContentModelPluginId)))
             {
                 parsedContent = channel.ContentModelPluginId;
-            }
-            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ContentRelatedPluginIds)))
-            {
-                parsedContent = ListUtils.ToString(channel.ContentRelatedPluginIds);
             }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ParentId)))
             {

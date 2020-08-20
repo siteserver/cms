@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Wx;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpPost, Route(RouteActionsAddTag)]
         public async Task<ActionResult<AddTagResult>> AddTag([FromBody] AddTagRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.WxUsers))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.WxUsers))
             {
                 return Unauthorized();
             }

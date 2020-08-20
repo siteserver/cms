@@ -10,9 +10,7 @@ namespace SSCMS.Repositories
     {
         Task InsertChannelAsync(Channel parentChannel, Channel channel);
 
-        Task<int> InsertAsync(int siteId, int parentId, string channelName, string indexName,
-            string contentModelPluginId, List<string> contentRelatedPluginIds, int channelTemplateId,
-            int contentTemplateId);
+        Task<int> InsertAsync(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId, int channelTemplateId, int contentTemplateId);
 
         Task<int> InsertAsync(Channel channel);
 

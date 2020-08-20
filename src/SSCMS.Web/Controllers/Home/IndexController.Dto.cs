@@ -12,7 +12,6 @@ namespace SSCMS.Web.Controllers.Home
             public string HomeTitle { get; set; }
             public string HomeLogoUrl { get; set; }
             public List<Menu> Menus { get; set; }
-            public string DefaultPageUrl { get; set; }
         }
     }
 }

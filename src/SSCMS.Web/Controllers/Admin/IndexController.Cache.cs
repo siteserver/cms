@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin
 {
     public partial class IndexController
     {
-        [Authorize(Roles = AuthTypes.Roles.Administrator)]
+        [Authorize(Roles = Types.Roles.Administrator)]
         [HttpPost, Route(RouteActionsCache)]
         public async Task<ActionResult<IntResult>> Cache([FromBody] SiteRequest request)
         {

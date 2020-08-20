@@ -1,9 +1,10 @@
 ﻿using System;
 using Quartz;
+using SSCMS.Plugins;
 
 namespace SSCMS.Cli.Core
 {
-    public class JobContext : IJobContext
+    public class JobContext : IPluginJobContext
     {
         public JobContext(string command, string[] args, string[] extras, IJobExecutionContext context)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] string pluginId)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }

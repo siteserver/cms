@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using SSCMS.Configuration;
 
 namespace SSCMS.Utils
 {
@@ -717,7 +718,7 @@ namespace SSCMS.Utils
             return Regex.IsMatch(chr.ToString(), pattern);
         }
 
-        public const string StrictNameRegex = "^[a-z][a-z0-9\\-]*$";
+        public const string StrictNameRegex = "^[a-z][a-z0-9\\-_]*$";
 
         public static bool IsStrictName(string name)
         {

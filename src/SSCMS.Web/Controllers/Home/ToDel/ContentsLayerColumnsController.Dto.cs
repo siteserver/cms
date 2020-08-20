@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Home.ToDel

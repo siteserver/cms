@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
@@ -14,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesSaveController : ControllerBase
     {
@@ -27,17 +28,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public SitesSaveController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public SitesSaveController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
         }
@@ -45,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -63,13 +62,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteSettings)]
         public async Task<ActionResult<SaveSettingsResult>> SaveSettings([FromBody] SaveRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
 
             var caching = new CacheUtils(_cacheManager);
-            var manager = new SiteTemplateManager(_pathManager, _pluginManager, _databaseManager, caching);
+            var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
 
             if (manager.IsSiteTemplateDirectoryExists(request.TemplateDir))
             {
@@ -140,14 +139,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteFiles)]
         public async Task<ActionResult<SaveFilesResult>> SaveFiles([FromBody]SaveRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var caching = new CacheUtils(_cacheManager);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
             await exportObject.ExportFilesToSiteAsync(siteTemplatePath, request.IsAllFiles, request.CheckedDirectories, request.CheckedFiles, true);
 
@@ -163,7 +162,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteActionsData)]
         public async Task<ActionResult<BoolResult>> SaveData([FromBody]SaveRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -174,10 +173,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
 
             var caching = new CacheUtils(_cacheManager);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, _pluginManager, site);
+            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, request.IsSaveContents, request.IsSaveAllChannels, request.CheckedChannelIds);
 
-            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, caching, _pluginManager, site, request.TemplateDir);
+            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, caching, site, request.TemplateDir);
 
             var siteTemplateInfo = new SiteTemplateInfo
             {

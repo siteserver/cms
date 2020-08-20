@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
 
@@ -11,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.WxReply))
+                Types.SitePermissions.WxReply))
             {
                 return Unauthorized();
             }

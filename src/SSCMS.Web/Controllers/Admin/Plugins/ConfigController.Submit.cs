@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Plugins;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
@@ -9,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AnalysisUserController : ControllerBase
     {
@@ -31,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAnalysisUser))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAnalysisUser))
             {
                 return Unauthorized();
             }

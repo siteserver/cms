@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ItemsResult>> GetItems([FromQuery] ItemsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
+                    Types.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -31,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ItemsResult>> AddItems([FromBody] ItemsAddRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
+                    Types.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -65,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ItemsResult>> EditItem([FromBody] ItemsEditRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
+                    Types.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -91,7 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ItemsResult>> DeleteItem([FromBody] ItemsDeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
+                    Types.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }
@@ -113,7 +114,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ItemsResult>> OrderItem([FromBody] ItemsOrderRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.SettingsStyleRelatedField))
+                    Types.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }

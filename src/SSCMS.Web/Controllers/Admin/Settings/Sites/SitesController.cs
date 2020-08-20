@@ -13,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesController : ControllerBase
     {
@@ -22,7 +22,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _oldPluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -30,13 +29,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
 
-        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository,
-            IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository)
+        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
-            _oldPluginManager = oldPluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;

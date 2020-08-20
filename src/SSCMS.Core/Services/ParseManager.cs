@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Context;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -19,15 +20,13 @@ namespace SSCMS.Core.Services
         public ISettingsManager SettingsManager { get; }
         public IPathManager PathManager { get; }
         public IDatabaseManager DatabaseManager { get; }
-        public IOldPluginManager OldPluginManager { get; }
         private readonly IPluginManager _pluginManager;
 
-        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, IPluginManager pluginManager)
+        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
         {
             SettingsManager = settingsManager;
             PathManager = pathManager;
             DatabaseManager = databaseManager;
-            OldPluginManager = oldPluginManager;
             _pluginManager = pluginManager;
         }
 

@@ -1,5 +1,13 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/css/github-markdown.css">
+  <style>
+    .el-card__body .el-form-item {
+      margin-bottom: 5px;
+    }
+  </style>
+}
 
 <el-form :inline="true" size="mini">
   <el-form-item label="关键字">
@@ -20,7 +28,7 @@
 
 <el-row>
   <el-col :span="6" v-for="(plugin, index) in plugins" :key="plugin.pluginId">
-    <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
+    <el-card style="margin-bottom: 15px; margin-right: 15px;">
       <div slot="header" class="clearfix">
         <span>
           <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
@@ -28,65 +36,37 @@
           </el-link>
         </span>
       </div>
-      <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
-        <el-image 
-          style="max-width: 150px; cursor: pointer; margin: 10px"
-          :src="getIconUrl(plugin.iconUrl)">
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline"></i>
-          </div>
-        </el-image>
-      </el-link>
-      <div class="text item" style="margin-bottom: 15px;">
-        
-        <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-          <tbody>
-            <tr class="el-table__row">
-              <td rowspan="1" colspan="1">
-                <div class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;">
-                  插件Id：
-                  <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
-                    {{ plugin.pluginId }}
-                    <span v-if="packageIds.indexOf(plugin.pluginId) !== -1">（已安装）</span>
-                  </el-link>
-                </div>
-              </td>
-            </tr>
-            <tr class="el-table__row">
-              <td rowspan="1" colspan="1">
-                <div class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;">
-                  最新版本: <span class="text-primary"> {{ getLatestVersion(plugin) }} </span>
-                </div>
-              </td>
-            </tr>
-            <tr class="el-table__row">
-              <td rowspan="1" colspan="1">
-                <div class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;">
-                  更新时间： <span class="text-primary"> {{ getLatestPublished(plugin) }} </span>
-                </div>
-              </td>
-            </tr>
-            <tr class="el-table__row">
-              <td rowspan="1" colspan="1">
-                <div class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;">
-                  标签： <span v-for="tagName in getTagNames(plugin)" style="margin-right: 2px;">{{ tagName }}</span>
-                </div>
-              </td>
-            </tr>
-            <tr class="el-table__row">
-              <td rowspan="1" colspan="1">
-                <div :title="plugin.summary" class="cell" style="font-size: 14px; text-align: left; padding: 5px 10px; overflow-y: hidden; height: 15px;; height: 50px; overflow: hidden">
-                  {{ plugin.summary }}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <!-- <div style="margin: 10px 0;">
-          <el-button plain type="info" v-on:click="btnPreviewClick(plugin.pluginId)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
-          <el-button plain type="primary" v-on:click="btnCreateClick('cloud', plugin.pluginId)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">创建站点</el-button>
-        </div> -->
+      <div style="text-align: center;">
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
+          <el-badge :value="packageIds.indexOf(plugin.pluginId) !== -1 ? '已安装' : '未安装'" :type="packageIds.indexOf(plugin.pluginId) !== -1 ? 'primary' : 'info'">
+            <el-image 
+              style="width: 150px; height: 150px; cursor: pointer; margin: 10px"
+              :src="getIconUrl(plugin.iconUrl)">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-badge>
+        </el-link>
+      </div>
+      <el-form size="mini" label-width="70px">
+        <el-form-item label="插件Id">
+          <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
+            {{ plugin.pluginId }}
+          </el-link>
+        </el-form-item>
+        <el-form-item label="最新版本">
+          {{ getLatestVersion(plugin) }}
+        </el-form-item>
+        <el-form-item label="更新时间">
+          {{ getLatestPublished(plugin) }}
+        </el-form-item>
+        <el-form-item label="标签">
+          <span v-for="tagName in getTagNames(plugin)" style="margin-right: 2px;">{{ tagName }}</span>
+        </el-form-item>
+      </el-form>
+      <div :title="plugin.summary" class="cell" style="font-size: 14px; text-align: left; overflow-y: hidden; height: 15px;; height: 35px; overflow: hidden">
+        {{ plugin.summary }}
       </div>
     </el-card>
   </el-col>

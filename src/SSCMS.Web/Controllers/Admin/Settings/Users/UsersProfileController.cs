@@ -15,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class UsersProfileController : ControllerBase
     {
@@ -38,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int userId)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -57,7 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm]IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
@@ -83,7 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]User request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }

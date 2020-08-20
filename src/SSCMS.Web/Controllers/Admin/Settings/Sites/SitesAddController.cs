@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Extensions;
@@ -14,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesAddController : ControllerBase
     {
@@ -27,12 +28,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _oldPluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IOldPluginManager oldPluginManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -40,7 +40,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
-            _oldPluginManager = oldPluginManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
             _administratorRepository = administratorRepository;
@@ -49,16 +48,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
 
             var caching = new CacheUtils(_cacheManager);
-            var manager = new SiteTemplateManager(_pathManager, _oldPluginManager, _databaseManager, caching);
+            var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplateInfoList();
 
-            var tableNameList = await _siteRepository.GetSiteTableNamesAsync(_oldPluginManager);
+            var tableNameList = await _siteRepository.GetSiteTableNamesAsync();
 
             var rootExists = await _siteRepository.GetSiteByIsRootAsync() != null;
 
@@ -85,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }
@@ -120,7 +119,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             channelInfo.ContentModelPluginId = string.Empty;
 
             var tableName = string.Empty;
-            if (StringUtils.EqualsIgnoreCase(request.SiteType, AuthTypes.SiteTypes.Web) || StringUtils.EqualsIgnoreCase(request.SiteType, AuthTypes.SiteTypes.Wx))
+            if (StringUtils.EqualsIgnoreCase(request.SiteType, Types.SiteTypes.Web) || StringUtils.EqualsIgnoreCase(request.SiteType, Types.SiteTypes.Wx))
             {
                 if (request.TableRule == TableRule.Choose)
                 {
@@ -174,7 +173,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             if (request.CreateType == "local")
             {
-                var manager = new SiteTemplateManager(_pathManager, _oldPluginManager, _databaseManager, caching);
+                var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 caching.SetProcess(request.Guid, "生成站点页面...");
@@ -201,7 +200,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
                 caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
 
-                var manager = new SiteTemplateManager(_pathManager, _oldPluginManager, _databaseManager, caching);
+                var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
                 await manager.ImportSiteTemplateToEmptySiteAsync(site, siteTemplateDir, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 caching.SetProcess(request.Guid, "生成站点页面...");
@@ -220,7 +219,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteProcess)]
         public async Task<ActionResult<CacheUtils.Process>> Process([FromBody] ProcessRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

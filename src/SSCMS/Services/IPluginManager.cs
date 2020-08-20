@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Plugins;
 
 namespace SSCMS.Services
 {
@@ -8,6 +9,10 @@ namespace SSCMS.Services
         List<IPlugin> Plugins { get; }
         List<IPlugin> EnabledPlugins { get; }
         List<IPlugin> NetCorePlugins { get; }
+        List<IPlugin> GetPlugins(int siteId);
+        List<IPlugin> GetPlugins(int siteId, int channelId);
+        bool IsEnabled(string pluginId, int siteId);
+        bool IsEnabled(string pluginId, int siteId, int channelId);
         IPlugin Current { get; }
         IPlugin GetPlugin(string pluginId);
         void Load();

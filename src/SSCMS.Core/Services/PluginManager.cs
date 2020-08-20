@@ -4,7 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using SSCMS.Configuration;
 using SSCMS.Core.Plugins;
+using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -84,6 +86,43 @@ namespace SSCMS.Core.Services
         public List<IPlugin> EnabledPlugins => Plugins.Where(x => x.Success && !x.Disabled).ToList();
 
         public List<IPlugin> NetCorePlugins => EnabledPlugins.Where(x => x.Assembly != null).ToList();
+
+        public List<IPlugin> GetPlugins(int siteId)
+        {
+            return EnabledPlugins.Where(plugin => IsEnabled(plugin, siteId)).ToList();
+        }
+
+        public List<IPlugin> GetPlugins(int siteId, int channelId)
+        {
+            var plugins = GetPlugins(siteId);
+            return plugins.Where(plugin => IsEnabled(plugin, siteId, channelId)).ToList();
+        }
+
+        private static bool IsEnabled(IPlugin plugin, int siteId)
+        {
+            if (plugin == null || plugin.Disabled) return false;
+            return plugin.IsAllSites || ListUtils.Contains(plugin.SiteIds, siteId);
+        }
+
+        private static bool IsEnabled(IPlugin plugin, int siteId, int channelId)
+        {
+            if (plugin == null || plugin.Disabled) return false;
+            var siteConfig = plugin.SiteConfigs?.FirstOrDefault(x => x.SiteId == siteId);
+            if (siteConfig == null) return false;
+            return siteConfig.IsAllChannels || ListUtils.Contains(siteConfig.ChannelIds, channelId);
+        }
+
+        public bool IsEnabled(string pluginId, int siteId)
+        {
+            var plugin = GetPlugin(pluginId);
+            return IsEnabled(plugin, siteId);
+        }
+
+        public bool IsEnabled(string pluginId, int siteId, int channelId)
+        {
+            var plugin = GetPlugin(pluginId);
+            return IsEnabled(plugin, siteId, channelId);
+        }
 
         public IPlugin GetPlugin(string pluginId)
         {

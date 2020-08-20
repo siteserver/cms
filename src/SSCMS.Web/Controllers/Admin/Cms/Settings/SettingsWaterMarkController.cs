@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Extensions;
@@ -14,7 +15,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SettingsWaterMarkController : ControllerBase
     {
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsWaterMark))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsWaterMark))
             {
                 return Unauthorized();
             }
@@ -55,7 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.SiteId, AuthTypes.SitePermissions.SettingsWaterMark))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.SiteId, Types.SitePermissions.SettingsWaterMark))
             {
                 return Unauthorized();
             }
@@ -94,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.SettingsWaterMark))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsWaterMark))
             {
                 return Unauthorized();
             }

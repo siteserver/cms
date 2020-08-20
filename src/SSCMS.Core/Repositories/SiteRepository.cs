@@ -13,6 +13,7 @@ namespace SSCMS.Core.Repositories
     public partial class SiteRepository : ISiteRepository
     {
         private readonly Repository<Site> _repository;
+        private readonly ISettingsManager _settingsManager;
         private readonly IChannelRepository _channelRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ITemplateRepository _templateRepository;
@@ -20,6 +21,7 @@ namespace SSCMS.Core.Repositories
         public SiteRepository(ISettingsManager settingsManager, IChannelRepository channelRepository, IAdministratorRepository administratorRepository, ITemplateRepository templateRepository)
         {
             _repository = new Repository<Site>(settingsManager.Database, settingsManager.Redis);
+            _settingsManager = settingsManager;
             _channelRepository = channelRepository;
             _administratorRepository = administratorRepository;
             _templateRepository = templateRepository;

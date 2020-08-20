@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -10,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentsLayerViewController : ControllerBase
     {
@@ -18,17 +19,15 @@ namespace SSCMS.Web.Controllers.Home.ToDel
 
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerViewController(IAuthManager authManager, IDatabaseManager databaseManager, IOldPluginManager pluginManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerViewController(IAuthManager authManager, IDatabaseManager databaseManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
@@ -38,7 +37,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, AuthTypes.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -56,7 +55,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
 
             var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var attributes = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             return new GetResult

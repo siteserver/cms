@@ -141,9 +141,9 @@ namespace SSCMS.Core.Repositories
         }
 
         // 回收站 - 删除全部
-        public async Task DeleteTrashAsync(Site site, IOldPluginManager oldPluginManager, IPluginManager pluginManager)
+        public async Task DeleteTrashAsync(Site site, IPluginManager pluginManager)
         {
-            var tableNames = await _siteRepository.GetTableNamesAsync(oldPluginManager, site);
+            var tableNames = await _siteRepository.GetTableNamesAsync(site);
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);
@@ -170,9 +170,9 @@ namespace SSCMS.Core.Repositories
         }
 
         // 回收站 - 恢复全部
-        public async Task RestoreTrashAsync(IOldPluginManager pluginManager, Site site, int restoreChannelId)
+        public async Task RestoreTrashAsync(Site site, int restoreChannelId)
         {
-            var tableNames = await _siteRepository.GetTableNamesAsync(pluginManager, site);
+            var tableNames = await _siteRepository.GetTableNamesAsync(site);
             foreach (var tableName in tableNames)
             {
                 var repository = GetRepository(tableName);

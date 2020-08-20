@@ -4,6 +4,7 @@ var $urlActionsSubmitChannels = '/plugins/config/actions/submitChannels';
 
 var data = utils.init({
   pluginId: utils.getQueryString('pluginId'),
+  siteId: utils.getQueryInt('siteId'),
   form: {
     taxis: 0,
     isAllSites: true,
@@ -12,12 +13,9 @@ var data = utils.init({
   sites: null,
   siteConfigs: null,
   siteName: null,
-  permissionInfo: null,
-
   treeData: [],
   defaultExpandedKeys: [],
-
-  pageType: 'sites',
+  pageType: null,
   channelsForm: null,
 });
 
@@ -41,6 +39,7 @@ var methods = {
         isAllSites: res.plugin.isAllSites,
         siteIds: res.plugin.siteIds || []
       }
+      $this.pageType = 'sites';
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -74,18 +73,23 @@ var methods = {
     });
   },
 
-  apiGetChannels: function (site) {
+  apiGetChannels: function (siteId) {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($urlActionsGetChannels, {
-      siteId: site.value
+      pluginId: this.pluginId,
+      siteId: siteId
     }).then(function (response) {
       var res = response.data;
 
       $this.siteName = res.siteName;
       $this.channel = res.channel;
-      $this.channelsForm = $this.getSiteConfig(site);
+      $this.channelsForm = {
+        siteId: res.siteConfig.siteId,
+        isAllChannels: res.siteConfig.isAllChannels,
+        channelIds: res.siteConfig.channelIds
+      };
       $this.treeData = [res.channel];
       $this.defaultExpandedKeys = [res.channel.id];
       $this.pageType = 'channels';
@@ -141,7 +145,7 @@ var methods = {
   },
 
   btnChannelsClick: function(site) {
-    this.apiGetChannels(site);
+    this.apiGetChannels(site.value);
   },
 
   btnSubmitClick: function () {
@@ -183,6 +187,10 @@ var $vue = new Vue({
     }
   },
   created: function () {
-    this.apiGet();
+    if (this.siteId > 0) {
+      this.apiGetChannels(this.siteId);
+    } else {
+      this.apiGet();
+    }
   }
 });

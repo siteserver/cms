@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Configuration;
+using SSCMS.Utils;
 using Menu = SSCMS.Configuration.Menu;
 
 namespace SSCMS.Core.Services
@@ -10,7 +12,7 @@ namespace SSCMS.Core.Services
     {
         private static readonly SiteType DefaultSiteType = new SiteType
         {
-            Id = AuthTypes.SiteTypes.Web,
+            Id = Types.SiteTypes.Web,
             IconClass = "ion-earth",
             Text = "网站"
         };
@@ -158,6 +160,14 @@ namespace SSCMS.Core.Services
             }
 
             return tables;
+        }
+
+        public List<string> GetContentTableNames()
+        {
+            var tables = GetTables();
+            return tables
+                .Where(x => StringUtils.EqualsIgnoreCase(x.Type, Types.TableTypes.Content)).Select(x => x.Id)
+                .ToList();
         }
     }
 }

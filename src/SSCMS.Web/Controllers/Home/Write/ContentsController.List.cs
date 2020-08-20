@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public async Task<ActionResult<ListResult>> List([FromBody] ListRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.Contents))
+                    Types.SitePermissions.Contents))
             {
                 return Unauthorized();
             }
@@ -23,10 +24,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
 
-            var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
-
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
 
             var offset = site.PageSize * (request.Page - 1);
@@ -44,10 +42,7 @@ namespace SSCMS.Web.Controllers.Home.Write
                     if (content == null) continue;
 
                     var pageContent =
-                        await columnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns, pluginColumns);
-
-                    var menus = await _pluginManager.GetContentMenusAsync(pluginIds, pageContent);
-                    pageContent.Set("PluginMenus", menus);
+                        await columnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns);
 
                     pageContents.Add(pageContent);
                 }

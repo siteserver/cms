@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using SSCMS.Configuration;
 using SSCMS.Core.Services;
 using SSCMS.Services;
 using SSCMS.Utils;

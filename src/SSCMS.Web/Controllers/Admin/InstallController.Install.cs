@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Utils;
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin
         {
             if (request.SecurityKey != _settingsManager.SecurityKey) return Unauthorized();
 
-            var (success, errorMessage) = await _databaseManager.InstallAsync(_pluginManager, request.UserName, request.AdminPassword, request.Email, request.Mobile);
+            var (success, errorMessage) = await _databaseManager.InstallAsync(request.UserName, request.AdminPassword, request.Email, request.Mobile);
             if (!success)
             {
                 return this.Error(errorMessage);

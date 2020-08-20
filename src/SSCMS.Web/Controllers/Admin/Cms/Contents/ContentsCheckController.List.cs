@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
@@ -14,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<ListResult>> List([FromBody] ListRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.ContentsCheck))
+                    Types.SitePermissions.ContentsCheck))
             {
                 return Unauthorized();
             }
@@ -24,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.CheckContents);
 
             var pageContents = new List<Content>();
@@ -41,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     if (content == null) continue;
 
                     var pageContent =
-                        await columnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns, null);
+                        await columnsManager.CalculateContentListAsync(sequence++, site, request.SiteId, content, columns);
 
                     pageContents.Add(pageContent);
                 }

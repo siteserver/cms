@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -10,7 +11,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsAccessTokensLayerViewController : ControllerBase
     {
@@ -31,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]int id)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }
@@ -49,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteRegenerate)]
         public async Task<ActionResult<RegenerateResult>> Regenerate([FromBody]IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsAccessTokens))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
             {
                 return Unauthorized();
             }

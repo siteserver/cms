@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Home.ToDel
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.User)]
+    [Authorize(Roles = Types.Roles.User)]
     [Route(Constants.ApiHomePrefix + "todel/")]
     public partial class ContentAddController : ControllerBase
     {
@@ -81,7 +82,7 @@ namespace SSCMS.Web.Controllers.Home.ToDel
                 if (siteInfo != null)
                 {
                     var channelIdList = await _authManager.GetChannelIdsAsync(siteInfo.Id,
-                        AuthTypes.ContentPermissions.Add);
+                        Types.ContentPermissions.Add);
                     foreach (var permissionChannelId in channelIdList)
                     {
                         var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);

@@ -98,7 +98,7 @@
   <el-row>
     <el-col :span="24" align="center">
       <el-button type="primary" v-on:click="btnChannelsSubmitClick" size="small">确 定</el-button>
-      <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      <el-button v-if="siteId === 0" size="small" v-on:click="btnCancelClick">取 消</el-button>
     </el-col>
   </el-row>
 </template>

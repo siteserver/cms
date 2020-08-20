@@ -11,5 +11,7 @@ namespace SSCMS.Services
         List<Permission> GetPermissions();
         List<Menu> GetMenus();
         List<Table> GetTables();
+
+        List<string> GetContentTableNames();
     }
 }

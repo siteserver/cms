@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -12,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsAdministratorsRole))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var allPermissions = _settingsManager.GetPermissions();
 
-            var allAppPermissions = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.App));
+            var allAppPermissions = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.App));
 
             foreach (var permission in allAppPermissions)
             {

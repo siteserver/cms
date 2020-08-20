@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Configs
@@ -9,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<UserMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsConfigsHomeMenu))
             {
                 return Unauthorized();
             }

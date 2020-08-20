@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    AuthTypes.SitePermissions.ContentsRecycle))
+                    Types.SitePermissions.ContentsRecycle))
             {
                 return Unauthorized();
             }
@@ -42,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
             else if (request.Action == Action.DeleteAll)
             {
-                await _contentRepository.DeleteTrashAsync(site, _oldPluginManager, _pluginManager);
+                await _contentRepository.DeleteTrashAsync(site, _pluginManager);
                 await _authManager.AddSiteLogAsync(request.SiteId, "从回收站清空所有内容");
             }
             else if (request.Action == Action.Restore)
@@ -66,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
             else if (request.Action == Action.RestoreAll)
             {
-                await _contentRepository.RestoreTrashAsync(_oldPluginManager, site, request.RestoreChannelId);
+                await _contentRepository.RestoreTrashAsync(site, request.RestoreChannelId);
                 await _authManager.AddSiteLogAsync(request.SiteId, "从回收站还原所有内容");
             }
 

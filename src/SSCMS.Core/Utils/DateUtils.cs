@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Utils;
 

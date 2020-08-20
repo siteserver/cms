@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpPost, Route(RouteMp)]
         public async Task<ActionResult<MpSubmitResult>> MpSubmit([FromBody] MpSubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, AuthTypes.SitePermissions.WxAccount))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.WxAccount))
             {
                 return Unauthorized();
             }

@@ -47,10 +47,10 @@ namespace SSCMS.Core.Plugins.Extensions
                 }
             }
 
-            var middlewares = pluginManager.GetExtensions<IPluginMiddleware>();
-            if (middlewares != null)
+            var middleWares = pluginManager.GetExtensions<IPluginMiddleware>();
+            if (middleWares != null)
             {
-                foreach (var middleware in middlewares)
+                foreach (var middleware in middleWares)
                 {
                     app.Use(next => async context => await middleware.UseAsync(next, context));
                 }
@@ -62,11 +62,11 @@ namespace SSCMS.Core.Plugins.Extensions
             foreach (var table in tables.Where(table => !string.IsNullOrEmpty(table.Id)))
             {
                 List<TableColumn> columns;
-                if (table.Type == TableType.Custom)
+                if (StringUtils.EqualsIgnoreCase(table.Type, Types.TableTypes.Custom))
                 {
                     columns = table.Columns;
                 }
-                else if (table.Type == TableType.Content)
+                else if (StringUtils.EqualsIgnoreCase(table.Type, Types.TableTypes.Content))
                 {
                     columns = database.GetTableColumns(null);
                     columns.AddRange(database.GetTableColumns<Content>());

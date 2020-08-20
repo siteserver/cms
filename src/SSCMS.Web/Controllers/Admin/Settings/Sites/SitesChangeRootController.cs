@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Repositories;
@@ -12,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesChangeRootController : ControllerBase
     {
@@ -34,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }
@@ -88,7 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }

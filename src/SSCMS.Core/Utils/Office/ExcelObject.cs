@@ -11,13 +11,11 @@ namespace SSCMS.Core.Utils.Office
     public class ExcelObject
     {
         private readonly IDatabaseManager _databaseManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
 
-        public ExcelObject(IDatabaseManager databaseManager, IOldPluginManager pluginManager, IPathManager pathManager)
+        public ExcelObject(IDatabaseManager databaseManager, IPathManager pathManager)
         {
             _databaseManager = databaseManager;
-            _pluginManager = pluginManager;
             _pathManager = pathManager;
         }
 
@@ -79,7 +77,7 @@ namespace SSCMS.Core.Utils.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columnsManager = new ColumnsManager(_databaseManager, _pluginManager, _pathManager);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 
             foreach (var column in columns)

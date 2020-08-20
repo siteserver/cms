@@ -13,7 +13,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class AdministratorsRoleAddController : ControllerBase
     {
@@ -122,7 +122,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 //    });
                 //}
 
-                var channelPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel));
+                var channelPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel));
                 foreach (var permission in channelPermissionList)
                 {
                     channelPermissions.Add(new Option
@@ -133,38 +133,38 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     });
                 }
 
-                var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content));
+                var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content));
                 foreach (var permission in contentPermissionList)
                 {
-                    if (permission.Id == AuthTypes.ContentPermissions.CheckLevel1)
+                    if (permission.Id == Types.ContentPermissions.CheckLevel1)
                     {
                         if (site.CheckContentLevel < 1)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel2)
+                    else if (permission.Id == Types.ContentPermissions.CheckLevel2)
                     {
                         if (site.CheckContentLevel < 2)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel3)
+                    else if (permission.Id == Types.ContentPermissions.CheckLevel3)
                     {
                         if (site.CheckContentLevel < 3)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel4)
+                    else if (permission.Id == Types.ContentPermissions.CheckLevel4)
                     {
                         if (site.CheckContentLevel < 4)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == AuthTypes.ContentPermissions.CheckLevel5)
+                    else if (permission.Id == Types.ContentPermissions.CheckLevel5)
                     {
                         if (site.CheckContentLevel < 5)
                         {
@@ -218,7 +218,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var channelPermissionList = await _authManager.GetChannelPermissionsAsync(siteId);
                 foreach (var channelPermission in channelPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Channel)))
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel)))
                     {
                         if (permission.Id == channelPermission)
                         {
@@ -235,27 +235,27 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var contentPermissionList = await _authManager.GetContentPermissionsAsync(siteId);
                 foreach (var contentPermission in contentPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content)))
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content)))
                     {
                         if (permission.Id == contentPermission)
                         {
-                            if (contentPermission == AuthTypes.ContentPermissions.CheckLevel1)
+                            if (contentPermission == Types.ContentPermissions.CheckLevel1)
                             {
                                 if (site.CheckContentLevel < 1) continue;
                             }
-                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel2)
+                            else if (contentPermission == Types.ContentPermissions.CheckLevel2)
                             {
                                 if (site.CheckContentLevel < 2) continue;
                             }
-                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel3)
+                            else if (contentPermission == Types.ContentPermissions.CheckLevel3)
                             {
                                 if (site.CheckContentLevel < 3) continue;
                             }
-                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel4)
+                            else if (contentPermission == Types.ContentPermissions.CheckLevel4)
                             {
                                 if (site.CheckContentLevel < 4) continue;
                             }
-                            else if (contentPermission == AuthTypes.ContentPermissions.CheckLevel5)
+                            else if (contentPermission == Types.ContentPermissions.CheckLevel5)
                             {
                                 if (site.CheckContentLevel < 5) continue;
                             }

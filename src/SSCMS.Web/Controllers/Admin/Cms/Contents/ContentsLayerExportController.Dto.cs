@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents

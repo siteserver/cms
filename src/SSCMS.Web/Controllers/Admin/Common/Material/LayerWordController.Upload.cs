@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Extensions;
 using SSCMS.Utils;
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                AuthTypes.SitePermissions.MaterialMessage))
+                Types.SitePermissions.MaterialMessage))
             {
                 return Unauthorized();
             }

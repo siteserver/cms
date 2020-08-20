@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -13,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPut, Route(Route)]
         public async Task<ActionResult<SitesResult>> Edit([FromBody] EditRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSites))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
             }

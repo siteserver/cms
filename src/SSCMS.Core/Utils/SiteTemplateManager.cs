@@ -11,15 +11,13 @@ namespace SSCMS.Core.Utils
     public class SiteTemplateManager
     {
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
         private readonly string _rootPath;
 
-        public SiteTemplateManager(IPathManager pathManager, IOldPluginManager pluginManager, IDatabaseManager databaseManager, CacheUtils caching)
+        public SiteTemplateManager(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching)
         {
             _pathManager = pathManager;
-            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
             _caching = caching;
             _rootPath = _pathManager.GetSiteTemplatesPath(string.Empty);
@@ -99,7 +97,7 @@ namespace SSCMS.Core.Utils
             var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.FileConfiguration);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
 
-            var importObject = new ImportObject(_pathManager, _pluginManager, _databaseManager, _caching, site, adminId);
+            var importObject = new ImportObject(_pathManager, _databaseManager, _caching, site, adminId);
 
             _caching.SetProcess(guid, $"导入站点文件: {siteTemplatePath}");
             await importObject.ImportFilesAsync(siteTemplatePath, true, guid);
@@ -124,9 +122,9 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IOldPluginManager pluginManager, Site site, string siteTemplateDir)
+        public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string siteTemplateDir)
         {
-            var exportObject = new ExportObject(pathManager, databaseManager, caching, pluginManager, site);
+            var exportObject = new ExportObject(pathManager, databaseManager, caching, site);
 
             var siteTemplatePath = pathManager.GetSiteTemplatesPath(siteTemplateDir);
 

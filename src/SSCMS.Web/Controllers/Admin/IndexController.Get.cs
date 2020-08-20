@@ -78,19 +78,7 @@ namespace SSCMS.Web.Controllers.Admin
                 //return this.Error(_local["You do not have a site to manage, please contact the super administrator for assistance"]);
             }
 
-            var plugins = new List<GetPlugin>();
-            foreach (var plugin in _pluginManager.Plugins)
-            {
-                if (plugin.Disabled) continue;
-
-                plugins.Add(new GetPlugin
-                {
-                    PluginId = plugin.PluginId,
-                    DisplayName = plugin.DisplayName,
-                    Version = plugin.Version
-                });
-            }
-
+            var enabledPlugins = _pluginManager.EnabledPlugins;
             var allMenus = _settingsManager.GetMenus();
 
             var menus = new List<Menu>();
@@ -102,7 +90,28 @@ namespace SSCMS.Web.Controllers.Admin
                 siteType = _settingsManager.GetSiteType(site.SiteType);
                 if (await _authManager.HasSitePermissionsAsync(site.Id))
                 {
-                    var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
+                    var sitePlugins = _pluginManager.GetPlugins(site.Id);
+                    var allPluginMenus = new List<Menu>();
+                    var sitePluginMenus = new List<Menu>();
+                    foreach (var enabledPlugin in enabledPlugins)
+                    {
+                        var pluginMenus = enabledPlugin.GetMenus()
+                            .Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType.Id)).ToList();
+                        if (pluginMenus.Count == 0) continue;
+
+                        allPluginMenus.AddRange(pluginMenus);
+                        if (sitePlugins.Exists(x => x.PluginId == enabledPlugin.PluginId))
+                        {
+                            sitePluginMenus.AddRange(pluginMenus);
+                        }
+                    }
+
+                    var siteMenus = allMenus
+                        .Where(menu => ListUtils.ContainsIgnoreCase(menu.Type, siteType.Id))
+                        .Where(menu => !allPluginMenus.Exists(x => x.Id == menu.Id))
+                        .ToList();
+                    siteMenus.AddRange(sitePluginMenus);
+
                     var siteMenu = new Menu
                     {
                         Id = IdSite,
@@ -111,11 +120,11 @@ namespace SSCMS.Web.Controllers.Admin
                         {
                             siteType.Id
                         },
-                        Children = new List<Menu>(allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType.Id)))
+                        Children = siteMenus
                     };
 
+                    var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
                     var query = new NameValueCollection { { "siteId", site.Id.ToString() } };
-
                     siteMenu.Children = GetChildren(siteMenu, sitePermissions, x =>
                     {
                         x.Link = PageUtils.AddQueryStringIfNotExists(x.Link, query);
@@ -174,7 +183,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var appPermissions = await _authManager.GetAppPermissionsAsync();
-            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
+            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
             foreach (var appMenu in appMenus)
             {
                 appMenu.Children = GetChildren(appMenu, appPermissions);
@@ -185,6 +194,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var requestCulture = HttpContext.Features.Get<IRequestCultureFeature>();
             var culture = requestCulture.RequestCulture.UICulture.Name;
+            var plugins = enabledPlugins.Select(plugin => new GetPlugin { PluginId = plugin.PluginId, DisplayName = plugin.DisplayName, Version = plugin.Version }).ToList();
 
             return new GetResult
             {

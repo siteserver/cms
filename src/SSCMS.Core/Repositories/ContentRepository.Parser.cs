@@ -146,7 +146,7 @@ namespace SSCMS.Core.Repositories
             return startNum <= 1 ? GetStlDataSourceByContentNumAndWhereString(tableName, totalNum, sqlWhereString, orderByString) : GetStlDataSourceByStartNum(tableName, startNum, totalNum, sqlWhereString, orderByString);
         }
 
-        private async Task<List<ContentSummary>> GetContentsDataSourceAsync(IDatabaseManager databaseManager, IOldPluginManager pluginManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        private async Task<List<ContentSummary>> GetContentsDataSourceAsync(IDatabaseManager databaseManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
@@ -159,10 +159,7 @@ namespace SSCMS.Core.Repositories
                 where = $"ID <> {contentId}";
             }
 
-            var sqlWhereString = pluginManager.IsExists(channel.ContentModelPluginId)
-                ? GetStlWhereString(site.Id, groupContent, groupContentNot,
-                    tags, isTopExists, isTop, where)
-                : GetStlWhereString(site.Id, groupContent,
+            var sqlWhereString = GetStlWhereString(site.Id, groupContent,
                     groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);
@@ -171,9 +168,9 @@ namespace SSCMS.Core.Repositories
             return await GetStlDataSourceCheckedAsync(databaseManager, channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
-        public async Task<List<ContentSummary>> GetSummariesAsync(IDatabaseManager databaseManager, IOldPluginManager pluginManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<List<ContentSummary>> GetSummariesAsync(IDatabaseManager databaseManager, Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
-            var dataSource = await GetContentsDataSourceAsync(databaseManager, pluginManager, site, channelId, contentId, groupContent, groupContentNot, tags,
+            var dataSource = await GetContentsDataSourceAsync(databaseManager, site, channelId, contentId, groupContent, groupContentNot, tags,
                 isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isRelatedContents, startNum,
                 totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot,
                 isColorExists, isColor, scopeType, groupChannel, groupChannelNot, others);

@@ -1,73 +1,59 @@
-<el-row id="commands">
-  <el-col :span="24">
-    <el-button size="mini" plain type="primary" icon="el-icon-circle-plus-outline" :disabled="!permissions.isAdd" v-on:click="btnAddClick">
-      添加
-    </el-button>
-    
-    <el-dropdown size="mini" v-on:command="btnImportClick">
-      <el-button size="mini" :disabled="!permissions.isAdd">
-        导入<i class="el-icon-arrow-down el-icon--right"></i>
-      </el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="Word"><i class="el-icon-tickets"></i>导入Word</el-dropdown-item>
-        <el-dropdown-item command="Import"><i class="el-icon-upload2"></i>批量导入</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
+<div id="commands">
 
-    <el-button size="mini" icon="el-icon-star-off" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
-      v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 500, height: 320, withContents: true})">
-      属性
+  <el-button size="mini" plain type="primary" icon="el-icon-circle-plus-outline" :disabled="!permissions.isAdd" v-on:click="btnAddClick">
+    添加
+  </el-button>
+  
+  <el-dropdown size="mini" v-on:command="btnImportClick">
+    <el-button size="mini" :disabled="!permissions.isAdd">
+      导入<i class="el-icon-arrow-down el-icon--right"></i>
     </el-button>
+    <el-dropdown-menu slot="dropdown">
+      <el-dropdown-item command="Word"><i class="el-icon-tickets"></i>导入Word</el-dropdown-item>
+      <el-dropdown-item command="Import"><i class="el-icon-upload2"></i>批量导入</el-dropdown-item>
+    </el-dropdown-menu>
+  </el-dropdown>
 
-    <el-button size="mini" icon="el-icon-files" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
-      v-on:click="btnLayerClick({title: '批量设置分组', name: 'Group', width: 700, height: 400, withContents: true})">
-      分组
-    </el-button>
+  <el-button size="mini" icon="el-icon-star-off" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
+    v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 500, height: 320, withContents: true})">
+    属性
+  </el-button>
 
-    <el-button size="mini" icon="el-icon-collection-tag" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
-      v-on:click="btnLayerClick({title: '批量设置标签', name: 'Tag', width: 700, height: 400, withContents: true})">
-      标签
-    </el-button>
+  <el-button size="mini" icon="el-icon-right" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"
+    v-on:click="btnLayerClick({title: '批量转移', name: 'Translate', withContents: true})">
+    转移
+  </el-button>
 
-    <el-button size="mini" icon="el-icon-right" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"
-      v-on:click="btnLayerClick({title: '批量转移', name: 'Translate', withContents: true})">
-      转移
-    </el-button>
+  <el-button size="mini" icon="el-icon-sort" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
+    v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true})">
+    排序
+  </el-button>
 
-    <el-button size="mini" icon="el-icon-copy-document" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"
-      v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', withContents: true})">
-      复制
-    </el-button>
+  <el-button size="mini" icon="el-icon-delete" :disabled="total === 0 || !permissions.isDelete || !isContentChecked" 
+    v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})">
+    删除
+  </el-button>
+  <el-button size="mini" icon="el-icon-circle-check" :disabled="total === 0 || !permissions.isCheck || !isContentChecked" 
+    v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})">
+    审核
+  </el-button>
+  <el-button size="mini" icon="el-icon-magic-stick" :disabled="total === 0 || !permissions.isCreate || !isContentChecked"
+    v-on:click="btnCreateClick">
+    生成
+  </el-button>
 
-    <el-button size="mini" icon="el-icon-sort" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
-      v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true})">
-      排序
+  <el-dropdown size="mini" v-on:command="btnMoreClick">
+    <el-button size="mini" :disabled="total === 0">
+      更多<i class="el-icon-arrow-down el-icon--right"></i>
     </el-button>
-
-    <el-button size="mini" icon="el-icon-delete" :disabled="total === 0 || !permissions.isDelete || !isContentChecked" 
-      v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})">
-      删除
-    </el-button>
-    <el-button size="mini" icon="el-icon-circle-check" :disabled="total === 0 || !permissions.isCheck || !isContentChecked" 
-      v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})">
-      审核
-    </el-button>
-    <el-button size="mini" icon="el-icon-magic-stick" :disabled="total === 0 || !permissions.isCreate || !isContentChecked"
-      v-on:click="btnCreateClick">
-      生成
-    </el-button>
-
-    <el-dropdown size="mini" v-on:command="btnMoreClick">
-      <el-button size="mini" :disabled="total === 0">
-        更多<i class="el-icon-arrow-down el-icon--right"></i>
-      </el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="ExportAll"><i class="el-icon-download"></i>导出全部</el-dropdown-item>
-        <el-dropdown-item command="ExportSelected" :disabled="!isContentChecked"><i class="el-icon-download"></i>导出选中</el-dropdown-item>
-        <el-dropdown-item command="Arrange" :disabled="!permissions.isArrange"><i class="el-icon-sort"></i>整理排序</el-dropdown-item>
-        <el-dropdown-item command="Hits" :disabled="!permissions.isEdit || !isContentChecked"><i class="el-icon-mouse"></i>设置点击量</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-
-  </el-col>
-</el-row>
+    <el-dropdown-menu slot="dropdown">
+      <el-dropdown-item command="Group" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i class="el-icon-files"></i>设置分组</el-dropdown-item>
+      <el-dropdown-item command="Tag" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i class="el-icon-collection-tag"></i>设置标签</el-dropdown-item>
+      <el-dropdown-item command="Copy" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"><i class="el-icon-copy-document"></i>复制内容</el-dropdown-item>
+      <el-dropdown-item command="ExportAll"><i class="el-icon-download"></i>导出全部</el-dropdown-item>
+      <el-dropdown-item command="ExportSelected" :disabled="!isContentChecked"><i class="el-icon-download"></i>导出选中</el-dropdown-item>
+      <el-dropdown-item command="Arrange" :disabled="!permissions.isArrange"><i class="el-icon-sort"></i>整理排序</el-dropdown-item>
+      <el-dropdown-item command="Hits" :disabled="!permissions.isEdit || !isContentChecked"><i class="el-icon-mouse"></i>设置点击量</el-dropdown-item>
+    </el-dropdown-menu>
+  </el-dropdown>
+</div>

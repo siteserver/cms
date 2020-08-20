@@ -17,15 +17,13 @@ namespace SSCMS.Core.Utils.Serialization
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
-        private readonly IOldPluginManager _pluginManager;
         private readonly Site _site;
 
-        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, IOldPluginManager pluginManager, Site site)
+        public ExportObject(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _caching = caching;
-            _pluginManager = pluginManager;
             _site = site;
         }
 
@@ -216,7 +214,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
             var styleIe = new TableStyleIe(_databaseManager, _caching, tableDirectoryPath);
 
-            var tableNameList = await _databaseManager.SiteRepository.GetTableNamesAsync(_pluginManager, _site);
+            var tableNameList = await _databaseManager.SiteRepository.GetTableNamesAsync(_site);
 
             foreach (var tableName in tableNameList)
             {

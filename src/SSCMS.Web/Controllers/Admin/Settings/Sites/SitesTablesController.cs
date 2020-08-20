@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -13,7 +14,7 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class SitesTablesController : ControllerBase
     {
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -65,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(RouteTable)]
         public async Task<ActionResult<GetColumnsResult>> GetColumns(string tableName)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }
@@ -82,7 +83,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteTableActionsRemoveCache)]
         public async Task<ActionResult<GetColumnsResult>> RemoveCache(string tableName)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsSitesTables))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTables))
             {
                 return Unauthorized();
             }

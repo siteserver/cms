@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
@@ -12,17 +14,17 @@ using SSCMS.Utils;
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     [OpenApiIgnore]
-    [Authorize(Roles = AuthTypes.Roles.Administrator)]
+    [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
     public partial class LogsErrorController : ControllerBase
     {
         private const string Route = "settings/logsError";
 
         private readonly IAuthManager _authManager;
-        private readonly IOldPluginManager _pluginManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public LogsErrorController(IAuthManager authManager, IOldPluginManager pluginManager, IErrorLogRepository errorLogRepository)
+        public LogsErrorController(IAuthManager authManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository)
         {
             _authManager = authManager;
             _pluginManager = pluginManager;
@@ -32,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SearchResult>> List([FromBody] SearchRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsLogsError))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsError))
             {
                 return Unauthorized();
             }
@@ -46,11 +48,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 categories.Add(new Select<string>(category.Key, category.Value));
             }
 
-            var pluginIds = new List<Select<string>>();
-            foreach (var plugin in _pluginManager.GetPlugins())
-            {
-                pluginIds.Add(new Select<string>(plugin.PluginId, plugin.Name));
-            }
+            var pluginIds = _pluginManager
+                .EnabledPlugins
+                .Select(plugin => new Select<string>(plugin.PluginId, plugin.DisplayName))
+                .ToList();
 
             return new SearchResult
             {
@@ -64,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            if (!await _authManager.HasAppPermissionsAsync(AuthTypes.AppPermissions.SettingsLogsError))
+            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsError))
             {
                 return Unauthorized();
             }

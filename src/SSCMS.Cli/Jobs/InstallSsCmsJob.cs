@@ -4,6 +4,8 @@ using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
+using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -21,17 +23,15 @@ namespace SSCMS.Cli.Jobs
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPathManager _pathManager;
-        private readonly IOldPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly OptionSet _options;
 
-        public InstallSsCmsJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPathManager pathManager, IOldPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public InstallSsCmsJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
             _pathManager = pathManager;
-            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
 
@@ -54,7 +54,7 @@ namespace SSCMS.Cli.Jobs
             Console.WriteLine();
         }
 
-        public async Task ExecuteAsync(IJobContext context)
+        public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
@@ -94,7 +94,7 @@ namespace SSCMS.Cli.Jobs
                 }
             }
 
-            (valid, message) = await _databaseManager.InstallAsync(_pluginManager, userName, password, string.Empty, string.Empty);
+            (valid, message) = await _databaseManager.InstallAsync(userName, password, string.Empty, string.Empty);
             if (!valid)
             {
                 await WriteUtils.PrintErrorAsync(message);

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Dto;
 using SSCMS.Models;
-using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
@@ -216,17 +215,17 @@ namespace SSCMS.Core.Repositories
             return siteIdList;
         }
 
-        public async Task<List<string>> GetSiteTableNamesAsync(IOldPluginManager pluginManager)
+        public async Task<List<string>> GetSiteTableNamesAsync()
         {
-            return await GetTableNamesAsync(pluginManager, true, false);
+            return await GetTableNamesAsync(true, false);
         }
 
-        public async Task<List<string>> GetAllTableNamesAsync(IOldPluginManager pluginManager)
+        public async Task<List<string>> GetAllTableNamesAsync()
         {
-            return await GetTableNamesAsync(pluginManager, true, true);
+            return await GetTableNamesAsync(true, true);
         }
 
-        private async Task<List<string>> GetTableNamesAsync(IOldPluginManager pluginManager, bool includeSiteTables, bool includePluginTables)
+        private async Task<List<string>> GetTableNamesAsync(bool includeSiteTables, bool includePluginTables)
         {
             var tableNames = new List<string>();
 
@@ -244,7 +243,7 @@ namespace SSCMS.Core.Repositories
 
             if (includePluginTables)
             {
-                var pluginTableNames = pluginManager.GetContentTableNameList();
+                var pluginTableNames = _settingsManager.GetContentTableNames();
                 foreach (var pluginTableName in pluginTableNames)
                 {
                     if (!string.IsNullOrEmpty(pluginTableName) && !ListUtils.ContainsIgnoreCase(tableNames, pluginTableName))
@@ -257,18 +256,18 @@ namespace SSCMS.Core.Repositories
             return tableNames;
         }
 
-        public async Task<List<string>> GetTableNamesAsync(IOldPluginManager pluginManager, Site site)
+        public async Task<List<string>> GetTableNamesAsync(Site site)
         {
             var tableNames = new List<string> { site.TableName };
             var channelSummaries = await _channelRepository.GetSummariesAsync(site.Id);
+            var pluginTableNames = _settingsManager.GetContentTableNames();
             foreach (var summary in channelSummaries)
             {
-                if (!string.IsNullOrEmpty(summary.ContentModelPluginId))
+                if (!string.IsNullOrEmpty(summary.TableName))
                 {
-                    var plugin = pluginManager.GetPlugin(summary.ContentModelPluginId);
-                    if (plugin != null && !string.IsNullOrEmpty(plugin.ContentTableName) && !tableNames.Contains(plugin.ContentTableName))
+                    if (ListUtils.Contains(pluginTableNames, summary.TableName))
                     {
-                        tableNames.Add(plugin.ContentTableName);
+                        tableNames.Add(summary.TableName);
                     }
                 }
             }
