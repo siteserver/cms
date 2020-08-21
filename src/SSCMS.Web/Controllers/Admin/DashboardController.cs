@@ -1,15 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
-using SSCMS.Dto;
-using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -18,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin
     [Route(Constants.ApiAdminPrefix)]
     public partial class DashboardController : ControllerBase
     {
-        public const string Route = "dashboard";
+        private const string Route = "dashboard";
         private const string RouteUnCheckedList = "dashboard/actions/unCheckedList";
 
         private readonly ISettingsManager _settingsManager;
@@ -36,73 +30,23 @@ namespace SSCMS.Web.Controllers.Admin
             _contentRepository = contentRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            var admin = await _authManager.GetAdminAsync();
-            var lastActivityDate = admin.LastActivityDate ?? Constants.SqlMinValue;
-            var config = await _configRepository.GetAsync();
-
-            return new GetResult
-            {
-                Version = _settingsManager.Version,
-                LastActivityDate = DateUtils.GetDateString(lastActivityDate, DateFormatType.Chinese),
-                UpdateDate = DateUtils.GetDateString(config.UpdateDate, DateFormatType.Chinese),
-                AdminWelcomeHtml = config.AdminWelcomeHtml,
-                FrameworkDescription = _settingsManager.FrameworkDescription,
-                OSDescription = _settingsManager.OSDescription,
-                Containerized = _settingsManager.Containerized,
-                CPUCores = _settingsManager.CPUCores
-            };
+            public string Version { get; set; }
+            public string LastActivityDate { get; set; }
+            public string UpdateDate { get; set; }
+            public string AdminWelcomeHtml { get; set; }
+            public string FrameworkDescription { get; set; }
+            public string OSArchitecture { get; set; }
+            public string OSDescription { get; set; }
+            public bool Containerized { get; set; }
+            public int CPUCores { get; set; }
         }
 
-        [HttpGet, Route(RouteUnCheckedList)]
-        public async Task<ActionResult<ObjectResult<List<Checking>>>> GetUnCheckedList()
+        public class Checking
         {
-            var checkingList = new List<Checking>();
-
-            if (await _authManager.IsSuperAdminAsync())
-            {
-                foreach (var site in await _siteRepository.GetSitesAsync())
-                {
-                    var count = await _contentRepository.GetCountCheckingAsync(site);
-                    if (count > 0)
-                    {
-                        checkingList.Add(new Checking
-                        {
-                            SiteName = site.SiteName,
-                            Count = count
-                        });
-                    }
-                }
-            }
-            else if (await _authManager.IsSiteAdminAsync())
-            {
-                var admin = await _authManager.GetAdminAsync();
-                if (admin.SiteIds != null)
-                {
-                    foreach (var siteId in admin.SiteIds)
-                    {
-                        var site = await _siteRepository.GetAsync(siteId);
-                        if (site == null) continue;
-
-                        var count = await _contentRepository.GetCountCheckingAsync(site);
-                        if (count > 0)
-                        {
-                            checkingList.Add(new Checking
-                            {
-                                SiteName = site.SiteName,
-                                Count = count
-                            });
-                        }
-                    }
-                }
-            }
-
-            return new ObjectResult<List<Checking>>
-            {
-                Value = checkingList
-            };
+            public string SiteName { get; set; }
+            public int Count { get; set; }
         }
     }
 }

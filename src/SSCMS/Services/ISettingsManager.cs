@@ -11,6 +11,7 @@ namespace SSCMS.Services
         string WebRootPath { get; }
         string Version { get; }
         string FrameworkDescription { get; }
+        string OSArchitecture { get; set; }
         string OSDescription { get; }
         bool Containerized { get; }
         int CPUCores { get; }

@@ -103,8 +103,8 @@ namespace SSCMS.Cli.Jobs
             if (!proceed) return;
 
             Console.WriteLine($"Downloading {result.Cms.Version}...");
-            CloudUtils.Dl.DownloadCms(_pathManager, result.Cms.Version);
-            var name = CloudUtils.Dl.GetCmsDownloadName(result.Cms.Version);
+            CloudUtils.Dl.DownloadCms(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
+            var name = CloudUtils.Dl.GetCmsDownloadName(_settingsManager.OSArchitecture, result.Cms.Version);
             var packagePath = _pathManager.GetPackagesPath(name);
 
             var offlinePath = PathUtils.Combine(_settingsManager.ContentRootPath, "app_offline.htm");

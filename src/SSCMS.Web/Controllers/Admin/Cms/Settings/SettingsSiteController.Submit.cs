@@ -20,11 +20,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var styles = await _tableStyleRepository.GetSiteStylesAsync(request.SiteId);
+            var styles = await GetInputStylesAsync(request.SiteId);
 
             foreach (var style in styles)
             {
-
                 var inputType = style.InputType;
                 if (inputType == InputType.TextEditor)
                 {
@@ -39,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 {
                     var count = request.Get(ColumnsManager.GetCountName(style.AttributeName), 0);
                     site.Set(ColumnsManager.GetCountName(style.AttributeName), count);
-                    for (var n = 1; n <= count; n++)
+                    for (var n = 0; n <= count; n++)
                     {
                         site.Set(ColumnsManager.GetExtendName(style.AttributeName, n), request.Get(ColumnsManager.GetExtendName(style.AttributeName, n), string.Empty));
                     }
@@ -55,23 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                     var value = request.Get(style.AttributeName, string.Empty);
                     site.Set(style.AttributeName, value);
                 }
-
-                if (style.IsFormatString)
-                {
-                    var formatStrong = request.Get($"{style.AttributeName}_formatStrong", false);
-                    var formatEm = request.Get($"{style.AttributeName}_formatEM", false);
-                    var formatU = request.Get($"{style.AttributeName}_formatU", false);
-                    var formatColor = request.Get($"{style.AttributeName}_formatColor", string.Empty);
-                    var formatString = ContentUtility.GetTitleFormatString(formatStrong, formatEm, formatU, formatColor);
-
-                    site.Set(ColumnsManager.GetFormatStringAttributeName(style.AttributeName), formatString);
-                }
             }
-
-            site.SiteName = request.SiteName;
-            site.ImageUrl = request.ImageUrl;
-            site.Keywords = request.Keywords;
-            site.Description = request.Description;
 
             await _siteRepository.UpdateAsync(site);
 

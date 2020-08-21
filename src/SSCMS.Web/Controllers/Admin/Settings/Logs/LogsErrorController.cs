@@ -9,7 +9,6 @@ using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {

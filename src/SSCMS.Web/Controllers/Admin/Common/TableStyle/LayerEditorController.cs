@@ -6,7 +6,6 @@ using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
 {

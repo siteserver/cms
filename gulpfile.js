@@ -72,12 +72,6 @@ gulp.task("build-src", function () {
   return gulp.src("./src/**/*").pipe(gulp.dest(`./build-${os}/src`));
 });
 
-gulp.task("build-os", function () {
-  return gulp.src("./src/SSCMS/Utils/Constants.cs")
-    .pipe(replace('OperatingSystem = "win-x64";', `OperatingSystem = "${os}";`))
-    .pipe(gulp.dest(`./build-${os}/src/SSCMS/Utils`));
-});
-
 gulp.task("build-sln", function () {
   return gulp.src("./build.sln").pipe(gulp.dest(`./build-${os}`));
 });
@@ -142,7 +136,6 @@ gulp.task("build-osx-x64", async function () {
   console.log("build version: " + version + os);
   return runSequence(
       "build-src",
-      "build-os",
       "build-sln",
       "build-ss-admin",
       "build-home",
@@ -155,7 +148,6 @@ gulp.task("build-linux-x64", async function () {
   console.log("build version: " + version + os);
   return runSequence(
       "build-src",
-      "build-os",
       "build-sln",
       "build-ss-admin",
       "build-home",
@@ -168,7 +160,6 @@ gulp.task("build-win-x64", async function () {
   console.log("build version: " + version + os);
   return runSequence(
       "build-src",
-      "build-os",
       "build-sln",
       "build-ss-admin",
       "build-home",
@@ -181,7 +172,6 @@ gulp.task("build-win-x86", async function () {
   console.log("build version: " + version + os);
   return runSequence(
       "build-src",
-      "build-os",
       "build-sln",
       "build-ss-admin",
       "build-home",

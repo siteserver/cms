@@ -80,9 +80,9 @@ namespace SSCMS.Cli.Jobs
                 }
 
                 Console.WriteLine($"Downloading {result.Cms.Version}...");
-                CloudUtils.Dl.DownloadCms(_pathManager, result.Cms.Version);
+                CloudUtils.Dl.DownloadCms(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
 
-                var name = CloudUtils.Dl.GetCmsDownloadName(result.Cms.Version);
+                var name = CloudUtils.Dl.GetCmsDownloadName(_settingsManager.OSArchitecture, result.Cms.Version);
                 var packagePath = _pathManager.GetPackagesPath(name);
 
                 foreach (var fileName in DirectoryUtils.GetFileNames(packagePath).Where(fileName =>

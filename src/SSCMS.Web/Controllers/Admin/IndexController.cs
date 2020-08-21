@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using SSCMS.Utils;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
@@ -76,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string RedirectUrl { get; set; }
             public bool IsNightly { get; set; }
             public string Version { get; set; }
-            public string OperatingSystem { get; set; }
+            public string OSArchitecture { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminTitle { get; set; }
             public bool IsSuperAdmin { get; set; }

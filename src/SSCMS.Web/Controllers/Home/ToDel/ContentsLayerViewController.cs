@@ -6,7 +6,6 @@ using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.ToDel
 {

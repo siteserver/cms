@@ -29,6 +29,26 @@ namespace SSCMS.Core.Services
                     .InformationalVersion;
                 FrameworkDescription = RuntimeInformation.FrameworkDescription;
                 OSDescription = RuntimeInformation.OSDescription;
+                string os;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    os = "win";
+                }
+                else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    os = "osx";
+                }
+                else
+                {
+                    os = "linux";
+                }
+                var architecture = "x64";
+                if (RuntimeInformation.OSArchitecture == Architecture.Arm ||
+                    RuntimeInformation.OSArchitecture == Architecture.X86)
+                {
+                    architecture = "x86";
+                }
+                OSArchitecture = $"{os}-{architecture}";
                 Containerized = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != null;
                 CPUCores = Environment.ProcessorCount;
             }
@@ -44,6 +64,7 @@ namespace SSCMS.Core.Services
         public string WebRootPath { get; }
         public string Version { get; }
         public string FrameworkDescription { get; }
+        public string OSArchitecture { get; set; }
         public string OSDescription { get; }
         public bool Containerized { get; }
         public int CPUCores { get; }

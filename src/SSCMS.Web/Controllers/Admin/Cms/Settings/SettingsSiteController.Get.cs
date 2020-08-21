@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
@@ -20,23 +20,32 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetSiteStylesAsync(request.SiteId))
+            var entity = new Entity();
+            var styles = await GetInputStylesAsync(request.SiteId);
+            foreach (var style in styles)
             {
-                styles.Add(new InputStyle(style));
-
                 if (style.InputType == InputType.Image ||
                     style.InputType == InputType.Video ||
                     style.InputType == InputType.File)
                 {
-                    site.Set(ColumnsManager.GetCountName(style.AttributeName), site.Get(ColumnsManager.GetCountName(style.AttributeName), 0));
+                    var count = site.Get(ColumnsManager.GetCountName(style.AttributeName), 0);
+                    entity.Set(ColumnsManager.GetCountName(style.AttributeName), count);
+                    for (var n = 0; n <= count; n++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(style.AttributeName, n);
+                        entity.Set(extendName, site.Get(extendName));
+                    }
                 }
                 else if (style.InputType == InputType.CheckBox ||
                          style.InputType == InputType.SelectMultiple)
                 {
                     var list = ListUtils.GetStringList(site.Get(style.AttributeName,
                         string.Empty));
-                    site.Set(style.AttributeName, list);
+                    entity.Set(style.AttributeName, list);
+                }
+                else
+                {
+                    entity.Set(style.AttributeName, site.Get(style.AttributeName));
                 }
             }
 
@@ -45,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             return new GetResult
             {
                 SiteUrl = StringUtils.TrimEndSlash(siteUrl),
-                Site = site,
+                Entity = entity,
                 Styles = styles
             };
         }

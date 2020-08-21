@@ -13,29 +13,6 @@
 
 <div style="height: 10px"></div>
 <el-form size="small" ref="form" :model="form" label-width="160px">
-  <el-form-item label="站点名称" prop="siteName" :rules="{ required: true, message: '请输入站点名称' }">
-    <el-input v-model="form.siteName" placeholder="请输入站点名称"></el-input>
-  </el-form-item>
-  <el-form-item label="站点图片">
-    <el-button-group>
-      <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: 'imageUrl', no: 0})">
-        上传
-      </el-button>
-      <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: 'imageUrl', no: 0, full: true})">
-        选择
-      </el-button>
-      <el-button size="mini" type="info" plain v-if="form.imageUrl" v-on:click="btnPreviewClick('imageUrl')">
-        预览
-      </el-button>
-    </el-button-group>
-    <el-input v-model="form.imageUrl" placeholder="站点图片地址"></el-input>
-  </el-form-item>
-  <el-form-item label="站点关键字">
-    <el-input v-model="form.keywords"></el-input>
-  </el-form-item>
-  <el-form-item label="站点描述">
-    <el-input type="textarea" v-model="form.description"></el-input>
-  </el-form-item>
 
   @await Html.PartialAsync("_PartialForm")
   
