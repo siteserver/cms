@@ -217,7 +217,7 @@ namespace SSCMS.Core.Utils
                         TranslateUtils.AddAttributesIfNotExists(imageAttributes, attributes);
                         imageAttributes["src"] = imageUrl;
 
-                        retVal = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
+                        retVal = $@"<img {TranslateUtils.ToAttributesString(imageAttributes)}>";
                     }
                     else
                     {

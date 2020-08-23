@@ -19,7 +19,7 @@ var data = utils.init({
   appendForm: null,
 
   editPanel: false,
-  editChannel: null,
+  form: null,
   editLinkTypes: [],
   editTaxisTypes: [],
   editEditor: null,
@@ -34,22 +34,58 @@ var data = utils.init({
 });
 
 var methods = {
-  runFormLayerImageUploadEditor: function(attributeName, html)
-  {
-    if (!html) return;
-    this.editEditor.cmd.do('insertHTML', html);
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
   },
 
-  runFormLayerImageUploadText: function(attributeName, no, text) {
-    this.editChannel[attributeName] = text;
-    this.editChannel = _.assign({}, this.editChannel);
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)];
+    if (count && count < no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
+  insertEditor: function(attributeName, html) {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
   
   setRuleText: function(rule, isChannel) {
     if (isChannel) {
-      this.editChannel.channelFilePathRule = rule;
+      this.form.channelFilePathRule = rule;
     } else {
-      this.editChannel.contentFilePathRule = rule;
+      this.form.contentFilePathRule = rule;
     }
   },
 
@@ -93,9 +129,9 @@ var methods = {
     $api.get($url + '/' + this.siteId + '/' + channelId).then(function (response) {
       var res = response.data;
 
-      $this.editChannel = res.channel;
-      if (!$this.editChannel.groupNames) {
-        $this.editChannel.groupNames = [];
+      $this.form = _.assign({}, res.entity);
+      if (!$this.form.groupNames) {
+        $this.form.groupNames = [];
       }
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
@@ -103,7 +139,7 @@ var methods = {
       $this.editPanel = true;
       setTimeout(function () {
         $this.loadEditor();
-      }, 100)
+      }, 100);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -138,7 +174,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, this.editChannel).then(function (response) {
+    $api.put($url, this.form).then(function (response) {
       var res = response.data;
 
       $this.editPanel = false;
@@ -189,34 +225,34 @@ var methods = {
   loadEditor: function () {
     var $this = this;
 
-    if (!this.editEditor) {
-      var E = window.wangEditor;
-      this.editEditor = new E('#editChannel_Content1', '#editChannel_Content2');
-      this.editEditor.customConfig.menus = [
-        'head',  // 标题
-        'bold',  // 粗体
-        'fontSize',  // 字号
-        'fontName',  // 字体
-        'italic',  // 斜体
-        'underline',  // 下划线
-        'strikeThrough',  // 删除线
-        'foreColor',  // 文字颜色
-        'backColor',  // 背景颜色
-        'link',  // 插入链接
-        'list',  // 列表
-        'justify',  // 对齐方式
-        'quote',  // 引用
-        'table',  // 表格
-        'undo',  // 撤销
-        'redo'  // 重复
-      ];
-      this.editEditor.customConfig.onchange = function (html) {
-        $this.editChannel.content = html;
-      };
-      this.editEditor.create();
-    }
-    
-    this.editEditor.txt.html(this.editChannel.content);
+    document.getElementById('form_Content1').innerHTML = '';
+    document.getElementById('form_Content2').innerHTML = '';
+
+    var E = window.wangEditor;
+    this.editEditor = new E('#form_Content1', '#form_Content2');
+    this.editEditor.customConfig.menus = [
+      'head',  // 标题
+      'bold',  // 粗体
+      'fontSize',  // 字号
+      'fontName',  // 字体
+      'italic',  // 斜体
+      'underline',  // 下划线
+      'strikeThrough',  // 删除线
+      'foreColor',  // 文字颜色
+      'backColor',  // 背景颜色
+      'link',  // 插入链接
+      'list',  // 列表
+      'justify',  // 对齐方式
+      'quote',  // 引用
+      'table',  // 表格
+      'undo',  // 撤销
+      'redo'  // 重复
+    ];
+    this.editEditor.customConfig.onchange = function (html) {
+      $this.form.content = html;
+    };
+    this.editEditor.create();
+    this.editEditor.txt.html(this.form.content);
   },
 
   btnSetClick: function(channelId, isChannel, rule) {
@@ -242,10 +278,6 @@ var methods = {
       width: 500,
       height: 300
     });
-  },
-
-  btnPreviewClick: function(imageUrl) {
-    window.open(imageUrl);
   },
 
   handleDragStart: function(node, ev) {
@@ -341,7 +373,6 @@ var methods = {
   },
 
   btnEditClick: function(row) {
-    this.editIsEditor = false;
     this.apiGet(row.value);
   },
 
@@ -524,6 +555,39 @@ var methods = {
     }
     utils.openLayer(args);
   },
+
+  btnExtendAddClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] + 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
+  },
+
+  btnExtendRemoveClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)];
+    this.form[utils.getCountName(style.attributeName)] = no - 1;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
+  },
+
+  btnExtendPreviewClick: function(attributeName, no) {
+    var count = this.form[utils.getCountName(attributeName)];
+    var data = [];
+    for (var i = 0; i <= count; i++) {
+      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
+      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
+      data.push({
+        "src": imageUrl
+      });
+    }
+    layer.photos({
+      photos: {
+        "start": no,
+        "data": data
+      }
+      ,anim: 5
+    });
+  }
 };
 
 var $vue = new Vue({

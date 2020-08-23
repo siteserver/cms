@@ -93,7 +93,7 @@ var methods = {
   },
 
   handleChannelChange: function() {
-    this.apiList();
+    this.apiGet();
   },
 
   btnEditClick: function (attributeName) {

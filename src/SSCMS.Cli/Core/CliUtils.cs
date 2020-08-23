@@ -70,12 +70,9 @@ namespace SSCMS.Cli.Core
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
 
-        public static string GetWebConfigPath(string configFile, ISettingsManager settingsManager)
+        public static string GetConfigPath(ISettingsManager settingsManager)
         {
-            return PathUtils.IsFilePath(configFile)
-                ? configFile
-                : PathUtils.Combine(settingsManager.ContentRootPath,
-                    !string.IsNullOrEmpty(configFile) ? configFile : Constants.ConfigFileName);
+            return PathUtils.Combine(settingsManager.ContentRootPath, Constants.ConfigFileName);
         }
 
         public static bool IsSsCmsExists(string directoryPath)

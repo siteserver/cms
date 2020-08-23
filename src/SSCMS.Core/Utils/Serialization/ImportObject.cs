@@ -92,7 +92,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            ZipUtils.ExtractZip(zipFilePath, directoryPath);
+            pathManager.ExtractZip(zipFilePath, directoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(databaseManager, site, directoryPath);
             await relatedFieldIe.ImportRelatedFieldAsync(true);
@@ -115,7 +115,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            ZipUtils.ExtractZip(zipFilePath, styleDirectoryPath);
+            pathManager.ExtractZip(zipFilePath, styleDirectoryPath);
 
             await TableStyleIe.SingleImportTableStyleAsync(databaseManager, tableName, styleDirectoryPath, relatedIdentities);
             return styleDirectoryPath;
@@ -133,7 +133,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
+            _pathManager.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             await ImportChannelsAndContentsFromZipAsync(parentId, siteContentDirectoryPath, isOverride, guid);
 
@@ -228,7 +228,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
+            _pathManager.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             var taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, false);
 
@@ -241,7 +241,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
+            _pathManager.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
             var taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, false);
 
@@ -365,7 +365,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            ZipUtils.ExtractZip(zipFilePath, directoryPath);
+            _pathManager.ExtractZip(zipFilePath, directoryPath);
 
             var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
 

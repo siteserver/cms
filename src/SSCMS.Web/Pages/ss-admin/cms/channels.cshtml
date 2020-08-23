@@ -349,117 +349,104 @@
 
 <el-drawer
   id="editForm"
-  v-if="editChannel"
+  v-if="form"
   title="编辑栏目"
   :visible.sync="editPanel"
   destroy-on-close
   direction="rtl"
   size="90%">
   <div class="drawer__content">
-    <el-form size="mini" ref="editForm" :model="editChannel" label-width="200px">
+    <el-form size="mini" ref="editForm" :model="form" label-width="200px">
       <el-form-item label="栏目名称" prop="channelName">
-        <el-input v-model="editChannel.channelName" placeholder="请输入栏目名称" :rules="{ required: true, message: '请输入栏目名称' }"></el-input>
+        <el-input v-model="form.channelName" placeholder="请输入栏目名称" :rules="{ required: true, message: '请输入栏目名称' }"></el-input>
       </el-form-item>
       <el-form-item label="栏目索引">
-        <el-input v-model="editChannel.indexName" placeholder="请输入栏目索引"></el-input>
+        <el-input v-model="form.indexName" placeholder="请输入栏目索引"></el-input>
       </el-form-item>
       <el-form-item label="栏目组" v-if="groupNames && groupNames.length > 0">
-        <el-checkbox-group v-model="editChannel.groupNames">
+        <el-checkbox-group v-model="form.groupNames">
           <el-checkbox v-for="groupName in groupNames" :key="groupName" :label="groupName" :value="groupName" name="groupNames"></el-checkbox>
         </el-checkbox-group>
         <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnEditAddGroupClick">
           新增栏目组
         </el-button>
       </el-form-item>
-      <el-form-item label="栏目图片">
-        <el-button-group>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: 'imageUrl', no: 0})">
-            上传
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: 'imageUrl', no: 0, full: true})">
-            选择
-          </el-button>
-          <el-button size="mini" type="info" plain v-if="editChannel.imageUrl" v-on:click="btnPreviewClick(editChannel.imageUrl)">
-            预览
-          </el-button>
-        </el-button-group>
-        <el-input v-model="editChannel.imageUrl" placeholder="栏目图片地址"></el-input>
-      </el-form-item>
+
+      @await Html.PartialAsync("_PartialForm")
+
       <el-form-item label="栏目模板">
-        <el-select v-model="editChannel.channelTemplateId" placeholder="请选择栏目模板">
+        <el-select v-model="form.channelTemplateId" placeholder="请选择栏目模板">
           <el-option label="<默认>" :value="0"></el-option>
           <el-option v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.templateName" :value="channelTemplate.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="内容模板">
-        <el-select v-model="editChannel.contentTemplateId" placeholder="请选择内容模板">
+        <el-select v-model="form.contentTemplateId" placeholder="请选择内容模板">
           <el-option label="<默认>" :value="0"></el-option>
           <el-option v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.templateName" :value="contentTemplate.id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="外部链接">
-        <el-input v-model="editChannel.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
+        <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
       </el-form-item>
       <el-form-item label="链接类型">
         <el-tooltip effect="light" content="设置此栏目的链接与子栏目及内容的关系" placement="right">
-          <el-select v-model="editChannel.linkType" placeholder="请选择链接类型">
+          <el-select v-model="form.linkType" placeholder="请选择链接类型">
             <el-option v-for="linkType in editLinkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
           </el-select>
         </el-tooltip>
       </el-form-item>
       <el-form-item label="新增内容排序规则">
         <el-tooltip effect="light" content="新增或导入的内容将按照此排序规则进行排序" placement="right">
-          <el-select v-model="editChannel.defaultTaxisType" placeholder="请选择新增内容排序规则">
+          <el-select v-model="form.defaultTaxisType" placeholder="请选择新增内容排序规则">
             <el-option v-for="taxisType in editTaxisTypes" :key="taxisType.value" :label="taxisType.label" :value="taxisType.value"></el-option>
           </el-select>
         </el-tooltip>
       </el-form-item>
       <el-form-item label="生成页面路径">
-        <el-input v-model="editChannel.filePath" placeholder="在此设置栏目的生成页面地址"></el-input>
+        <el-input v-model="form.filePath" placeholder="在此设置栏目的生成页面地址"></el-input>
       </el-form-item>
       <el-form-item label="下级栏目页面命名规则">
-        <el-input style="width: 70%" v-model="editChannel.channelFilePathRule" placeholder="在此设置下级栏目页面命名规则"></el-input>
-        <el-button v-on:click.prevent="btnSetClick(editChannel.channelId, true, editChannel.channelFilePathRule)">构造</el-button>
+        <el-input style="width: 70%" v-model="form.channelFilePathRule" placeholder="在此设置下级栏目页面命名规则"></el-input>
+        <el-button v-on:click.prevent="btnSetClick(form.channelId, true, form.channelFilePathRule)">构造</el-button>
       </el-form-item>
       <el-form-item label="内容页面命名规则">
-        <el-input style="width: 70%" v-model="editChannel.contentFilePathRule" placeholder="在此设置栏目页面命名规则"></el-input>
-        <el-button v-on:click.prevent="btnSetClick(editChannel.channelId, false, editChannel.contentFilePathRule)">构造</el-button>
+        <el-input style="width: 70%" v-model="form.contentFilePathRule" placeholder="在此设置栏目页面命名规则"></el-input>
+        <el-button v-on:click.prevent="btnSetClick(form.channelId, false, form.contentFilePathRule)">构造</el-button>
       </el-form-item>
 
       <el-form-item label="栏目关键字">
-        <el-input v-model="editChannel.keywords"></el-input>
+        <el-input v-model="form.keywords"></el-input>
       </el-form-item>
       <el-form-item label="栏目描述">
-        <el-input type="textarea" v-model="editChannel.description"></el-input>
+        <el-input type="textarea" v-model="form.description"></el-input>
       </el-form-item>
       <el-form-item label="栏目正文">
         <div class="editor__toolbar">
-          <div id="editChannel_Content1"></div>
+          <div id="form_Content1"></div>
           <div class="w-e-toolbar">
-            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', attributeName: 'editChannel_Content'})">
+            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', attributeName: 'form_Content'})">
               <el-link title="导入Word" :underline="false"><i class="fa fa-wikipedia-w"></i></el-link>
             </div>
-            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入图片', name: 'editorLayerImage', attributeName: 'editChannel_Content'})">
+            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入图片', name: 'editorLayerImage', attributeName: 'form_Content'})">
               <el-link title="插入图片" :underline="false"><i class="fa fa-image"></i></el-link>
             </div>
-            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入附件', name: 'editorLayerFile', attributeName: 'editChannel_Content'})">
+            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入附件', name: 'editorLayerFile', attributeName: 'form_Content'})">
               <el-link title="插入附件" :underline="false"><i class="fa fa-file"></i></el-link>
             </div>
-            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入视频', name: 'editorLayerVideo', attributeName: 'editChannel_Content'})">
+            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入视频', name: 'editorLayerVideo', attributeName: 'form_Content'})">
               <el-link title="插入视频" :underline="false"><i class="fa fa-film"></i></el-link>
             </div>
-            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入音频', name: 'editorLayerAudio', attributeName: 'editChannel_Content'})">
+            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入音频', name: 'editorLayerAudio', attributeName: 'form_Content'})">
               <el-link title="插入音频" :underline="false"><i class="fa fa-music"></i></el-link>
             </div>
-            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入图文', name: 'editorLayerText', attributeName: 'editChannel_Content'})">
+            <div class="w-e-menu" style="z-index:10000;" v-on:click="btnLayerClick({title: '插入图文', name: 'editorLayerText', attributeName: 'form_Content'})">
               <el-link title="插入图文" :underline="false"><i class="fa fa-wpforms"></i></el-link>
             </div>
           </div>
         </div>
-        <div class="editor__text" id="editChannel_Content2"></div>
+        <div id="form_Content2" class="editor__text"></div>
       </el-form-item>
-      
-      @await Html.PartialAsync("_PartialForm")
 
       <el-divider></el-divider>
       <div class="drawer__footer">

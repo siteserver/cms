@@ -32,7 +32,7 @@ namespace SSCMS.Cli.Jobs
                 { "p|password=", "登录密码",
                     v => _password = v },
                 {
-                    "h|help", "命令说明",
+                    "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };

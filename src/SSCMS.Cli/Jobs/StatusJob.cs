@@ -5,7 +5,6 @@ using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Configuration;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -31,7 +30,7 @@ namespace SSCMS.Cli.Jobs
             _options = new OptionSet
             {
                 {
-                    "h|help", "命令说明",
+                    "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };
@@ -61,18 +60,35 @@ namespace SSCMS.Cli.Jobs
             await Console.Out.WriteLineAsync($"Cli location: {entryAssembly.Location}");
             await Console.Out.WriteLineAsync($"Work location: {_settingsManager.ContentRootPath}");
 
-            var configPath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName);
-
+            var configPath = CliUtils.GetConfigPath(_settingsManager);
             if (FileUtils.IsFileExists(configPath))
             {
                 await Console.Out.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
                 await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
-            }
 
-            var plugins = _pluginManager.Plugins;
-            foreach (var plugin in plugins)
+                if (!string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString))
+                {
+                    var (isConnectionWorks, errorMessage) =
+                        await _settingsManager.Database.IsConnectionWorksAsync();
+
+                    if (!isConnectionWorks)
+                    {
+                        await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
+                        return;
+                    }
+
+                    await Console.Out.WriteLineAsync("Database status: Connection successful");
+                }
+
+                var plugins = _pluginManager.Plugins;
+                foreach (var plugin in plugins)
+                {
+                    await Console.Out.WriteLineAsync($"PluginId: {plugin.PluginId}, Version: {plugin.Version}");
+                }
+            }
+            else
             {
-                await Console.Out.WriteLineAsync($"PluginId: {plugin.PluginId}, Version: {plugin.Version}");
+                await Console.Out.WriteLineAsync($"The sscms.json file does not exist: {configPath}");
             }
 
             var (status, _) = _apiService.GetStatus();

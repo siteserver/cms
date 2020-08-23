@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Mono.Options;
@@ -34,11 +33,11 @@ namespace SSCMS.Cli.Jobs
             _updateService = updateService;
 
             _options = new OptionSet {
-                { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
+                { "d|directory=", "Backup folder name",
                     v => _directory = v },
-                { "content-split",  "拆分内容表",
+                { "content-split",  "Split content table by site",
                     v => _contentSplit = v != null },
-                { "h|help",  "命令说明",
+                { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
         }
@@ -64,7 +63,7 @@ namespace SSCMS.Cli.Jobs
 
             if (string.IsNullOrEmpty(_directory))
             {
-                await WriteUtils.PrintErrorAsync("未指定需要转换至最新版本的备份数据文件夹：directory");
+                await WriteUtils.PrintErrorAsync("Backup folder name not specified: --directory");
                 return;
             }
 
@@ -73,21 +72,20 @@ namespace SSCMS.Cli.Jobs
 
             if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
             {
-                await WriteUtils.PrintErrorAsync($"备份数据的文件夹 {oldTreeInfo.DirectoryPath} 不存在");
+                await WriteUtils.PrintErrorAsync($"The backup folder does not exist: {oldTreeInfo.DirectoryPath}");
                 return;
             }
             DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
 
             _updateService.Load(oldTreeInfo, newTreeInfo);
 
-            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            await Console.Out.WriteLineAsync($"备份数据文件夹: {oldTreeInfo.DirectoryPath}，升级数据文件夹: {newTreeInfo.DirectoryPath}，升级版本: {version.Substring(0, version.Length - 2)}");
+            await Console.Out.WriteLineAsync($"Backup folder: {oldTreeInfo.DirectoryPath}, Update folder: {newTreeInfo.DirectoryPath}, Update to SSCMS version: {_settingsManager.Version}");
 
             var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintRowAsync("备份表名称", "升级表名称", "总条数");
+            await WriteUtils.PrintRowAsync("Backup table name", "Update table Name", "Count");
             await WriteUtils.PrintRowLineAsync();
 
             var siteIdList = new List<int>();
@@ -174,7 +172,7 @@ namespace SSCMS.Cli.Jobs
             await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintSuccessAsync($"恭喜，成功从备份文件夹：{oldTreeInfo.DirectoryPath} 升级至新版本：{newTreeInfo.DirectoryPath} ！");
+            await WriteUtils.PrintSuccessAsync("Update the backup data to the new version successfully!");
         }
     }
 }

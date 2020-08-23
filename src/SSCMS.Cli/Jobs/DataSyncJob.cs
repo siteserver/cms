@@ -37,9 +37,9 @@ namespace SSCMS.Cli.Jobs
             {
                 { "d|directory=", "指定保存备份文件的文件夹名称",
                     v => _directory = v },
-                { "from=", "指定需要备份的配置文件Web.config路径或文件名",
+                { "from=", "指定需要备份的配置文件sscms.json路径或文件名",
                     v => _from = v },
-                { "to=", "指定需要恢复的配置文件Web.config路径或文件名",
+                { "to=", "指定需要恢复的配置文件sscms.json路径或文件名",
                     v => _to = v },
                 { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
                     v => _includes = v == null ? null : ListUtils.GetStringList(v) },
@@ -47,7 +47,7 @@ namespace SSCMS.Cli.Jobs
                     v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
                 { "max-rows=", "指定需要备份的表的最大行数",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
-                { "h|help",  "命令说明",
+                { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
         }
@@ -80,10 +80,10 @@ namespace SSCMS.Cli.Jobs
             var treeInfo = new TreeInfo(_settingsManager, directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var backupWebConfigPath = CliUtils.GetWebConfigPath(_from, _settingsManager);
-            if (!FileUtils.IsFileExists(backupWebConfigPath))
+            var backupConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _from);
+            if (!FileUtils.IsFileExists(backupConfigPath))
             {
-                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{backupWebConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"The sscms configuration file does not exist: {backupConfigPath}");
                 return;
             }
             //WebConfigUtils.Load(_settingsManager.ContentRootPath, backupWebConfigPath);
@@ -100,7 +100,7 @@ namespace SSCMS.Cli.Jobs
             var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await WriteUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
                 return;
             }
 
@@ -118,10 +118,10 @@ namespace SSCMS.Cli.Jobs
 
             await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
-            var restoreWebConfigPath = CliUtils.GetWebConfigPath(_to, _settingsManager);
-            if (!FileUtils.IsFileExists(restoreWebConfigPath))
+            var restoreConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _to);
+            if (!FileUtils.IsFileExists(restoreConfigPath))
             {
-                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{restoreWebConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"The sscms configuration file does not exist: {restoreConfigPath}");
                 return;
             }
             //WebConfigUtils.Load(_settingsManager.ContentRootPath, restoreWebConfigPath);
@@ -135,14 +135,14 @@ namespace SSCMS.Cli.Jobs
             (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await WriteUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
                 return;
             }
 
             await _restoreService.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintSuccessAsync("恭喜，成功同步数据！");
+            await WriteUtils.PrintSuccessAsync("恭喜，成功同步数据!");
         }
     }
 }

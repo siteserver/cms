@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -64,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
         public class ChannelResult
         {
-            public Channel Channel { get; set; }
+            public Entity Entity { get; set; }
             public IEnumerable<Select<string>> LinkTypes { get; set; }
             public IEnumerable<Select<string>> TaxisTypes { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
@@ -101,7 +103,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public string ChannelName { get; set; }
             public string IndexName { get; set; }
             public List<string> GroupNames { get; set; }
-            public string ImageUrl { get; set; }
             public string Content { get; set; }
             public int ChannelTemplateId { get; set; }
             public int ContentTemplateId { get; set; }
@@ -123,6 +124,23 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public bool IsParentTemplates { get; set; }
             public bool IsIndexName { get; set; }
             public string Channels { get; set; }
+        }
+
+        private async Task<List<InputStyle>> GetInputStylesAsync(Channel channel)
+        {
+            var styles = new List<InputStyle>
+            {
+                new InputStyle
+                {
+                    AttributeName = nameof(Site.ImageUrl),
+                    DisplayName = "栏目图片",
+                    InputType = InputType.Image
+                }
+            };
+            var tableStyles = await _tableStyleRepository.GetChannelStylesAsync(channel);
+            styles.AddRange(tableStyles.Select(x => new InputStyle(x)));
+
+            return styles;
         }
     }
 }

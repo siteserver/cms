@@ -196,7 +196,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 var siteTemplateDir = $"T_{request.CreateTemplateId}";
                 var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-                ZipUtils.ExtractZip(filePath, directoryPath);
+                _pathManager.ExtractZip(filePath, directoryPath);
 
                 caching.SetProcess(request.Guid, "模板压缩包解压成功，正在导入数据...");
 

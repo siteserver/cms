@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,17 +23,19 @@ namespace SSCMS.Core.Services
             _settingsManager = settingsManager;
 
             _directoryPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
-            DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
         }
 
         public void Load()
         {
             var plugins = new List<Plugin>();
+            Plugins = new List<IPlugin>();
             var configurations = new List<IConfiguration>
             {
                 _config
             };
-            foreach (var folderPath in Directory.GetDirectories(_directoryPath))
+            if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
+
+            foreach (var folderPath in DirectoryUtils.GetDirectoryPaths(_directoryPath))
             {
                 if (string.IsNullOrEmpty(folderPath)) continue;
                 var configPath = PathUtils.Combine(folderPath, Constants.PackageFileName);
@@ -42,13 +43,12 @@ namespace SSCMS.Core.Services
 
                 var plugin = new Plugin(folderPath, true);
                 if (!StringUtils.IsStrictName(plugin.Publisher) || !StringUtils.IsStrictName(plugin.Name)) continue;
-                if (Path.GetFileName(folderPath) != plugin.PluginId) continue;
+                if (PathUtils.GetFileName(folderPath) != plugin.PluginId) continue;
 
                 plugins.Add(plugin);
                 
             }
 
-            Plugins = new List<IPlugin>();
             foreach (var plugin in plugins.OrderBy(x => x.Taxis == 0 ? int.MaxValue : x.Taxis))
             {
                 Plugins.Add(plugin);

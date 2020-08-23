@@ -125,7 +125,7 @@ namespace SSCMS.Core.Utils.Serialization
             var sitePath = await _pathManager.GetSitePathAsync(_site);
             DirectoryUtils.Copy(sitePath, filesDirectoryPath);
 
-            ZipUtils.CreateZip(filePath, filesDirectoryPath);
+            _pathManager.CreateZip(filePath, filesDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(filesDirectoryPath);
         }
@@ -136,7 +136,7 @@ namespace SSCMS.Core.Utils.Serialization
             var styleDirectoryPath = _pathManager.GetTemporaryFilesPath("TableStyle");
 
             await TableStyleIe.SingleExportTableStylesAsync(_databaseManager, tableName, _site.Id, relatedIdentity, styleDirectoryPath);
-            ZipUtils.CreateZip(filePath, styleDirectoryPath);
+            _pathManager.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
 
@@ -148,7 +148,7 @@ namespace SSCMS.Core.Utils.Serialization
             var filePath = pathManager.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = pathManager.GetTemporaryFilesPath("TableStyle");
             await TableStyleIe.SingleExportTableStylesAsync(databaseManager, siteId, tableName, relatedIdentities, styleDirectoryPath);
-            ZipUtils.CreateZip(filePath, styleDirectoryPath);
+            pathManager.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
 
@@ -200,7 +200,7 @@ namespace SSCMS.Core.Utils.Serialization
                 await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
             }
 
-            ZipUtils.CreateZip(filePath, directoryPath);
+            pathManager.CreateZip(filePath, directoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
 
@@ -335,7 +335,7 @@ namespace SSCMS.Core.Utils.Serialization
             var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName); 
             feed.Save(uploadFilePath);
 
-            ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
+            _pathManager.CreateZip(filePath, siteContentDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
 
@@ -354,7 +354,7 @@ namespace SSCMS.Core.Utils.Serialization
             var isExport = await contentIe.ExportContentsAsync(_site, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
             if (isExport)
             {
-                ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
+                _pathManager.CreateZip(filePath, siteContentDirectoryPath);
                 DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             }
             return isExport;
@@ -372,7 +372,7 @@ namespace SSCMS.Core.Utils.Serialization
             var isExport = await contentIe.ExportContentsAsync(_site, contentInfoList);
             if (isExport)
             {
-                ZipUtils.CreateZip(filePath, siteContentDirectoryPath);
+                _pathManager.CreateZip(filePath, siteContentDirectoryPath);
                 DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             }
             return isExport;

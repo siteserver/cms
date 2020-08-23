@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
             var pluginPath = _pathManager.GetPluginPath(request.PluginId);
             DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-            ZipUtils.ExtractZip(filePath, pluginPath);
+            _pathManager.ExtractZip(filePath, pluginPath);
 
             return new BoolResult
             {

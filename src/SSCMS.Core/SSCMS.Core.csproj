@@ -36,6 +36,8 @@
     <PackageReference Include="Senparc.Weixin" Version="6.7.502" />
     <PackageReference Include="Senparc.Weixin.WxOpen" Version="3.8.502" />
     <PackageReference Include="Senparc.Weixin.TenPay" Version="1.5.502.3" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0003" />
   </ItemGroup>
 
   <ItemGroup>

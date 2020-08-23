@@ -80,7 +80,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var styles = await _tableStyleRepository.GetChannelStylesAsync(channel);
+            var styles = await GetInputStylesAsync(channel);
             foreach (var style in styles)
             {
                 var inputType = style.InputType;
@@ -97,10 +97,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 {
                     var count = request.Get(ColumnsManager.GetCountName(style.AttributeName), 0);
                     channel.Set(ColumnsManager.GetCountName(style.AttributeName), count);
-                    for (var n = 1; n <= count; n++)
+                    for (var n = 0; n <= count; n++)
                     {
-                        channel.Set(ColumnsManager.GetExtendName(style.AttributeName, n),
-                            request.Get(ColumnsManager.GetExtendName(style.AttributeName, n), string.Empty));
+                        channel.Set(ColumnsManager.GetExtendName(style.AttributeName, n), request.Get(ColumnsManager.GetExtendName(style.AttributeName, n), string.Empty));
                     }
                 }
                 else if (inputType == InputType.CheckBox ||
@@ -119,7 +118,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             channel.ChannelName = request.ChannelName;
             channel.IndexName = request.IndexName;
             channel.GroupNames = request.GroupNames;
-            channel.ImageUrl = request.ImageUrl;
             channel.Content = request.Content;
             channel.ChannelTemplateId = request.ChannelTemplateId;
             channel.ContentTemplateId = request.ContentTemplateId;

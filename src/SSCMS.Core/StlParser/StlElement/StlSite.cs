@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Configuration;
@@ -65,11 +66,11 @@ namespace SSCMS.Core.StlParser.StlElement
 	    [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
-	    public const string TypeSiteName = nameof(Site.SiteName);
-        public const string TypeImageUrl = nameof(Site.ImageUrl);
-        public const string TypeKeywords = nameof(Site.Keywords);
-        public const string TypeDescription = nameof(Site.Description);
-        public const string TypeSiteUrl = "SiteUrl";
+        private const string TypeSiteName = nameof(Site.SiteName);
+        private const string TypeImageUrl = nameof(Site.ImageUrl);
+        private const string TypeKeywords = nameof(Site.Keywords);
+        private const string TypeDescription = nameof(Site.Description);
+        private const string TypeSiteUrl = "SiteUrl";
 
 	    public static SortedList<string, string> TypeList => new SortedList<string, string>
 	    {
@@ -99,6 +100,7 @@ namespace SSCMS.Core.StlParser.StlElement
 		    var isReturnToBr = false;
 		    var isLower = false;
 		    var isUpper = false;
+            var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -168,6 +170,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isUpper = TranslateUtils.ToBool(value, true);
                 }
+                else
+                {
+                    attributes[name] = value;
+                }
             }
 
 		    var site = parseManager.ContextInfo.Site;
@@ -186,10 +192,10 @@ namespace SSCMS.Core.StlParser.StlElement
 		        return site;
 		    }
 
-            return await ParseImplAsync(parseManager, site, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseManager, site, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, Site site, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, Site site, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -231,11 +237,8 @@ namespace SSCMS.Core.StlParser.StlElement
                     var sbParsedContent = new StringBuilder();
                     //第一条
                     sbParsedContent.Append(contextInfo.IsStlEntity
-                        ? await parseManager.PathManager.ParseSiteUrlAsync(site,
-                            site.ImageUrl, pageInfo.IsLocal)
-                        : await inputParser.GetImageOrFlashHtmlAsync(site,
-                            site.ImageUrl,
-                            contextInfo.Attributes, false));
+                        ? await parseManager.PathManager.ParseSiteUrlAsync(site, site.ImageUrl, pageInfo.IsLocal)
+                        : await inputParser.GetImageOrFlashHtmlAsync(site, site.ImageUrl, attributes, false));
 
                     //第n条
                     var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
@@ -246,10 +249,8 @@ namespace SSCMS.Core.StlParser.StlElement
                         var extend = site.Get<string>(extendName);
 
                         sbParsedContent.Append(contextInfo.IsStlEntity
-                            ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend,
-                                pageInfo.IsLocal)
-                            : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend,
-                                contextInfo.Attributes, false));
+                            ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal)
+                            : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, attributes, false));
                     }
 
                     parsedContent = sbParsedContent.ToString();
@@ -259,7 +260,9 @@ namespace SSCMS.Core.StlParser.StlElement
                     var num = TranslateUtils.ToInt(no);
                     if (num <= 1)
                     {
-                        parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseSiteUrlAsync(site, site.ImageUrl, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(site, site.ImageUrl, contextInfo.Attributes, false);
+                        parsedContent = contextInfo.IsStlEntity
+                            ? await parseManager.PathManager.ParseSiteUrlAsync(site, site.ImageUrl, pageInfo.IsLocal)
+                            : await inputParser.GetImageOrFlashHtmlAsync(site, site.ImageUrl, attributes, false);
                     }
                     else
                     {
@@ -267,16 +270,19 @@ namespace SSCMS.Core.StlParser.StlElement
                         var extend = site.Get<string>(extendName);
                         if (!string.IsNullOrEmpty(extend))
                         {
-                            parsedContent = contextInfo.IsStlEntity ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal) : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsStlEntity
+                                ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend,
+                                    pageInfo.IsLocal)
+                                : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, attributes, false);
                         }
                     }
                 }
             }
-            if (StringUtils.EqualsIgnoreCase(type, TypeKeywords))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeKeywords))
             {
                 parsedContent = site.Keywords;
             }
-            if (StringUtils.EqualsIgnoreCase(type, TypeDescription))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeDescription))
             {
                 parsedContent = site.Description;
             }
@@ -301,7 +307,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         {
                             var inputParser = new InputParserManager(parseManager.PathManager);
 
-                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
 
                             inputType = styleInfo.InputType;
 

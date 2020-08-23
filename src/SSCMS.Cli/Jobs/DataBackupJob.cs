@@ -16,7 +16,6 @@ namespace SSCMS.Cli.Jobs
         public string CommandName => "data backup";
 
         private string _directory;
-        private string _configFile;
         private List<string> _includes;
         private List<string> _excludes;
         private int _maxRows;
@@ -32,17 +31,15 @@ namespace SSCMS.Cli.Jobs
             _databaseManager = databaseManager;
             _options = new OptionSet
             {
-                { "d|directory=", "指定保存备份文件的文件夹名称",
+                { "d|directory=", "Backup folder name",
                     v => _directory = v },
-                { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                    v => _configFile = v },
-                { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
+                { "includes=", "Include table names, separated by commas, default backup all tables",
                     v => _includes = v == null ? null : ListUtils.GetStringList(v) },
-                { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
+                { "excludes=", "Exclude table names, separated by commas",
                     v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
-                { "max-rows=", "指定需要备份的表的最大行数",
+                { "max-rows=", "Maximum number of rows to backup. All data is backed up by default",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
-                { "h|help",  "命令说明",
+                { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
         }
@@ -50,7 +47,7 @@ namespace SSCMS.Cli.Jobs
         public void PrintUsage()
         {
             Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: backup database to dist");
+            Console.WriteLine("Summary: backup database to folder");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
@@ -75,12 +72,16 @@ namespace SSCMS.Cli.Jobs
             var treeInfo = new TreeInfo(_settingsManager, directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
-            if (!FileUtils.IsFileExists(webConfigPath))
+            var configPath = CliUtils.GetConfigPath(_settingsManager);
+            if (!FileUtils.IsFileExists(configPath))
             {
-                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"The sscms.json file does not exist: {configPath}");
                 return;
             }
+
+            await Console.Out.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
+            await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
+            await WriteUtils.PrintSuccessAsync($"Backup folder: {treeInfo.DirectoryPath}!");
 
             //WebConfigUtils.Load(_settingsManager.ContentRootPath, webConfigPath);
 
@@ -101,6 +102,15 @@ namespace SSCMS.Cli.Jobs
             //    return;
             //}
 
+            var (isConnectionWorks, errorMessage) =
+                await _settingsManager.Database.IsConnectionWorksAsync();
+
+            if (!isConnectionWorks)
+            {
+                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
+                return;
+            }
+
             if (_excludes == null)
             {
                 _excludes = new List<string>();
@@ -114,7 +124,7 @@ namespace SSCMS.Cli.Jobs
             await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintSuccessAsync($"恭喜，成功备份数据库至文件夹：{treeInfo.DirectoryPath}！");
+            await WriteUtils.PrintSuccessAsync("backup database to folder successfully!");
         }
 
         public static async Task Backup(ISettingsManager settingsManager, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo)
@@ -134,12 +144,14 @@ namespace SSCMS.Cli.Jobs
             await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, TranslateUtils.JsonSerialize(tableNames));
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintRowAsync("备份表名称", "总条数");
+            await WriteUtils.PrintRowAsync("Backup table name", "Count");
             await WriteUtils.PrintRowLineAsync();
 
             foreach (var tableName in tableNames)
             {
-                var repository = new Repository(settingsManager.Database, tableName);
+                var columns = await settingsManager.Database.GetTableColumnsAsync(tableName);
+                var repository = new Repository(settingsManager.Database, tableName, columns);
+
                 var tableInfo = new TableInfo
                 {
                     Columns = repository.TableColumns,

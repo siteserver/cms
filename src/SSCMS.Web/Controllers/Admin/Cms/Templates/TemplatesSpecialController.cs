@@ -101,7 +101,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var zipFilePath = _pathManager.GetSpecialZipFilePath(specialInfo.Title, directoryPath);
 
             FileUtils.DeleteFileIfExists(zipFilePath);
-            ZipUtils.CreateZip(zipFilePath, srcDirectoryPath);
+            _pathManager.CreateZip(zipFilePath, srcDirectoryPath);
             var url = await _pathManager.GetSpecialZipFileUrlAsync(site, specialInfo);
 
             return new StringResult
@@ -215,7 +215,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                     if (FileUtils.IsZip(PathUtils.GetExtension(filePath)))
                     {
-                        ZipUtils.ExtractZip(filePath, srcDirectoryPath);
+                        _pathManager.ExtractZip(filePath, srcDirectoryPath);
                     }
                     else
                     {
@@ -248,7 +248,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                     if (FileUtils.IsZip(PathUtils.GetExtension(filePath)))
                     {
-                        ZipUtils.ExtractZip(filePath, srcDirectoryPath);
+                        _pathManager.ExtractZip(filePath, srcDirectoryPath);
                     }
                     else
                     {

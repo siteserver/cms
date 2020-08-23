@@ -1,4 +1,5 @@
-﻿using SSCMS.Core.Plugins;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using SSCMS.Core.Plugins;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
@@ -11,7 +12,9 @@ namespace SSCMS.Core.Services
             var pluginPath = PathUtils.Combine(_directoryPath, pluginId);
 
             var zipFilePath = CloudUtils.Dl.DownloadPlugin(packagesPath, pluginId, version);
-            ZipUtils.ExtractZip(zipFilePath, pluginPath);
+
+            var fz = new FastZip();
+            fz.ExtractZip(zipFilePath, pluginPath, null);
         }
 
         public void UnInstall(string pluginId)

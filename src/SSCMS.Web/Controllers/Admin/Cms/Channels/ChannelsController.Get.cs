@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
@@ -34,30 +35,38 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 new Select<string>(TaxisType.OrderByAddDate)
             };
 
-            var styles = new List<InputStyle>();
-            foreach (var style in await _tableStyleRepository.GetChannelStylesAsync( channel))
+            var styles = await GetInputStylesAsync(channel);
+            var entity = new Entity(channel.ToDictionary());
+            foreach (var style in styles)
             {
-                styles.Add(new InputStyle(style));
-
                 if (style.InputType == InputType.Image ||
                     style.InputType == InputType.Video ||
                     style.InputType == InputType.File)
                 {
-                    channel.Set(ColumnsManager.GetCountName(style.AttributeName),
-                        channel.Get(ColumnsManager.GetCountName(style.AttributeName), 0));
+                    var count = channel.Get(ColumnsManager.GetCountName(style.AttributeName), 0);
+                    entity.Set(ColumnsManager.GetCountName(style.AttributeName), count);
+                    for (var n = 0; n <= count; n++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(style.AttributeName, n);
+                        entity.Set(extendName, channel.Get(extendName));
+                    }
                 }
                 else if (style.InputType == InputType.CheckBox ||
                          style.InputType == InputType.SelectMultiple)
                 {
                     var list = ListUtils.GetStringList(channel.Get(style.AttributeName,
                         string.Empty));
-                    channel.Set(style.AttributeName, list);
+                    entity.Set(style.AttributeName, list);
+                }
+                else
+                {
+                    entity.Set(style.AttributeName, channel.Get(style.AttributeName));
                 }
             }
 
             return new ChannelResult
             {
-                Channel = channel,
+                Entity = entity,
                 LinkTypes = linkTypes,
                 TaxisTypes = taxisTypes,
                 Styles = styles

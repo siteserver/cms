@@ -33,7 +33,7 @@ namespace SSCMS.Cli.Jobs
                 { "v|version=", "发布版本",
                     v => _version = v },
                 {
-                    "h|help", "命令说明",
+                    "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };
@@ -122,7 +122,7 @@ namespace SSCMS.Cli.Jobs
             }
 
             var packageId = PluginUtils.GetPackageId(plugin.Publisher, plugin.Name, plugin.Version);
-            var zipPath = PluginPackageJob.Package(plugin);
+            var zipPath = PluginPackageJob.Package(_pathManager, plugin);
             var fileSize = FileUtils.GetFileSizeByFilePath(zipPath);
 
             await Console.Out.WriteLineAsync($"Packaged: {zipPath}");

@@ -89,7 +89,7 @@ namespace SSCMS.Core.Plugins
                     client.DownloadData(request);
                 }
 
-                ZipUtils.ExtractZip(filePath, directoryPath);
+                pathManager.ExtractZip(filePath, directoryPath);
             }
 
             public static bool IsCmsDownload(IPathManager pathManager, string osArchitecture, string version)

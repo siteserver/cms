@@ -22,7 +22,7 @@ namespace SSCMS.Cli.Jobs
             _options = new OptionSet
             {
                 {
-                    "h|help", "命令说明",
+                    "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };

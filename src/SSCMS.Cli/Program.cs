@@ -54,7 +54,7 @@ namespace SSCMS.Cli
             var configuration = builder.Build();
 
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("log/log.log", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("logs/cli/log.log", rollingInterval: RollingInterval.Day)
                 .Enrich.FromLogContext()
                 .CreateLogger();
 

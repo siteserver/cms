@@ -38,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var tempPluginPath = _pathManager.GetTemporaryFilesPath(PathUtils.GetFileNameWithoutExtension(fileName));
             DirectoryUtils.DeleteDirectoryIfExists(tempPluginPath);
             DirectoryUtils.CreateDirectoryIfNotExists(tempPluginPath);
-            ZipUtils.ExtractZip(filePath, tempPluginPath);
+            _pathManager.ExtractZip(filePath, tempPluginPath);
 
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(tempPluginPath);
             if (plugin == null)
@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 var pluginPath = _pathManager.GetPluginPath(plugin.PluginId);
                 DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
-                ZipUtils.ExtractZip(filePath, pluginPath);
+                _pathManager.ExtractZip(filePath, pluginPath);
             }
 
             return new UploadResult

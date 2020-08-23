@@ -28,7 +28,7 @@ namespace SSCMS.Cli.Jobs
             _options = new OptionSet
             {
                 {
-                    "h|help", "命令说明",
+                    "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };
@@ -70,13 +70,13 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var zipPath = Package(plugin);
+            var zipPath = Package(_pathManager, plugin);
             var fileSize = FileUtils.GetFileSizeByFilePath(zipPath);
 
             await WriteUtils.PrintSuccessAsync($"Packaged: {zipPath} ({fileSize})");
         }
 
-        public static string Package(Plugin plugin)
+        public static string Package(IPathManager pathManager, Plugin plugin)
         {
             var outputPath = PathUtils.Combine(plugin.ContentRootPath, plugin.Output);
             var packageId = PluginUtils.GetPackageId(plugin.Publisher, plugin.Name, plugin.Version);
@@ -132,7 +132,7 @@ namespace SSCMS.Cli.Jobs
                 }
             }
 
-            ZipUtils.CreateZip(zipPath, publishPath);
+            pathManager.CreateZip(zipPath, publishPath);
             DirectoryUtils.DeleteDirectoryIfExists(publishPath);
 
             return zipPath;

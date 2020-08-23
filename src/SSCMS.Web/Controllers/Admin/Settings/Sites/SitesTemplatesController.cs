@@ -104,7 +104,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             FileUtils.DeleteFileIfExists(filePath);
 
-            ZipUtils.CreateZip(filePath, directoryPath);
+            _pathManager.CreateZip(filePath, directoryPath);
 
             return new StringResult
             {
@@ -125,7 +125,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var directoryPathToUnZip = _pathManager.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileNameToUnZip));
             var zipFilePath = _pathManager.GetSiteTemplatesPath(fileNameToUnZip);
 
-            ZipUtils.ExtractZip(zipFilePath, directoryPathToUnZip);
+            _pathManager.ExtractZip(zipFilePath, directoryPathToUnZip);
 
             return await GetListResultAsync();
         }
@@ -185,7 +185,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             await _pathManager.UploadAsync(file, filePath);
 
-            ZipUtils.ExtractZip(filePath, directoryPath);
+            _pathManager.ExtractZip(filePath, directoryPath);
 
             return await GetListResultAsync();
         }

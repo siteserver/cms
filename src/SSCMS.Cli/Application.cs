@@ -35,7 +35,7 @@ namespace SSCMS.Cli
             _options = new OptionSet {
                 { "r|repeat=", "schedule CRON expression",
                     v => _repeat = v },
-                { "h|help",  "命令说明",
+                { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
         }
@@ -85,7 +85,7 @@ namespace SSCMS.Cli
             else
             {
                 isJobService = true;
-                commandName = "run";
+                commandName = "status";
             }
 
             CommandName = commandName;

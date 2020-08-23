@@ -58,7 +58,7 @@ namespace SSCMS.Core.Utils.Serialization
             await exportObject.ExportConfigurationAsync(configurationFilePath);
             exportObject.ExportMetadata(site.SiteName, await pathManager.GetWebUrlAsync(site), string.Empty, string.Empty, metadataPath);
 
-            ZipUtils.CreateZip(filePath, siteTemplatePath);
+            pathManager.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
@@ -74,7 +74,7 @@ namespace SSCMS.Core.Utils.Serialization
                 DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
                 DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-                ZipUtils.ExtractZip(path, siteTemplatePath);
+                pathManager.ExtractZip(path, siteTemplatePath);
             }
             var siteTemplateMetadataPath = PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteTemplateMetadata);
 

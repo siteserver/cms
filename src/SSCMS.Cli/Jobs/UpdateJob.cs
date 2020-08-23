@@ -52,7 +52,7 @@ namespace SSCMS.Cli.Jobs
                     }
                 },
                 {
-                    "h|help", "命令说明",
+                    "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };

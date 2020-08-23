@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Specialized;
+using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Configuration;
@@ -45,6 +46,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
 
+        [StlAttribute(Title = "显示第几项")]
+        private const string No = nameof(No);
+
         [StlAttribute(Title = "显示多项时的分割字符串")]
         private const string Separator = nameof(Separator);
 
@@ -88,6 +92,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var topLevel = -1;
             var type = string.Empty;
             var formatString = string.Empty;
+            var no = "0";
             string separator = null;
             var startIndex = 0;
             var length = 0;
@@ -99,6 +104,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var isReturnToBr = false;
             var isLower = false;
             var isUpper = false;
+            var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -142,6 +148,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
                     formatString = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, No))
+                {
+                    no = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Separator))
                 {
@@ -187,6 +197,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isUpper = TranslateUtils.ToBool(value, true);
                 }
+                else
+                {
+                    attributes[name] = value;
+                }
             }
 
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
@@ -200,7 +214,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return channel.ToDictionary();
             }
 
-            var parsedContent = await ParseImplAsync(parseManager, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+            var parsedContent = await ParseImplAsync(parseManager, leftText, rightText, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId, attributes);
 
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);
@@ -214,7 +228,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, Channel channel, int channelId)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string leftText, string rightText, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -299,9 +313,57 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ImageUrl)))
             {
-                inputType = InputType.Image;
+                //inputType = InputType.Image;
+                //var inputParser = new InputParserManager(parseManager.PathManager);
+                //parsedContent = await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, attributes, contextInfo.IsStlEntity);
+
                 var inputParser = new InputParserManager(parseManager.PathManager);
-                parsedContent = await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsStlEntity); // contextInfo.IsStlEntity = true 表示实体标签
+
+                if (no == "all")
+                {
+                    var sbParsedContent = new StringBuilder();
+                    //第一条
+                    sbParsedContent.Append(contextInfo.IsStlEntity
+                        ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, channel.ImageUrl, pageInfo.IsLocal)
+                        : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, attributes, false));
+
+                    //第n条
+                    var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
+                    var count = channel.Get<int>(countName);
+                    for (var i = 1; i <= count; i++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
+                        var extend = channel.Get<string>(extendName);
+
+                        sbParsedContent.Append(contextInfo.IsStlEntity
+                            ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend, pageInfo.IsLocal)
+                            : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, attributes, false));
+                    }
+
+                    parsedContent = sbParsedContent.ToString();
+                }
+                else
+                {
+                    var num = TranslateUtils.ToInt(no);
+                    if (num <= 1)
+                    {
+                        parsedContent = contextInfo.IsStlEntity
+                            ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, channel.ImageUrl, pageInfo.IsLocal)
+                            : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, attributes, false);
+                    }
+                    else
+                    {
+                        var extendName = ColumnsManager.GetExtendName(nameof(Site.ImageUrl), num - 1);
+                        var extend = channel.Get<string>(extendName);
+                        if (!string.IsNullOrEmpty(extend))
+                        {
+                            parsedContent = contextInfo.IsStlEntity
+                                ? await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, extend,
+                                    pageInfo.IsLocal)
+                                : await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, extend, attributes, false);
+                        }
+                    }
+                }
             }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Content)))
             {
@@ -433,7 +495,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         var inputParser = new InputParserManager(parseManager.PathManager);
-                        parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                        parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
                         inputType = styleInfo.InputType;
                     }
                 }

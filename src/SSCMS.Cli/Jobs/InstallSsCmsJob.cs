@@ -40,7 +40,7 @@ namespace SSCMS.Cli.Jobs
                     v => _userName = v },
                 { "p|password",  "Super administrator username",
                     v => _password = v },
-                { "h|help",  "命令说明",
+                { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
         }

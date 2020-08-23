@@ -16,7 +16,6 @@ namespace SSCMS.Cli.Jobs
         public string CommandName => "data restore";
 
         private string _directory;
-        private string _configFile;
         private List<string> _includes;
         private List<string> _excludes;
         private bool _dataOnly;
@@ -36,17 +35,15 @@ namespace SSCMS.Cli.Jobs
             _restoreService = restoreService;
 
             _options = new OptionSet {
-                { "d|directory=", "从指定的文件夹中恢复数据",
+                { "d|directory=", "Backup folder name",
                     v => _directory = v },
-                { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                    v => _configFile = v },
-                { "includes=", "指定需要还原的表，多个表用英文逗号隔开，默认还原所有表",
+                { "includes=", "Include table names, separated by commas, default restore all tables",
                     v => _includes = v == null ? null : ListUtils.GetStringList(v) },
-                { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
+                { "excludes=", "Exclude table names, separated by commas",
                     v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
-                { "data-only",  "仅恢复数据",
+                { "data-only",  "Restore data only",
                     v => _dataOnly = v != null },
-                { "h|help",  "命令说明",
+                { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
         }
@@ -72,7 +69,7 @@ namespace SSCMS.Cli.Jobs
 
             if (string.IsNullOrEmpty(_directory))
             {
-                await WriteUtils.PrintErrorAsync("需要指定恢复数据的文件夹名称：directory");
+                await WriteUtils.PrintErrorAsync("Backup folder name not specified: --directory");
                 return;
             }
 
@@ -91,10 +88,10 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var webConfigPath = CliUtils.GetWebConfigPath(_configFile, _settingsManager);
-            if (!FileUtils.IsFileExists(webConfigPath))
+            var configPath = CliUtils.GetConfigPath(_settingsManager);
+            if (!FileUtils.IsFileExists(configPath))
             {
-                await WriteUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
+                await WriteUtils.PrintErrorAsync($"The sscms.json file does not exist: {configPath}");
                 return;
             }
 
@@ -130,14 +127,14 @@ namespace SSCMS.Cli.Jobs
             }
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintRowAsync("恢复表名称", "总条数");
+            await WriteUtils.PrintRowAsync("Restore table name", "Count");
             await WriteUtils.PrintRowLineAsync();
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
 
             await _restoreService.RestoreAsync(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
 
-            await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
+            await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据!");
         }
     }
 }
