@@ -4,8 +4,6 @@ namespace SSCMS.Repositories
 {
     public partial interface IChannelRepository
     {
-        Task UpdateTaxisDownAsync(int siteId, int channelId, int parentId, int taxis);
-
-        Task UpdateTaxisUpAsync(int siteId, int channelId, int parentId, int taxis);
+        Task UpdateTaxisAsync(int siteId, int parentId, int channelId, bool isUp);
     }
 }

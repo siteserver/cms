@@ -16,14 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 return Unauthorized();
             }
 
-            if (request.IsUp)
-            {
-                await _channelRepository.UpdateTaxisUpAsync(request.SiteId, request.ChannelId, request.ParentId, request.Taxis);
-            }
-            else
-            {
-                await _channelRepository.UpdateTaxisDownAsync(request.SiteId, request.ChannelId, request.ParentId, request.Taxis);
-            }
+            await _channelRepository.UpdateTaxisAsync(request.SiteId, request.ParentId, request.ChannelId, request.IsUp);
 
             return new List<int>
             {

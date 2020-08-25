@@ -124,7 +124,7 @@
         <col name="el-table_1_column_1">
         <col name="el-table_1_column_2" width="180">
         <col name="el-table_1_column_3" width="180">
-        <col name="el-table_1_column_4" width="150">
+        <col name="el-table_1_column_4" width="180">
       </colgroup>
       <tbody>
         <tr class="el-table__row">
@@ -155,18 +155,18 @@
         <td rowspan="1" colspan="1" class="el-table_1_column_4">
           <div class="cell">
 
-            <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
+            <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
               编辑
-            </el-button>
-            <el-button v-if="data.parentId > 0" type="text" size="mini" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, true)">
+            </el-link>
+            <el-link :underline="false" v-if="data.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, true)">
               上升
-            </el-button>
-            <el-button v-if="data.parentId > 0" type="text" size="mini" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, false)">
+            </el-link>
+            <el-link :underline="false" v-if="data.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, false)">
               下降
-            </el-button>
-            <el-button type="text" size="mini" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
+            </el-link>
+            <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
               删除
-            </el-button>
+            </el-link>
 
           </div>
         </td>

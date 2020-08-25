@@ -26,33 +26,66 @@ namespace SSCMS.Core.Repositories
                 .Max();
         }
 
-        public async Task UpdateTaxisDownAsync(int siteId, int channelId, int parentId, int taxis)
+        //public async Task UpdateTaxisDownAsync(int siteId, int channelId, int parentId, int taxis)
+        //{
+        //    var summaries = await GetSummariesAsync(siteId);
+        //    var higher = summaries
+        //        .Where(x => x.ParentId == parentId && x.Taxis > taxis && x.Id != channelId)
+        //        .OrderBy(x => x.Taxis)
+        //        .FirstOrDefault();
+
+        //    if (higher != null)
+        //    {
+        //        await SetTaxisAsync(siteId, channelId, higher.Taxis);
+        //        await SetTaxisAsync(siteId, higher.Id, taxis);
+        //    }
+        //}
+
+        //public async Task UpdateTaxisUpAsync(int siteId, int channelId, int parentId, int taxis)
+        //{
+        //    var summaries = await GetSummariesAsync(siteId);
+
+        //    var lower = summaries
+        //        .Where(x => x.ParentId == parentId && x.Taxis < taxis && x.Id != channelId)
+        //        .OrderByDescending(x => x.Taxis)
+        //        .FirstOrDefault();
+
+        //    if (lower != null)
+        //    {
+        //        await SetTaxisAsync(siteId, channelId, lower.Taxis);
+        //        await SetTaxisAsync(siteId, lower.Id, taxis);
+        //    }
+        //}
+
+        public async Task UpdateTaxisAsync(int siteId, int parentId, int channelId, bool isUp)
         {
             var summaries = await GetSummariesAsync(siteId);
-            var higher = summaries
-                .Where(x => x.ParentId == parentId && x.Taxis > taxis && x.Id != channelId)
+
+            var channelIds = summaries
+                .Where(x => x.ParentId == parentId)
                 .OrderBy(x => x.Taxis)
-                .FirstOrDefault();
+                .Select(x => x.Id)
+                .ToList();
 
-            if (higher != null)
+            var index = channelIds.IndexOf(channelId);
+
+            if (isUp && index == 0) return;
+            if (!isUp && index == channelIds.Count - 1) return;
+
+            if (isUp)
             {
-                await SetTaxisAsync(siteId, channelId, higher.Taxis);
-                await SetTaxisAsync(siteId, higher.Id, taxis);
+                channelIds.Remove(channelId);
+                channelIds.Insert(index - 1, channelId);
             }
-        }
-
-        public async Task UpdateTaxisUpAsync(int siteId, int channelId, int parentId, int taxis)
-        {
-            var summaries = await GetSummariesAsync(siteId);
-            var lower = summaries
-                .Where(x => x.ParentId == parentId && x.Taxis < taxis && x.Id != channelId)
-                .OrderByDescending(x => x.Taxis)
-                .FirstOrDefault();
-
-            if (lower != null)
+            else
             {
-                await SetTaxisAsync(siteId, channelId, lower.Taxis);
-                await SetTaxisAsync(siteId, lower.Id, taxis);
+                channelIds.Remove(channelId);
+                channelIds.Insert(index + 1, channelId);
+            }
+
+            for (var taxis = 1; taxis <= channelIds.Count; taxis++)
+            {
+                await SetTaxisAsync(siteId, channelIds[taxis - 1], taxis);
             }
         }
     }

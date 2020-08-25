@@ -33,33 +33,34 @@ namespace SSCMS.Core.Services
             {
                 _config
             };
-            if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
-
-            foreach (var folderPath in DirectoryUtils.GetDirectoryPaths(_directoryPath))
+            if (DirectoryUtils.IsDirectoryExists(_directoryPath))
             {
-                if (string.IsNullOrEmpty(folderPath)) continue;
-                var configPath = PathUtils.Combine(folderPath, Constants.PackageFileName);
-                if (!FileUtils.IsFileExists(configPath)) continue;
-
-                var plugin = new Plugin(folderPath, true);
-                if (!StringUtils.IsStrictName(plugin.Publisher) || !StringUtils.IsStrictName(plugin.Name)) continue;
-                if (PathUtils.GetFileName(folderPath) != plugin.PluginId) continue;
-
-                plugins.Add(plugin);
-                
-            }
-
-            foreach (var plugin in plugins.OrderBy(x => x.Taxis == 0 ? int.MaxValue : x.Taxis))
-            {
-                Plugins.Add(plugin);
-                if (!plugin.Disabled)
+                foreach (var folderPath in DirectoryUtils.GetDirectoryPaths(_directoryPath))
                 {
-                    var (success, errorMessage) = plugin.LoadAssembly();
-                    plugin.Success = success;
-                    plugin.ErrorMessage = errorMessage;
-                    if (success)
+                    if (string.IsNullOrEmpty(folderPath)) continue;
+                    var configPath = PathUtils.Combine(folderPath, Constants.PackageFileName);
+                    if (!FileUtils.IsFileExists(configPath)) continue;
+
+                    var plugin = new Plugin(folderPath, true);
+                    if (!StringUtils.IsStrictName(plugin.Publisher) || !StringUtils.IsStrictName(plugin.Name)) continue;
+                    if (PathUtils.GetFileName(folderPath) != plugin.PluginId) continue;
+
+                    plugins.Add(plugin);
+
+                }
+
+                foreach (var plugin in plugins.OrderBy(x => x.Taxis == 0 ? int.MaxValue : x.Taxis))
+                {
+                    Plugins.Add(plugin);
+                    if (!plugin.Disabled)
                     {
-                        configurations.Add(plugin.Configuration);
+                        var (success, errorMessage) = plugin.LoadAssembly();
+                        plugin.Success = success;
+                        plugin.ErrorMessage = errorMessage;
+                        if (success)
+                        {
+                            configurations.Add(plugin.Configuration);
+                        }
                     }
                 }
             }
