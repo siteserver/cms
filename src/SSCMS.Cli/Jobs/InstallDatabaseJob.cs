@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Configuration;
-using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Repositories;
@@ -156,7 +153,7 @@ namespace SSCMS.Cli.Jobs
             var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
 
             var isProtectData = ReadUtils.GetYesNo("Protect settings in sscms.json?");
-            _settingsManager.SaveSettings(_isNightly, isProtectData, databaseType, databaseConnectionString, string.Empty);
+            _settingsManager.SaveSettings(_isNightly, isProtectData, false, databaseType, databaseConnectionString, string.Empty);
 
             await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run sscms install sscms");
         }

@@ -27,10 +27,8 @@ namespace SSCMS.Core.Plugins
             Configuration = builder.Build();
         }
 
-        public (bool, string) LoadAssembly()
+        public string GetAssemblyPath()
         {
-            if (string.IsNullOrEmpty(Main)) return (true, string.Empty);
-
             string assemblyPath;
             if (FileUtils.IsFileExists(PathUtils.Combine(ContentRootPath, Output, Main)))
             {
@@ -44,6 +42,15 @@ namespace SSCMS.Core.Plugins
             {
                 assemblyPath = Directory.GetFiles(ContentRootPath, Main, SearchOption.AllDirectories).FirstOrDefault();
             }
+
+            return assemblyPath;
+        }
+
+        public (bool, string) LoadAssembly()
+        {
+            if (string.IsNullOrEmpty(Main)) return (true, string.Empty);
+
+            var assemblyPath = GetAssemblyPath();
 
             if (string.IsNullOrEmpty(assemblyPath)) return (false, $"{Main}可执行文件不存在");
 

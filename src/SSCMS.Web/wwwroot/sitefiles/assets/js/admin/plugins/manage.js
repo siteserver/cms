@@ -86,7 +86,7 @@ var methods = {
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
-      $this.btnNavSelect('enabled');
+      $this.btnNavSelect($this.pageType || 'enabled');
       utils.loading($this, false);
     });
   },

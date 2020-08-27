@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
 
 namespace SSCMS.Models
 {
-    [DataTable("siteserver_Tag")]
+    [DataTable("siteserver_ContentTag")]
     public class ContentTag : Entity
     {
         [DataColumn]
@@ -11,5 +12,13 @@ namespace SSCMS.Models
 
         [DataColumn]
         public int SiteId { get; set; }
+
+        [DataColumn(Text = true)]
+        public List<int> ContentIds { get; set; }
+
+        [DataColumn]
+        public int UseNum { get; set; }
+
+        public int Level { get; set; }
     }
 }

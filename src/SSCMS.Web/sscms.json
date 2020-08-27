@@ -1,6 +1,7 @@
 {
   "IsNightlyUpdate": true,
   "IsProtectData": false,
+  "IsDisablePlugins": false,
   "SecurityKey": "ec169e93b156ce7a",
   "Database": {
     "Type": "SQLite",

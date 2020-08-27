@@ -15,6 +15,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
+            _settingsManager.SaveSettings(_settingsManager.IsNightlyUpdate, _settingsManager.IsProtectData, false, _settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString, _settingsManager.RedisConnectionString);
+
             _hostApplicationLifetime.StopApplication();
 
             return new BoolResult

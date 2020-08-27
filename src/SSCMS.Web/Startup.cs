@@ -26,6 +26,7 @@ using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
+using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -175,7 +176,7 @@ namespace SSCMS.Web
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IOptions<SenparcSetting> senparcSetting)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
         {
             if (env.IsDevelopment())
             {
@@ -243,7 +244,7 @@ namespace SSCMS.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UsePluginsAsync(settingsManager, pluginManager).GetAwaiter().GetResult();
+            app.UsePluginsAsync(settingsManager, pluginManager, errorLogRepository).GetAwaiter().GetResult();
 
             app.UseEndpoints(endpoints =>
             {

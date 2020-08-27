@@ -59,6 +59,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             await _contentRepository.UpdateAsync(site, channel, content);
 
+            await _contentTagRepository.UpdateTagsAsync(source.TagNames, content.TagNames, request.SiteId, content.Id);
+
             if (request.Translations != null && request.Translations.Count > 0)
             {
                 foreach (var translation in request.Translations)

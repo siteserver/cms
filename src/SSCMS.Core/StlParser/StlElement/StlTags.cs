@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Abstractions;
-using SSCMS.Abstractions.Parse;
-using SS.CMS.Core;
-using SS.CMS.StlParser.Model;
+using SSCMS.Core.StlParser.Model;
+using SSCMS.Models;
+using SSCMS.Parse;
+using SSCMS.Services;
+using SSCMS.Utils;
 
-namespace SS.CMS.StlParser.StlElement
+namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
     public class StlTags
@@ -23,24 +25,18 @@ namespace SS.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否按引用次数排序")]
         private const string IsOrderByCount = nameof(IsOrderByCount);
 
-        [StlAttribute(Title = "主题样式")]
-        private const string Theme = nameof(Theme);
-
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
-
-        public static async Task<object> ParseAsync(PageInfo pageInfo, ContextInfo contextInfo)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var tagLevel = 1;
             var totalNum = 0;
             var isOrderByCount = false;
-            var theme = "default";
-            var isInnerHtml = !string.IsNullOrEmpty(contextInfo.InnerHtml);
 
-		    foreach (var name in contextInfo.Attributes.AllKeys)
-		    {
-		        var value = contextInfo.Attributes[name];
+		    foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
+            {
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TagLevel))
                 {
@@ -54,50 +50,47 @@ namespace SS.CMS.StlParser.StlElement
                 {
                     isOrderByCount = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Theme))
-                {
-                    theme = value;
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
-                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                    parseManager.ContextInfo.ContextType = TranslateUtils.ToEnum(value, parseManager.ContextInfo.ContextType);
                 }
             }
 
-            return await ParseImplAsync(isInnerHtml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
-		}
+            return await ParseImplAsync(parseManager, tagLevel, totalNum, isOrderByCount);
+        }
 
-        private static async Task<string> ParseImplAsync(bool isInnerHtml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, int tagLevel, int totalNum, bool isOrderByCount)
         {
-            var innerHtml = string.Empty;
-            if (isInnerHtml)
-            {
-                innerHtml = StringUtils.StripTags(contextInfo.OuterHtml, ElementName);
-            }
+            var innerHtml = StringUtils.StripTags(parseManager.ContextInfo.OuterHtml, ElementName);
 
             var tagsBuilder = new StringBuilder();
-            if (!isInnerHtml)
-            {
-                tagsBuilder.Append($@"
-<link rel=""stylesheet"" href=""{SiteFilesAssets.Tags.GetStyleUrl(pageInfo.ApiUrl, theme)}"" type=""text/css"" />
-");
-                tagsBuilder.Append(@"<ul class=""tagCloud"">");
-            }
 
-            if (contextInfo.ContextType == EContextType.Undefined)
+            if (parseManager.ContextInfo.ContextType == ParseType.Undefined)
             {
-                contextInfo.ContextType = contextInfo.ContentId != 0 ? EContextType.Content : EContextType.Channel;
+                parseManager.ContextInfo.ContextType = parseManager.ContextInfo.ContentId != 0 ? ParseType.Content : ParseType.Channel;
             }
             var contentId = 0;
-            if (contextInfo.ContextType == EContextType.Content)
+            if (parseManager.ContextInfo.ContextType == ParseType.Content)
             {
-                contentId = contextInfo.ContentId;
+                contentId = parseManager.ContextInfo.ContentId;
             }
 
-            var tagInfoList = await DataProvider.ContentTagRepository.GetTagListAsync(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
-            tagInfoList = DataProvider.ContentTagRepository.GetTagInfoList(tagInfoList, totalNum, tagLevel);
-            var contentInfo = await contextInfo.GetContentAsync();
-            if (contextInfo.ContextType == EContextType.Content && contentInfo != null)
+            var tags =
+                await parseManager.DatabaseManager.ContentTagRepository.GetTagsAsync(parseManager.PageInfo.SiteId);
+
+            var tagInfoList = tags.Where(x => ListUtils.Contains(x.ContentIds, contentId)).ToList();
+            if (!isOrderByCount)
+            {
+                tagInfoList = tagInfoList.OrderBy(x => x.TagName).ToList();
+            }
+
+            if (totalNum > 0)
+            {
+                tagInfoList = tagInfoList.Take(totalNum).ToList();
+            }
+            tagInfoList = parseManager.DatabaseManager.ContentTagRepository.GetTagsByLevel(tagInfoList, totalNum, tagLevel);
+            var contentInfo = parseManager.ContextInfo.Content;
+            if (parseManager.ContextInfo.ContextType == ParseType.Content && contentInfo != null)
             {
                 var tagInfoList2 = new List<ContentTag>();
                 var tagNameList = contentInfo.TagNames;
@@ -120,9 +113,8 @@ namespace SS.CMS.StlParser.StlElement
                             var tagInfo = new ContentTag
                             {
                                 Id = 0,
-                                SiteId = pageInfo.SiteId,
-                                ChannelId = pageInfo.PageChannelId,
-                                ContentId = contentId,
+                                SiteId = parseManager.PageInfo.SiteId,
+                                ContentIds = new List<int>{ contentId },
                                 TagName = tagName,
                                 UseNum = 1
                             };
@@ -135,31 +127,16 @@ namespace SS.CMS.StlParser.StlElement
 
             foreach (var tagInfo in tagInfoList)
             {
-                if (isInnerHtml)
-                {
-                    var tagHtml = innerHtml;
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Name}", tagInfo.TagName);
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Count}", tagInfo.UseNum.ToString());
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Level}", tagInfo.Level.ToString());
-                    var innerBuilder = new StringBuilder(tagHtml);
-                    await StlParserManager.ParseInnerContentAsync(innerBuilder, pageInfo, contextInfo);
-                    tagsBuilder.Append(innerBuilder);
-                }
-                else
-                {
-                    var url = PageUtility.ParseNavigationUrl(pageInfo.Site,
-                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.TagName)}", pageInfo.IsLocal);
-                    tagsBuilder.Append($@"
-<li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.TagName}</a></li>
-");
-                }
+                var tagHtml = innerHtml;
+                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Name}", tagInfo.TagName);
+                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Count}", tagInfo.UseNum.ToString());
+                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Level}", tagInfo.Level.ToString());
+                var innerBuilder = new StringBuilder(tagHtml);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
+                tagsBuilder.Append(innerBuilder);
             }
 
-            if (!isInnerHtml)
-            {
-                tagsBuilder.Append("</ul>");
-            }
             return tagsBuilder.ToString();
         }
-	}
+    }
 }

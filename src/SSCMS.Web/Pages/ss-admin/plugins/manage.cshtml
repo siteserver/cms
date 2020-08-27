@@ -194,22 +194,22 @@
         {{ scope.row.displayName }}
       </template>
     </el-table-column>
-    <el-table-column label="已安装版本" width="80">
+    <el-table-column label="已安装版本" width="120" align="center">
       <template slot-scope="scope">
         {{ scope.row ? scope.row.version : '' }}
       </template>
     </el-table-column>
-    <el-table-column label="新版本">
+    <el-table-column label="新版本"  width="120" align="center">
       <template slot-scope="scope">
         {{ scope.row.updatePlugin.version }}
       </template>
     </el-table-column>
-    <el-table-column label="发布时间">
+    <el-table-column label="发布时间"  width="120" align="center">
       <template slot-scope="scope">
         {{ scope.row.updatePlugin.published }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" width="100">
+    <el-table-column label="操作" width="100" align="center">
       <template slot-scope="scope">
         <el-link
           :underline="false"

@@ -21,10 +21,7 @@ namespace SSCMS.Core.StlParser.StlElement
         
         [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
-        
-        [StlAttribute(Title = "显示多项时的分割字符串")]
-        private const string Separator = nameof(Separator);
-        
+
         [StlAttribute(Title = "字符开始位置")]
         private const string StartIndex = nameof(StartIndex);
         
@@ -55,15 +52,11 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
-        public const string TypeSiteName = "SiteName";
-		public const string TypeSiteUrl = "SiteUrl";
         public const string TypeDate = "Date";
         public const string TypeDateOfTraditional = "DateOfTraditional";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            {TypeSiteName, "站点名称"},
-            {TypeSiteUrl, "站点的域名地址"},
             {TypeDate, "当前日期"},
             {TypeDateOfTraditional, "带农历的当前日期"}
         };
@@ -72,7 +65,6 @@ namespace SSCMS.Core.StlParser.StlElement
 		{
 		    var type = string.Empty;
             var formatString = string.Empty;
-            string separator = null;
             var startIndex = 0;
             var length = 0;
             var wordNum = 0;
@@ -95,10 +87,6 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
                     formatString = value;
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, Separator))
-                {
-                    separator = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
@@ -142,18 +130,17 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseManager, type, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<object> ParseImplAsync(IParseManager parseManager, string type, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
-            var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
-            var parsedContent = string.Empty;
+            string parsedContent;
 
             if (contextInfo.ContextType == ParseType.Each)
             {
@@ -161,15 +148,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return parsedContent;
             }
 
-            if (StringUtils.EqualsIgnoreCase(type, TypeSiteName))
-            {
-                parsedContent = pageInfo.Site.SiteName;
-            }
-            else if (StringUtils.EqualsIgnoreCase(type, TypeSiteUrl))
-            {
-                parsedContent = await parseManager.PathManager.GetWebUrlAsync(pageInfo.Site);
-            }
-            else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
+            if (StringUtils.EqualsIgnoreCase(type, TypeDate))
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
                 {
@@ -198,34 +177,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else
             {
-                if (pageInfo.Site.Get<string>(type) != null)
-                {
-                    parsedContent = pageInfo.Site.Get<string>(type);
-                    if (!string.IsNullOrEmpty(parsedContent))
-                    {
-                        var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(databaseManager.SiteRepository.TableName, type, databaseManager.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
-
-                        // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                        if (styleInfo.Id > 0)
-                        {
-                            if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
-                            {
-                                parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, parsedContent, pageInfo.IsLocal);
-                            }
-                            else
-                            {
-                                var inputParser = new InputParserManager(parseManager.PathManager);
-
-                                parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                                parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-                            }
-                        }
-                        else
-                        { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空
-                            parsedContent = string.Empty; 
-                        }
-                    }
-                }
+                return await StlSite.ParseAsync(parseManager);
             }
             return parsedContent;
         }

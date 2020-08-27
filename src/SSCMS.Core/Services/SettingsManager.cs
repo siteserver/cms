@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Datory;
@@ -70,6 +69,7 @@ namespace SSCMS.Core.Services
         public int CPUCores { get; }
         public bool IsNightlyUpdate => _config.GetValue(nameof(IsNightlyUpdate), false);
         public bool IsProtectData => _config.GetValue(nameof(IsProtectData), false);
+        public bool IsDisablePlugins => _config.GetValue(nameof(IsDisablePlugins), false);
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
         public string ApiHost => _config.GetValue(nameof(ApiHost), "/");
         public DatabaseType DatabaseType => TranslateUtils.ToEnum(IsProtectData ? Decrypt(_config.GetValue<string>("Database:Type")) : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
@@ -88,8 +88,7 @@ namespace SSCMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public void SaveSettings(bool isNightlyUpdate, bool isProtectData, DatabaseType databaseType,
-            string databaseConnectionString, string redisConnectionString)
+        public void SaveSettings(bool isNightlyUpdate, bool isProtectData, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
         {
             var type = databaseType.GetValue();
             var databaseConnectionStringValue = databaseConnectionString;
@@ -101,8 +100,7 @@ namespace SSCMS.Core.Services
                 redisConnectionStringValue = Encrypt(redisConnectionString, SecurityKey);
             }
 
-            InstallUtils.SaveSettings(ContentRootPath, isNightlyUpdate, isProtectData, SecurityKey, type,
-                databaseConnectionStringValue, redisConnectionStringValue);
+            InstallUtils.SaveSettings(ContentRootPath, isNightlyUpdate, isProtectData, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue);
         }
     }
 }

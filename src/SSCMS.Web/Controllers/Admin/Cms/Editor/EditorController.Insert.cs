@@ -36,7 +36,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 content.CheckedLevel = 0;
             }
 
-            await _contentRepository.InsertAsync(site, channel, content);
+            var contentId = await _contentRepository.InsertAsync(site, channel, content);
+
+            await _contentTagRepository.UpdateTagsAsync(null, content.TagNames, request.SiteId, contentId);
 
             if (request.Translations != null && request.Translations.Count > 0)
             {

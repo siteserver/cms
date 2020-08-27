@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="StlParser\StlElement\StlTags.cs" />
     <Compile Remove="TabManager.cs" />
     <Compile Remove="Utils\PermissionConfigManager.cs" />
   </ItemGroup>

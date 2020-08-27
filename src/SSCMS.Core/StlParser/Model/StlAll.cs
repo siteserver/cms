@@ -165,6 +165,10 @@ namespace SSCMS.Core.StlParser.Model
                 typeof(StlTabs)
             },
             {
+                StlTags.ElementName,
+                typeof(StlTags)
+            },
+            {
                 StlValue.ElementName,
                 typeof(StlValue)
             },

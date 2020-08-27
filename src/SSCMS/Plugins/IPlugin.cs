@@ -35,5 +35,6 @@ namespace SSCMS.Plugins
         string ErrorMessage { get; }
         int Taxis { get; }
         List<Menu> GetMenus();
+        string GetAssemblyPath();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
@@ -31,16 +32,28 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             _pluginManager = pluginManager;
         }
 
+        public class GetRequest
+        {
+            public string PluginIds { get; set; }
+        }
+
         public class GetResult
         {
             public bool IsNightly { get; set; }
             public string Version { get; set; }
+            public Dictionary<string, string> PluginPathDict { get; set; }
         }
 
         public class DownloadRequest
         {
             public string PluginId { get; set; }
             public string Version { get; set; }
+            public string Path { get; set; }
+        }
+
+        public class RestartRequest
+        {
+            public bool IsDisablePlugins { get; set; }
         }
 
         public class UploadRequest

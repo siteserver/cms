@@ -1,6 +1,10 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
+<div style="height: 20px;"></div>
+
+<el-progress :percentage="percentage" :format="format"></el-progress>
+
 @section Scripts{
   <script src="/sitefiles/assets/js/admin/plugins/install.js" type="text/javascript"></script>
 }

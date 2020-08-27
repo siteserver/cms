@@ -550,6 +550,16 @@ namespace SSCMS.Utils
             return retVal;
         }
 
+        public static string ToJsonString(string value)
+        {
+            var retVal = string.Empty;
+            if (!string.IsNullOrEmpty(value))
+            {
+                retVal = value.Replace("\\", "\\\\");
+            }
+            return retVal;
+        }
+
         public static string ParseReplace(string parsedContent, string replace, string to)
         {
             if (replace.IndexOf(',') != -1)

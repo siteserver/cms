@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Plugins;
+using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -17,7 +19,7 @@ namespace SSCMS.Core.Plugins.Extensions
     public static class PluginApplicationBuilderExtensions
     {
         public static async Task UsePluginsAsync(this IApplicationBuilder app, ISettingsManager settingsManager,
-            IPluginManager pluginManager)
+            IPluginManager pluginManager, IErrorLogRepository errorLogRepository)
         {
             var logger = app.ApplicationServices.GetService<ILoggerFactory>()
                 .CreateLogger<IApplicationBuilder>();
@@ -52,7 +54,18 @@ namespace SSCMS.Core.Plugins.Extensions
             {
                 foreach (var middleware in middleWares)
                 {
-                    app.Use(next => async context => await middleware.UseAsync(next, context));
+                    app.Use(next => async context =>
+                    {
+                        try
+                        {
+                            await middleware.UseAsync(next, context);
+                        }
+                        catch (Exception ex)
+                        {
+                            await errorLogRepository.AddErrorLogAsync(ex);
+                            await next(context);
+                        }
+                    });
                 }
             }
 

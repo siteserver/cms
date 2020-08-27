@@ -70,6 +70,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlSqlContent.ElementName), StlSqlContent.ParseAsync},
             {StringUtils.ToLower(StlSqlContents.ElementName), StlSqlContents.ParseAsync},
             {StringUtils.ToLower(StlTabs.ElementName), StlTabs.ParseAsync},
+            {StringUtils.ToLower(StlTags.ElementName), StlTags.ParseAsync},
             {StringUtils.ToLower(StlValue.ElementName), StlValue.ParseAsync},
             {StringUtils.ToLower(StlVideo.ElementName), StlVideo.ParseAsync},
             {StringUtils.ToLower(StlZoom.ElementName), StlZoom.ParseAsync}

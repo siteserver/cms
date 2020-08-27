@@ -12,6 +12,11 @@ namespace SSCMS.Core.StlParser.Model
     {
         private ISettingsManager _settingsManager;
 
+        public DynamicInfo(ISettingsManager settingsManager)
+        {
+            _settingsManager = settingsManager;
+        }
+
         public static DynamicInfo GetDynamicInfo(ISettingsManager settingsManager, string value, int page, User user, string pathAndQuery)
         {
             var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(settingsManager.Decrypt(value));

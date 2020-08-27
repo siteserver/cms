@@ -100,7 +100,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 await parseManager.ParseInnerContentAsync(new StringBuilder(template));
             }
 
-            var dynamicInfo = new DynamicInfo
+            var dynamicInfo = new DynamicInfo(parseManager.SettingsManager)
             {
                 ElementName = ElementName,
                 SiteId = parseManager.PageInfo.SiteId,

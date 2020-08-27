@@ -13,6 +13,13 @@ namespace SSCMS.Utils
             return list == null ? default : list.FirstOrDefault(predicate);
         }
 
+        public static bool Equals<T>(List<T> list1, List<T> list2)
+        {
+            if (list1 == null && list2 == null) return true;
+            if (list1 == null || list2 == null) return false;
+            return list1.All(list2.Contains) && list1.Count == list2.Count;
+        }
+
         public static bool Contains(string strCollection, int inInt)
         {
             return Contains(GetIntList(strCollection), inInt);
@@ -26,6 +33,26 @@ namespace SSCMS.Utils
         public static bool Contains<T>(IEnumerable<T> list, T value)
         {
             return list != null && list.Contains(value);
+        }
+
+        public static bool Remove<T>(List<T> list, T value)
+        {
+            return list != null && list.Remove(value);
+        }
+
+        public static List<T> Add<T>(List<T> list, T value)
+        {
+            if (list == null)
+            {
+                list = new List<T>();
+            }
+            list.Add(value);
+            return list;
+        }
+
+        public static int Count<T>(List<T> list)
+        {
+            return list?.Count ?? 0;
         }
 
         public static List<string> GetStringList(string collection, char split = ',')
