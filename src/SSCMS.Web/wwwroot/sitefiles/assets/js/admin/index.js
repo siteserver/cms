@@ -10,7 +10,6 @@ var $collapseWidth = 60;
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
-  isNightly: null,
   version: null,
   adminLogoUrl: null,
   adminTitle: null,
@@ -58,7 +57,6 @@ var methods = {
       if (res.value) {
         utils.addTab('首页', utils.getRootUrl('dashboard'));
 
-        $this.isNightly = res.isNightly;
         $this.version = res.version;
         $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
         $this.adminTitle = res.adminTitle || 'SS CMS';
@@ -137,7 +135,7 @@ var methods = {
     var $this = this;
 
     var pluginIds = this.plugins.map(function (x){ return x.pluginId});
-    cloud.getUpdates($this.isNightly, $this.version, pluginIds).then(function (response) {
+    cloud.getUpdates($this.version, pluginIds).then(function (response) {
       var res = response.data;
 
       var cms = res.cms;

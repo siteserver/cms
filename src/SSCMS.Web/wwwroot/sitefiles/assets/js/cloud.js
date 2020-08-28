@@ -36,10 +36,9 @@ var cloud = _.extend(axios.create({
     });
   },
 
-  getPlugin: function(pluginId, isNightly, version) {
+  getPlugin: function(pluginId, version) {
     return this.get('cms/plugins/' + pluginId, {
       params: {
-        isNightly: isNightly,
         version: version
       }
     }).catch(function (error) {
@@ -67,9 +66,8 @@ var cloud = _.extend(axios.create({
     return this.get('cms/templates/' + templateId);
   },
 
-  getUpdates: function(isNightly, version, pluginIds) {
+  getUpdates: function(version, pluginIds) {
     return this.post('cms/updates', {
-      isNightly: isNightly,
       version: version,
       pluginIds: pluginIds
     });

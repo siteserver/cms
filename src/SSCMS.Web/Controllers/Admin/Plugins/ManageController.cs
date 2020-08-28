@@ -34,7 +34,6 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
         public class GetResult
         {
-            public bool IsNightly { get; set; }
             public string Version { get; set; }
             public IEnumerable<IPlugin> AllPlugins { get; set; }
         }

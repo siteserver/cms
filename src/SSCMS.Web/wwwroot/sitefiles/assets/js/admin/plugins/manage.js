@@ -5,7 +5,6 @@ var $urlActionsRestart = $url + '/actions/restart';
 
 var data = utils.init({
   pageType: utils.getQueryString("pageType"),
-  isNightly: null,
   version: null,
   allPlugins: null,
   plugins: null,
@@ -37,7 +36,6 @@ var methods = {
         return;
       }
 
-      $this.isNightly = res.isNightly;
       $this.version = res.version;
       $this.allPlugins = res.allPlugins;
 
@@ -56,7 +54,7 @@ var methods = {
 
       var pluginIds = $this.enabledPlugins.map(function(x) { return x.pluginId });
 
-      cloud.getUpdates($this.isNightly, $this.version, pluginIds).then(function (response) {
+      cloud.getUpdates($this.version, pluginIds).then(function (response) {
         var res = response.data;
   
         var plugins = res.plugins;

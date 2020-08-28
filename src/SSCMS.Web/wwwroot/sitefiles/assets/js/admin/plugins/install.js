@@ -8,11 +8,11 @@ var data = utils.init({
   pageType: utils.getQueryBoolean('isUpdate') ? '升级' : '安装',
   active: 0,
   success: false,
-  isNightly: false,
   version: null,
   pluginPathDict: null,
 
   percentage: 0,
+  interval: 500,
 
   listPackages: [],
   listPackageIds: [],
@@ -31,9 +31,12 @@ var methods = {
     var $this = this;
 
     setInterval(function () {
+      if ($this.percentage > 80) {
+        $this.interval = 3000;
+      }
       if ($this.percentage > 95) return;
       $this.percentage += 1;
-    }, 1500);
+    }, this.interval);
 
     $api.get($url, {
       params: {
@@ -42,7 +45,6 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.isNightly = res.isNightly;
       $this.version = res.version;
       $this.pluginPathDict = res.pluginPathDict;
 
@@ -123,7 +125,7 @@ var methods = {
   getPackages: function () {
     var $this = this;
 
-    cloud.getUpdates($this.isNightly, $this.version, $this.pluginIds).then(function (response) {
+    cloud.getUpdates($this.version, $this.pluginIds).then(function (response) {
       var res = response.data;
 
       var plugins = res.plugins;

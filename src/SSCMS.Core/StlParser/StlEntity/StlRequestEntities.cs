@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Parse;
@@ -74,7 +75,11 @@ $(function(){{
             {
                 foreach (string key in queryString.Keys)
                 {
-                    templateContent = StringUtils.ReplaceIgnoreCase(templateContent, $"{{Request.{key}}}", AttackUtils.FilterSqlAndXss(queryString[key]));
+                    var value = queryString[key];
+                    value = WebUtility.UrlDecode(value);
+                    value = AttackUtils.FilterSqlAndXss(value);
+
+                    templateContent = StringUtils.ReplaceIgnoreCase(templateContent, $"{{Request.{key}}}", value);
                 }
             }
             return RegexUtils.Replace("{Request.[^}]+}", templateContent, string.Empty);

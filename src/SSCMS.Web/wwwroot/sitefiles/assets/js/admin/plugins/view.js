@@ -5,7 +5,6 @@ var $urlActionsDelete = $url + '/actions/delete';
 var data = utils.init({
   pluginId: utils.getQueryString('pluginId'),
   activeName: 'overview',
-  isNightly: null,
   version: null,
   localPlugin: null,
   content: null,
@@ -27,13 +26,12 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.isNightly = res.isNightly;
       $this.version = res.version;
       $this.localPlugin = res.localPlugin;
       $this.content = res.content;
       $this.changeLog = res.changeLog;
 
-      cloud.getPlugin($this.pluginId, $this.isNightly, $this.version).then(function (response) {
+      cloud.getPlugin($this.pluginId, $this.version).then(function (response) {
         var res = response.data;
 
         $this.cloudPlugin = res.plugin;

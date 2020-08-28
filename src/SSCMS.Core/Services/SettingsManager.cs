@@ -67,7 +67,6 @@ namespace SSCMS.Core.Services
         public string OSDescription { get; }
         public bool Containerized { get; }
         public int CPUCores { get; }
-        public bool IsNightlyUpdate => _config.GetValue(nameof(IsNightlyUpdate), false);
         public bool IsProtectData => _config.GetValue(nameof(IsProtectData), false);
         public bool IsDisablePlugins => _config.GetValue(nameof(IsDisablePlugins), false);
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
@@ -88,7 +87,7 @@ namespace SSCMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public void SaveSettings(bool isNightlyUpdate, bool isProtectData, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
+        public void SaveSettings(bool isProtectData, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString)
         {
             var type = databaseType.GetValue();
             var databaseConnectionStringValue = databaseConnectionString;
@@ -100,7 +99,7 @@ namespace SSCMS.Core.Services
                 redisConnectionStringValue = Encrypt(redisConnectionString, SecurityKey);
             }
 
-            InstallUtils.SaveSettings(ContentRootPath, isNightlyUpdate, isProtectData, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue);
+            InstallUtils.SaveSettings(ContentRootPath, isProtectData, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue);
         }
     }
 }

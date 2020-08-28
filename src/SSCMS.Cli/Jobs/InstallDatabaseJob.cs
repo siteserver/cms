@@ -17,25 +17,18 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "install database";
 
-        private bool _isNightly;
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
         private readonly ISettingsManager _settingsManager;
-        private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
 
-        public InstallDatabaseJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
+        public InstallDatabaseJob(ISettingsManager settingsManager, IConfigRepository configRepository)
         {
-            _apiService = apiService;
             _settingsManager = settingsManager;
-            _pathManager = pathManager;
             _configRepository = configRepository;
 
             _options = new OptionSet {
-                { "nightly",  "Install nightly version",
-                    v => _isNightly = v != null },
                 { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
@@ -153,7 +146,7 @@ namespace SSCMS.Cli.Jobs
             var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
 
             var isProtectData = ReadUtils.GetYesNo("Protect settings in sscms.json?");
-            _settingsManager.SaveSettings(_isNightly, isProtectData, false, databaseType, databaseConnectionString, string.Empty);
+            _settingsManager.SaveSettings(isProtectData, false, databaseType, databaseConnectionString, string.Empty);
 
             await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run sscms install sscms");
         }

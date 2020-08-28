@@ -207,7 +207,9 @@ var utils = {
   },
 
   getUrl: function(siteUrl, url) {
-    return (siteUrl || '/') + _.trimStart(_.trimStart(_.trimStart(url, '~'), '@'), '/');
+    if (url && url.startsWith('/')) return url;
+    siteUrl = _.trimEnd(siteUrl, '/');
+    return siteUrl + '/' + _.trimStart(_.trimStart(_.trimStart(url, '~'), '@'), '/');
   },
 
   getFriendlyDate: function(date) {

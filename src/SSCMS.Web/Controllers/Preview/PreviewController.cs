@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -15,7 +12,6 @@ using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
-using SSCMS.Web.Controllers.Admin;
 
 namespace SSCMS.Web.Controllers.Preview
 {
@@ -35,79 +31,35 @@ namespace SSCMS.Web.Controllers.Preview
             _channelRepository = channelRepository;
         }
 
-        [HttpGet, Route(Constants.RoutePreview)]
-        public async Task<HttpResponseMessage> Get([FromQuery]GetRequest request)
+        public class GetRequest
         {
-            try
-            {
-                return await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, 0, 0, 0, request.PageIndex, 0));
-            }
-            catch (Exception ex)
-            {
-                HttpContext.Response.Redirect(_pathManager.GetAdminUrl(ErrorController.Route) + "/?message=" + HttpUtility.UrlPathEncode(ex.Message));
-            }
-
-            return null;
+            public int PageIndex { get; set; }
         }
 
-        [HttpGet, Route(Constants.RoutePreviewChannel)]
-        public async Task<HttpResponseMessage> GetChannel([FromQuery]GetChannelRequest request)
+        public class GetChannelRequest
         {
-            try
-            {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, request.ChannelId, 0, 0, request.PageIndex, 0));
-                return response;
-            }
-            catch (Exception ex)
-            {
-                HttpContext.Response.Redirect(_pathManager.GetAdminUrl(ErrorController.Route) + "/?message=" + HttpUtility.UrlPathEncode(ex.Message));
-            }
-
-            return null;
+            public int PageIndex { get; set; }
         }
 
-        [HttpGet, Route(Constants.RoutePreviewContent)]
-        public async Task<HttpResponseMessage> GetContent([FromQuery] GetContentRequest request)
+        public class GetContentRequest
         {
-            try
-            {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, request.ChannelId, request.ContentId, 0, request.PageIndex, request.PreviewId));
-                return response;
-            }
-            catch (Exception ex)
-            {
-                HttpContext.Response.Redirect(_pathManager.GetAdminUrl(ErrorController.Route) + "/?message=" + HttpUtility.UrlPathEncode(ex.Message));
-            }
-
-            return null;
+            public int PreviewId { get; set; }
+            public int PageIndex { get; set; }
         }
 
-        [HttpGet, Route(Constants.RoutePreviewFile)]
-        public async Task<HttpResponseMessage> GetFile([FromQuery]GetFileRequest request)
+        public class GetFileRequest
         {
-            try
-            {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, request.SiteId, 0, 0, request.FileTemplateId, request.PageIndex, 0));
-                return response;
-            }
-            catch (Exception ex)
-            {
-                HttpContext.Response.Redirect(_pathManager.GetAdminUrl(ErrorController.Route) + "/?message=" + HttpUtility.UrlPathEncode(ex.Message));
-            }
-
-            return null;
+            public int PageIndex { get; set; }
         }
 
-        private HttpResponseMessage GetResponse(string html)
+        private FileResult GetResponse(string html)
         {
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content =
-                    new StringContent(html, Encoding.UTF8, "text/html")
-            };
+            var bytes = Encoding.UTF8.GetBytes(html);
+
+            return File(bytes, "text/html");
         }
 
-        private async Task<HttpResponseMessage> GetResponseMessageAsync(VisualInfo visualInfo)
+        private async Task<FileResult> GetResponseMessageAsync(VisualInfo visualInfo)
         {
             if (visualInfo.Site == null || visualInfo.Template == null) return null;
 
@@ -126,7 +78,7 @@ namespace SSCMS.Web.Controllers.Preview
                 var content = Regex.Replace(contentBuilder.ToString(), @"<!-- #include virtual=""([^""]+)"" -->", @"<stl:include file=""$1""></stl:include>");
                 contentBuilder = new StringBuilder(content);
             }
-            HttpResponseMessage message = null;
+            FileResult message = null;
 
             if (templateInfo.TemplateType == TemplateType.FileTemplate)           //单页
             {
@@ -144,7 +96,7 @@ namespace SSCMS.Web.Controllers.Preview
             return message;
         }
 
-        private async Task<HttpResponseMessage> GetContentTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
+        private async Task<FileResult> GetContentTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
         {
             var content = await _parseManager.GetContentAsync();
             if (content == null) return null;
@@ -270,7 +222,7 @@ namespace SSCMS.Web.Controllers.Preview
             return GetResponse(contentBuilder.ToString());
         }
 
-        private async Task<HttpResponseMessage> GetChannelTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
+        private async Task<FileResult> GetChannelTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
         {
             var nodeInfo = await _channelRepository.GetAsync(visualInfo.ChannelId);
             if (nodeInfo == null) return null;
@@ -411,7 +363,7 @@ namespace SSCMS.Web.Controllers.Preview
             return GetResponse(contentBuilder.ToString());
         }
 
-        private async Task<HttpResponseMessage> GetFileTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
+        private async Task<FileResult> GetFileTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
         {
             await _parseManager.ParseAsync(contentBuilder, visualInfo.FilePath, true);
             return GetResponse(contentBuilder.ToString());

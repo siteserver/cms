@@ -4,7 +4,7 @@ namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, GetReleasesResult result, string failureMessage) GetReleases(bool isNightly, string version, List<string> pluginIds)
+        public (bool success, GetReleasesResult result, string failureMessage) GetReleases(string version, List<string> pluginIds)
         {
             //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlReleases)) { Timeout = -1 };
             //var request = new RestRequest(Method.POST);
@@ -34,7 +34,6 @@ namespace SSCMS.Cli.Services
 
             return ExecutePost<GetReleasesRequest, GetReleasesResult>(RestUrlReleases, new GetReleasesRequest
             {
-                IsNightly = isNightly,
                 Version = version,
                 PluginIds = pluginIds
             });

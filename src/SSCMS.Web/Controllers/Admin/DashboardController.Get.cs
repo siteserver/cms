@@ -25,7 +25,9 @@ namespace SSCMS.Web.Controllers.Admin
                 OSArchitecture = _settingsManager.OSArchitecture,
                 OSDescription = _settingsManager.OSDescription,
                 Containerized = _settingsManager.Containerized,
-                CPUCores = _settingsManager.CPUCores
+                CPUCores = _settingsManager.CPUCores,
+                UserName = admin.UserName,
+                Level = await _authManager.GetAdminLevelAsync()
             };
         }
     }

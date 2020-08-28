@@ -54,15 +54,16 @@ namespace SSCMS.Core.Plugins
                 return $"{pluginId}.{version}";
             }
 
-            public static void DownloadCms(IPathManager pathManager, string osArchitecture, string version)
+            public static string DownloadCms(IPathManager pathManager, string osArchitecture, string version)
             {
-                if (IsCmsDownload(pathManager, osArchitecture, version))
-                {
-                    return;
-                }
-
                 var packagesPath = pathManager.GetPackagesPath();
                 var name = GetCmsDownloadName(osArchitecture, version);
+                var directoryPath = PathUtils.Combine(packagesPath, name);
+
+                if (IsCmsDownload(pathManager, osArchitecture, version))
+                {
+                    return directoryPath;
+                }
 
                 var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
                 foreach (var directoryName in directoryNames.Where(directoryName => StringUtils.StartsWithIgnoreCase(directoryName, "sscms-")))
@@ -70,10 +71,9 @@ namespace SSCMS.Core.Plugins
                     DirectoryUtils.DeleteDirectoryIfExists(PathUtils.Combine(packagesPath, directoryName));
                 }
 
-                var directoryPath = PathUtils.Combine(packagesPath, name);
                 DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-                var filePath = PathUtils.Combine(directoryPath, $"{GetCmsDownloadName(osArchitecture, version)}.zip");
+                var filePath = PathUtils.Combine(packagesPath, $"{GetCmsDownloadName(osArchitecture, version)}.zip");
                 FileUtils.WriteText(filePath, string.Empty);
                 using (var writer = File.OpenWrite(filePath))
                 {
@@ -90,6 +90,10 @@ namespace SSCMS.Core.Plugins
                 }
 
                 pathManager.ExtractZip(filePath, directoryPath);
+
+                FileUtils.DeleteFileIfExists(filePath);
+
+                return directoryPath;
             }
 
             public static bool IsCmsDownload(IPathManager pathManager, string osArchitecture, string version)

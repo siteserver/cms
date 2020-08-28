@@ -21,13 +21,15 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             foreach (var pluginId in pluginIds)
             {
                 var plugin = _pluginManager.GetPlugin(pluginId);
-                var assemblyPath = plugin.GetAssemblyPath();
-                pluginPathDict[pluginId] = assemblyPath;
+                if (plugin != null)
+                {
+                    var assemblyPath = plugin.GetAssemblyPath();
+                    pluginPathDict[pluginId] = assemblyPath;
+                }
             }
 
             return new GetResult
             {
-                IsNightly = _settingsManager.IsNightlyUpdate,
                 Version = _settingsManager.Version,
                 PluginPathDict = pluginPathDict
             };

@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin
                 redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
             }
 
-            _settingsManager.SaveSettings(false, request.IsProtectData, false, request.DatabaseType, databaseConnectionString,
+            _settingsManager.SaveSettings(request.IsProtectData, false, request.DatabaseType, databaseConnectionString,
                 redisConnectionString);
 
             return new StringResult

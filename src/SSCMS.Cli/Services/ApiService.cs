@@ -91,7 +91,6 @@ namespace SSCMS.Cli.Services
 
         public class GetReleasesRequest
         {
-            public bool IsNightly { get; set; }
             public string Version { get; set; }
             public List<string> PluginIds { get; set; }
         }

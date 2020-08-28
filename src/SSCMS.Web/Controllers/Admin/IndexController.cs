@@ -73,7 +73,6 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public bool Value { get; set; }
             public string RedirectUrl { get; set; }
-            public bool IsNightly { get; set; }
             public string Version { get; set; }
             public string OSArchitecture { get; set; }
             public string AdminLogoUrl { get; set; }

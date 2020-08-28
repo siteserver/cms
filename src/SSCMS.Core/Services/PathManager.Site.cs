@@ -166,14 +166,14 @@ namespace SSCMS.Core.Services
 
         public string GetPreviewSiteUrl(int siteId)
         {
-            var apiUrl = GetApiUrl(Constants.RoutePreview);
+            var apiUrl = PageUtils.Combine(_settingsManager.ApiHost, Constants.RoutePreview);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             return apiUrl;
         }
 
         public string GetPreviewChannelUrl(int siteId, int channelId)
         {
-            var apiUrl = GetApiUrl(Constants.RoutePreviewChannel);
+            var apiUrl = PageUtils.Combine(_settingsManager.ApiHost, Constants.RoutePreviewChannel);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
             return apiUrl;
@@ -181,7 +181,7 @@ namespace SSCMS.Core.Services
 
         public string GetPreviewContentUrl(int siteId, int channelId, int contentId)
         {
-            var apiUrl = GetApiUrl(Constants.RoutePreviewContent);
+            var apiUrl = PageUtils.Combine(_settingsManager.ApiHost, Constants.RoutePreviewContent);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
             apiUrl = apiUrl.Replace("{contentId}", contentId.ToString());
@@ -199,7 +199,7 @@ namespace SSCMS.Core.Services
 
         public string GetPreviewFileUrl(int siteId, int fileTemplateId)
         {
-            var apiUrl = GetApiUrl(Constants.RoutePreviewFile);
+            var apiUrl = PageUtils.Combine(_settingsManager.ApiHost, Constants.RoutePreviewFile);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{fileTemplateId}", fileTemplateId.ToString());
             return apiUrl;
@@ -207,7 +207,7 @@ namespace SSCMS.Core.Services
 
         public string GetPreviewSpecialUrl(int siteId, int specialId)
         {
-            var apiUrl = GetApiUrl(Constants.RoutePreviewSpecial);
+            var apiUrl = PageUtils.Combine(_settingsManager.ApiHost, Constants.RoutePreviewSpecial);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{specialId}", specialId.ToString());
             return apiUrl;

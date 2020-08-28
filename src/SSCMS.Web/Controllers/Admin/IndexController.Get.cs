@@ -199,7 +199,6 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 Value = true,
-                IsNightly = _settingsManager.IsNightlyUpdate,
                 Version = _settingsManager.Version,
                 OSArchitecture = _settingsManager.OSArchitecture,
                 AdminLogoUrl = config.AdminLogoUrl,

@@ -77,8 +77,11 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var tags =
                 await parseManager.DatabaseManager.ContentTagRepository.GetTagsAsync(parseManager.PageInfo.SiteId);
-
-            var tagInfoList = tags.Where(x => ListUtils.Contains(x.ContentIds, contentId)).ToList();
+            var tagInfoList = tags;
+            if (contentId > 0)
+            {
+                tagInfoList = tags.Where(x => ListUtils.Contains(x.ContentIds, contentId)).ToList();
+            }
             if (!isOrderByCount)
             {
                 tagInfoList = tagInfoList.OrderBy(x => x.TagName).ToList();
@@ -128,9 +131,9 @@ namespace SSCMS.Core.StlParser.StlElement
             foreach (var tagInfo in tagInfoList)
             {
                 var tagHtml = innerHtml;
-                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Name}", tagInfo.TagName);
-                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Count}", tagInfo.UseNum.ToString());
-                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{TagName.Level}", tagInfo.Level.ToString());
+                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Name}", tagInfo.TagName);
+                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Count}", tagInfo.UseNum.ToString());
+                tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Level}", tagInfo.Level.ToString());
                 var innerBuilder = new StringBuilder(tagHtml);
                 await parseManager.ParseInnerContentAsync(innerBuilder);
                 tagsBuilder.Append(innerBuilder);

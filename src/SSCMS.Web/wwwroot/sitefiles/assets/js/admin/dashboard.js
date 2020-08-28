@@ -11,7 +11,9 @@ var data = utils.init({
   osArchitecture: null,
   osDescription: null,
   containerized: null,
-  cpuCores: null
+  cpuCores: null,
+  userName: null,
+  level: null
 });
 
 var methods = {
@@ -32,6 +34,8 @@ var methods = {
       $this.osDescription = res.osDescription;
       $this.containerized = res.containerized;
       $this.cpuCores = res.cpuCores;
+      $this.userName = res.userName;
+      $this.level = res.level;
 
       $this.getUnCheckedList();
     }).catch(function (error) {
