@@ -11,6 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class MessageController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {

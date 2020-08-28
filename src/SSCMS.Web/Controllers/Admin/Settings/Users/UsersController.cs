@@ -82,6 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             };
         }
 
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<ImportResult>> Import([FromForm] IFormFile file)
         {

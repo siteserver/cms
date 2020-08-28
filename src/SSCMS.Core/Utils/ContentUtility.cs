@@ -113,6 +113,8 @@ namespace SSCMS.Core.Utils
 
             if (contentInfo == null) return;
 
+            contentInfo = contentInfo.Clone<Content>();
+
             if (translateType == TranslateContentType.Copy)
             {
                 await pathManager.MoveFileByContentAsync(site, targetSite, contentInfo);
@@ -120,6 +122,7 @@ namespace SSCMS.Core.Utils
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
+                contentInfo.Taxis = 0;
                 contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Copy.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
@@ -159,6 +162,7 @@ namespace SSCMS.Core.Utils
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
+                contentInfo.Taxis = 0;
                 contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Cut.GetValue());
 
                 var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
@@ -206,6 +210,7 @@ namespace SSCMS.Core.Utils
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
+                contentInfo.Taxis = 0;
                 contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.Reference.GetValue());
                 //content.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
                 int theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
@@ -222,6 +227,7 @@ namespace SSCMS.Core.Utils
                 contentInfo.SiteId = targetSiteId;
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
+                contentInfo.Taxis = 0;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ColumnsManager.TranslateContentType, TranslateContentType.ReferenceContent.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);

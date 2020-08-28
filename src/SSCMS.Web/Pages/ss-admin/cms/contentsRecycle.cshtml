@@ -460,7 +460,7 @@
         show-overflow-tooltip
         label="删除时间">
         <template slot-scope="scope">
-          {{ scope.row.lastEditDate }}
+          {{ utils.getFriendlyDate(scope.row.lastModifiedDate) }}
         </template>
       </el-table-column>
 

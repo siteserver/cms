@@ -36,7 +36,7 @@ namespace SSCMS.Web
                             loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
                             loggerConfiguration.Enrich.FromLogContext();
                         })
-                        .UseKestrel((ctx, options) => { options.Limits.MaxRequestBodySize = null; })
+                        .UseKestrel(options => { options.Limits.MaxRequestBodySize = long.MaxValue; })
                         .UseIIS()
                         .UseStartup<Startup>();
                 });

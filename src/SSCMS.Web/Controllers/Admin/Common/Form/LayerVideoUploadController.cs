@@ -50,6 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             return options;
         }
 
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {

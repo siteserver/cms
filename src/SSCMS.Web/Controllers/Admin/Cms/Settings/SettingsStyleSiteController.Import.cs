@@ -11,6 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsStyleSiteController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

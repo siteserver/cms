@@ -102,6 +102,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             return await _relatedFieldRepository.GetRelatedFieldsAsync(request.SiteId);
         }
 
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

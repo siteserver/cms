@@ -16,12 +16,7 @@
   
   <el-form-item label="文件扩展名">
     <el-select v-model="template.createdFileExtName" placeholder="请选择文件扩展名">
-      <el-option label=".html" value=".html"></el-option>
-      <el-option label=".htm" value=".htm"></el-option>
-      <el-option label=".shtml" value=".shtml"></el-option>
-      <el-option label=".xml" value=".xml"></el-option>
-      <el-option label=".json" value=".json"></el-option>
-      <el-option label=".js" value=".js"></el-option>
+      <el-option v-for="createdFileExtName in createdFileExtNames" :key="createdFileExtName" :label="createdFileExtName" :value="createdFileExtName"></el-option>
     </el-select>
     <div class="tips">文件扩展名将决定模板文件以及生成文件的文件类型</div>
   </el-form-item>

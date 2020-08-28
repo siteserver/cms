@@ -31,6 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             _siteRepository = siteRepository;
         }
 
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

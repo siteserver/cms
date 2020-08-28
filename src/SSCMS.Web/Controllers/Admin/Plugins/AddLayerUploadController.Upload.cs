@@ -10,6 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 {
     public partial class AddLayerUploadController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteActionsUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromForm] IFormFile file)
         {

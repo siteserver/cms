@@ -16,6 +16,14 @@ var data = utils.init({
   createdFileFullNameTips: '以“~/”开头代表系统根目录，以“@/”开头代表站点根目录',
   template: null,
   contentEditor: null,
+  createdFileExtNames: [
+    '.html',
+    '.htm',
+    '.shtml',
+    '.xml',
+    '.json',
+    '.js'
+  ],
   rules: {
     templateName: [
       { required: true, message: '请输入模板名称', trigger: 'blur' }

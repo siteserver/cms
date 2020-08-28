@@ -10,6 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 {
     public partial class ActionsController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteActionsUploadFile)]
         public async Task<ActionResult<UploadFileResult>> UploadFile([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {

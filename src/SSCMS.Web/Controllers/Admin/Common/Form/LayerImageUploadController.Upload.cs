@@ -9,6 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 {
     public partial class LayerImageUploadController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] int siteId, [FromForm] IFormFile file)
         {

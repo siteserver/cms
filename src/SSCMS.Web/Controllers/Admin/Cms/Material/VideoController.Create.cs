@@ -12,6 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class VideoController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<MaterialVideo>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {

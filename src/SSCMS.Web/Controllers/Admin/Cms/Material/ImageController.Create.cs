@@ -12,6 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class ImageController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<MaterialImage>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {

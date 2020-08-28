@@ -132,6 +132,7 @@ namespace SSCMS.Web.Controllers.V1
             };
         }
 
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUserAvatar)]
         public async Task<ActionResult<User>> UploadAvatar([FromQuery] int id, [FromForm] IFormFile file)
         {

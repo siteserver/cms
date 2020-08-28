@@ -12,6 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class AudioController
     {
+        [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<MaterialAudio>> Create([FromQuery] CreateRequest request, [FromForm] IFormFile file)
         {
