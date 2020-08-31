@@ -22,8 +22,6 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             await _authManager.AddAdminLogAsync(request.Disabled ? "禁用插件" : "启用插件", $"插件:{request.PluginId}");
 
-            _hostApplicationLifetime.StopApplication();
-
             return new BoolResult
             {
                 Value = true

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
+using SqlKata;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -24,6 +24,12 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteActionsCheck = "contents/actions/check";
         private const string RouteChannel = "contents/{siteId:int}/{channelId:int}";
         private const string RouteContent = "contents/{siteId:int}/{channelId:int}/{id:int}";
+
+        public const string OpEquals = "=";
+        public const string OpIn = "In";
+        public const string OpNotIn = "NotIn";
+        public const string OpLike = "Like";
+        public const string OpNotLike = "NotLike";
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -44,308 +50,181 @@ namespace SSCMS.Web.Controllers.V1
             _contentCheckRepository = contentCheckRepository;
         }
 
-        [OpenApiOperation("添加内容API", "")]
-        [HttpPost, Route(RouteChannel)]
-        public async Task<ActionResult<Content>> Create([FromBody] Content request)
+        public class ClauseWhere
         {
-            bool isAuth;
-            if (request.SourceId == SourceManager.User)
+            public string Column { get; set; }
+            public string Operator { get; set; }
+            public string Value { get; set; }
+        }
+
+        public class ClauseOrder
+        {
+            public string Column { get; set; }
+            public bool Desc { get; set; }
+        }
+
+        public class QueryRequest
+        {
+            public int SiteId { get; set; }
+            public int? ChannelId { get; set; }
+            public bool? Checked { get; set; }
+            public bool? Top { get; set; }
+            public bool? Recommend { get; set; }
+            public bool? Color { get; set; }
+            public bool? Hot { get; set; }
+            public List<string> GroupNames { get; set; }
+            public List<string> TagNames { get; set; }
+            public List<ClauseWhere> Wheres { get; set; }
+            public List<ClauseOrder> Orders { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
+        }
+
+        public class QueryResult
+        {
+            public int TotalCount { get; set; }
+            public IEnumerable<Content> Contents { get; set; }
+        }
+
+        public class CheckRequest
+        {
+            public int SiteId { get; set; }
+            public List<ContentSummary> Contents { get; set; }
+            public string Reasons { get; set; }
+        }
+
+        public class CheckResult
+        {
+            public List<Content> Contents { get; set; }
+        }
+
+        private async Task<Query> GetQueryAsync(int siteId, int? channelId, QueryRequest request)
+        {
+            var query = Q.Where(nameof(Models.Content.SiteId), siteId).Where(nameof(Models.Content.ChannelId), ">", 0);
+
+            if (channelId.HasValue)
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add);
+                //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
+                var channelIds = await _channelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
+
+                query.WhereIn(nameof(Models.Content.ChannelId), channelIds);
             }
-            else
+
+            if (request.Checked.HasValue)
             {
-                isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                         _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add);
+                query.Where(nameof(Models.Content.Checked), request.Checked.Value.ToString());
             }
-            if (!isAuth) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
-
-            var checkedLevel = request.CheckedLevel;
-
-            var isChecked = checkedLevel >= site.CheckContentLevel;
-            if (isChecked)
+            if (request.Top.HasValue)
             {
-                if (request.SourceId == SourceManager.User || _authManager.IsUser)
+                query.Where(nameof(Models.Content.Top), request.Top.Value.ToString());
+            }
+            if (request.Recommend.HasValue)
+            {
+                query.Where(nameof(Models.Content.Recommend), request.Recommend.Value.ToString());
+            }
+            if (request.Color.HasValue)
+            {
+                query.Where(nameof(Models.Content.Color), request.Color.Value.ToString());
+            }
+            if (request.Hot.HasValue)
+            {
+                query.Where(nameof(Models.Content.Hot), request.Hot.Value.ToString());
+            }
+
+            if (request.GroupNames != null)
+            {
+                query.Where(q =>
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1);
-                }
-                else if (_authManager.IsAdmin)
-                {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1);
-                }
-            }
-
-            var adminId = _authManager.AdminId;
-            var userId = _authManager.UserId;
-
-            var contentInfo = new Content
-            {
-                SiteId = request.SiteId,
-                ChannelId = request.ChannelId,
-                AdminId = adminId,
-                LastEditAdminId = adminId,
-                UserId = userId,
-                SourceId = request.SourceId,
-                Checked = isChecked,
-                CheckedLevel = checkedLevel
-            };
-            contentInfo.LoadDict(request.ToDictionary());
-
-            contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
-
-            //foreach (var plugin in _pluginManager.GetPlugins(request.SiteId, request.ChannelId))
-            //{
-            //    try
-            //    {
-            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, contentInfo.Id, request.ToDictionary(), contentInfo));
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        await _errorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(IOldPlugin.ContentFormSubmit));
-            //    }
-            //}
-
-            if (contentInfo.Checked)
-            {
-                await _createManager.CreateContentAsync(request.SiteId, request.ChannelId, contentInfo.Id);
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
-            }
-
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, contentInfo.Id, "添加内容",
-                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
-
-            return contentInfo;
-        }
-
-        [OpenApiOperation("修改内容API", "")]
-        [HttpPut, Route(RouteContent)]
-        public async Task<ActionResult<Content>> Update([FromBody]Content request)
-        {
-            bool isAuth;
-            if (request.SourceId == SourceManager.User)
-            {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit);
-            }
-            else
-            {
-                isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                         _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit);
-            }
-            if (!isAuth) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
-            if (channelInfo == null) return NotFound();
-
-            var content = await _contentRepository.GetAsync(site, channelInfo, request.Id);
-            if (content == null) return NotFound();
-
-            content.LoadDict(request.ToDictionary());
-
-            content.SiteId = request.SiteId;
-            content.ChannelId = request.ChannelId;
-            content.LastEditAdminId = _authManager.AdminId;
-            content.SourceId = request.SourceId;
-
-            var postCheckedLevel = content.CheckedLevel;
-            var isChecked = postCheckedLevel >= site.CheckContentLevel;
-            var checkedLevel = postCheckedLevel;
-
-            content.Checked = isChecked;
-            content.CheckedLevel = checkedLevel;
-
-            await _contentRepository.UpdateAsync(site, channelInfo, content);
-
-            //foreach (var plugin in _pluginManager.GetPlugins(request.SiteId, request.ChannelId))
-            //{
-            //    try
-            //    {
-            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, content.Id, content.ToDictionary(), content));
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        await _errorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(IOldPlugin.ContentFormSubmit));
-            //    }
-            //}
-
-            if (content.Checked)
-            {
-                await _createManager.CreateContentAsync(request.SiteId, request.ChannelId, content.Id);
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
-            }
-
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, content.Id, "修改内容",
-                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, content.ChannelId)},内容标题:{content.Title}");
-
-            return content;
-        }
-
-        [OpenApiOperation("删除内容API", "")]
-        [HttpDelete, Route(RouteContent)]
-        public async Task<ActionResult<Content>> Delete(int siteId, int channelId, int id)
-        {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete);
-            var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                            _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete) ||
-                            _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete);
-            if (!isUserAuth && !isApiAuth) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(channelId);
-            if (channel == null) return NotFound();
-
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete)) return Unauthorized();
-
-            var content = await _contentRepository.GetAsync(site, channel, id);
-            if (content == null) return NotFound();
-
-            await _contentRepository.TrashContentAsync(site, channel, id, _authManager.AdminId);
-
-            return content;
-        }
-
-        [OpenApiOperation("获取内容API", "")]
-        [HttpGet, Route(RouteContent)]
-        public async Task<ActionResult<Content>> Get(int siteId, int channelId, int id)
-        {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View);
-            var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                            _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View) ||
-                            _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View);
-            if (!isUserAuth && !isApiAuth) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
-
-            var channelInfo = await _channelRepository.GetAsync(channelId);
-            if (channelInfo == null) return NotFound();
-
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View)) return Unauthorized();
-
-            var content = await _contentRepository.GetAsync(site, channelInfo, id);
-            if (content == null) return NotFound();
-
-            return content;
-        }
-
-        [OpenApiOperation("获取内容列表API", "")]
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<QueryResult>> GetContents([FromBody] QueryRequest request)
-        {
-            var channelId = request.ChannelId ?? request.SiteId;
-
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Types.ContentPermissions.View);
-            var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                            _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Types.ContentPermissions.View) ||
-                            _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Types.ContentPermissions.View);
-            if (!isUserAuth && !isApiAuth) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var tableName = site.TableName;
-            var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
-            var totalCount = await _contentRepository.GetCountAsync(tableName, query);
-            var summaries = await _contentRepository.GetSummariesAsync(tableName, query.ForPage(request.Page, request.PerPage));
-
-            var contents = new List<Content>();
-            foreach (var summary in summaries)
-            {
-                var content = await _contentRepository.GetAsync(site, summary.ChannelId, summary.Id);
-                contents.Add(content);
-            }
-
-            return new QueryResult
-            {
-                Contents = contents,
-                TotalCount = totalCount
-            };
-        }
-
-        [OpenApiOperation("审核内容API", "")]
-        [HttpPost, Route(RouteActionsCheck)]
-        public async Task<ActionResult<CheckResult>> CheckContents([FromBody] CheckRequest request)
-        {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var adminId = _authManager.AdminId;
-            var contents = new List<Content>();
-            foreach (var channelContentId in request.Contents)
-            {
-                var channel = await _channelRepository.GetAsync(channelContentId.ChannelId);
-                var content = await _contentRepository.GetAsync(site, channel, channelContentId.Id);
-                if (content == null) continue;
-
-                content.Set(ColumnsManager.CheckAdminId, adminId);
-                content.Set(ColumnsManager.CheckDate, DateTime.Now);
-                content.Set(ColumnsManager.CheckReasons, request.Reasons);
-
-                content.Checked = true;
-                content.CheckedLevel = 0;
-
-                await _contentRepository.UpdateAsync(site, channel, content);
-
-                contents.Add(content);
-
-                await _contentCheckRepository.InsertAsync(new ContentCheck
-                {
-                    SiteId = request.SiteId,
-                    ChannelId = content.ChannelId,
-                    ContentId = content.Id,
-                    AdminId = adminId,
-                    Checked = true,
-                    CheckedLevel = 0,
-                    CheckDate = DateTime.Now,
-                    Reasons = request.Reasons
+                    foreach (var groupName in request.GroupNames)
+                    {
+                        if (!string.IsNullOrEmpty(groupName))
+                        {
+                            q
+                                .OrWhere(nameof(Models.Content.GroupNames), groupName)
+                                .OrWhereLike(nameof(Models.Content.GroupNames), $"{groupName},%")
+                                .OrWhereLike(nameof(Models.Content.GroupNames), $"%,{groupName},%")
+                                .OrWhereLike(nameof(Models.Content.GroupNames), $"%,{groupName}");
+                        }
+                    }
+                    return q;
                 });
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "批量审核内容");
-
-            foreach (var content in request.Contents)
+            if (request.TagNames != null)
             {
-                await _createManager.CreateContentAsync(request.SiteId, content.ChannelId, content.Id);
+                query.Where(q =>
+                {
+                    foreach (var tagName in request.TagNames)
+                    {
+                        if (!string.IsNullOrEmpty(tagName))
+                        {
+                            q
+                                .OrWhere(nameof(Models.Content.TagNames), tagName)
+                                .OrWhereLike(nameof(Models.Content.TagNames), $"{tagName},%")
+                                .OrWhereLike(nameof(Models.Content.TagNames), $"%,{tagName},%")
+                                .OrWhereLike(nameof(Models.Content.TagNames), $"%,{tagName}");
+                        }
+                    }
+                    return q;
+                });
             }
 
-            foreach (var distinctChannelId in request.Contents.Select(x => x.ChannelId).Distinct())
+            if (request.Wheres != null)
             {
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, distinctChannelId);
+                foreach (var where in request.Wheres)
+                {
+                    if (string.IsNullOrEmpty(where.Operator)) where.Operator = OpEquals;
+                    if (StringUtils.EqualsIgnoreCase(where.Operator, OpIn))
+                    {
+                        query.WhereIn(where.Column, ListUtils.GetStringList(where.Value));
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(where.Operator, OpNotIn))
+                    {
+                        query.WhereNotIn(where.Column, ListUtils.GetStringList(where.Value));
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(where.Operator, OpLike))
+                    {
+                        query.WhereLike(where.Column, where.Value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(where.Operator, OpNotLike))
+                    {
+                        query.WhereNotLike(where.Column, where.Value);
+                    }
+                    else
+                    {
+                        query.Where(where.Column, where.Operator, where.Value);
+                    }
+                }
             }
 
-            await _createManager.CreateChannelAsync(request.SiteId, request.SiteId);
-
-            return new CheckResult
+            if (request.Orders != null)
             {
-                Contents = contents
-            };
+                foreach (var order in request.Orders)
+                {
+                    if (order.Desc)
+                    {
+                        query.OrderByDesc(order.Column);
+                    }
+                    else
+                    {
+                        query.OrderBy(order.Column);
+                    }
+                }
+            }
+            else
+            {
+                query.OrderByDesc(nameof(Models.Content.Top), 
+                    nameof(Models.Content.ChannelId),
+                    nameof(Models.Content.Taxis),
+                    nameof(Models.Content.Id));
+            }
+
+            var page = request.Page > 0 ? request.Page : 1;
+            var perPage = request.PerPage > 0 ? request.PerPage : 20;
+
+            query.ForPage(page, perPage);
+
+            return query;
         }
 
         //[OpenApiOperation("获取站点内容API", "")]

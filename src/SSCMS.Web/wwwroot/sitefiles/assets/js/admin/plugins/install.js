@@ -105,18 +105,20 @@ var methods = {
     $api.post($urlActionsRestart, {
       isDisablePlugins: callback ? true : false
     }).then(function (response) {
-      if (callback) {
-        callback();
-      } else {
-        $this.percentage = 100;
-        utils.alertSuccess({
-          title: '插件' + $this.pageType + '成功',
-          text: '插件' + $this.pageType + '成功，系统需要重载页面',
-          callback: function() {
-            window.top.location.reload(true);
-          }
-        });
-      }
+      setTimeout(function () {
+        if (callback) {
+          callback();
+        } else {
+          $this.percentage = 100;
+          utils.alertSuccess({
+            title: '插件' + $this.pageType + '成功',
+            text: '插件' + $this.pageType + '成功，系统需要重载页面',
+            callback: function() {
+              window.top.location.reload(true);
+            }
+          });
+        }
+      }, 30000);
     }).catch(function (error) {
       utils.error(error);
     });

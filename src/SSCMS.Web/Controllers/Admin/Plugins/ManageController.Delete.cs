@@ -25,8 +25,6 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             await _authManager.AddAdminLogAsync("卸载插件", $"插件:{request.PluginId}");
 
-            _hostApplicationLifetime.StopApplication();
-
             return new BoolResult
             {
                 Value = true

@@ -1,16 +1,10 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Dto;
-using SSCMS.Enums;
-using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -44,256 +38,58 @@ namespace SSCMS.Web.Controllers.V1
             _statRepository = statRepository;
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<User>> Create([FromBody]User request)
+        public class ListRequest
         {
-            var config = await _configRepository.GetAsync();
-
-            if (!config.IsUserRegistrationGroup)
-            {
-                request.GroupId = 0;
-            }
-            var password = request.Password;
-
-            var (user, errorMessage) = await _userRepository.InsertAsync(request, password, string.Empty);
-            if (user == null)
-            {
-                return this.Error(errorMessage);
-            }
-
-            await _statRepository.AddCountAsync(StatType.UserRegister);
-
-            return user;
+            public int Top { get; set; }
+            public int Skip { get; set; }
         }
 
-        [HttpPut, Route(RouteUser)]
-        public async Task<ActionResult<User>> Update([FromRoute]int id, [FromBody]User request)
+        public class ListResult
         {
-            var isAuth = await
-                             _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            var (success, errorMessage) = await _userRepository.UpdateAsync(request);
-            if (!success)
-            {
-                return this.Error(errorMessage);
-            }
-
-            return request;
+            public int Count { get; set; }
+            public List<User> Users { get; set; }
         }
 
-        [HttpDelete, Route(RouteUser)]
-        public async Task<ActionResult<User>> Delete(int id)
+        public class LoginRequest
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
+            /// <summary>
+            /// 账号
+            /// </summary>
+            public string Account { get; set; }
 
-            var user = await _userRepository.DeleteAsync(id);
+            /// <summary>
+            /// 密码
+            /// </summary>
+            public string Password { get; set; }
 
-            return user;
+            /// <summary>
+            /// 下次自动登录
+            /// </summary>
+            public bool IsPersistent { get; set; }
         }
 
-        [HttpGet, Route(RouteUser)]
-        public async Task<ActionResult<User>> Get(int id)
+        public class LoginResult
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            if (!await _userRepository.IsExistsAsync(id)) return NotFound();
-
-            var user = await _userRepository.GetByUserIdAsync(id);
-
-            return user;
+            public User User { get; set; }
+            public string AccessToken { get; set; }
         }
 
-        [HttpGet, Route(RouteUserAvatar)]
-        public async Task<StringResult> GetAvatar(int id)
+        public class GetLogsRequest
         {
-            var user = await _userRepository.GetByUserIdAsync(id);
-
-            var avatarUrl = !string.IsNullOrEmpty(user?.AvatarUrl) ? user.AvatarUrl : _pathManager.DefaultAvatarUrl;
-            avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
-
-            return new StringResult
-            {
-                Value = avatarUrl
-            };
+            public int Top { get; set; }
+            public int Skip { get; set; }
         }
 
-        [RequestSizeLimit(long.MaxValue)]
-        [HttpPost, Route(RouteUserAvatar)]
-        public async Task<ActionResult<User>> UploadAvatar([FromQuery] int id, [FromForm] IFormFile file)
+        public class GetLogsResult
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var fileName = Path.GetFileName(file.FileName);
-
-            fileName = _pathManager.GetUserUploadFileName(fileName);
-            var filePath = _pathManager.GetUserUploadPath(user.Id, fileName);
-
-            if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
-            {
-                return this.Error("文件只能是 Image 格式，请选择有效的文件上传");
-            }
-
-            await _pathManager.UploadAsync(file, filePath);
-
-            user.AvatarUrl = _pathManager.GetUserUploadUrl(user.Id, fileName);
-
-            await _userRepository.UpdateAsync(user);
-
-            return user;
+            public int Count { get; set; }
+            public List<Log> Logs { get; set; }
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
+        public class ResetPasswordRequest
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            var top = request.Top;
-            if (top <= 0)
-            {
-                top = 20;
-            }
-
-            var skip = request.Skip;
-
-            var users = await _userRepository.GetUsersAsync(null, 0, 0, null, null, skip, top);
-            var count = await _userRepository.GetCountAsync();
-
-            return new ListResult
-            {
-                Count = count,
-                Users = users
-            };
-        }
-
-        [HttpPost, Route(RouteActionsLogin)]
-        public async Task<ActionResult<LoginResult>> Login([FromBody]LoginRequest request)
-        {
-            var (user, _, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
-            if (user == null)
-            {
-                return this.Error(errorMessage);
-            }
-
-            var accessToken = _authManager.AuthenticateUser(user, request.IsPersistent);
-
-            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
-
-            await _statRepository.AddCountAsync(StatType.UserLogin);
-            await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess, string.Empty);
-
-            return new LoginResult
-            {
-                User = user,
-                AccessToken = accessToken
-            };
-        }
-
-        [HttpPost, Route(RouteUserLogs)]
-        public async Task<ActionResult<Log>> CreateLog(int id, [FromBody] Log log)
-        {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
-
-            log.UserId = user.Id;
-            await _logRepository.AddUserLogAsync(user, log.Action, log.Summary);
-
-            return log;
-        }
-
-        [HttpGet, Route(RouteUserLogs)]
-        public async Task<ActionResult<GetLogsResult>> GetLogs(int id, [FromQuery]GetLogsRequest request)
-        {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
-
-            var top = request.Top;
-            if (top <= 0)
-            {
-                top = 20;
-            }
-            var skip = request.Skip;
-
-            var logs = await _logRepository.GetUserLogsAsync(user.Id, skip, top);
-
-            return new GetLogsResult
-            {
-                Count = await _userRepository.GetCountAsync(),
-                Logs = logs
-            };
-        }
-
-        [HttpPost, Route(RouteUserResetPassword)]
-        public async Task<ActionResult<User>> ResetPassword(int id, [FromBody]ResetPasswordRequest request)
-        {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
-
-            var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
-
-            if (!_userRepository.CheckPassword(request.Password, false, user.Password, user.PasswordFormat, user.PasswordSalt))
-            {
-                return this.Error("原密码不正确，请重新输入");
-            }
-
-            var (success, errorMessage) = await _userRepository.ChangePasswordAsync(user.Id, request.NewPassword);
-            if (!success)
-            {
-                return this.Error(errorMessage);
-            }
-
-            await _logRepository.AddUserLogAsync(user, "修改密码", string.Empty);
-
-            return user;
+            public string Password { get; set; }
+            public string NewPassword { get; set; }
         }
     }
 }

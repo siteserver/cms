@@ -24,8 +24,6 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             await _authManager.AddAdminLogAsync("修改插件配置", $"插件:{request.PluginId}");
 
-            _hostApplicationLifetime.StopApplication();
-
             return new BoolResult
             {
                 Value = true

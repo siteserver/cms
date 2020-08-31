@@ -165,7 +165,7 @@ namespace SSCMS.Web
                     {
                         Name = "SS CMS",
                         Email = string.Empty,
-                        Url = "https://www.siteserver.cn"
+                        Url = "https://www.sscms.com"
                     };
                     document.Info.License = new NSwag.OpenApiLicense
                     {
@@ -258,10 +258,8 @@ namespace SSCMS.Web
             app.UseRequestLocalization();
 
             RegisterService.Start(senparcSetting.Value)
-
-                    //自动扫描自定义扩展缓存（二选一）
-                    .UseSenparcGlobal(true)
-
+                //自动扫描自定义扩展缓存（二选一）
+                .UseSenparcGlobal(true)
                 //指定自定义扩展缓存（二选一）
                 //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
                 ;
@@ -270,7 +268,7 @@ namespace SSCMS.Web
             app.UseSwaggerUi3();
             app.UseReDoc(settings =>
             {
-                settings.Path = "/docs";
+                settings.Path = "/api/docs";
                 settings.DocumentPath = "/swagger/v1/swagger.json";
             });
         }

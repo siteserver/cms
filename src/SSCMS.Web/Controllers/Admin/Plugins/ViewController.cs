@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private const string Route = "plugins/view";
         private const string RouteActionsDisable = "plugins/view/actions/disable";
         private const string RouteActionsDelete = "plugins/view/actions/delete";
+        private const string RouteActionsRestart = "plugins/view/actions/restart";
 
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ISettingsManager _settingsManager;

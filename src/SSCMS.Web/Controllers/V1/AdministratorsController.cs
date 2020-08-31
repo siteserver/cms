@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Enums;
-using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -43,174 +39,50 @@ namespace SSCMS.Web.Controllers.V1
             _statRepository = statRepository;
         }
 
-        /// <summary>
-        /// 新增管理员API
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<Administrator>> Create([FromBody] Administrator request)
+        public class ListRequest
         {
-            var isApiAuthorized = _authManager.IsApi && await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
-
-            var (isValid, errorMessage) = await _administratorRepository.InsertAsync(request, request.Password);
-            if (!isValid)
-            {
-                return this.Error(errorMessage);
-            }
-
-            return request;
+            public int Top { get; set; }
+            public int Skip { get; set; }
         }
 
-        /// <summary>
-        /// 修改管理员API
-        /// </summary>
-        [HttpPut, Route(RouteAdministrator)]
-        public async Task<ActionResult<Administrator>> Update(int id, [FromBody] Administrator administrator)
+        public class ListResult
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
-
-            if (administrator == null) return this.Error("Could not read administrator from body");
-
-            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
-
-            administrator.Id = id;
-
-            var (isValid, errorMessage) = await _administratorRepository.UpdateAsync(administrator);
-            if (!isValid)
-            {
-                return this.Error(errorMessage);
-            }
-
-            return administrator;
+            public int Count { get; set; }
+            public List<Administrator> Administrators { get; set; }
         }
 
-        [HttpDelete, Route(RouteAdministrator)]
-        public async Task<ActionResult<Administrator>> Delete(int id)
+        public class LoginRequest
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
+            /// <summary>
+            /// 账号
+            /// </summary>
+            public string Account { get; set; }
 
-            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
+            /// <summary>
+            /// 密码
+            /// </summary>
+            public string Password { get; set; }
 
-            var administrator = await _administratorRepository.DeleteAsync(id);
-
-            return administrator;
+            /// <summary>
+            /// 下次自动登录
+            /// </summary>
+            public bool IsAutoLogin { get; set; }
         }
 
-        [HttpGet, Route(RouteAdministrator)]
-        public async Task<ActionResult<Administrator>> Get(int id)
+        public class LoginResult
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
-
-            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
-
-            var administrator = await _administratorRepository.GetByUserIdAsync(id);
-
-            return administrator;
+            public Administrator Administrator { get; set; }
+            public string AccessToken { get; set; }
+            public DateTime? ExpiresAt { get; set; }
+            public string SessionId { get; set; }
+            public bool IsEnforcePasswordChange { get; set; }
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
+        public class ResetPasswordRequest
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
-
-            var top = request.Top;
-            if (top <= 0) top = 20;
-            var skip = request.Skip;
-
-            var administrators = await _administratorRepository.GetAdministratorsAsync(skip, top);
-            var count = await _administratorRepository.GetCountAsync();
-
-            return new ListResult
-            {
-                Count = count,
-                Administrators = administrators
-            };
-        }
-
-        [HttpPost, Route(RouteActionsLogin)]
-        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
-        {
-            var (administrator, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
-
-            if (administrator == null)
-            {
-                administrator = await _administratorRepository.GetByUserNameAsync(userName);
-                if (administrator != null)
-                {
-                    await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
-                }
-
-                await _statRepository.AddCountAsync(StatType.AdminLoginFailure);
-                return this.Error(errorMessage);
-            }
-
-            administrator = await _administratorRepository.GetByUserNameAsync(userName);
-            await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
-            var token = _authManager.AuthenticateAdministrator(administrator, request.IsAutoLogin);
-
-            await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
-            await _logRepository.AddAdminLogAsync(administrator, Constants.ActionsLoginSuccess);
-
-            var sessionId = StringUtils.Guid();
-            var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
-            await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
-
-            var config = await _configRepository.GetAsync();
-
-            var isEnforcePasswordChange = false;
-            if (config.IsAdminEnforcePasswordChange)
-            {
-                if (administrator.LastChangePasswordDate == null)
-                {
-                    isEnforcePasswordChange = true;
-                }
-                else
-                {
-                    var ts = new TimeSpan(DateTime.Now.Ticks - administrator.LastChangePasswordDate.Value.Ticks);
-                    if (ts.TotalDays > config.AdminEnforcePasswordChangeDays)
-                    {
-                        isEnforcePasswordChange = true;
-                    }
-                }
-            }
-
-            return new LoginResult
-            {
-                Administrator = administrator,
-                AccessToken = token,
-                SessionId = sessionId,
-                IsEnforcePasswordChange = isEnforcePasswordChange
-            };
-        }
-
-        [HttpPost, Route(RouteActionsResetPassword)]
-        public async Task<ActionResult<Administrator>> ResetPassword([FromBody]ResetPasswordRequest request)
-        {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
-
-            var (administrator, _, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
-            if (administrator == null)
-            {
-                return this.Error(errorMessage);
-            }
-
-            bool isValid;
-            (isValid, errorMessage) = await _administratorRepository.ChangePasswordAsync(administrator, request.NewPassword);
-            if (!isValid)
-            {
-                return this.Error(errorMessage);
-            }
-
-            return administrator;
+            public string Account { get; set; }
+            public string Password { get; set; }
+            public string NewPassword { get; set; }
         }
     }
 }

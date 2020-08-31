@@ -1,6 +1,7 @@
 ﻿var $url = '/plugins/config';
 var $urlActionsGetChannels = '/plugins/config/actions/getChannels';
 var $urlActionsSubmitChannels = '/plugins/config/actions/submitChannels';
+var $urlActionsRestart = '/plugins/config/actions/restart';
 
 var data = utils.init({
   pluginId: utils.getQueryString('pluginId'),
@@ -59,17 +60,28 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.alertSuccess({
-        title: '插件配置保存成功',
-        text: '插件配置保存成功，系统需要重新加载',
-        callback: function() {
-          window.top.location.reload(true);
-        }
-      });
+      $this.apiRestart();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
+    });
+  },
+
+  apiRestart: function () {
+    utils.loading(this, true);
+    $api.post($urlActionsRestart).then(function (response) {
+      setTimeout(function () {
+        utils.alertSuccess({
+          title: '插件配置保存成功',
+          text: '插件配置保存成功，系统需要重新加载',
+          callback: function() {
+            window.top.location.reload(true);
+          }
+        });
+      }, 30000);
+    }).catch(function (error) {
+      utils.error(error);
     });
   },
 
@@ -112,13 +124,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.alertSuccess({
-        title: '插件配置保存成功',
-        text: '插件配置保存成功，系统需要重新加载',
-        callback: function() {
-          window.top.location.reload(true);
-        }
-      });
+      $this.apiRestart();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

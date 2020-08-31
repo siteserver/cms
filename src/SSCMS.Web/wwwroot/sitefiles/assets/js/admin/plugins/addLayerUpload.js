@@ -31,13 +31,15 @@ var methods = {
 
     utils.loading(this, true);
     $api.post($urlActionsRestart).then(function (response) {
-      parent.utils.alertSuccess({
-        title: '插件安装成功',
-        text: '插件名称：' + $this.plugin.displayName + '，插件Id：' + $this.plugin.pluginId + '，插件版本：' + $this.plugin.version,
-        callback: function() {
-          window.top.location.reload(true);
-        }
-      });
+      setTimeout(function () {
+        parent.utils.alertSuccess({
+          title: '插件安装成功',
+          text: '插件名称：' + $this.plugin.displayName + '，插件Id：' + $this.plugin.pluginId + '，插件版本：' + $this.plugin.version,
+          callback: function() {
+            window.top.location.reload(true);
+          }
+        });
+      }, 30000);
     }).catch(function (error) {
       utils.error(error);
     });

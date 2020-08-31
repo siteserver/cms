@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private const string Route = "plugins/config";
         private const string RouteActionsGetChannels = "plugins/config/actions/getChannels";
         private const string RouteActionsSubmitChannels = "plugins/config/actions/submitChannels";
+        private const string RouteActionsRestart = "plugins/config/actions/restart";
 
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IAuthManager _authManager;

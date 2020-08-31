@@ -89,18 +89,22 @@ var methods = {
     });
   },
 
-  apiRestart: function () {
+  apiRestart: function (callback) {
     utils.loading(this, true);
     $api.post($urlActionsRestart).then(function (response) {
       setTimeout(function() {
-        utils.alertSuccess({
-          title: '插件重新加载成功',
-          text: '插件重新加载成功，系统需要重载页面',
-          callback: function() {
-            window.top.location.reload(true);
-          }
-        });
-      }, 3000);
+        if (callback) {
+          callback();
+        } else {
+          utils.alertSuccess({
+            title: '插件重新加载成功',
+            text: '插件重新加载成功，系统需要重载页面',
+            callback: function() {
+              window.top.location.reload(true);
+            }
+          });
+        }
+      }, 30000);
     }).catch(function (error) {
       utils.error(error);
     });
@@ -118,12 +122,14 @@ var methods = {
       $this.plugins.splice($this.plugins.indexOf(plugin), 1);
 
       var text = plugin.disabled ? '启用' : '禁用';
-      utils.alertSuccess({
-        title: '插件' + text + '成功',
-        text: '插件' + text + '成功，系统需要重载页面',
-        callback: function() {
-          window.top.location.reload(true);
-        }
+      $this.apiRestart(function() {
+        utils.alertSuccess({
+          title: '插件' + text + '成功',
+          text: '插件' + text + '成功，系统需要重载页面',
+          callback: function() {
+            window.top.location.reload(true);
+          }
+        });
       });
     }).catch(function (error) {
       utils.error(error);
@@ -142,23 +148,25 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      setTimeout(function () {
+      $this.apiRestart(function () {
         $api.post($urlActionsDelete, {
           pluginId: plugin.pluginId
         }).then(function (response) {
-          utils.alertSuccess({
-            title: '插件卸载成功',
-            text: '插件卸载成功，系统需要重载页面',
-            callback: function() {
-              window.top.location.reload(true);
-            }
+          $this.apiRestart(function () {
+            utils.alertSuccess({
+              title: '插件卸载成功',
+              text: '插件卸载成功，系统需要重载页面',
+              callback: function() {
+                window.top.location.reload(true);
+              }
+            });
           });
         }).catch(function (error) {
           utils.error(error);
         }).then(function () {
           utils.loading($this, false);
         });
-      }, 3000);
+      });
       
     }).catch(function (error) {
       utils.error(error);

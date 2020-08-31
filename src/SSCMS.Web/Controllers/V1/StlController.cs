@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Enums;
+using SSCMS.Models;
+using SSCMS.Parse;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -31,51 +35,102 @@ namespace SSCMS.Web.Controllers.V1
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public class GetRequest : Dictionary<string, string>
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeStl);
+            public string ElementName { get; set; }
+            public int SiteId { get; set; }
+            public string SiteDir { get; set; }
+            public int ChannelId { get; set; }
+            public int ContentId { get; set; }
+        }
 
-            var stlRequest = new StlRequest();
-            await stlRequest.LoadAsync(_authManager, _pathManager, _configRepository, _siteRepository, isApiAuthorized, request);
+        public class GetResult
+        {
+            public object Value { get; set; }
+        }
 
-            if (!stlRequest.IsApiAuthorized)
+        public class StlRequest
+        {
+            private IAuthManager Auth { get; set; }
+
+            public bool IsApiAuthorized { get; private set; }
+
+            public Site Site { get; private set; }
+
+            public ParsePage PageInfo { get; private set; }
+
+            public ParseContext ContextInfo { get; private set; }
+
+            public async Task LoadAsync(IAuthManager auth, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, bool isApiAuthorized, GetRequest request)
             {
-                return Unauthorized();
-            }
+                //Request = new AuthenticatedRequest();
+                //IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
 
-            var site = stlRequest.Site;
+                Auth = auth;
+                IsApiAuthorized = isApiAuthorized;
 
-            if (site == null)
-            {
-                return NotFound();
-            }
+                if (!IsApiAuthorized) return;
 
-            var elementName = $"stl:{StringUtils.ToLower(request.ElementName)}";
-
-            object value = null;
-
-            if (_parseManager.ElementsToParseDic.ContainsKey(elementName))
-            {
-                if (_parseManager.ElementsToParseDic.TryGetValue(elementName, out var func))
+                if (request.SiteId > 0)
                 {
-                    var obj = await func(_parseManager);
-
-                    if (obj is string)
+                    Site = await siteRepository.GetAsync(request.SiteId);
+                }
+                else if (!string.IsNullOrEmpty(request.SiteDir))
+                {
+                    Site = await siteRepository.GetSiteByDirectoryAsync(request.SiteDir);
+                }
+                else
+                {
+                    Site = await siteRepository.GetSiteByIsRootAsync();
+                    if (Site == null)
                     {
-                        value = (string)obj;
-                    }
-                    else
-                    {
-                        value = obj;
+                        var siteList = await siteRepository.GetSitesAsync();
+                        if (siteList != null && siteList.Count > 0)
+                        {
+                            Site = siteList[0];
+                        }
                     }
                 }
-            }
 
-            return new GetResult
-            {
-                Value = value
-            };
+                if (Site == null) return;
+
+                if (request.ChannelId == 0)
+                {
+                    request.ChannelId = Site.Id;
+                }
+
+                var templateInfo = new Template
+                {
+                    Id = 0,
+                    SiteId = Site.Id,
+                    TemplateName = string.Empty,
+                    TemplateType = TemplateType.IndexPageTemplate,
+                    RelatedFileName = string.Empty,
+                    CreatedFileFullName = string.Empty,
+                    CreatedFileExtName = string.Empty,
+                    DefaultTemplate = true
+                };
+
+                var config = await configRepository.GetAsync();
+                PageInfo = new ParsePage(pathManager, config, request.ChannelId, request.ContentId, Site, templateInfo,
+                    new Dictionary<string, object>())
+                {
+                    UniqueId = 1000, User = await Auth.GetUserAsync()
+                };
+
+                var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
+                foreach (var key in request.Keys)
+                {
+                    attributes[key] = request[key];
+                }
+
+                ContextInfo = new ParseContext(PageInfo)
+                {
+                    IsStlEntity = true,
+                    Attributes = attributes,
+                    InnerHtml = string.Empty
+                };
+            }
         }
     }
 }
