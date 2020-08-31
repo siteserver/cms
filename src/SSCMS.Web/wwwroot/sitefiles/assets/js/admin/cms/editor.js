@@ -10,7 +10,7 @@ var data = utils.init({
   isSettings: true,
   sideType: 'first',
   collapseSettings: ['checkedLevel', 'addDate'],
-  collapseMore: ['translations'],
+  collapseMore: ['translates'],
 
   site: null,
   siteUrl: null,
@@ -23,7 +23,7 @@ var data = utils.init({
   styles: null,
   form: null,
 
-  translations: [],
+  translates: [],
   isPreviewSaving: false
 });
 
@@ -75,12 +75,14 @@ var methods = {
     UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
 
-  addTranslation: function(transSiteId, transChannelId, transType, name) {
-    this.translations.push({
-      transSiteId: transSiteId,
-      transChannelId: transChannelId,
-      transType: transType,
-      name: name
+  addTranslation: function(targetSiteId, targetChannelId, translateType, summary) {
+    this.translates.push({
+      siteId: this.siteId,
+      channelId: this.channelId,
+      targetSiteId: targetSiteId,
+      targetChannelId: targetChannelId,
+      translateType: translateType,
+      summary: summary
     });
   },
 
@@ -182,7 +184,7 @@ var methods = {
       channelId: this.channelId,
       contentId: this.contentId,
       content: this.form,
-      translations: this.translations
+      translates: this.translates
     }).then(function(response) {
       var res = response.data;
 
@@ -228,7 +230,7 @@ var methods = {
       channelId: this.channelId,
       contentId: this.contentId,
       content: this.form,
-      translations: this.translations
+      translates: this.translates
     }).then(function(response) {
       var res = response.data;
 
@@ -284,9 +286,9 @@ var methods = {
     utils.openLayer(args);
   },
 
-  handleTranslationClose: function(name) {
-    this.translations = _.remove(this.translations, function(n) {
-      return name !== n.name;
+  handleTranslationClose: function(summary) {
+    this.translates = _.remove(this.translates, function(n) {
+      return summary !== n.summary;
     });
   },
 

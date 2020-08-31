@@ -19,7 +19,7 @@
       <el-input
         v-model="form[_.lowerFirst(style.attributeName)]"
         size="small"
-        placeholder="请输入图片地址或点击上方按钮上传">
+        :placeholder="style.helpText || '请输入图片地址或点击上方按钮上传'">
       </el-input>
       <template v-for="n in form[utils.getCountName(style.attributeName)]">
         <el-button-group>
@@ -42,7 +42,7 @@
         <el-input
           v-model="form[utils.getExtendName(style.attributeName, n)]"
           size="small"
-          placeholder="请输入图片地址或点击上方按钮上传">
+          :placeholder="style.helpText || '请输入图片地址或点击上方按钮上传'">
         </el-input>
       </template>
     </el-form-item>
@@ -64,7 +64,7 @@
       <el-input
         v-model="form[_.lowerFirst(style.attributeName)]"
         size="small"
-        placeholder="请输入附件地址或点击上方按钮上传">
+        :placeholder="style.helpText || '请输入附件地址或点击上方按钮上传'">
       </el-input>
       <template v-for="n in form[utils.getCountName(style.attributeName)]">
         <el-button-group>
@@ -84,7 +84,7 @@
         <el-input
           v-model="form[utils.getExtendName(style.attributeName, n)]"
           size="small"
-          placeholder="请输入附件地址或点击上方按钮上传">
+          :placeholder="style.helpText || '请输入附件地址或点击上方按钮上传'">
         </el-input>
       </template>
     </el-form-item>
@@ -106,7 +106,7 @@
       <el-input
         v-model="form[_.lowerFirst(style.attributeName)]"
         size="small"
-        placeholder="请输入视频地址或点击上方按钮上传">
+        :placeholder="style.helpText || '请输入视频地址或点击上方按钮上传'">
       </el-input>
       <template v-for="n in form[utils.getCountName(style.attributeName)]">
         <el-button-group>
@@ -126,7 +126,7 @@
         <el-input
           v-model="form[utils.getExtendName(style.attributeName, n)]"
           size="small"
-          placeholder="请输入视频地址或点击上方按钮上传">
+          :placeholder="style.helpText || '请输入视频地址或点击上方按钮上传'">
         </el-input>
       </template>
     </el-form-item>
@@ -160,6 +160,7 @@
         v-html="form[_.lowerFirst(style.attributeName)]"
         style="width: 100%;">
       </textarea>
+      <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
     </el-form-item>
   </template>
   <!-- TextArea -->
@@ -169,6 +170,7 @@
         v-model="form[_.lowerFirst(style.attributeName)]"
         type="textarea"
         size="small"
+        :placeholder="style.helpText"
         :autosize="{ minRows: 4, maxRows: 10}">
       </el-input>
     </el-form-item>
@@ -176,13 +178,13 @@
   <!-- Text -->
   <template v-else-if="style.inputType === 'Text'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-input v-model="form[_.lowerFirst(style.attributeName)]"></el-input>
+      <el-input v-model="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText"></el-input>
     </el-form-item>
   </template>
   <!-- Number -->
   <template v-else-if="style.inputType === 'Number'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-input v-model.number="form[_.lowerFirst(style.attributeName)]"></el-input>
+      <el-input v-model.number="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText"></el-input>
     </el-form-item>
   </template>
   <!-- CheckBox -->
@@ -191,6 +193,7 @@
       <el-checkbox-group v-model="form[_.lowerFirst(style.attributeName)]">
         <el-checkbox v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-checkbox>
       </el-checkbox-group>
+      <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
     </el-form-item>
   </template>
   <!-- Radio -->
@@ -199,12 +202,13 @@
       <el-radio-group v-model="form[_.lowerFirst(style.attributeName)]">
         <el-radio v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-radio>
       </el-radio-group>
+      <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
     </el-form-item>
   </template>
   <!-- SelectOne -->
   <template v-else-if="style.inputType === 'SelectOne'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-select v-model="form[_.lowerFirst(style.attributeName)]" placeholder="请选择">
+      <el-select v-model="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText || '请选择'">
         <el-option
           v-for="item in style.items"
           :key="item.value"
@@ -216,7 +220,7 @@
   <!-- SelectMultiple -->
   <template v-else-if="style.inputType === 'SelectMultiple'">
     <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-select v-model="form[_.lowerFirst(style.attributeName)]" multiple placeholder="请选择">
+      <el-select v-model="form[_.lowerFirst(style.attributeName)]" multiple :placeholder="style.helpText || '请选择'">
         <el-option
           v-for="item in style.items"
           :key="item.value"
@@ -231,7 +235,7 @@
       <el-date-picker
         v-model="form[_.lowerFirst(style.attributeName)]"
         type="date"
-        placeholder="请选择日期">
+        :placeholder="style.helpText || '请选择日期'">
       </el-date-picker>
     </el-form-item>
   </template>
@@ -241,7 +245,7 @@
       <el-date-picker
         v-model="form[_.lowerFirst(style.attributeName)]"
         type="datetime"
-        placeholder="请选择日期时间">
+        :placeholder="style.helpText || '请选择日期时间'">
       </el-date-picker>
     </el-form-item>
   </template>

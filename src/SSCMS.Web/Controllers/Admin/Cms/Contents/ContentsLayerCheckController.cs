@@ -175,7 +175,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
                 if (request.IsTranslate)
                 {
-                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateContentType.Cut, _createManager, _authManager.AdminId);
+                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, TranslateType.Cut, _createManager, _authManager.AdminId);
                 }
             }
 

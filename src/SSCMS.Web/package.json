@@ -293,13 +293,13 @@
         "type": ["web", "wx"],
         "order": 26
       },
-      "site_settingsCrossSiteTrans": {
-        "text": "跨站转发审核设置",
+      "site_settingsCrossSiteTransChannels": {
+        "text": "跨站转发栏目设置",
         "type": ["web", "wx"],
         "order": 27
       },
-      "site_settingsCrossSiteTransChannels": {
-        "text": "跨站转发栏目设置",
+      "site_settingsCrossSiteTrans": {
+        "text": "跨站转发审核设置",
         "type": ["web", "wx"],
         "order": 28
       },
@@ -1183,16 +1183,16 @@
             ],
             "order": 6,
             "menus": {
-              "site_settingsCrossSiteTrans": {
-                "text": "跨站转发审核设置",
-                "link": "./cms/settingsCrossSiteTrans/",
-                "permissions": ["site_settingsCrossSiteTrans"],
-                "order": 1
-              },
               "site_settingsCrossSiteTransChannels": {
                 "text": "跨站转发栏目设置",
                 "link": "./cms/settingsCrossSiteTransChannels/",
                 "permissions": ["site_settingsCrossSiteTransChannels"],
+                "order": 1
+              },
+              "site_settingsCrossSiteTrans": {
+                "text": "跨站转发审核设置",
+                "link": "./cms/settingsCrossSiteTrans/",
+                "permissions": ["site_settingsCrossSiteTrans"],
                 "order": 2
               }
             }

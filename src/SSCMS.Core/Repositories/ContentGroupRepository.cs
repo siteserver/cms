@@ -57,11 +57,11 @@ namespace SSCMS.Core.Repositories
 
         public async Task UpdateTaxisDownAsync(int siteId, int groupId, int taxis)
         {
-            var higherGroup = await _repository.GetAsync<ChannelGroup>(Q
-                .Where(nameof(ChannelGroup.SiteId), siteId)
-                .Where(nameof(ChannelGroup.Taxis), ">", taxis)
-                .WhereNot(nameof(ChannelGroup.Id), groupId)
-                .OrderBy(nameof(ChannelGroup.Taxis)));
+            var higherGroup = await _repository.GetAsync<ContentGroup>(Q
+                .Where(nameof(ContentGroup.SiteId), siteId)
+                .Where(nameof(ContentGroup.Taxis), ">", taxis)
+                .WhereNot(nameof(ContentGroup.Id), groupId)
+                .OrderBy(nameof(ContentGroup.Taxis)));
 
             if (higherGroup != null)
             {
@@ -72,11 +72,11 @@ namespace SSCMS.Core.Repositories
 
         public async Task UpdateTaxisUpAsync(int siteId, int groupId, int taxis)
         {
-            var lowerGroup = await _repository.GetAsync<ChannelGroup>(Q
-                .Where(nameof(ChannelGroup.SiteId), siteId)
-                .Where(nameof(ChannelGroup.Taxis), "<", taxis)
-                .WhereNot(nameof(ChannelGroup.Id), groupId)
-                .OrderByDesc(nameof(ChannelGroup.Taxis)));
+            var lowerGroup = await _repository.GetAsync<ContentGroup>(Q
+                .Where(nameof(ContentGroup.SiteId), siteId)
+                .Where(nameof(ContentGroup.Taxis), "<", taxis)
+                .WhereNot(nameof(ContentGroup.Id), groupId)
+                .OrderByDesc(nameof(ContentGroup.Taxis)));
 
             if (lowerGroup != null)
             {
@@ -88,8 +88,8 @@ namespace SSCMS.Core.Repositories
         private async Task SetTaxisAsync(int groupId, int taxis)
         {
             await _repository.UpdateAsync(Q
-                .Set(nameof(ChannelGroup.Taxis), taxis)
-                .Where(nameof(ChannelGroup.Id), groupId)
+                .Set(nameof(ContentGroup.Taxis), taxis)
+                .Where(nameof(ContentGroup.Id), groupId)
             );
         }
 

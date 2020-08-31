@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             return new PreviewResult
             {
-                Url = _pathManager.GetPreviewContentUrl(request.SiteId, request.ChannelId, request.ContentId, content.Id)
+                Url = _pathManager.GetPreviewContentUrl(request.SiteId, request.ChannelId, content.Id, true)
             };
 
             ////contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);

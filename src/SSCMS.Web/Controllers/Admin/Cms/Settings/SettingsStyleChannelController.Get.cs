@@ -29,7 +29,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             foreach (var style in styles)
             {
                 style.IsSystem = style.RelatedIdentity != request.ChannelId;
-                style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
             }
 
             Cascade<int> cascade = null;

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -32,95 +31,37 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _contentRepository = contentRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var siteIdList = await _authManager.GetSiteIdsAsync();
-            var transSites = await _siteRepository.GetSelectsAsync(siteIdList);
-
-            return new GetResult
-            {
-                TransSites = transSites
-            };
+            public List<Select<int>> TransSites { get; set; }
         }
 
-        [HttpPost, Route(RouteOptions)]
-        public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody]GetOptionsRequest request)
+        public class GetOptionsRequest : ChannelRequest
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, Types.ContentPermissions.Add);
-
-            var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
-            var transSite = await _siteRepository.GetAsync(request.TransSiteId);
-            var cascade = await _channelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
-            {
-                var count = await _contentRepository.GetCountAsync(site, summary);
-
-                return new
-                {
-                    Disabled = !channelIdList.Contains(summary.Id),
-                    summary.IndexName,
-                    Count = count
-                };
-            });
-
-            return new GetOptionsResult
-            {
-                TransChannels = cascade
-            };
+            public int TransSiteId { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
+        public class GetOptionsResult
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
-            {
-                return Unauthorized();
-            }
+            public Cascade<int> TransChannels { get; set; }
+        }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+        public class SubmitRequest : ChannelRequest
+        {
+            public int TransSiteId { get; set; }
+            public List<int> TransChannelIds { get; set; }
+            public TranslateType TransType { get; set; }
+        }
 
-            var transSite = await _siteRepository.GetAsync(request.TransSiteId);
-            var siteName = transSite.SiteName;
+        public class TransChannel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
 
-            var channels = new List<TransChannel>();
-            foreach (var transChannelId in request.TransChannelIds)
-            {
-                var name = await _channelRepository.GetChannelNameNavigationAsync(request.TransSiteId, transChannelId);
-                if (request.TransSiteId != request.SiteId)
-                {
-                    name = siteName + " : " + name;
-                }
-
-                name += $" ({request.TransType.GetDisplayName()})";
-
-                channels.Add(new TransChannel
-                {
-                    Id = transChannelId,
-                    Name = name
-                });
-            }
-
-            return new SubmitResult
-            {
-                Channels = channels
-            };
+        public class SubmitResult
+        {
+            public List<TransChannel> Channels { get; set; }
         }
     }
 }

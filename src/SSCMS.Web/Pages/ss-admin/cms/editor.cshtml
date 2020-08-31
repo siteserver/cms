@@ -93,15 +93,15 @@
         </el-tab-pane>
         <el-tab-pane label="更多" name="second">
           <el-collapse v-model="collapseMore">
-            <el-collapse-item title="同时转移到" name="translations">
+            <el-collapse-item title="同时转移到" name="translates">
               <el-tag
-                v-for="translation in translations"
-                :key="translation.name"
+                v-for="translate in translates"
+                :key="translate.summary"
                 closable
                 size="mini"
-                v-on:close="handleTranslationClose(translation.name)"
+                v-on:close="handleTranslationClose(translate.summary)"
                 type="primary">
-                {{translation.name}}
+                {{translate.summary}}
               </el-tag>
 
               <div></div>

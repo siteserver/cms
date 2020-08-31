@@ -114,6 +114,7 @@ namespace SSCMS.Core.Repositories
             foreach (var style in styles)
             {
                 style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(style.ItemValues);
+                style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
             }
 
             return styles;

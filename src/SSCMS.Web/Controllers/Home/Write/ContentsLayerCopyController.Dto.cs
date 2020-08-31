@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public List<int> ContentIds { get; set; }
             public int TargetSiteId { get; set; }
             public int TargetChannelId { get; set; }
-            public TranslateContentType CopyType { get; set; }
+            public TranslateType CopyType { get; set; }
         }
     }
 }

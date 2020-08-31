@@ -61,11 +61,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             await _contentTagRepository.UpdateTagsAsync(source.TagNames, content.TagNames, request.SiteId, content.Id);
 
-            if (request.Translations != null && request.Translations.Count > 0)
+            if (request.Translates != null && request.Translates.Count > 0)
             {
-                foreach (var translation in request.Translations)
+                foreach (var translate in request.Translates)
                 {
-                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager, _authManager.AdminId);
+                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translate.TargetSiteId, translate.TargetChannelId, translate.TranslateType, _createManager, _authManager.AdminId);
                 }
             }
 

@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         {
             public int TransSiteId { get; set; }
             public int TransChannelId { get; set; }
-            public TranslateContentType TransType { get; set; }
+            public TranslateType TransType { get; set; }
         }
 
         public class SaveRequest

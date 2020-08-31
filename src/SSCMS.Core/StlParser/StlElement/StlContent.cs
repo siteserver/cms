@@ -217,7 +217,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (isOriginal)
             {
-                if (content.ReferenceId > 0 && content.SourceId > 0 && TranslateContentType.Reference.GetValue() == content.Get<string>(ColumnsManager.TranslateContentType))
+                if (content.ReferenceId > 0 && content.SourceId > 0 && TranslateType.Reference.GetValue() == content.Get<string>(ColumnsManager.TranslateContentType))
                 {
                     var targetChannelId = content.SourceId;
                     //var targetSiteId = databaseManager.ChannelRepository.GetSiteId(targetChannelId);

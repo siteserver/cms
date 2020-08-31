@@ -66,16 +66,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<int> ChannelIds { get; set; }
             public int TransSiteId { get; set; }
             public int TransChannelId { get; set; }
-            public TranslateType TranslateType { get; set; }
+            public ChannelTranslateType ChannelTranslateType { get; set; }
             public bool IsDeleteAfterTranslate { get; set; }
         }
 
-        private async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, TranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
+        private async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, ChannelTranslateType channelTranslateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
         {
             var channelIdList = new List<int>();//需要转移的栏目ID
             foreach (var channelId in channelIds)
             {
-                if (translateType != TranslateType.Content)//需要转移栏目
+                if (channelTranslateType != ChannelTranslateType.Content)//需要转移栏目
                 {
                     if (!await _channelRepository.IsAncestorOrSelfAsync(site.Id, channelId, targetChannelId))
                     {
@@ -83,13 +83,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     }
                 }
 
-                if (translateType == TranslateType.Content)//转移内容
+                if (channelTranslateType == ChannelTranslateType.Content)//转移内容
                 {
                     await TranslateContentAsync(site, channelId, targetSiteId, targetChannelId, isDeleteAfterTranslate);
                 }
             }
 
-            if (translateType != TranslateType.Content)//需要转移栏目
+            if (channelTranslateType != ChannelTranslateType.Content)//需要转移栏目
             {
                 var channelIdListToTranslate = new List<int>(channelIdList);
                 foreach (var channelId in channelIdList)
@@ -115,7 +115,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     nodeInfoList.Add(nodeInfo);
                 }
 
-                await TranslateChannelAndContentAsync(site, nodeInfoList, targetSiteId, targetChannelId, translateType, null, null, isDeleteAfterTranslate);
+                await TranslateChannelAndContentAsync(site, nodeInfoList, targetSiteId, targetChannelId, channelTranslateType, null, null, isDeleteAfterTranslate);
 
                 if (isDeleteAfterTranslate)
                 {
@@ -128,7 +128,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
         }
 
-        private async Task TranslateChannelAndContentAsync(Site site, List<Channel> nodeInfoList, int targetSiteId, int parentId, TranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList, bool isDeleteAfterTranslate)
+        private async Task TranslateChannelAndContentAsync(Site site, List<Channel> nodeInfoList, int targetSiteId, int parentId, ChannelTranslateType channelTranslateType, List<string> nodeIndexNameList, List<string> filePathList, bool isDeleteAfterTranslate)
         {
             if (nodeInfoList == null || nodeInfoList.Count == 0)
             {
@@ -179,7 +179,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
                 var targetChannelId = await _channelRepository.InsertAsync(nodeInfo);
 
-                if (translateType == TranslateType.All)
+                if (channelTranslateType == ChannelTranslateType.All)
                 {
                     await TranslateContentAsync(site, oldNodeInfo.Id, targetSiteId, targetChannelId, isDeleteAfterTranslate);
                 }
@@ -198,7 +198,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
                     if (channelIdList.Count > 0)
                     {
-                        await TranslateChannelAndContentAsync(site, childrenNodeInfoList, targetSiteId, targetChannelId, translateType, nodeIndexNameList, filePathList, isDeleteAfterTranslate);
+                        await TranslateChannelAndContentAsync(site, childrenNodeInfoList, targetSiteId, targetChannelId, channelTranslateType, nodeIndexNameList, filePathList, isDeleteAfterTranslate);
                     }
 
                     await _createManager.CreateChannelAsync(targetSiteId, targetChannelId);
@@ -212,8 +212,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var contentIdList = await _contentRepository.GetContentIdsAsync(site, channel);
 
             var translateType = isDeleteAfterTranslate
-                ? TranslateContentType.Cut
-                : TranslateContentType.Copy;
+                ? TranslateType.Cut
+                : TranslateType.Copy;
 
             foreach (var contentId in contentIdList)
             {

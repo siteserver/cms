@@ -22,9 +22,7 @@ namespace SSCMS.Services
 
         string GetPreviewChannelUrl(int siteId, int channelId);
 
-        string GetPreviewContentUrl(int siteId, int channelId, int contentId);
-
-        string GetPreviewContentUrl(int siteId, int channelId, int contentId, int previewId);
+        string GetPreviewContentUrl(int siteId, int channelId, int contentId, bool isPreview = false);
 
         string GetPreviewFileUrl(int siteId, int fileTemplateId);
 

@@ -3,12 +3,12 @@
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channels: [],
-  transTypes: null,
-  transDoneTypes: null,
   filterText: '',
 
   editPanel: false,
-  editForm: null
+  channelId: null,
+  channelName: null,
+  translates: [],
 });
 
 var methods = {
@@ -24,8 +24,6 @@ var methods = {
       var res = response.data;
 
       $this.channels = [res.channels];
-      $this.transTypes = res.transTypes;
-      $this.transDoneTypes = res.transDoneTypes;
 
       if (message) {
         utils.success(message);
@@ -37,48 +35,15 @@ var methods = {
     });
   },
 
-  apiGetOptions: function(channelId, transType, transSiteId) {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url + '/actions/options', {
-      siteId: this.siteId,
-      channelId: channelId,
-      transType: transType,
-      transSiteId: transSiteId
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.editForm = {
-        siteId: $this.siteId,
-        channelId: channelId,
-        channelName: res.channelName,
-        transType: res.transType,
-        isTransSiteId: res.isTransSiteId,
-        transSiteId: res.transSiteId,
-        isTransChannelIds: res.isTransChannelIds,
-        transChannelIds: res.transChannelIds,
-        isTransChannelNames: res.isTransChannelNames,
-        transChannelNames: res.transChannelNames,
-        isTransIsAutomatic: res.isTransIsAutomatic,
-        transIsAutomatic: res.transIsAutomatic,
-        transDoneType: res.transDoneType,
-        transSites: res.transSites,
-        transChannels: [res.transChannels]
-      };
-      $this.editPanel = true;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
   apiSubmit: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, this.editForm).then(function (response) {
+    $api.post($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      translates: this.translates
+    }).then(function (response) {
       var res = response.data;
 
       $this.editPanel = false;
@@ -101,20 +66,16 @@ var methods = {
     return utils.contains(data.label, value.filterText) || utils.contains(data.indexName, value.filterText);
   },
 
-  handleTransTypeChange: function(transType) {
-    this.apiGetOptions(this.editForm.channelId, transType, this.editForm.transSiteId);
-  },
-
-  handleTransSiteIdChange: function(transSiteId) {
-    this.apiGetOptions(this.editForm.channelId, this.editForm.transType, transSiteId);
-  },
-
   btnCancelClick: function() {
     this.editPanel = false;
   },
 
   btnEditClick: function(data) {
-    this.apiGetOptions(data.value, data.transType, data.transSiteId);
+    this.channelId = data.value;
+    this.channelName = data.label;
+    this.translates = data.translates;
+    this.editPanel = true;
+    // this.apiGetOptions(data.value, data.transType, data.transSiteId);
   },
 
   handleTreeChanged: function() {
@@ -123,7 +84,36 @@ var methods = {
 
   btnSubmitClick: function() {
     this.apiSubmit();
-  }
+  },
+
+  btnTranslateAddClick: function() {
+    utils.openLayer({
+      title: "选择转移栏目",
+      url: utils.getCmsUrl('editorLayerTranslate', {
+        siteId: this.siteId,
+        channelId: this.channelId
+      }),
+      width: 620,
+      height: 400
+    });
+  },
+
+  addTranslation: function(transSiteId, transChannelId, transType, summary) {
+    this.translates.push({
+      siteId: this.siteId,
+      channelId: this.channelId,
+      targetSiteId: transSiteId,
+      targetChannelId: transChannelId,
+      translateType: transType,
+      summary: summary
+    });
+  },
+
+  handleTranslationClose: function(summary) {
+    this.translates = _.remove(this.translates, function(n) {
+      return summary !== n.summary;
+    });
+  },
 };
 
 var $vue = new Vue({

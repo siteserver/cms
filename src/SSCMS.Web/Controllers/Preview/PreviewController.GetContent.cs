@@ -11,11 +11,11 @@ namespace SSCMS.Web.Controllers.Preview
     public partial class PreviewController
     {
         [HttpGet, Route(Constants.RoutePreviewContent)]
-        public async Task<FileResult> GetContent([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int contentId, [FromRoute] GetContentRequest request)
+        public async Task<FileResult> GetContent([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int contentId, [FromQuery] GetContentRequest request)
         {
             try
             {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, siteId, channelId, contentId, 0, request.PageIndex, request.PreviewId));
+                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, siteId, channelId, contentId, 0, request.PageIndex, request.IsPreview));
                 return response;
             }
             catch (Exception ex)

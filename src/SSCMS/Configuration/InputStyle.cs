@@ -20,6 +20,7 @@ namespace SSCMS.Configuration
             Id = style.Id;
             AttributeName = style.AttributeName;
             DisplayName = style.DisplayName;
+            HelpText = style.HelpText;
             InputType = style.InputType;
             Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
             Items = style.Items;

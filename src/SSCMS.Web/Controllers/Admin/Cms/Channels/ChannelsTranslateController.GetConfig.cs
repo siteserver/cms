@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -33,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             });
 
             var transSites = await _siteRepository.GetSelectsAsync();
-            var translateTypes = ListUtils.GetEnums<TranslateType>().Select(x => new Select<string>(x));
+            var translateTypes = ListUtils.GetEnums<ChannelTranslateType>().Select(x => new Select<string>(x));
 
             return new GetResult
             {

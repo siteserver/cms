@@ -24,7 +24,7 @@ namespace SSCMS.Core.Utils
 
         public int PageIndex { get; private set; }
 
-        public static async Task<VisualInfo> GetInstanceAsync(IPathManager pathManager, IDatabaseManager databaseManager, int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId)
+        public static async Task<VisualInfo> GetInstanceAsync(IPathManager pathManager, IDatabaseManager databaseManager, int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, bool isPreview = false)
         {
             if (siteId == 0)
             {
@@ -44,11 +44,7 @@ namespace SSCMS.Core.Utils
 
             if (visualInfo.Site == null) return visualInfo;
 
-            if (previewId > 0)
-            {
-                visualInfo.IsPreview = true;
-                visualInfo.ContentId = previewId;
-            }
+            visualInfo.IsPreview = isPreview;
 
             TemplateType templateType;
 

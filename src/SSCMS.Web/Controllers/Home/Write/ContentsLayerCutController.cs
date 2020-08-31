@@ -139,7 +139,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             foreach (var contentId in request.ContentIds)
             {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, TranslateContentType.Cut, _createManager, _authManager.AdminId);
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, TranslateType.Cut, _createManager, _authManager.AdminId);
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, "转移内容", string.Empty);

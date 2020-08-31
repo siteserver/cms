@@ -86,19 +86,6 @@ namespace SSCMS.Models
 
         public string ListColumns { get; set; }
 
-        public TransType TransType { get; set; }
-
-        public int TransSiteId { get; set; }
-
-        public string TransChannelIds { get; set; }
-
-        public string TransChannelNames { get; set; }
-
-        public bool TransIsAutomatic { get; set; }
-
-        //跨站转发操作类型：复制 引用地址 引用内容
-        public TranslateContentType TransDoneType { get; set; }
-
         public bool IsPreviewContentsExists { get; set; }
 
         public TaxisType DefaultTaxisType { get; set; } = TaxisType.OrderByTaxisDesc;

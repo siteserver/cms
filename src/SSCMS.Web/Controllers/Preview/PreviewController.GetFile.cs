@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Preview
         {
             try
             {
-                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, siteId, 0, 0, fileTemplateId, request.PageIndex, 0));
+                var response = await GetResponseMessageAsync(await VisualInfo.GetInstanceAsync(_pathManager, _databaseManager, siteId, 0, 0, fileTemplateId, request.PageIndex));
                 return response;
             }
             catch (Exception ex)

@@ -1,5 +1,16 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <style>
+    .el-tag {
+      height: auto;
+      white-space: inherit;
+      margin-bottom: 5px;
+      margin-right: 5px;
+    }
+  </style>
+}
 
 <el-form :inline="true">
   <el-form-item label="关键字">
@@ -72,13 +83,19 @@
         </td>
         <td rowspan="1" colspan="1" class="el-table_1_column_2">
           <div class="cell">
-            {{ data.contribute }}
+            <el-tag
+              v-for="translate in data.translates"
+              :key="translate.summary"
+              size="mini"
+              type="primary">
+              {{translate.summary}}
+            </el-tag>
           </div>
         </td>
         <td rowspan="1" colspan="1" class="el-table_1_column_3">
           <div class="cell">
             <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop="btnEditClick(data)">
-              跨站转发栏目
+              跨站转发设置
             </el-button>
           </div>
         </td>
@@ -89,70 +106,33 @@
 </el-tree>
 
 <el-drawer
-  id="editForm"
-  v-if="editForm"
   title="跨站转发设置"
   :visible.sync="editPanel"
   destroy-on-close
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form size="small" ref="editForm" :model="editForm" label-width="220px">
-      <el-form-item label="栏目名称" prop="channelName">
-        {{editForm.channelName}}
+    <el-form size="small" label-width="220px">
+      <el-form-item label="栏目名称">
+        {{channelName}}
       </el-form-item>
 
-      <el-form-item label="跨站转发类型">
-        <el-select v-model="editForm.transType" v-on:change="handleTransTypeChange">
-          <el-option v-for="transType in transTypes" :key="transType.value" :value="transType.value" :label="transType.label"></el-option>
-        </el-select>
-      </el-form-item>
+      <el-form-item label="新增内容自动转发到">
+        <el-tag
+          v-for="translate in translates"
+          :key="translate.summary"
+          closable
+          size="mini"
+          v-on:close="handleTranslationClose(translate.summary)"
+          type="primary">
+          {{translate.summary}}
+        </el-tag>
 
-      <el-form-item v-if="editForm.isTransSiteId" label="指定跨站转发站点">
-        <el-select v-model="editForm.transSiteId" v-on:change="handleTransSiteIdChange">
-          <el-option v-for="transSite in editForm.transSites" :key="transSite.value" :value="transSite.value" :label="transSite.label"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item v-if="editForm.isTransChannelIds" label="选择可跨站转发的栏目">
-        <el-tree
-          :data="editForm.transChannels"
-          ref="channelsTree"
-          show-checkbox
-          check-on-click-node
-          check-strictly
-          node-key="value"
-          :check-on-click-node="true"
-          :default-expanded-keys="[(editForm.transSiteId || siteId)]"
-          :default-checked-keys="editForm.transChannelIds"
-          :expand-on-click-node="true"
-          v-on:check-change="handleTreeChanged">
-          <span class="custom-tree-node" slot-scope="{ node, data }">
-            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
-              <i class="el-icon-link"></i>
-            </a>
-            {{ data.label }} ({{ data.count }})
-            <el-tag size="mini" v-if="data.indexName">
-              {{ data.indexName }}
-            </el-tag>
-          </span>
-        </el-tree>
-      </el-form-item>
+        <div></div>
 
-      <el-form-item v-if="editForm.isTransChannelNames" label="设置可跨站转发的栏目名称">
-        <el-input type="textarea" rows="5" v-model="editForm.transChannelNames"></el-input>
-        <div class="tips">多个栏目以,分隔，不添加栏目代表可以对所有栏目进行跨站转发。</div>
-      </el-form-item>
-
-      <el-form-item v-if="editForm.isTransIsAutomatic" label="是否自动转发内容">
-        <el-radio-group v-model="editForm.transIsAutomatic">
-          <el-radio :label="true">自动转发</el-radio>
-          <el-radio :label="false">手动转发</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item v-if="editForm.isTransIsAutomatic" label="设置转发内容类型">
-        <el-select v-model="editForm.transDoneType">
-          <el-option v-for="transDoneType in transDoneTypes" :key="transDoneType.value" :value="transDoneType.value" :label="transDoneType.label"></el-option>
-        </el-select>
+        <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnTranslateAddClick">
+          新增转移
+        </el-button>
       </el-form-item>
 
       <el-divider></el-divider>

@@ -9,8 +9,8 @@ namespace SSCMS.Services
         IAccessTokenRepository AccessTokenRepository { get; }
         IAdministratorRepository AdministratorRepository { get; }
         IAdministratorsInRolesRepository AdministratorsInRolesRepository { get; }
-        IChannelGroupRepository ChannelGroupRepository { get; }
         IChannelRepository ChannelRepository { get; }
+        IChannelGroupRepository ChannelGroupRepository { get; }
         IConfigRepository ConfigRepository { get; }
         IContentCheckRepository ContentCheckRepository { get; }
         IContentGroupRepository ContentGroupRepository { get; }
@@ -38,6 +38,7 @@ namespace SSCMS.Services
         ITableStyleRepository TableStyleRepository { get; }
         ITemplateLogRepository TemplateLogRepository { get; }
         ITemplateRepository TemplateRepository { get; }
+        ITranslateRepository TranslateRepository { get; }
         IUserGroupRepository UserGroupRepository { get; }
         IUserMenuRepository UserMenuRepository { get; }
         IUserRepository UserRepository { get; }

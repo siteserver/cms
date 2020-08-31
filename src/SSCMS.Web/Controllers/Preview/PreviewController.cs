@@ -43,7 +43,7 @@ namespace SSCMS.Web.Controllers.Preview
 
         public class GetContentRequest
         {
-            public int PreviewId { get; set; }
+            public bool IsPreview { get; set; }
             public int PageIndex { get; set; }
         }
 

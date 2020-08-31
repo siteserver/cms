@@ -40,12 +40,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             await _contentTagRepository.UpdateTagsAsync(null, content.TagNames, request.SiteId, contentId);
 
-            if (request.Translations != null && request.Translations.Count > 0)
+            var translates = await _translateRepository.GetTranslatesAsync(request.SiteId, request.ChannelId);
+            if (request.Translates != null && request.Translates.Count > 0)
             {
-                foreach (var translation in request.Translations)
-                {
-                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager, _authManager.AdminId);
-                }
+                translates.AddRange(request.Translates);
+            }
+            foreach (var translate in translates)
+            {
+                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translate.TargetSiteId, translate.TargetChannelId, translate.TranslateType, _createManager, _authManager.AdminId);
             }
 
             await _createManager.CreateContentAsync(request.SiteId, channel.Id, content.Id);
