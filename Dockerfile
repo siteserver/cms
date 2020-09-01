@@ -15,8 +15,8 @@ RUN npm run build-linux-x64
 RUN dotnet build ./build-linux-x64/build.sln -c Release
 
 FROM build AS publish
-RUN dotnet publish ./build-linux-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r linux-x64 -c Release -o ./publish/sscms-linux-x64 /p:PublishTrimmed=true
-RUN dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -r linux-x64 -c Release -o ./publish/sscms-linux-x64 /p:PublishTrimmed=true
+RUN dotnet publish ./build-linux-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c Release -o ./publish/sscms-linux-x64
+RUN dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -c Release -o ./publish/sscms-linux-x64
 RUN npm run copy-linux-x64
 
 FROM base AS final

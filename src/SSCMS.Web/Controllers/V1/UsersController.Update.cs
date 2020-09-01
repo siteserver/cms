@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -8,16 +9,16 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class UsersController
     {
+        [OpenApiOperation("修改用户 API", "修改用户属性，使用PUT发起请求，请求地址为/api/v1/users/{id}")]
         [HttpPut, Route(RouteUser)]
         public async Task<ActionResult<User>> Update([FromRoute]int id, [FromBody]User request)
         {
-            var isAuth = await
-                             _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers))
+            {
+                return Unauthorized();
+            }
+
+            request.Id = id;
 
             var (success, errorMessage) = await _userRepository.UpdateAsync(request);
             if (!success)

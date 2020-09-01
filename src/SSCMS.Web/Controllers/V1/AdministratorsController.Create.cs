@@ -10,14 +10,14 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class AdministratorsController
     {
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [OpenApiOperation("新增管理员 API", "注册新管理员，使用POST发起请求，请求地址为/api/v1/administrators")]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<Administrator>> Create([FromBody] Administrator request)
         {
-            var isApiAuthorized = _authManager.IsApi && await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
+            {
+                return Unauthorized();
+            }
 
             var (isValid, errorMessage) = await _administratorRepository.InsertAsync(request, request.Password);
             if (!isValid)

@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Datory;
+using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
@@ -170,8 +173,8 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
-            var apiUrl = parseManager.PathManager.GetSearchApiUrl();
-            var apiParameters = parseManager.PathManager.GetSearchApiParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
+            var apiUrl = GetSearchApiUrl(parseManager.SettingsManager);
+            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -219,7 +222,7 @@ jQuery(document).ready(function(){{
                 jQuery(""#{ajaxDivId} .stl_loading"").hide();
                 jQuery(""#{ajaxDivId} .stl_yes"").show();
                 jQuery(""#{ajaxDivId} .stl_no"").hide();
-                jQuery(""#{ajaxDivId} .stl_yes"").html(res);
+                jQuery(""#{ajaxDivId} .stl_yes"").html(res.value);
             }},
             error: function(e) {{
                 jQuery(""#{ajaxDivId} .stl_loading"").hide();
@@ -259,5 +262,80 @@ function stlRedirect{ajaxDivId}(page)
 
             return builder.ToString();
         }
+
+        public class SearchRequest : Entity
+        {
+            public bool IsAllSites { get; set; }
+            public int SiteId { get; set; }
+            public string SiteName { get; set; }
+            public string SiteDir { get; set; }
+            public string SiteIds { get; set; }
+            public string ChannelIndex { get; set; }
+            public string ChannelName { get; set; }
+            public string ChannelIds { get; set; }
+            public string Type { get; set; }
+            public string Word { get; set; }
+            public string DateAttribute { get; set; }
+            public string DateFrom { get; set; }
+            public string DateTo { get; set; }
+            public string Since { get; set; }
+            public int PageNum { get; set; }
+            public bool IsHighlight { get; set; }
+            public string AjaxDivId { get; set; }
+            public string Template { get; set; }
+            public int Page { get; set; }
+        }
+
+        public static string GetSearchApiUrl(ISettingsManager settingsManager)
+        {
+            return PageUtils.Combine(settingsManager.ApiHost, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
+        }
+
+        public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)
+        {
+            return TranslateUtils.JsonSerialize(new SearchRequest
+            {
+                IsAllSites = isAllSites,
+                SiteName = siteName,
+                SiteDir = siteDir,
+                SiteIds = siteIds,
+                ChannelIndex = channelIndex,
+                ChannelName = channelName,
+                ChannelIds = channelIds,
+                Type = type,
+                Word = word,
+                DateAttribute = dateAttribute,
+                DateFrom = dateFrom,
+                DateTo = dateTo,
+                Since = since,
+                PageNum = pageNum,
+                IsHighlight = isHighlight,
+                SiteId = siteId,
+                AjaxDivId = ajaxDivId,
+                Template = settingsManager.Encrypt(template)
+            });
+        }
+
+        public static List<string> GetSearchExcludeAttributeNames => new List<string>
+        {
+            nameof(SearchRequest.IsAllSites),
+            nameof(SearchRequest.SiteName),
+            nameof(SearchRequest.SiteDir),
+            nameof(SearchRequest.SiteIds),
+            nameof(SearchRequest.ChannelIndex),
+            nameof(SearchRequest.ChannelName),
+            nameof(SearchRequest.ChannelIds),
+            nameof(SearchRequest.Type),
+            nameof(SearchRequest.Word),
+            nameof(SearchRequest.DateAttribute),
+            nameof(SearchRequest.DateFrom),
+            nameof(SearchRequest.DateTo),
+            nameof(SearchRequest.Since),
+            nameof(SearchRequest.PageNum),
+            nameof(SearchRequest.IsHighlight),
+            nameof(SearchRequest.SiteId),
+            nameof(SearchRequest.AjaxDivId),
+            nameof(SearchRequest.Template)
+        };
     }
 }

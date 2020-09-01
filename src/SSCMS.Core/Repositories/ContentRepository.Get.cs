@@ -289,7 +289,7 @@ group by tmp.adminId";
 
             foreach (string key in form.Keys)
             {
-                if (excludeAttributes.Contains(StringUtils.ToLower(key))) continue;
+                if (ListUtils.ContainsIgnoreCase(excludeAttributes, key)) continue;
                 if (string.IsNullOrEmpty(form[key])) continue;
 
                 var value = StringUtils.Trim(form[key]);

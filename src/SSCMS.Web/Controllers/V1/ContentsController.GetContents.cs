@@ -9,19 +9,14 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("获取内容列表API", "")]
+        [OpenApiOperation("获取内容列表 API", "获取内容列表使用 POST 发起请求，请求地址为 /api/v1/contents，系统将根据 POST Body 传递过来的筛选参数获取到内容列表并返回")]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<QueryResult>> GetContents([FromBody] QueryRequest request)
         {
-            var channelId = request.ChannelId ?? request.SiteId;
-
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Types.ContentPermissions.View);
-            var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                            _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Types.ContentPermissions.View) ||
-                            _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, Types.ContentPermissions.View);
-            if (!isUserAuth && !isApiAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
+            {
+                return Unauthorized();
+            }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();

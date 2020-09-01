@@ -12,6 +12,7 @@ namespace SSCMS.Core.Services
 {
     public partial class AuthManager : IAuthManager
     {
+        private readonly IHttpContextAccessor _context;
         private readonly ClaimsPrincipal _principal;
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
@@ -19,6 +20,7 @@ namespace SSCMS.Core.Services
 
         public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
+            _context = context;
             _principal = context.HttpContext.User;
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
@@ -100,8 +102,35 @@ namespace SSCMS.Core.Services
 
         public string UserName => IsUser ? _principal.Identity.Name : string.Empty;
 
-        public bool IsApi => _principal != null && _principal.IsInRole(Types.Roles.Api);
+        //public bool IsApi => _principal != null && _principal.IsInRole(Types.Roles.Api);
 
-        public string ApiToken => IsApi ? _principal.Identity.Name : string.Empty;
+        //public string ApiToken => IsApi ? _principal.Identity.Name : string.Empty;
+
+        public bool IsApi => ApiToken != null;
+
+        public string ApiToken
+        {
+            get
+            {
+                if (_context.HttpContext.Request.Query.TryGetValue("apiKey", out var queries))
+                {
+                    var token = queries.SingleOrDefault();
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        return token;
+                    }
+                }
+                if (_context.HttpContext.Request.Headers.TryGetValue("X-SS-API-KEY", out var headers))
+                {
+                    var token = headers.SingleOrDefault();
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        return token;
+                    }
+                }
+
+                return null;
+            }
+        }
     }
 }

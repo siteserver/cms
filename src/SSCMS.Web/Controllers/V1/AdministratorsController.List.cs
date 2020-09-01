@@ -11,8 +11,10 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery] ListRequest request)
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
+            {
+                return Unauthorized();
+            }
 
             var top = request.Top;
             if (top <= 0) top = 20;

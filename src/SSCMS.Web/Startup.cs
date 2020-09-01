@@ -121,7 +121,7 @@ namespace SSCMS.Web
 
             services.AddRepositories(assemblies);
             services.AddServices();
-            services.AddOpenManager(_config);
+            services.AddWxManager(_config);
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services

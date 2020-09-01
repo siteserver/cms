@@ -13,8 +13,10 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsResetPassword)]
         public async Task<ActionResult<Administrator>> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
+            {
+                return Unauthorized();
+            }
 
             var (administrator, _, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
             if (administrator == null)

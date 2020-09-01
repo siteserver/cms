@@ -284,7 +284,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.IndexName)) || StringUtils.EqualsIgnoreCase(type, nameof(Channel.IndexName)))
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.IndexName)) || StringUtils.EqualsIgnoreCase(type, "ChannelIndex"))
             {
                 parsedContent = channel.IndexName;
 

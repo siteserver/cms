@@ -63,7 +63,6 @@ var methods = {
       $this.apiRestart();
     }).catch(function (error) {
       utils.error(error);
-    }).then(function () {
       utils.loading($this, false);
     });
   },
@@ -127,7 +126,6 @@ var methods = {
       $this.apiRestart();
     }).catch(function (error) {
       utils.error(error);
-    }).then(function () {
       utils.loading($this, false);
     });
   },

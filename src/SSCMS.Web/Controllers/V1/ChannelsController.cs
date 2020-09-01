@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Enums;
@@ -8,7 +7,8 @@ using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Types.Roles.Api)]
+    [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [Route(Constants.ApiV1Prefix)]
     public partial class ChannelsController : ControllerBase
     {
@@ -34,7 +34,6 @@ namespace SSCMS.Web.Controllers.V1
 
         public class CreateRequest : Dictionary<string, object>
         {
-            public int SiteId { get; set; }
             public int ParentId { get; set; }
             public string ContentModelPluginId { get; set; }
             public List<string> ContentRelatedPluginIds { get; set; }
@@ -56,8 +55,6 @@ namespace SSCMS.Web.Controllers.V1
 
         public class UpdateRequest : Dictionary<string, object>
         {
-            public int SiteId { get; set; }
-            public int ChannelId { get; set; }
             public string ChannelName { get; set; }
             public string IndexName { get; set; }
             public string ContentModelPluginId { get; set; }

@@ -9,29 +9,19 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("添加内容API", "")]
+        [OpenApiOperation("新增内容 API", "新增内容，使用POST发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}")]
         [HttpPost, Route(RouteChannel)]
-        public async Task<ActionResult<Content>> Create([FromBody] Content request)
+        public async Task<ActionResult<Content>> Create([FromRoute] int siteId, [FromRoute] int channelId, [FromBody] Content request)
         {
-            bool isAuth;
-            if (request.SourceId == SourceManager.User)
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add);
+                return Unauthorized();
             }
-            else
-            {
-                isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                         _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add);
-            }
-            if (!isAuth) return Unauthorized();
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
             var checkedLevel = request.CheckedLevel;
@@ -41,11 +31,11 @@ namespace SSCMS.Web.Controllers.V1
             {
                 if (request.SourceId == SourceManager.User || _authManager.IsUser)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.CheckLevel1);
                 }
                 else if (_authManager.IsAdmin)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.CheckLevel1);
                 }
             }
 
@@ -54,8 +44,8 @@ namespace SSCMS.Web.Controllers.V1
 
             var contentInfo = new Content
             {
-                SiteId = request.SiteId,
-                ChannelId = request.ChannelId,
+                SiteId = siteId,
+                ChannelId = channelId,
                 AdminId = adminId,
                 LastEditAdminId = adminId,
                 UserId = userId,
@@ -67,11 +57,11 @@ namespace SSCMS.Web.Controllers.V1
 
             contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 
-            //foreach (var plugin in _pluginManager.GetPlugins(request.SiteId, request.ChannelId))
+            //foreach (var plugin in _pluginManager.GetPlugins(siteId, channelId))
             //{
             //    try
             //    {
-            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, contentInfo.Id, request.ToDictionary(), contentInfo));
+            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, request.ToDictionary(), contentInfo));
             //    }
             //    catch (Exception ex)
             //    {
@@ -81,12 +71,12 @@ namespace SSCMS.Web.Controllers.V1
 
             if (contentInfo.Checked)
             {
-                await _createManager.CreateContentAsync(request.SiteId, request.ChannelId, contentInfo.Id);
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
+                await _createManager.CreateContentAsync(siteId, channelId, contentInfo.Id);
+                await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, contentInfo.Id, "添加内容",
-                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+            await _authManager.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "添加内容",
+                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
             return contentInfo;
         }

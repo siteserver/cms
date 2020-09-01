@@ -14,7 +14,6 @@
         {
             public const string Administrator = nameof(Administrator);
             public const string User = nameof(User);
-            public const string Api = nameof(Api);
         }
 
         public static class Resources

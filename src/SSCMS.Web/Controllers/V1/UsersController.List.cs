@@ -1,18 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.V1
 {
     public partial class UsersController
     {
+        [OpenApiOperation("获取用户列表 API", "获取用户列表，使用GET发起请求，请求地址为/api/v1/users")]
         [HttpGet, Route(Route)]
         public async Task<ActionResult<ListResult>> List([FromQuery]ListRequest request)
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers))
+            {
+                return Unauthorized();
+            }
 
             var top = request.Top;
             if (top <= 0)

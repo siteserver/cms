@@ -8,17 +8,14 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("删除内容API", "")]
+        [OpenApiOperation("删除内容 API", "删除内容，使用DELETE发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
         [HttpDelete, Route(RouteContent)]
-        public async Task<ActionResult<Content>> Delete(int siteId, int channelId, int id)
+        public async Task<ActionResult<Content>> Delete([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id)
         {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete);
-            var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                            _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete) ||
-                            _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.Delete);
-            if (!isUserAuth && !isApiAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
+            {
+                return Unauthorized();
+            }
 
             var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();

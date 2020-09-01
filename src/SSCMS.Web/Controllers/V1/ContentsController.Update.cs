@@ -9,38 +9,28 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("修改内容API", "")]
+        [OpenApiOperation("修改内容 API", "修改内容，使用PUT发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
         [HttpPut, Route(RouteContent)]
-        public async Task<ActionResult<Content>> Update([FromBody]Content request)
+        public async Task<ActionResult<Content>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id, [FromBody]Content request)
         {
-            bool isAuth;
-            if (request.SourceId == SourceManager.User)
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
             {
-                isAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit);
+                return Unauthorized();
             }
-            else
-            {
-                isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                         _authManager.IsUser &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit);
-            }
-            if (!isAuth) return Unauthorized();
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
+            var channelInfo = await _channelRepository.GetAsync(channelId);
             if (channelInfo == null) return NotFound();
 
-            var content = await _contentRepository.GetAsync(site, channelInfo, request.Id);
+            var content = await _contentRepository.GetAsync(site, channelInfo, id);
             if (content == null) return NotFound();
 
             content.LoadDict(request.ToDictionary());
 
-            content.SiteId = request.SiteId;
-            content.ChannelId = request.ChannelId;
+            content.SiteId = siteId;
+            content.ChannelId = channelId;
             content.LastEditAdminId = _authManager.AdminId;
             content.SourceId = request.SourceId;
 
@@ -53,11 +43,11 @@ namespace SSCMS.Web.Controllers.V1
 
             await _contentRepository.UpdateAsync(site, channelInfo, content);
 
-            //foreach (var plugin in _pluginManager.GetPlugins(request.SiteId, request.ChannelId))
+            //foreach (var plugin in _pluginManager.GetPlugins(siteId, channelId))
             //{
             //    try
             //    {
-            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(request.SiteId, request.ChannelId, content.Id, content.ToDictionary(), content));
+            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, content.Id, content.ToDictionary(), content));
             //    }
             //    catch (Exception ex)
             //    {
@@ -67,12 +57,12 @@ namespace SSCMS.Web.Controllers.V1
 
             if (content.Checked)
             {
-                await _createManager.CreateContentAsync(request.SiteId, request.ChannelId, content.Id);
-                await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
+                await _createManager.CreateContentAsync(siteId, channelId, content.Id);
+                await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, content.Id, "修改内容",
-                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, content.ChannelId)},内容标题:{content.Title}");
+            await _authManager.AddSiteLogAsync(siteId, channelId, content.Id, "修改内容",
+                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(siteId, content.ChannelId)},内容标题:{content.Title}");
 
             return content;
         }

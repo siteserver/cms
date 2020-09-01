@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Utils;
 
@@ -7,18 +8,17 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class StlController
     {
+        [OpenApiOperation("STL 模板语言 API", "使用GET发起请求，请求地址为/api/v1/stl/{elementName}，其中{elementName}为STL标签名称")]
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromRoute] string elementName, [FromQuery]GetRequest request)
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeStl);
-
-            var stlRequest = new StlRequest();
-            await stlRequest.LoadAsync(_authManager, _pathManager, _configRepository, _siteRepository, isApiAuthorized, request);
-
-            if (!stlRequest.IsApiAuthorized)
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeStl))
             {
                 return Unauthorized();
             }
+
+            var stlRequest = new StlRequest();
+            await stlRequest.LoadAsync(_authManager, _pathManager, _configRepository, _siteRepository, request);
 
             var site = stlRequest.Site;
 
@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.V1
                 return NotFound();
             }
 
-            var elementName = $"stl:{StringUtils.ToLower(request.ElementName)}";
+            elementName = $"stl:{StringUtils.ToLower(elementName)}";
 
             object value = null;
 

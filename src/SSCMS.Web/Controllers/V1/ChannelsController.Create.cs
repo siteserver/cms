@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -10,26 +11,27 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ChannelsController
     {
+        [OpenApiOperation("新增栏目 API", "新增栏目，使用POST发起请求，请求地址为/api/v1/channels/{siteId}")]
         [HttpPost, Route(RouteSite)]
-        public async Task<ActionResult<Channel>> Create([FromBody] CreateRequest request)
+        public async Task<ActionResult<Channel>> Create([FromRoute] int siteId, [FromBody] CreateRequest request)
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Types.ChannelPermissions.Add);
-            if (!isAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels))
+            {
+                return Unauthorized();
+            }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
             var channelInfo = new Channel
             {
-                SiteId = request.SiteId,
+                SiteId = siteId,
                 ParentId = request.ParentId
             };
 
             if (!string.IsNullOrEmpty(request.IndexName))
             {
-                var indexNameList = await _channelRepository.GetIndexNamesAsync(request.SiteId);
+                var indexNameList = await _channelRepository.GetIndexNamesAsync(siteId);
                 if (indexNameList.Contains(request.IndexName))
                 {
                     return this.Error("栏目添加失败，栏目索引已存在！");
@@ -48,7 +50,7 @@ namespace SSCMS.Web.Controllers.V1
                     request.FilePath = PageUtils.Combine(request.FilePath, "index.html");
                 }
 
-                var filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
+                var filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(siteId);
                 if (filePathList.Contains(request.FilePath))
                 {
                     return this.Error("栏目添加失败，栏目页面路径已存在！");
@@ -112,9 +114,9 @@ namespace SSCMS.Web.Controllers.V1
             channelInfo.Id = await _channelRepository.InsertAsync(channelInfo);
             //栏目选择投票样式后，内容
 
-            await _createManager.CreateChannelAsync(request.SiteId, channelInfo.Id);
+            await _createManager.CreateChannelAsync(siteId, channelInfo.Id);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "添加栏目", $"栏目:{request.ChannelName}");
+            await _authManager.AddSiteLogAsync(siteId, "添加栏目", $"栏目:{request.ChannelName}");
 
             return channelInfo;
         }

@@ -12,9 +12,5 @@ namespace SSCMS.Services
         string AuthenticateUser(User user, bool isPersistent);
 
         Task<string> RefreshUserTokenAsync(string accessToken);
-
-        string AuthenticateApi(AccessToken accessToken, bool isPersistent);
-
-        Task<string> RefreshApiTokenAsync(string accessToken);
     }
 }

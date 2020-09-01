@@ -10,10 +10,12 @@ namespace SSCMS.Web.Controllers.V1
     {
         [OpenApiOperation("获取管理员 API", "获取管理员，使用GET发起请求，请求地址为/api/v1/administrators/{id}")]
         [HttpGet, Route(RouteAdministrator)]
-        public async Task<ActionResult<Administrator>> Get(int id)
+        public async Task<ActionResult<Administrator>> Get([FromRoute] int id)
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
+            {
+                return Unauthorized();
+            }
 
             if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
 

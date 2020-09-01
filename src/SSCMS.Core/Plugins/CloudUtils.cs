@@ -60,10 +60,10 @@ namespace SSCMS.Core.Plugins
                 var name = GetCmsDownloadName(osArchitecture, version);
                 var directoryPath = PathUtils.Combine(packagesPath, name);
 
-                if (IsCmsDownload(pathManager, osArchitecture, version))
-                {
-                    return directoryPath;
-                }
+                //if (IsCmsDownload(pathManager, osArchitecture, version))
+                //{
+                //    return directoryPath;
+                //}
 
                 var directoryNames = DirectoryUtils.GetDirectoryNames(packagesPath);
                 foreach (var directoryName in directoryNames.Where(directoryName => StringUtils.StartsWithIgnoreCase(directoryName, "sscms-")))

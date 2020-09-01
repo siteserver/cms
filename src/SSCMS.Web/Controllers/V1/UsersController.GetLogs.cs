@@ -1,20 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.V1
 {
     public partial class UsersController
     {
+        [OpenApiOperation("获取用户操作日志 API", "获取用户操作日志列表，使用GET发起请求，请求地址为/api/v1/users/{id}/logs")]
         [HttpGet, Route(RouteUserLogs)]
-        public async Task<ActionResult<GetLogsResult>> GetLogs(int id, [FromQuery]GetLogsRequest request)
+        public async Task<ActionResult<GetLogsResult>> GetLogs([FromRoute] int id, [FromQuery]GetLogsRequest request)
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers))
+            {
+                return Unauthorized();
+            }
 
             var user = await _userRepository.GetByUserIdAsync(id);
             if (user == null) return NotFound();

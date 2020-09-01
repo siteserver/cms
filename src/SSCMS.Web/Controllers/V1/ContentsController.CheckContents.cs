@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("审核内容API", "")]
+        [OpenApiOperation("审核内容 API", "审核内容使用POST发起请求，请求地址为/api/v1/contents/actions/check")]
         [HttpPost, Route(RouteActionsCheck)]
         public async Task<ActionResult<CheckResult>> CheckContents([FromBody] CheckRequest request)
         {

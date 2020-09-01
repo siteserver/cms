@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SqlKata;
 using SSCMS.Configuration;
@@ -16,7 +15,8 @@ namespace SSCMS.Web.Controllers.V1
     /// <summary>
     /// 内容操作API
     /// </summary>
-    [Authorize(Roles = Types.Roles.Api)]
+    [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [Route(Constants.ApiV1Prefix)]
     public partial class ContentsController : ControllerBase
     {

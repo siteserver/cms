@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Enums;
@@ -12,7 +11,8 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Types.Roles.Api)]
+    [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [Route(Constants.ApiV1Prefix)]
     public partial class StlController : ControllerBase
     {
@@ -37,7 +37,6 @@ namespace SSCMS.Web.Controllers.V1
 
         public class GetRequest : Dictionary<string, string>
         {
-            public string ElementName { get; set; }
             public int SiteId { get; set; }
             public string SiteDir { get; set; }
             public int ChannelId { get; set; }
@@ -53,23 +52,18 @@ namespace SSCMS.Web.Controllers.V1
         {
             private IAuthManager Auth { get; set; }
 
-            public bool IsApiAuthorized { get; private set; }
-
             public Site Site { get; private set; }
 
             public ParsePage PageInfo { get; private set; }
 
             public ParseContext ContextInfo { get; private set; }
 
-            public async Task LoadAsync(IAuthManager auth, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, bool isApiAuthorized, GetRequest request)
+            public async Task LoadAsync(IAuthManager auth, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, GetRequest request)
             {
                 //Request = new AuthenticatedRequest();
                 //IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
 
                 Auth = auth;
-                IsApiAuthorized = isApiAuthorized;
-
-                if (!IsApiAuthorized) return;
 
                 if (request.SiteId > 0)
                 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Models;
@@ -10,7 +9,6 @@ using SSCMS.Services;
 namespace SSCMS.Web.Controllers.V1
 {
     [ApiController]
-    [Authorize(Roles = Types.Roles.Api)]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route(Constants.ApiV1Prefix)]
     public partial class AdministratorsController : ControllerBase

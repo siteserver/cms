@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    [Authorize(Roles = Types.Roles.Api)]
+    [ApiController]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [Route(Constants.ApiV1Prefix)]
     public partial class CaptchaController : ControllerBase
     {

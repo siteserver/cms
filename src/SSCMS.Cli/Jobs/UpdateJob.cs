@@ -77,14 +77,17 @@ namespace SSCMS.Cli.Jobs
 
             if (!SemVersion.TryParse(result.Cms.Version, out var version) || version <= _settingsManager.Version)
             {
-                await WriteUtils.PrintSuccessAsync("SS CMS is the latest version and no update is required");
-                return;
+                Console.WriteLine($"SS CMS {result.Cms.Version} is the latest version and no update is required");
+                var proceed = ReadUtils.GetYesNo("do you still want to update?");
+                if (!proceed) return;
+            }
+            else
+            {
+                var proceed = ReadUtils.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
+                if (!proceed) return;
             }
 
-            var proceed = ReadUtils.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
-            if (!proceed) return;
-
-            Console.WriteLine($"Downloading {result.Cms.Version}...");
+            Console.WriteLine($"Downloading SS CMS {result.Cms.Version}...");
             var directoryPath = CloudUtils.Dl.DownloadCms(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
 
             FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName));
@@ -92,9 +95,11 @@ namespace SSCMS.Cli.Jobs
             FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, "wwwroot/favicon.ico"));
             FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, "wwwroot/index.html"));
 
-            Console.WriteLine($"{result.Cms.Version} download successfully!");
+            await WriteUtils.PrintSuccessAsync($"{result.Cms.Version} download successfully!");
+            Console.WriteLine();
+            Console.WriteLine();
 
-            Console.WriteLine("Please stop website and replace files and directories ");
+            Console.WriteLine("Please stop website and override files and directories ");
             Console.WriteLine($"     {directoryPath}");
             Console.WriteLine("to");
             Console.WriteLine($"     {contentRootPath}");

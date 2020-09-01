@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -8,6 +9,7 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class UsersController
     {
+        [OpenApiOperation("新增用户 API", "注册新用户，使用POST发起请求，请求地址为/api/v1/users")]
         [HttpPost, Route(Route)]
         public async Task<ActionResult<User>> Create([FromBody]User request)
         {

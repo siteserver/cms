@@ -10,10 +10,12 @@ namespace SSCMS.Web.Controllers.V1
     {
         [OpenApiOperation("删除管理员 API", "删除管理员，使用DELETE发起请求，请求地址为/api/v1/administrators/{id}")]
         [HttpDelete, Route(RouteAdministrator)]
-        public async Task<ActionResult<Administrator>> Delete(int id)
+        public async Task<ActionResult<Administrator>> Delete([FromRoute]int id)
         {
-            var isApiAuthorized = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators);
-            if (!isApiAuthorized) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
+            {
+                return Unauthorized();
+            }
 
             if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
 

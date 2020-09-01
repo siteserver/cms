@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Extensions;
@@ -10,18 +11,19 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ChannelsController
     {
+        [OpenApiOperation("修改栏目 API", "修改栏目，使用PUT发起请求，请求地址为/api/v1/channels/{siteId}/{channelId}")]
         [HttpPut, Route(RouteChannel)]
-        public async Task<ActionResult<Channel>> Update([FromBody] UpdateRequest request)
+        public async Task<ActionResult<Channel>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromBody] UpdateRequest request)
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels) ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, Types.ChannelPermissions.Edit);
-            if (!isAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels))
+            {
+                return Unauthorized();
+            }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();
 
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
             foreach (var (key, value) in request)
@@ -38,7 +40,7 @@ namespace SSCMS.Web.Controllers.V1
             {
                 if (!channel.IndexName.Equals(request.IndexName) && !string.IsNullOrEmpty(request.IndexName))
                 {
-                    var indexNameList = await _channelRepository.GetIndexNamesAsync(request.SiteId);
+                    var indexNameList = await _channelRepository.GetIndexNamesAsync(siteId);
                     if (indexNameList.Contains(request.IndexName))
                     {
                         return this.Error("栏目属性修改失败，栏目索引已存在！");
@@ -70,7 +72,7 @@ namespace SSCMS.Web.Controllers.V1
                         request.FilePath = PageUtils.Combine(request.FilePath, "index.html");
                     }
 
-                    var filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(request.SiteId);
+                    var filePathList = await _channelRepository.GetAllFilePathBySiteIdAsync(siteId);
                     if (filePathList.Contains(request.FilePath))
                     {
                         return this.Error("栏目修改失败，栏目页面路径已存在！");

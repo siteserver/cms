@@ -9,6 +9,7 @@ using SSCMS.Configuration;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.StlEntity;
 using SSCMS.Core.StlParser.Utility;
+using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Extensions;
 using SSCMS.Models;
@@ -20,21 +21,19 @@ namespace SSCMS.Web.Controllers.Stl
 {
     [OpenApiIgnore]
     [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
-    public partial class ActionsSearchController : ControllerBase
+    public class ActionsSearchController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
-        private readonly IPathManager _pathManager;
         private readonly IParseManager _parseManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ActionsSearchController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IParseManager parseManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository)
+        public ActionsSearchController(ISettingsManager settingsManager, IAuthManager authManager, IParseManager parseManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
-            _pathManager = pathManager;
             _parseManager = parseManager;
             _databaseManager = databaseManager;
             _siteRepository = siteRepository;
@@ -42,7 +41,7 @@ namespace SSCMS.Web.Controllers.Stl
         }
 
         [HttpPost, Route(Constants.RouteStlActionsSearch)]
-        public async Task<ActionResult<string>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<StringResult>> Submit([FromBody] StlSearch.SearchRequest request)
         {
             var template = string.Empty;
             try
@@ -79,7 +78,7 @@ namespace SSCMS.Web.Controllers.Stl
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, _pathManager.GetSearchExcludeAttributeNames, form);
+                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, StlSearch.GetSearchExcludeAttributeNames, form);
 
                     var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager, request.PageNum, site.TableName, whereString);
                     var (pageCount, totalNum) = stlPageContents.GetPageCount();
@@ -107,7 +106,10 @@ namespace SSCMS.Web.Controllers.Stl
                         }
 
                         await _parseManager.ParseAsync(pagedBuilder, string.Empty, false);
-                        return pagedBuilder.ToString();
+                        return new StringResult
+                        {
+                            Value = pagedBuilder.ToString()
+                        };
                     }
                 }
                 else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
@@ -141,12 +143,18 @@ namespace SSCMS.Web.Controllers.Stl
                         }
 
                         await _parseManager.ParseAsync(pagedBuilder, string.Empty, false);
-                        return pagedBuilder.ToString();
+                        return new StringResult
+                        {
+                            Value = pagedBuilder.ToString()
+                        };
                     }
                 }
 
                 await _parseManager.ParseAsync(contentBuilder, string.Empty, false);
-                return contentBuilder.ToString();
+                return new StringResult
+                {
+                    Value = contentBuilder.ToString()
+                };
             }
             catch (Exception ex)
             {
@@ -155,12 +163,16 @@ namespace SSCMS.Web.Controllers.Stl
             }
         }
 
-        private NameValueCollection GetPostCollection(Dictionary<string, object> request)
+        private NameValueCollection GetPostCollection(StlSearch.SearchRequest request)
         {
             var formCollection = new NameValueCollection();
-            foreach (var (key, value) in request)
+            foreach (var key in request.GetKeys())
             {
-                formCollection[key] = value.ToString();
+                var value = request.Get(key);
+                if (value != null)
+                {
+                    formCollection[key] = request.Get(key).ToString();
+                }
             }
 
             return formCollection;

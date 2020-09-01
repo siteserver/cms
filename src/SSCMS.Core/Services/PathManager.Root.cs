@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -35,6 +33,7 @@ namespace SSCMS.Core.Services
         public string ParseUrl(string virtualUrl)
         {
             if (string.IsNullOrEmpty(virtualUrl)) return string.Empty;
+            if (PageUtils.IsAbsoluteUrl(virtualUrl)) return virtualUrl;
 
             virtualUrl = virtualUrl.StartsWith("~") ? GetRootUrl(virtualUrl.Substring(1)) : virtualUrl;
             virtualUrl = virtualUrl.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
@@ -244,58 +243,6 @@ namespace SSCMS.Core.Services
     stlPageContentsElement: '{_settingsManager.Encrypt(stlPageContentsElement)}'
 }}";
         }
-
-        public string GetSearchApiUrl()
-        {
-            return PageUtils.Combine(_settingsManager.ApiHost, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
-        }
-
-        public string GetSearchApiParameters(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)
-        {
-            return $@"
-{{
-    {StringUtils.ToLower(StlSearch.IsAllSites)}: {StringUtils.ToLower(isAllSites.ToString())},
-    {StringUtils.ToLower(StlSearch.SiteName)}: '{siteName}',
-    {StringUtils.ToLower(StlSearch.SiteDir)}: '{siteDir}',
-    {StringUtils.ToLower(StlSearch.SiteIds)}: '{siteIds}',
-    {StringUtils.ToLower(StlSearch.ChannelIndex)}: '{channelIndex}',
-    {StringUtils.ToLower(StlSearch.ChannelName)}: '{channelName}',
-    {StringUtils.ToLower(StlSearch.ChannelIds)}: '{channelIds}',
-    {StringUtils.ToLower(StlSearch.Type)}: '{type}',
-    {StringUtils.ToLower(StlSearch.Word)}: '{word}',
-    {StringUtils.ToLower(StlSearch.DateAttribute)}: '{dateAttribute}',
-    {StringUtils.ToLower(StlSearch.DateFrom)}: '{dateFrom}',
-    {StringUtils.ToLower(StlSearch.DateTo)}: '{dateTo}',
-    {StringUtils.ToLower(StlSearch.Since)}: '{since}',
-    {StringUtils.ToLower(StlSearch.PageNum)}: {pageNum},
-    {StringUtils.ToLower(StlSearch.IsHighlight)}: {StringUtils.ToLower(isHighlight.ToString())},
-    siteid: '{siteId}',
-    ajaxdivid: '{ajaxDivId}',
-    template: '{_settingsManager.Encrypt(template)}',
-}}";
-        }
-
-        public List<string> GetSearchExcludeAttributeNames => new List<string>
-        {
-            StringUtils.ToLower(StlSearch.IsAllSites),
-            StringUtils.ToLower(StlSearch.SiteName),
-            StringUtils.ToLower(StlSearch.SiteDir),
-            StringUtils.ToLower(StlSearch.SiteIds),
-            StringUtils.ToLower(StlSearch.ChannelIndex),
-            StringUtils.ToLower(StlSearch.ChannelName),
-            StringUtils.ToLower(StlSearch.ChannelIds),
-            StringUtils.ToLower(StlSearch.Type),
-            StringUtils.ToLower(StlSearch.Word),
-            StringUtils.ToLower(StlSearch.DateAttribute),
-            StringUtils.ToLower(StlSearch.DateFrom),
-            StringUtils.ToLower(StlSearch.DateTo),
-            StringUtils.ToLower(StlSearch.Since),
-            StringUtils.ToLower(StlSearch.PageNum),
-            StringUtils.ToLower(StlSearch.IsHighlight),
-            "siteid",
-            "ajaxdivid",
-            "template",
-        };
 
         public string GetTriggerApiUrl(int siteId, int channelId, int contentId,
             int fileTemplateId, bool isRedirect)

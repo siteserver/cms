@@ -8,17 +8,14 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("获取内容API", "")]
+        [OpenApiOperation("获取内容 API", "获取内容，使用GET发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
         [HttpGet, Route(RouteContent)]
-        public async Task<ActionResult<Content>> Get(int siteId, int channelId, int id)
+        public async Task<ActionResult<Content>> Get([FromRoute]int siteId, [FromRoute] int channelId, [FromRoute] int id)
         {
-            var isUserAuth = _authManager.IsUser && await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View);
-            var isApiAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents) ||
-                            _authManager.IsUser &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View) ||
-                            _authManager.IsAdmin &&
-                            await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.View);
-            if (!isUserAuth && !isApiAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
+            {
+                return Unauthorized();
+            }
 
             var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return NotFound();

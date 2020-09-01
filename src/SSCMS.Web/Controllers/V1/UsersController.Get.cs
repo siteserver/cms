@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
 
@@ -7,15 +8,14 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class UsersController
     {
+        [OpenApiOperation("获取用户 API", "获取用户，使用GET发起请求，请求地址为/api/v1/users/{id}")]
         [HttpGet, Route(RouteUser)]
-        public async Task<ActionResult<User>> Get(int id)
+        public async Task<ActionResult<User>> Get([FromRoute] int id)
         {
-            var isAuth = await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) ||
-                         _authManager.IsUser &&
-                         _authManager.UserId == id ||
-                         _authManager.IsAdmin &&
-                         await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers);
-            if (!isAuth) return Unauthorized();
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers))
+            {
+                return Unauthorized();
+            }
 
             if (!await _userRepository.IsExistsAsync(id)) return NotFound();
 
