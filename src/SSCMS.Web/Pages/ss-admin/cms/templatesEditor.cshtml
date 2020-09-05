@@ -1,7 +1,9 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form ref="template" :model="template" :inline="true" label-position="top" size="small" :rules="rules">
+<div style="height: 10px"></div>
+
+<el-form ref="template" :model="template" :inline="true" size="small" :rules="rules">
   <el-form-item label="模板名称" prop="templateName">
     <el-input v-model="template.templateName" placeholder="请输入模板名称"></el-input>
   </el-form-item>
@@ -18,7 +20,7 @@
     <el-select v-model="template.createdFileExtName" placeholder="请选择文件扩展名">
       <el-option v-for="createdFileExtName in createdFileExtNames" :key="createdFileExtName" :label="createdFileExtName" :value="createdFileExtName"></el-option>
     </el-select>
-    <div class="tips">文件扩展名将决定模板文件以及生成文件的文件类型</div>
+    <div class="tips">文件扩展名将决定生成文件的扩展名</div>
   </el-form-item>
 </el-form>
 
@@ -30,9 +32,9 @@
   </el-col>
 </el-row>
 
-<div id="templateContent" style="width:99%; height: 450px; border: 1px solid #d7dae2;"></div>
+<div id="templateContent" style="width:99%; height: 550px; border: 1px solid #d7dae2;"></div>
 
-<div style="margin-top: 15px; text-align: center">
+<div style="margin: 15px 0; text-align: center">
   <el-button type="primary" size="small" v-on:click="btnSubmitClick(false)">保 存</el-button>
   <el-button type="success" size="small" v-on:click="btnSubmitClick(true)">保存并关闭</el-button>
 </div>

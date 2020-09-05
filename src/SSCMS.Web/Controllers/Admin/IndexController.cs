@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteActionsSetLanguage = "index/actions/setLanguage";
         private const string RouteActionsCache = "index/actions/cache";
 
-        private readonly IStringLocalizer<IndexController> _local;
+        //private readonly IStringLocalizer<IndexController> _local;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -34,9 +34,8 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(IStringLocalizer<IndexController> local, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
-            _local = local;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;

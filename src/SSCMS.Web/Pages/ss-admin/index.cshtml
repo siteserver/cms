@@ -79,7 +79,7 @@
         </el-link>
       </el-popover>
 
-      <el-dropdown v-on:command="btnCultureClick">
+      <!-- <el-dropdown v-on:command="btnCultureClick">
         <span class="el-dropdown-link">
           <i class="fa fa-language"></i>
         </span>
@@ -87,7 +87,7 @@
           <el-dropdown-item command="en-US" :disabled="culture === 'en-US'">English</el-dropdown-item>
           <el-dropdown-item command="zh-CN" :disabled="culture === 'zh-CN'">中文</el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
 
       <form v-if="siteId > 0" id="search" class="search" :action="utils.getCmsUrl('contentsSearch')" target="right" method="get">
         <input name="siteId" type="hidden" :value="siteId">

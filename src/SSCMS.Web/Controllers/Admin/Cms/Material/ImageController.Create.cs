@@ -42,6 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             var filePath = PathUtils.Combine(directoryPath, materialFileName);
 
             await _pathManager.UploadAsync(file, filePath);
+            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             var image = new MaterialImage
             {

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -21,21 +20,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _authManager = authManager;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplatesOnline))
-            {
-                return Unauthorized();
-            }
-
-            var siteAddPermission =
-                await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd);
-
-            return new GetResult
-            {
-                SiteAddPermission = siteAddPermission
-            };
+            public bool SiteAddPermission { get; set; }
         }
     }
 }

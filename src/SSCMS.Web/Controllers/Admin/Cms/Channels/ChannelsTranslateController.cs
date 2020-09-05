@@ -66,16 +66,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<int> ChannelIds { get; set; }
             public int TransSiteId { get; set; }
             public int TransChannelId { get; set; }
-            public ChannelTranslateType ChannelTranslateType { get; set; }
+            public ChannelTranslateType TranslateType { get; set; }
             public bool IsDeleteAfterTranslate { get; set; }
         }
 
-        private async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, ChannelTranslateType channelTranslateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
+        private async Task TranslateAsync(Site site, int targetSiteId, int targetChannelId, ChannelTranslateType translateType, IEnumerable<int> channelIds, bool isDeleteAfterTranslate, int adminId)
         {
             var channelIdList = new List<int>();//需要转移的栏目ID
             foreach (var channelId in channelIds)
             {
-                if (channelTranslateType != ChannelTranslateType.Content)//需要转移栏目
+                if (translateType != ChannelTranslateType.Content)//需要转移栏目
                 {
                     if (!await _channelRepository.IsAncestorOrSelfAsync(site.Id, channelId, targetChannelId))
                     {
@@ -83,13 +83,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     }
                 }
 
-                if (channelTranslateType == ChannelTranslateType.Content)//转移内容
+                if (translateType == ChannelTranslateType.Content)//转移内容
                 {
                     await TranslateContentAsync(site, channelId, targetSiteId, targetChannelId, isDeleteAfterTranslate);
                 }
             }
 
-            if (channelTranslateType != ChannelTranslateType.Content)//需要转移栏目
+            if (translateType != ChannelTranslateType.Content)//需要转移栏目
             {
                 var channelIdListToTranslate = new List<int>(channelIdList);
                 foreach (var channelId in channelIdList)
@@ -115,7 +115,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     nodeInfoList.Add(nodeInfo);
                 }
 
-                await TranslateChannelAndContentAsync(site, nodeInfoList, targetSiteId, targetChannelId, channelTranslateType, null, null, isDeleteAfterTranslate);
+                await TranslateChannelAndContentAsync(site, nodeInfoList, targetSiteId, targetChannelId, translateType, null, null, isDeleteAfterTranslate);
 
                 if (isDeleteAfterTranslate)
                 {

@@ -91,7 +91,7 @@
       <el-radio v-model="form.isSaveAllChannels" :label="true">保存全部栏目</el-radio>
       <el-radio v-model="form.isSaveAllChannels" :label="false">保存指定栏目</el-radio>
     </el-form-item>
-    <el-form-item v-if="!isSaveAllChannels && channel" label="指定保存的栏目">
+    <el-form-item v-if="!form.isSaveAllChannels && channel" label="指定保存的栏目">
       <div class="tips">从下边选择需要保存的栏目，所选栏目的下级栏目将自动保存到站点模板中</div>
       <el-divider></el-divider>
       <el-tree
@@ -115,14 +115,14 @@
 
 <template v-else-if="active === 3">
   <div class="alert alert-success">
-    <h4>保存成功，站点模版保存在"SiteFiles\SiteTemplates\{{ templateDir }}"文件夹中</h4>
+    <h4>保存成功，站点模版保存在"SiteFiles\SiteTemplates\{{ form.templateDir }}"文件夹中</h4>
   </div>
 </template>
 
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-row>
+<el-row v-if="active !== 3">
   <el-col :span="24" align="center">
     <el-button type="primary" v-on:click="btnNextClick" size="small">下一步</el-button>
   </el-col>

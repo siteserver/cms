@@ -24,6 +24,7 @@ var data = utils.init({
   editTaxisTypes: [],
   editEditor: null,
   styles: [],
+  isTemplateEditable: false,
 
   deletePanel: false,
   deleteForm: null,
@@ -136,6 +137,7 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.styles = res.styles;
+      $this.isTemplateEditable = res.isTemplateEditable;
       $this.editPanel = true;
       setTimeout(function () {
         $this.loadEditor();
@@ -271,6 +273,24 @@ var methods = {
     });
   },
 
+  btnTemplateEditClick: function(isChannel, templateId) {
+    var templateName = '';
+    if (isChannel) {
+      templateName = this.channelTemplates.find(function(x) {
+        return x.id === templateId;
+      }).templateName;
+    } else {
+      templateName = this.contentTemplates.find(function(x) {
+        return x.id === templateId;
+      }).templateName;
+    }
+    utils.addTab('编辑:' + templateName, utils.getCmsUrl('templatesEditor', {
+      siteId: this.siteId,
+      templateId: templateId,
+      templateType: isChannel ? 'ChannelTemplate' : 'ContentTemplate',
+    }));
+  },
+
   btnEditAddGroupClick: function() {
     utils.openLayer({
       title: '新增栏目组',
@@ -327,15 +347,15 @@ var methods = {
   filterNode: function(value, data) {
     if (!value) return true;
     if (value.channelName && value.indexName && value.groupName) {
-      return data.label.indexOf(value.channelName) !== -1 && data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
+      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.channelName && value.indexName) {
-      return data.label.indexOf(value.channelName) !== -1 && data.indexName === value.indexName;
+      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.indexName === value.indexName;
     } else if (value.channelName && value.groupName) {
-      return data.label.indexOf(value.channelName) !== -1 && data.groupNames.indexOf(value.groupName) !== -1;
+      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.indexName && value.groupName) {
       return data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.channelName) {
-      return data.label.indexOf(value.channelName) !== -1;
+      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName);
     } else if (value.groupName) {
       return data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.indexName) {

@@ -40,6 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             var filePath = PathUtils.Combine(_settingsManager.WebRootPath, virtualUrl);
 
             await _pathManager.UploadAsync(file, filePath);
+            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             return new UploadResult
             {

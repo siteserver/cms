@@ -32,6 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
 
             await _pathManager.UploadAsync(file, filePath);
+            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             return new UploadResult
             {

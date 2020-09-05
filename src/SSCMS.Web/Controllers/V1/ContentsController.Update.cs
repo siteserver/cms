@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.V1

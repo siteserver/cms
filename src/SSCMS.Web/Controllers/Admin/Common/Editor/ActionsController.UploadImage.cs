@@ -39,6 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var filePath = PathUtils.Combine(localDirectoryPath, fileName);
 
             await _pathManager.UploadAsync(file, filePath);
+            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 

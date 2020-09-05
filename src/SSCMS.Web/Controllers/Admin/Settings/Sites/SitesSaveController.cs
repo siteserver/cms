@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
-using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
-using SSCMS.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -41,158 +38,35 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _channelRepository = channelRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            var templateDir = "T_" + site.SiteName.Replace(" ", "_");
-
-            return new GetResult
-            {
-                Site = site,
-                TemplateDir = templateDir
-            };
+            public Site Site { get; set; }
+            public string TemplateDir { get; set; }
         }
 
-        [HttpPost, Route(RouteSettings)]
-        public async Task<ActionResult<SaveSettingsResult>> SaveSettings([FromBody] SaveRequest request)
+        public class SaveSettingsResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
-            {
-                return Unauthorized();
-            }
-
-            var caching = new CacheUtils(_cacheManager);
-            var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
-
-            if (manager.IsSiteTemplateDirectoryExists(request.TemplateDir))
-            {
-                return this.Error("站点模板文件夹已存在，请更换站点模板文件夹！");
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            var sitePath = await _pathManager.GetSitePathAsync(site);
-            var directoryNames = DirectoryUtils.GetDirectoryNames(sitePath);
-
-            var directories = new List<string>();
-            var siteDirList = await _siteRepository.GetSiteDirsAsync(0);
-            foreach (var directoryName in directoryNames)
-            {
-                var isSiteDirectory = false;
-                if (site.Root)
-                {
-                    foreach (var siteDir in siteDirList)
-                    {
-                        if (StringUtils.EqualsIgnoreCase(siteDir, directoryName))
-                        {
-                            isSiteDirectory = true;
-                        }
-                    }
-                }
-                if (!isSiteDirectory && !_pathManager.IsSystemDirectory(directoryName))
-                {
-                    directories.Add(directoryName);
-                }
-            }
-
-            var files = DirectoryUtils.GetFileNames(sitePath);
-
-            //var fileSystems = FileUtility.GetFileSystemInfoExtendCollection(await _pathManager.GetSitePathAsync(site));
-            //foreach (FileSystemInfoExtend fileSystem in fileSystems)
-            //{
-            //    if (!fileSystem.IsDirectory) continue;
-
-            //    var isSiteDirectory = false;
-            //    if (site.Root)
-            //    {
-            //        foreach (var siteDir in siteDirList)
-            //        {
-            //            if (StringUtils.EqualsIgnoreCase(siteDir, fileSystem.Name))
-            //            {
-            //                isSiteDirectory = true;
-            //            }
-            //        }
-            //    }
-            //    if (!isSiteDirectory && !_pathManager.IsSystemDirectory(fileSystem.Name))
-            //    {
-            //        directories.Add(fileSystem.Name);
-            //    }
-            //}
-            //foreach (FileSystemInfoExtend fileSystem in fileSystems)
-            //{
-            //    if (fileSystem.IsDirectory) continue;
-            //    files.Add(fileSystem.Name);
-            //}
-
-            return new SaveSettingsResult
-            {
-                Directories = directories,
-                Files = files
-            };
+            public List<string> Directories { get; set; }
+            public List<string> Files { get; set; }
         }
 
-        [HttpPost, Route(RouteFiles)]
-        public async Task<ActionResult<SaveFilesResult>> SaveFiles([FromBody]SaveRequest request)
+        public class SaveFilesResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            var caching = new CacheUtils(_cacheManager);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
-            var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
-            await exportObject.ExportFilesToSiteAsync(siteTemplatePath, request.IsAllFiles, request.CheckedDirectories, request.CheckedFiles, true);
-
-            var channel = await _channelRepository.GetAsync(request.SiteId);
-            channel.Children = await _channelRepository.GetChildrenAsync(request.SiteId, request.SiteId);
-
-            return new SaveFilesResult
-            {
-                Channel = channel
-            };
+            public Channel Channel { get; set; }
         }
 
-        [HttpPost, Route(RouteActionsData)]
-        public async Task<ActionResult<BoolResult>> SaveData([FromBody]SaveRequest request)
+        public class SaveRequest : SiteRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            var siteTemplatePath = _pathManager.GetSiteTemplatesPath(request.TemplateDir);
-            var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
-
-            var caching = new CacheUtils(_cacheManager);
-            var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
-            await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, request.IsSaveContents, request.IsSaveAllChannels, request.CheckedChannelIds);
-
-            await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, caching, site, request.TemplateDir);
-
-            var siteTemplateInfo = new SiteTemplateInfo
-            {
-                SiteTemplateName = request.TemplateName,
-                PicFileName = string.Empty,
-                WebSiteUrl = request.WebSiteUrl,
-                Description = request.Description
-            };
-            var xmlPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath,
-                DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
-            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
-
-            return new BoolResult
-            {
-                Value = true,
-            };
+            public string TemplateName { get; set; }
+            public string TemplateDir { get; set; }
+            public string WebSiteUrl { get; set; }
+            public string Description { get; set; }
+            public bool IsAllFiles { get; set; }
+            public IList<string> CheckedDirectories { get; set; }
+            public IList<string> CheckedFiles { get; set; }
+            public bool IsSaveContents { get; set; }
+            public bool IsSaveAllChannels { get; set; }
+            public IList<int> CheckedChannelIds { get; set; }
         }
     }
 }

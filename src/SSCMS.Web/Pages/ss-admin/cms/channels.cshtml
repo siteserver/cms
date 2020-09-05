@@ -5,7 +5,7 @@
   <el-col :span="22">
     <el-form size="mini" :inline="true">
       <el-form-item label="关键字">
-        <el-input v-model="filterText" placeholder="输入关键字进行过滤"></el-input>
+        <el-input v-model="filterText" placeholder="请输入栏目名称/栏目Id"></el-input>
       </el-form-item>
       <el-form-item label="栏目索引" v-if="indexNames && indexNames.length > 0">
         <el-select v-model="filterIndexName" placeholder="选择栏目索引进行过滤">
@@ -379,12 +379,14 @@
           <el-option label="<默认>" :value="0"></el-option>
           <el-option v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.templateName" :value="channelTemplate.id"></el-option>
         </el-select>
+        <el-button v-if="isTemplateEditable" v-on:click.prevent="btnTemplateEditClick(true, form.channelTemplateId)">编辑</el-button>
       </el-form-item>
       <el-form-item label="内容模板">
         <el-select v-model="form.contentTemplateId" placeholder="请选择内容模板">
           <el-option label="<默认>" :value="0"></el-option>
           <el-option v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.templateName" :value="contentTemplate.id"></el-option>
         </el-select>
+        <el-button v-if="isTemplateEditable" v-on:click.prevent="btnTemplateEditClick(false, form.contentTemplateId)">编辑</el-button>
       </el-form-item>
       <el-form-item label="外部链接">
         <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>

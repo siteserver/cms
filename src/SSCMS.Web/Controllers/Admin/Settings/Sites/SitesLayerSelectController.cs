@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -26,29 +27,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSites))
-            {
-                return Unauthorized();
-            }
-
-            var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
-
-            var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
-            {
-                SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
-            });
-
-            var tableNames = await _siteRepository.GetSiteTableNamesAsync();
-
-            return new GetResult
-            {
-                Sites = sites,
-                RootSiteId = rootSiteId,
-                TableNames = tableNames
-            };
+            public List<Site> Sites { get; set; }
+            public int RootSiteId { get; set; }
+            public List<string> TableNames { get; set; }
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Datory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -32,68 +29,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTables))
-            {
-                return Unauthorized();
-            }
-
-            var nameDict = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var site in await _siteRepository.GetSitesAsync())
-            {
-                if (nameDict.ContainsKey(site.TableName))
-                {
-                    var list = nameDict[site.TableName];
-                    list.Add(site.SiteName);
-                }
-                else
-                {
-                    nameDict[site.TableName] = new List<string> { site.SiteName };
-                }
-            }
-
-            return new GetResult
-            {
-                Value = nameDict.Keys.ToList(),
-                NameDict = nameDict
-            };
+            public List<string> Value { get; set; }
+            public Dictionary<string, List<string>> NameDict { get; set; }
         }
 
-        [HttpGet, Route(RouteTable)]
-        public async Task<ActionResult<GetColumnsResult>> GetColumns(string tableName)
+        public class GetColumnsResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTables))
-            {
-                return Unauthorized();
-            }
-
-            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ColumnsManager.MetadataAttributes.Value);
-
-            return new GetColumnsResult
-            {
-                Columns = columns,
-                Count = _databaseManager.GetCount(tableName)
-            };
-        }
-
-        [HttpPost, Route(RouteTableActionsRemoveCache)]
-        public async Task<ActionResult<GetColumnsResult>> RemoveCache(string tableName)
-        {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTables))
-            {
-                return Unauthorized();
-            }
-
-            var columns = await _databaseManager.GetTableColumnInfoListAsync(tableName, ColumnsManager.MetadataAttributes.Value);
-
-            return new GetColumnsResult
-            {
-                Columns = columns,
-                Count = _databaseManager.GetCount(tableName)
-            };
+            public List<TableColumn> Columns { get; set; }
+            public int Count { get; set; }
         }
     }
 }

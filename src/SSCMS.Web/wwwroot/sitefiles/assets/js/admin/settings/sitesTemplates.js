@@ -35,8 +35,8 @@ var methods = {
 
   btnCreateClick: function(row) {
     location.href = utils.getSettingsUrl('sitesAdd', {
-      type: create,
-      createType: local,
+      type: 'submit',
+      createType: 'local',
       createTemplateId: row.directoryName
     });
   },

@@ -43,15 +43,15 @@
         <span>转移到</span>
       </div>
 
-      <el-form size="small" label-position="top">
-        <el-form-item label="转移到站点">
-          <el-select v-model="transSiteId" filterable style="width: 100%;" v-on:change="handleTransSiteIdChange">
+      <el-form ref="form" :model="form" size="small" label-position="top">
+        <el-form-item label="转移到站点" prop="transSiteId" :rules="{ required: true, message: '请选择转移到站点' }">
+          <el-select v-model="form.transSiteId" filterable style="width: 100%;" v-on:change="handleTransSiteIdChange">
             <el-option v-for="transSite in transSites" :key="transSite.value" :value="transSite.value" :label="transSite.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="transChannels" label="转移到栏目">
+        <el-form-item v-if="transChannels" label="转移到栏目" prop="transChannelIds" :rules="{ required: true, message: '请选择转移到栏目' }">
           <el-cascader
-            v-model="transChannelIds"
+            v-model="form.transChannelIds"
             filterable
             :options="transChannels"
             :props="{ checkStrictly: true }"
@@ -59,14 +59,14 @@
             placeholder="请选择栏目">
           </el-cascader>
         </el-form-item>
-        <el-form-item label="转移类型">
-          <el-select v-model="translateType" style="width: 100%;">
+        <el-form-item label="转移类型" prop="translateType" :rules="{ required: true, message: '请选择转移类型' }">
+          <el-select v-model="form.translateType" style="width: 100%;">
             <el-option v-for="type in translateTypes" :key="type.value" :value="type.value" :label="type.label"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="转移后删除">
           <el-switch
-            v-model="isDeleteAfterTranslate">
+            v-model="form.isDeleteAfterTranslate">
           </el-switch>
         </el-form-item>
       </el-form>

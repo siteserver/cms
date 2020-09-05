@@ -36,36 +36,37 @@ namespace SSCMS.Core.Utils.Serialization
         {
             var sitePath = await _pathManager.GetSitePathAsync(_site);
 
+            IList<string> siteDirList = new List<string>();
+
+            var filePaths = DirectoryUtils.GetFilePaths(siteTemplatePath);
+            foreach (var filePath in filePaths)
+            {
+                var fileName = PathUtils.GetFileName(filePath);
+                if (StringUtils.StartsWithIgnoreCase(fileName, "T_")) continue;
+
+                var destFilePath = PathUtils.Combine(sitePath, fileName);
+                _caching.SetProcess(guid, $"导入站点文件: {filePath}");
+                FileUtils.MoveFile(filePath, destFilePath, isOverride);
+            }
+
             if (_site.Root)
             {
-                var filePaths = DirectoryUtils.GetFilePaths(siteTemplatePath);
-                foreach (var filePath in filePaths)
-                {
-                    var fileName = PathUtils.GetFileName(filePath);
-                    var destFilePath = PathUtils.Combine(sitePath, fileName);
-                    _caching.SetProcess(guid, $"导入站点文件: {filePath}");
-                    FileUtils.MoveFile(filePath, destFilePath, isOverride);
-                }
-
-                var siteDirList = await _databaseManager.SiteRepository.GetSiteDirsAsync(0);
-
-                var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
-                foreach (var subDirectoryPath in directoryPaths)
-                {
-                    var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!_pathManager.IsSystemDirectory(directoryName) && !ListUtils.ContainsIgnoreCase(siteDirList, directoryName))
-                    {
-                        _caching.SetProcess(guid, $"导入站点文件夹: {subDirectoryPath}");
-                        var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
-                        DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);
-                    }
-                }
+                siteDirList = await _databaseManager.SiteRepository.GetSiteDirsAsync(0);
             }
-            else
+
+            var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
+            foreach (var subDirectoryPath in directoryPaths)
             {
-                _caching.SetProcess(guid, $"导入站点文件夹: {siteTemplatePath}");
-                DirectoryUtils.MoveDirectory(siteTemplatePath, sitePath, isOverride);
+                var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
+                if (StringUtils.EqualsIgnoreCase(directoryName, "Template")) continue;
+
+                if (_site.Root && (_pathManager.IsSystemDirectory(directoryName) || ListUtils.ContainsIgnoreCase(siteDirList, directoryName))) continue;
+
+                _caching.SetProcess(guid, $"导入站点文件夹: {subDirectoryPath}");
+                var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
+                DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);
             }
+
             var siteTemplateMetadataPath = PathUtils.Combine(sitePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteTemplateMetadata);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplateMetadataPath);
         }

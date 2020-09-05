@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -28,62 +28,23 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesUrl))
-            {
-                return Unauthorized();
-            }
-
-            var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
-            {
-                SiteUrl = await _pathManager.GetSiteUrlAsync(x, false),
-                AssetsUrl = await _pathManager.GetAssetsUrlAsync(x)
-            });
-
-            return new GetResult
-            {
-                Sites = sites
-            };
+            public List<Site> Sites { get; set; }
         }
 
-        [HttpPut, Route(Route)]
-        public async Task<ActionResult<EditWebResult>> Edit([FromBody]EditWebRequest request)
+        public class EditWebRequest : SiteRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesUrl))
-            {
-                return Unauthorized();
-            }
+            public bool IsSeparatedWeb { get; set; }
+            public string SeparatedWebUrl { get; set; }
+            public bool IsSeparatedAssets { get; set; }
+            public string AssetsDir { get; set; }
+            public string SeparatedAssetsUrl { get; set; }
+        }
 
-            if (!string.IsNullOrEmpty(request.SeparatedWebUrl) && !request.SeparatedWebUrl.EndsWith("/"))
-            {
-                request.SeparatedWebUrl = request.SeparatedWebUrl + "/";
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            site.IsSeparatedWeb = request.IsSeparatedWeb;
-            site.SeparatedWebUrl = request.SeparatedWebUrl;
-
-            site.IsSeparatedAssets = request.IsSeparatedAssets;
-            site.SeparatedAssetsUrl = request.SeparatedAssetsUrl;
-            site.AssetsDir = request.AssetsDir;
-
-            await _siteRepository.UpdateAsync(site);
-            await _authManager.AddSiteLogAsync(request.SiteId, "修改站点访问地址");
-
-            var siteIdList = await _siteRepository.GetSiteIdsAsync(0);
-            var sites = new List<Site>();
-            foreach (var id in siteIdList)
-            {
-                sites.Add(await _siteRepository.GetAsync(id));
-            }
-
-            return new EditWebResult
-            {
-                Sites = sites
-            };
+        public class EditWebResult
+        {
+            public List<Site> Sites { get; set; }
         }
     }
 }

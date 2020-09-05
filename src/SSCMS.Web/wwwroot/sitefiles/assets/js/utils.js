@@ -559,6 +559,33 @@ var utils = {
     }
   },
 
+  getForm: function(styles, value) {
+    var form =  _.assign({}, value);
+    for (var i = 0; i < styles.length; i++) {
+      var style = styles[i];
+      var name = _.lowerFirst(style.attributeName);
+      if (style.inputType === 'TextEditor') {
+        setTimeout(function () {
+          var editor = UE.getEditor(style.attributeName, {
+            allowDivTransToP: false,
+            maximumWords: 99999999
+          });
+          editor.attributeName = style.attributeName;
+          editor.ready(function () {
+            editor.addListener("contentChange", function () {
+              $this.form[this.attributeName] = this.getContent();
+            });
+          });
+        }, 100);
+      } else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
+        if (!form[name] || !Array.isArray(form[name])) {
+          form[name] = [];
+        }
+      }
+    }
+    return form;
+  },
+
   getRules: function (rules) {
     var options = [
       { required: "字段为必填项" },
