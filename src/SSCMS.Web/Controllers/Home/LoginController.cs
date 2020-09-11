@@ -1,10 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Enums;
-using SSCMS.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -35,49 +32,28 @@ namespace SSCMS.Web.Controllers.Home
             _statRepository = statRepository;
         }
 
-        [HttpGet, Route(Route)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            var config = await _configRepository.GetAsync();
-            if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
-
-            return new GetResult
-            {
-                HomeTitle = config.HomeTitle
-            };
+            public string HomeTitle { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
+        public class CheckRequest
         {
-            var (user, userName, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
+            public string Token { get; set; }
+            public string Value { get; set; }
+        }
 
-            if (user == null)
-            {
-                user = await _userRepository.GetByUserNameAsync(userName);
-                if (user != null)
-                {
-                    await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginFailure, "帐号或密码错误");
-                }
-                return this.Error(errorMessage);
-            }
+        public class SubmitRequest
+        {
+            public string Account { get; set; }
+            public string Password { get; set; }
+            public bool IsPersistent { get; set; }
+        }
 
-            user = await _userRepository.GetByUserNameAsync(userName);
-            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user
-                ); // 记录最后登录时间、失败次数清零
-
-            await _statRepository.AddCountAsync(StatType.UserLogin);
-            await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess);
-            var token = _authManager.AuthenticateUser(user, request.IsPersistent);
-
-            return new LoginResult
-            {
-                User = user,
-                Token = token
-            };
+        public class SubmitResult
+        {
+            public User User { get; set; }
+            public string Token { get; set; }
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -33,36 +34,16 @@ namespace SSCMS.Web.Controllers.Home.Write
             _contentRepository = contentRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public class GetRequest : ChannelRequest
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
-            {
-                return Unauthorized();
-            }
+            public int ContentId { set; get; }
+        }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
-
-            var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
-            if (content == null) return NotFound();
-
-            content.Set(ColumnsManager.CheckState, CheckManager.GetCheckState(site, content));
-
-            var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
-
-            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
-            var attributes = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-
-            return new GetResult
-            {
-                Content = content,
-                ChannelName = channelName,
-                Attributes = attributes
-            };
+        public class GetResult
+        {
+            public Content Content { set; get; }
+            public string ChannelName { set; get; }
+            public List<ContentColumn> Attributes { set; get; }
         }
     }
 }

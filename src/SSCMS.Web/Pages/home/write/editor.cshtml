@@ -11,23 +11,10 @@
       height: auto;
       white-space: inherit;
       margin-bottom: 5px;
+      margin-right: 5px;
     }
   </style>
 }
-
-<el-row>
-  <el-col :span="12">
-    <el-button size="small" v-on:click="getWordSpliter();return false;">提取标签</el-button>
-    <el-button size="small" v-on:click="detection_Content();return false;">敏感词检测</el-button>
-    
-  </el-col>
-  <el-col align="right" :span="12">
-    <el-button size="small" v-on:click="btnSaveClick" type="primary">保 存</el-button>
-    <el-button size="small" v-on:click="btnPreviewClick" type="info">预 览</el-button>
-  </el-col>
-</el-row>
-
-<el-divider></el-divider>
 
 <el-container style="padding-top: 0; padding-bottom: 0; overflow:hidden;" :style="{height: mainHeight}">
   <el-main style="padding: 0; margin: 0">
@@ -41,10 +28,110 @@
 
     </el-scrollbar>
   </el-main>
+  <el-aside v-if="isSettings" width="280px">
+    <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
+      
+      <el-tabs v-model="sideType" type="border-card">
+        <el-tab-pane label="设置" name="first">
+          <el-collapse v-model="collapseSettings">
+            <el-collapse-item title="审核状态" name="checkedLevel">
+              <el-select v-model="form.checkedLevel" size="small" style="width: 100%;">
+                <el-option
+                  v-for="level in checkedLevels"
+                  :key="level.value"
+                  :label="level.label"
+                  :value="level.value"></el-option>
+              </el-select>
+            </el-collapse-item>
+            <el-collapse-item title="内容属性" name="attributes">
+              <el-checkbox v-model="form.top">置顶</el-checkbox>
+              <el-checkbox v-model="form.recommend">推荐</el-checkbox>
+              <el-checkbox v-model="form.hot">热点</el-checkbox>
+              <el-checkbox v-model="form.color">醒目</el-checkbox>
+            </el-collapse-item>
+            <el-collapse-item title="内容组" name="groupNames">
+              <el-checkbox-group v-model="form.groupNames">
+                <el-checkbox v-for="groupName in groupNames" :key="groupName" :label="groupName" :value="groupName" name="groupNames"></el-checkbox>
+              </el-checkbox-group>
+              <div style="height: 5px"></div>
+              <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnGroupAddClick">
+                新增内容组
+              </el-button>
+            </el-collapse-item>
+            <el-collapse-item title="标签" name="tagNames">
+              <el-select
+                v-model="form.tagNames"
+                style="width: 100%;"
+                size="small"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                placeholder="请选择内容标签">
+                <el-option
+                  v-for="tagName in tagNames"
+                  :key="tagName"
+                  :label="tagName"
+                  :value="tagName">
+                </el-option>
+              </el-select>
+              <small class="tips">输入文字后回车可创建新标签</small>
+            </el-collapse-item>
+            <el-collapse-item title="外部链接" name="linkUrl">
+              <el-input v-model="form.linkUrl" name="linkUrl" placeholder="设置后链接将指向此地址" size="small" autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" data-vv-as="外部链接" v-validate="'url'"></el-input>
+              <small class="tips">设置外部链接后系统将不会生成内容页面</small>
+            </el-collapse-item>
+            <el-collapse-item title="添加时间" name="addDate">
+              <el-date-picker
+                v-model="form.addDate"
+                size="small"
+                type="datetime"
+                placeholder="选择内容添加时间">
+              </el-date-picker>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+        <el-tab-pane label="更多" name="second">
+          <el-collapse v-model="collapseMore">
+            <el-collapse-item title="同时转移到" name="translates">
+              <el-tag
+                v-for="translate in translates"
+                :key="translate.summary"
+                closable
+                size="mini"
+                v-on:close="handleTranslationClose(translate.summary)"
+                type="primary">
+                {{translate.summary}}
+              </el-tag>
+
+              <div></div>
+  
+              <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnTranslateAddClick">
+                新增转移
+              </el-button>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+      </el-tabs>
+
+    </el-scrollbar>
+  </el-aside>
 </el-container>
 
+<el-divider></el-divider>
+
+<el-row align="center" style="text-align: center; padding-top:4px">
+  <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+  <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
+  <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
+  <!-- <el-button size="medium" v-on:click="getWordSpliter();return false;">提取标签</el-button>
+  <el-button size="medium" v-on:click="detection_Content();return false;">敏感词检测</el-button> -->
+  <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
+</el-row>
+
 @section Scripts{
-<script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
-<script src="/sitefiles/assets/lib/ueditor/ueditor.all.js" type="text/javascript"></script>
-<script src="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript"></script>
-<script src="/sitefiles/assets/js/home/write/editor.js" type="text/javascript"></script> }
+  <script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
+  <script src="/sitefiles/assets/lib/ueditor/ueditor.all.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/home/write/editor.js" type="text/javascript"></script>
+}

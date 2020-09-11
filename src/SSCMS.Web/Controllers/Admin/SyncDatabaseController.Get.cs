@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Extensions;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {

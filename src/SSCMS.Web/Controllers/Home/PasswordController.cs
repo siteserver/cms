@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Dto;
-using SSCMS.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -26,33 +24,14 @@ namespace SSCMS.Web.Controllers.Home
             _userRepository = userRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            var user = await _authManager.GetUserAsync();
-
-            return new GetResult
-            {
-                User = user
-            };
+            public User User { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public class SubmitRequest
         {
-            var password = request.Password;
-            var (isValid, errorMessage) = await _userRepository.ChangePasswordAsync(_authManager.UserId, password);
-            if (!isValid)
-            {
-                return this.Error($"更改密码失败：{errorMessage}");
-            }
-
-            await _authManager.AddUserLogAsync("修改密码");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string Password { get; set; }
         }
     }
 }

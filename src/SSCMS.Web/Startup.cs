@@ -188,12 +188,24 @@ namespace SSCMS.Web
                 var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                 var exception = exceptionHandlerPathFeature.Error;
 
-                var result = TranslateUtils.JsonSerialize(new
+                string result;
+                if (env.IsDevelopment())
                 {
-                    exception.Message,
-                    exception.StackTrace,
-                    AddDate = DateTime.Now
-                });
+                    result = TranslateUtils.JsonSerialize(new
+                    {
+                        exception.Message,
+                        exception.StackTrace,
+                        AddDate = DateTime.Now
+                    });
+                }
+                else
+                {
+                    result = TranslateUtils.JsonSerialize(new
+                    {
+                        exception.Message,
+                        AddDate = DateTime.Now
+                    });
+                }
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(result);
             }));

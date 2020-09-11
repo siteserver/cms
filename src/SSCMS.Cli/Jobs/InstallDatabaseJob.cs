@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -17,18 +16,30 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "install database";
 
+        private string _userName;
+        private string _password;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
+        private readonly IAdministratorRepository _administratorRepository;
         private readonly OptionSet _options;
 
-        public InstallDatabaseJob(ISettingsManager settingsManager, IConfigRepository configRepository)
+        public InstallDatabaseJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IPathManager pathManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
+            _pathManager = pathManager;
             _configRepository = configRepository;
+            _administratorRepository = administratorRepository;
 
             _options = new OptionSet {
+                { "u|userName",  "Super administrator username",
+                    v => _userName = v },
+                { "p|password",  "Super administrator username",
+                    v => _password = v },
                 { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
@@ -37,7 +48,7 @@ namespace SSCMS.Cli.Jobs
         public void PrintUsage()
         {
             Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: download sscms and save settings");
+            Console.WriteLine("Summary: install sscms");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
@@ -53,102 +64,46 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var contentRootPath = _settingsManager.ContentRootPath;
-
-            var proceed = ReadUtils.GetYesNo($"Do you want to install SS CMS in {contentRootPath}?");
-            if (!proceed) return;
-
-            InstallUtils.Init(contentRootPath);
-
-            if (!CliUtils.IsSsCmsExists(contentRootPath))
-            {
-                await WriteUtils.PrintErrorAsync($"SS CMS has not been downloaded in {contentRootPath}");
-                return;
-            }
-            //if (!CliUtils.IsSsCmsExists(contentRootPath))
-            //{
-            //    var (success, result, errorMessage) = _apiService.GetReleases(_isNightly, string.Empty, null);
-            //    if (!success)
-            //    {
-            //        await WriteUtils.PrintErrorAsync(errorMessage);
-            //        return;
-            //    }
-
-            //    Console.WriteLine($"Downloading {result.Cms.Version}...");
-            //    CloudUtils.Dl.DownloadCms(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
-
-            //    var name = CloudUtils.Dl.GetCmsDownloadName(_settingsManager.OSArchitecture, result.Cms.Version);
-            //    var packagePath = _pathManager.GetPackagesPath(name);
-
-            //    foreach (var fileName in DirectoryUtils.GetFileNames(packagePath).Where(fileName =>
-            //        !StringUtils.EqualsIgnoreCase(fileName, $"{name}.zip") &&
-            //        !StringUtils.EqualsIgnoreCase(fileName, Constants.ConfigFileName)))
-            //    {
-            //        FileUtils.CopyFile(PathUtils.Combine(packagePath, fileName),
-            //            PathUtils.Combine(contentRootPath, fileName), true);
-            //    }
-
-            //    foreach (var directoryName in DirectoryUtils.GetDirectoryNames(packagePath))
-            //    {
-            //        DirectoryUtils.Copy(PathUtils.Combine(packagePath, directoryName), PathUtils.Combine(contentRootPath, directoryName), true);
-            //    }
-            //}
-
             if (!await _configRepository.IsNeedInstallAsync())
             {
-                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {contentRootPath}");
+                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {_settingsManager.ContentRootPath}");
                 return;
             }
 
-            var databaseTypeInput = ReadUtils.GetSelect("Database type", new List<string>
+            var userName = string.IsNullOrEmpty(_userName)
+                ? ReadUtils.GetString("Super administrator username:")
+                : _userName;
+            var password = string.IsNullOrEmpty(_password)
+                ? ReadUtils.GetPassword("Super administrator password:")
+                : _password;
+
+            var (valid, message) =
+                await _administratorRepository.InsertValidateAsync(userName, password, string.Empty, string.Empty);
+            if (!valid)
             {
-                DatabaseType.MySql.GetValue().ToLower(),
-                DatabaseType.SqlServer.GetValue().ToLower(),
-                DatabaseType.PostgreSql.GetValue().ToLower(),
-                DatabaseType.SQLite.GetValue().ToLower()
-            });
-
-            var databaseType = TranslateUtils.ToEnum(databaseTypeInput, DatabaseType.MySql);
-            var databaseName = string.Empty;
-            var databaseHost = string.Empty;
-            var isDatabaseDefaultPort = true;
-            var databasePort = 0;
-            var databaseUserName = string.Empty;
-            var databasePassword = string.Empty;
-
-            if (databaseType != DatabaseType.SQLite)
-            {
-                databaseHost = ReadUtils.GetString("Database hostname / IP:");
-                isDatabaseDefaultPort = ReadUtils.GetYesNo("Use default port?");
-                
-                if (!isDatabaseDefaultPort)
-                {
-                    databasePort = ReadUtils.GetInt("Database port:");
-                }
-                databaseUserName = ReadUtils.GetString("Database userName:");
-                databasePassword = ReadUtils.GetPassword("Database password:");
-
-                var connectionStringWithoutDatabaseName = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, string.Empty);
-
-                var db = new Database(databaseType, connectionStringWithoutDatabaseName);
-
-                var (success, errorMessage) = await db.IsConnectionWorksAsync();
-                if (!success)
-                {
-                    await WriteUtils.PrintErrorAsync(errorMessage);
-                    return;
-                }
-
-                var databaseNames = await db.GetDatabaseNamesAsync();
-                databaseName = ReadUtils.GetSelect("Database name", databaseNames);
+                await WriteUtils.PrintErrorAsync(message);
+                return;
             }
 
-            var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
+            if (_settingsManager.DatabaseType == DatabaseType.SQLite)
+            {
+                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
+                if (!FileUtils.IsFileExists(filePath))
+                {
+                    await FileUtils.WriteTextAsync(filePath, string.Empty);
+                }
+            }
 
-            var isProtectData = ReadUtils.GetYesNo("Protect settings in sscms.json?");
-            _settingsManager.SaveSettings(isProtectData, false, databaseType, databaseConnectionString, string.Empty);
+            (valid, message) = await _databaseManager.InstallAsync(userName, password, string.Empty, string.Empty);
+            if (!valid)
+            {
+                await WriteUtils.PrintErrorAsync(message);
+                return;
+            }
 
-            await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run sscms install sscms");
+            await FileUtils.WriteTextAsync(_pathManager.GetRootPath("index.html"), Constants.Html5Empty);
+
+            await WriteUtils.PrintSuccessAsync("Congratulations, SS CMS was installed successfully!");
         }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Extensions;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {

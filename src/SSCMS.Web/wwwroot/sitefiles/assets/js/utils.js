@@ -14,29 +14,9 @@ if (window.swal && swal.mixin) {
 }
 
 var PER_PAGE = 30;
-var ADMIN_ACCESS_TOKEN_NAME = "ss_admin_access_token";
-var USER_ACCESS_TOKEN_NAME = "ss_user_access_token";
 var DEFAULT_AVATAR_URL = '/sitefiles/assets/images/default_avatar.png';
 
-var $type = "admin";
-
-try {
-  var scripts = document.getElementsByTagName("script");
-  var dataValue = scripts[scripts.length - 1].getAttribute("data-type");
-  if (dataValue) $type = dataValue;
-} catch (e) {}
-
-var $apiUrl = "/api/admin";
-var $rootUrl = "/ss-admin";
-var $token =
-  sessionStorage.getItem(ADMIN_ACCESS_TOKEN_NAME) ||
-  localStorage.getItem(ADMIN_ACCESS_TOKEN_NAME);
-if ($type === "user") {
-  $apiUrl = "/api/home";
-  $rootUrl = "/home";
-  $token = localStorage.getItem(USER_ACCESS_TOKEN_NAME);
-}
-
+var $token = sessionStorage.getItem(ACCESS_TOKEN_NAME) || localStorage.getItem(ACCESS_TOKEN_NAME);
 var $api = axios.create({
   baseURL: $apiUrl,
   headers: {

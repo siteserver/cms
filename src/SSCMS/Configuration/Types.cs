@@ -64,7 +64,6 @@
             public const string SettingsLogsUser = "app_settings_logsUser";
             public const string SettingsLogsError = "app_settings_logsError";
             public const string SettingsLogsConfig = "app_settings_logsConfig";
-            public const string SettingsConfigsAdmin = "app_settings_configsAdmin";
             public const string SettingsConfigsHome = "app_settings_configsHome";
             public const string SettingsConfigsHomeMenu = "app_settings_configsHomeMenu";
             public const string SettingsUtilitiesCache = "app_settings_utilitiesCache";

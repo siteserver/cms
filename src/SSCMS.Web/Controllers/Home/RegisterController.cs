@@ -1,16 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Dto;
-using SSCMS.Enums;
-using SSCMS.Extensions;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home
 {
@@ -39,45 +33,19 @@ namespace SSCMS.Web.Controllers.Home
             _statRepository = statRepository;
         }
 
-        [HttpGet, Route(Route)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            var config = await _configRepository.GetAsync();
-            if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
-            if (!config.IsUserRegistrationAllowed) return this.Error("对不起，系统已禁止新用户注册！");
-
-            var userStyles = await _tableStyleRepository.GetUserStylesAsync();
-            var styles = userStyles
-                .Where(x => ListUtils.ContainsIgnoreCase(config.UserRegistrationAttributes, x.AttributeName))
-                .Select(x => new InputStyle(x));
-
-            return new GetResult
-            {
-                IsUserRegistrationGroup = config.IsUserRegistrationGroup,
-                IsHomeAgreement = config.IsHomeAgreement,
-                HomeAgreementHtml = config.HomeAgreementHtml,
-                Styles = styles,
-                Groups = await _userGroupRepository.GetUserGroupsAsync()
-            };
+            public bool IsUserRegistrationGroup { get; set; }
+            public bool IsHomeAgreement { get; set; }
+            public string HomeAgreementHtml { get; set; }
+            public IEnumerable<InputStyle> Styles { get; set; }
+            public IEnumerable<UserGroup> Groups { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]User request)
+        public class CheckRequest
         {
-            var ipAddress = HttpContext.Connection.RemoteIpAddress.ToString();
-            var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, ipAddress);
-            if (user == null)
-            {
-                return this.Error($"用户注册失败：{errorMessage}");
-            }
-
-            await _statRepository.AddCountAsync(StatType.UserRegister);
-
-            return new BoolResult
-            {
-                Value = user.Checked
-            };
+            public string Token { get; set; }
+            public string Value { get; set; }
         }
     }
 }

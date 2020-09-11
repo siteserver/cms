@@ -8,5 +8,10 @@
   },
   "Redis": {
     "ConnectionString": ""
+  },
+  "AdminRestriction": {
+    "Host": "",
+    "AllowList": [],
+    "BlockList": []
   }
 }

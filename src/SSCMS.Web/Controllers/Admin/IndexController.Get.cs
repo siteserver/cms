@@ -19,6 +19,29 @@ namespace SSCMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
+            var allowed = true;
+            if (!string.IsNullOrEmpty(_settingsManager.AdminRestrictionHost))
+            {
+                var currentHost = PageUtils.RemoveProtocolFromUrl(PageUtils.GetHost(Request));
+                if (!StringUtils.StartsWithIgnoreCase(currentHost, PageUtils.RemoveProtocolFromUrl(_settingsManager.AdminRestrictionHost)))
+                {
+                    allowed = false;
+                }
+            }
+
+            if (!allowed)
+            {
+                var ipAddress = PageUtils.GetIpAddress(Request);
+                allowed = PageUtils.IsAllowed(ipAddress,
+                    new List<string>(_settingsManager.AdminRestrictionBlockList),
+                    new List<string>(_settingsManager.AdminRestrictionAllowList));
+            }
+
+            if (!allowed)
+            {
+                return this.Error($"访问已被禁止，IP地址：{PageUtils.GetIpAddress(Request)}，请与网站管理员联系开通访问权限");
+            }
+
             var (redirect, redirectUrl) = await AdminRedirectCheckAsync();
             if (redirect)
             {

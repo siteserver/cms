@@ -95,7 +95,7 @@ namespace SSCMS.Models
 
         public bool IsHomeAgreement { get; set; }
 
-        public string HomeAgreementHtml { get; set; } = @"阅读并接受<a href=""/agreement.html"" target=""_blank"">《用户协议》</a>";
+        public string HomeAgreementHtml { get; set; } = @"阅读并接受<a href=""#"">《用户协议》</a>";
 
         public string HomeWelcomeHtml { get; set; } = @"欢迎使用用户中心";
     }

@@ -61,7 +61,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
                 var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
                 var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
-                var permissions = new Permissions
+                var permissions = new TreePermissions
                 {
                     IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Add),
                     IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Delete),
@@ -92,37 +92,6 @@ namespace SSCMS.Web.Controllers.Home.Write
             {
                 Root = root
             };
-        }
-
-        public class TreeRequest : SiteRequest
-        {
-            public bool Reload { get; set; }
-        }
-
-        public class Permissions
-        {
-            public bool IsAdd { get; set; }
-            public bool IsDelete { get; set; }
-            public bool IsEdit { get; set; }
-            public bool IsArrange { get; set; }
-            public bool IsTranslate { get; set; }
-            public bool IsCheck { get; set; }
-            public bool IsCreate { get; set; }
-            public bool IsChannelEdit { get; set; }
-        }
-
-        public class TreeResult
-        {
-            public List<Select<int>> Sites { get; set; }
-            public int SiteId { get; set; }
-            public string SiteName { get; set; }
-            public string SiteUrl { get; set; }
-            public Cascade<int> Root { get; set; }
-            public IEnumerable<string> GroupNames { get; set; }
-            public IEnumerable<string> TagNames { get; set; }
-            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
-            public List<ContentColumn> Columns { get; set; }
-            public Permissions Permissions { get; set; }
         }
     }
 }

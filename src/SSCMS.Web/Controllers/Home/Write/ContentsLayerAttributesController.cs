@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -29,100 +29,15 @@ namespace SSCMS.Web.Controllers.Home.Write
             _contentRepository = contentRepository;
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public class SubmitRequest : ChannelRequest
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
-            if (channelInfo == null) return NotFound();
-
-            if (request.PageType == "setAttributes")
-            {
-                if (request.IsRecommend || request.IsHot || request.IsColor || request.IsTop)
-                {
-                    foreach (var contentId in request.ContentIds)
-                    {
-                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
-                        if (contentInfo == null) continue;
-
-                        if (request.IsRecommend)
-                        {
-                            contentInfo.Recommend = true;
-                        }
-                        if (request.IsHot)
-                        {
-                            contentInfo.Hot = true;
-                        }
-                        if (request.IsColor)
-                        {
-                            contentInfo.Color = true;
-                        }
-                        if (request.IsTop)
-                        {
-                            contentInfo.Top = true;
-                        }
-                        await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
-                    }
-
-                    await _authManager.AddSiteLogAsync(request.SiteId, "设置内容属性");
-                }
-            }
-            else if (request.PageType == "cancelAttributes")
-            {
-                if (request.IsRecommend || request.IsHot || request.IsColor || request.IsTop)
-                {
-                    foreach (var contentId in request.ContentIds)
-                    {
-                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
-                        if (contentInfo == null) continue;
-
-                        if (request.IsRecommend)
-                        {
-                            contentInfo.Recommend = false;
-                        }
-                        if (request.IsHot)
-                        {
-                            contentInfo.Hot = false;
-                        }
-                        if (request.IsColor)
-                        {
-                            contentInfo.Color = false;
-                        }
-                        if (request.IsTop)
-                        {
-                            contentInfo.Top = false;
-                        }
-                        await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
-                    }
-
-                    await _authManager.AddSiteLogAsync(request.SiteId, "取消内容属性");
-                }
-            }
-            else if (request.PageType == "setHits")
-            {
-                foreach (var contentId in request.ContentIds)
-                {
-                    var contentInfo = await _contentRepository.GetAsync(site, channelInfo, contentId);
-                    if (contentInfo == null) continue;
-
-                    contentInfo.Hits = request.Hits;
-                    await _contentRepository.UpdateAsync(site, channelInfo, contentInfo);
-                }
-
-                await _authManager.AddSiteLogAsync(request.SiteId, "设置内容点击量");
-            }
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public List<int> ContentIds { get; set; }
+            public string PageType { get; set; }
+            public bool IsRecommend { get; set; }
+            public bool IsHot { get; set; }
+            public bool IsColor { get; set; }
+            public bool IsTop { get; set; }
+            public int Hits { get; set; }
         }
     }
 }

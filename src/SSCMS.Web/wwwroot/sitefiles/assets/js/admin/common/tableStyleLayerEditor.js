@@ -4,6 +4,7 @@ var data = utils.init({
   tableName: utils.getQueryString('tableName'),
   attributeName: utils.getQueryString('attributeName'),
   relatedIdentities: utils.getQueryString('relatedIdentities'),
+  excludes: utils.getQueryStringList('excludes'),
   inputTypes: null,
   form: null
 });
@@ -22,7 +23,10 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.inputTypes = res.inputTypes;
+      $this.inputTypes = res.inputTypes.filter(function (x) {
+        return $this.excludes.indexOf(x.key) == -1;
+      });
+
       $this.form = res.form;
       if (!$this.form.items || $this.form.items.length === 0) {
         $this.form.items.push({

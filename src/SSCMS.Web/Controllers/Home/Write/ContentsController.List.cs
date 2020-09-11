@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
-using SSCMS.Dto;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Home.Write
@@ -54,23 +53,6 @@ namespace SSCMS.Web.Controllers.Home.Write
                 Total = total,
                 PageSize = site.PageSize
             };
-        }
-
-        public class ListRequest : SiteRequest
-        {
-            public int? ChannelId { get; set; }
-            public int Page { get; set; }
-            public bool IsCheckedLevels { get; set; }
-            public List<int> CheckedLevels { get; set; }
-            public List<string> GroupNames { get; set; }
-            public List<string> TagNames { get; set; }
-        }
-
-        public class ListResult
-        {
-            public List<Content> PageContents { get; set; }
-            public int Total { get; set; }
-            public int PageSize { get; set; }
         }
     }
 }

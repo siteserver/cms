@@ -16,11 +16,11 @@
       <div class="tips">插件排序会影响到插件的显示顺序，0代表默认排序</div>
     </el-form-item>
     
-    <el-form-item label="站点设置">
-      <el-radio v-model="form.isAllSites" :label="true">为所有站点开启插件</el-radio>
-      <el-radio v-model="form.isAllSites" :label="false">为指定站点开启插件</el-radio>
+    <el-form-item v-if="plugin.applyToSites" label="站点设置">
+      <el-radio v-model="form.allSites" :label="true">为所有站点开启插件</el-radio>
+      <el-radio v-model="form.allSites" :label="false">为指定站点开启插件</el-radio>
     </el-form-item>
-    <el-form-item v-if="!form.isAllSites" label="指定站点">
+    <el-form-item v-if="plugin.applyToSites && !form.allSites" label="指定站点">
       <el-cascader-panel
         ref="siteIds"
         v-model="form.siteIds"
@@ -30,18 +30,17 @@
         placeholder="请选择站点">
       </el-cascader-panel>
     </el-form-item>
-    
 
-    <el-form-item label="栏目设置">
+    <el-form-item v-if="plugin.applyToSites && plugin.applyToChannels" label="栏目设置">
       <el-row>
-        <el-col :span="8" v-for="site in sites" v-if="form.isAllSites || siteIds.indexOf(site.value) !== -1" style="margin-bottom: 20px; padding: 10px">
+        <el-col :span="8" v-for="site in sites" v-if="form.allSites || siteIds.indexOf(site.value) !== -1" style="margin-bottom: 20px; padding: 10px">
           <el-card>
             <div slot="header" class="clearfix">
               <span>{{site.label}}</span>
               <el-button style="float: right; font-size: 14px;" type="text" v-on:click="btnChannelsClick(site)">栏目设置</el-button>
             </div>
             <div>
-              {{getSiteConfig(site).isAllChannels ? '为所有栏目开启插件' : '为指定栏目开启插件'}}
+              {{getSiteConfig(site).allChannels ? '为所有栏目开启插件' : '为指定栏目开启插件'}}
             </div>
           </el-card>
         </el-col>
@@ -69,10 +68,10 @@
       {{ siteName }}
     </el-form-item>
     <el-form-item label="栏目设置">
-      <el-radio v-model="channelsForm.isAllChannels" :label="true">为所有栏目开启插件</el-radio>
-      <el-radio v-model="channelsForm.isAllChannels" :label="false">为指定栏目开启插件</el-radio>
+      <el-radio v-model="channelsForm.allChannels" :label="true">为所有栏目开启插件</el-radio>
+      <el-radio v-model="channelsForm.allChannels" :label="false">为指定栏目开启插件</el-radio>
     </el-form-item>
-    <el-form-item v-if="!channelsForm.isAllChannels" label="开启插件的栏目">
+    <el-form-item v-if="!channelsForm.allChannels" label="开启插件的栏目">
       <el-tree
         :data="treeData"
         ref="tree"

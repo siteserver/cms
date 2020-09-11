@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         {
             public string PluginId { get; set; }
             public int SiteId { get; set; }
-            public bool IsAllChannels { get; set; }
+            public bool AllChannels { get; set; }
             public List<int> ChannelIds { get; set; }
         }
 
@@ -72,7 +72,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         {
             public string PluginId { get; set; }
             public int Taxis { get; set; }
-            public bool IsAllSites { get; set; }
+            public bool AllSites { get; set; }
             public List<int> SiteIds { get; set; }
         }
     }

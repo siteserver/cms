@@ -60,18 +60,6 @@ namespace SSCMS.Core.StlParser.StlEntity
                 {
                     parsedContent = parseManager.PathManager.GetUserAvatarUrl(pageInfo.User);
                 }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.Gender), attributeName))
-                {
-                    parsedContent = pageInfo.User.Gender;
-                }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.Birthday), attributeName))
-                {
-                    parsedContent = pageInfo.User.Birthday;
-                }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.Bio), attributeName))
-                {
-                    parsedContent = pageInfo.User.Bio;
-                }
                 else
                 {
                     parsedContent = pageInfo.User.Get<string>(attributeName);

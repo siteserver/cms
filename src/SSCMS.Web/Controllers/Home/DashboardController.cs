@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -16,25 +14,16 @@ namespace SSCMS.Web.Controllers.Home
     {
         private const string Route = "dashboard";
 
-        private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;
 
-        public DashboardController(IAuthManager authManager, IConfigRepository configRepository)
+        public DashboardController(IConfigRepository configRepository)
         {
-            _authManager = authManager;
             _configRepository = configRepository;
         }
 
-        [HttpGet, Route(Route)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            var config = await _configRepository.GetAsync();
-
-            return new GetResult
-            {
-                HomeWelcomeHtml = config.HomeWelcomeHtml
-            };
+            public string HomeWelcomeHtml { get; set; }
         }
     }
 }

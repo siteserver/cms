@@ -49,26 +49,6 @@ namespace SSCMS.Core.Plugins.Extensions
                 }
             }
 
-            var middleWares = pluginManager.GetExtensions<IPluginMiddleware>();
-            if (middleWares != null)
-            {
-                foreach (var middleware in middleWares)
-                {
-                    app.Use(next => async context =>
-                    {
-                        try
-                        {
-                            await middleware.UseAsync(next, context);
-                        }
-                        catch (Exception ex)
-                        {
-                            await errorLogRepository.AddErrorLogAsync(ex);
-                            await next(context);
-                        }
-                    });
-                }
-            }
-
             var database = settingsManager.Database;
 
             var tables = settingsManager.GetTables();

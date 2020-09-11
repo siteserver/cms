@@ -116,7 +116,7 @@ namespace SSCMS.Cli.Jobs
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
 
-            await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
+            await DataBackupJob.Backup(_settingsManager.Database, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
             var restoreConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _to);
             if (!FileUtils.IsFileExists(restoreConfigPath))

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
-using SSCMS.Extensions;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
@@ -14,14 +13,14 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteActionsCheck)]
         public ActionResult<BoolResult> Check([FromBody] CheckRequest request)
         {
-            var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Captcha));
+            var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Value));
 
             if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
             {
                 return this.Error("验证码已超时，请点击刷新验证码！");
             }
 
-            if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
+            if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Captcha))
             {
                 return this.Error("验证码不正确，请重新输入！");
             }

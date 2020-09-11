@@ -80,9 +80,9 @@ namespace SSCMS.Utils
             return Enum.GetValues(typeof(T)).Cast<T>().ToList();
         }
 
-        public static IEnumerable<Select<string>> GetSelects<T>() where T : Enum
+        public static List<Select<string>> GetSelects<T>() where T : Enum
         {
-            return GetEnums<T>().Select(x => new Select<string>(x));
+            return GetEnums<T>().Select(x => new Select<string>(x)).ToList();
         }
 
         public static string ToString(string[] collection, string separator = ",")

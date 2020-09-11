@@ -56,14 +56,5 @@ namespace SSCMS.Models
 
         [DataColumn]
         public string AvatarUrl { get; set; }
-
-        [DataColumn]
-        public string Gender { get; set; }
-
-        [DataColumn]
-        public string Birthday { get; set; }
-
-        [DataColumn(Text = true)]
-        public string Bio { get; set; }
     }
 }

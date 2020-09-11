@@ -4,7 +4,7 @@ var data = utils.init({});
 
 var methods = {
   logout: function () {
-    localStorage.removeItem(USER_ACCESS_TOKEN_NAME);
+    localStorage.removeItem(ACCESS_TOKEN_NAME);
     this.redirect();
   },
 

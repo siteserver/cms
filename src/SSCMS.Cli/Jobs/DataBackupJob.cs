@@ -15,6 +15,8 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "data backup";
 
+        private string _databaseType;
+        private string _connectionString;
         private string _directory;
         private List<string> _includes;
         private List<string> _excludes;
@@ -31,16 +33,34 @@ namespace SSCMS.Cli.Jobs
             _databaseManager = databaseManager;
             _options = new OptionSet
             {
-                { "d|directory=", "Backup folder name",
-                    v => _directory = v },
-                { "includes=", "Include table names, separated by commas, default backup all tables",
-                    v => _includes = v == null ? null : ListUtils.GetStringList(v) },
-                { "excludes=", "Exclude table names, separated by commas",
-                    v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
-                { "max-rows=", "Maximum number of rows to backup. All data is backed up by default",
-                    v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
-                { "h|help",  "Display help",
-                    v => _isHelp = v != null }
+                {
+                    "t|database-type=", "Database type",
+                    v => _databaseType = v
+                },
+                {
+                    "c|connection-string=", "Database connection string",
+                    v => _connectionString = v
+                },
+                {
+                    "d|directory=", "Backup folder name",
+                    v => _directory = v
+                },
+                {
+                    "includes=", "Include table names, separated by commas, default backup all tables",
+                    v => _includes = v == null ? null : ListUtils.GetStringList(v)
+                },
+                {
+                    "excludes=", "Exclude table names, separated by commas",
+                    v => _excludes = v == null ? null : ListUtils.GetStringList(v)
+                },
+                {
+                    "max-rows=", "Maximum number of rows to backup. All data is backed up by default",
+                    v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v)
+                },
+                {
+                    "h|help", "Display help",
+                    v => _isHelp = v != null
+                }
             };
         }
 
@@ -73,15 +93,26 @@ namespace SSCMS.Cli.Jobs
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
             var configPath = CliUtils.GetConfigPath(_settingsManager);
-            if (!FileUtils.IsFileExists(configPath))
+
+            var databaseType = TranslateUtils.ToEnum(_databaseType, DatabaseType.MySql);
+            var connectionString = _connectionString;
+            if (string.IsNullOrEmpty(connectionString))
             {
-                await WriteUtils.PrintErrorAsync($"The sscms.json file does not exist: {configPath}");
-                return;
+                if (FileUtils.IsFileExists(configPath))
+                {
+                    databaseType = _settingsManager.Database.DatabaseType;
+                    connectionString = _settingsManager.DatabaseConnectionString;
+                }
+                else
+                {
+                    await WriteUtils.PrintErrorAsync($"The sscms.json file does not exist: {configPath}");
+                    return;
+                }
             }
 
-            await Console.Out.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
-            await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
-            await WriteUtils.PrintSuccessAsync($"Backup folder: {treeInfo.DirectoryPath}!");
+            await Console.Out.WriteLineAsync($"Database type: {databaseType.GetDisplayName()}");
+            await Console.Out.WriteLineAsync($"Database connection string: {connectionString}");
+            await Console.Out.WriteLineAsync($"Backup folder: {treeInfo.DirectoryPath}");
 
             //WebConfigUtils.Load(_settingsManager.ContentRootPath, webConfigPath);
 
@@ -102,9 +133,8 @@ namespace SSCMS.Cli.Jobs
             //    return;
             //}
 
-            var (isConnectionWorks, errorMessage) =
-                await _settingsManager.Database.IsConnectionWorksAsync();
-
+            var database = new Database(databaseType, connectionString);
+            var (isConnectionWorks, errorMessage) = await database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
                 await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
@@ -121,15 +151,15 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
+            await Backup(database, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
 
             await WriteUtils.PrintRowLineAsync();
             await WriteUtils.PrintSuccessAsync("backup database to folder successfully!");
         }
 
-        public static async Task Backup(ISettingsManager settingsManager, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo)
+        public static async Task Backup(IDatabase database, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo)
         {
-            var allTableNames = await settingsManager.Database.GetTableNamesAsync();
+            var allTableNames = await database.GetTableNamesAsync();
 
             var tableNames = new List<string>();
 
@@ -149,8 +179,8 @@ namespace SSCMS.Cli.Jobs
 
             foreach (var tableName in tableNames)
             {
-                var columns = await settingsManager.Database.GetTableColumnsAsync(tableName);
-                var repository = new Repository(settingsManager.Database, tableName, columns);
+                var columns = await database.GetTableColumnsAsync(tableName);
+                var repository = new Repository(database, tableName, columns);
 
                 var tableInfo = new TableInfo
                 {
@@ -166,7 +196,7 @@ namespace SSCMS.Cli.Jobs
 
                 await WriteUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                var identityColumnName = await settingsManager.Database.AddIdentityColumnIdIfNotExistsAsync(tableName, tableInfo.Columns);
+                var identityColumnName = await database.AddIdentityColumnIdIfNotExistsAsync(tableName, tableInfo.Columns);
 
                 if (tableInfo.TotalCount > 0)
                 {

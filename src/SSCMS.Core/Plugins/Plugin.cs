@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Plugins;
 using SSCMS.Utils;
 
@@ -92,15 +91,13 @@ namespace SSCMS.Core.Plugins
         public string Homepage => Configuration[nameof(Homepage)];
         public string Output => Configuration[nameof(Output)];
         public string Main => Configuration[nameof(Main)];
+        public bool ApplyToSites => Configuration.GetValue(nameof(ApplyToSites), true);
+        public bool ApplyToChannels => Configuration.GetValue(nameof(ApplyToChannels), false);
 
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
-
-        public bool IsAllSites => Configuration.GetValue(nameof(IsAllSites), true);
-
+        public bool AllSites => Configuration.GetValue(nameof(AllSites), true);
         public IEnumerable<int> SiteIds => Configuration.GetSection(nameof(SiteIds)).Get<int[]>();
-
         public IEnumerable<SiteConfig> SiteConfigs => Configuration.GetSection(nameof(SiteConfigs)).Get<SiteConfig[]>();
-
         public IEnumerable<Table> Tables => Configuration.GetSection(nameof(Tables)).Get<Table[]>();
 
         public bool Success { get; set; }

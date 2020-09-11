@@ -36,7 +36,7 @@ namespace SSCMS.Core.Repositories
         private async Task<(bool success, string errorMessage)> InsertValidateAsync(string userName, string email, string mobile, string password, string ipAddress)
         {
             var config = await _configRepository.GetAsync();
-            if (!await IsIpAddressCachedAsync(ipAddress))
+            if (await IsIpAddressCachedAsync(ipAddress))
             {
                 return (false, $"同一IP在{config.UserRegistrationMinMinutes}分钟内只能注册一次");
             }

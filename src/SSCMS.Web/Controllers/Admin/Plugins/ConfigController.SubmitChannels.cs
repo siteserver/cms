@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var siteConfig = siteConfigs.FirstOrDefault(x => x.SiteId == request.SiteId);
             if (siteConfig != null)
             {
-                siteConfig.IsAllChannels = request.IsAllChannels;
+                siteConfig.AllChannels = request.AllChannels;
                 siteConfig.ChannelIds = request.ChannelIds;
             }
             else
@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 siteConfig = new SiteConfig
                 {
                     SiteId = request.SiteId,
-                    IsAllChannels = request.IsAllChannels,
+                    AllChannels = request.AllChannels,
                     ChannelIds = request.ChannelIds
                 };
                 siteConfigs.Add(siteConfig);

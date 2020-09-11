@@ -15,10 +15,6 @@ namespace SSCMS.Repositories
 
         Task<User> GetByEmailAsync(string email);
 
-        Task<bool> IsIpAddressCachedAsync(string ipAddress);
-
-        Task CacheIpAddressAsync(string ipAddress);
-
         Task<string> GetDisplayAsync(int userId);
     }
 }

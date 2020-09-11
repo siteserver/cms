@@ -1,6 +1,6 @@
 {
-  "IsNightlyUpdate": false,
   "IsProtectData": false,
+  "IsDisablePlugins": false,
   "SecurityKey": "",
   "Database": {
     "Type": "",
@@ -8,5 +8,10 @@
   },
   "Redis": {
     "ConnectionString": ""
+  },
+  "AdminRestriction": {
+    "Host": "",
+    "AllowList": [],
+    "BlockList": []
   }
 }

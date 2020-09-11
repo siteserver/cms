@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Dto;
-using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -41,115 +39,29 @@ namespace SSCMS.Web.Controllers.Home.Write
             _contentRepository = contentRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public class GetRequest : ChannelRequest
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
-
-            var retVal = new List<IDictionary<string, object>>();
-            foreach (var contentId in request.ContentIds)
-            {
-                var contentInfo = await _contentRepository.GetAsync(site, channel, contentId);
-                if (contentInfo == null) continue;
-
-                var dict = contentInfo.ToDictionary();
-                dict["checkState"] =
-                    CheckManager.GetCheckState(site, contentInfo);
-                retVal.Add(dict);
-            }
-
-            var sites = new List<object>();
-            var channels = new List<object>();
-
-            var siteIdList = await _authManager.GetSiteIdsAsync();
-            foreach (var permissionSiteId in siteIdList)
-            {
-                var permissionSite = await _siteRepository.GetAsync(permissionSiteId);
-                sites.Add(new
-                {
-                    permissionSite.Id,
-                    permissionSite.SiteName
-                });
-            }
-
-            var channelIdList = await _authManager.GetChannelIdsAsync(site.Id,
-                Types.ContentPermissions.Add);
-            foreach (var permissionChannelId in channelIdList)
-            {
-                var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
-                channels.Add(new
-                {
-                    permissionChannelInfo.Id,
-                    ChannelName = await _channelRepository.GetChannelNameNavigationAsync(site.Id, permissionChannelId)
-                });
-            }
-
-            return new GetResult
-            {
-                Value = retVal,
-                Sites = sites,
-                Channels = channels,
-                Site = site
-            };
+            public List<int> ContentIds { get; set; }
         }
 
-        [HttpGet, Route(RouteGetChannels)]
-        public async Task<ActionResult<GetChannelsResult>> GetChannels([FromQuery]SiteRequest request)
+        public class GetResult
         {
-            var channels = new List<object>();
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.SiteId, Types.ContentPermissions.Add);
-            foreach (var permissionChannelId in channelIdList)
-            {
-                var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);
-                channels.Add(new
-                {
-                    permissionChannelInfo.Id,
-                    ChannelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, permissionChannelId)
-                });
-            }
-
-            return new GetChannelsResult
-            {
-                Channels = channels
-            };
+            public List<IDictionary<string, object>> Value { get; set; }
+            public List<object> Sites { get; set; }
+            public List<object> Channels { get; set; }
+            public Site Site { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public class GetChannelsResult
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
-            {
-                return Unauthorized();
-            }
+            public List<object> Channels { get; set; }
+        }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channelInfo = await _channelRepository.GetAsync(request.ChannelId);
-            if (channelInfo == null) return NotFound();
-
-            foreach (var contentId in request.ContentIds)
-            {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, request.ChannelId, contentId, request.TargetSiteId, request.TargetChannelId, TranslateType.Cut, _createManager, _authManager.AdminId);
-            }
-
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, "转移内容", string.Empty);
-
-            await _createManager.TriggerContentChangedEventAsync(request.SiteId, request.ChannelId);
-
-            return new BoolResult
-            {
-                Value = true
-            };
+        public class SubmitRequest : ChannelRequest
+        {
+            public List<int> ContentIds { get; set; }
+            public int TargetSiteId { get; set; }
+            public int TargetChannelId { get; set; }
         }
     }
 }

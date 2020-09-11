@@ -14,6 +14,7 @@ namespace SSCMS.Cli.Core
             Console.BackgroundColor = backgroundColor;
 
             await Console.Out.WriteAsync($" {successMessage}");
+            await Console.Out.WriteLineAsync();
         }
 
         public static async Task PrintErrorAsync(string errorMessage)
@@ -24,6 +25,7 @@ namespace SSCMS.Cli.Core
             Console.BackgroundColor = backgroundColor;
 
             await Console.Out.WriteAsync($" {errorMessage}");
+            await Console.Out.WriteLineAsync();
         }
 
         public static async Task PrintRowLineAsync()

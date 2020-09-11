@@ -1,18 +1,12 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
-using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
-using SSCMS.Enums;
-using SSCMS.Extensions;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -41,139 +35,25 @@ namespace SSCMS.Web.Controllers.Home.Write
             _channelRepository = channelRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
-
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
-            var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
-
-            return new GetResult
-            {
-                CheckedLevel = checkedLevel,
-                CheckedLevels = checkedLevels
-            };
+            public int CheckedLevel { get; set; }
+            public List<KeyValuePair<int, string>> CheckedLevels { get; set; }
         }
 
-        [RequestSizeLimit(long.MaxValue)]
-        [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
+        public class UploadResult
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
-            {
-                return Unauthorized();
-            }
-
-            if (file == null)
-            {
-                return this.Error("请选择有效的文件上传");
-            }
-
-            var fileName = Path.GetFileName(file.FileName);
-            if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".zip", ".csv", ".txt"))
-            {
-                return this.Error("请选择有效的文件上传!");
-            }
-
-            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
-            await _pathManager.UploadAsync(file, filePath);
-
-            FileInfo fileInfo = null;
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                fileInfo = new FileInfo(filePath);
-            }
-            if (fileInfo != null)
-            {
-                return new UploadResult
-                {
-                    FileName = fileName,
-                    Length = fileInfo.Length,
-                    Ret = 1
-                };
-            }
-
-            return new UploadResult
-            {
-                Ret = 0
-            };
+            public string FileName { set; get; }
+            public long Length { set; get; }
+            public int Ret { set; get; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public class SubmitRequest : ChannelRequest
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
-
-            var isChecked = request.CheckedLevel >= site.CheckContentLevel;
-            var adminId = _authManager.AdminId;
-            var userId = _authManager.UserId;
-
-            var caching = new CacheUtils(_cacheManager);
-            if (request.ImportType == "zip")
-            {
-                foreach (var fileName in request.FileNames)
-                {
-                    var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
-
-                    if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
-                        continue;
-
-                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    await importObject.ImportContentsByZipFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
-                }
-            }
-
-            else if (request.ImportType == "csv")
-            {
-                foreach (var fileName in request.FileNames)
-                {
-                    var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
-
-                    if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
-                        continue;
-
-                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    await importObject.ImportContentsByCsvFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
-                }
-            }
-            else if (request.ImportType == "txt")
-            {
-                foreach (var fileName in request.FileNames)
-                {
-                    var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
-                    if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
-                        continue;
-
-                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    await importObject.ImportContentsByTxtFileAsync(channel, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, userId, SourceManager.User);
-                }
-            }
-
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "导入内容", string.Empty);
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string ImportType { set; get; }
+            public int CheckedLevel { set; get; }
+            public bool IsOverride { set; get; }
+            public List<string> FileNames { set; get; }
         }
     }
 }

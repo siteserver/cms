@@ -16,14 +16,6 @@ var data = utils.init({
 });
 
 var methods = {
-  insertEditor: function(attributeName, html)
-  {
-    if (html)
-    {
-      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
-    }
-  },
-
   insertText: function(attributeName, no, text) {
     var count = this.form[utils.getCountName(attributeName)];
     if (count < no) {
@@ -52,39 +44,15 @@ var methods = {
         var style = res.styles[i];
         $this.form[_.lowerFirst(style.attributeName)] = style.defaultValue;
       }
+      $this.form = _.assign({}, $this.form);
       $this.groups = res.groups;
 
-      $this.loadEditor();
       $this.apiCaptchaReload();
     }).catch(function (error) {
       utils.error(error, {redirect: true});
     }).then(function () {
       utils.loading($this, false);
     });
-  },
-
-  loadEditor: function() {
-    this.form = _.assign({}, this.form);
-
-    var $this = this;
-    setTimeout(function () {
-      for (var i = 0; i < $this.styles.length; i++) {
-        var style = $this.styles[i];
-        if (style.inputType === 'TextEditor') {
-          var editor = UE.getEditor(style.attributeName, {
-            allowDivTransToP: false,
-            maximumWords: 99999999
-          });
-          editor.attributeName = style.attributeName;
-          editor.ready(function () {
-            editor.addListener("contentChange", function () {
-              $this.form[this.attributeName] = this.getContent();
-            });
-          });
-        }
-      }
-
-    }, 100);
   },
 
   btnExtendAddClick: function(style) {
@@ -141,11 +109,12 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    delete this.form.captchaValue;
-    delete this.form.password;
-    delete this.form.confirmPassword;
 
-    $api.post($url, this.form).then(function (response) {
+    var payload = _.assign({}, this.form);
+    delete payload.captchaValue;
+    delete payload.confirmPassword;
+
+    $api.post($url, payload).then(function (response) {
       var res = response.data;
 
       if (res.value) {
@@ -201,7 +170,7 @@ var methods = {
   }
 };
 
-new Vue({
+var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,

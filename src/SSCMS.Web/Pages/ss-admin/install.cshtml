@@ -233,7 +233,7 @@
         <el-input v-model="adminForm.email" placeholder="请填写超级管理员邮箱"></el-input>
         <small class="tips">可用于登录、找回密码等功能</small>
       </el-form-item>
-      <el-form-item label="超级管理员手机号码">
+      <el-form-item label="超级管理员手机号码" prop="mobile" :rules="[{ validator: utils.validateMobile, message: '字段必须是有效的手机号码' }]">
         <el-input v-model="adminForm.mobile" placeholder="请填写超级管理员手机号码"></el-input>
         <small class="tips">可用于登录、找回密码等功能</small>
       </el-form-item>

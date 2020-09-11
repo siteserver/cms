@@ -10,6 +10,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class CaptchaController : ControllerBase
     {
         private const string Route = "captcha";
+        private const string RouteValue = "captcha/{value}";
         private const string RouteActionsCheck = "captcha/actions/check";
 
         private readonly ISettingsManager _settingsManager;

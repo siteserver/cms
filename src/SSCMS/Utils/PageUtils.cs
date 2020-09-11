@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace SSCMS.Utils
 {
@@ -83,7 +85,19 @@ namespace SSCMS.Utils
             return url.StartsWith("/") || url.IndexOf("://", StringComparison.Ordinal) != -1 || url.StartsWith("javascript:");
         }
 
-        
+        public static string GetHost(HttpRequest request)
+        {
+            var host = string.Empty;
+            if (request == null) return string.IsNullOrEmpty(host) ? string.Empty : host.Trim().ToLower();
+            host = request.Headers["HOST"];
+            if (string.IsNullOrEmpty(host))
+            {
+                host = request.Host.Host;
+            }
+
+            return string.IsNullOrEmpty(host) ? string.Empty : host.Trim().ToLower();
+        }
+
 
         //public static string HttpContextRootDomain
         //{
@@ -292,6 +306,426 @@ namespace SSCMS.Utils
             newValue = HttpUtility.UrlEncode(newValue);
             newValue = newValue.Replace("%2f", "/");
             return newValue;
+        }
+
+        public static string GetIpAddress(HttpRequest request)
+        {
+            var result = string.Empty;
+
+            try
+            {
+                result = request.Headers["HTTP_X_FORWARDED_FOR"];
+                if (!string.IsNullOrEmpty(result))
+                {
+                    if (result.IndexOf(".", StringComparison.Ordinal) == -1)
+                        result = null;
+                    else
+                    {
+                        if (result.IndexOf(",", StringComparison.Ordinal) != -1)
+                        {
+                            result = result.Replace("  ", "").Replace("'", "");
+                            var temporary = result.Split(",;".ToCharArray());
+                            foreach (var t in temporary)
+                            {
+                                if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                                {
+                                    result = t;
+                                }
+                            }
+                            var str = result.Split(',');
+                            if (str.Length > 0)
+                                result = str[0].Trim();
+                        }
+                        else if (IsIpAddress(result))
+                            return result;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(result))
+                {
+                    result = request.Headers["REMOTE_ADDR"];
+                }
+
+                if (string.IsNullOrEmpty(result))
+                {
+                    result = request.HttpContext.Connection.RemoteIpAddress.ToString();
+                }
+
+                if (string.IsNullOrEmpty(result) || result == "::1")
+                {
+                    result = "127.0.0.1";
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return result;
+        }
+
+        public static bool IsAllowed(string ipAddress, List<string> blockList, List<string> allowList)
+        {
+            var isAllowed = true;
+
+            if (blockList != null && blockList.Count > 0)
+            {
+                var list = new IpList();
+                foreach (var restriction in blockList)
+                {
+                    AddRestrictionToIpList(list, restriction);
+                }
+                if (list.CheckNumber(ipAddress))
+                {
+                    isAllowed = false;
+                }
+            }
+            else if (allowList != null && allowList.Count > 0)
+            {
+                isAllowed = false;
+                var list = new IpList();
+                foreach (var restriction in allowList)
+                {
+                    AddRestrictionToIpList(list, restriction);
+                }
+                if (list.CheckNumber(ipAddress))
+                {
+                    isAllowed = true;
+                }
+            }
+
+            return isAllowed;
+        }
+
+        private static void AddRestrictionToIpList(IpList list, string restriction)
+        {
+            if (string.IsNullOrEmpty(restriction)) return;
+
+            if (StringUtils.Contains(restriction, "-"))
+            {
+                restriction = restriction.Trim(' ', '-');
+                var arr = restriction.Split('-');
+                list.AddRange(arr[0].Trim(), arr[1].Trim());
+            }
+            else if (StringUtils.Contains(restriction, "*"))
+            {
+                var ipPrefix = restriction.Substring(0, restriction.IndexOf('*'));
+                ipPrefix = ipPrefix.Trim(' ', '.');
+                var dotNum = StringUtils.GetCount(".", ipPrefix);
+
+                string ipNumber;
+                string mask;
+                if (dotNum == 0)
+                {
+                    ipNumber = ipPrefix + ".0.0.0";
+                    mask = "255.0.0.0";
+                }
+                else if (dotNum == 1)
+                {
+                    ipNumber = ipPrefix + ".0.0";
+                    mask = "255.255.0.0";
+                }
+                else
+                {
+                    ipNumber = ipPrefix + ".0";
+                    mask = "255.255.255.0";
+                }
+                list.Add(ipNumber, mask);
+            }
+            else
+            {
+                list.Add(restriction);
+            }
+        }
+
+        private class IpList
+        {
+            private readonly List<IpRangeList> _ipRangeList = new List<IpRangeList>();
+            private readonly SortedList _maskList = new SortedList();
+            private readonly List<int> _usedList = new List<int>();
+
+            public IpList()
+            {
+                // Initialize IP mask list and create IPArrayList into the ipRangeList
+                uint mask = 0x00000000;
+                for (var level = 1; level < 33; level++)
+                {
+                    mask = (mask >> 1) | 0x80000000;
+                    _maskList.Add(mask, level);
+                    _ipRangeList.Add(new IpRangeList(mask));
+                }
+            }
+
+            // Parse a String IP address to a 32 bit unsigned integer
+            // We can't use System.Net.IPAddress as it will not parse
+            // our masks correctly eg. 255.255.0.0 is pased as 65535 !
+            private uint parseIP(string ipNumber)
+            {
+                uint res = 0;
+                var elements = ipNumber.Split('.');
+                if (elements.Length == 4)
+                {
+                    res = (uint)Convert.ToInt32(elements[0]) << 24;
+                    res += (uint)Convert.ToInt32(elements[1]) << 16;
+                    res += (uint)Convert.ToInt32(elements[2]) << 8;
+                    res += (uint)Convert.ToInt32(elements[3]);
+                }
+
+                return res;
+            }
+
+            /// <summary>
+            /// Add a single IP number to the list as a string, ex. 10.1.1.1
+            /// </summary>
+            public void Add(string ipNumber)
+            {
+                Add(parseIP(ipNumber));
+            }
+
+            /// <summary>
+            /// Add a single IP number to the list as a unsigned integer, ex. 0x0A010101
+            /// </summary>
+            private void Add(uint ip)
+            {
+                _ipRangeList[31].Add(ip);
+                if (_usedList.Contains(31)) return;
+                _usedList.Add(31);
+                _usedList.Sort();
+            }
+
+            /// <summary>
+            /// Adds IP numbers using a mask for range where the mask specifies the number of
+            /// fixed bits, ex. 172.16.0.0 255.255.0.0 will add 172.16.0.0 - 172.16.255.255
+            /// </summary>
+            public void Add(string ipNumber, string mask)
+            {
+                Add(parseIP(ipNumber), parseIP(mask));
+            }
+
+            /// <summary>
+            /// Adds IP numbers using a mask for range where the mask specifies the number of
+            /// fixed bits, ex. 0xAC1000 0xFFFF0000 will add 172.16.0.0 - 172.16.255.255
+            /// </summary>
+            public void Add(uint ip, uint uMask)
+            {
+                var level = _maskList[uMask];
+                if (level == null) return;
+                ip = ip & uMask;
+                _ipRangeList[(int)level - 1].Add(ip);
+                if (_usedList.Contains((int)level - 1)) return;
+                _usedList.Add((int)level - 1);
+                _usedList.Sort();
+            }
+
+            /// <summary>
+            /// Adds IP numbers using a mask for range where the mask specifies the number of
+            /// fixed bits, ex. 192.168.1.0/24 which will add 192.168.1.0 - 192.168.1.255
+            /// </summary>
+            public void Add(string ipNumber, int maskLevel)
+            {
+                Add(parseIP(ipNumber), (uint)_maskList.GetKey(_maskList.IndexOfValue(maskLevel)));
+            }
+
+            /// <summary>
+            /// Adds IP numbers using a from and to IP number. The method checks the range and
+            /// splits it into normal ip/mask blocks.
+            /// </summary>
+            public void AddRange(string fromIp, string toIp)
+            {
+                AddRange(parseIP(fromIp), parseIP(toIp));
+            }
+
+            /// <summary>
+            /// Adds IP numbers using a from and to IP number. The method checks the range and
+            /// splits it into normal ip/mask blocks.
+            /// </summary>
+            private void AddRange(uint fromIp, uint toIp)
+            {
+                // If the order is not asending, switch the IP numbers.
+                if (fromIp > toIp)
+                {
+                    var tempIp = fromIp;
+                    fromIp = toIp;
+                    toIp = tempIp;
+                }
+
+                if (fromIp == toIp)
+                {
+                    Add(fromIp);
+                }
+                else
+                {
+                    var diff = toIp - fromIp;
+                    var diffLevel = 1;
+                    var range = 0x80000000;
+                    if (diff < 256)
+                    {
+                        diffLevel = 24;
+                        range = 0x00000100;
+                    }
+
+                    while (range > diff)
+                    {
+                        range = range >> 1;
+                        diffLevel++;
+                    }
+
+                    var mask = (uint)_maskList.GetKey(_maskList.IndexOfValue(diffLevel));
+                    var minIp = fromIp & mask;
+                    if (minIp < fromIp) minIp += range;
+                    if (minIp > fromIp)
+                    {
+                        AddRange(fromIp, minIp - 1);
+                        fromIp = minIp;
+                    }
+
+                    if (fromIp == toIp)
+                    {
+                        Add(fromIp);
+                    }
+                    else
+                    {
+                        if ((minIp + (range - 1)) <= toIp)
+                        {
+                            Add(minIp, mask);
+                            fromIp = minIp + range;
+                        }
+
+                        if (fromIp == toIp)
+                        {
+                            Add(toIp);
+                        }
+                        else
+                        {
+                            if (fromIp < toIp) AddRange(fromIp, toIp);
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Checks if an IP number is contained in the lists, ex. 10.0.0.1
+            /// </summary>
+            public bool CheckNumber(string ipNumber)
+            {
+                return CheckNumber(parseIP(ipNumber));
+            }
+
+            /// <summary>
+            /// Checks if an IP number is contained in the lists, ex. 0x0A000001
+            /// </summary>
+            private bool CheckNumber(uint ip)
+            {
+                var found = false;
+                var i = 0;
+                while (!found && i < _usedList.Count)
+                {
+                    found = _ipRangeList[_usedList[i]].Check(ip);
+                    i++;
+                }
+
+                return found;
+            }
+
+            /// <summary>
+            /// Clears all lists of IP numbers
+            /// </summary>
+            public void Clear()
+            {
+                foreach (var i in _usedList)
+                {
+                    _ipRangeList[i].Clear();
+                }
+
+                _usedList.Clear();
+            }
+
+            /// <summary>
+            /// Generates a list of all IP ranges in printable format
+            /// </summary>
+            public override string ToString()
+            {
+                var buffer = new StringBuilder();
+                foreach (var i in _usedList)
+                {
+                    buffer.Append("\r\nRange with mask of ").Append(i + 1).Append("\r\n");
+                    buffer.Append(_ipRangeList[i]);
+                }
+
+                return buffer.ToString();
+            }
+        }
+
+        private class IpRangeList
+        {
+            private bool _isSorted;
+            private readonly List<uint> _ipNumList = new List<uint>();
+            private readonly uint _ipMask;
+
+            /// <summary>
+            /// Constructor that sets the mask for the list
+            /// </summary>
+            public IpRangeList(uint mask)
+            {
+                _ipMask = mask;
+            }
+
+            /// <summary>
+            /// Add a new IP numer (range) to the list
+            /// </summary>
+            public void Add(uint ipNum)
+            {
+                _isSorted = false;
+                _ipNumList.Add(ipNum & _ipMask);
+            }
+
+            /// <summary>
+            /// Checks if an IP number is within the ranges included by the list
+            /// </summary>
+            public bool Check(uint ipNum)
+            {
+                var found = false;
+                if (_ipNumList.Count > 0)
+                {
+                    if (!_isSorted)
+                    {
+                        _ipNumList.Sort();
+                        _isSorted = true;
+                    }
+
+                    ipNum = ipNum & _ipMask;
+                    if (_ipNumList.BinarySearch(ipNum) >= 0) found = true;
+                }
+
+                return found;
+            }
+
+            /// <summary>
+            /// Clears the list
+            /// </summary>
+            public void Clear()
+            {
+                _ipNumList.Clear();
+                _isSorted = false;
+            }
+
+            /// <summary>
+            /// The ToString is overriden to generate a list of the IP numbers
+            /// </summary>
+            public override string ToString()
+            {
+                var buf = new StringBuilder();
+                foreach (uint ipNum in _ipNumList)
+                {
+                    if (buf.Length > 0) buf.Append("\r\n");
+                    buf.Append(((int)ipNum & 0xFF000000) >> 24).Append('.');
+                    buf.Append(((int)ipNum & 0x00FF0000) >> 16).Append('.');
+                    buf.Append(((int)ipNum & 0x0000FF00) >> 8).Append('.');
+                    buf.Append(((int)ipNum & 0x000000FF));
+                }
+
+                return buf.ToString();
+            }
         }
     }
 }

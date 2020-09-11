@@ -46,10 +46,7 @@ namespace SSCMS.Core.Repositories
                     {
                         nameof(User.DisplayName),
                         nameof(User.Mobile),
-                        nameof(User.Email),
-                        nameof(User.Gender),
-                        nameof(User.Birthday),
-                        nameof(User.Bio)
+                        nameof(User.Email)
                     };
 
                     foreach (var columnName in tableStyleAttributes)
@@ -413,40 +410,6 @@ namespace SSCMS.Core.Repositories
                     }
                 });
                 style.Taxis = 3;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Gender)))
-            {
-                style.AttributeName = nameof(User.Gender);
-                style.DisplayName = "性别";
-                style.InputType = InputType.Radio;
-                style.Items = new List<InputStyleItem>
-                    {
-                        new InputStyleItem
-                        {
-                            Label = "男",
-                            Value = "男"
-                        },
-                        new InputStyleItem
-                        {
-                            Label = "女",
-                            Value = "女"
-                        }
-                    };
-                style.Taxis = 4;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Birthday)))
-            {
-                style.AttributeName = nameof(User.Birthday);
-                style.DisplayName = "出生日期";
-                style.InputType = InputType.Date;
-                style.Taxis = 5;
-            }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Bio)))
-            {
-                style.AttributeName = nameof(User.Bio);
-                style.InputType = InputType.TextArea;
-                style.DisplayName = "个人简介";
-                style.Taxis = 9;
             }
 
             return style;

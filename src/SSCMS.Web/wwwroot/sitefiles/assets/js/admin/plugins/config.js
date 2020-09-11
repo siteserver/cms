@@ -8,7 +8,7 @@ var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   form: {
     taxis: 0,
-    isAllSites: true,
+    allSites: true,
     siteIds: null,
   },
   sites: null,
@@ -37,7 +37,7 @@ var methods = {
       $this.siteConfigs = res.plugin.siteConfigs || [];
       $this.form = {
         taxis: res.plugin.taxis,
-        isAllSites: res.plugin.isAllSites,
+        allSites: res.plugin.allSites,
         siteIds: res.plugin.siteIds || []
       }
       $this.pageType = 'sites';
@@ -55,7 +55,7 @@ var methods = {
     $api.post($url, {
       pluginId: this.pluginId,
       taxis: this.form.taxis,
-      isAllSites: this.form.isAllSites,
+      allSites: this.form.allSites,
       siteIds: this.siteIds
     }).then(function (response) {
       var res = response.data;
@@ -98,7 +98,7 @@ var methods = {
       $this.channel = res.channel;
       $this.channelsForm = {
         siteId: res.siteConfig.siteId,
-        isAllChannels: res.siteConfig.isAllChannels,
+        allChannels: res.siteConfig.allChannels,
         channelIds: res.siteConfig.channelIds
       };
       $this.treeData = [res.channel];
@@ -118,7 +118,7 @@ var methods = {
     $api.post($urlActionsSubmitChannels, {
       pluginId: this.pluginId,
       siteId: this.channelsForm.siteId,
-      isAllChannels: this.channelsForm.isAllChannels,
+      allChannels: this.channelsForm.allChannels,
       channelIds: this.channelsForm.channelIds
     }).then(function (response) {
       var res = response.data;
@@ -137,7 +137,7 @@ var methods = {
     if (!siteConfig) {
       siteConfig = {
         siteId: site.value,
-        isAllChannels: false,
+        allChannels: false,
         channelIds: []
       };
     }
@@ -182,7 +182,7 @@ var $vue = new Vue({
   computed: {
     siteIds: function() {
       var siteIds =  [];
-      if (!this.form.isAllSites && this.form.siteIds && this.form.siteIds.length > 0) {
+      if (!this.form.allSites && this.form.siteIds && this.form.siteIds.length > 0) {
         siteIds = this.form.siteIds.map(function (x) { 
           return typeof x === 'number' ? x : x[x.length - 1];
         });

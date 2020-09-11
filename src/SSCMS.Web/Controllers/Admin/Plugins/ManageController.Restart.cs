@@ -17,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             if (_settingsManager.IsDisablePlugins)
             {
-                _settingsManager.SaveSettings(_settingsManager.IsProtectData, false, _settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString, _settingsManager.RedisConnectionString);
+                _settingsManager.SaveSettings(_settingsManager.IsProtectData, false, _settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString, _settingsManager.RedisConnectionString, _settingsManager.AdminRestrictionHost, _settingsManager.AdminRestrictionAllowList, _settingsManager.AdminRestrictionBlockList);
             }
 
             _hostApplicationLifetime.StopApplication();

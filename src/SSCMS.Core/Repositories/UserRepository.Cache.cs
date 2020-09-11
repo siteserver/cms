@@ -106,24 +106,23 @@ namespace SSCMS.Core.Repositories
             return $"{nameof(UserRepository)}:{ipAddress}";
         }
 
-        public async Task<bool> IsIpAddressCachedAsync(string ipAddress)
+        private async Task<bool> IsIpAddressCachedAsync(string ipAddress)
         {
             var config = await _configRepository.GetAsync();
             if (config.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
             {
-                return true;
+                return false;
             }
 
-            var cacheManager = await _repository.GetCacheManagerAsync();
-            return cacheManager.Exists(GetIpAddressCacheKey(ipAddress));
+            return _cacheManager.Exists(GetIpAddressCacheKey(ipAddress));
         }
 
-        public async Task CacheIpAddressAsync(string ipAddress)
+        private async Task CacheIpAddressAsync(string ipAddress)
         {
             var config = await _configRepository.GetAsync();
             if (config.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                _cacheManager.AddOrUpdateSliding(GetIpAddressCacheKey(ipAddress), true, config.UserRegistrationMinMinutes);
+                _cacheManager.AddOrUpdateAbsolute(GetIpAddressCacheKey(ipAddress), true, config.UserRegistrationMinMinutes);
             }
         }
 

@@ -76,8 +76,8 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
       
-      localStorage.removeItem(USER_ACCESS_TOKEN_NAME);
-      localStorage.setItem(USER_ACCESS_TOKEN_NAME, res.token);
+      localStorage.removeItem(ACCESS_TOKEN_NAME);
+      localStorage.setItem(ACCESS_TOKEN_NAME, res.token);
       if (res.isEnforcePasswordChange) {
         $this.redirectPassword();
       } else {

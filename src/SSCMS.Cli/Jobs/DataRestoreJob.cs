@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -35,7 +37,7 @@ namespace SSCMS.Cli.Jobs
             _restoreService = restoreService;
 
             _options = new OptionSet {
-                { "d|directory=", "Backup folder name",
+                { "d|directory=", "Restore folder name",
                     v => _directory = v },
                 { "includes=", "Include table names, separated by commas, default restore all tables",
                     v => _includes = v == null ? null : ListUtils.GetStringList(v) },
@@ -69,7 +71,7 @@ namespace SSCMS.Cli.Jobs
 
             if (string.IsNullOrEmpty(_directory))
             {
-                await WriteUtils.PrintErrorAsync("Backup folder name not specified: --directory");
+                await WriteUtils.PrintErrorAsync("Restore folder name not specified: --directory");
                 return;
             }
 
@@ -107,24 +109,39 @@ namespace SSCMS.Cli.Jobs
             //await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             //await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
+            await Console.Out.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
+            await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.Database.ConnectionString}");
+            await Console.Out.WriteLineAsync($"Restore folder: {treeInfo.DirectoryPath}");
+
             var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await WriteUtils.PrintErrorAsync($"数据库连接错误：{errorMessage}");
+                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
                 return;
             }
 
-            if (!_dataOnly)
-            {
-                if (!await _configRepository.IsNeedInstallAsync())
-                {
-                    await WriteUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
-                    return;
-                }
+            //if (!_dataOnly)
+            //{
+            //    if (!await _configRepository.IsNeedInstallAsync())
+            //    {
+            //        await WriteUtils.PrintErrorAsync("The data could not be restored on the installed sscms database");
+            //        return;
+            //    }
 
-                // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                await _databaseManager.CreateSiteServerTablesAsync();
-            }
+            //    // 恢复前先创建表，确保系统在恢复的数据库中能够使用
+            //    //await _databaseManager.CreateSiteServerTablesAsync();
+
+            //    if (_settingsManager.DatabaseType == DatabaseType.SQLite)
+            //    {
+            //        var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
+            //        if (!FileUtils.IsFileExists(filePath))
+            //        {
+            //            await FileUtils.WriteTextAsync(filePath, string.Empty);
+            //        }
+            //    }
+
+            //    await _databaseManager.SyncDatabaseAsync();
+            //}
 
             await WriteUtils.PrintRowLineAsync();
             await WriteUtils.PrintRowAsync("Restore table name", "Count");

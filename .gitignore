@@ -10,6 +10,8 @@ packages/
 plugin-all/
 plugin-samples/
 .config/
+src/SSCMS.Web/log/
+src/SSCMS.Web/logs/
 src/SSCMS.Web/plugins/
 src/SSCMS.Web/.vs/
 src/SSCMS.Web/.vscode/

@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             var config = await _pluginManager.GetConfigAsync(request.PluginId);
             config[nameof(IPlugin.Taxis)] = request.Taxis;
-            config[nameof(IPlugin.IsAllSites)] = request.IsAllSites;
+            config[nameof(IPlugin.AllSites)] = request.AllSites;
             config[nameof(IPlugin.SiteIds)] = request.SiteIds;
             await _pluginManager.SaveConfigAsync(request.PluginId, config);
 

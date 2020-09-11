@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 siteConfig = new SiteConfig
                 {
                     SiteId = request.SiteId,
-                    IsAllChannels = false,
+                    AllChannels = false,
                     ChannelIds = new List<int>()
                 };
             }

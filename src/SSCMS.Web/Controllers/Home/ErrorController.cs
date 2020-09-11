@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Models;
 using SSCMS.Repositories;
 
 namespace SSCMS.Web.Controllers.Home
@@ -19,13 +19,9 @@ namespace SSCMS.Web.Controllers.Home
             _errorLogRepository = errorLogRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<GetResult> Get([FromQuery] int logId)
+        public class GetResult
         {
-            return new GetResult
-            {
-                Error = await _errorLogRepository.GetErrorLogAsync(logId)
-            };
+            public ErrorLog Error { get; set; }
         }
     }
 }

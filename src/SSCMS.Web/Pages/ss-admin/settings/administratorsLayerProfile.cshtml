@@ -37,7 +37,7 @@
       <i class="el-icon-plus"></i>
     </el-upload>
   </el-form-item>
-  <el-form-item label="手机号码">
+  <el-form-item label="手机号码" prop="mobile" :rules="[{ validator: utils.validateMobile, message: '字段必须是有效的手机号码' }]">
     <el-input v-model="form.mobile"></el-input>
     <small class="tips">可用于登录、找回密码等功能</small>
   </el-form-item>

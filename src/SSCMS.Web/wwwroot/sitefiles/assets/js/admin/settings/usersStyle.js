@@ -82,7 +82,8 @@ var methods = {
       url: utils.getCommonUrl('tableStyleLayerEditor', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
-        attributeName: attributeName
+        attributeName: attributeName,
+        excludes: 'TextEditor,SelectCascading,Customize'
       })
     });
   },
@@ -115,7 +116,8 @@ var methods = {
       title: '新增字段',
       url: utils.getCommonUrl('tableStyleLayerEditor', {
         tableName: this.tableName,
-        relatedIdentities: this.relatedIdentities
+        relatedIdentities: this.relatedIdentities,
+        excludes: 'TextEditor,SelectCascading,Customize'
       })
     });
   },
@@ -125,7 +127,8 @@ var methods = {
       title: '批量新增字段',
       url: utils.getCommonUrl('tableStyleLayerAddMultiple', {
         tableName: this.tableName,
-        relatedIdentities: this.relatedIdentities
+        relatedIdentities: this.relatedIdentities,
+        excludes: 'TextEditor,SelectCascading,Customize'
       })
     });
   },

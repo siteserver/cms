@@ -133,35 +133,30 @@
         "type": ["app"],
         "order": 24
       },
-      "app_settings_configsAdmin": {
-        "text": "管理后台设置",
-        "type": ["app"],
-        "order": 25
-      },
       "app_settings_configsHome": {
         "text": "用户中心设置",
         "type": ["app"],
-        "order": 26
+        "order": 25
       },
       "app_settings_configsHomeMenu": {
         "text": "用户中心菜单",
         "type": ["app"],
-        "order": 27
+        "order": 26
       },
       "app_settings_utilitiesCache": {
         "text": "系统缓存",
         "type": ["app"],
-        "order": 28
+        "order": 27
       },
       "app_settings_utilitiesParameters": {
         "text": "系统参数",
         "type": ["app"],
-        "order": 29
+        "order": 28
       },
       "app_settings_utilitiesEncrypt": {
         "text": "加密符串",
         "type": ["app"],
-        "order": 30
+        "order": 29
       },
       "site_contents": {
         "text": "内容管理",
@@ -770,30 +765,23 @@
           "app_settings_configs_all": {
             "text": "系统设置",
             "permissions": [
-              "app_settings_configsAdmin",
               "app_settings_configsHome",
               "app_settings_configsHomeMenu"
             ],
             "iconClass": "ion-wrench",
             "order": 7,
             "menus": {
-              "app_settings_configsAdmin": {
-                "text": "管理后台设置",
-                "link": "./settings/configsAdmin/",
-                "permissions": ["app_settings_configsAdmin"],
-                "order": 1
-              },
               "app_settings_configsHome": {
                 "text": "用户中心设置",
                 "link": "./settings/configsHome/",
                 "permissions": ["app_settings_configsHome"],
-                "order": 2
+                "order": 1
               },
               "app_settings_configsHomeMenu": {
                 "text": "用户中心菜单",
                 "link": "./settings/configsHomeMenu/",
                 "permissions": ["app_settings_configsHomeMenu"],
-                "order": 3
+                "order": 2
               }
             }
           },

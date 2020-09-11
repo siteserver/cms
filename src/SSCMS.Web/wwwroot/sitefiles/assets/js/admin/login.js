@@ -88,12 +88,12 @@ var methods = {
 
       localStorage.setItem('sessionId', res.sessionId);
       
-      localStorage.removeItem(ADMIN_ACCESS_TOKEN_NAME);
-      sessionStorage.removeItem(ADMIN_ACCESS_TOKEN_NAME);
+      localStorage.removeItem(ACCESS_TOKEN_NAME);
+      sessionStorage.removeItem(ACCESS_TOKEN_NAME);
       if ($this.isPersistent) {
-        localStorage.setItem(ADMIN_ACCESS_TOKEN_NAME, res.token);
+        localStorage.setItem(ACCESS_TOKEN_NAME, res.token);
       } else {
-        sessionStorage.setItem(ADMIN_ACCESS_TOKEN_NAME, res.token);
+        sessionStorage.setItem(ACCESS_TOKEN_NAME, res.token);
       }
       if (res.isEnforcePasswordChange) {
         $this.redirectPassword();
