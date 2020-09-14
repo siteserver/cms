@@ -120,11 +120,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 for (var i = 0; i < channels.Count; i++)
                 {
-                    if (isSeparator && i % 2 != 0 && i != channels.Count - 1)
-                    {
-                        builder.Append(listInfo.SeparatorTemplate);
-                    }
-
                     var channel = channels[i];
 
                     pageInfo.ChannelItems.Push(channel);
@@ -132,6 +127,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     var parsedString = await TemplateUtility.GetChannelsItemTemplateStringAsync(templateString,
                         listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Channel);
                     builder.Append(parsedString);
+
+                    if (isSeparator && i != channels.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorTemplate);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))

@@ -16,6 +16,7 @@ var data = utils.init({
 
   items: null,
   commentTypes: null,
+  siteType: null,
   form: null,
   action: null
 });
@@ -57,6 +58,10 @@ var methods = {
     this.editor.setContent(this.form.content);
   },
 
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertHtml(html);
+  },
+
   insertHtml: function(html) {
     if (!html) return;
     this.editor.execCommand('insertHTML', html);
@@ -76,6 +81,7 @@ var methods = {
       
       $this.items = res.items;
       $this.commentTypes = res.commentTypes;
+      $this.siteType = res.siteType;
       $this.form = $this.items[0];
 
       setTimeout(function () {
@@ -276,7 +282,10 @@ var methods = {
   btnLayerClick: function(options) {
     utils.openLayer({
       title: options.title,
-      url: utils.getCmsUrl('materialLayer' + options.name, {siteId: this.siteId}),
+      url: utils.getCommonUrl('editorLayer' + options.name, {
+        siteId: this.siteId,
+        attributeName: options.attributeName
+      }),
       full: options.full,
       width: options.width ? options.width : 700,
       height: options.height ? options.height : 500

@@ -22,7 +22,7 @@ var data = utils.init({
   previewUrl: null,
   local: null,
   menu: null,
-  searchWord: null,
+  keyword: null,
   newCms: null,
   newPlugins: [],
 
@@ -189,6 +189,11 @@ var methods = {
       this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
       this.contextMenuVisible = true;
       this.contextLeft = e.clientX;
+      if (e.clientX + 130 > this.winWidth) {
+        this.contextLeft = this.winWidth - 130;
+      } else {
+        this.contextLeft = e.clientX;
+      }
       this.contextTop = e.clientY;
     }
   },
@@ -241,6 +246,15 @@ var methods = {
     else if (level2) return level1.id + '/' + level2.id;
     else if (level1) return level1.id;
     return '';
+  },
+
+  btnSearchClick: function() {
+    if (!this.keyword) return;
+
+    utils.addTab('内容搜索', utils.getCmsUrl('contentsSearch', {
+      siteId: this.siteId,
+      keyword: this.keyword
+    }));
   },
 
   btnTopMenuClick: function (menu) {

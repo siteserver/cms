@@ -96,7 +96,7 @@ namespace SSCMS.Core.StlParser.StlElement
             if (parseManager.ContextInfo.ContextType == ParseType.Content && contentInfo != null)
             {
                 var tagInfoList2 = new List<ContentTag>();
-                var tagNameList = contentInfo.TagNames;
+                var tagNameList = new List<string>(contentInfo.TagNames);
                 foreach (var tagName in tagNameList)
                 {
                     if (!string.IsNullOrEmpty(tagName))

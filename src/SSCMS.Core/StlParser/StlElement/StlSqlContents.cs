@@ -73,16 +73,16 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 for (var i = 0; i < dataSource.Count; i++)
                 {
-                    if (isSeparator && i % 2 != 0 && i != dataSource.Count - 1)
-                    {
-                        builder.Append(listInfo.SeparatorTemplate);
-                    }
-
                     var dict = dataSource[i];
 
                     pageInfo.SqlItems.Push(dict);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     builder.Append(await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.SqlContent));
+
+                    if (isSeparator && i != dataSource.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorTemplate);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))

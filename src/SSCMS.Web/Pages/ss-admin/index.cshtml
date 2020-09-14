@@ -89,13 +89,12 @@
         </el-dropdown-menu>
       </el-dropdown> -->
 
-      <form v-if="siteId > 0" id="search" class="search" :action="utils.getCmsUrl('contentsSearch')" target="right" method="get">
-        <input name="siteId" type="hidden" :value="siteId">
-        <input name="keyword" type="text" placeholder="内容搜索..." class="form-control">
-        <a href="javascript:;" onclick="$('#search').submit();">
+      <div v-if="siteId > 0" class="search">
+        <input type="text" v-model="keyword" placeholder="内容搜索..." class="form-control">
+        <a href="javascript:;" v-on:click="btnSearchClick">
           <i class="ion-search"></i>
         </a>
-      </form>
+      </div>
 
       <el-dropdown v-on:command="btnUserMenuClick">
         <span class="el-dropdown-link" style="top: 7px;position: inherit;">

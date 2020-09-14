@@ -19,6 +19,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
+            var site = await _siteRepository.GetAsync(request.SiteId);
+
             var message = await _materialMessageRepository.GetAsync(request.MessageId);
             var items = message?.Items ?? new List<MaterialMessageItem>();
             if (items.Count == 0)
@@ -33,7 +35,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             return new GetResult
             {
                 Items = items,
-                CommentTypes = commentTypes
+                CommentTypes = commentTypes,
+                SiteType = site.SiteType
             };
         }
     }

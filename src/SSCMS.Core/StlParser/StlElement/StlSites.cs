@@ -99,17 +99,17 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 for (var i = 0; i < sites.Count; i++)
                 {
-                    if (isSeparator && i % 2 != 0 && i != sites.Count - 1)
-                    {
-                        builder.Append(listInfo.SeparatorTemplate);
-                    }
-
                     var site = sites[i];
 
                     pageInfo.SiteItems.Push(site);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     var parsedString = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, parseManager, ParseType.Site);
                     builder.Append(parsedString);
+
+                    if (isSeparator && i != sites.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorTemplate);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))

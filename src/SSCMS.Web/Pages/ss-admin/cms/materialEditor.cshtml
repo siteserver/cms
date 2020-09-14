@@ -207,19 +207,19 @@
         </el-form-item>
         <el-form-item label="正文" prop="content" :rules="{ required: true, message: '请输入正文' }">
           <el-button-group style="margin-bottom: 2px;">
-            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', attributeName: style.attributeName})">
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'Word', attributeName: 'editor'})">
               导入Word
             </el-button>
-            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图片', name: 'editorLayerImage', attributeName: style.attributeName})">
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图片', name: 'Image', attributeName: 'editor'})">
               插入图片
             </el-button>
-            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入视频', name: 'editorLayerVideo', attributeName: style.attributeName})">
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入视频', name: 'Video', attributeName: 'editor'})">
               插入视频
             </el-button>
-            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入音频', name: 'editorLayerAudio', attributeName: style.attributeName})">
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入音频', name: 'Audio', attributeName: 'editor'})">
               插入音频
             </el-button>
-            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入附件', name: 'editorLayerFile', attributeName: style.attributeName})">
+            <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入附件', name: 'File', attributeName: 'editor'})">
               插入附件
             </el-button>
           </el-button-group>
@@ -290,8 +290,8 @@
 
 <el-row align="center" style="text-align: center; padding-top:4px">
   <el-button size="medium" v-on:click="btnSubmitClick" type="primary">保 存</el-button>
-  <el-button size="medium" v-on:click="btnPreviewClick" type="default">预 览</el-button>
-  <el-button size="medium" v-on:click="btnSendClick" type="default">保存并群发</el-button>
+  <el-button v-if="siteType === 'wx'" size="medium" v-on:click="btnPreviewClick" type="default">预 览</el-button>
+  <el-button v-if="siteType === 'wx'" size="medium" v-on:click="btnSendClick" type="default">保存并群发</el-button>
   <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
 </el-row>
 

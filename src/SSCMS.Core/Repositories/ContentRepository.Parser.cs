@@ -192,7 +192,7 @@ namespace SSCMS.Core.Repositories
             //return list;
         }
 
-        public async Task<List<KeyValuePair<int, Content>>> ParserGetContentsDataSourceAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<List<KeyValuePair<int, Content>>> ParserGetContentsDataSourceAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, string where, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
@@ -430,6 +430,11 @@ namespace SSCMS.Core.Repositories
             }
 
             ParserOrderQuery(query, taxisType);
+
+            if (!string.IsNullOrEmpty(where))
+            {
+                query.WhereRaw(where);
+            }
 
             var summaries = await repository.GetAllAsync<ContentSummary>(query);
 

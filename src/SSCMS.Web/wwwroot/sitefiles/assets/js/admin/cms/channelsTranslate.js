@@ -69,7 +69,7 @@ var methods = {
     $api.post($url, data).then(function (response) {
       var res = response.data;
 
-      utils.success('批量转移成功！');
+      utils.success('批量复制成功！');
       location.href = $this.returnUrl;
     }).catch(function (error) {
       utils.error(error);
@@ -87,10 +87,7 @@ var methods = {
 
   filterNode: function(value, data) {
     if (!value) return true;
-    if (value.channelName) {
-      return data.label.indexOf(value.channelName) !== -1;
-    }
-    return true;
+    return data.label.indexOf(value) !== -1 || data.value + '' === value;
   },
 
   handleTransSiteIdChange: function() {
@@ -128,9 +125,7 @@ var $vue = new Vue({
   methods: methods,
   watch: {
     filterText: function(val) {
-      this.$refs.tree.filter({
-        channelName: val
-      });
+      this.$refs.tree.filter(val);
     }
   },
   created: function () {

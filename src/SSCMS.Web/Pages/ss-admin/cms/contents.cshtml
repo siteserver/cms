@@ -48,7 +48,7 @@
   <el-scrollbar class="scrollbar" style="padding-top: 5px; padding-left: 5px; width: 200px; min-width: 200px;" :style="{height: asideHeight + 'px'}">
 
     <el-input
-      placeholder="输入栏目名称进行过滤"
+      placeholder="请输入栏目名称/栏目Id"
       size="mini"
       suffix-icon="el-icon-search"
       v-model="filterText">
@@ -59,7 +59,7 @@
     <el-tree
       ref="tree"
       class="leftTree"
-      :data="[root]"
+      :data="root"
       node-key="value"
       :default-expanded-keys="expendedChannelIds"
       :highlight-current="true"

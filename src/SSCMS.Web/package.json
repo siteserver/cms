@@ -29,7 +29,7 @@
         "order": 3
       },
       "app_settings_sites": {
-        "text": "站点管理",
+        "text": "站群管理",
         "type": ["app"],
         "order": 4
       },
@@ -174,7 +174,7 @@
         "order": 3
       },
       "site_channelsTranslate": {
-        "text": "批量转移",
+        "text": "批量复制",
         "type": ["web", "wx"],
         "order": 4
       },
@@ -571,7 +571,7 @@
             "order": 1
           },
           "app_settings_sites_all": {
-            "text": "站点管理",
+            "text": "站群管理",
             "permissions": [
               "app_settings_sites",
               "app_settings_sitesUrl",
@@ -583,7 +583,7 @@
             "order": 2,
             "menus": {
               "app_settings_sites": {
-                "text": "站点管理",
+                "text": "站群管理",
                 "link": "./settings/sites/",
                 "permissions": ["app_settings_sites"],
                 "order": 1
@@ -907,7 +907,7 @@
             }
           },
           "site_channelsTranslate": {
-            "text": "批量转移",
+            "text": "批量复制",
             "link": "./cms/channelsTranslate/",
             "permissions": ["site_channelsTranslate"],
             "order": 6
@@ -921,7 +921,7 @@
         }
       },
       "site_wx_all": {
-        "text": "微信管理",
+        "text": "微信公众号",
         "type": ["wx"],
         "permissions": [
           "site_wxAccount",

@@ -2,8 +2,8 @@
 @{ Layout = "_Layout"; }
 
 <el-form :inline="true">
-  <el-form-item label="栏目名称">
-    <el-input v-model="filterText" size="mini" placeholder="输入栏目进行过滤"></el-input>
+  <el-form-item label="栏目筛选">
+    <el-input v-model="filterText" size="mini" placeholder="请输入栏目名称/栏目Id"></el-input>
   </el-form-item>
 </el-form>
 
@@ -40,16 +40,16 @@
   <el-col :span="12">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>转移到</span>
+        <span>复制到</span>
       </div>
 
       <el-form ref="form" :model="form" size="small" label-position="top">
-        <el-form-item label="转移到站点" prop="transSiteId" :rules="{ required: true, message: '请选择转移到站点' }">
+        <el-form-item label="复制到站点" prop="transSiteId" :rules="{ required: true, message: '请选择复制到站点' }">
           <el-select v-model="form.transSiteId" filterable style="width: 100%;" v-on:change="handleTransSiteIdChange">
             <el-option v-for="transSite in transSites" :key="transSite.value" :value="transSite.value" :label="transSite.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="transChannels" label="转移到栏目" prop="transChannelIds" :rules="{ required: true, message: '请选择转移到栏目' }">
+        <el-form-item v-if="transChannels" label="复制到栏目" prop="transChannelIds" :rules="{ required: true, message: '请选择复制到栏目' }">
           <el-cascader
             v-model="form.transChannelIds"
             filterable
@@ -59,12 +59,12 @@
             placeholder="请选择栏目">
           </el-cascader>
         </el-form-item>
-        <el-form-item label="转移类型" prop="translateType" :rules="{ required: true, message: '请选择转移类型' }">
+        <el-form-item label="复制类型" prop="translateType" :rules="{ required: true, message: '请选择复制类型' }">
           <el-select v-model="form.translateType" style="width: 100%;">
             <el-option v-for="type in translateTypes" :key="type.value" :value="type.value" :label="type.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="转移后删除">
+        <el-form-item label="复制后删除">
           <el-switch
             v-model="form.isDeleteAfterTranslate">
           </el-switch>
@@ -76,7 +76,7 @@
       <div style="margin: 10px 0"></div>
 
       <el-button v-on:click="btnTranslateClick" :disabled="channelIds.length === 0" type="primary" size="medium">
-        转移
+        复制
       </el-button>
     </el-card>
   </el-col>

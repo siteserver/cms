@@ -93,7 +93,7 @@ var methods = {
   },
 
   btnCancelClick: function () {
-    if (this.isAddForm && this.groupNames) {
+    if (this.isAddForm && this.groupNames && this.groupNames.length > 0) {
       this.isAddForm = false;
     } else {
       utils.closeLayer();

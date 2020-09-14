@@ -49,7 +49,7 @@ namespace SSCMS.Core.StlParser.StlElement
         }
 
         //API StlActionsSearchController调用
-        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager, int pageNum, string tableName, string where)
+        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager, int pageNum, string where)
         {
             var stlPageContents = new StlPageContents
             {
@@ -67,6 +67,8 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 stlPageContents.ListInfo.PageNum = pageNum;
             }
+
+            stlPageContents.ListInfo.Where = where;
 
             stlPageContents.DataSource = await GetContentsDataSourceAsync(parseManager, stlPageContents.ListInfo);
 

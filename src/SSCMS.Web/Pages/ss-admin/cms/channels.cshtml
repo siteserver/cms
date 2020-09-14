@@ -195,7 +195,7 @@
     排 序
   </el-button>
   <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-right" v-on:click="btnTranslateClick">
-    转 移
+    复 制
   </el-button>
   <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-magic-stick" v-on:click="btnCreateClick">
     生 成
@@ -223,7 +223,7 @@
         </el-cascader>
       </el-form-item>
       <el-form-item label="栏目" prop="channels" :rules="{ required: true, message: '请输入栏目名称' }">
-        <el-input v-model="appendForm.channels" type="textarea" rows="5" :autosize="{ minRows: 5}" placeholder="栏目之间用换行分割，下级栏目在栏目前添加“-”字符，索引可以放到括号中，如：&#10;栏目一(栏目索引)&#10;-下级栏目(下级索引)&#10;--下下级栏目"></el-input>
+        <el-input v-model="appendForm.channels" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}" placeholder="栏目之间用换行分割，下级栏目在栏目前添加“-”字符，索引可以放到括号中，如：&#10;栏目一(栏目索引)&#10;-下级栏目(下级索引)&#10;--下下级栏目"></el-input>
       </el-form-item>
       <el-form-item>
         <el-checkbox label="采用父栏目模板" v-model="appendForm.isParentTemplates"></el-checkbox>

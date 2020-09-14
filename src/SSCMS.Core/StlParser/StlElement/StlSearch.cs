@@ -335,7 +335,8 @@ function stlRedirect{ajaxDivId}(page)
             nameof(SearchRequest.IsHighlight),
             nameof(SearchRequest.SiteId),
             nameof(SearchRequest.AjaxDivId),
-            nameof(SearchRequest.Template)
+            nameof(SearchRequest.Template),
+            "ExtendValues"
         };
     }
 }

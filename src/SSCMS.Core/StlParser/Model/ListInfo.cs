@@ -221,6 +221,10 @@ namespace SSCMS.Core.StlParser.Model
                 {
                     listInfo.Order = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Where))
+                {
+                    listInfo.Where = value;
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupChannel))
                 {
                     listInfo.GroupChannel = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
@@ -363,6 +367,8 @@ namespace SSCMS.Core.StlParser.Model
         public int StartNum { get; private set; } = 1;
 
         public string Order { get; set; }
+
+        public string Where { get; set; }
 
         public string GroupChannel { get; private set; } = string.Empty;
 

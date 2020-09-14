@@ -8,7 +8,6 @@
 
 var methods = {
   load: function() {
-    console.log(parent.$vue.messages);
     if (this.index) {
       this.form.text = parent.$vue.messages[parseInt(this.index)].text;
     }

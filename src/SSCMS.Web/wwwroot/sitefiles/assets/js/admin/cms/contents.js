@@ -55,7 +55,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.root = res.root;
+      $this.root = [res.root];
       if (!reload) {
         $this.siteUrl = res.siteUrl;
         $this.groupNames = res.groupNames;
@@ -363,7 +363,7 @@ var methods = {
 
   filterNode: function(value, data) {
     if (!value) return true;
-    return data.label.indexOf(value) !== -1;
+    return data.label.indexOf(value) !== -1 || data.value + '' === value;
   },
 
   handleSelectionChange: function(val) {

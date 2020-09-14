@@ -43,6 +43,9 @@ var methods = {
         var plugins = response.data;
   
         $this.plugins = plugins;
+      }).catch(function (error) {
+        utils.error(error);
+      }).then(function () {
         utils.loading($this, false);
       });
     }).catch(function (error) {

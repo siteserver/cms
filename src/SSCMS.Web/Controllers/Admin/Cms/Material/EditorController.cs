@@ -20,12 +20,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public EditorController(IAuthManager authManager, IWxManager wxManager, IMaterialMessageRepository materialMessageRepository)
+        public EditorController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IMaterialMessageRepository materialMessageRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
+            _siteRepository = siteRepository;
             _materialMessageRepository = materialMessageRepository;
         }
 
@@ -38,6 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         {
             public List<MaterialMessageItem> Items { get; set; }
             public IEnumerable<Select<string>> CommentTypes { get; set; }
+            public string SiteType { get; set; }
         }
 
         public class CreateRequest : SiteRequest
