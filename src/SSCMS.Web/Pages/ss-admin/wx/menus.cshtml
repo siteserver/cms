@@ -1,0 +1,138 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-alert type="info" title="使用菜单需要成为“服务号”，或通过认证的“订阅号”。"></el-alert>
+<div style="height: 10px"></div>
+
+<el-row class="tac" :gutter="20">
+  <el-col :span="6">
+    
+    <el-menu
+      :default-openeds="defaultOpeneds"
+      :unique-opened="false"
+      class="el-menu-vertical-demo"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+      v-on:select="btnSideMenuClick"
+      v-on:open="btnSideMenuOpen"
+      v-on:close="btnSideMenuOpen">
+    
+      <template v-for="level1 in wxMenus">
+        <template v-if="level1.children && level1.children.length > 0">
+    
+          <el-submenu :index="level1.id">
+            <template slot="title">
+              <span>{{ level1.text }}</span>
+            </template>
+    
+            <template v-for="level2 in level1.children">
+    
+              <template v-if="level2.children && level2.children.length > 0">
+    
+                <el-submenu :index="level2.id">
+                  <template slot="title">
+                    <span>{{ level2.text }}</span>
+                  </template>
+        
+                  <template v-for="level3 in level2.children">
+                    <el-menu-item :class="{'is-active': getIndex(level1, level2, level3) == defaultActive}" :index="getIndex(level1, level2, level3)">
+                      <span>{{ level3.text }}</span>
+                    </el-menu-item>
+                  </template>
+        
+                </el-submenu>
+        
+              </template>
+              <template v-else>
+                <el-menu-item :class="{'is-active': getIndex(level1, level2) == defaultActive}" :index="getIndex(level1, level2)">
+                  <span>{{ level2.text }}</span>
+                </el-menu-item>
+              </template>
+            </template>
+    
+          </el-submenu>
+    
+        </template>
+        <template v-else>
+          <el-menu-item :class="{'is-active': getIndex(level1) == defaultActive}" :index="getIndex(level1)">
+            <span>{{ level1.text }}</span>
+          </el-menu-item>
+        </template>
+      </template>
+    </el-menu>
+
+  </el-col>
+  <el-col :span="18">
+
+    <el-card v-if="wxMenu" class="box-card">
+      <div slot="header" class="clearfix">
+        <span>{{getCardTitle()}}</span>
+        <el-button v-if="wxMenu.id > 0" style="float: right; padding: 3px 0; margin-left: 10px; color: #f56c6c" type="text" v-on:click="btnDeleteClick">删 除</el-button>
+        <el-button v-if="wxMenu.id > 0 && firstMenuIds.indexOf(wxMenu.parentId) === -1" style="float: right; padding: 3px 0; margin-left: 10px" type="text" v-on:click="btnAddChildClick">新增下级菜单</el-button>
+      </div>
+      <div class="text item">
+        <el-form ref="wxMenu" :model="wxMenu" size="small" label-width="160px">
+          <el-form-item label="菜单标题" prop="text" :rules="{ required: true, message: '请输入菜单标题' }">
+            <el-input v-model="wxMenu.text"></el-input>
+            <div class="tips">字数最多：主菜单5个、子菜单19个</div>
+          </el-form-item>
+          <el-form-item label="菜单类型" prop="menuType" :rules="{ required: true, message: '请选择菜单类型' }">
+            <el-radio v-for="menuType in menuTypes" :key="menuType.value" v-model="wxMenu.menuType" :label="menuType.value">{{menuType.label}}</el-radio>
+            <div class="tips">
+              如果有下级菜单请忽略菜单类型、关键词以及菜单链接等参数。
+            </div>
+          </el-form-item>
+          <el-form-item v-if="wxMenu.menuType !== 'view' && wxMenu.menuType !== 'miniprogram' && wxMenu.menuType !== 'media_id' && wxMenu.menuType !== 'view_limited'" label="要触发的关键词" prop="key" :rules="{ required: true, message: '请输入要触发的关键词' }">
+            <el-input v-model="wxMenu.key"></el-input>
+          </el-form-item>
+          <el-form-item v-if="wxMenu.menuType === 'view'" label="菜单链接" prop="url" :rules="{ required: true, message: '请输入菜单链接' }">
+            <el-input v-model="wxMenu.url"></el-input>
+            <div class="tips">必须http(s)://开头，不支持短网址。</div>
+          </el-form-item>
+          <el-form-item v-if="wxMenu.menuType === 'miniprogram'" label="小程序AppId" prop="appId" :rules="{ required: true, message: '请输入小程序AppId' }">
+            <el-input v-model="wxMenu.appId"></el-input>
+          </el-form-item>
+          <el-form-item v-if="wxMenu.menuType === 'miniprogram'" label="小程序PagePath" prop="pagePath" :rules="{ required: true, message: '请输入小程序PagePath' }">
+            <el-input v-model="wxMenu.pagePath"></el-input>
+          </el-form-item>
+          <el-form-item v-if="wxMenu.menuType === 'media_id' || wxMenu.menuType === 'view_limited'" label="MediaId" prop="mediaId" :rules="{ required: true, message: '请输入MediaId' }">
+            <el-input v-model="wxMenu.mediaId"></el-input>
+          </el-form-item>
+          <el-form-item label="排序" prop="taxis" :rules="[
+            { required: true, message: '请输入排序' },
+            { type: 'number', message: '排序必须为数字' }
+          ]">
+            <el-input v-model.number="wxMenu.taxis"></el-input>
+          </el-form-item>
+      
+          <el-divider></el-divider>
+          <div>
+            <el-button type="primary" v-on:click="btnSubmitClick" size="small">保 存</el-button>
+            <el-button type="default" v-on:click="btnCancelClick" size="small">取 消</el-button>
+          </div>
+        </el-form>
+      </div>
+    </el-card>
+
+  </el-col>
+</el-row>
+
+<div style="height: 10px"></div>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddFirstClick">
+  新增一级菜单
+</el-button>
+
+<el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-bottom" v-on:click="btnPullClick">
+  拉取微信菜单
+</el-button>
+
+<el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-top" v-on:click="btnPushClick">
+  推送微信菜单
+</el-button>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/wx/menus.js" type="text/javascript"></script> }

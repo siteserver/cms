@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\*.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="TabManager.cs" />
+    <Compile Remove="Utils\PermissionConfigManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CacheManager.Core" Version="1.2.0" />
+    <PackageReference Include="CacheManager.Microsoft.Extensions.Configuration" Version="1.2.0" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="FluentScheduler" Version="5.4.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
+    <PackageReference Include="Markdig" Version="0.20.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
+    <PackageReference Include="NuGet.Packaging" Version="5.4.0" />
+    <PackageReference Include="NuGet.Versioning" Version="5.4.0" />
+    <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
+    <PackageReference Include="Semver" Version="2.0.6" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0009" />
+    <PackageReference Include="RestSharp" Version="106.10.1" />    
+    <PackageReference Include="HtmlSanitizer" Version="5.0.310" />
+    <PackageReference Include="Senparc.Weixin" Version="6.7.502" />
+    <PackageReference Include="Senparc.Weixin.WxOpen" Version="3.8.502" />
+    <PackageReference Include="Senparc.Weixin.TenPay" Version="1.5.502.3" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0003" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SSCMS\SSCMS.csproj" />
+  </ItemGroup>
+
+</Project>

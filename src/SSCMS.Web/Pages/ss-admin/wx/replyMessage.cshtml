@@ -1,0 +1,327 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-tabs--right .el-tabs__header.is-right{
+      width: 98%;
+    }
+    .cover-uploader {
+      border-color: #00B19D;
+    }
+    .cover-uploader {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      width: 120px;
+    }
+    .cover-uploader:hover {
+      border-color: #409EFF;
+    }
+    .cover-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 120px;
+      height: 120px;
+      line-height: 120px;
+      text-align: center;
+    }
+    .cover {
+      width: 120px;
+      height: 120px;
+      display: block;
+    }
+    .el-icon-picture-outline {
+      font-size: 22px;
+      margin: 100px 0;
+      color: #c0c4cc;
+    }
+
+    .thumb {
+      padding: 10px;
+    }
+    .thumb .cover {
+      cursor: pointer; 
+      position: relative; 
+      height:150px; 
+      width: 100%;
+      background-size: cover;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+      background-color: #f6f8f9;
+    }
+
+    .thumb .cover .text {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      display: block;
+      width: 226px;
+      color: #fff;
+      padding: 6px;
+      background-color: #999;;
+    }
+
+    .list {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .thumb:hover, .active, .list:hover {
+      background: rgb(225, 243, 216);
+    }
+    .list .text {
+      font-size: 14px;
+      height: 38px;
+      overflow: hidden;
+    }
+    .el-card__body {
+      padding: 10px;
+    }
+    .el-tab-pane {
+      min-height: 220px;
+    }
+    .icon-wrapper {
+      text-align: center; padding: 45px 0;
+    }
+    .icon-wrapper div {
+      display: inline-block;
+      width: 130px;
+      color: #9a9a9a;
+      vertical-align: top;
+    }
+    .icon-wrapper div:hover {
+      background-color: #f1f1f1;
+    }
+    .icon-wrapper a {
+      display: block;
+      height: 100%;
+      padding-top: 28px;
+      padding-bottom: 34px;
+      box-sizing: border-box;
+      text-decoration: none;
+    }
+    .icon-wrapper i {
+      display: inline-block;
+      font-size: 30px;
+      width: 40px;
+      height: 40px;
+    }
+    .icon-wrapper strong {
+      font-weight: normal;
+      display: block;
+      font-size: 14px;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+
+<div v-if="!success">
+  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>
+<div v-else>
+
+  <el-tabs type="border-card" v-model="form.materialType" v-on:tab-click="btnTabClick">
+    <el-tab-pane name="Text">
+      <span slot="label"><i class="el-icon-chat-line-round"></i> 文字</span>
+
+      <el-input type="textarea" :rows="10" v-model="form.text"></el-input>
+      
+    </el-tab-pane>
+    <el-tab-pane name="Message">
+      <span slot="label"><i class="el-icon-notebook-2"></i> 图文消息</span>
+      
+      <div v-if="form.materialId && items">
+        <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">
+          <template v-for="(item, index) in items" :key="index">
+            <div v-if="index === 0" class="thumb">
+              <div class="cover" :style="{backgroundImage: 'url(' + item.thumbUrl + ')'}">
+                <div class="text">{{(item.title || '标题')}}</div>
+              </div>
+            </div>
+        
+            <div v-else class="list">
+              <el-row>
+                <el-col span="18">
+                  <div class="text">{{item.title}} {{item.index}}</div>
+                </el-col>
+                <el-col span="6">
+                  <el-image 
+                    fit="cover"
+                    style="width: 55px; height: 55px"
+                    :src="item.thumbUrl">
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline" style="margin: 0px; font-size: 36px; color: #999; background: #fff; padding: 5px;"></i>
+                    </div>
+                  </el-image>
+                </el-col>
+              </el-row>
+            </div>
+            
+            <el-divider></el-divider>
+          </template>
+        
+        </el-card>
+        <el-link :underline="false" type="primary" v-on:click="btnRemoveClick">删除</el-link>
+      </div>
+      <div v-else class="icon-wrapper">
+        <div>
+          <el-link :underline="false" type="primary" v-on:click="btnSelectClick">
+            <i class="el-icon-folder"></i>
+            <strong>从素材库选择</strong>
+          </el-link>
+        </div>
+        <div>
+          <el-link :underline="false" type="primary" v-on:click="">
+            <i class="el-icon-tickets"></i>
+            <strong>从内容中选择</strong>
+          </el-link>
+        </div>
+      </div>
+  
+    </el-tab-pane>
+    <el-tab-pane name="Image">
+      <span slot="label"><i class="el-icon-picture"></i> 图片</span>
+  
+      <div v-if="form.materialId && image">
+        <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">
+          <el-image 
+            style="width: 100%; min-height: 120px; max-height:220px;"
+            :src="image.url">
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+  
+          <div style="padding: 14px;">
+            <div style="cursor: pointer; height: 22px; font-size: 14px; overflow: hidden;">
+              {{ image.title }}
+            </div>
+          </div>
+        </el-card>
+        <el-link :underline="false" type="primary" v-on:click="btnRemoveClick">删除</el-link>
+      </div>
+      <div v-else class="icon-wrapper">
+        <div>
+          <el-link :underline="false" type="primary" v-on:click="btnSelectClick">
+            <i class="el-icon-folder"></i>
+            <strong>从素材库选择</strong>
+          </el-link>
+        </div>
+        <div>
+          
+          <el-upload
+            :action="getUploadUrl()"
+            :headers="{Authorization: 'Bearer ' + $token}"
+            :on-progress="uploadProgress"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :multiple="true"
+            :show-file-list="false">
+            <el-link :underline="false" type="primary">
+              <i class="el-icon-upload"></i>
+              <strong>上传图片</strong>
+            </el-link>
+          </el-upload>
+  
+        </div>
+      </div>
+      
+    </el-tab-pane>
+    <el-tab-pane name="Audio">
+      <span slot="label"><i class="el-icon-headset"></i> 音频</span>
+  
+      <div v-if="form.materialId && audio">
+        <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">  
+          <div style="padding: 14px;">
+            <div style="cursor: pointer; height: 22px; font-size: 14px; overflow: hidden;">
+              {{ audio.title }}
+            </div>
+          </div>
+        </el-card>
+        <el-link :underline="false" type="primary" v-on:click="btnRemoveClick">删除</el-link>
+      </div>
+      <div v-else class="icon-wrapper">
+        <div>
+          <el-link :underline="false" type="primary" v-on:click="btnSelectClick">
+            <i class="el-icon-folder"></i>
+            <strong>从素材库选择</strong>
+          </el-link>
+        </div>
+        <div>
+          
+          <el-upload
+            :action="getUploadUrl()"
+            :headers="{Authorization: 'Bearer ' + $token}"
+            :on-progress="uploadProgress"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :multiple="true"
+            :show-file-list="false">
+            <el-link :underline="false" type="primary">
+              <i class="el-icon-upload"></i>
+              <strong>上传音频</strong>
+            </el-link>
+          </el-upload>
+  
+        </div>
+      </div>
+  
+    </el-tab-pane>
+    <el-tab-pane name="Video">
+      <span slot="label"><i class="el-icon-video-play"></i> 视频</span>
+  
+      <div v-if="form.materialId && video">
+        <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">  
+          <div style="padding: 14px;">
+            <div style="cursor: pointer; height: 22px; font-size: 14px; overflow: hidden;">
+              {{ video.title }}
+            </div>
+          </div>
+        </el-card>
+        <el-link :underline="false" type="primary" v-on:click="btnRemoveClick">删除</el-link>
+      </div>
+      <div v-else class="icon-wrapper">
+        <div>
+          <el-link :underline="false" type="primary" v-on:click="btnSelectClick">
+            <i class="el-icon-folder"></i>
+            <strong>从素材库选择</strong>
+          </el-link>
+        </div>
+        <div>
+          
+          <el-upload
+            :action="getUploadUrl()"
+            :headers="{Authorization: 'Bearer ' + $token}"
+            :on-progress="uploadProgress"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :multiple="true"
+            :show-file-list="false">
+            <el-link :underline="false" type="primary">
+              <i class="el-icon-upload"></i>
+              <strong>上传视频</strong>
+            </el-link>
+          </el-upload>
+  
+        </div>
+      </div>
+  
+    </el-tab-pane>
+  </el-tabs>
+  
+  <el-row align="center" style="text-align: center; padding-top:15px">
+    <el-button size="small" v-on:click="btnSubmitClick" type="primary">保 存</el-button>
+    <el-button :disabled="form.id === 0" size="small" v-on:click="btnDeleteClick" type="default">删除回复</el-button>
+  </el-row>
+
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/replyMessage.js" type="text/javascript"></script>
+}

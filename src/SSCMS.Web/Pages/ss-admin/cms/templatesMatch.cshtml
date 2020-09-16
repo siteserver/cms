@@ -1,0 +1,122 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-radio {
+      display: block;
+      line-height: 30px;
+    }
+  </style>
+}
+
+<el-form :inline="true">
+  <el-form-item label="栏目名称">
+    <el-input v-model="filterText" size="mini" placeholder="输入栏目进行过滤"></el-input>
+  </el-form-item>
+  <el-form-item label="栏目模板" v-if="channelTemplates && channelTemplates.length > 0">
+    <el-select v-model="filterChannelTemplateId" size="mini" placeholder="选择栏目模板进行过滤">
+      <el-option label="<无筛选>" :value="0"></el-option>
+      <el-option v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.templateName" :value="channelTemplate.id"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item label="内容模板" v-if="contentTemplates && contentTemplates.length > 0">
+    <el-select v-model="filterContentTemplateId" size="mini" placeholder="选择内容模板进行过滤">
+      <el-option label="<无筛选>" :value="0"></el-option>
+      <el-option v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.templateName" :value="contentTemplate.id"></el-option>
+    </el-select>
+  </el-form-item>
+</el-form>
+
+<el-row :gutter="12">
+  <el-col :span="12">
+    <el-card>
+      <div slot="header" class="clearfix">
+        <span>匹配栏目</span>
+
+        <div style="float: right; margin-top: -8px;">
+          <el-dropdown v-on:command="btnCreateClick">
+            <el-button :disabled="channelIds.length === 0" type="text">
+              创建模板<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="CreateChannelTemplate">创建并匹配栏目模版</el-dropdown-item>
+              <el-dropdown-item command="CreateSubChannelTemplate">创建并匹配下级栏目模版</el-dropdown-item>
+              <el-dropdown-item command="CreateContentTemplate">创建并匹配内容模版</el-dropdown-item>
+              <el-dropdown-item command="CreateSubContentTemplate">创建并匹配下级内容模版</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        
+      </div>
+      <el-tree
+        ref="tree"
+        :data="channels"
+        :default-expanded-keys="expandedChannelIds"
+        node-key="value"
+        show-checkbox
+        check-on-click-node
+        check-strictly
+        highlight-current
+        class="tree"
+        :filter-node-method="filterNode"
+        v-on:check-change="handleCheckChange">
+        <div slot-scope="{ node, data }">
+          <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank"><i class="el-icon-link"></i></el-link>
+          {{ data.label }} 
+          <el-tag size="mini">
+            {{ getChannelTemplateName(data.channelTemplateId) }}
+          </el-tag>
+          <el-tag size="mini" type="success">
+            {{ getContentTemplateName(data.contentTemplateId) }}
+          </el-tag>
+        </div>
+      </el-tree>
+    </el-card>
+  </el-col>
+  <el-col :span="6">
+    <el-card>
+      <div slot="header" class="clearfix">
+        <span>栏目模板</span>
+      </div>
+
+      <el-radio-group v-model="channelTemplateId">
+        <el-radio v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.id">{{ channelTemplate.templateName + (channelTemplate.defaultTemplate ? '（默认）' : '') }}</el-radio>
+      </el-radio-group>
+
+      <div style="margin: 10px 0"></div>
+
+      <el-divider></el-divider>
+
+      <div style="margin: 10px 0"></div>
+
+      <el-button v-on:click="btnChannelMatchClick" :disabled="channelIds.length === 0 || channelTemplateId === 0" type="primary" size="medium">
+        匹配
+      </el-button>
+    </el-card>
+  </el-col>
+  <el-col :span="6">
+    <el-card>
+      <div slot="header" class="clearfix">
+        <span>内容模板</span>
+      </div>
+      
+      <el-radio-group v-model="contentTemplateId">
+        <el-radio v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.id">{{ contentTemplate.templateName + (contentTemplate.defaultTemplate ? '（默认）' : '') }}</el-radio>
+      </el-radio-group>
+
+      <div style="margin: 10px 0"></div>
+
+      <el-divider></el-divider>
+
+      <div style="margin: 10px 0"></div>
+
+      <el-button v-on:click="btnContentMatchClick" :disabled="channelIds.length === 0 || contentTemplateId === 0" type="primary" size="medium">
+        匹配
+      </el-button>
+    </el-card>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/templatesMatch.js" type="text/javascript"></script>
+}

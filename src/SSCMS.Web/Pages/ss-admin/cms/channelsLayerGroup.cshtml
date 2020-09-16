@@ -1,0 +1,40 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form v-if="isAddForm" size="small" ref="addForm" :model="addForm" label-width="120px">
+  <el-form-item label="栏目组名称" prop="groupName" :rules="{ required: true, message: '请输入栏目组名称' }">
+    <el-input v-model="addForm.groupName" placeholder="请输入栏目组名称"></el-input>
+  </el-form-item>
+  <el-form-item label="栏目组说明" prop="description">
+    <el-input type="textarea" v-model="addForm.description" placeholder="请输入栏目组说明"></el-input>
+  </el-form-item>
+</el-form>
+<el-form v-else size="small" ref="form" :model="form" label-width="120px">
+  <el-form-item label="操作">
+    <el-radio-group v-model="form.isCancel">
+      <el-radio-button :label="false">设置栏目组</el-radio-button>
+      <el-radio-button :label="true">取消栏目组</el-radio-button>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="栏目组" v-if="groupNames && groupNames.length > 0">
+    <el-checkbox-group v-model="form.groupNames">
+      <el-checkbox v-for="groupName in groupNames" :key="groupName" :label="groupName" :value="groupName" name="groupNames"></el-checkbox>
+    </el-checkbox-group>
+    <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="isAddForm = true">
+      新增栏目组
+    </el-button>
+  </el-form-item>
+</el-form>
+
+<div style="height: 10px"></div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/channelsLayerGroup.js" type="text/javascript"></script> }

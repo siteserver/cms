@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <Version>7.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
+    <PackageReference Include="Mono.Options" Version="6.6.0.161" />
+    <PackageReference Include="Quartz" Version="3.0.7" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SSCMS.Core\SSCMS.Core.csproj" />
+  </ItemGroup>
+
+</Project>

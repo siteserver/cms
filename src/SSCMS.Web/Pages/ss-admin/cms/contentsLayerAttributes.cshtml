@@ -1,0 +1,28 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form size="small" ref="form" :model="form" label-width="120px">
+  <el-form-item label="操作">
+    <el-radio-group v-model="form.isCancel">
+      <el-radio-button :label="false">设置属性</el-radio-button>
+      <el-radio-button :label="true">取消属性</el-radio-button>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="内容属性">
+    <el-checkbox label="置顶" v-model="form.isTop"></el-checkbox>
+    <el-checkbox label="推荐" v-model="form.isRecommend"></el-checkbox>
+    <el-checkbox label="热点" v-model="form.isHot"></el-checkbox>
+    <el-checkbox label="醒目" v-model="form.isColor"></el-checkbox>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/contentsLayerAttributes.js" type="text/javascript"></script> }

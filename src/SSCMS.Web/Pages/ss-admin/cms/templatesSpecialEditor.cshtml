@@ -1,0 +1,28 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+@section Styles{
+  <base :href="specialUrl" />
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    .el-tag {
+      height: auto;
+      white-space: inherit;
+      margin-bottom: 5px;
+      margin-right: 5px;
+    }
+  </style>
+}
+
+<textarea v-html="bodyHtml"></textarea>
+
+@section Scripts{
+  <script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
+  <script src="/sitefiles/assets/lib/ueditor/ueditor.all.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/cms/templatesSpecialEditor.js" type="text/javascript"></script>
+}

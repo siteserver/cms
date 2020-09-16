@@ -1,0 +1,17 @@
+{
+  "IsProtectData": false,
+  "IsDisablePlugins": false,
+  "SecurityKey": "",
+  "Database": {
+    "Type": "",
+    "ConnectionString": ""
+  },
+  "Redis": {
+    "ConnectionString": ""
+  },
+  "AdminRestriction": {
+    "Host": "",
+    "AllowList": [],
+    "BlockList": []
+  }
+}

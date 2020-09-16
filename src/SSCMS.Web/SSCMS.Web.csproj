@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Version>7.0.0</Version>
+    <UserSecretsId>be371ebf-a970-4d7c-8db5-77392513935f</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <!--<EnableDefaultContentItems>false</EnableDefaultContentItems>-->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <AssemblyName>SSCMS.Web</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="packages\**" />
+    <Compile Remove="plugins\**" />
+    <Content Remove="packages\**" />
+    <Content Remove="plugins\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <EmbeddedResource Remove="plugins\**" />
+    <None Remove="packages\**" />
+    <None Remove="plugins\**" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>-->
+
+  <!--<ItemGroup>
+    https://github.com/dotnet/core/blob/master/Documentation/build-and-install-rhel6-prerequisites.md
+    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
+    this code will cause sqlserver connection not work
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.3" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XPath.XDocument" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SSCMS.Core\SSCMS.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Include="plugins\**\*.cshtml;plugins\**\*.cs" Exclude="plugins\*\obj\**\*;plugins\bin\**\*" />
+  </ItemGroup>
+
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet build plugins\SSCMS.Advertisement" />
+  </Target>-->
+
+</Project>

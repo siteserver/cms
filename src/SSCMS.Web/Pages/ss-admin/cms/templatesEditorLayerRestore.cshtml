@@ -1,0 +1,41 @@
+@page
+@{ Layout = "_Layout"; }
+
+<div v-if="logId">
+  <el-form :inline="true" size="small">
+    <el-form-item label="历史版本">
+      <el-select style="width: 450px" v-model="logId" v-on:change="handleLogIdChange" placeholder="请选择历史版本">
+        <el-option v-for="log in logs" :key="log.key" :label="log.value" :value="log.key"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item>
+      <el-button v-on:click="btnDeleteClick">删除此版本</el-button>
+    </el-form-item>
+  </el-form>
+
+  <el-row>
+    <el-col :span="12" align="center"><el-link :underline="false" href="javascript:;">历史版本</el-link></el-col>
+    <el-col :span="12" align="center"><el-link :underline="false" href="javascript:;">当前版本</el-link></el-col>
+  </el-row>
+  
+  <div id="content" style="width:99%; height: 450px; margin-top: 10px; border: 1px solid #d7dae2;"></div>
+</div>
+<div v-else>
+  <el-alert type="error" title="当前模板不存在历史版本，无法进行还原"></el-alert>
+</div>
+
+<div style="height: 10px"></div>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row align="right" style="margin-right: 5px">
+  <el-col :span="24" align="right">
+    <el-button v-if="logId" size="small" type="primary" v-on:click="btnSubmitClick">还原历史版本</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/lib/monaco-editor/min/vs/loader.js"></script>
+<script src="/sitefiles/assets/js/admin/cms/templatesEditorLayerRestore.js" type="text/javascript"></script>
+}

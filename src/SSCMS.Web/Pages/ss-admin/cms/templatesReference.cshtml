@@ -1,0 +1,59 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-table
+  :data="elements"
+  stripe
+  style="width: 100%">
+  <el-table-column
+    label="标签"
+    width="150">
+    <template slot-scope="scope">
+      <el-link :underline="false" type="primary" v-on:click="btnElementSelectClick(scope.row)">
+        {{ scope.row.name }}
+      </el-link>
+    </template>
+  </el-table-column>
+  <el-table-column
+    prop="title"
+    label="说明"
+    width="150">
+  </el-table-column>
+  <el-table-column label="参考">
+    <template slot-scope="scope">
+        <el-link :underline="false" type="primary" :href="getLinkUrl(scope.row.name)" target="_blank">{{ getLinkUrl(scope.row.name) }}</el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<el-dialog
+  v-if="elementFields"
+  :title="elementTitle"
+  ref="elementPanel"
+  :visible.sync="elementPanel"
+  width="80%"
+  :center="true">
+  <el-table
+    :data="elementFields"
+    stripe
+    style="width: 100%">
+    <el-table-column
+      prop="name"
+      width="150"
+      label="属性">
+    </el-table-column>
+    <el-table-column
+      prop="title"
+      width="150"
+      label="说明">
+    </el-table-column>
+    <el-table-column label="参考">
+      <template slot-scope="scope">
+          <el-link :underline="false" type="primary" :href="getFieldLinkUrl(scope.row)" target="_blank">{{ getFieldLinkUrl(scope.row) }}</el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+</el-dialog>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/templatesReference.js" type="text/javascript"></script> }

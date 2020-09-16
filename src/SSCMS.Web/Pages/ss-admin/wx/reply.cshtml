@@ -1,0 +1,271 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-tabs--right .el-tabs__header.is-right{
+      width: 98%;
+    }
+    .el-card__header {
+      padding: 10px 20px;
+    }
+    .el-card-wrapper {
+      padding-bottom: 15px; 
+      padding-right: 15px; 
+      width: 25%; 
+      box-sizing: border-box;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .thumb {
+      padding: 10px;
+    }
+    .thumb .cover {
+      cursor: pointer; 
+      position: relative; 
+      height:150px; 
+      background-size: cover;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+      background-color: #f6f8f9;
+    }
+    .thumb .cover .text {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      display: block;
+      width: 100%;
+      color: #fff;
+      padding: 6px;
+      background-color: rgba(202, 195, 195, 0.28);;
+    }
+    .list {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .thumb:hover, .active, .list:hover {
+      background: rgb(225, 243, 216);
+    }
+    .list .text {
+      text-align: left;
+      font-size: 14px;
+      height: 38px;
+      overflow: hidden;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+
+<div v-if="!success">
+  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>
+<div v-else>
+
+  <el-row>
+    <el-col :span="12">
+      <el-form :inline="true" :model="form" size="mini">
+        <el-form-item label="搜索规则名称">
+          <el-input v-model="form.keyword" placeholder="请输入规则名称"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
+    <el-col class="commands" align="right" :span="12">
+  
+      <el-button v-on:click="btnAddClick" size="small" plain type="primary">
+        <i class="el-icon-plus"></i>
+        添加回复
+      </el-button>
+    </el-col>
+  </el-row>
+
+  <div style="height: 10px"></div>
+  <el-divider></el-divider>
+
+  <el-table
+    :data="rules"
+    stripe
+    style="width: 100%">
+    <el-table-column type="expand" width="25" align="right">
+      <template slot-scope="scope">
+        <el-form label-position="top">
+          <el-form-item
+            label="关键词">
+            <strong v-for="keyword in scope.row.keywords" style="margin-right: 15px;">
+              {{ keyword.text }}<span class="tips">（{{ keyword.exact ? '全匹配' : '半匹配' }}）</span>
+            </strong>
+          </el-form-item>
+          <el-form-item
+            label="回复内容">
+            
+            <template v-for="message in scope.row.messages">
+              <div v-if="message.materialType === 'Message' && message.materialId">
+                
+                <div class="el-card-wrapper" v-if="message.items.length === 1">
+                  <el-card :body-style="{ padding: '0px', textAlign: 'center' }">
+                    <div slot="header" class="clearfix">
+                      <el-tooltip :content="message.items[0].title" placement="top">
+                        <span style="text-overflow: ellipsis; display: block; width: 100%; white-space: nowrap; overflow: hidden;">{{ message.items[0].title }}</span>
+                      </el-tooltip>
+                    </div>
+                    <a href="javascript:;">
+                      <el-image 
+                        style="width: 100%; min-height: 120px; max-height:220px;"
+                        :src="message.items[0].thumbUrl">
+                        <div slot="error" class="image-slot">
+                          <i class="el-icon-picture-outline"></i>
+                        </div>
+                      </el-image>
+                    </a>
+                    <div style="padding: 14px;">
+                      <div style="cursor: pointer; font-size: 14px; text-overflow: ellipsis; width: 100%; max-height: 95px; line-height: 20px; overflow: hidden;">
+                        {{ message.items[0].digest }}
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="el-card-wrapper" v-else>
+                  <el-card :body-style="{ padding: '0px', textAlign: 'center' }">
+                    <template v-for="(item, index) in message.items" :key="index">
+                      <div v-if="index === 0" class="thumb">
+                        <div class="cover" :style="{backgroundImage: 'url(' + item.thumbUrl + ')'}">
+                          <div class="text">{{item.title}}</div>
+                        </div>
+                      </div>
+                      <div v-else class="list">
+                        <el-row>
+                          <el-col span="18">
+                            <div class="text">{{item.title}} {{item.index}}</div>
+                          </el-col>
+                          <el-col span="6">
+                            <el-image 
+                              fit="cover"
+                              style="width: 55px; height: 55px"
+                              :src="item.thumbUrl">
+                              <div slot="error" class="image-slot">
+                                <i class="el-icon-picture-outline" style="margin: 0px; font-size: 36px; color: #999; background: #fff; padding: 5px;"></i>
+                              </div>
+                            </el-image>
+                          </el-col>
+                        </el-row>
+                      </div>
+                      
+                      <el-divider></el-divider>
+                    </template>
+            
+                  </el-card>
+                </div>
+              </div>
+              <div v-else-if="message.materialType === 'Text' && message.text" style="padding: 20px 10px;">
+                <span style="white-space: pre;">{{ message.text }}</span>
+              </div>
+              <div v-else-if="message.materialType === 'Image' && message.materialId">
+                <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">
+                  <el-image 
+                    style="width: 100%; min-height: 120px; max-height:220px;"
+                    :src="message.image.url">
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+          
+                  <div style="padding: 14px;">
+                    <div>
+                      {{ message.image.title }}
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+              <div v-else-if="message.materialType === 'Audio' && message.materialId">
+                <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">  
+                  <div slot="header" class="clearfix">
+                    <i class="el-icon-headset"></i>
+                    <span>音频</span>
+                  </div>
+                  <div style="padding: 14px;">
+                    <div>
+                      {{ message.audio.title }}
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+              <div v-else-if="message.materialType === 'Video' && message.materialId">
+                <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">  
+                  <div slot="header" class="clearfix">
+                    <i class="el-icon-video-play"></i>
+                    <span>视频</span>
+                  </div>
+                  <div style="padding: 14px;">
+                    <div>
+                      {{ message.video.title }}
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+        
+              <el-divider></el-divider>
+            </template>
+
+          </el-form-item>
+        </el-form>
+      </template>
+    </el-table-column>
+    <el-table-column
+      prop="ruleName"
+      label="规则名称">
+    </el-table-column>
+    <el-table-column
+      label="关键词">
+      <template slot-scope="scope">
+        {{getKeywords(scope.row.keywords)}}
+      </template>
+    </el-table-column>
+    <el-table-column
+      label="回复内容">
+      <template slot-scope="scope">
+        {{getMessages(scope.row.messages)}}
+      </template>
+    </el-table-column>
+    <el-table-column
+      width="120"
+      label="更新于">
+      <template slot-scope="scope">
+        {{utils.getFriendlyDate(scope.row.lastModifiedDate)}}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="140">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button size="mini" v-on:click="btnEditClick(scope.row)">
+            编辑
+          </el-button>
+          <el-button size="mini" v-on:click="btnDeleteClick(scope.row)">
+            删除
+          </el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <div style="text-align: center; margin-top: 15px">
+    <el-pagination
+      v-on:current-change="btnPageClick"
+      :current-page="form.page"
+      :page-size="form.perPage"
+      layout="total, prev, pager, next, jumper"
+      :total="count">
+    </el-pagination>
+  </div>
+
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/reply.js" type="text/javascript"></script>
+}

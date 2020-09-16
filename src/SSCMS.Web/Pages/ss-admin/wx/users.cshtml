@@ -1,0 +1,282 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-tabs--right .el-tabs__header.is-right{
+      width: 98%;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+
+<div v-if="!success">
+  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>
+
+<el-tabs v-else v-model="form.isBlock" v-on:tab-click="btnTabClick" type="border-card">
+  <el-tab-pane :name="false" label="已关注">
+
+    <el-row>
+      <el-col :span="12">
+        <el-form :inline="true" :model="form" size="mini">
+          <el-form-item label="用户昵称">
+            <el-input v-model="form.keyword" placeholder="请输入关键字"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col class="commands" align="right" :span="12">
+
+        <el-popover
+          placement="bottom"
+          width="300"
+          v-model="popAddTags"
+          trigger="manual">
+          <el-form size="small" label-position="top" ref="formAddTags" :model="formAddTags">
+            <el-form-item label="标签名称" prop="tagName" :rules="{ required: true, message: '请输入标签名称' }">
+              <el-input v-model="formAddTags.tagName"></el-input>
+            </el-form-item>
+            <el-form-item align="center">
+              <el-button type="primary" v-on:click="btnAddTagClick">确 定</el-button>
+              <el-button v-on:click="popAddTags = false">取 消</el-button>
+            </el-form-item>
+          </el-form>
+          <el-button slot="reference" v-on:click="popAddTags = !popAddTags" size="small" plain type="primary">
+            <i class="el-icon-plus"></i>
+            新建标签
+          </el-button>
+        </el-popover>
+
+        <el-popover
+          placement="bottom"
+          width="300"
+          v-model="popEditTags"
+          trigger="manual">
+          <el-form size="small" label-position="top" ref="formEditTags" :model="formEditTags">
+            <el-form-item label="标签名称" prop="tagName" :rules="{ required: true, message: '请输入标签名称' }">
+              <el-input v-model="formEditTags.tagName"></el-input>
+            </el-form-item>
+            <el-form-item align="center">
+              <el-button type="primary" v-on:click="btnEditTagClick">确 定</el-button>
+              <el-button v-on:click="popEditTags = false">取 消</el-button>
+            </el-form-item>
+          </el-form>
+          <el-button slot="reference" v-if="form.tagId > 0" size="small" plain type="primary" v-on:click="popEditTags = !popEditTags">
+            重命名标签
+          </el-button>
+        </el-popover>
+
+        <el-button v-if="form.tagId > 0" size="small" plain type="primary" v-on:click="btnDeleteTagClick">
+          删除标签
+        </el-button>
+        
+      </el-col>
+    </el-row>
+
+    <el-container>
+      
+      <el-container>
+        <el-main>
+
+          <el-button size="small" plain type="primary" :disabled="!isChecked" v-on:click="">
+            打标签
+          </el-button>
+          <el-button size="small" plain type="primary" :disabled="!isChecked" v-on:click="btnBlockClick">
+            加入黑名单
+          </el-button>
+
+          <div style="height: 10px"></div>
+          <el-divider></el-divider>
+    
+          <el-table
+            :data="users"
+            ref="multipleTable"
+            row-key="openId"
+            :row-class-name="tableRowClassName"
+            v-on:selection-change="handleSelectionChange"
+            v-on:row-click="toggleSelection"
+            style="width: 100%">
+            <el-table-column type="selection" width="45" align="center"></el-table-column>
+            <el-table-column
+              label="头像" width="80">
+              <template slot-scope="scope">
+                <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">
+                  <el-avatar :size="36" :src="scope.row.headImgUrl"></el-avatar>
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="昵称">
+              <template slot-scope="scope">
+                <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">
+                  {{getUserTitle(scope.row)}}
+                  <br v-if="scope.row.tagIdList && scope.row.tagIdList.length > 0" />
+                  {{ getUserTags(scope.row) }}
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="city"
+              width="120"
+              label="城市">
+            </el-table-column>
+            <el-table-column
+              width="120"
+              label="关注时间">
+              <template slot-scope="scope">
+                {{utils.formatDate(scope.row.subscribeTime)}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="120"
+              label="来源">
+              <template slot-scope="scope">
+                {{formatSubscribeScene(scope.row.subscribeScene)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120">
+              <template slot-scope="scope">
+
+                <el-button size="mini" v-on:click="btnRemarkClick(scope.row)">
+                  修改备注
+                </el-button>
+
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <div style="text-align: center; margin-top: 15px">
+            <el-pagination
+              v-on:current-change="btnPageClick"
+              :current-page="form.page"
+              :page-size="form.perPage"
+              layout="total, prev, pager, next, jumper"
+              :total="count">
+            </el-pagination>
+          </div>
+    
+        </el-main>
+      </el-container>
+
+      <el-aside width="200px">
+        <el-tabs v-model="form.tagId" tab-position="right" style="height: 100%;" v-on:tab-click="btnSearchClick">
+          <el-tab-pane :label="'全部用户' + '(' + total + ')'" :name="0"></el-tab-pane>
+          <el-tab-pane
+            v-for="tag in tags"
+            :key="tag.id"
+            :label="tag.name + '(' + tag.count + ')'"
+            :name="tag.id">
+          </el-tab-pane>
+        </el-tabs>
+      </el-aside>
+
+    </el-container>
+    
+  </el-tab-pane>
+  <el-tab-pane :name="true" label="黑名单">
+    
+    <el-button size="small" plain type="primary" :disabled="!isChecked" v-on:click="btnUnBlockClick">
+      移出黑名单
+    </el-button>
+
+    <div style="height: 10px"></div>
+    <el-divider></el-divider>
+
+    <el-table
+      :data="users"
+      ref="multipleTable"
+      row-key="openId"
+      :row-class-name="tableRowClassName"
+      v-on:selection-change="handleSelectionChange"
+      v-on:row-click="toggleSelection"
+      style="width: 100%">
+      <el-table-column type="selection" width="45" align="center"></el-table-column>
+      <el-table-column
+        label="头像" width="80">
+        <template slot-scope="scope">
+          <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">
+            <el-avatar :size="36" :src="scope.row.headImgUrl"></el-avatar>
+          </el-link>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="昵称">
+        <template slot-scope="scope">
+          <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">
+            {{getUserTitle(scope.row)}}
+            <br v-if="scope.row.tagIdList && scope.row.tagIdList.length > 0" />
+            {{ getUserTags(scope.row) }}
+          </el-link>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="city"
+        width="120"
+        label="城市">
+      </el-table-column>
+      <el-table-column
+        width="120"
+        label="关注时间">
+        <template slot-scope="scope">
+          {{utils.formatDate(scope.row.subscribeTime)}}
+        </template>
+      </el-table-column>
+      <el-table-column
+        width="120"
+        label="来源">
+        <template slot-scope="scope">
+          {{formatSubscribeScene(scope.row.subscribeScene)}}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="120">
+        <template slot-scope="scope">
+          <el-button-group>
+            
+            <el-button size="mini" v-on:click="btnRemarkClick(scope.row)">
+              修改备注
+            </el-button>
+
+          </el-button-group>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div style="text-align: center; margin-top: 15px">
+      <el-pagination
+        v-on:current-change="btnPageClick"
+        :current-page="form.page"
+        :page-size="form.perPage"
+        layout="total, prev, pager, next, jumper"
+        :total="count">
+      </el-pagination>
+    </div>
+
+  </el-tab-pane>
+</el-tabs>
+
+<el-dialog
+  title="修改备注"
+  :visible.sync="dialogRemark"
+  size="small"
+  width="30%">
+  <el-form size="small" label-position="top" ref="formRemark" :model="formRemark">
+    <el-form-item label="备注" prop="remark" :rules="{ required: true, message: '请输入备注' }">
+      <el-input v-model="formRemark.remark"></el-input>
+    </el-form-item>
+  </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button size="small" v-on:click="dialogRemark = false">取 消</el-button>
+    <el-button size="small" type="primary" v-on:click="btnRemarkSubmitClick">确 定</el-button>
+  </span>
+</el-dialog>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/users.js" type="text/javascript"></script>
+}

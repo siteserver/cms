@@ -1,0 +1,19 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form ref="form" :model="form">
+  <el-form-item label="" prop="text" :rules="{ required: true, message: '请输入内容' }">
+    <el-input type="textarea" :rows="10" v-model="form.text"></el-input>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+  
+<el-row align="center" style="text-align: center; padding-top:10px">
+  <el-button size="small" v-on:click="btnSubmitClick" type="primary">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick" type="default">取 消</el-button>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/layerText.js" type="text/javascript"></script>
+}

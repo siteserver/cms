@@ -1,0 +1,22 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <link href="/sitefiles/assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="card" style="margin: 10px;">
+  <div class="card-header" style="border-top: 3px solid #ef5350 !important;border-radius: 3px;">
+    <strong>错误信息</strong>
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+      <p style="word-wrap: break-word; font-size: 14px;" v-html="message" v-show="message"></p>
+      <p style="word-wrap: break-word; font-size: 14px;" v-html="stackTrace" v-show="stackTrace"></p>
+      <p style="word-wrap: break-word; font-size: 14px;" v-html="addDate" v-show="addDate"></p>
+    </blockquote>
+  </div>
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/error.js" type="text/javascript"></script> }

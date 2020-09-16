@@ -1,0 +1,103 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-tabs--right .el-tabs__header.is-right{
+      width: 98%;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+
+<div v-if="!success">
+  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>
+<div v-else>
+
+  <el-form :inline="true" :model="form" size="mini">
+    <el-form-item label="内容">
+      <el-input v-model="form.keyword" placeholder="请输入关键字"></el-input>
+    </el-form-item>
+    <el-form-item label="">
+      <el-checkbox v-model="form.star">仅显示收藏</el-checkbox>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+    </el-form-item>
+  </el-form>
+  
+  <el-divider></el-divider>
+  
+  <el-alert type="warning">
+    根据微信公众号规则，消息允许在收到2天内回复，超过2天时间将无法回复
+  </el-alert>
+  
+  <div style="height: 10px"></div>
+  
+  <el-table
+    :data="chats"
+    stripe
+    style="width: 100%">
+    <el-table-column
+      label="头像" width="80">
+      <template slot-scope="scope">
+        <el-avatar :size="36" :src="getUserAvatarUrl(scope.row)"></el-avatar>
+      </template>
+    </el-table-column>
+    <el-table-column
+      width="120"
+      label="昵称">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary">
+          {{getUserTitle(scope.row)}}
+        </el-link>
+      </template>
+    </el-table-column>
+    <el-table-column
+      prop="text"
+      label="内容">
+    </el-table-column>
+    <el-table-column
+      width="120"
+      label="时间">
+      <template slot-scope="scope">
+        {{utils.getFriendlyDate(scope.row.createdDate)}}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="200">
+      <template slot-scope="scope">
+        <el-button-group>
+          <el-button v-if="scope.row.isStar" size="mini" icon="el-icon-star-off" v-on:click="btnStarClick(scope.row)">
+            取消收藏
+          </el-button>
+          <el-button v-else size="mini" icon="el-icon-star-off" v-on:click="btnStarClick(scope.row)">
+            收藏
+          </el-button>
+          <el-button size="mini" icon="el-icon-chat-round" v-on:click="btnReplyClick(scope.row)">
+            回复
+          </el-button>
+        </el-button-group>
+      </template>
+    </el-table-column>
+  </el-table>
+  
+  <div style="text-align: center; margin-top: 15px">
+    <el-pagination
+      v-on:current-change="btnPageClick"
+      :current-page="form.page"
+      :page-size="form.perPage"
+      layout="total, prev, pager, next, jumper"
+      :total="count">
+    </el-pagination>
+  </div>
+
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/chat.js" type="text/javascript"></script>
+}

@@ -1,0 +1,241 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-badge__content.is-fixed {
+      top: 16px;
+      right: 4px;
+      border: 0;
+    }
+  </style>
+}
+
+<el-menu :default-active="pageType" mode="horizontal"
+  background-color="#545c64"
+  text-color="#fff"
+  active-text-color="#ffd04b"
+  v-on:select="btnNavSelect">
+  <el-menu-item index="enabled">
+      <el-link :underline="false">
+        <el-badge type="primary" :value="enabledPlugins.length">已启用</el-badge>
+      </el-link>
+  </el-menu-item>
+  <el-menu-item index="disabled">
+    <el-link :underline="false">
+      <el-badge type="warning" :value="disabledPlugins.length">已禁用</el-badge>
+    </el-link>
+  </el-menu-item>
+  <el-menu-item index="error" v-if="errorPlugins.length > 0">
+    <el-link :underline="false">
+      <el-badge type="danger" :value="errorPlugins.length">运行错误</el-badge>
+    </el-link>
+  </el-menu-item>
+  <el-menu-item index="update" v-if="pageType == 'update' || updatePlugins.length > 0">
+    <el-link :underline="false">
+      <el-badge type="warning" :value="updatePlugins.length">发现新版本</el-badge>
+    </el-link>
+  </el-menu-item>
+</el-menu>
+
+<el-card class="box-card">
+
+  <div slot="header" class="clearfix">
+    <span>{{getPageTitle()}}</span>
+    <el-button style="float: right; padding: 10px; margin-top: -8px;" type="warning" icon="el-icon-refresh" v-on:click="btnRestartClick">重新加载所有插件</el-button>
+  </div>
+
+  <el-table v-if="pageType == 'enabled' || pageType == 'disabled'" :data="plugins">
+    <el-table-column label="LOGO" width="80" align="center">
+      <template slot-scope="scope">
+        <img :src="getIconUrl(scope.row)" width="48" height="48">
+      </template>
+    </el-table-column>
+    <el-table-column label="插件Id" width="160">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{ scope.row.pluginId }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="插件名称" width="220">
+      <template slot-scope="scope">
+        {{ scope.row.displayName }}
+      </template>
+    </el-table-column>
+    <el-table-column label="版本号" width="80">
+      <template slot-scope="scope">
+        {{ scope.row.version }}
+      </template>
+    </el-table-column>
+    <el-table-column label="插件介绍">
+      <template slot-scope="scope">
+        {{ scope.row.description }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="60">
+      <template slot-scope="scope">
+
+        <el-popover
+          placement="bottom"
+          width="200"
+          trigger="click">
+
+          <el-menu
+            v-on:select="btnMenuClick"
+            class="el-menu-vertical-demo">
+            <el-menu-item v-if="scope.row.disabled" :index="scope.row.pluginId + ':enable'">
+              <i class="el-icon-check"></i>
+              <span slot="title">启用</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':config'">
+              <i class="el-icon-setting"></i>
+              <span slot="title">配置</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':disable'">
+              <i class="el-icon-close"></i>
+              <span slot="title">禁用</span>
+            </el-menu-item>
+            <el-menu-item :index="scope.row.pluginId + ':uninstall'">
+              <i class="el-icon-delete"></i>
+              <span slot="title">卸载插件</span>
+            </el-menu-item>
+          </el-menu>
+
+          <el-link
+            slot="reference"
+            :underline="false"
+            type="default">
+            <i class="el-icon-setting" style="font-size: 22px;"></i>
+          </el-link>
+        </el-popover>
+        
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-table v-if="pageType == 'error'" :data="plugins">
+    <el-table-column label="LOGO" width="80" align="center">
+      <template slot-scope="scope">
+        <img :src="getIconUrl(scope.row)" width="48" height="48">
+      </template>
+    </el-table-column>
+    <el-table-column label="插件Id" width="160">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{ scope.row.pluginId }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="插件名称" width="220">
+      <template slot-scope="scope">
+        {{ scope.row.displayName }}
+      </template>
+    </el-table-column>
+    <el-table-column label="版本号" width="80">
+      <template slot-scope="scope">
+        {{ scope.row.version }}
+      </template>
+    </el-table-column>
+    <el-table-column label="错误说明">
+      <template slot-scope="scope">
+        {{ scope.row.errorMessage }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="60">
+      <template slot-scope="scope">
+        
+        <el-popover
+          placement="bottom"
+          width="200"
+          trigger="click">
+
+          <el-menu
+            v-on:select="btnMenuClick"
+            class="el-menu-vertical-demo">
+            <el-menu-item v-if="scope.row.disabled" :index="scope.row.pluginId + ':enable'">
+              <i class="el-icon-check"></i>
+              <span slot="title">启用</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':config'">
+              <i class="el-icon-setting"></i>
+              <span slot="title">配置</span>
+            </el-menu-item>
+            <el-menu-item v-if="!scope.row.disabled" :index="scope.row.pluginId + ':disable'">
+              <i class="el-icon-close"></i>
+              <span slot="title">禁用</span>
+            </el-menu-item>
+            <el-menu-item :index="scope.row.pluginId + ':uninstall'">
+              <i class="el-icon-delete"></i>
+              <span slot="title">卸载插件</span>
+            </el-menu-item>
+          </el-menu>
+
+          <el-link
+            slot="reference"
+            :underline="false"
+            type="default">
+            <i class="el-icon-setting" style="font-size: 22px;"></i>
+          </el-link>
+        </el-popover>
+        
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-table v-else-if="pageType == 'update'" :data="plugins">
+    <el-table-column label="LOGO" width="80" align="center">
+      <template slot-scope="scope">
+        <img :src="scope.row.icon || utils.getAssetsUrl('images/favicon.png')" width="48" height="48">
+      </template>
+    </el-table-column>
+    <el-table-column label="插件Id">
+      <template slot-scope="scope">
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row.updatePlugin)">{{ scope.row.updatePlugin.pluginId }}</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="插件名称">
+      <template slot-scope="scope">
+        {{ scope.row.displayName }}
+      </template>
+    </el-table-column>
+    <el-table-column label="已安装版本" width="120" align="center">
+      <template slot-scope="scope">
+        {{ scope.row ? scope.row.version : '' }}
+      </template>
+    </el-table-column>
+    <el-table-column label="新版本"  width="120" align="center">
+      <template slot-scope="scope">
+        {{ scope.row.updatePlugin.version }}
+      </template>
+    </el-table-column>
+    <el-table-column label="发布时间"  width="120" align="center">
+      <template slot-scope="scope">
+        {{ scope.row.updatePlugin.published }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="100" align="center">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          type="warning"
+          :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: scope.row.pluginId})">
+          升级
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+  
+  <div v-if="pageType === 'update'">
+    <div style="height: 10px"></div>
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+
+    <el-button
+      size="small"
+      type="warning"
+      v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePluginIds.join(',')})">
+      一键升级所有插件
+    </el-button>
+  </div>
+
+</el-card>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/plugins/manage.js" type="text/javascript"></script>
+}

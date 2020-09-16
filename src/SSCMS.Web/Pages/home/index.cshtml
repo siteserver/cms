@@ -1,0 +1,159 @@
+@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <link href="/sitefiles/assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="/sitefiles/assets/css/menu.css" rel="stylesheet" type="text/css" />
+}
+
+<header id="header">
+  
+  <div class="logo">
+    <a v-if="homeLogoUrl" :href="cloud.host" target="_blank">
+      <img :src="homeLogoUrl" />
+    </a>
+    <a v-else :href="cloud.host" target="_blank">
+      {{ homeTitle }}
+    </a>
+  </div>
+
+  <template v-if="isDesktop">
+
+    <el-link v-for="topMenu in menus" class="nav" :key="topMenu.id" :underline="false" :icon="topMenu.iconClass"  v-on:click="btnTopMenuClick(topMenu)" :style="{backgroundColor: (topMenu == menu ? '#2e9c90' : '')}">
+      {{ topMenu.text }}
+    </el-link>
+
+    <div class="right">
+
+      <el-dropdown v-on:command="btnUserMenuClick">
+        <span class="el-dropdown-link" style="top: 7px;position: inherit;">
+          <el-avatar size="small" :src="user.avatarUrl || '/sitefiles/assets/images/default_avatar.png'"></el-avatar>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="view">{{user.displayName || user.userName}}</el-dropdown-item>
+          <el-dropdown-item command="profile">修改资料</el-dropdown-item>
+          <el-dropdown-item command="password">更改密码</el-dropdown-item>
+          <el-dropdown-item command="logout">退出系统</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+    </div>
+
+  </template>
+  <template v-else>
+    <a href="javascript:;" v-on:click="btnMobileMenuClick" style="margin-right: 20px; float: right;">
+      <i :class="{'ion-navicon': !isMobileMenu, 'ion-android-close': isMobileMenu}" style="font-size: 28px;color: #fff;"></i>
+    </a>
+  </template>
+
+  <div style="clear:both"></div>
+
+</header>
+
+<div v-if="isDesktop || isMobileMenu" id="sidebar" :style="{width: leftWidth + 'px'}">
+
+  <div class="title">
+
+    <div v-if="!isCollapse">
+
+      <div>
+        <el-link :underline="false" style="margin-left: -15px;">
+          {{ menu.text }}
+          <i v-if="menu.iconClass" :class="menu.iconClass"></i>
+        </el-link>
+      </div>
+
+      <el-link v-if="!isMobileMenu" style="float: right" :underline="false" v-on:click="isCollapse = true;">
+        <i class="el-icon-s-fold" style="font-size: 18px; position: absolute; top: -17px; right: 6px;"></i>
+      </el-link>
+    </div>
+    <div v-else>
+      <el-link v-if="!isMobileMenu" :underline="false" v-on:click="isCollapse = false;">
+        <i class="el-icon-s-unfold" style="font-size: 18px;"></i>
+      </el-link>
+    </div>
+  </div>
+
+  <el-menu
+    :default-openeds="defaultOpeneds"
+    :default-active="defaultActive"
+    :unique-opened="true"
+    :collapse="isCollapse"
+    :collapse-transition="false"
+    v-on:select="btnSideMenuClick">
+
+    <template v-for="level1 in menu.children">
+      <template v-if="level1.children && level1.children.length > 0">
+
+        <el-submenu :index="level1.id">
+          <template slot="title">
+            <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+            <span>{{ level1.text }}</span>
+          </template>
+
+          <template v-for="level2 in level1.children">
+
+            <template v-if="level2.children && level2.children.length > 0">
+
+              <el-submenu :index="level2.id">
+                <template slot="title">
+                  <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                  <span>{{ level2.text }}</span>
+                </template>
+      
+                <template v-for="level3 in level2.children">
+                  <el-menu-item :class="{'is-active': getIndex(level1, level2, level3) == defaultActive}" :index="getIndex(level1, level2, level3)">
+                    <i v-if="level3.iconClass" :class="level3.iconClass"></i>
+                    <span>{{ level3.text }}</span>
+                  </el-menu-item>
+                </template>
+      
+              </el-submenu>
+      
+            </template>
+            <template v-else>
+              <el-menu-item :class="{'is-active': getIndex(level1, level2) == defaultActive}" :index="getIndex(level1, level2)">
+                <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                <span>{{ level2.text }}</span>
+              </el-menu-item>
+            </template>
+          </template>
+
+        </el-submenu>
+
+      </template>
+      <template v-else>
+        <el-menu-item :class="{'is-active': getIndex(level1) == defaultActive}" :index="getIndex(level1)">
+          <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+          <span>{{ level1.text }}</span>
+        </el-menu-item>
+      </template>
+    </template>
+  </el-menu>
+
+  <div style="height: 45px"></div>
+  
+</div>
+
+<div v-if="tabs && tabs.length > 0" id="tabs" :style="{width: (winWidth - leftWidth) + 'px', marginLeft: leftWidth + 'px'}">
+  <el-tabs v-on:contextmenu.prevent.native="openContextMenu($event)" v-model="tabName" type="border-card" :closable="true" v-on:tab-remove="utils.removeTab">
+    <el-tab-pane
+      :key="item.name"
+      v-for="(item, index) in tabs"
+      :label="item.title"
+      :name="item.name">
+      <iframe :id="'frm-' + item.name" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
+    </el-tab-pane>
+  </el-tabs>
+</div>
+
+<ul v-show="contextMenuVisible" :style="{left: contextLeft + 'px', top: contextTop + 'px'}" class="el-dropdown-menu" style="z-index: 2001; position: absolute; display: none;">
+  <li v-on:click="btnContextClick('this')" class="el-dropdown-menu__item">关闭</li>
+  <li v-on:click="btnContextClick('others')" class="el-dropdown-menu__item">关闭其他</li>
+  <li v-on:click="btnContextClick('left')" class="el-dropdown-menu__item">关闭左边</li>
+  <li v-on:click="btnContextClick('right')" class="el-dropdown-menu__item">关闭右边</li>
+  <li v-on:click="btnContextClick('all')" class="el-dropdown-menu__item">关闭所有</li>
+</ul>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/index.js" type="text/javascript"></script>
+}

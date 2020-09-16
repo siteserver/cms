@@ -1,0 +1,99 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form :inline="true">
+  <el-form-item label="栏目筛选">
+    <el-input v-model="filterText" size="mini" placeholder="请输入栏目名称/栏目Id"></el-input>
+  </el-form-item>
+</el-form>
+
+<el-row :gutter="12">
+  <el-col :span="12">
+    <el-card>
+      <div slot="header" class="clearfix">
+        <span>从栏目</span>
+      </div>
+
+      <el-tree
+        ref="tree"
+        :data="channels"
+        :default-expanded-keys="expandedChannelIds"
+        :default-checked-keys="checkedChannelIds"
+        node-key="value"
+        show-checkbox
+        check-on-click-node
+        check-strictly
+        highlight-current
+        class="tree"
+        :filter-node-method="filterNode"
+        v-on:check-change="handleCheckChange">
+        <div slot-scope="{ node, data }">
+          <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank"><i class="el-icon-link"></i></el-link>
+          {{ data.label }} ({{ data.count }})
+          <el-tag size="mini" v-if="data.indexName">
+            {{ data.indexName }}
+          </el-tag>
+        </div>
+      </el-tree>
+    </el-card>
+  </el-col>
+  <el-col :span="12">
+    <el-card>
+      <div slot="header" class="clearfix">
+        <span>复制到</span>
+      </div>
+
+      <el-form ref="form" :model="form" size="small" label-position="top">
+        <el-form-item label="复制到站点" prop="transSiteId" :rules="{ required: true, message: '请选择复制到站点' }">
+          <el-select v-model="form.transSiteId" filterable style="width: 100%;" v-on:change="handleTransSiteIdChange">
+            <el-option v-for="transSite in transSites" :key="transSite.value" :value="transSite.value" :label="transSite.label"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="transChannels" label="复制到栏目" prop="transChannelIds" :rules="{ required: true, message: '请选择复制到栏目' }">
+          <el-cascader
+            v-model="form.transChannelIds"
+            filterable
+            :options="transChannels"
+            :props="{ checkStrictly: true }"
+            style="width: 100%;"
+            placeholder="请选择栏目">
+          </el-cascader>
+        </el-form-item>
+        <el-form-item label="复制类型" prop="translateType" :rules="{ required: true, message: '请选择复制类型' }">
+          <el-select v-model="form.translateType" style="width: 100%;">
+            <el-option v-for="type in translateTypes" :key="type.value" :value="type.value" :label="type.label"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="复制后删除">
+          <el-switch
+            v-model="form.isDeleteAfterTranslate">
+          </el-switch>
+        </el-form-item>
+      </el-form>
+
+      <div style="margin: 10px 0"></div>
+      <el-divider></el-divider>
+      <div style="margin: 10px 0"></div>
+
+      <el-button v-on:click="btnTranslateClick" :disabled="channelIds.length === 0" type="primary" size="medium">
+        复制
+      </el-button>
+    </el-card>
+  </el-col>
+</el-row>
+
+<div v-if="returnUrl">
+  <div style="height: 10px"></div>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+
+  <el-button
+    size="small"
+    v-on:click="btnReturnClick">
+    返 回
+  </el-button>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/channelsTranslate.js" type="text/javascript"></script>
+}

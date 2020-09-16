@@ -1,0 +1,107 @@
+@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px"></div>
+
+<el-tabs type="border-card">
+  <el-tab-pane label="微信公众号设置">
+
+    <el-alert v-if="mpResult && mpResult.success" type="success" title="微信公众号设置保存成功！"></el-alert>
+    <el-alert v-else-if="mpResult && !mpResult.success" type="error" :title="mpResult.errorMessage" ></el-alert>
+
+    <div style="height: 10px"></div>
+
+    <el-form size="small" ref="mpForm" label-width="260px" status-icon :model="mpForm">
+      <el-form-item label="AppId" prop="mpAppId" :rules="{ required: true, message: '请输入AppId' }">
+        <el-input v-model="mpForm.mpAppId" placeholder="请输入AppId"></el-input>
+      </el-form-item>
+      <el-form-item label="AppSecret" prop="mpAppSecret" :rules="{ required: true, message: '请输入AppSecret' }">
+        <el-input v-model="mpForm.mpAppSecret" placeholder="请输入AppSecret"></el-input>
+      </el-form-item>
+    </el-form>
+
+    <div style="height: 10px"></div>
+    <el-alert type="info">
+      请进入微信公众平台，进入<strong>开发 -> 基本配置 -> 服务器配置</strong>，将以下信息填入并启用。
+    </el-alert>
+    <div style="height: 10px"></div>
+
+    <el-form size="small" label-width="260px" status-icon>
+      <el-form-item label="服务器地址(URL)">
+        {{mpUrl}}
+      </el-form-item>
+      <el-form-item label="令牌(Token)">
+        {{account.mpToken}}
+      </el-form-item>
+      <el-form-item label="消息加解密密钥(EncodingAESKey)">
+        {{account.mpEncodingAESKey}}
+      </el-form-item>
+      <el-form-item label="消息加解密方式">
+        安全模式（推荐）
+      </el-form-item>
+    </el-form>
+
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+
+    <el-row>
+      <el-col :span="24" align="center">
+        <el-button type="primary" v-on:click="btnMpSubmitClick" size="small">保 存</el-button>
+      </el-col>
+    </el-row>
+  </el-tab-pane>
+  
+  <!-- <el-tab-pane label="微信支付设置">
+
+    <el-alert v-if="tenPayForm.tenPayConnected" type="success" title="微信支付连接成功，服务器配置已启用"></el-alert>
+    <el-alert v-else type="warning" title="微信支付未连接，请设置后进入微信支付中启用" ></el-alert>
+    <div style="height: 10px"></div>
+    <el-alert type="info" title="此处设置的支付接口将作用于系统所有支持的在线支付插件"></el-alert>
+    <div style="height: 10px"></div>
+
+    <el-form size="small" ref="tenPayForm" label-width="260px" status-icon :model="tenPayForm">
+      <el-form-item label="AppId" prop="tenPayAppId" :rules="{ required: true, message: '请输入AppId' }">
+        <el-input v-model="tenPayForm.tenPayAppId" placeholder="请输入AppId"></el-input>
+      </el-form-item>
+      <el-form-item label="AppSecret" prop="tenPayAppSecret" :rules="{ required: true, message: '请输入AppSecret' }">
+        <el-input v-model="tenPayForm.tenPayAppSecret" placeholder="请输入AppSecret"></el-input>
+      </el-form-item>
+      <el-form-item label="商户号(MchId)" prop="tenPayMchId" :rules="{ required: true, message: '请输入商户号' }">
+        <el-input v-model="tenPayForm.tenPayMchId" placeholder="请输入商户号"></el-input>
+      </el-form-item>
+      <el-form-item label="商户支付密钥(Key)" prop="tenPayKey" :rules="{ required: true, message: '请输入商户支付密钥' }">
+        <el-input v-model="tenPayForm.tenPayKey" placeholder="商户支付密钥"></el-input>
+        <div class="tips">
+          商户支付密钥请参考微信商户开户邮件设置
+        </div>
+      </el-form-item>
+      <el-form-item label="支付授权目录" prop="tenPayAuthorizeUrl" :rules="{ required: true, message: '请输入地址，以http(s)开头' }">
+        <el-input v-model="tenPayForm.tenPayAuthorizeUrl" placeholder="请输入地址，以http(s)开头"></el-input>
+        <div class="tips">
+          必须以http://或https://开头，分别支持80端口和443端口。
+          <el-link type="primary" :underline="false" v-on:click="btnResetClick('tenPayAuthorizeUrl')">默认地址</el-link>
+        </div>
+      </el-form-item>
+      <el-form-item label="支付回调链接" prop="tenPayNotifyUrl" :rules="{ required: true, message: '请输入地址，以http(s)开头' }">
+        <el-input v-model="tenPayForm.tenPayNotifyUrl" placeholder="请输入地址，以http(s)开头"></el-input>
+        <div class="tips">
+          必须以http://或https://开头，分别支持80端口和443端口。
+          <el-link type="primary" :underline="false" v-on:click="btnResetClick('tenPayNotifyUrl')">默认地址</el-link>
+        </div>
+      </el-form-item>
+    </el-form>
+
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+
+    <el-row>
+      <el-col :span="24" align="center">
+        <el-button type="primary" v-on:click="btnTenPaySubmitClick" size="small">保 存</el-button>
+      </el-col>
+    </el-row>
+  </el-tab-pane> -->
+</el-tabs>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/account.js" type="text/javascript"></script>
+}

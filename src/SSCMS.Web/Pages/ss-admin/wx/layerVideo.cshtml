@@ -1,0 +1,72 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-row>
+  <el-col :span="24">
+    <el-form :inline="true" :model="form" size="mini">
+      <el-form-item label="搜索">
+        <el-input v-model="form.keyword" placeholder="关键字"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+      </el-form-item>
+    </el-form>
+  </el-col>
+</el-row>
+
+<el-form :inline="true" :model="form">
+  <el-form-item label="分组">
+
+    <el-tag
+      v-for="group in groups"
+      :key="group.id"
+      type="success"
+      style="cursor: pointer; margin: 0 3px 6px 0;"
+      v-on:click="btnGroupClick(group.id)"
+      :effect="form.groupId === group.id ? 'dark' : 'plain'">
+      {{ group.groupName }}
+    </el-tag>
+   
+  </el-form-item>
+</el-form>
+
+<el-table
+  :data="videos"
+  style="width: 100%">
+  <el-table-column label="标题">
+    <template slot-scope="scope">
+      <el-link :underline="false" v-on:click="btnAudioClick(scope.row)" style="cursor: pointer; height: 22px; overflow: hidden; font-size: 14px;" type="primary">{{ scope.row.title }}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column
+    prop="fileType"
+    label="文件类型"
+    width="120">
+  </el-table-column>
+  <el-table-column
+    prop="createdDate"
+    label="创建时间"
+    width="220">
+  </el-table-column>
+</el-table>
+
+<el-divider></el-divider>
+<el-row style="margin: 10px;">
+  <el-col :span="20" align="left">
+    <div style="text-align: left;">
+      <el-pagination
+        v-on:current-change="btnPageClick"
+        :current-page="form.page"
+        :page-size="form.perPage"
+        layout="total, prev, pager, next, jumper"
+        :total="count">
+      </el-pagination>
+    </div>
+  </el-col>
+  <el-col :span="4" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/wx/layerVideo.js" type="text/javascript"></script> }

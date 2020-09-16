@@ -1,0 +1,252 @@
+<template v-for="style in styles" :key="style.attributeName">
+  <!-- Image -->
+  <template v-if="style.inputType === 'Image'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-button-group>
+        <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: style.attributeName, no: 0})">
+          上传
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: style.attributeName, no: 0, full: true})">
+          选择
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[_.lowerFirst(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
+          预览
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
+          新增
+        </el-button>
+      </el-button-group>
+      <el-input
+        v-model="form[_.lowerFirst(style.attributeName)]"
+        size="small"
+        :placeholder="style.helpText || '请输入图片地址或点击上方按钮上传'">
+      </el-input>
+      <template v-for="n in form[utils.getCountName(style.attributeName)]">
+        <el-button-group>
+          <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: style.attributeName, no: n})">
+            上传
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: style.attributeName, no: n, full: true})">
+            选择
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, n)">
+            预览
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
+            新增
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-remove-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
+            删除
+          </el-button>
+        </el-button-group>
+        <el-input
+          v-model="form[utils.getExtendName(style.attributeName, n)]"
+          size="small"
+          :placeholder="style.helpText || '请输入图片地址或点击上方按钮上传'">
+        </el-input>
+      </template>
+    </el-form-item>
+  </template>
+  <!-- File -->
+  <template v-else-if="style.inputType === 'File'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-button-group>
+        <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传附件', name: 'formLayerFileUpload', attributeName: style.attributeName, no: 0})">
+          上传
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'materialLayerFileSelect', attributeName: style.attributeName, no: 0, full: true})">
+          选择
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
+          新增
+        </el-button>
+      </el-button-group>
+      <el-input
+        v-model="form[_.lowerFirst(style.attributeName)]"
+        size="small"
+        :placeholder="style.helpText || '请输入附件地址或点击上方按钮上传'">
+      </el-input>
+      <template v-for="n in form[utils.getCountName(style.attributeName)]">
+        <el-button-group>
+          <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传附件', name: 'formLayerFileUpload', attributeName: style.attributeName, no: n})">
+            上传
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'materialLayerFileSelect', attributeName: style.attributeName, no: n, full: true})">
+            选择
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
+            新增
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-remove-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
+            删除
+          </el-button>
+        </el-button-group>
+        <el-input
+          v-model="form[utils.getExtendName(style.attributeName, n)]"
+          size="small"
+          :placeholder="style.helpText || '请输入附件地址或点击上方按钮上传'">
+        </el-input>
+      </template>
+    </el-form-item>
+  </template>
+  <!-- Video -->
+  <template v-else-if="style.inputType === 'Video'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-button-group>
+        <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传视频', name: 'formLayerVideoUpload', attributeName: style.attributeName, no: 0})">
+          上传
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'materialLayerVideoSelect', attributeName: style.attributeName, no: 0, full: true})">
+          选择
+        </el-button>
+        <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
+          新增
+        </el-button>
+      </el-button-group>
+      <el-input
+        v-model="form[_.lowerFirst(style.attributeName)]"
+        size="small"
+        :placeholder="style.helpText || '请输入视频地址或点击上方按钮上传'">
+      </el-input>
+      <template v-for="n in form[utils.getCountName(style.attributeName)]">
+        <el-button-group>
+          <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传视频', name: 'formLayerVideoUpload', attributeName: style.attributeName, no: n})">
+            上传
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'materialLayerVideoSelect', attributeName: style.attributeName, no: n, full: true})">
+            选择
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
+            新增
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-remove-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
+            删除
+          </el-button>
+        </el-button-group>
+        <el-input
+          v-model="form[utils.getExtendName(style.attributeName, n)]"
+          size="small"
+          :placeholder="style.helpText || '请输入视频地址或点击上方按钮上传'">
+        </el-input>
+      </template>
+    </el-form-item>
+  </template>
+  <!-- TextEditor -->
+  <template v-else-if="style.inputType === 'TextEditor'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-button-group style="margin-bottom: 2px;">
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', attributeName: style.attributeName})">
+          导入Word
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图片', name: 'editorLayerImage', attributeName: style.attributeName})">
+          插入图片
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入视频', name: 'editorLayerVideo', attributeName: style.attributeName})">
+          插入视频
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入音频', name: 'editorLayerAudio', attributeName: style.attributeName})">
+          插入音频
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入附件', name: 'editorLayerFile', attributeName: style.attributeName})">
+          插入附件
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图文', name: 'editorLayerArticle', attributeName: style.attributeName, full: true})">
+          插入图文
+        </el-button>
+      </el-button-group>
+      <textarea
+        :id="style.attributeName"
+        :name="style.attributeName"
+        v-html="form[_.lowerFirst(style.attributeName)]"
+        style="width: 100%;">
+      </textarea>
+      <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
+    </el-form-item>
+  </template>
+  <!-- TextArea -->
+  <template v-else-if="style.inputType === 'TextArea'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-input
+        v-model="form[_.lowerFirst(style.attributeName)]"
+        type="textarea"
+        size="small"
+        :placeholder="style.helpText"
+        :autosize="{ minRows: 4, maxRows: 10}">
+      </el-input>
+    </el-form-item>
+  </template>
+  <!-- Text -->
+  <template v-else-if="style.inputType === 'Text'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-input v-model="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText"></el-input>
+    </el-form-item>
+  </template>
+  <!-- Number -->
+  <template v-else-if="style.inputType === 'Number'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-input v-model.number="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText"></el-input>
+    </el-form-item>
+  </template>
+  <!-- CheckBox -->
+  <template v-else-if="style.inputType === 'CheckBox'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-checkbox-group v-model="form[_.lowerFirst(style.attributeName)]">
+        <el-checkbox v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-checkbox>
+      </el-checkbox-group>
+      <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
+    </el-form-item>
+  </template>
+  <!-- Radio -->
+  <template v-else-if="style.inputType === 'Radio'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-radio-group v-model="form[_.lowerFirst(style.attributeName)]">
+        <el-radio v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-radio>
+      </el-radio-group>
+      <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
+    </el-form-item>
+  </template>
+  <!-- SelectOne -->
+  <template v-else-if="style.inputType === 'SelectOne'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-select v-model="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText || '请选择'">
+        <el-option
+          v-for="item in style.items"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"></el-option>
+      </el-select>
+    </el-form-item>
+  </template>
+  <!-- SelectMultiple -->
+  <template v-else-if="style.inputType === 'SelectMultiple'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-select v-model="form[_.lowerFirst(style.attributeName)]" multiple :placeholder="style.helpText || '请选择'">
+        <el-option
+          v-for="item in style.items"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"></el-option>
+      </el-select>
+    </el-form-item>
+  </template>
+  <!-- Date -->
+  <template v-else-if="style.inputType === 'Date'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-date-picker
+        v-model="form[_.lowerFirst(style.attributeName)]"
+        type="date"
+        :placeholder="style.helpText || '请选择日期'">
+      </el-date-picker>
+    </el-form-item>
+  </template>
+  <!-- DateTime -->
+  <template v-else-if="style.inputType === 'DateTime'">
+    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-date-picker
+        v-model="form[_.lowerFirst(style.attributeName)]"
+        type="datetime"
+        :placeholder="style.helpText || '请选择日期时间'">
+      </el-date-picker>
+    </el-form-item>
+  </template>
+</template>

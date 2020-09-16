@@ -1,0 +1,31 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .videojs {
+      width: 100% !important;
+      min-height: 300px;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+<el-form size="small" ref="form" :model="form" label-width="160px">
+
+  @await Html.PartialAsync("_PartialForm")
+  
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+  <el-form-item>
+    <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    <el-button size="small" icon="el-icon-setting" type="default" v-on:click="btnSiteStylesClick">站点字段管理</el-button>
+  </el-form-item>
+</el-form>
+
+@section Scripts{
+  <script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>
+  <script src="/sitefiles/assets/lib/ueditor/ueditor.all.js" type="text/javascript"></script>
+<script src="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js" type="text/javascript" ></script>
+<script src="/sitefiles/assets/js/admin/cms/settingsSite.js" type="text/javascript"></script> }

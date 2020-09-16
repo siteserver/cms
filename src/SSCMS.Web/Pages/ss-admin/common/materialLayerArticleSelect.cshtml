@@ -1,0 +1,90 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-row>
+  <el-form :inline="true" :model="form" size="mini">
+    <el-form-item label="搜索">
+      <el-input v-model="form.keyword" placeholder="关键字"></el-input>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+    </el-form-item>
+  </el-form>
+</el-row>
+
+<el-form :inline="true" :model="form">
+  <el-form-item label="分组">
+
+    <el-tag
+      v-for="group in groups"
+      :key="group.id"
+      type="success"
+      style="cursor: pointer; margin: 0 3px 6px 0;"
+      v-on:click="btnGroupClick(group.id)"
+      :effect="form.groupId === group.id ? 'dark' : 'plain'">
+      {{ group.groupName }}
+    </el-tag>
+   
+  </el-form-item>
+</el-form>
+
+<el-table
+  ref="multipleTable"
+  :data="items"
+  stripe
+  v-on:selection-change="handleSelectionChange"
+  style="width: 100%">
+  <el-table-column
+    type="selection"
+    width="55">
+  </el-table-column>
+  <el-table-column
+    label="图片"
+    width="150">
+    <template slot-scope="scope">
+      <el-image 
+        style="max-height: 120px; max-width: 120px;"
+        :src="scope.row.thumbUrl"
+        :preview-src-list="getPreviewSrcList(scope.row.thumbUrl)">
+        <div slot="error" class="image-slot">
+          <i class="el-icon-picture-outline" style="margin-top: 10px;"></i>
+        </div>
+      </el-image>
+    </template>
+  </el-table-column>
+  <el-table-column label="标题">
+    <template slot-scope="scope">
+      <el-link :underline="false" v-on:click="btnTitleClick(scope.row)" style="cursor: pointer; height: 22px; overflow: hidden; font-size: 14px;" type="primary">{{ scope.row.title }}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column
+    prop="createdDate"
+    label="更新于"
+    width="160">
+    <template slot-scope="scope">
+      {{ utils.getFriendlyDate(scope.row.lastModifiedDate) }}
+    </template>
+  </el-table-column>
+</el-table>
+
+<div style="text-align: center; margin-top: 15px">
+  <el-pagination
+    v-on:current-change="btnPageClick"
+    :current-page="form.page"
+    :page-size="form.perPage"
+    layout="total, prev, pager, next, jumper"
+    :total="count">
+  </el-pagination>
+</div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/common/materialLayerArticleSelect.js" type="text/javascript"></script>
+}

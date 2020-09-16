@@ -1,0 +1,148 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/xiumi/xiumi-ue-v5.css">
+  <style>
+    .el-tag {
+      height: auto;
+      white-space: inherit;
+      margin-bottom: 5px;
+      margin-right: 5px;
+    }
+  </style>
+}
+
+<el-form :inline="true">
+  <el-form-item label="关键字">
+    <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
+  </el-form-item>
+</el-form>
+
+<div class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
+  <div class="hidden-columns">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="el-table__header-wrapper">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__header" style="width: 100%;">
+      <colgroup>
+        <col name="el-table_1_column_1">
+        <col name="el-table_1_column_2" width="400">
+        <col name="el-table_1_column_3" width="80">
+      </colgroup>
+      <thead class="has-gutter">
+        <tr class="">
+          <th colspan="1" rowspan="1" class="el-table_1_column_1 is-leaf">
+            <div class="cell">栏目</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_2 is-leaf">
+            <div class="cell">跨站转发设置</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_3 is-leaf">
+            <div class="cell">操作</div>
+          </th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="el-table__column-resize-proxy" style="display: none;"></div>
+</div>
+
+<el-tree
+  ref="tree"
+  :data="channels"
+  :default-expanded-keys="[siteId]"
+  node-key="value"
+  check-on-click-node
+  check-strictly
+  highlight-current
+  class="tree"
+  :filter-node-method="filterNode"
+>
+  <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+      <colgroup>
+        <col name="el-table_1_column_1">
+        <col name="el-table_1_column_2" width="400">
+        <col name="el-table_1_column_3" width="80">
+      </colgroup>
+      <tbody>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1" class="el-table_1_column_1">
+          <div class="cell">
+            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+              <i class="el-icon-link"></i>
+            </a>
+            {{ data.label }} ({{ data.count }})
+            <el-tag size="mini" v-if="data.indexName">
+              {{ data.indexName }}
+            </el-tag>
+          </div>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_2">
+          <div class="cell">
+            <el-tag
+              v-for="translate in data.translates"
+              :key="translate.summary"
+              size="mini"
+              type="primary">
+              {{translate.summary}}
+            </el-tag>
+          </div>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_3">
+          <div class="cell">
+            <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop="btnEditClick(data)">
+              跨站转发设置
+            </el-button>
+          </div>
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</el-tree>
+
+<el-drawer
+  title="跨站转发设置"
+  :visible.sync="editPanel"
+  destroy-on-close
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form size="small" label-width="220px">
+      <el-form-item label="栏目名称">
+        {{channelName}}
+      </el-form-item>
+
+      <el-form-item label="新增内容自动转发到">
+        <el-tag
+          v-for="translate in translates"
+          :key="translate.summary"
+          closable
+          size="mini"
+          v-on:close="handleTranslationClose(translate.summary)"
+          type="primary">
+          {{translate.summary}}
+        </el-tag>
+
+        <div></div>
+
+        <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnTranslateAddClick">
+          新增转移
+        </el-button>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/settingsCrossSiteTransChannels.js" type="text/javascript"></script> }

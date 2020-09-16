@@ -1,0 +1,93 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7087E39F-5DDF-4108-831C-2EBD8DEC3804}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{273FDE01-B4F1-4A5F-8E08-23D071ED7206}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E23844F2-3E94-4B93-B795-1A53C41F0BA5}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		appsettings.json = appsettings.json
+		azure-pipelines.yml = azure-pipelines.yml
+		gulpfile.js = gulpfile.js
+		package.json = package.json
+		README.md = README.md
+		sscms.json = sscms.json
+		web.config = web.config
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Core", "src\SSCMS.Core\SSCMS.Core.csproj", "{360F8930-C570-4747-BB9F-D66C4B460468}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Cli", "src\SSCMS.Cli\SSCMS.Cli.csproj", "{224FF8EA-D7AA-41C3-96C8-02C97CD40828}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Core.Tests", "tests\SSCMS.Core.Tests\SSCMS.Core.Tests.csproj", "{10B8E9B0-F3DC-4B41-B6E3-83CD1645E649}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Cli.Tests", "tests\SSCMS.Cli.Tests\SSCMS.Cli.Tests.csproj", "{858E4350-83EA-4399-8E1F-09CB5901D642}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS", "src\SSCMS\SSCMS.csproj", "{596EF466-097A-4A10-A8AF-533F7F799E9D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Tests", "tests\SSCMS.Tests\SSCMS.Tests.csproj", "{AE00C669-2E15-440B-829B-C054B63DF564}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Web", "src\SSCMS.Web\SSCMS.Web.csproj", "{52CBA2D4-F857-4660-AF94-2704ED9AA3F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSCMS.Web.Tests", "tests\SSCMS.Web.Tests\SSCMS.Web.Tests.csproj", "{CCE9B25D-0537-48B4-98C8-F8F119631ABC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{360F8930-C570-4747-BB9F-D66C4B460468}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{360F8930-C570-4747-BB9F-D66C4B460468}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{360F8930-C570-4747-BB9F-D66C4B460468}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{360F8930-C570-4747-BB9F-D66C4B460468}.Release|Any CPU.Build.0 = Release|Any CPU
+		{224FF8EA-D7AA-41C3-96C8-02C97CD40828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{224FF8EA-D7AA-41C3-96C8-02C97CD40828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{224FF8EA-D7AA-41C3-96C8-02C97CD40828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{224FF8EA-D7AA-41C3-96C8-02C97CD40828}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10B8E9B0-F3DC-4B41-B6E3-83CD1645E649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10B8E9B0-F3DC-4B41-B6E3-83CD1645E649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10B8E9B0-F3DC-4B41-B6E3-83CD1645E649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10B8E9B0-F3DC-4B41-B6E3-83CD1645E649}.Release|Any CPU.Build.0 = Release|Any CPU
+		{858E4350-83EA-4399-8E1F-09CB5901D642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{858E4350-83EA-4399-8E1F-09CB5901D642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{858E4350-83EA-4399-8E1F-09CB5901D642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{858E4350-83EA-4399-8E1F-09CB5901D642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{596EF466-097A-4A10-A8AF-533F7F799E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{596EF466-097A-4A10-A8AF-533F7F799E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{596EF466-097A-4A10-A8AF-533F7F799E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{596EF466-097A-4A10-A8AF-533F7F799E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE00C669-2E15-440B-829B-C054B63DF564}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE00C669-2E15-440B-829B-C054B63DF564}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE00C669-2E15-440B-829B-C054B63DF564}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE00C669-2E15-440B-829B-C054B63DF564}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52CBA2D4-F857-4660-AF94-2704ED9AA3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CBA2D4-F857-4660-AF94-2704ED9AA3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52CBA2D4-F857-4660-AF94-2704ED9AA3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52CBA2D4-F857-4660-AF94-2704ED9AA3F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCE9B25D-0537-48B4-98C8-F8F119631ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{360F8930-C570-4747-BB9F-D66C4B460468} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
+		{224FF8EA-D7AA-41C3-96C8-02C97CD40828} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
+		{10B8E9B0-F3DC-4B41-B6E3-83CD1645E649} = {7087E39F-5DDF-4108-831C-2EBD8DEC3804}
+		{858E4350-83EA-4399-8E1F-09CB5901D642} = {7087E39F-5DDF-4108-831C-2EBD8DEC3804}
+		{596EF466-097A-4A10-A8AF-533F7F799E9D} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
+		{AE00C669-2E15-440B-829B-C054B63DF564} = {7087E39F-5DDF-4108-831C-2EBD8DEC3804}
+		{52CBA2D4-F857-4660-AF94-2704ED9AA3F7} = {273FDE01-B4F1-4A5F-8E08-23D071ED7206}
+		{CCE9B25D-0537-48B4-98C8-F8F119631ABC} = {7087E39F-5DDF-4108-831C-2EBD8DEC3804}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {16E9F7DE-60E7-4FB3-A3DB-38729FE5A04F}
+	EndGlobalSection
+EndGlobal

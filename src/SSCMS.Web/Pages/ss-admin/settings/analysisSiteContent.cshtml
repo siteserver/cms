@@ -1,0 +1,46 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form :inline="true" :model="form" size="mini">
+  <el-form-item label="站点">
+    <el-cascader
+      ref="siteIds"
+      v-model="siteIds"
+      :options="sites"
+      :props="{ checkStrictly: true }"
+      filterable
+      placeholder="请选择站点">
+    </el-cascader>
+  </el-form-item>
+  <el-form-item label="从">
+    <el-date-picker
+      v-model="form.dateFrom"
+      type="date"
+      format="yyyy 年 MM 月 dd 日"
+      value-format="yyyy-MM-dd"
+      placeholder="选择开始日期">
+    </el-date-picker>
+  </el-form-item>
+  <el-form-item label="到">
+    <el-date-picker
+      v-model="form.dateTo"
+      type="date"
+      format="yyyy 年 MM 月 dd 日"
+      value-format="yyyy-MM-dd"
+      placeholder="选择结束日期">
+    </el-date-picker>
+  </el-form-item>
+  
+  <el-form-item>
+    <el-button type="primary" v-on:click="btnSearchClick">统计</el-button>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+
+<line-chart :chart-data="chartData"></line-chart>
+
+@section Scripts{
+<script src="/sitefiles/assets/lib/chartjs/chart-2.7.1.min.js"></script>
+<script src="/sitefiles/assets/lib/chartjs/vue-chartjs.min.js"></script>
+<script src="/sitefiles/assets/js/admin/settings/analysisSiteContent.js" type="text/javascript"></script> }

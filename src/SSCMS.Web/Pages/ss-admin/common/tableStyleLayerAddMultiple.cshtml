@@ -1,0 +1,51 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form 
+  size="small" 
+  :model="form" 
+  ref="form"
+  :inline="true"
+  label-position="top"
+  label-width="130px">
+
+  <template v-for="(style, index) in form.styles">
+    <el-form-item :label="'字段名称（' + (index + 1) + '）'" :prop="'styles.' + index + '.attributeName'" :rules="{
+      required: true, message: '请输入字段名称'
+    }">
+      <el-input v-model="style.attributeName" placeholder="请输入字段名称"></el-input>
+    </el-form-item>
+    <el-form-item :label="'显示名称（' + (index + 1) + '）'" :prop="'styles.' + index + '.displayName'" :rules="{
+      required: true, message: '请输入显示名称'
+    }">
+      <el-input v-model="style.displayName" placeholder="请输入显示名称"></el-input>
+    </el-form-item>
+    <el-form-item :label="'表单提交类型（' + (index + 1) + '）'" :prop="'styles.' + index + '.inputType'" :rules="{
+      required: true, message: '请选择表单提交类型'
+    }">
+      <el-select v-model="style.inputType" placeholder="请选择表单提交类型">
+        <el-option v-for="inputType in inputTypes" :key="inputType.key" :label="inputType.value + '(' + inputType.key + ')'" :value="inputType.key"></el-option>
+      </el-select>
+      <el-button size="mini" style="margin-left: 10px" v-if="index > 0" v-on:click="btnStyleRemoveClick(index)">删 除</el-button>
+      <el-button size="mini" style="margin-left: 10px" v-if="index + 1 === form.styles.length" v-on:click="btnStyleAddClick">新 增</el-button>
+    </el-form-item>
+    <br />
+  
+  </template>
+  
+</el-form>
+
+
+<div style="height: 10px"></div>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row align="right" style="margin-right: 5px">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/common/tableStyleLayerAddMultiple.js" type="text/javascript"></script> }

@@ -1,0 +1,36 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-alert type="warning">
+  请在此上传zip格式的插件包，系统将自动解压并安装插件。
+</el-alert>
+
+<div style="height:10px"></div>
+
+<el-upload
+  :drag="true"
+  :limit="1"
+  :action="uploadUrl"
+  :auto-upload="true"
+  :headers="{Authorization: 'Bearer ' + $token}"
+  :file-list="uploadList"
+  :before-upload="uploadBefore"
+  :on-progress="uploadProgress"
+  :on-success="uploadSuccess"
+  :on-error="uploadError"
+  :multiple="false">
+  <i class="el-icon-upload"></i>
+  <div class="el-upload__text">将插件包文件拖到此处，或 <em>点击上传</em></div>
+</el-upload>
+
+<div style="height: 10px"></div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/plugins/addLayerUpload.js" type="text/javascript"></script> }

@@ -1,0 +1,368 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .commands div { display: inline-block; width: auto; }
+    .el-upload, .el-upload-dragger { display: inline-block; width: auto; }
+    .el-icon-arrow-down {
+      font-size: 12px;
+    }
+    .el-icon-picture-outline {
+      font-size: 22px;
+      margin: 80px 0;
+      color: #c0c4cc;
+    }
+    .el-card-wrapper {
+      padding-bottom: 15px; 
+      padding-right: 15px; 
+      width: 25%; 
+      box-sizing: border-box;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .thumb {
+      padding: 10px;
+    }
+    .thumb .cover {
+      cursor: pointer; 
+      position: relative; 
+      height:150px; 
+      background-size: cover;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+      background-color: #f6f8f9;
+    }
+    .thumb .cover .text {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      display: block;
+      width: 100%;
+      color: #fff;
+      padding: 6px;
+      background-color: rgba(202, 195, 195, 0.28);;
+    }
+    .list {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .thumb:hover, .active, .list:hover {
+      background: rgb(225, 243, 216);
+    }
+    .list .text {
+      text-align: left;
+      font-size: 14px;
+      height: 38px;
+      overflow: hidden;
+    }
+  </style>
+}
+
+<el-row>
+  <el-col :span="12">
+    <el-form :inline="true" :model="form" size="mini">
+      <el-form-item label="搜索">
+        <el-input v-model="form.keyword" placeholder="关键字"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+      </el-form-item>
+    </el-form>
+  </el-col>
+  <el-col class="commands" align="right" :span="12">
+
+    <el-upload
+      :action="getUploadUrl()"
+      style="display: inline-block;"
+      :headers="{Authorization: 'Bearer ' + $token}"
+      :before-upload="uploadBefore"
+      :on-progress="uploadProgress"
+      :on-success="uploadSuccess"
+      :on-error="uploadError"
+      :multiple="true"
+      :show-file-list="false">
+      <el-button plain type="primary" size="small">
+        <i class="el-icon-upload"></i>
+        导入Word
+      </el-button>
+    </el-upload>
+
+    <el-button v-on:click="btnCreateClick()" plain type="primary" size="small">
+      <i class="el-icon-plus"></i>
+      新建图文
+    </el-button>
+
+    <el-button v-if="siteType === 'wx'" v-on:click="btnPullClick" size="small" plain type="primary" style="margin-left: 0px;">
+      <i class="el-icon-download"></i>
+      拉 取
+    </el-button>
+
+    <el-radio-group v-model="showType" plain size="small">
+      <el-radio-button label="card">卡片视图</el-radio-button>
+      <el-radio-button label="list">列表视图</el-radio-button>
+    </el-radio-group>
+
+  </el-col>
+</el-row>
+
+<el-form :inline="true" :model="form">
+  <el-form-item label="分组">
+
+    <el-tag
+      v-for="group in groups"
+      :key="group.id"
+      type="success"
+      style="cursor: pointer; margin: 0 3px 6px 0;"
+      v-on:click="btnGroupClick(group.id)"
+      :effect="form.groupId === group.id ? 'dark' : 'plain'">
+      {{ group.groupName }}
+    </el-tag>
+   
+  </el-form-item>
+
+  <el-form-item v-if="form.groupId > 0">
+    <el-button-group>
+      <el-button size="small" plain v-on:click="btnGroupEditClick" type="primary">
+        <i class="el-icon-edit"></i>
+      </el-button>
+      <el-button size="small" plain v-on:click="btnGroupDeleteClick" type="primary">
+        <i class="el-icon-delete"></i>
+      </el-button>
+      <el-button size="small" plain v-on:click="btnGroupAddClick" type="primary">
+        <i class="el-icon-plus"></i>
+      </el-button>
+    </el-button-group>
+  </el-form-item>
+  <el-form-item v-else>
+    <el-button size="small" plain v-on:click="btnGroupAddClick" type="primary">
+      <i class="el-icon-plus"></i>
+      新建分组
+    </el-button>
+  </el-form-item>
+</el-form>
+
+<div>
+  <template v-if="showType === 'card'">
+
+    <template  v-for="(message, index) in messages" :key="message.id" v-if="message.items && message.items.length >= 1">
+      <div class="el-card-wrapper" v-if="message.items.length === 1">
+        <el-card :body-style="{ padding: '0px', textAlign: 'center' }">
+          <div slot="header" class="clearfix">
+            <el-tooltip :content="message.items[0].title" placement="top">
+              <span style="text-overflow: ellipsis; display: block; width: 100%; white-space: nowrap; overflow: hidden;">{{ message.items[0].title }}</span>
+            </el-tooltip>
+          </div>
+          <a href="javascript:;" v-on:click="btnUpdateClick(message)">
+            <el-image 
+              style="width: 100%; min-height: 120px; max-height:220px;"
+              :src="message.items[0].thumbUrl">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </a>
+          <div style="padding: 14px;">
+            <div v-on:click="btnUpdateClick(message)" style="cursor: pointer; font-size: 14px; text-overflow: ellipsis; width: 100%; max-height: 95px; overflow: hidden;">
+              {{ message.items[0].digest }}
+            </div>
+  
+            <el-divider></el-divider>
+  
+            <el-row style="margin-top: 10px;">
+              <el-col span="14" align="left" style="font-size: 14px; color: #999; padding-top: 3px">
+                更新于 {{ utils.getFriendlyDate(message.lastModifiedDate) }}
+              </el-col>
+              <el-col span="10" align="right">
+                <el-tooltip content="编辑" placement="top">
+                  <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" v-on:click="btnUpdateClick(message)" icon="el-icon-edit"></el-link>
+                </el-tooltip>
+                
+                <el-tooltip content="移动分组" placement="top">
+                  <el-popover
+                    v-if="groups.length > 1"
+                    placement="right"
+                    width="400"
+                    v-model="message.isSelectGroups"
+                    trigger="click">
+                    <div>
+                      <el-tag
+                        title="移动分组"
+                        v-for="group in groups"
+                        v-if="group.id !== 0"
+                        :key="group.id"
+                        type="success"
+                        style="cursor: pointer; margin: 0 3px 6px 0;"
+                        v-on:click="btnSelectGroupClick(group.id)"
+                        :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
+                        {{ group.groupName }}
+                      </el-tag>
+                      <el-divider></el-divider>
+                      <el-button size="small" v-on:click="btnSelectGroupSubmit(message)" type="primary">确 定</el-button>
+                      <el-button size="small" v-on:click="message.isSelectGroups = false;">取 消</el-button>
+                    </div>
+                    <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" slot="reference" v-on:click="message.isSelectGroups = true; selectedGroupId = message.groupId" icon="el-icon-menu"></el-link>
+                  </el-popover>
+                </el-tooltip>
+  
+                <el-tooltip content="删除" placement="top">
+                  <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" v-on:click="btnDeleteClick(message)" icon="el-icon-delete"></el-link>
+                </el-tooltip>
+                
+              </el-col>
+            </el-row>
+            
+          </div>
+        </el-card>
+      </div>
+      <div class="el-card-wrapper" v-else>
+        <el-card :body-style="{ padding: '0px', textAlign: 'center' }">
+          <template v-for="(item, index) in message.items" :key="index">
+            <div v-if="index === 0" v-on:click="btnUpdateClick(message)" class="thumb">
+              <div class="cover" :style="{backgroundImage: 'url(' + item.thumbUrl + ')'}">
+                <div class="text">{{item.title}}</div>
+              </div>
+            </div>
+            <div v-else v-on:click="btnUpdateClick(message)" class="list">
+              <el-row>
+                <el-col span="18">
+                  <div class="text">{{item.title}} {{item.index}}</div>
+                </el-col>
+                <el-col span="6">
+                  <el-image 
+                    fit="cover"
+                    style="width: 55px; height: 55px"
+                    :src="item.thumbUrl">
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline" style="margin: 0px; font-size: 36px; color: #999; background: #fff; padding: 5px;"></i>
+                    </div>
+                  </el-image>
+                </el-col>
+              </el-row>
+            </div>
+            
+            <el-divider></el-divider>
+          </template>
+  
+          <el-row style="padding: 10px;margin-bottom: 5px">
+            <el-col span="14" align="left" style="font-size: 14px; color: #999; padding-top: 3px">
+              更新于 {{ utils.getFriendlyDate(message.lastModifiedDate) }}
+            </el-col>
+            <el-col span="10" align="right">
+              <el-tooltip content="编辑" placement="top">
+                <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" v-on:click="btnUpdateClick(message)" icon="el-icon-edit"></el-link>
+              </el-tooltip>
+              
+              <el-tooltip content="移动分组" placement="top">
+                <el-popover
+                  v-if="groups.length > 1"
+                  placement="right"
+                  width="400"
+                  v-model="message.isSelectGroups"
+                  trigger="click">
+                  <div>
+                    <el-tag
+                      title="移动分组"
+                      v-for="group in groups"
+                      v-if="group.id !== 0"
+                      :key="group.id"
+                      type="success"
+                      style="cursor: pointer; margin: 0 3px 6px 0;"
+                      v-on:click="btnSelectGroupClick(group.id)"
+                      :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
+                      {{ group.groupName }}
+                    </el-tag>
+                    <el-divider></el-divider>
+                    <el-button size="small" v-on:click="btnSelectGroupSubmit(message)" type="primary">确 定</el-button>
+                    <el-button size="small" v-on:click="message.isSelectGroups = false;">取 消</el-button>
+                  </div>
+                  <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" slot="reference" v-on:click="message.isSelectGroups = true; selectedGroupId = message.groupId" icon="el-icon-menu"></el-link>
+                </el-popover>
+              </el-tooltip>
+  
+              <el-tooltip content="删除" placement="top">
+                <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" v-on:click="btnDeleteClick(message)" icon="el-icon-delete"></el-link>
+              </el-tooltip>
+              
+            </el-col>
+          </el-row>
+  
+        </el-card>
+      </div>
+    </template>
+  
+  </template>
+  <template v-else>
+    <el-table
+      :data="messages"
+      style="width: 100%">
+      <el-table-column
+        label="封面"
+        width="140">
+        <template slot-scope="scope">
+          <a :href="scope.row.items[0].thumbUrl" target="_blank">
+            <img :src="scope.row.items[0].thumbUrl" style="max-height: 120px; max-width: 120px;"/>
+          </a>
+        </template>
+      </el-table-column>
+      <el-table-column label="内容">
+        <template slot-scope="scope">
+          <div v-html="getFriendlyContent(scope.row)"></div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="lastModifiedDate"
+        label="更新于"
+        width="160">
+        <template slot-scope="scope">
+          {{ utils.getFriendlyDate(scope.row.lastModifiedDate) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="220">
+        <template slot-scope="scope">
+            <el-button v-on:click="btnUpdateClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">编辑</el-button>
+            <el-popover
+              v-if="groups.length > 1"
+              placement="right"
+              width="400"
+              v-model="scope.row.isSelectGroups"
+              trigger="click">
+              <div>
+                <el-tag
+                  title="移动分组"
+                  v-for="group in groups"
+                  v-if="group.id !== 0"
+                  :key="group.id"
+                  type="success"
+                  style="cursor: pointer; margin: 0 3px 6px 0;"
+                  v-on:click="btnSelectGroupClick(group.id)"
+                  :effect="selectedGroupId === group.id ? 'dark' : 'plain'">
+                  {{ group.groupName }}
+                </el-tag>
+                <el-divider></el-divider>
+                <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="primary">确 定</el-button>
+                <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
+              </div>
+              <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-menu" style="margin: 0 5px">移动分组</el-button>
+            </el-popover>
+            <el-button v-on:click="btnDeleteClick(scope.row)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </template>
+</div>
+
+<el-divider></el-divider>
+
+<div style="text-align: center; margin-top: 15px">
+  <el-pagination
+    v-on:current-change="btnPageClick"
+    :current-page="form.page"
+    :page-size="form.perPage"
+    layout="total, prev, pager, next, jumper"
+    :total="count">
+  </el-pagination>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/materialMessage.js" type="text/javascript"></script> }

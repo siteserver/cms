@@ -1,0 +1,22 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-alert>提示! 选择当栏目未设置跨站转发类型时采用的默认设置，同时设置跨站转发到本站点的内容是否需要审核</el-alert>
+  <div style="height: 10px"></div>
+
+  <el-form size="small" ref="form" :model="form" label-width="280px">
+
+    <el-form-item label="跨站转发到本站点的内容是否需要审核">
+      <el-radio-group v-model="form.isCrossSiteTransChecked">
+        <el-radio :label="true">需要审核</el-radio>
+        <el-radio :label="false">无需审核</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item>
+      <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    </el-form-item>
+  </el-form>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/settingsCrossSiteTrans.js" type="text/javascript"></script> }

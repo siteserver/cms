@@ -1,0 +1,50 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px"></div>
+<el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+  <el-form-item label="自动删除日志">
+    <el-radio v-model="form.isTimeThreshold" :label="true">启用</el-radio>
+    <el-radio v-model="form.isTimeThreshold" :label="false">禁用</el-radio>
+    <div class="tips">启用后系统将定时自动删除日志，以节省数据库存储空间</div>
+  </el-form-item>
+  <el-form-item v-if="form.isTimeThreshold" label="日志保留天数" prop="timeThreshold" :rules="[
+    { required: true, message: '请输入日志保留天数' },
+    { type: 'number', message: '日志保留天数必须为数字值'}
+  ]">
+    <el-input v-model="form.timeThreshold"></el-input>
+    <small class="tips">设置为60天，则默认只保留60天的日志，60天之前的日志将被系统自动删除</small>
+  </el-form-item>
+  <el-form-item label="站点日志">
+    <el-radio v-model="form.isLogSite" :label="true">启用</el-radio>
+    <el-radio v-model="form.isLogSite" :label="false">禁用</el-radio>
+    <div class="tips">禁用后系统将不再记录站点操作日志</div>
+  </el-form-item>
+  <el-form-item label="管理员日志">
+    <el-radio v-model="form.isLogAdmin" :label="true">启用</el-radio>
+    <el-radio v-model="form.isLogAdmin" :label="false">禁用</el-radio>
+    <div class="tips">禁用后系统将不再记录管理员操作日志</div>
+  </el-form-item>
+  <el-form-item label="用户日志">
+    <el-radio v-model="form.isLogUser" :label="true">启用</el-radio>
+    <el-radio v-model="form.isLogUser" :label="false">禁用</el-radio>
+    <div class="tips">禁用后系统将不再记录用户操作日志</div>
+  </el-form-item>
+  <el-form-item label="系统错误日志">
+    <el-radio v-model="form.isLogError" :label="true">启用</el-radio>
+    <el-radio v-model="form.isLogError" :label="false">禁用</el-radio>
+    <div class="tips">禁用后系统将不再记录系统错误日志</div>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row>
+  <el-col :span="24" align="center">
+    <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/settings/logsConfig.js" type="text/javascript"></script> }

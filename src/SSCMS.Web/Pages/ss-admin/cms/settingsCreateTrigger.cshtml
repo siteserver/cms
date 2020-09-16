@@ -1,0 +1,147 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form :inline="true">
+  <el-form-item label="关键字">
+    <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
+  </el-form-item>
+</el-form>
+
+<div class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
+  <div class="hidden-columns">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="el-table__header-wrapper">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__header" style="width: 100%;">
+      <colgroup>
+        <col name="el-table_1_column_1">
+        <col name="el-table_1_column_2">
+        <col name="el-table_1_column_3" width="80">
+      </colgroup>
+      <thead class="has-gutter">
+        <tr class="">
+          <th colspan="1" rowspan="1" class="el-table_1_column_1 is-leaf">
+            <div class="cell">栏目</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_2 is-leaf">
+            <div class="cell">内容变动时需要生成的栏目</div>
+          </th>
+          <th colspan="1" rowspan="1" class="el-table_1_column_3 is-leaf">
+            <div class="cell">操作</div>
+          </th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="el-table__column-resize-proxy" style="display: none;"></div>
+</div>
+
+<el-tree
+  ref="tree"
+  :data="channels"
+  :default-expanded-keys="[siteId]"
+  node-key="value"
+  check-on-click-node
+  check-strictly
+  highlight-current
+  class="tree"
+  :filter-node-method="filterNode"
+>
+  <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+      <colgroup>
+        <col name="el-table_1_column_1">
+        <col name="el-table_1_column_2">
+        <col name="el-table_1_column_3" width="80">
+      </colgroup>
+      <tbody>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1" class="el-table_1_column_1">
+          <div class="cell">
+            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+              <i class="el-icon-link"></i>
+            </a>
+            {{ data.label }} ({{ data.count }})
+            <el-tag size="mini" v-if="data.indexName">
+              {{ data.indexName }}
+            </el-tag>
+          </div>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_2">
+          <div class="cell">
+            <el-tag size="mini" type="info" v-if="data.changeNames" v-for="changeName in data.changeNames" :key="changeName">
+              {{ changeName }}
+            </el-tag>
+          </div>
+        </td>
+        <td rowspan="1" colspan="1" class="el-table_1_column_3">
+          <div class="cell">
+            <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop="btnEditClick(data)">
+              触发栏目
+            </el-button>
+          </div>
+        </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</el-tree>
+
+<el-drawer
+  id="editForm"
+  v-if="editForm"
+  title="栏目变动触发设置"
+  :visible.sync="editPanel"
+  destroy-on-close
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form size="small" ref="editForm" :model="editForm" label-width="220px">
+      <el-form-item label="栏目名称" prop="channelName">
+        {{editForm.channelName}}
+      </el-form-item>
+      <el-form-item label="当内容变动时是否生成本栏目">
+        <el-radio-group v-model="editForm.isCreateChannelIfContentChanged">
+          <el-radio :label="true">生成</el-radio>
+          <el-radio :label="false">不生成</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="选择内容变动时需要生成的栏目">
+        <el-tree
+          :data="channels"
+          ref="channelsTree"
+          show-checkbox
+          check-on-click-node
+          check-strictly
+          node-key="value"
+          :check-on-click-node="true"
+          :default-expanded-keys="[siteId]"
+          :default-checked-keys="editForm.createChannelIdsIfContentChanged"
+          :expand-on-click-node="true"
+          v-on:check-change="handleTreeChanged">
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+              <i class="el-icon-link"></i>
+            </a>
+            {{ data.label }} ({{ data.count }})
+            <el-tag size="mini" v-if="data.indexName">
+              {{ data.indexName }}
+            </el-tag>
+          </span>
+        </el-tree>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/settingsCreateTrigger.js" type="text/javascript"></script> }

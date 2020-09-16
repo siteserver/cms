@@ -1,0 +1,313 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-menu {
+      border-right: 0;
+    }
+    .el-select .el-input {
+      width: 130px;
+    }
+    .input-with-select .el-input-group__prepend {
+      background-color: #fff;
+    }
+    .input-with-select .el-input-group__append {
+      width: 50px;
+      background-color: #fff;
+    }
+    .input-with-select .el-input-group__append i{
+      font-size: 16px;
+    }
+    .input-with-select .el-input-group__append .el-button {
+      padding: 7px 13px;
+    }
+    .el-popper .el-link {
+      margin: 0 15px;
+    }
+    .el-card__header {
+      padding: 10px 20px;
+    }
+    .el-card-wrapper {
+      padding-bottom: 15px; 
+      padding-right: 15px; 
+      width: 25%; 
+      box-sizing: border-box;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .thumb {
+      padding: 10px;
+    }
+    .thumb .cover {
+      cursor: pointer; 
+      position: relative; 
+      height:150px; 
+      background-size: cover;
+      background-position: 50% 50%;
+      background-repeat: no-repeat;
+      background-color: #f6f8f9;
+    }
+    .thumb .cover .text {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      display: block;
+      width: 100%;
+      color: #fff;
+      padding: 6px;
+      background-color: rgba(202, 195, 195, 0.28);;
+    }
+    .list {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .thumb:hover, .active, .list:hover {
+      background: rgb(225, 243, 216);
+    }
+    .list .text {
+      text-align: left;
+      font-size: 14px;
+      height: 38px;
+      overflow: hidden;
+    }
+    .el-popover {
+      min-width: auto;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+
+<div v-if="!success">
+  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>
+<div v-else>
+
+  <el-form ref="rule1" :model="form" size="small" status-icon label-width="100px">
+    <el-form-item label="规则名称" prop="ruleName" :rules="{ required: true, message: '请输入规则名称' }">
+      <el-input
+        v-model="form.ruleName"
+        size="small"
+        placeholder="请输入规则名称">
+      </el-input>
+    </el-form-item>
+  </el-form>
+
+  <el-form v-for="(keyword, index) in keywords" :key="'keyword' + index" ref="keywords" :model="keyword" size="small" label-width="100px">
+    <el-form-item label="关键词" prop="text" :rules="{ required: true, message: '请添加关键词' }">
+      
+      <el-input placeholder="请输入关键词" v-model="keyword.text" class="input-with-select">
+        <el-select slot="prepend" v-model="keyword.exact" placeholder="请选择匹配方式">
+          <el-option label="半匹配" :value="false"></el-option>
+          <el-option label="全匹配" :value="true"></el-option>
+        </el-select>
+        <el-button-group slot="append">
+          <el-button icon="el-icon-circle-plus-outline" v-on:click="btnAppendClick"></el-button>
+          <el-button icon="el-icon-remove-outline" v-if="index > 0" v-on:click="btnRemoveKeywordClick(index)"></el-button>
+        </el-button-group>
+      </el-input>
+
+    </el-form-item>
+  </el-form>
+
+  <el-form ref="rule2" :model="form" size="small" label-width="100px">
+    <el-form-item label="回复消息" prop="messages" :rules="{ required: true, message: '请添加回复消息' }">
+
+      <template v-for="(message, index) in messages">
+        <div v-if="message.materialType === 'Message' && message.materialId">
+
+          <el-popover
+            placement="right"
+            trigger="hover">
+            <el-link :underline="false" v-on:click="btnRemoveMessageClick(index)">
+              <i class="el-icon-delete"></i>
+              <span>删除</span>
+            </el-link>
+
+            <div slot="reference" class="el-card-wrapper">
+              <el-card v-if="message.items.length === 1" :body-style="{ padding: '0px', textAlign: 'center' }">
+                <div slot="header" class="clearfix">
+                  <el-tooltip :content="message.items[0].title" placement="top">
+                    <span style="text-overflow: ellipsis; display: block; width: 100%; white-space: nowrap; overflow: hidden;">{{ message.items[0].title }}</span>
+                  </el-tooltip>
+                </div>
+                <a href="javascript:;">
+                  <el-image 
+                    style="width: 100%; min-height: 120px; max-height:220px;"
+                    :src="message.items[0].thumbUrl">
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </a>
+                <div style="padding: 14px;">
+                  <div style="cursor: pointer; font-size: 14px; text-overflow: ellipsis; width: 100%; max-height: 95px; overflow: hidden;">
+                    {{ message.items[0].digest }}
+                  </div>
+                </div>
+              </el-card>
+              <el-card v-else :body-style="{ padding: '0px', textAlign: 'center' }">
+                <template v-for="(item, index) in message.items" :key="index">
+                  <div v-if="index === 0" class="thumb">
+                    <div class="cover" :style="{backgroundImage: 'url(' + item.thumbUrl + ')'}">
+                      <div class="text">{{item.title}}</div>
+                    </div>
+                  </div>
+                  <div v-else class="list">
+                    <el-row>
+                      <el-col span="18">
+                        <div class="text">{{item.title}} {{item.index}}</div>
+                      </el-col>
+                      <el-col span="6">
+                        <el-image 
+                          fit="cover"
+                          style="width: 55px; height: 55px"
+                          :src="item.thumbUrl">
+                          <div slot="error" class="image-slot">
+                            <i class="el-icon-picture-outline" style="margin: 0px; font-size: 36px; color: #999; background: #fff; padding: 5px;"></i>
+                          </div>
+                        </el-image>
+                      </el-col>
+                    </el-row>
+                  </div>
+                  
+                  <el-divider></el-divider>
+                </template>
+        
+              </el-card>
+            </div>
+          </el-popover>
+
+        </div>
+        <div v-else-if="message.materialType === 'Text' && message.text" style="padding: 20px 10px;">
+          <el-popover
+            placement="right"
+            trigger="hover">
+            <el-link :underline="false" v-on:click="btnSelectClick('Text', index)">
+              <i class="el-icon-edit"></i>
+              <span>修改</span>
+            </el-link>
+            <el-link :underline="false" v-on:click="btnRemoveMessageClick(index)">
+              <i class="el-icon-delete"></i>
+              <span>删除</span>
+            </el-link>
+            <span slot="reference" style="white-space: pre;">{{ message.text }}</span>
+          </el-popover>
+        </div>
+        <div v-else-if="message.materialType === 'Image' && message.materialId">
+          <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">
+            <el-image 
+              style="width: 100%; min-height: 120px; max-height:220px;"
+              :src="message.image.url">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+    
+            <div style="padding: 14px;">
+              <div>
+                {{ message.image.title }}
+              </div>
+            </div>
+          </el-card>
+          
+          <el-button slot="reference" size="small" plain type="default" icon="el-icon-delete" v-on:click="btnRemoveMessageClick(index)" style="vertical-align: bottom; margin-bottom: 15px;">删除</el-button>
+        </div>
+        <div v-else-if="message.materialType === 'Audio' && message.materialId">
+          <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">  
+            <div slot="header" class="clearfix">
+              <i class="el-icon-headset"></i>
+              <span>音频</span>
+            </div>
+            <div style="padding: 14px;">
+              <div>
+                {{ message.audio.title }}
+              </div>
+            </div>
+          </el-card>
+          
+          <el-button slot="reference" size="small" plain type="default" icon="el-icon-delete" v-on:click="btnRemoveMessageClick(index)" style="vertical-align: bottom; margin-bottom: 15px;">删除</el-button>
+        </div>
+        <div v-else-if="message.materialType === 'Video' && message.materialId">
+          <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">  
+            <div slot="header" class="clearfix">
+              <i class="el-icon-video-play"></i>
+              <span>视频</span>
+            </div>
+            <div style="padding: 14px;">
+              <div>
+                {{ message.video.title }}
+              </div>
+            </div>
+          </el-card>
+          
+          <el-button slot="reference" size="small" plain type="default" icon="el-icon-delete" v-on:click="btnRemoveMessageClick(index)" style="vertical-align: bottom; margin-bottom: 15px;">删除</el-button>
+        </div>
+  
+        <el-divider></el-divider>
+      </template>
+
+      <el-popover
+        placement="right"
+        trigger="hover">
+        
+        <el-link :underline="false" v-on:click="btnSelectClick('Content')">
+          <i class="el-icon-notebook-2"></i>
+          <span>内容</span>
+        </el-link>
+        <el-link :underline="false" v-on:click="btnSelectClick('Message')">
+          <i class="el-icon-tickets"></i>
+          <span>图文消息</span>
+        </el-link>
+        <el-link :underline="false" v-on:click="btnSelectClick('Text')">
+          <i class="el-icon-chat-line-round"></i>
+          <span>文字</span>
+        </el-link>
+        <el-link :underline="false" v-on:click="btnSelectClick('Image')">
+          <i class="el-icon-picture"></i>
+          <span>图片</span>
+        </el-link>
+        <el-link :underline="false" v-on:click="btnSelectClick('Audio')">
+          <i class="el-icon-headset"></i>
+          <span>音频</span>
+        </el-link>
+        <el-link :underline="false" v-on:click="btnSelectClick('Video')">
+          <i class="el-icon-video-play"></i>
+          <span>视频</span>
+        </el-link>
+
+        <el-button slot="reference" size="small" plain type="primary" icon="el-icon-circle-plus">
+          新增消息
+        </el-button>
+        
+      </el-popover>
+
+    </el-form-item>
+  </el-form>
+
+  <el-form ref="rule3" :model="form" size="small" status-icon label-width="100px">
+    <el-form-item label="回复方式" prop="random" :rules="{ required: true, message: '请选择回复方式' }">
+      <el-radio-group v-model="form.random">
+        <el-radio :label="false">回复全部</el-radio>
+        <el-radio :label="true">随机回复一条</el-radio>
+      </el-radio-group>
+    </el-form-item>
+  </el-form>
+  
+  <el-divider></el-divider>
+  
+  <el-row align="center" style="text-align: center; padding-top:10px">
+    <el-button size="small" v-on:click="btnSubmitClick" type="primary">保 存</el-button>
+    <el-button size="small" v-on:click="btnCloseClick" type="default">关 闭</el-button>
+  </el-row>
+
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/wx/replyAdd.js" type="text/javascript"></script>
+}

@@ -1,0 +1,120 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-form 
+  size="small" 
+  class="form-fixed"
+  :model="form" 
+  ref="form1"
+  :inline="true"
+  label-width="120px">
+  <el-form-item label="字段名称" prop="attributeName" :rules="[{ required: true, message: '请输入字段名称' }, { validator: validateAttributeName }]">
+    <el-input v-model="form.attributeName" :disabled="attributeName !== ''" placeholder="请输入字段名称"></el-input>
+  </el-form-item>
+  <el-form-item label="显示名称" prop="displayName" :rules="{ required: true, message: '请输入显示名称' }">
+    <el-input v-model="form.displayName" placeholder="请输入显示名称"></el-input>
+  </el-form-item>
+  <el-form-item label="提示信息">
+    <el-input v-model="form.helpText" placeholder="请输入提示信息"></el-input>
+  </el-form-item>
+  <el-form-item label="表单提交类型" prop="inputType" :rules="{ required: true, message: '请选择表单提交类型' }">
+    <el-select v-model="form.inputType" placeholder="请选择表单提交类型">
+      <el-option v-for="inputType in inputTypes" :key="inputType.key" :label="inputType.value + '(' + inputType.key + ')'" :value="inputType.key"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item label="排序" prop="taxis" :rules="{ required: true, message: '请输入排序' }">
+    <el-input v-model="form.taxis" placeholder="请输入排序"></el-input>
+  </el-form-item>
+  <el-form-item label="默认值">
+    <el-input v-model="form.defaultValue" placeholder="请输入默认值"></el-input>
+  </el-form-item>
+  <el-form-item label="高度" prop="height" v-if="form.inputType === 'TextArea' || form.inputType === 'TextEditor'" :rules="{ required: true, message: '请输入高度' }">
+    <el-input v-model="form.height" placeholder="请输入高度"></el-input>
+    <div class="tips">单位：px，0代表默认高度</div>
+  </el-form-item>
+  <template v-if="isSelect">
+    <el-form-item label="设置选项" prop="isRapid">
+      <el-select v-model="form.isRapid" placeholder="请选择设置选项">
+        <el-option :value="true" label="快速设置"></el-option>
+        <el-option :value="false" label="详细设置"></el-option>
+      </el-select>
+    </el-form-item>
+  </template>
+</el-form>
+
+<el-form 
+  v-if="isSelect && form.isRapid" 
+  size="small" 
+  class="form-fixed"
+  :model="form" 
+  ref="form2"
+  label-width="120px">
+  <el-form-item label="选项可选值" prop="rapidValues" :rules="{ required: true, message: '请输入选项可选值' }">
+    <el-input v-model="form.rapidValues" type="textarea" placeholder="请输入选项可选值"></el-input>
+    <div class="tips">多个选项使用英文","分隔</div>
+  </el-form-item>
+</el-form>
+
+<el-form 
+  v-if="isSelect && !form.isRapid" 
+  size="small" 
+  class="form-fixed"
+  :inline="true"
+  :model="form" 
+  ref="form3"
+  label-width="120px">
+  <template v-for="(item, index) in form.items">
+    <el-form-item :label="'标题（选项' + (index + 1) + '）'" :prop="'items.' + index + '.label'" :rules="{
+      required: true, message: '请输入选项标题'
+    }">
+      <el-input v-model="item.label" placeholder="请输入选项标题"></el-input>
+    </el-form-item>
+    <el-form-item :label="'值（选项' + (index + 1) + '）'" :prop="'items.' + index + '.value'" :rules="{
+      required: true, message: '请输入选项值'
+    }">
+      <el-input v-model="item.value" placeholder="请输入选项值"></el-input>
+    </el-form-item>
+    <el-form-item>
+      <el-checkbox v-model="item.selected" label="默认勾选" v-if="form.inputType==='CheckBox' || form.inputType==='SelectMultiple'"></el-checkbox>
+      <el-radio v-model="item.selected" v-on:change="btnRadioClick(index)" :label="true" name="selected" v-if="form.inputType==='Radio' || form.inputType==='SelectOne'">默认勾选</el-radio>
+      <el-button size="mini" style="margin-left: 10px" v-if="index > 0" v-on:click="btnStyleItemRemoveClick(index)">删 除</el-button>
+      <el-button size="mini" style="margin-left: 10px" v-if="index + 1 === form.items.length" v-on:click="btnStyleItemAddClick">新 增</el-button>
+    </el-form-item>
+  </template>
+</el-form>
+
+<el-form 
+  v-if="form.inputType === 'Customize'"
+  size="small" 
+  class="form-fixed"
+  :model="form" 
+  ref="form4"
+  label-width="120px"
+  :rules="{
+    customizeLeft: [
+      { required: true, message: '请输入左侧代码' }
+    ]
+  }">
+  <el-form-item label="左侧代码" prop="customizeLeft">
+    <el-input v-model="form.customizeLeft" type="textarea" placeholder="请输入左侧代码"></el-input>
+    <div class="tips">左侧代码（Html）为包含字段名称的表单项，{Value}代表表单项的值</div>
+  </el-form-item>
+  <el-form-item label="右侧代码">
+    <el-input v-model="form.customizeRight" type="textarea" placeholder="请输入右侧代码"></el-input>
+    <div class="tips">右侧代码（Html、Css、Js）为按钮、说明等其他元素，可选</div>
+  </el-form-item>
+</el-form>
+
+<div style="height: 10px"></div>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row align="right" style="margin-right: 5px">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/common/tableStyleLayerEditor.js" type="text/javascript"></script> }

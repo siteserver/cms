@@ -1,0 +1,151 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-submenu__title i, .el-menu-item i {
+      font-size: 18px;
+      margin-right: 5px;
+      color: #fff;
+    }
+  </style>
+}
+
+<el-row class="tac" :gutter="20">
+  <el-col :span="6">
+    
+    <el-menu
+      :default-openeds="defaultOpeneds"
+      :default-active="defaultActive"
+      :unique-opened="false"
+      class="el-menu-vertical-demo"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+      v-on:select="btnSideMenuClick"
+      v-on:open="btnSideMenuOpen"
+      v-on:close="btnSideMenuOpen">
+    
+      <template v-for="level1 in userMenus">
+        <template v-if="level1.children && level1.children.length > 0">
+    
+          <el-submenu :index="level1.id">
+            <template slot="title">
+              <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+              <span>{{ level1.text }}</span>
+            </template>
+    
+            <template v-for="level2 in level1.children">
+    
+              <template v-if="level2.children && level2.children.length > 0">
+    
+                <el-submenu :index="level2.id">
+                  <template slot="title">
+                    <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                    <span>{{ level2.text }}</span>
+                  </template>
+        
+                  <template v-for="level3 in level2.children">
+                    <el-menu-item :class="{'is-active': getIndex(level1, level2, level3) == defaultActive}" :index="getIndex(level1, level2, level3)">
+                      <i v-if="level3.iconClass" :class="level3.iconClass"></i>
+                      <span>{{ level3.text }}</span>
+                    </el-menu-item>
+                  </template>
+        
+                </el-submenu>
+        
+              </template>
+              <template v-else>
+                <el-menu-item :class="{'is-active': getIndex(level1, level2) == defaultActive}" :index="getIndex(level1, level2)">
+                  <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                  <span>{{ level2.text }}</span>
+                </el-menu-item>
+              </template>
+            </template>
+    
+          </el-submenu>
+    
+        </template>
+        <template v-else>
+          <el-menu-item :class="{'is-active': getIndex(level1) == defaultActive}" :index="getIndex(level1)">
+            <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+            <span>{{ level1.text }}</span>
+          </el-menu-item>
+        </template>
+      </template>
+    </el-menu>
+
+  </el-col>
+  <el-col :span="18">
+
+    <el-card v-if="userMenu" class="box-card">
+      <div slot="header" class="clearfix">
+        <span>{{getCardTitle()}}</span>
+        <el-button v-if="this.userMenu.id > 0" style="float: right; padding: 3px 0; margin-left: 10px; color: #f56c6c" type="text" v-on:click="btnDeleteClick">删 除</el-button>
+        <el-button v-if="this.userMenu.id > 0" style="float: right; padding: 3px 0; margin-left: 10px" type="text" v-on:click="btnAddChildClick">新增下级菜单</el-button>
+      </div>
+      <div class="text item">
+        <el-form ref="userMenu" :model="userMenu" size="small" label-width="160px">
+          <el-form-item label="菜单标题" prop="text" :rules="{ required: true, message: '请输入菜单标题' }">
+            <el-input v-model="userMenu.text"></el-input>
+          </el-form-item>
+          <el-form-item label="菜单链接">
+            <el-input v-model="userMenu.link"></el-input>
+          </el-form-item>
+          <el-form-item label="图标Css类">
+            <el-input v-model="userMenu.iconClass"></el-input>
+          </el-form-item>
+          <el-form-item label="目标窗口">
+            <el-select v-model="userMenu.target" class="form-control">
+              <el-option value="_top" label="载入整个窗口"></el-option>
+              <el-option value="_self" label="载入框架窗口"></el-option>
+              <el-option value="_blank" label="弹出新窗口"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="显示菜单的用户组">
+            <el-radio v-model="userMenu.isGroup" :label="false">所有用户组</el-radio>
+            <el-radio v-model="userMenu.isGroup" :label="true">指定用户组</el-radio>
+            <div v-if="userMenu.isGroup">
+              <el-checkbox-group v-model="userMenu.groupIds">
+                <el-checkbox v-for="group in groups" :key="group.id" :label="group.id">{{ group.groupName }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <small v-if="userMenu.isGroup" class="tips">
+              指定用户组后，菜单将只在对应的用户组用户登录后才显示
+            </small>
+          </el-form-item>
+          <el-form-item label="排序" prop="taxis" :rules="[
+            { required: true, message: '请输入排序' },
+            { type: 'number', message: '排序必须为数字' }
+          ]">
+            <el-input v-model.number="userMenu.taxis"></el-input>
+          </el-form-item>
+          <el-form-item label="状态" prop="disabled" :rules="{ required: true, message: '请选择状态' }">
+            <el-radio v-model="userMenu.disabled" :label="false">启用</el-radio>
+            <el-radio v-model="userMenu.disabled" :label="true">禁用</el-radio>
+          </el-form-item>
+      
+          <el-divider></el-divider>
+          <div>
+            <el-button type="primary" v-on:click="btnSubmitClick" size="small">保 存</el-button>
+            <el-button type="default" v-on:click="btnCancelClick" size="small">取 消</el-button>
+          </div>
+        </el-form>
+      </div>
+    </el-card>
+
+  </el-col>
+</el-row>
+
+<div style="height: 10px"></div>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddFirstClick">
+  新增一级菜单
+</el-button>
+<el-button size="small" plain type="danger" style="margin-left: 0px;" icon="el-icon-refresh" v-on:click="btnResetClick">
+  重置用户菜单
+</el-button>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/settings/configsHomeMenu.js" type="text/javascript"></script> }
