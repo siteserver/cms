@@ -1299,7 +1299,8 @@ namespace SSCMS.Core.Services
 
         public bool IsSystemDirectory(string directoryName)
         {
-            return StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.Home) ||
+            return StringUtils.EqualsIgnoreCase(directoryName, Constants.AdminDirectory) ||
+                   StringUtils.EqualsIgnoreCase(directoryName, Constants.HomeDirectory) ||
                    StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName);
         }
 

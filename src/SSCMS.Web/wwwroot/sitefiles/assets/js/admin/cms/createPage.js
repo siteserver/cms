@@ -63,6 +63,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, {
       siteId: this.siteId,
+      type: this.type,
       channelIdList: this.isAllChecked ? [] : this.channelIds,
       isAllChecked: this.isAllChecked,
       isDescendent: this.isDescendent,
@@ -81,6 +82,7 @@ var methods = {
 
     $api.post($url, {
       siteId: this.siteId,
+      type: this.type,
       channelIdList: [this.siteId],
       isAllChecked: false,
       isDescendent: false,

@@ -124,6 +124,9 @@ var methods = {
       if ($this.form.checked) {
         $this.form.checkedLevel = $this.site.checkContentLevel;
       }
+      if ($this.checkedLevels.indexOf($this.form.checkedLevel) === -1) {
+        $this.form.checkedLevel = res.checkedLevel;
+      }
       if ($this.form.top || $this.form.recommend || $this.form.hot || $this.form.color) {
         $this.collapseSettings.push('attributes');
       }

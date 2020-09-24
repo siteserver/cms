@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -49,7 +49,7 @@ namespace SSCMS.Core.Services
                     architecture = "x86";
                 }
                 OSArchitecture = $"{os}-{architecture}";
-                Containerized = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") != null;
+                Containerized = EnvironmentUtils.RunningInContainer;
                 CPUCores = Environment.ProcessorCount;
             }
         }
@@ -68,15 +68,40 @@ namespace SSCMS.Core.Services
         public string OSDescription { get; }
         public bool Containerized { get; }
         public int CPUCores { get; }
-        public bool IsProtectData => _config.GetValue(nameof(IsProtectData), false);
-        public bool IsDisablePlugins => _config.GetValue(nameof(IsDisablePlugins), false);
-        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
-        public string ApiHost => _config.GetValue(nameof(ApiHost), "/");
-        public DatabaseType DatabaseType => TranslateUtils.ToEnum(IsProtectData ? Decrypt(_config.GetValue<string>("Database:Type")) : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
-        public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
+
+        public bool IsProtectData => !Containerized && _config.GetValue(nameof(IsProtectData), false);
+
+        private string GetValue(string envName, string jsonName)
+        {
+            return EnvironmentUtils.GetValue(envName) ?? _config.GetValue<string>(jsonName);
+        }
+
+        public string SecurityKey => GetValue(EnvironmentUtils.SecurityKey, nameof(SecurityKey));
+
+        public DatabaseType DatabaseType => TranslateUtils.ToEnum(
+            IsProtectData
+                ? Decrypt(GetValue(EnvironmentUtils.DatabaseType, "Database:Type"))
+                : GetValue(EnvironmentUtils.DatabaseType, "Database:Type"), DatabaseType.MySql);
+
+        public string DatabaseConnectionString => DatabaseType == DatabaseType.SQLite
+            ? (Containerized
+                ? $"Data Source={Constants.LocalDbContainerVirtualPath};Version=3;"
+                : $"Data Source={Constants.LocalDbHostVirtualPath};Version=3;")
+            : (IsProtectData
+                ? Decrypt(GetValue(EnvironmentUtils.DatabaseConnectionString, "Database:ConnectionString"))
+                : GetValue(EnvironmentUtils.DatabaseConnectionString, "Database:ConnectionString"));
+
         public IDatabase Database => new Database(DatabaseType, DatabaseConnectionString);
-        public string RedisConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Redis:ConnectionString")) : _config.GetValue<string>("Redis:ConnectionString");
+
+        public string RedisConnectionString => IsProtectData
+            ? Decrypt(GetValue(EnvironmentUtils.RedisConnectionString, "Redis:ConnectionString"))
+            : GetValue(EnvironmentUtils.RedisConnectionString, "Redis:ConnectionString");
+
         public IRedis Redis => new Redis(RedisConnectionString);
+
+        public string ApiHost => _config.GetValue(nameof(ApiHost), "/");
+
+        public bool IsDisablePlugins => _config.GetValue(nameof(IsDisablePlugins), false);
 
         public string AdminRestrictionHost => _config.GetValue<string>("AdminRestriction:Host");
 

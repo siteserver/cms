@@ -29,6 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         {
             public string Version { get; set; }
             public IEnumerable<string> PackageIds { get; set; }
+            public bool Containerized { get; set; }
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -25,55 +25,24 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _configRepository = configRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsConfig))
-            {
-                return Unauthorized();
-            }
-
-            var config = await _configRepository.GetAsync();
-
-            return new GetResult
-            {
-                Config = config
-            };
+            public Config Config { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody]SubmitRequest request)
+        public class SubmitRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsConfig))
-            {
-                return Unauthorized();
-            }
-
-            var config = await _configRepository.GetAsync();
-
-            config.AdminUserNameMinLength = request.AdminUserNameMinLength;
-            config.AdminPasswordMinLength = request.AdminPasswordMinLength;
-            config.AdminPasswordRestriction = request.AdminPasswordRestriction;
-
-            config.IsAdminLockLogin = request.IsAdminLockLogin;
-            config.AdminLockLoginCount = request.AdminLockLoginCount;
-            config.AdminLockLoginType = request.AdminLockLoginType;
-            config.AdminLockLoginHours = request.AdminLockLoginHours;
-
-            config.IsAdminEnforcePasswordChange = request.IsAdminEnforcePasswordChange;
-            config.AdminEnforcePasswordChangeDays = request.AdminEnforcePasswordChangeDays;
-
-            config.IsAdminEnforceLogout = request.IsAdminEnforceLogout;
-            config.AdminEnforceLogoutMinutes = request.AdminEnforceLogoutMinutes;
-
-            await _configRepository.UpdateAsync(config);
-
-            await _authManager.AddAdminLogAsync("修改管理员设置");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public int AdminUserNameMinLength { get; set; }
+            public int AdminPasswordMinLength { get; set; }
+            public PasswordRestriction AdminPasswordRestriction { get; set; }
+            public bool IsAdminLockLogin { get; set; }
+            public int AdminLockLoginCount { get; set; }
+            public LockType AdminLockLoginType { get; set; }
+            public int AdminLockLoginHours { get; set; }
+            public bool IsAdminEnforcePasswordChange { get; set; }
+            public int AdminEnforcePasswordChangeDays { get; set; }
+            public bool IsAdminEnforceLogout { get; set; }
+            public int AdminEnforceLogoutMinutes { get; set; }
         }
     }
 }

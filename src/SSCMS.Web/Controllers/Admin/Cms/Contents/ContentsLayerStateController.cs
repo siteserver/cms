@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
+using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -33,38 +34,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _administratorRepository = administratorRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
+        public class GetRequest : ChannelRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
-            {
-                return Unauthorized();
-            }
+            public int ContentId { get; set; }
+        }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
-
-            var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
-            if (content == null) return NotFound();
-
-            var contentChecks = await _contentCheckRepository.GetCheckListAsync(content.SiteId, content.ChannelId, request.ContentId);
-            contentChecks.ForEach(async x =>
-            {
-                x.Set("State", CheckManager.GetCheckState(site, x.Checked, x.CheckedLevel));
-                x.Set("AdminName", await _administratorRepository.GetDisplayAsync(x.AdminId));
-            });
-
-            return new GetResult
-            {
-                ContentChecks = contentChecks,
-                Content = content,
-                State = CheckManager.GetCheckState(site, content)
-            };
+        public class GetResult
+        {
+            public List<ContentCheck> ContentChecks { get; set; }
+            public Content Content { get; set; }
+            public string State { get; set; }
         }
     }
 }

@@ -19,10 +19,19 @@ namespace SSCMS.Core.Utils
                 adminRestrictionBlockList = new string[] { };
             }
 
-            var json = $@"
+            var json = EnvironmentUtils.RunningInContainer
+                ? $@"
+{{
+  ""IsDisablePlugins"": {StringUtils.ToLower(isDisablePlugins.ToString())},
+  ""AdminRestriction"": {{
+    ""Host"": ""{adminRestrictionHost}"",
+    ""AllowList"": {TranslateUtils.JsonSerialize(adminRestrictionAllowList)},
+    ""BlockList"": {TranslateUtils.JsonSerialize(adminRestrictionBlockList)}
+  }}
+}}"
+                : $@"
 {{
   ""IsProtectData"": {StringUtils.ToLower(isProtectData.ToString())},
-  ""IsDisablePlugins"": {StringUtils.ToLower(isDisablePlugins.ToString())},
   ""SecurityKey"": ""{securityKey}"",
   ""Database"": {{
     ""Type"": ""{databaseType}"",
@@ -31,12 +40,15 @@ namespace SSCMS.Core.Utils
   ""Redis"": {{
     ""ConnectionString"": ""{redisConnectionString}""
   }},
+  ""IsDisablePlugins"": {StringUtils.ToLower(isDisablePlugins.ToString())},
   ""AdminRestriction"": {{
     ""Host"": ""{adminRestrictionHost}"",
     ""AllowList"": {TranslateUtils.JsonSerialize(adminRestrictionAllowList)},
     ""BlockList"": {TranslateUtils.JsonSerialize(adminRestrictionBlockList)}
   }}
 }}";
+
+            
 
             FileUtils.WriteText(path, json.Trim());
 
@@ -50,6 +62,8 @@ namespace SSCMS.Core.Utils
 
         public static void Init(string contentRootPath)
         {
+            if (EnvironmentUtils.RunningInContainer) return;
+
             var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
             if (FileUtils.IsFileExists(filePath))
             {
@@ -115,7 +129,7 @@ namespace SSCMS.Core.Utils
             }
             else if (databaseType == DatabaseType.SQLite)
             {
-                connectionString = $"Data Source=~/{Constants.DefaultLocalDbFileName};Version=3;";
+                connectionString = $"Data Source={Constants.LocalDbHostVirtualPath};Version=3;";
             }
 
             return connectionString;

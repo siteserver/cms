@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -21,13 +20,9 @@ namespace SSCMS.Web.Controllers.Admin
             _settingsManager = settingsManager;
         }
 
-        [HttpPost, Route(Route)]
-        public ActionResult<StringResult> Submit([FromBody] SubmitRequest request)
+        public class SubmitRequest
         {
-            return new StringResult
-            {
-                Value = _settingsManager.Decrypt(request.RedirectUrl)
-            };
+            public string RedirectUrl { get; set; }
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -28,49 +26,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             _logRepository = logRepository;
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<PageResult<Log>>> List([FromBody] SearchRequest request)
+        public class SearchRequest : PageRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsAdmin))
-            {
-                return Unauthorized();
-            }
-
-            var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
-            var adminId = admin?.Id ?? 0;
-
-            var count = await _logRepository.GetAdminLogsCountAsync(adminId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await _logRepository.GetAdminLogsAsync(adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
-
-            foreach (var log in logs)
-            {
-                var adminName = await _administratorRepository.GetDisplayAsync(log.AdminId);
-                log.Set("adminName", adminName);
-            }
-
-            return new PageResult<Log>
-            {
-                Items = logs,
-                Count = count
-            };
-        }
-
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Delete()
-        {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsAdmin))
-            {
-                return Unauthorized();
-            }
-
-            await _logRepository.DeleteAllAdminLogsAsync();
-
-            await _authManager.AddAdminLogAsync("清空管理员日志");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string UserName { get; set; }
+            public string Keyword { get; set; }
+            public string DateFrom { get; set; }
+            public string DateTo { get; set; }
         }
     }
 }

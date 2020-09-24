@@ -64,6 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
             public List<Select<int>> CheckedLevels { get; set; }
+            public int CheckedLevel { get; set; }
         }
 
         public class PreviewRequest

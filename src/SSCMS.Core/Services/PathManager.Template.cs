@@ -17,11 +17,11 @@ namespace SSCMS.Core.Services
             }
             else if (template.TemplateType == TemplateType.ContentTemplate)
             {
-                filePath = await GetSitePathAsync(site, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, template.RelatedFileName);
+                filePath = await GetSitePathAsync(site, DirectoryUtils.Site.Template, DirectoryUtils.Site.Content, template.RelatedFileName);
             }
             else
             {
-                filePath = await GetSitePathAsync(site, DirectoryUtils.PublishmentSytem.Template, template.RelatedFileName);
+                filePath = await GetSitePathAsync(site, DirectoryUtils.Site.Template, template.RelatedFileName);
             }
             return filePath;
         }

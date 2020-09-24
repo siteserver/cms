@@ -1,4 +1,4 @@
-using System.IO;
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +12,7 @@ namespace SSCMS.Web
     {
         public static void Main(string[] args)
         {
-            InstallUtils.Init(Directory.GetCurrentDirectory());
+            InstallUtils.Init(AppDomain.CurrentDomain.BaseDirectory);
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -21,11 +21,11 @@ namespace SSCMS.Web
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    config.SetBasePath(Directory.GetCurrentDirectory())
+                    config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddJsonFile(Constants.PackageFileName, optional: true, reloadOnChange: true)
                         .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
-                        .AddEnvironmentVariables("SSCMS_")
+                        //.AddEnvironmentVariables(Constants.EnvironmentPrefix)
                         .AddCommandLine(args);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

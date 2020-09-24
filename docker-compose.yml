@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+
+  nginx:
+    image: "dev"
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SSCMS_SECURITY_KEY: e2a3d303-ac9b-41ff-9154-930710af0845
+      SSCMS_DATABASE_TYPE: Sqlite
+
+    restart: always
+
+  sscms:
+    depends_on:
+      - nginx
+    image: "sscms/core:v7.0.0"
+    expose:
+      - "5000"
+    restart: always
+
+# docker-compose build
+# docker-compose up -d
+# docker-compose down
+
+# Browse to: http://localhost/ss-admin/

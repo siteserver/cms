@@ -105,9 +105,6 @@ namespace SSCMS.Core.Utils
             _caching.SetProcess(guid, $"导入模板文件: {templateFilePath}");
             await importObject.ImportTemplatesAsync(templateFilePath, true, adminId, guid);
 
-            _caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
-            await importObject.ImportConfigurationAsync(configurationFilePath, guid);
-
             var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
             foreach (var filePath in filePathList)
             {
@@ -120,6 +117,9 @@ namespace SSCMS.Core.Utils
                 _caching.SetProcess(guid, $"导入表字段: {tableDirectoryPath}");
                 await importObject.ImportTableStylesAsync(tableDirectoryPath, guid);
             }
+
+            _caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
+            await importObject.ImportConfigurationAsync(configurationFilePath, guid);
         }
 
         public static async Task ExportSiteToSiteTemplateAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string siteTemplateDir)

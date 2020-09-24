@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Models;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -26,46 +25,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<ObjectResult<Site>>> GetConfig([FromQuery] SiteRequest request)
+        public class SubmitRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsUploadVideo))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            return new ObjectResult<Site>
-            {
-                Value = site
-            };
-        }
-
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsUploadVideo))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            site.VideoUploadDirectoryName = request.VideoUploadDirectoryName;
-            site.VideoUploadDateFormatString = request.VideoUploadDateFormatString;
-            site.IsVideoUploadChangeFileName = request.IsVideoUploadChangeFileName;
-            site.VideoUploadExtensions = request.VideoUploadExtensions.Replace("|", ",");
-            site.VideoUploadTypeMaxSize = request.VideoUploadTypeMaxSize;
-
-            await _siteRepository.UpdateAsync(site);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "修改视频上传设置");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public string VideoUploadDirectoryName { get; set; }
+            public DateFormatType VideoUploadDateFormatString { get; set; }
+            public bool IsVideoUploadChangeFileName { get; set; }
+            public string VideoUploadExtensions { get; set; }
+            public int VideoUploadTypeMaxSize { get; set; }
         }
     }
 }

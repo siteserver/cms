@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -27,77 +28,91 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] FileRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
+            public string Path { get; set; }
+            public string ExtName { get; set; }
+            public string Content { get; set; }
+        }
+
+        public class FileRequest
+        {
+            public int SiteId { get; set; }
+            public string DirectoryPath { get; set; }
+            public string FileName { get; set; }
+        }
+
+        public class ContentRequest
+        {
+            public int SiteId { get; set; }
+            public string Path { get; set; }
+            public string ExtName { get; set; }
+            public string Content { get; set; }
+            public string DirectoryPath { get; set; }
+            public string FileName { get; set; }
+        }
+
+        public class ContentResult
+        {
+            public string DirectoryPath { get; set; }
+            public string FileName { get; set; }
+        }
+
+        private async Task<ActionResult<ContentResult>> SaveFile(ContentRequest request, Site site, bool isAdd)
+        {
+            var filePath = string.Empty;
+            if (StringUtils.EqualsIgnoreCase(request.ExtName, "html"))
             {
-                return Unauthorized();
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsIncludeDir, request.Path + ".html");
+            }
+            else if (StringUtils.EqualsIgnoreCase(request.ExtName, "css"))
+            {
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsCssDir, request.Path + ".css");
+            }
+            else if (StringUtils.EqualsIgnoreCase(request.ExtName, "js"))
+            {
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsJsDir, request.Path + ".js");
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var filePath = await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
-            var content = string.Empty;
-            if (FileUtils.IsFileExists(filePath))
+            var filePathToDelete = string.Empty;
+            if (isAdd)
             {
-                content = await FileUtils.ReadTextAsync(filePath);
+                if (FileUtils.IsFileExists(filePath))
+                {
+                    return this.Error("文件新增失败，同名文件已存在！");
+                }
             }
-            var extName = StringUtils.ToLower(PathUtils.GetExtension(filePath));
-            extName = StringUtils.ReplaceStartsWith(extName, ".", string.Empty);
-            var path = string.Empty;
-
-            if (StringUtils.EqualsIgnoreCase(extName, "html"))
+            else
             {
-                path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsIncludeDir,
-                    string.Empty), request.FileName);
-            }
-            else if (StringUtils.EqualsIgnoreCase(extName, "css"))
-            {
-                path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsCssDir,
-                    string.Empty), request.FileName);
-            }
-            else if (StringUtils.EqualsIgnoreCase(extName, "js"))
-            {
-                path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsJsDir,
-                    string.Empty), request.FileName);
+                var originalFilePath = await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
+                if (!StringUtils.EqualsIgnoreCase(originalFilePath, filePath))
+                {
+                    filePathToDelete = originalFilePath;
+                    if (FileUtils.IsFileExists(filePath))
+                    {
+                        return this.Error("文件编辑失败，同名文件已存在！");
+                    }
+                }
             }
 
-            return new GetResult
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+            await FileUtils.WriteTextAsync(filePath, request.Content);
+            if (!string.IsNullOrEmpty(filePathToDelete))
             {
-                Path = StringUtils.TrimSlash(PathUtils.RemoveExtension(path)),
-                ExtName = extName,
-                Content = content
+                FileUtils.DeleteFileIfExists(filePathToDelete);
+            }
+
+            var fileName = PathUtils.GetFileName(filePath);
+            var sitePath = await _pathManager.GetSitePathAsync(site);
+            var directoryPath = StringUtils.ReplaceStartsWithIgnoreCase(filePath, sitePath, string.Empty);
+            directoryPath = StringUtils.ReplaceEndsWithIgnoreCase(directoryPath, fileName, string.Empty);
+            directoryPath = StringUtils.TrimSlash(directoryPath);
+
+            return new ContentResult
+            {
+                DirectoryPath = directoryPath,
+                FileName = fileName
             };
-        }
-
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<ContentResult>> Add([FromBody] ContentRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            return await SaveFile(request, site, false);
-        }
-
-        [HttpPut, Route(Route)]
-        public async Task<ActionResult<ContentResult>> Edit([FromBody] ContentRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            return await SaveFile(request, site, false);
         }
     }
 }

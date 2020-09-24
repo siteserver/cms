@@ -13,7 +13,10 @@ var data = utils.init({
   siteFilesWritable: null,
   databaseTypes: null,
   adminUrl: null,
-  oraclePrivileges: null,
+  containerized: false,
+  databaseType: null,
+  databaseConnectionString: null,
+  redisConnectionString: null,
   databaseNames: null,
   pageIndex: 0,
   agreement: false,
@@ -21,15 +24,12 @@ var data = utils.init({
   errorMessage: null,
 
   databaseForm: {
-    databaseType: null,
+    databaseType: 'MySql',
     databaseHost: null,
     isDatabaseDefaultPort: true,
     databasePort: null,
     databaseUserName: null,
     databasePassword: null,
-    oraclePrivilege: 'Normal',
-    oracleIsSid: false,
-    oracleDatabase: null,
     databaseName: null
   },
 
@@ -71,7 +71,10 @@ var methods = {
       $this.siteFilesWritable = res.siteFilesWritable;
       $this.databaseTypes = res.databaseTypes;
       $this.adminUrl = res.adminUrl;
-      $this.oraclePrivileges = res.oraclePrivileges;
+      $this.containerized = res.containerized;
+      $this.databaseType = res.databaseType;
+      $this.databaseConnectionString = res.databaseConnectionString;
+      $this.redisConnectionString = res.redisConnectionString;
     }).catch(function (error) {
       $this.errorMessage = utils.getErrorMessage(error);
     }).then(function () {
@@ -86,6 +89,11 @@ var methods = {
     utils.loading(this, true);
     $api.post($url + '/actions/databaseConnect', this.databaseForm).then(function (response) {
       var res = response.data;
+
+      if ($this.containerized) {
+        $this.pageIndex++;
+        return;
+      }
 
       $this.databaseNames = res.databaseNames;
     }).catch(function (error) {
@@ -260,31 +268,50 @@ var methods = {
   btnDatabaseConnectClick: function () {
     var $this = this;
 
-    if (this.databaseNames && this.databaseForm.databaseName || this.databaseForm.databaseType === $sqlite) {
-      this.pageIndex++;
-      return;
-    }
-
-    this.$refs.databaseForm.validate(function(valid) {
-      if (valid) {
+    if (this.containerized) {
+      if (this.databaseType === $sqlite) {
+        this.pageIndex++;
+        return;
+      } else {
         $this.apiDatabaseConnect();
+        return;
       }
-    });
+    } else {
+      if (this.databaseNames && this.databaseForm.databaseName || this.databaseForm.databaseType === $sqlite) {
+        this.pageIndex++;
+        return;
+      }
+  
+      this.$refs.databaseForm.validate(function(valid) {
+        if (valid) {
+          $this.apiDatabaseConnect();
+        }
+      });
+    }
   },
 
   btnRedisConnectClick: function () {
     var $this = this;
 
-    if (!this.redisForm.isRedis) {
-      this.pageIndex++;
-      return;
-    }
-
-    this.$refs.redisForm.validate(function(valid) {
-      if (valid) {
+    if (this.containerized) {
+      if (!this.redisConnectionString) {
+        this.pageIndex++;
+        return;
+      } else {
         $this.apiRedisConnect();
       }
-    });
+    } else {
+      if (!this.redisForm.isRedis) {
+        this.pageIndex++;
+        return;
+      }
+  
+      this.$refs.redisForm.validate(function(valid) {
+        if (valid) {
+          $this.apiRedisConnect();
+        }
+      });
+    }
   },
 
   btnInstallClick: function() {

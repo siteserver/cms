@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -8,7 +6,6 @@ using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -30,74 +27,26 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             _contentTagRepository = contentTagRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
+        public class GetRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentTag))
-            {
-                return Unauthorized();
-            }
-
-            var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
-            var pageTagNames = new List<string>();
-            var total = tagNames.Count;
-            if (total > 0)
-            {
-                var offset = request.PerPage * (request.Page - 1);
-                var limit = request.PerPage;
-                pageTagNames = tagNames.Skip(offset).Take(limit).ToList();
-            }
-
-            return new GetResult
-            {
-                Total = total,
-                TagNames = pageTagNames
-            };
+            public int Page { get; set; }
+            public int PerPage { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Delete([FromBody]DeleteRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentTag))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            await _contentTagRepository.DeleteAsync(request.SiteId, request.TagName);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "删除内容标签", $"内容标签:{request.TagName}");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public int Total { get; set; }
+            public IEnumerable<string> TagNames { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Add([FromBody] SubmitRequest request)
+        public class SubmitRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentTag))
-            {
-                return Unauthorized();
-            }
+            public List<string> TagNames { get; set; }
+        }
 
-            foreach (var tagName in request.TagNames)
-            {
-                await _contentTagRepository.InsertAsync(request.SiteId, tagName);
-            }
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容标签", $"内容标签:{ListUtils.ToString(request.TagNames)}");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+        public class DeleteRequest : SiteRequest
+        {
+            public string TagName { get; set; }
         }
     }
 }

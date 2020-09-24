@@ -7,6 +7,7 @@ var data = utils.init({
   pageType: utils.getQueryString("pageType"),
   version: null,
   allPlugins: null,
+  containerized: null,
   plugins: null,
   enabledPlugins: [],
   disabledPlugins: [],
@@ -27,17 +28,18 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
+      $this.version = res.version;
+      $this.allPlugins = res.allPlugins;
+      $this.containerized = res.containerized;
+
       var server = response.headers['server'];
-      if (!server || server === 'Kestrel') {
+      if (!$this.containerized && (!server || server === 'Kestrel')) {
         var docsUrl = cloud.getDocsUrl('getting-started/deploy.html');
         utils.error('页面加载失败，SSCMS 插件需要在进程管理器（Nginx、Apache、IIS、Windows 服务）中运行，请参考文档 <a href="' + docsUrl + '" target="_blank">托管和部署</a>', {
           redirect: true
         });
         return;
       }
-
-      $this.version = res.version;
-      $this.allPlugins = res.allPlugins;
 
       for (var i = 0; i < $this.allPlugins.length; i++) {
         var plugin = $this.allPlugins[i];

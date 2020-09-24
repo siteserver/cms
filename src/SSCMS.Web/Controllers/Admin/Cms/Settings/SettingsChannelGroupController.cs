@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -26,66 +27,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             _channelGroupRepository = channelGroupRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsChannelGroup))
-            {
-                return Unauthorized();
-            }
-
-            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
+            public IEnumerable<ChannelGroup> Groups { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<GetResult>> Delete([FromBody]DeleteRequest request)
+        public class DeleteRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsChannelGroup))
-            {
-                return Unauthorized();
-            }
-
-            await _channelGroupRepository.DeleteAsync(request.SiteId, request.GroupName);
-
-            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
+            public string GroupName { get; set; }
         }
 
-        [HttpPost, Route(RouteOrder)]
-        public async Task<ActionResult<GetResult>> Order([FromBody] OrderRequest request)
+        public class OrderRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsChannelGroup))
-            {
-                return Unauthorized();
-            }
-
-            if (request.IsUp)
-            {
-                await _channelGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
-            }
-            else
-            {
-                await _channelGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
-            }
-
-            var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
+            public int GroupId { get; set; }
+            public int Taxis { get; set; }
+            public bool IsUp { get; set; }
         }
     }
 }

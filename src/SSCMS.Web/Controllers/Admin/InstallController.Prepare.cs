@@ -23,24 +23,39 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error(errorMessage);
             }
 
-            if (request.DatabaseType == DatabaseType.SQLite)
+            if (_settingsManager.Containerized)
             {
-                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
-                if (!FileUtils.IsFileExists(filePath))
+                if (_settingsManager.DatabaseType == DatabaseType.SQLite)
                 {
-                    await FileUtils.WriteTextAsync(filePath, string.Empty);
+                    var filePath = _pathManager.ParsePath(_settingsManager.ContentRootPath,
+                        Constants.LocalDbContainerVirtualPath);
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        await FileUtils.WriteTextAsync(filePath, string.Empty);
+                    }
                 }
             }
-
-            var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(request.DatabaseType, request.DatabaseHost, request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName, request.DatabasePassword, request.DatabaseName);
-            var redisConnectionString = string.Empty;
-            if (request.IsRedis)
+            else
             {
-                redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
-            }
+                if (request.DatabaseType == DatabaseType.SQLite)
+                {
+                    var filePath = _pathManager.ParsePath(_settingsManager.ContentRootPath, Constants.LocalDbHostVirtualPath);
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        await FileUtils.WriteTextAsync(filePath, string.Empty);
+                    }
+                }
 
-            _settingsManager.SaveSettings(request.IsProtectData, false, request.DatabaseType, databaseConnectionString,
-                redisConnectionString, string.Empty, null, null);
+                var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(request.DatabaseType, request.DatabaseHost, request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName, request.DatabasePassword, request.DatabaseName);
+                var redisConnectionString = string.Empty;
+                if (request.IsRedis)
+                {
+                    redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+                }
+
+                _settingsManager.SaveSettings(request.IsProtectData, false, request.DatabaseType, databaseConnectionString,
+                    redisConnectionString, string.Empty, null, null);
+            }
 
             return new StringResult
             {

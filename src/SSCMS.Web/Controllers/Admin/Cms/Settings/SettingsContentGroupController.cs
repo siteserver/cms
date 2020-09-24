@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -7,7 +7,6 @@ using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -28,130 +27,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             _contentGroupRepository = contentGroupRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentGroup))
-            {
-                return Unauthorized();
-            }
-
-            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
+            public IEnumerable<ContentGroup> Groups { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<GetResult>> Delete([FromBody]DeleteRequest request)
+        public class DeleteRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentGroup))
-            {
-                return Unauthorized();
-            }
-
-            await _contentGroupRepository.DeleteAsync(request.SiteId, request.GroupName);
-
-            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
+            public string GroupName { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<GetResult>> Add([FromBody] ChannelGroup request)
+        public class OrderRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentGroup))
-            {
-                return Unauthorized();
-            }
-
-            if (await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
-            {
-                return this.Error("保存失败，已存在相同名称的内容组！");
-            }
-
-            var groupInfo = new ContentGroup
-            {
-                SiteId = request.SiteId,
-                GroupName = request.GroupName,
-                Description = request.Description
-            };
-
-            await _contentGroupRepository.InsertAsync(groupInfo);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组:{groupInfo.GroupName}");
-
-            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
-        }
-
-        [HttpPut, Route(Route)]
-        public async Task<ActionResult<GetResult>> Edit([FromBody] ChannelGroup request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentGroup))
-            {
-                return Unauthorized();
-            }
-
-            var groupInfo = await _contentGroupRepository.GetAsync(request.SiteId, request.Id);
-
-            if (groupInfo.GroupName != request.GroupName && await _contentGroupRepository.IsExistsAsync(request.SiteId, request.GroupName))
-            {
-                return this.Error("保存失败，已存在相同名称的内容组！");
-            }
-
-            groupInfo.GroupName = request.GroupName;
-            groupInfo.Description = request.Description;
-
-            await _contentGroupRepository.UpdateAsync(groupInfo);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
-
-            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
-        }
-
-        [HttpPost, Route(RouteOrder)]
-        public async Task<ActionResult<GetResult>> Order([FromBody] OrderRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.SettingsContentGroup))
-            {
-                return Unauthorized();
-            }
-
-            if (request.IsUp)
-            {
-                await _contentGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
-            }
-            else
-            {
-                await _contentGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
-            }
-
-            var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
-
-            return new GetResult
-            {
-                Groups = groups
-            };
+            public int GroupId { get; set; }
+            public int Taxis { get; set; }
+            public bool IsUp { get; set; }
         }
     }
 }

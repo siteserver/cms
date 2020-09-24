@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -26,54 +25,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<ObjectResult<Site>>> GetConfig([FromQuery] SiteRequest request)
+        public class SubmitRequest : SiteRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsCreate))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            return new ObjectResult<Site>
-            {
-                Value = site
-            };
-        }
-
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.SettingsCreate))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-
-            site.IsCreateDoubleClick = request.IsCreateDoubleClick;
-            site.IsCreateContentIfContentChanged = request.IsCreateContentIfContentChanged;
-            site.IsCreateChannelIfChannelChanged = request.IsCreateChannelIfChannelChanged;
-            site.IsCreateShowPageInfo = request.IsCreateShowPageInfo;
-            site.IsCreateIe8Compatible = request.IsCreateIe8Compatible;
-            site.IsCreateBrowserNoCache = request.IsCreateBrowserNoCache;
-            site.IsCreateJsIgnoreError = request.IsCreateJsIgnoreError;
-            site.IsCreateWithJQuery = request.IsCreateWithJQuery;
-            site.CreateStaticMaxPage = request.CreateStaticMaxPage;
-            site.IsCreateUseDefaultFileName = request.IsCreateUseDefaultFileName;
-            site.CreateDefaultFileName = request.CreateDefaultFileName;
-            site.IsCreateStaticContentByAddDate = request.IsCreateStaticContentByAddDate;
-            site.CreateStaticContentAddDate = request.CreateStaticContentAddDate;
-
-            await _siteRepository.UpdateAsync(site);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, "修改页面生成设置");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public bool IsCreateDoubleClick { get; set; }
+            public bool IsCreateContentIfContentChanged { get; set; }
+            public bool IsCreateChannelIfChannelChanged { get; set; }
+            public bool IsCreateShowPageInfo { get; set; }
+            public bool IsCreateIe8Compatible { get; set; }
+            public bool IsCreateBrowserNoCache { get; set; }
+            public bool IsCreateJsIgnoreError { get; set; }
+            public bool IsCreateWithJQuery { get; set; }
+            public int CreateStaticMaxPage { get; set; }
+            public bool IsCreateUseDefaultFileName { get; set; }
+            public string CreateDefaultFileName { get; set; }
+            public bool IsCreateStaticContentByAddDate { get; set; }
+            public DateTime CreateStaticContentAddDate { get; set; }
         }
     }
 }

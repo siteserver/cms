@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
@@ -15,16 +16,11 @@ namespace SSCMS.Core.Services
             return packagesPath;
         }
 
-        public string PluginsPath => GetContentRootPath(DirectoryUtils.Plugins);
+        public string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
 
         public string GetPluginPath(string pluginId, params string[] paths)
         {
-            return GetContentRootPath(DirectoryUtils.Plugins, pluginId, PathUtils.Combine(paths));
-        }
-
-        public string GetPluginNuspecPath(string pluginId)
-        {
-            return GetPluginPath(pluginId, pluginId + ".nuspec");
+            return PathUtils.Combine(PluginsPath, pluginId, PathUtils.Combine(paths));
         }
 
         public string GetPluginDllDirectoryPath(string pluginId)
@@ -45,27 +41,6 @@ namespace SSCMS.Core.Services
                 var filePath = dict.OrderByDescending(x => x.Key).First().Value;
                 return Path.GetDirectoryName(filePath);
             }
-
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", "net4.6.1", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Debug");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", "net4.6.1", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Debug");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Debug");
-            //}
-            //if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Release", fileName)))
-            //{
-            //    return GetPluginPath(pluginId, "Bin", "Release");
-            //}
 
             return string.Empty;
         }

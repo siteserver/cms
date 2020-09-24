@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SSCMS.Utils
 {
-    internal class DesEncryptor
+    public class DesEncryptor
 	{
 		#region 私有成员
 		/// <summary>

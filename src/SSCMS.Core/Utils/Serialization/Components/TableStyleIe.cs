@@ -25,9 +25,15 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
 		public async Task ExportTableStylesAsync(int siteId, string tableName)
 		{
-            var allRelatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
-            allRelatedIdentities.Insert(0, 0);
-            var tableStyleWithItemsDict = await _databaseManager.TableStyleRepository.GetTableStyleWithItemsDictionaryAsync(tableName, allRelatedIdentities);
+            var relatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
+            relatedIdentities.Insert(0, 0);
+
+            if (StringUtils.EqualsIgnoreCase(tableName, _databaseManager.SiteRepository.TableName))
+            {
+                relatedIdentities = _databaseManager.TableStyleRepository.GetRelatedIdentities(siteId);
+            }
+
+            var tableStyleWithItemsDict = await _databaseManager.TableStyleRepository.GetTableStyleWithItemsDictionaryAsync(tableName, relatedIdentities);
 		    if (tableStyleWithItemsDict == null || tableStyleWithItemsDict.Count <= 0) return;
 
 		    var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);

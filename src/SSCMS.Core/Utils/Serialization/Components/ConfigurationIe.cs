@@ -33,12 +33,16 @@ namespace SSCMS.Core.Utils.Serialization.Components
 			var feed = AtomUtility.GetEmptyFeed();
 
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.Id), "PublishmentSystemId" }, _site.Id.ToString());
-			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteName), "PublishmentSystemName" }, _site.SiteName);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteDir), "PublishmentSystemDir" }, _site.SiteDir);
+			AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.SiteName), "PublishmentSystemName" }, _site.SiteName);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.SiteType), _site.SiteType);
+			AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.ImageUrl), _site.ImageUrl);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.Keywords), _site.Keywords);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.Description), _site.Description);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.TableName), "AuxiliaryTableForContent" }, _site.TableName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(Site.ParentId), "ParentPublishmentSystemId" }, _site.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Site.Taxis), _site.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "SettingsXml", _site.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "SettingsXml", TranslateUtils.JsonSerialize(_site.ToDictionary(null)));
+			AtomUtility.AddDcElement(feed.AdditionalElements, "ExtendValues", AtomUtility.Encrypt(TranslateUtils.JsonSerialize(_site)));
 
             var indexTemplateId = await _databaseManager.TemplateRepository.GetDefaultTemplateIdAsync(_site.Id, TemplateType.IndexPageTemplate);
 			if (indexTemplateId != 0)
@@ -115,31 +119,39 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-            var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
-                "SettingsXml");
-            if (!string.IsNullOrEmpty(json))
+            var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                "ExtendValues");
+            if (!string.IsNullOrEmpty(extendValues))
             {
-                var dict = ListUtils.ToDictionary(json);
-                foreach (var o in dict)
+				_site.LoadExtend(AtomUtility.Decrypt(extendValues));
+            }
+            else
+            {
+                var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                    "SettingsXml");
+                if (!string.IsNullOrEmpty(json))
                 {
-                    _site.Set(o.Key, o.Value);
+                    var dict = ListUtils.ToDictionary(json);
+                    foreach (var o in dict)
+                    {
+                        _site.Set(o.Key, o.Value);
+                    }
                 }
 			}
-            json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
-                "ExtendValues");
-            if (!string.IsNullOrEmpty(json))
-            {
-                var dict = ListUtils.ToDictionary(json);
-                foreach (var o in dict)
-                {
-                    _site.Set(o.Key, o.Value);
-                }
-            }
 
             _site.IsSeparatedWeb = false;
             _site.IsCreateDoubleClick = false;
 
-            _caching.SetProcess(guid, $"更新站点配置...");
+			_site.SiteType = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                nameof(Site.SiteType));
+            _site.ImageUrl = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                nameof(Site.ImageUrl));
+            _site.Keywords = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                nameof(Site.Keywords));
+            _site.Description = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+                nameof(Site.Description));
+
+            _caching.SetProcess(guid, "更新站点配置...");
 			await _databaseManager.SiteRepository.UpdateAsync(_site);
 
 			var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);

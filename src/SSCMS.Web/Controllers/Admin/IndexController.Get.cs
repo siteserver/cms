@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 
@@ -19,6 +20,14 @@ namespace SSCMS.Web.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
+            if (_settingsManager.Containerized)
+            {
+                if (string.IsNullOrEmpty(EnvironmentUtils.GetValue(EnvironmentUtils.SecurityKey)) || string.IsNullOrEmpty(EnvironmentUtils.GetValue(EnvironmentUtils.DatabaseType)))
+                {
+                    return this.Error("系统启动失败，为 SS CMS 容器运行设置环境变量");
+                }
+            }
+
             var allowed = true;
             if (!string.IsNullOrEmpty(_settingsManager.AdminRestrictionHost))
             {

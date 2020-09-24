@@ -9,11 +9,10 @@ namespace SSCMS.Utils
     /// </summary>
     public static class DirectoryUtils
     {
-        public const string Plugins = "plugins";
         public const string Packages = "packages";
         public const string BinDirectoryName = "bin";
 
-        public static class PublishmentSytem
+        public static class Site
         {
             public const string Include = "Include";
             public const string Template = "Template";
@@ -26,7 +25,8 @@ namespace SSCMS.Utils
             public const string Library = "library";
             public const string BackupFiles = "backupfiles";
             public const string TemporaryFiles = "temporaryfiles";
-            
+            public const string Plugins = "plugins";
+
             public const string Home = "home";
             public const string Administrators = "administrators";
             public const string Users = "users";

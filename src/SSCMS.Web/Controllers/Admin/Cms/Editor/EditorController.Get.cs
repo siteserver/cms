@@ -69,7 +69,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 Styles = styles,
-                CheckedLevels = checkedLevels
+                CheckedLevels = checkedLevels,
+                CheckedLevel = userCheckedLevel
             };
         }
     }

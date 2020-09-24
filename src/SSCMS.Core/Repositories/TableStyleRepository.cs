@@ -72,7 +72,9 @@ namespace SSCMS.Core.Repositories
         {
             Sync(style);
 
-            await _repository.UpdateAsync(style, Q.CachingRemove(GetCacheKey(style.TableName)));
+            await _repository.UpdateAsync(style, Q
+                .CachingRemove(GetCacheKey(style.TableName))
+            );
         }
 
         public async Task DeleteAllAsync(string tableName)
@@ -111,6 +113,7 @@ namespace SSCMS.Core.Repositories
                 .OrderByDesc(nameof(TableStyle.Taxis), nameof(TableStyle.Id))
                 .CachingGet(GetCacheKey(tableName))
             );
+
             foreach (var style in styles)
             {
                 style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(style.ItemValues);

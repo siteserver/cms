@@ -87,7 +87,7 @@ namespace SSCMS.Cli.Jobs
 
             if (_settingsManager.DatabaseType == DatabaseType.SQLite)
             {
-                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
+                var filePath = _pathManager.ParsePath(_settingsManager.ContentRootPath, Constants.LocalDbHostVirtualPath);
                 if (!FileUtils.IsFileExists(filePath))
                 {
                     await FileUtils.WriteTextAsync(filePath, string.Empty);

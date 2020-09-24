@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -67,7 +68,12 @@ namespace SSCMS.Web
 
             services.AddHttpContextAccessor();
 
-            var key = Encoding.UTF8.GetBytes(settingsManager.SecurityKey);
+            var securityKey = settingsManager.SecurityKey;
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                securityKey = StringUtils.Guid();
+            }
+            var key = Encoding.UTF8.GetBytes(securityKey);
             services.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -223,18 +229,19 @@ namespace SSCMS.Web
             options.DefaultFileNames.Clear();
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
-            app.UseStaticFiles();
 
-            //if (env.IsDevelopment())
-            //{
-            //    app.Map($"/{DirectoryUtils.SiteFilesDirectoryName}/assets", assets =>
-            //    {
-            //        assets.UseStaticFiles(new StaticFileOptions
-            //        {
-            //            FileProvider = new PhysicalFileProvider(Path.Combine(settingsManager.ContentRootPath, "assets"))
-            //        });
-            //    });
-            //}
+            if (settingsManager.Containerized)
+            {
+                app.Map($"/{DirectoryUtils.SiteFiles.DirectoryName}/assets", assets =>
+                {
+                    assets.UseStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(PathUtils.Combine(settingsManager.ContentRootPath, "assets"))
+                    });
+                });
+            }
+
+            app.UseStaticFiles();
 
             var supportedCultures = new[]
             {

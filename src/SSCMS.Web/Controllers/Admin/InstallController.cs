@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Permissions;
-using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -8,7 +6,6 @@ using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -37,68 +34,68 @@ namespace SSCMS.Web.Controllers.Admin
             _administratorRepository = administratorRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _configRepository.IsNeedInstallAsync())
-            {
-                return new GetResult
-                {
-                    Forbidden = true
-                };
-            }
+            public bool Forbidden { get; set; }
+            public string Version { get; set; }
+            public string FrameworkDescription { get; set; }
+            public string OSDescription { get; set; }
+            public string ContentRootPath { get; set; }
+            public string WebRootPath { get; set; }
+            public bool RootWritable { get; set; }
+            public bool SiteFilesWritable { get; set; }
+            public List<Select<string>> DatabaseTypes { get; set; }
+            public string AdminUrl { get; set; }
+            public bool Containerized { get; set; }
+            public DatabaseType DatabaseType { get; set; }
+            public string DatabaseConnectionString { get; set; }
+            public string RedisConnectionString { get; set; }
+        }
 
-            var rootWritable = false;
-            try
-            {
-                var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
-                FileUtils.WriteText(filePath, _settingsManager.Version);
+        public class DatabaseConnectRequest
+        {
+            public DatabaseType DatabaseType { get; set; }
+            public string DatabaseHost { get; set; }
+            public bool IsDatabaseDefaultPort { get; set; }
+            public string DatabasePort { get; set; }
+            public string DatabaseUserName { get; set; }
+            public string DatabasePassword { get; set; }
+        }
 
-                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
-                ioPermission.Demand();
+        public class DatabaseConnectResult
+        {
+            public IList<string> DatabaseNames { get; set; }
+        }
 
-                rootWritable = true;
-            }
-            catch
-            {
-                // ignored
-            }
+        public class RedisConnectRequest
+        {
+            public bool IsRedis { get; set; }
+            public string RedisHost { get; set; }
+            public bool IsRedisDefaultPort { get; set; }
+            public int RedisPort { get; set; }
+            public bool IsSsl { get; set; }
+            public string RedisPassword { get; set; }
+        }
 
-            var siteFilesWritable = false;
-            try
-            {
-                var filePath = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, "index.html");
-                FileUtils.WriteText(filePath, Constants.Html5Empty);
+        public class PrepareRequest : RedisConnectRequest
+        {
+            public DatabaseType DatabaseType { get; set; }
+            public string DatabaseHost { get; set; }
+            public bool IsDatabaseDefaultPort { get; set; }
+            public string DatabasePort { get; set; }
+            public string DatabaseUserName { get; set; }
+            public string DatabasePassword { get; set; }
+            public string DatabaseName { get; set; }
+            public string UserName { get; set; }
+            public string Email { get; set; }
+            public string Mobile { get; set; }
+            public string AdminPassword { get; set; }
+            public bool IsProtectData { get; set; }
+        }
 
-                var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName));
-                ioPermission.Demand();
-
-                siteFilesWritable = true;
-            }
-            catch
-            {
-                // ignored
-            }
-
-            var result = new GetResult
-            {
-                Version = _settingsManager.Version,
-                FrameworkDescription = _settingsManager.FrameworkDescription,
-                OSDescription = _settingsManager.OSDescription,
-                ContentRootPath = _settingsManager.ContentRootPath,
-                WebRootPath = _settingsManager.WebRootPath,
-                RootWritable = rootWritable,
-                SiteFilesWritable = siteFilesWritable,
-                DatabaseTypes = new List<Select<string>>(),
-                AdminUrl = _pathManager.GetAdminUrl(LoginController.Route)
-            };
-
-            foreach (var databaseType in ListUtils.GetEnums<DatabaseType>())
-            {
-                result.DatabaseTypes.Add(new Select<string>(databaseType));
-            }
-
-            return result;
+        public class InstallRequest : PrepareRequest
+        {
+            public string SecurityKey { get; set; }
         }
     }
 }

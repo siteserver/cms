@@ -21,11 +21,11 @@ namespace SSCMS.Tests
 
             var contentRootPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(dirPath)));
 
-            //var contentRootPath = Directory.GetCurrentDirectory();
+            //var contentRootPath = AppDomain.CurrentDomain.BaseDirectory;
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(contentRootPath)
-                .AddJsonFile("sscms.json")
+                .AddJsonFile(Constants.ConfigFileName)
                 .Build();
 
             SettingsManager = new SettingsManager(null, config, contentRootPath, PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory), null);

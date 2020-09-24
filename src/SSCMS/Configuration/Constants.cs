@@ -4,6 +4,7 @@ namespace SSCMS.Configuration
 {
     public static class Constants
     {
+        public const string EnvironmentPrefix = "SSCMS_";
         public const string ConfigFileName = "sscms.json";
         public const string PackageFileName = "package.json";
         public const string ReadmeFileName = "README.md";
@@ -12,12 +13,13 @@ namespace SSCMS.Configuration
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
         public const string WwwrootDirectory = "wwwroot";
-        public const string PluginsDirectory = "plugins";
         public const string DefaultLanguage = "en";
-        public const string DefaultLocalDbFileName = "database.sqlite";
         public const string EncryptStingIndicator = "0secret0";
         public const string ActionsLoginSuccess = "LoginSuccess";
         public const string ActionsLoginFailure = "LoginFailure";
+
+        public const string LocalDbHostVirtualPath = "~/database.sqlite";
+        public const string LocalDbContainerVirtualPath = "~/wwwroot/sitefiles/database.sqlite";
 
         public const int AccessTokenExpireDays = 7;
 

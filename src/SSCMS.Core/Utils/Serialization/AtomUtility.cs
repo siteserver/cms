@@ -102,15 +102,13 @@ namespace SSCMS.Core.Utils.Serialization
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            return TranslateUtils.EncryptStringBySecretKey(inputString, "TgQQk42O");
-
-            //var encryptor = new DesEncryptor
-            //{
-            //    InputString = inputString,
-            //    EncryptKey = "TgQQk42O"
-            //};
-            //encryptor.DesEncrypt();
-            //return encryptor.OutString;
+            var encryptor = new DesEncryptor
+            {
+                InputString = inputString,
+                EncryptKey = "TgQQk42O"
+            };
+            encryptor.DesEncrypt();
+            return encryptor.OutString;
         }
 
 
@@ -118,15 +116,13 @@ namespace SSCMS.Core.Utils.Serialization
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 
-            return TranslateUtils.DecryptStringBySecretKey(inputString, "TgQQk42O");
-
-            //var encryptor = new DesEncryptor
-            //{
-            //    InputString = inputString,
-            //    DecryptKey = "TgQQk42O"
-            //};
-            //encryptor.DesDecrypt();
-            //return encryptor.OutString;
+            var encryptor = new DesEncryptor
+            {
+                InputString = inputString,
+                DecryptKey = "TgQQk42O"
+            };
+            encryptor.DesDecrypt();
+            return encryptor.OutString;
         }
     }
 }

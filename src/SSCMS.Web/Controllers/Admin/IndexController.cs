@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -281,7 +278,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var config = await _configRepository.GetAsync();
 
-            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
+            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString) || await _configRepository.IsNeedInstallAsync())
             {
                 redirect = true;
                 redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);

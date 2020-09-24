@@ -21,7 +21,7 @@ namespace SSCMS.Core.Services
             _config = config;
             _settingsManager = settingsManager;
 
-            _directoryPath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
+            _directoryPath = PathUtils.Combine(settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Plugins);
         }
 
         public void Load()

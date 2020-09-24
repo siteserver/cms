@@ -1,14 +1,14 @@
-﻿using System.Threading.Tasks;
-using Datory;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -39,130 +39,69 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             _templateRepository = templateRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            return await GetResultAsync(site);
+            public List<Cascade<int>> Channels { get; set; }
+            public IEnumerable<Template> Templates { get; set; }
         }
 
-        [HttpPost, Route(RouteDefault)]
-        public async Task<ActionResult<GetResult>> Default([FromBody] TemplateRequest request)
+        public class TemplateRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
-            if (templateInfo != null && !templateInfo.DefaultTemplate)
-            {
-                await _templateRepository.SetDefaultAsync(request.TemplateId);
-                await _authManager.AddSiteLogAsync(site.Id,
-                    $"设置默认{templateInfo.TemplateType.GetDisplayName()}",
-                    $"模板名称:{templateInfo.TemplateName}");
-            }
-
-            return await GetResultAsync(site);
+            public int SiteId { get; set; }
+            public int TemplateId { get; set; }
         }
 
-        [HttpPost, Route(RouteCreate)]
-        public async Task<ActionResult<BoolResult>> Create([FromBody] TemplateRequest request)
+        private async Task<ActionResult<GetResult>> GetResultAsync(Site site)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
+            var channels = new List<Channel>();
+            var children = await _channelRepository.GetCascadeChildrenAsync(site, site.Id,
+                async summary =>
+                {
+                    var entity = await _channelRepository.GetAsync(summary.Id);
+                    channels.Add(entity);
+                    return new
+                    {
+                        entity.ChannelTemplateId,
+                        entity.ContentTemplateId
+                    };
+                });
+
+            var summaries = await _templateRepository.GetSummariesAsync(site.Id);
+            var templates = new List<Template>();
+            foreach (var summary in summaries)
             {
-                return Unauthorized();
+                var original = await _templateRepository.GetAsync(summary.Id);
+                var template = original.Clone<Template>();
+
+                template.Set("useCount", _channelRepository.GetTemplateUseCount(site.Id, template.Id, template.TemplateType, template.DefaultTemplate, channels));
+
+                if (template.TemplateType == TemplateType.IndexPageTemplate)
+                {
+                    template.Set("url", await _pathManager.ParseSiteUrlAsync(site, template.CreatedFileFullName, false));
+                    templates.Add(template);
+                }
+                else if (template.TemplateType == TemplateType.ChannelTemplate)
+                {
+                    template.Set("channelIds", _channelRepository.GetChannelIdsByTemplateId(true, template.Id, channels));
+                    templates.Add(template);
+                }
+                else if (template.TemplateType == TemplateType.ContentTemplate)
+                {
+                    template.Set("channelIds", _channelRepository.GetChannelIdsByTemplateId(false, template.Id, channels));
+                    templates.Add(template);
+                }
+                else if (template.TemplateType == TemplateType.FileTemplate)
+                {
+                    template.Set("url", await _pathManager.ParseSiteUrlAsync(site, template.CreatedFileFullName, false));
+                    templates.Add(template);
+                }
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            await _createManager.CreateByTemplateAsync(request.SiteId, request.TemplateId);
-
-            return new BoolResult
+            return new GetResult
             {
-                Value = true
+                Channels = children,
+                Templates = templates
             };
-        }
-
-        [HttpPost, Route(RouteCopy)]
-        public async Task<ActionResult<GetResult>> Copy([FromBody] TemplateRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var template = await _templateRepository.GetAsync(request.TemplateId);
-
-            var templateName = template.TemplateName + "_复件";
-            var relatedFileName = PathUtils.RemoveExtension(template.RelatedFileName) + "_复件";
-            var createdFileFullName = PathUtils.RemoveExtension(template.CreatedFileFullName) + "_复件";
-
-            var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, template.TemplateType);
-            if (templateNameList.Contains(templateName))
-            {
-                return this.Error("模板复制失败，模板名称已存在！");
-            }
-            var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, template.TemplateType);
-            if (ListUtils.ContainsIgnoreCase(fileNameList, relatedFileName))
-            {
-                return this.Error("模板复制失败，模板文件已存在！");
-            }
-
-            var templateInfo = new Template
-            {
-                SiteId = request.SiteId,
-                TemplateName = templateName,
-                TemplateType = template.TemplateType,
-                RelatedFileName = relatedFileName + template.CreatedFileExtName,
-                CreatedFileExtName = template.CreatedFileExtName,
-                CreatedFileFullName = createdFileFullName + template.CreatedFileExtName,
-                DefaultTemplate = false
-            };
-
-            var content = await _pathManager.GetTemplateContentAsync(site, template);
-
-            var adminId = _authManager.AdminId;
-            templateInfo.Id = await _templateRepository.InsertAsync(_pathManager, site, templateInfo, content, adminId);
-
-            return await GetResultAsync(site);
-        }
-
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<GetResult>> Delete([FromBody] TemplateRequest request)
-        {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var templateInfo = await _templateRepository.GetAsync(request.TemplateId);
-            if (templateInfo != null && !templateInfo.DefaultTemplate)
-            {
-                await _templateRepository.DeleteAsync(_pathManager, site, request.TemplateId);
-                await _authManager.AddSiteLogAsync(site.Id,
-                    $"删除{templateInfo.TemplateType.GetDisplayName()}",
-                    $"模板名称:{templateInfo.TemplateName}");
-            }
-
-            return await GetResultAsync(site);
         }
     }
 }

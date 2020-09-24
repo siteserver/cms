@@ -32,7 +32,7 @@ namespace SSCMS.Core.Tests
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(ContentRootPath)
-                .AddJsonFile("sscms.json")
+                .AddJsonFile(Constants.ConfigFileName)
                 .Build();
 
             var services = new ServiceCollection();
@@ -44,7 +44,7 @@ namespace SSCMS.Core.Tests
             var settingsManager = Provider.GetService<ISettingsManager>();
             if (settingsManager.Database.DatabaseType == DatabaseType.SQLite)
             {
-                var filePath = PathUtils.Combine(settingsManager.ContentRootPath, Constants.DefaultLocalDbFileName);
+                var filePath = PathUtils.Combine(settingsManager.ContentRootPath, "database.sqlite");
                 if (!FileUtils.IsFileExists(filePath))
                 {
                     FileUtils.WriteText(filePath, string.Empty);

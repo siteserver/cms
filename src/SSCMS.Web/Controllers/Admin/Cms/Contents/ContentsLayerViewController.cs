@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
-using SSCMS.Enums;
+using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -41,63 +40,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _tableStyleRepository = tableStyleRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
+        public class GetRequest : ChannelRequest
         {
-            
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
-            {
-                return Unauthorized();
-            }
+            public int ContentId { get; set; }
+        }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
-            if (content == null) return NotFound();
-
-            var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
-
-            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
-
-            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
-
-            var calculatedContent =
-                await columnsManager.CalculateContentListAsync(1, site, request.ChannelId, content, columns);
-            calculatedContent.Body = content.Body;
-
-            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
-            var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
-            var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
-
-            var editorColumns = new List<ContentColumn>();
-
-            var styles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
-            foreach (var tableStyle in styles)
-            {
-                if (tableStyle.InputType != InputType.TextEditor) continue;
-
-                editorColumns.Add(new ContentColumn
-                {
-                    AttributeName = tableStyle.AttributeName,
-                    DisplayName = tableStyle.DisplayName
-                });
-            }
-
-            return new GetResult
-            {
-                Content = calculatedContent,
-                ChannelName = channelName,
-                State = CheckManager.GetCheckState(site, content),
-                Columns = columns,
-                SiteUrl = siteUrl,
-                GroupNames = groupNames,
-                TagNames = tagNames,
-                EditorColumns = editorColumns
-            };
+        public class GetResult
+        {
+            public Content Content { get; set; }
+            public string ChannelName { get; set; }
+            public string State { get; set; }
+            public List<ContentColumn> Columns { get; set; }
+            public string SiteUrl { get; set; }
+            public IEnumerable<string> GroupNames { get; set; }
+            public IEnumerable<string> TagNames { get; set; }
+            public List<ContentColumn> EditorColumns { get; set; }
         }
     }
 }

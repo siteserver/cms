@@ -36,6 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         {
             public string Version { get; set; }
             public IEnumerable<IPlugin> AllPlugins { get; set; }
+            public bool Containerized { get; set; }
         }
 
         public class DisableRequest

@@ -15,9 +15,16 @@ namespace SSCMS.Web.Controllers.Admin
             if (!await _configRepository.IsNeedInstallAsync()) return Unauthorized();
 
             var redisConnectionString = string.Empty;
-            if (request.IsRedis)
+            if (_settingsManager.Containerized)
             {
-                redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+                redisConnectionString = _settingsManager.RedisConnectionString;
+            }
+            else
+            {
+                if (request.IsRedis)
+                {
+                    redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+                }
             }
 
             var db = new Redis(redisConnectionString);

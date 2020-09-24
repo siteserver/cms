@@ -114,8 +114,15 @@
 </template>
 
 <template v-else-if="active === 3">
-  <div class="alert alert-success">
-    <h4>保存成功，站点模版保存在"SiteFiles\SiteTemplates\{{ form.templateDir }}"文件夹中</h4>
+  <div role="alert" class="el-alert el-alert--success is-light" style="padding: 30px">
+    <div class="el-alert__content">
+      <span class="el-alert__title is-bold" style="font-size: 14px;">
+        保存成功 
+      </span>
+      <p class="el-alert__description" style="font-size: 14px;">
+        站点模版保存在"wwwroot/sitefiles/sitetemplates/{{ form.templateDir }}"文件夹中! 
+      </p>
+    </div>
   </div>
 </template>
 

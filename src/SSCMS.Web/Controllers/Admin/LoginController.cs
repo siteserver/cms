@@ -1,13 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -40,87 +37,55 @@ namespace SSCMS.Web.Controllers.Admin
             _statRepository = statRepository;
         }
 
-        [HttpGet, Route(Route)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class CheckRequest
         {
-            var redirectUrl = await AdminRedirectCheckAsync();
-            if (!string.IsNullOrEmpty(redirectUrl))
-            {
-                return new GetResult
-                {
-                    Success = false,
-                    RedirectUrl = redirectUrl
-                };
-            }
-
-            var config = await _configRepository.GetAsync();
-
-            return new GetResult
-            {
-                Success = true,
-                Version = _settingsManager.Version,
-                AdminTitle = config.AdminTitle
-            };
+            public string Token { get; set; }
+            public string Value { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
+        public class GetResult
         {
-            var (administrator, userName, errorMessage) = await _administratorRepository.ValidateAsync(request.Account, request.Password, true);
+            public bool Success { get; set; }
+            public string RedirectUrl { get; set; }
+            public string Version { get; set; }
+            public string AdminTitle { get; set; }
+        }
 
-            if (administrator == null)
-            {
-                administrator = await _administratorRepository.GetByUserNameAsync(userName);
-                if (administrator != null)
-                {
-                    await _administratorRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(administrator); // 记录最后登录时间、失败次数+1
-                }
+        public class LoginRequest
+        {
+            public string Account { get; set; }
+            public string Password { get; set; }
+            public bool IsPersistent { get; set; }
+        }
 
-                await _statRepository.AddCountAsync(StatType.AdminLoginFailure);
-                return this.Error(errorMessage);
-            }
+        public class LoginResult
+        {
+            public Administrator Administrator { get; set; }
+            public string SessionId { get; set; }
+            public bool IsEnforcePasswordChange { get; set; }
+            public string Token { get; set; }
+        }
 
-            administrator = await _administratorRepository.GetByUserNameAsync(userName);
-            await _administratorRepository.UpdateLastActivityDateAndCountOfLoginAsync(administrator); // 记录最后登录时间、失败次数清零
-
-            var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
-
-            await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
-            await _logRepository.AddAdminLogAsync(administrator, Constants.ActionsLoginSuccess);
-
-            var sessionId = StringUtils.Guid();
-            var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
-            await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
+        private async Task<string> AdminRedirectCheckAsync()
+        {
+            var redirect = false;
+            var redirectUrl = string.Empty;
 
             var config = await _configRepository.GetAsync();
 
-            var isEnforcePasswordChange = false;
-            if (config.IsAdminEnforcePasswordChange)
+            if (string.IsNullOrEmpty(_settingsManager.Database.ConnectionString))
             {
-                if (administrator.LastChangePasswordDate == null)
-                {
-                    isEnforcePasswordChange = true;
-                }
-                else
-                {
-                    var ts = new TimeSpan(DateTime.Now.Ticks - administrator.LastChangePasswordDate.Value.Ticks);
-                    if (ts.TotalDays > config.AdminEnforcePasswordChangeDays)
-                    {
-                        isEnforcePasswordChange = true;
-                    }
-                }
+                redirect = true;
+                redirectUrl = _pathManager.GetAdminUrl(InstallController.Route);
+            }
+            else if (config.Initialized &&
+                     config.DatabaseVersion != _settingsManager.Version)
+            {
+                redirect = true;
+                redirectUrl = _pathManager.GetAdminUrl(SyncDatabaseController.Route);
             }
 
-            return new LoginResult
-            {
-                Administrator = administrator,
-                SessionId = sessionId,
-                IsEnforcePasswordChange = isEnforcePasswordChange,
-                Token = token
-            };
+            return redirect ? redirectUrl : null;
         }
     }
 }

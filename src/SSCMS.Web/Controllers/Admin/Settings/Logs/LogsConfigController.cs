@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -24,51 +24,20 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             _configRepository = configRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsConfig))
-            {
-                return Unauthorized();
-            }
-
-            var config = await _configRepository.GetAsync();
-
-            return new GetResult
-            {
-                Config = config
-            };
+            public Config Config { get; set; }
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<GetResult>> Submit([FromBody]SubmitRequest request)
+        public class SubmitRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsConfig))
-            {
-                return Unauthorized();
-            }
+            public bool IsTimeThreshold { get; set; }
+            public int TimeThreshold { get; set; }
+            public bool IsLogSite { get; set; }
 
-            var config = await _configRepository.GetAsync();
-
-            config.IsTimeThreshold = request.IsTimeThreshold;
-            if (config.IsTimeThreshold)
-            {
-                config.TimeThreshold = request.TimeThreshold;
-            }
-
-            config.IsLogSite = request.IsLogSite;
-            config.IsLogAdmin = request.IsLogAdmin;
-            config.IsLogUser = request.IsLogUser;
-            config.IsLogError = request.IsLogError;
-
-            await _configRepository.UpdateAsync(config);
-
-            await _authManager.AddAdminLogAsync("修改日志设置");
-
-            return new GetResult
-            {
-                Config = config
-            };
+            public bool IsLogAdmin { get; set; }
+            public bool IsLogUser { get; set; }
+            public bool IsLogError { get; set; }
         }
     }
 }

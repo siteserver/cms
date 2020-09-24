@@ -99,12 +99,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var permissions = new Permissions
             {
-                IsAdd = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Add),
-                IsDelete = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Delete),
-                IsEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Edit),
-                IsArrange = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Arrange),
-                IsTranslate = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Translate),
-                IsCheck = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.CheckLevel1),
+                IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Add),
+                IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Delete),
+                IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Edit),
+                IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Arrange),
+                IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Translate),
+                IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.CheckLevel1),
                 IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, Types.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Create),
                 IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ChannelPermissions.Edit)
             };

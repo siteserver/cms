@@ -25,6 +25,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             {
                 permission = Types.SitePermissions.CreateContents;
             }
+            else if (request.Type == CreateType.File)
+            {
+                permission = Types.SitePermissions.CreateFiles;
+            }
+            else if (request.Type == CreateType.Special)
+            {
+                permission = Types.SitePermissions.CreateSpecials;
+            }
             else if (request.Type == CreateType.All)
             {
                 permission = Types.SitePermissions.CreateAll;

@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -28,40 +27,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _accessTokenRepository = accessTokenRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]int id)
+        public class GetResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
-            {
-                return Unauthorized();
-            }
-
-            var tokenInfo = await _accessTokenRepository.GetAsync(id);
-            var accessToken = _settingsManager.Decrypt(tokenInfo.Token);
-
-            return new GetResult
-            {
-                Token = tokenInfo,
-                AccessToken = accessToken
-            };
+            public AccessToken Token { get; set; }
+            public string AccessToken { get; set; }
         }
 
-        [HttpPost, Route(RouteRegenerate)]
-        public async Task<ActionResult<RegenerateResult>> Regenerate([FromBody]IdRequest request)
+        public class RegenerateResult
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministratorsAccessTokens))
-            {
-                return Unauthorized();
-            }
-
-            var accessTokenInfo = await _accessTokenRepository.GetAsync(request.Id);
-
-            var accessToken = _settingsManager.Decrypt(await _accessTokenRepository.RegenerateAsync(accessTokenInfo));
-
-            return new RegenerateResult
-            {
-                AccessToken = accessToken
-            };
+            public string AccessToken { get; set; }
         }
     }
 }

@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -32,108 +32,26 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             _siteLogRepository = siteLogRepository;
         }
 
-        //[HttpGet, Route(Route)]
-        //public async Task<SiteLogPageResult> List([FromBody] PageRequest request)
-        //{
-        //    
-        //    await _authManager.CheckPermissionAsync(Request, AuthTypes.AppPermissions.SettingsLog);
-
-        //    var count = await _siteLogRepository.GetCountAsync(null, null, null, null, null, null);
-        //    var siteLogs = await _siteLogRepository.GetAllAsync(null, null, null, null, null, null, request.Offset, request.Limit);
-        //    var siteOptions = await _siteRepository.GetSiteOptionsAsync(0);
-
-        //    var siteIdList = await _siteRepository.GetSiteIdListAsync();
-        //    var logTasks = siteLogs.Where(x => siteIdList.Contains(x.SiteId)).Select(async x =>
-        //    {
-        //        var site = await _siteRepository.GetAsync(x.SiteId);
-        //        var log = new SiteLogResult
-        //        {
-        //            Id = x.Id,
-        //            SiteId = x.SiteId,
-        //            ChannelId = x.ChannelId,
-        //            ContentId = x.ContentId,
-        //            UserName = x.UserName,
-        //            IpAddress = x.IpAddress,
-        //            AddDate = x.AddDate,
-        //            Action = x.Action,
-        //            Summary = x.Summary,
-        //            SiteName = site.SiteName,
-        //            WebUrl = site.WebUrl
-        //        };
-        //        return log;
-        //    });
-        //    var logs = await Task.WhenAll(logTasks);
-
-        //    return new SiteLogPageResult
-        //    {
-        //        Items = logs,
-        //        Count = count,
-        //        SiteOptions = siteOptions
-        //    };
-        //}
-
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<SiteLogPageResult>> List([FromBody] SearchRequest request)
+        public class SearchRequest : PageRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsSite))
-            {
-                return Unauthorized();
-            }
-
-            var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
-            var adminId = admin?.Id ?? 0;
-
-            var count = await _siteLogRepository.GetCountAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo);
-            var siteLogs = await _siteLogRepository.GetAllAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
-
-            var siteIdList = await _siteRepository.GetSiteIdsAsync();
-            var logTasks = siteLogs.Where(x => siteIdList.Contains(x.SiteId)).Select(async x =>
-            {
-                var site = await _siteRepository.GetAsync(x.SiteId);
-                var log = new SiteLogResult
-                {
-                    Id = x.Id,
-                    SiteId = x.SiteId,
-                    ChannelId = x.ChannelId,
-                    ContentId = x.ContentId,
-                    AdminId = x.AdminId,
-                    IpAddress = x.IpAddress,
-                    Action = x.Action,
-                    Summary = x.Summary,
-                    SiteName = site.SiteName,
-                    CreatedDate = x.CreatedDate,
-                    WebUrl = await _pathManager.GetWebUrlAsync(site)
-                };
-                return log;
-            });
-            var logs = await Task.WhenAll(logTasks);
-
-            var siteOptions = await _siteRepository.GetSiteOptionsAsync(0);
-
-            return new SiteLogPageResult
-            {
-                Items = logs,
-                Count = count,
-                SiteOptions = siteOptions
-            };
+            public List<int> SiteIds { get; set; }
+            public string LogType { get; set; }
+            public string UserName { get; set; }
+            public string Keyword { get; set; }
+            public string DateFrom { get; set; }
+            public string DateTo { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Delete()
+        public class SiteLogResult : SiteLog
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsSite))
-            {
-                return Unauthorized();
-            }
+            public string WebUrl { get; set; }
 
-            await _siteLogRepository.DeleteAllAsync();
+            public string SiteName { get; set; }
+        }
 
-            await _authManager.AddAdminLogAsync("清空站点日志");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+        public class SiteLogPageResult : PageResult<SiteLogResult>
+        {
+            public IEnumerable<Cascade<int>> SiteOptions { get; set; }
         }
     }
 }

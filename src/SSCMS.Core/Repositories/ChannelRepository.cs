@@ -74,6 +74,11 @@ namespace SSCMS.Core.Repositories
                 .CachingRemove(GetListKey(channel.SiteId))
             );
 
+            if (parentChannel != null)
+            {
+                await _repository.RemoveCacheAsync(GetEntityKey(parentChannel.Id));
+            }
+
             if (!string.IsNullOrEmpty(channel.ParentsPath))
             {
                 await _repository.IncrementAsync(nameof(Channel.ChildrenCount), Q
@@ -144,6 +149,7 @@ namespace SSCMS.Core.Repositories
             await _repository.UpdateAsync(Q
                 .Set(nameof(Channel.ChannelTemplateId), channel.ChannelTemplateId)
                 .Where(nameof(Channel.Id), channel.Id)
+                .CachingRemove(GetEntityKey(channel.Id))
             );
         }
 
@@ -152,6 +158,7 @@ namespace SSCMS.Core.Repositories
             await _repository.UpdateAsync(Q
                 .Set(nameof(Channel.ContentTemplateId), channel.ContentTemplateId)
                 .Where(nameof(Channel.Id), channel.Id)
+                .CachingRemove(GetEntityKey(channel.Id))
             );
         }
 
@@ -169,10 +176,13 @@ namespace SSCMS.Core.Repositories
 
             //_contentRepository.DeleteContentsByDeletedChannelIdList(trans, site, idList);
 
+            var cacheKeys = new List<string> { GetListKey(site.Id) };
+            cacheKeys.AddRange(idList.Select(GetEntityKey));
+
             var deletedNum = await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), site.Id)
                 .WhereIn(nameof(Channel.Id), idList)
-                .CachingRemove(GetListKey(site.Id))
+                .CachingRemove(cacheKeys.ToArray())
             );
 
             if (channelEntity.ParentId != 0)
@@ -195,10 +205,15 @@ namespace SSCMS.Core.Repositories
 
         public async Task DeleteAllAsync(int siteId)
         {
+            var channelIds = await GetChannelIdsAsync(siteId);
+
+            var cacheKeys = new List<string> {GetListKey(siteId)};
+            cacheKeys.AddRange(channelIds.Select(GetEntityKey));
+
             await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), siteId)
                 .OrWhere(nameof(Channel.Id), siteId)
-                .CachingRemove(GetListKey(siteId))
+                .CachingRemove(cacheKeys.ToArray())
             );
         }
 

@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 
@@ -26,25 +25,26 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             _materialArticleRepository = materialArticleRepository;
         }
 
-        [HttpPost, Route(RouteList)]
-        public async Task<ActionResult<QueryResult>> List([FromBody]QueryRequest req)
+        public class QueryRequest
         {
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Article);
-            var count = await _materialArticleRepository.GetCountAsync(req.GroupId, req.Keyword);
-            var items = await _materialArticleRepository.GetAllAsync(req.GroupId, req.Keyword, req.Page, req.PerPage);
-
-            return new QueryResult
-            {
-                Groups = groups,
-                Count = count,
-                Items = items
-            };
+            public int SiteId { get; set; }
+            public string Keyword { get; set; }
+            public int GroupId { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
         }
 
-        [HttpGet, Route(RouteId)]
-        public async Task<ActionResult<MaterialArticle>> Get([FromQuery]int id)
+        public class QueryResult
         {
-            return await _materialArticleRepository.GetAsync(id);
+            public IEnumerable<MaterialGroup> Groups { get; set; }
+            public int Count { get; set; }
+            public IEnumerable<MaterialArticle> Items { get; set; }
+        }
+
+        public class GroupRequest
+        {
+            public int SiteId { get; set; }
+            public string Name { get; set; }
         }
     }
 }

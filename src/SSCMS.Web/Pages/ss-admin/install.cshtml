@@ -66,6 +66,7 @@
         {key: 'SSCMS 版本', value: 'SSCMS ' + version},
         {key: '.NET Core 版本', value: frameworkDescription},
         {key: 'OS 版本', value: osDescription},
+        {key: '运行环境', value: containerized ? '容器' : '主机'},
         {key: '系统根目录', value: contentRootPath},
         {key: '网站根目录', value: webRootPath}
       ]"
@@ -96,7 +97,16 @@
 
   <template v-if="pageIndex === 2">
 
-    <el-form ref="databaseForm" size="medium" :model="databaseForm" label-width="150px">
+    <el-form v-if="containerized" size="medium" label-width="150px">
+      <el-form-item label="数据库类型">
+        {{ databaseType }}
+      </el-form-item>
+      <el-form-item label="连接字符串">
+        {{ databaseConnectionString }}
+      </el-form-item>
+    </el-form>
+
+    <el-form v-else ref="databaseForm" size="medium" :model="databaseForm" label-width="150px">
       <el-form-item label="数据库类型" prop="databaseType" :rules="{ required: true, message: '请选择数据库类型' }">
         <el-radio-group v-model="databaseForm.databaseType">
           <el-radio-button v-for="databaseType in databaseTypes" :label="databaseType.value">{{ databaseType.label }}</el-radio-button>
@@ -124,16 +134,6 @@
           <el-form-item label="数据库密码" prop="databasePassword" :rules="{ required: true, message: '请输入数据库密码' }">
             <el-input v-model="databaseForm.databasePassword" type="password" placeholder="连接数据库的密码"></el-input>
           </el-form-item>
-          <el-form-item v-if="databaseForm.databaseType === 'Oracle'" label="连接为" prop="oraclePrivilege" :rules="{ required: true, message: '请选择连接为' }">
-            <el-radio v-model="databaseForm.oraclePrivilege" v-for="oraclePrivilege in oraclePrivileges" :label="oraclePrivilege.label" :value="oraclePrivilege.value"></el-radio>
-          </el-form-item>
-          <el-form-item v-if="databaseForm.databaseType === 'Oracle'" label="数据库实例">
-            <el-radio v-model="databaseForm.oracleIsSid" :label="true">SID</el-radio>
-            <el-radio v-model="databaseForm.oracleIsSid" :label="false">Service name</el-radio>
-          </el-form-item>
-          <el-form-item v-if="databaseForm.databaseType === 'Oracle'" label="实例名称"  prop="oracleDatabase" :rules="{ required: true, message: '请输入实例名称' }">
-            <el-input v-model="databaseForm.oracleDatabase" placeholder="指定需要安装的Oracle数据库实例名称"></el-input>
-          </el-form-item>
         </template>
         <template v-else>
           <el-form-item label="选择数据库实例" prop="databaseName" :rules="{ required: true, message: '请选择需要安装的数据库实例' }">
@@ -160,7 +160,16 @@
 
   <template v-if="pageIndex === 3">
 
-    <el-form ref="redisForm" size="medium" :model="redisForm" label-width="150px">
+    <el-form v-if="containerized" size="medium" label-width="150px">
+      <el-form-item label="缓存类型">
+        {{ redisConnectionString ? 'Redis缓存' : '默认缓存' }}
+      </el-form-item>
+      <el-form-item v-if="redisConnectionString" label="连接字符串">
+        {{ redisConnectionString }}
+      </el-form-item>
+    </el-form>
+
+    <el-form v-else ref="redisForm" size="medium" :model="redisForm" label-width="150px">
       <el-form-item label="缓存类型" prop="isRedis" :rules="{ required: true, message: '请选择缓存类型' }">
         <el-radio-group v-model="redisForm.isRedis">
           <el-radio-button :label="false">默认缓存</el-radio-button>
@@ -237,7 +246,7 @@
         <el-input v-model="adminForm.mobile" placeholder="请填写超级管理员手机号码"></el-input>
         <small class="tips">可用于登录、找回密码等功能</small>
       </el-form-item>
-      <el-form-item label="是否加密配置文件">
+      <el-form-item v-if="!containerized" label="是否加密配置文件">
         <el-checkbox v-model="adminForm.isProtectData" label="加密配置文件"></el-checkbox>
         <small class="tips">设置是否加密 sscms.json 配置文件，加密后将隐藏数据库以及Redis链接信息</small>
       </el-form-item>

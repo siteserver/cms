@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -34,91 +35,59 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             _siteRepository = siteRepository;
         }
 
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
+        public class GetResult
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            var directories = new List<Cascade<string>>();
-            var files = new List<KeyValuePair<string, string>>();
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsIncludeDir, ExtInclude);
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
-
-            var siteUrl = (await _pathManager.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
-
-            return new GetResult
-            {
-                Directories = directories,
-                Files = files,
-                SiteUrl = siteUrl,
-                IncludeDir = site.TemplatesAssetsIncludeDir,
-                CssDir = site.TemplatesAssetsCssDir,
-                JsDir = site.TemplatesAssetsJsDir
-            };
+            public List<Cascade<string>> Directories { get; set; }
+            public List<KeyValuePair<string, string>> Files { get; set; }
+            public string SiteUrl { get; set; }
+            public string IncludeDir { get; set; }
+            public string CssDir { get; set; }
+            public string JsDir { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Delete([FromBody] FileRequest request)
+        public class FileRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
-            {
-                return Unauthorized();
-            }
-
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName));
-            await _authManager.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{request.DirectoryPath}:{request.FileName}");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public int SiteId { get; set; }
+            public string DirectoryPath { get; set; }
+            public string FileName { get; set; }
         }
 
-        [HttpPost, Route(RouteConfig)]
-        public async Task<ActionResult<GetResult>> Config([FromBody] ConfigRequest request)
+        public class ConfigRequest
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
+            public int SiteId { get; set; }
+            public string IncludeDir { get; set; }
+            public string CssDir { get; set; }
+            public string JsDir { get; set; }
+        }
+
+        private async Task GetDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<KeyValuePair<string, string>> files, Site site, string virtualPath, string extName)
+        {
+            extName = "." + extName;
+            var directoryPath = await _pathManager.GetSitePathAsync(site, virtualPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+            var fileNames = DirectoryUtils.GetFileNames(directoryPath);
+            foreach (var fileName in fileNames)
             {
-                return Unauthorized();
+                if (StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(fileName), extName))
+                {
+                    files.Add(new KeyValuePair<string, string>(virtualPath, fileName));
+                }
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
-            site.TemplatesAssetsIncludeDir = request.IncludeDir.Trim('/');
-            site.TemplatesAssetsCssDir = request.CssDir.Trim('/');
-            site.TemplatesAssetsJsDir = request.JsDir.Trim('/');
-
-            await _siteRepository.UpdateAsync(site);
-            await _authManager.AddSiteLogAsync(request.SiteId, "资源文件文件夹设置");
-
-            var directories = new List<Cascade<string>>();
-            var files = new List<KeyValuePair<string, string>>();
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsIncludeDir, ExtInclude);
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
-
-            var siteUrl = (await _pathManager.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
-
-            return new GetResult
+            var dir = new Cascade<string>
             {
-                Directories = directories,
-                Files = files,
-                SiteUrl = siteUrl,
-                IncludeDir = site.TemplatesAssetsIncludeDir,
-                CssDir = site.TemplatesAssetsCssDir,
-                JsDir = site.TemplatesAssetsJsDir
+                Label = PathUtils.GetDirectoryName(directoryPath, false),
+                Value = virtualPath
             };
+
+            var children = DirectoryUtils.GetDirectoryNames(directoryPath);
+            dir.Children = new List<Cascade<string>>();
+            foreach (var directoryName in children)
+            {
+                await GetDirectoriesAndFilesAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), extName);
+            }
+
+            directories.Add(dir);
         }
     }
 }

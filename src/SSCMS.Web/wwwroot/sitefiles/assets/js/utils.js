@@ -208,7 +208,7 @@ var utils = {
   },
 
   getRootVue: function() {
-    return top.$vue;
+    return top.$vue || window.$vue;
   },
 
   getTabVue: function(name) {

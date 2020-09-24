@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Core.Utils;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -30,53 +28,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             _errorLogRepository = errorLogRepository;
         }
 
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<SearchResult>> List([FromBody] SearchRequest request)
+        public class SearchRequest : PageRequest
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsError))
-            {
-                return Unauthorized();
-            }
-
-            var count = await _errorLogRepository.GetCountAsync(request.Category, request.PluginId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await _errorLogRepository.GetAllAsync(request.Category, request.PluginId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
-
-            var categories = new List<Select<string>>();
-            foreach (var category in LogUtils.AllCategoryList.Value)
-            {
-                categories.Add(new Select<string>(category.Key, category.Value));
-            }
-
-            var pluginIds = _pluginManager
-                .EnabledPlugins
-                .Select(plugin => new Select<string>(plugin.PluginId, plugin.DisplayName))
-                .ToList();
-
-            return new SearchResult
-            {
-                Items = logs,
-                Count = count,
-                Categories = categories,
-                PluginIds = pluginIds
-            };
+            public string Category { get; set; }
+            public string PluginId { get; set; }
+            public string Keyword { get; set; }
+            public string DateFrom { get; set; }
+            public string DateTo { get; set; }
         }
 
-        [HttpDelete, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Delete()
+        public class SearchResult : PageResult<ErrorLog>
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsError))
-            {
-                return Unauthorized();
-            }
-
-            await _errorLogRepository.DeleteAllAsync();
-
-            await _authManager.AddAdminLogAsync("清空错误日志");
-
-            return new BoolResult
-            {
-                Value = true
-            };
+            public List<Select<string>> Categories { get; set; }
+            public List<Select<string>> PluginIds { get; set; }
         }
     }
 }

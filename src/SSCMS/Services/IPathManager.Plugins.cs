@@ -8,8 +8,6 @@
 
         string GetPluginPath(string pluginId, params string[] paths);
 
-        string GetPluginNuspecPath(string pluginId);
-
         string GetPluginDllDirectoryPath(string pluginId);
     }
 }
