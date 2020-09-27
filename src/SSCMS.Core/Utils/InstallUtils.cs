@@ -1,5 +1,6 @@
 ﻿using Datory;
 using SSCMS.Configuration;
+using SSCMS.Core.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -19,7 +20,7 @@ namespace SSCMS.Core.Utils
                 adminRestrictionBlockList = new string[] { };
             }
 
-            var json = EnvironmentUtils.RunningInContainer
+            var json = SettingsManager.RunningInContainer
                 ? $@"
 {{
   ""IsDisablePlugins"": {StringUtils.ToLower(isDisablePlugins.ToString())},
@@ -62,7 +63,7 @@ namespace SSCMS.Core.Utils
 
         public static void Init(string contentRootPath)
         {
-            if (EnvironmentUtils.RunningInContainer) return;
+            if (SettingsManager.RunningInContainer) return;
 
             var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
             if (FileUtils.IsFileExists(filePath))
@@ -116,12 +117,12 @@ namespace SSCMS.Core.Utils
             }
             else if (databaseType == DatabaseType.PostgreSql)
             {
-                connectionString = $"Host={server};";
+                connectionString = $"Server={server};";
                 if (!isDefaultPort && port > 0)
                 {
                     connectionString += $"Port={port};";
                 }
-                connectionString += $"Username={userName};Password={password};";
+                connectionString += $"User Id={userName};Password={password};";
                 if (!string.IsNullOrEmpty(databaseName))
                 {
                     connectionString += $"Database={databaseName};";

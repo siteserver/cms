@@ -13,13 +13,14 @@ namespace SSCMS.Web.Controllers.Admin
         {
             if (!await _configRepository.IsNeedInstallAsync()) return Unauthorized();
 
-            var connectionStringWithoutDatabaseName = _settingsManager.Containerized
+            var databaseType = _settingsManager.Containerized ? _settingsManager.DatabaseType : request.DatabaseType;
+            var connectionString = _settingsManager.Containerized
                 ? _settingsManager.DatabaseConnectionString
                 : InstallUtils.GetDatabaseConnectionString(request.DatabaseType, request.DatabaseHost,
                     request.IsDatabaseDefaultPort, TranslateUtils.ToInt(request.DatabasePort), request.DatabaseUserName,
                     request.DatabasePassword, string.Empty);
 
-            var db = new Database(request.DatabaseType, connectionStringWithoutDatabaseName);
+            var db = new Database(databaseType, connectionString);
 
             var (isConnectionWorks, message) = await db.IsConnectionWorksAsync();
             if (!isConnectionWorks)

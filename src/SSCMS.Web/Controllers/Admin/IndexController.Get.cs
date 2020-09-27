@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
+using SSCMS.Core.Services;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 
@@ -22,9 +22,21 @@ namespace SSCMS.Web.Controllers.Admin
         {
             if (_settingsManager.Containerized)
             {
-                if (string.IsNullOrEmpty(EnvironmentUtils.GetValue(EnvironmentUtils.SecurityKey)) || string.IsNullOrEmpty(EnvironmentUtils.GetValue(EnvironmentUtils.DatabaseType)))
+                var envSecurityKey = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvSecurityKey);
+                var envDatabaseType = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabaseType);
+                var envDatabaseHost = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabaseHost);
+                var envDatabasePort = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabasePort);
+                var envDatabaseUser = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabaseUser);
+                var envDatabasePassword = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabasePassword);
+                var envDatabaseName = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabaseName);
+                var envDatabaseConnectionString = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvDatabaseConnectionString);
+                var envRedisConnectionString = SettingsManager.GetEnvironmentVariable(SettingsManager.EnvRedisConnectionString);
+
+                var isEnvironment = SettingsManager.IsEnvironment(envSecurityKey, envDatabaseType, envDatabaseConnectionString,
+                    envDatabaseHost, envDatabaseUser, envDatabasePassword, envDatabaseName);
+                if (!isEnvironment)
                 {
-                    return this.Error("系统启动失败，为 SS CMS 容器运行设置环境变量");
+                    return this.Error("系统启动失败，请检查 SS CMS 容器运行环境变量设置");
                 }
             }
 

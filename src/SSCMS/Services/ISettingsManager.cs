@@ -28,10 +28,10 @@ namespace SSCMS.Services
         public string AdminRestrictionHost { get; }
         public string[] AdminRestrictionAllowList { get; }
         public string[] AdminRestrictionBlockList { get; }
-
         string Encrypt(string inputString, string securityKey = null);
         string Decrypt(string inputString, string securityKey = null);
         void SaveSettings(bool isProtectData, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList);
         IServiceProvider BuildServiceProvider();
+        void Reload();
     }
 }

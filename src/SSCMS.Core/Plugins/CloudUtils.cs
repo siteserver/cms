@@ -33,6 +33,11 @@ namespace SSCMS.Core.Plugins
         {
             private const string Host = "https://dl.sscms.com";
 
+            public static string GetTemplateDownloadUrl(string name)
+            {
+                return $"{Host}/templates/T_{name}.zip";
+            }
+
             public static string GetCmsDownloadName(string osArchitecture, string version)
             {
                 return $"sscms-{version}-{osArchitecture}";

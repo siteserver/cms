@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
@@ -118,7 +119,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
                 var filePath = _pathManager.GetSiteTemplatesPath($"T_{request.CreateTemplateId}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
-                var downloadUrl = OnlineTemplateManager.GetDownloadUrl(request.CreateTemplateId);
+                var downloadUrl = CloudUtils.Dl.GetTemplateDownloadUrl(request.CreateTemplateId);
                 WebClientUtils.Download(downloadUrl, filePath);
 
                 caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");
