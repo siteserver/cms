@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SSCMS.Models
 {
@@ -7,7 +8,7 @@ namespace SSCMS.Models
         int Id { get; set; }
         string ChannelName { get; set; }
         int ParentId { get; set; }
-        string ParentsPath { get; set; }
+        List<int> ParentsPath { get; set; }
         string IndexName { get; set; }
         string ContentModelPluginId { get; set; }
         string TableName { get; set; }

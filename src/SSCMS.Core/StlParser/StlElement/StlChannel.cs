@@ -274,7 +274,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ParentsPath)))
             {
-                parsedContent = channel.ParentsPath;
+                parsedContent = ListUtils.ToString(channel.ParentsPath);
             }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ParentsCount)))
             {

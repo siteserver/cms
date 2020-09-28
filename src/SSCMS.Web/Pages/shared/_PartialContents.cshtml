@@ -240,7 +240,7 @@
     :key="menu.id"
     fixed="right"
     align="center"
-    min-width="80"
+    :width="getColumnWidth(menu.text)"
     show-overflow-tooltip>
     <template slot-scope="scope">
       <el-link v-if="menus" :disabled="!permissions.isEdit" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">

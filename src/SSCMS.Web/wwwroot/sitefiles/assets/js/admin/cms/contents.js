@@ -387,6 +387,9 @@ var methods = {
   },
 
   getColumnWidth: function(column) {
+    if (typeof column === 'string') {
+      return column.length * 30;
+    }
     if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits' || column.attributeName === 'HitsByDay' || column.attributeName === 'HitsByWeek' || column.attributeName === 'HitsByMonth' || column.attributeName === 'Downloads') {
       return 70;
     }

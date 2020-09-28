@@ -447,9 +447,9 @@ namespace SSCMS.Core.Repositories
             return retVal;
         }
 
-        private async Task<string> GetParentsPathAsync(int channelId)
+        private async Task<List<int>> GetParentsPathAsync(int channelId)
         {
-            var retVal = string.Empty;
+            List<int> retVal = null;
             var channel = await GetAsync(channelId);
             if (channel != null)
             {
@@ -461,7 +461,7 @@ namespace SSCMS.Core.Repositories
         public async Task<int> GetTopLevelAsync(int siteId, int channelId)
         {
             var parentsPath = await GetParentsPathAsync(channelId);
-            return string.IsNullOrEmpty(parentsPath) ? 0 : parentsPath.Split(',').Length;
+            return parentsPath?.Count ?? 0;
         }
 
         public async Task<string> GetChannelNameAsync(int siteId, int channelId)

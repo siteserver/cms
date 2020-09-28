@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Model;
@@ -83,14 +84,14 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var parentsPath = nodeInfo.ParentsPath;
             var parentsCount = nodeInfo.ParentsCount;
-            if (!string.IsNullOrEmpty(parentsPath))
+            if (parentsPath != null)
             {
-                var nodePath = parentsPath;
+                var nodePath = new List<int>(parentsPath);
                 if (isContainSelf)
                 {
-                    nodePath = nodePath + "," + contextInfo.ChannelId;
+                    nodePath.Add(contextInfo.ChannelId);
                 }
-                var channelIdArrayList = ListUtils.GetStringList(nodePath);
+                var channelIdArrayList = ListUtils.GetStringList(ListUtils.ToString(nodePath));
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = TranslateUtils.ToInt(channelIdStr);

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -41,6 +44,74 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _contentRepository = contentRepository;
             _contentGroupRepository = contentGroupRepository;
             _contentTagRepository = contentTagRepository;
+        }
+
+        public class AllRequest : ChannelRequest
+        {
+            public bool IsAllContents { get; set; }
+        }
+
+        public class ColumnsRequest : ChannelRequest
+        {
+            public List<string> AttributeNames { get; set; }
+        }
+
+        public class CreateRequest : SiteRequest
+        {
+            public string ChannelContentIds { get; set; }
+        }
+
+        public class ListRequest : ChannelRequest
+        {
+            public int Page { get; set; }
+            public string SearchType { get; set; }
+            public string SearchText { get; set; }
+            public bool IsAdvanced { get; set; }
+            public List<int> CheckedLevels { get; set; }
+            public bool IsTop { get; set; }
+            public bool IsRecommend { get; set; }
+            public bool IsHot { get; set; }
+            public bool IsColor { get; set; }
+            public List<string> GroupNames { get; set; }
+            public List<string> TagNames { get; set; }
+        }
+
+        public class Permissions
+        {
+            public bool IsAdd { get; set; }
+            public bool IsDelete { get; set; }
+            public bool IsEdit { get; set; }
+            public bool IsArrange { get; set; }
+            public bool IsTranslate { get; set; }
+            public bool IsCheck { get; set; }
+            public bool IsCreate { get; set; }
+            public bool IsChannelEdit { get; set; }
+        }
+
+        public class ListResult
+        {
+            public List<Content> PageContents { get; set; }
+            public int Total { get; set; }
+            public int PageSize { get; set; }
+            public List<ContentColumn> Columns { get; set; }
+            public bool IsAllContents { get; set; }
+            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
+            public Permissions Permissions { get; set; }
+            public List<Menu> Menus { get; set; }
+        }
+
+        public class TreeRequest : SiteRequest
+        {
+            public bool Reload { get; set; }
+        }
+
+        public class TreeResult
+        {
+            public Cascade<int> Root { get; set; }
+            public string SiteUrl { get; set; }
+            public IEnumerable<string> GroupNames { get; set; }
+            public IEnumerable<string> TagNames { get; set; }
+            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
         }
     }
 }

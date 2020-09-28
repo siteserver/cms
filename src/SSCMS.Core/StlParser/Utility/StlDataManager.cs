@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Enums;
 using SSCMS.Services;
@@ -55,7 +56,7 @@ namespace SSCMS.Core.StlParser.Utility
                     {
                         if (topLevel < channel.ParentsCount)
                         {
-                            var parentIdStrList = ListUtils.GetStringList(channel.ParentsPath);
+                            var parentIdStrList = ListUtils.GetStringList(ListUtils.ToString(channel.ParentsPath));
                             if (parentIdStrList[topLevel] != null)
                             {
                                 var parentIdStr = parentIdStrList[topLevel];
@@ -72,7 +73,7 @@ namespace SSCMS.Core.StlParser.Utility
                 {
                     if (upLevel < channel.ParentsCount)
                     {
-                        var parentIdStrList = ListUtils.GetStringList(channel.ParentsPath);
+                        var parentIdStrList = ListUtils.GetStringList(ListUtils.ToString(channel.ParentsPath));
                         if (parentIdStrList[upLevel] != null)
                         {
                             var parentIdStr = parentIdStrList[channel.ParentsCount - upLevel];

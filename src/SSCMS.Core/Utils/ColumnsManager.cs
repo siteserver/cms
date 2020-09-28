@@ -522,6 +522,119 @@ namespace SSCMS.Core.Utils
             return columns;
         }
 
+        private static List<TableStyle> GetChannelListStyles(List<TableStyle> tableStyleList)
+        {
+            var taxis = 1;
+            var list = new List<TableStyle>
+            {
+                new TableStyle
+                {
+                    AttributeName = nameof(Channel.ChannelName),
+                    DisplayName = "栏目名称",
+                    Taxis = taxis++
+                },
+                new TableStyle
+                {
+                    AttributeName = nameof(Channel.Id),
+                    DisplayName = "栏目Id",
+                    Taxis = taxis++
+                },
+                new TableStyle
+                {
+                    AttributeName = nameof(Channel.IndexName),
+                    DisplayName = "栏目索引",
+                    Taxis = taxis++
+                },
+                new TableStyle
+                {
+                    AttributeName = nameof(Channel.GroupNames),
+                    DisplayName = "栏目组",
+                    Taxis = taxis++
+                }
+        };
+
+            if (tableStyleList != null)
+            {
+                foreach (var tableStyle in tableStyleList)
+                {
+                    if (!list.Exists(t => t.AttributeName == tableStyle.AttributeName))
+                    {
+                        list.Add(new TableStyle
+                        {
+                            AttributeName = tableStyle.AttributeName,
+                            DisplayName = tableStyle.DisplayName,
+                            InputType = tableStyle.InputType,
+                            Taxis = taxis++
+                        });
+                    }
+                }
+            }
+
+            list.AddRange(new List<TableStyle>
+            {
+                new TableStyle
+                {
+                    AttributeName = nameof(Channel.ChannelTemplateId),
+                    DisplayName = "栏目模板",
+                    Taxis = taxis++
+                },
+                new TableStyle
+                {
+                    AttributeName = nameof(Channel.ContentTemplateId),
+                    DisplayName = "内容模板",
+                    Taxis = taxis
+                }
+            });
+
+            return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
+        }
+
+        public async Task<List<ContentColumn>> GetChannelListColumnsAsync(Site site)
+        {
+            var columns = new List<ContentColumn>();
+            var listColumns = ListUtils.GetStringList(site.ChannelListColumns);
+            if (listColumns.Count == 0)
+            {
+                listColumns.Add(nameof(Channel.ChannelName));
+                listColumns.Add(nameof(Channel.IndexName));
+                listColumns.Add(nameof(Channel.GroupNames));
+            }
+
+            var styles = GetChannelListStyles(await _databaseManager.TableStyleRepository.GetChannelStylesAsync(await _databaseManager.ChannelRepository.GetAsync(site.Id)));
+
+            foreach (var style in styles)
+            {
+                if (string.IsNullOrEmpty(style.DisplayName) || style.InputType == InputType.TextEditor) continue;
+
+                var column = new ContentColumn
+                {
+                    AttributeName = style.AttributeName,
+                    DisplayName = style.DisplayName,
+                    InputType = style.InputType
+                };
+                if (style.AttributeName == nameof(Channel.ChannelName))
+                {
+                    column.IsList = true;
+                }
+                else
+                {
+                    if (ListUtils.ContainsIgnoreCase(listColumns, style.AttributeName))
+                    {
+                        column.IsList = true;
+                    }
+                }
+
+                if (!ListUtils.ContainsIgnoreCase(UnSearchableAttributes, style.AttributeName))
+                {
+                    column.IsSearchable = true;
+                }
+
+                columns.Add(column);
+            }
+
+            return columns;
+        }
+
         public static async Task<Dictionary<string, object>> SaveAttributesAsync(IPathManager pathManager, Site site, List<TableStyle> styleList, NameValueCollection formCollection, List<string> dontAddAttributes)
         {
             var dict = new Dictionary<string, object>();

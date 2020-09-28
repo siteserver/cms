@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -55,15 +54,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 summaries = await _contentRepository.GetSummariesAsync(site, channel, channel.IsAllContents);
             }
             var total = summaries.Count;
-
-            //var allMenus = _settingsManager.GetMenus();
-            //var contentPermissions = await _authManager.GetContentPermissionsAsync(request.SiteId, request.ChannelId);
-            //var contentMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, AuthTypes.Resources.Content)).ToList();
-            //foreach (var appMenu in appMenus)
-            //{
-            //    appMenu.Children = GetChildren(appMenu, appPermissions);
-            //}
-            //menus.AddRange(appMenus);
 
             var channelPlugins = _pluginManager.GetPlugins(request.SiteId, request.ChannelId);
             var contentMenus = new List<Menu>();
@@ -120,45 +110,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 Permissions = permissions,
                 Menus = contentMenus
             };
-        }
-
-        public class ListRequest : ChannelRequest
-        {
-            public int Page { get; set; }
-            public string SearchType { get; set; }
-            public string SearchText { get; set; }
-            public bool IsAdvanced { get; set; }
-            public List<int> CheckedLevels { get; set; }
-            public bool IsTop { get; set; }
-            public bool IsRecommend { get; set; }
-            public bool IsHot { get; set; }
-            public bool IsColor { get; set; }
-            public List<string> GroupNames { get; set; }
-            public List<string> TagNames { get; set; }
-        }
-
-        public class Permissions
-        {
-            public bool IsAdd { get; set; }
-            public bool IsDelete { get; set; }
-            public bool IsEdit { get; set; }
-            public bool IsArrange { get; set; }
-            public bool IsTranslate { get; set; }
-            public bool IsCheck { get; set; }
-            public bool IsCreate { get; set; }
-            public bool IsChannelEdit { get; set; }
-        }
-
-        public class ListResult
-        {
-            public List<Content> PageContents { get; set; }
-            public int Total { get; set; }
-            public int PageSize { get; set; }
-            public List<ContentColumn> Columns { get; set; }
-            public bool IsAllContents { get; set; }
-            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
-            public Permissions Permissions { get; set; }
-            public List<Menu> Menus { get; set; }
         }
     }
 }

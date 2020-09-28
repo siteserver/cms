@@ -8,6 +8,10 @@ var data = utils.init({
   groupNames: [],
   channelTemplates: [],
   contentTemplates: [],
+  defaultChannelTemplate: null,
+  defaultContentTemplate: null,
+  columns: null,
+  commandsWidth: 160,
 
   channelIds: [],
 
@@ -111,6 +115,15 @@ var methods = {
       $this.groupNames = res.groupNames;
       $this.channelTemplates = res.channelTemplates;
       $this.contentTemplates = res.contentTemplates;
+      $this.defaultChannelTemplate = $this.channelTemplates.find(function(x) {
+        return x.defaultTemplate;
+      });
+      $this.defaultContentTemplate = $this.contentTemplates.find(function(x) {
+        return x.defaultTemplate;
+      });
+      $this.columns = res.columns;
+      $this.commandsWidth = res.commandsWidth;
+      $this.isTemplateEditable = res.isTemplateEditable;
       $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
 
       if (message) {
@@ -137,7 +150,6 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.styles = res.styles;
-      $this.isTemplateEditable = res.isTemplateEditable;
       $this.editPanel = true;
       setTimeout(function () {
         $this.loadEditor();
@@ -224,6 +236,41 @@ var methods = {
     })
   },
 
+  apiDrop: function (sourceId, targetId, dropType) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/drop', {
+      siteId: this.siteId,
+      sourceId: sourceId,
+      targetId: targetId,
+      dropType: dropType
+    }).then(function (response) {
+      var res = response.data;
+      
+      // $this.apiList('栏目排序成功!', [$this.siteId, sourceId]);
+      utils.success('栏目排序成功!');
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiColumns: function(attributeNames) {
+    var $this = this;
+
+    $api.post($url + '/actions/columns', {
+      siteId: this.siteId,
+      attributeNames: attributeNames
+    }).then(function(response) {
+      var res = response.data;
+
+    }).catch(function(error) {
+      utils.error(error);
+    });
+  },
+
   loadEditor: function () {
     var $this = this;
 
@@ -257,6 +304,14 @@ var methods = {
     this.editEditor.txt.html(this.form.content);
   },
 
+  handleColumnsChange: function() {
+    var listColumns = _.filter(this.columns, function(o) { return o.isList; });
+    var attributeNames = _.map(listColumns, function(column) {
+      return column.attributeName;
+    });
+    this.apiColumns(attributeNames);
+  },
+
   btnSetClick: function(channelId, isChannel, rule) {
     var url = utils.getCmsUrl('settingsCreateRuleLayerSet', {
       siteId: this.siteId,
@@ -272,21 +327,39 @@ var methods = {
       height: 500
     });
   },
+  
+  getColumnWidth: function(attributeName) {
+    if (attributeName === 'Id') return 80;
+    if (attributeName === 'ChannelTemplateId' || attributeName === 'ContentTemplateId') return 120;
+    if (attributeName === 'IndexName') return 120;
+    return 180;
+  },
+
+  getTemplate: function(isChannel, templateId) {
+    var template = null;
+    if (isChannel) {
+      template = this.channelTemplates.find(function(x) {
+        return x.id === templateId;
+      });
+    } else {
+      template = this.contentTemplates.find(function(x) {
+        return x.id === templateId;
+      });
+    }
+    if (!template) {
+      template = isChannel ? this.defaultChannelTemplate : this.defaultContentTemplate;
+    }
+    return template;
+  },
 
   btnTemplateEditClick: function(isChannel, templateId) {
-    var templateName = '';
-    if (isChannel) {
-      templateName = this.channelTemplates.find(function(x) {
-        return x.id === templateId;
-      }).templateName;
-    } else {
-      templateName = this.contentTemplates.find(function(x) {
-        return x.id === templateId;
-      }).templateName;
-    }
-    utils.addTab('编辑:' + templateName, utils.getCmsUrl('templatesEditor', {
+    if (!this.isTemplateEditable) return;
+
+    var template = this.getTemplate(isChannel, templateId);
+    
+    utils.addTab('编辑:' + template.templateName, utils.getCmsUrl('templatesEditor', {
       siteId: this.siteId,
-      templateId: templateId,
+      templateId: template.id,
       templateType: isChannel ? 'ChannelTemplate' : 'ContentTemplate',
     }));
   },
@@ -300,40 +373,20 @@ var methods = {
     });
   },
 
-  handleDragStart: function(node, ev) {
-    console.log('drag start', node);
-  },
-
-  handleDragEnter: function(draggingNode, dropNode, ev) {
-    console.log('tree drag enter: ', dropNode.channelName);
-  },
-
-  handleDragLeave: function(draggingNode, dropNode, ev) {
-    console.log('tree drag leave: ', dropNode.channelName);
-  },
-
-  handleDragOver: function(draggingNode, dropNode, ev) {
-    console.log('tree drag over: ', dropNode.channelName);
-  },
-  
-  handleDragEnd: function(draggingNode, dropNode, dropType, ev) {
-    console.log('tree drag end: ', dropNode && dropNode.channelName, dropType);
-  },
-
   handleDrop: function(draggingNode, dropNode, dropType, ev) {
-    console.log('tree drop: ', dropNode.channelName, dropType);
+    this.apiDrop(draggingNode.data.value, dropNode.data.value, dropType);
   },
 
   allowDrop: function(draggingNode, dropNode, type) {
-    if (dropNode.data.channelName === '二级 3-1') {
-      return type !== 'inner';
+    if (dropNode.data.value === this.siteId) {
+      return false;
     } else {
       return true;
     }
   },
 
   allowDrag: function(draggingNode) {
-    return draggingNode.data.channelName.indexOf('三级 3-2-2') === -1;
+    return draggingNode.data.value !== this.siteId;
   },
 
   getChannelUrl: function(data) {
@@ -347,19 +400,19 @@ var methods = {
   filterNode: function(value, data) {
     if (!value) return true;
     if (value.channelName && value.indexName && value.groupName) {
-      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
+      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.channel.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.channelName && value.indexName) {
-      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.indexName === value.indexName;
+      return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.channel.indexName === value.indexName;
     } else if (value.channelName && value.groupName) {
       return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName) && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.indexName && value.groupName) {
-      return data.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
+      return data.channel.indexName === value.indexName && data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.channelName) {
       return (data.label.indexOf(value.channelName) !== -1 || data.value + '' === value.channelName);
     } else if (value.groupName) {
       return data.groupNames.indexOf(value.groupName) !== -1;
     } else if (value.indexName) {
-      return data.indexName === value.indexName;
+      return data.channel.indexName === value.indexName;
     }
     return true;
   },
@@ -528,6 +581,31 @@ var methods = {
       width: 500,
       height: 260
     });
+  },
+
+  btnMenuClick: function(menu, channel) {
+    var url = utils.addQuery(menu.link, {
+      siteId: this.siteId,
+      channelId: channel.value
+    });
+
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: url,
+        full: true
+      });
+    } else if (menu.target == '_self') {
+      location.href = url;
+    } else if (menu.target == '_parent') {
+      parent.location.href = url;
+    }  else if (menu.target == '_top') {
+      top.location.href = url;
+    } else if (menu.target == '_blank') {
+      window.open(url);
+    } else {
+      utils.addTab(menu.text, url);
+    }
   },
 
   uploadBefore(file) {

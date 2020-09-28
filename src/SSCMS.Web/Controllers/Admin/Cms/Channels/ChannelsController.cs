@@ -27,12 +27,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private const string RouteImport = "cms/channels/channels/actions/import";
         private const string RouteExport = "cms/channels/channels/actions/export";
         private const string RouteOrder = "cms/channels/channels/actions/order";
+        private const string RouteDrop = "cms/channels/channels/actions/drop";
+        private const string RouteColumns = "cms/channels/channels/actions/columns";
 
         private readonly ICacheManager<CacheUtils.Process> _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -40,19 +43,25 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _channelGroupRepository = channelGroupRepository;
             _templateRepository = templateRepository;
             _tableStyleRepository = tableStyleRepository;
+        }
+
+        public class ColumnsRequest : ChannelRequest
+        {
+            public List<string> AttributeNames { get; set; }
         }
 
         public class ChannelsResult
@@ -62,6 +71,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<Template> ChannelTemplates { get; set; }
             public IEnumerable<Template> ContentTemplates { get; set; }
+            public List<ContentColumn> Columns { get; set; }
+            public int CommandsWidth { get; set; }
+            public bool IsTemplateEditable { get; set; }
         }
 
         public class ChannelResult
@@ -70,7 +82,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<Select<string>> LinkTypes { get; set; }
             public IEnumerable<Select<string>> TaxisTypes { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
-            public bool IsTemplateEditable { get; set; }
         }
 
         public class ImportRequest : ChannelRequest
@@ -84,6 +95,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public int ParentId { get; set; }
             public int Taxis { get; set; }
             public bool IsUp { get; set; }
+        }
+
+        public class DropRequest : SiteRequest
+        {
+            public int SourceId { get; set; }
+            public int TargetId { get; set; }
+            public string DropType { get; set; }
         }
 
         public class ChannelIdsRequest : SiteRequest

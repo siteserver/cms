@@ -1,8 +1,16 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+<style>
+  .commands {
+    text-align: right;
+    padding-right: 10px;
+  }
+</style>
+}
 
 <el-row>
-  <el-col :span="22">
+  <el-col :span="20">
     <el-form size="mini" :inline="true">
       <el-form-item label="关键字">
         <el-input v-model="filterText" placeholder="请输入栏目名称/栏目Id"></el-input>
@@ -21,74 +29,80 @@
       </el-form-item>
     </el-form>
   </el-col>
-  <el-col :span="2">
+  <el-col :span="4" align="right">
+
     <el-popover
+      id="sortColumns"
       placement="top"
-      style="display: none;"
-      width="280"
+      width="360"
       trigger="click">
-        <div>
-          设置列 （拖动选项排序）
-        </div>
-        <!-- https://github.com/sindu12jun/table-dragger -->
-        <el-table
-          :data="[{
-            id: 1,
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-          }]"
-          size="mini"
-          style="width: 100%">
-          <el-table-column width="50">
-            <template slot-scope="scope">
-              <i style="cursor: move;" class="fa fa-bars"></i>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="name">
-          </el-table-column>
-          <el-table-column align="right">
-            <template slot-scope="scope">
-              <el-switch
-                size="mini">
-              </el-switch>
-            </template>
-          </el-table-column>
-        </el-table>
-      <el-button slot="reference" style="float: right;" type="text" icon="el-icon-setting">显示列</el-button>
+      <div>
+        设置显示列
+      </div>
+      <el-table
+        :data="columns"
+        size="mini"
+        style="width: 100%; overflow: auto; max-height: 500px !important">
+        <el-table-column prop="displayName"></el-table-column>
+        <el-table-column prop="attributeName"></el-table-column>
+        <el-table-column align="right" width="80">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.isList"
+              :disabled="scope.row.attributeName === 'ChannelName'"
+              v-on:change="handleColumnsChange"
+              size="mini">
+            </el-switch>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div slot="reference" class="el-dropdown">
+        <span style="cursor: pointer;">
+          显示列<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+      </div>
     </el-popover>
+
   </el-col>
 </el-row>
 
 <div class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
   <div class="hidden-columns">
     <div></div>
-    <div></div>
-    <div></div>
+    <div
+      v-for="column in columns"
+      v-if="column.isList && column.attributeName !== 'ChannelName'"
+      :key="column.attributeName">
+    </div>
     <div></div>
   </div>
   <div class="el-table__header-wrapper">
     <table cellspacing="0" cellpadding="0" border="0" class="el-table__header" style="width: 100%;">
       <colgroup>
-        <col name="el-table_1_column_1">
-        <col name="el-table_1_column_2" width="180">
-        <col name="el-table_1_column_3" width="180">
-        <col name="el-table_1_column_4" width="150">
+        <col>
+        <col
+          v-for="column in columns"
+          v-if="column.isList && column.attributeName !== 'ChannelName'"
+          :key="column.attributeName"
+          :width="getColumnWidth(column.attributeName)">
+        <col :width="commandsWidth">
       </colgroup>
       <thead class="has-gutter">
         <tr class="">
-          <th colspan="1" rowspan="1" class="el-table_1_column_1 is-leaf">
+          <th colspan="1" rowspan="1" class="is-leaf">
             <div class="cell">栏目名称</div>
           </th>
-          <th colspan="1" rowspan="1" class="el-table_1_column_2 is-leaf">
-            <div class="cell">索引</div>
+          <th 
+            v-for="column in columns"
+            v-if="column.isList && column.attributeName !== 'ChannelName'"
+            :key="column.attributeName"
+            colspan="1"
+            rowspan="1"
+            class="is-leaf">
+            <div class="cell">{{ column.displayName }}</div>
           </th>
-          <th colspan="1" rowspan="1" class="el-table_1_column_3 is-leaf">
-            <div class="cell">栏目组</div>
-          </th>
-          <th colspan="1" rowspan="1" class="el-table_1_column_4 is-leaf">
-            <div class="cell">操作</div>
+          <th colspan="1" rowspan="1" class="is-leaf">
+            <div class="cell"></div>
           </th>
         </tr>
       </thead>
@@ -110,66 +124,86 @@
   :filter-node-method="filterNode"
   :allow-drop="allowDrop"
   :allow-drag="allowDrag"
-  v-on:node-drag-start="handleDragStart"
-  v-on:node-drag-enter="handleDragEnter"
-  v-on:node-drag-leave="handleDragLeave"
-  v-on:node-drag-over="handleDragOver"
-  v-on:node-drag-end="handleDragEnd"
   v-on:node-drop="handleDrop"
   v-on:check-change="handleCheckChange"
 >
   <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
     <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
       <colgroup>
-        <col name="el-table_1_column_1">
-        <col name="el-table_1_column_2" width="180">
-        <col name="el-table_1_column_3" width="180">
-        <col name="el-table_1_column_4" width="180">
+        <col>
+        <col
+          v-for="column in columns"
+          v-if="column.isList && column.attributeName !== 'ChannelName'"
+          :key="column.attributeName"
+          :width="getColumnWidth(column.attributeName)">
+        <col :width="commandsWidth">
       </colgroup>
       <tbody>
         <tr class="el-table__row">
-          <td rowspan="1" colspan="1" class="el-table_1_column_1">
-          <div class="cell">
-          <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
-            <i class="el-icon-link"></i>
-          </el-link>
-          {{ data.label }} ({{ data.count }})
-        </div>
-        </td>
-        <td rowspan="1" colspan="1" class="el-table_1_column_2">
-          <div class="cell">
-            <el-tag size="mini" v-if="data.indexName">
-              {{ data.indexName }}
-            </el-tag>
-          </div>
-        </td>
-        <td rowspan="1" colspan="1" class="el-table_1_column_3">
-          <div class="cell">
-            <template v-if="data.groupNames && groupNames" v-for="groupName in data.groupNames">
-              <el-tag v-if="groupNames.indexOf(groupName) !== -1" :key="groupName" size="mini" type="info">
-                {{ groupName }}
-              </el-tag>
-            </template>
-          </div>
-        </td>
-        <td rowspan="1" colspan="1" class="el-table_1_column_4">
-          <div class="cell">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+                <i class="el-icon-link"></i>
+              </el-link>
+              {{ data.label }} ({{ data.count }})
+            </div>
+          </td>
+          <td 
+            v-for="column in columns"
+            v-if="column.isList && column.attributeName !== 'ChannelName'"
+            :key="column.attributeName"
+            rowspan="1"
+            colspan="1">
+            <div class="cell">
+              <template v-if="column.attributeName === 'IndexName'">
+                <el-tag size="mini" v-if="data.channel.indexName">
+                  {{ data.channel.indexName }}
+                </el-tag>
+              </template>
+              <template v-else-if="column.attributeName === 'GroupNames'">
+                <template v-if="data.groupNames && groupNames" v-for="groupName in data.groupNames">
+                  <el-tag v-if="groupNames.indexOf(groupName) !== -1" :key="groupName" size="mini" type="info">
+                    {{ groupName }}
+                  </el-tag>
+                </template>
+              </template>
+              <template v-else-if="column.attributeName === 'ChannelTemplateId'">
+                <el-link :underline="false" type="primary" size="small" v-on:click.stop.native="btnTemplateEditClick(true, data.channel.channelTemplateId)">
+                  {{ getTemplate(true, data.channel.channelTemplateId).templateName }}
+                </el-link>
+              </template>
+              <template v-else-if="column.attributeName === 'ContentTemplateId'">
+                <el-link :underline="false" type="primary" size="small" v-on:click.stop.native="btnTemplateEditClick(false, data.channel.contentTemplateId)">
+                  {{ getTemplate(false, data.channel.contentTemplateId).templateName }}
+                </el-link>
+              </template>
+              <template v-else>
+                <span v-html="data.channel.getEntityValue(column.attributeName)"></span>
+              </template>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1" class="commands">
+            <div class="cell">
 
-            <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
-              编辑
-            </el-link>
-            <el-link :underline="false" v-if="data.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, true)">
-              上升
-            </el-link>
-            <el-link :underline="false" v-if="data.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, false)">
-              下降
-            </el-link>
-            <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
-              删除
-            </el-link>
+              <el-link v-for="menu in data.menus" :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnMenuClick(menu, data)">
+                {{ menu.text }}
+              </el-link>
 
-          </div>
-        </td>
+              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
+                编辑
+              </el-link>
+              <el-link :underline="false" v-if="data.channel.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, true)">
+                上升
+              </el-link>
+              <el-link :underline="false" v-if="data.channel.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, false)">
+                下降
+              </el-link>
+              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
+                删除
+              </el-link>
+
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -200,6 +234,12 @@
   <el-button size="small" type="primary" plain style="margin-left: 0px;" :disabled="channelIds.length === 0" icon="el-icon-magic-stick" v-on:click="btnCreateClick">
     生 成
   </el-button>
+
+  <div style="height: 5px"></div>
+
+  <el-alert type="info">
+    提示：可以对栏目进行拖拽管理
+  </el-alert>
 </el-row>
 
 <el-drawer

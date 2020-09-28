@@ -64,16 +64,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var isTemplateEditable =
-                await _authManager.HasSitePermissionsAsync(siteId, Types.SitePermissions.Templates);
-
             return new ChannelResult
             {
                 Entity = entity,
                 LinkTypes = linkTypes,
                 TaxisTypes = taxisTypes,
-                Styles = styles,
-                IsTemplateEditable = isTemplateEditable
+                Styles = styles
             };
         }
     }

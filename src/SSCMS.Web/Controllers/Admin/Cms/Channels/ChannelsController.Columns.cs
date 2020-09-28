@@ -2,17 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Cms.Contents
+namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
-    public partial class ContentsController
+    public partial class ChannelsController
     {
         [HttpPost, Route(RouteColumns)]
         public async Task<ActionResult<BoolResult>> Columns([FromBody] ColumnsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents))
+                Types.SitePermissions.Channels))
             {
                 return Unauthorized();
             }
@@ -20,10 +19,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-            channel.ListColumns = ListUtils.ToString(request.AttributeNames);
+            site.ChannelListColumns = request.AttributeNames;
 
-            await _channelRepository.UpdateAsync(channel);
+            await _siteRepository.UpdateAsync(site);
 
             return new BoolResult
             {

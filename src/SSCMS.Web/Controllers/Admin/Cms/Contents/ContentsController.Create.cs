@@ -32,10 +32,5 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 Value = true
             };
         }
-
-        public class CreateRequest : SiteRequest
-        {
-            public string ChannelContentIds { get; set; }
-        }
     }
 }

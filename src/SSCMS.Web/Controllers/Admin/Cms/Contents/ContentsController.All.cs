@@ -28,10 +28,5 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 Value = true
             };
         }
-
-        public class AllRequest : ChannelRequest
-        {
-            public bool IsAllContents { get; set; }
-        }
     }
 }

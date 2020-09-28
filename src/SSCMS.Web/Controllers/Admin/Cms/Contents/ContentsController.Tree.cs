@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
@@ -62,20 +60,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             {
                 Root = root
             };
-        }
-
-        public class TreeRequest : SiteRequest
-        {
-            public bool Reload { get; set; }
-        }
-
-        public class TreeResult
-        {
-            public Cascade<int> Root { get; set; }
-            public string SiteUrl { get; set; }
-            public IEnumerable<string> GroupNames { get; set; }
-            public IEnumerable<string> TagNames { get; set; }
-            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
         }
     }
 }

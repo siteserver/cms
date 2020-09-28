@@ -10,7 +10,6 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -38,14 +37,10 @@ namespace SSCMS.Core.Repositories
             if (parentChannel != null)
             {
                 channel.SiteId = parentChannel.SiteId;
-                if (string.IsNullOrEmpty(parentChannel.ParentsPath))
-                {
-                    channel.ParentsPath = parentChannel.Id.ToString();
-                }
-                else
-                {
-                    channel.ParentsPath = parentChannel.ParentsPath + "," + parentChannel.Id;
-                }
+                channel.ParentsPath = parentChannel.ParentsPath == null
+                    ? new List<int> {parentChannel.Id}
+                    : new List<int>(parentChannel.ParentsPath) {parentChannel.Id};
+
                 channel.ParentsCount = parentChannel.ParentsCount + 1;
 
                 var maxTaxis = await GetMaxTaxisAsync(channel.SiteId, channel.ParentId);
@@ -76,14 +71,11 @@ namespace SSCMS.Core.Repositories
 
             if (parentChannel != null)
             {
-                await _repository.RemoveCacheAsync(GetEntityKey(parentChannel.Id));
-            }
-
-            if (!string.IsNullOrEmpty(channel.ParentsPath))
-            {
                 await _repository.IncrementAsync(nameof(Channel.ChildrenCount), Q
-                    .WhereIn(nameof(Channel.Id), ListUtils.GetIntList(channel.ParentsPath))
+                    .Where(nameof(Channel.Id), parentChannel.Id)
                 );
+
+                await _repository.RemoveCacheAsync(GetEntityKey(parentChannel.Id));
             }
         }
 
@@ -190,16 +182,11 @@ namespace SSCMS.Core.Repositories
                 await _repository.DecrementAsync(nameof(Channel.Taxis), Q
                     .Where(nameof(Channel.SiteId), channelEntity.SiteId)
                     .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
-                    .CachingRemove(GetListKey(site.Id))
                 , deletedNum);
-            }
 
-            if (!string.IsNullOrEmpty(channelEntity.ParentsPath))
-            {
                 await _repository.DecrementAsync(nameof(Channel.ChildrenCount), Q
-                        .WhereIn(nameof(Channel.Id), ListUtils.GetIntList(channelEntity.ParentsPath))
-                        .CachingRemove(GetListKey(site.Id))
-                    , deletedNum);
+                        .Where(nameof(Channel.Id), channelEntity.ParentId)
+                        .CachingRemove(GetListKey(site.Id)));
             }
         }
 

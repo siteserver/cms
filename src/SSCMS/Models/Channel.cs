@@ -25,7 +25,7 @@ namespace SSCMS.Models
         public int ParentId { get; set; }
 
         [DataColumn]
-        public string ParentsPath { get; set; }
+        public List<int> ParentsPath { get; set; }
 
         [DataColumn]
         public int ParentsCount { get; set; }

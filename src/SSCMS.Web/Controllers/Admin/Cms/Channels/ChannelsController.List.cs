@@ -1,8 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -21,17 +26,33 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
+            var max = 0;
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 var count = await _contentRepository.GetCountAsync(site, summary);
                 var groupNames = await _channelRepository.GetGroupNamesAsync(summary.Id);
+
+                var channelPlugins = _pluginManager.GetPlugins(request.SiteId, summary.Id);
+                var menus = new List<Menu>();
+                foreach (var plugin in channelPlugins)
+                {
+                    var pluginMenus = plugin.GetMenus()
+                        .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel)).ToList();
+                    if (pluginMenus.Count == 0) continue;
+
+                    menus.AddRange(pluginMenus);
+                }
+
+                max = Math.Max(max, menus.Count);
+
+                var node = await _channelRepository.GetAsync(summary.Id);
+
                 return new
                 {
+                    Channel = node,
                     Count = count,
-                    summary.IndexName,
                     GroupNames = groupNames,
-                    summary.Taxis,
-                    summary.ParentId
+                    Menus = menus
                 };
             });
 
@@ -41,14 +62,32 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
             var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
+            var columns = await columnsManager.GetChannelListColumnsAsync(site);
+
+            var commandsWidth = 160 + 40 * max;
+            var isTemplateEditable =
+                await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates);
+
             return new ChannelsResult
             {
                 Channel = cascade,
                 IndexNames = indexNames,
                 GroupNames = groupNameList,
                 ChannelTemplates = channelTemplates,
-                ContentTemplates = contentTemplates
+                ContentTemplates = contentTemplates,
+                Columns = columns,
+                CommandsWidth = commandsWidth,
+                IsTemplateEditable = isTemplateEditable
             };
+        }
+
+        public class ChannelColumn
+        {
+            public string AttributeName { get; set; }
+            public string DisplayName { get; set; }
+            public InputType InputType { get; set; }
+            public bool IsList { get; set; }
         }
     }
 }

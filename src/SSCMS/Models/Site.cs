@@ -131,6 +131,8 @@ namespace SSCMS.Models
 
         public List<string> RecycleListColumns { get; set; }
 
+        public List<string> ChannelListColumns { get; set; }
+
         public bool ConfigUEditorVideoIsImageUrl { get; set; }
 
         public bool ConfigUEditorVideoIsAutoPlay { get; set; }
