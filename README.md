@@ -95,9 +95,15 @@ npm run copy-osx-x64
 
 ## 在 Docker 中运行
 
-###  运行最新版本
+拉取最新版本的 SS CMS 镜像
+
 ```sh
-docker pull sscms/core
+docker pull sscms/core:latest
+```
+
+运行 SS CMS 容器
+
+```sh
 docker run -d \
     --name my-sscms \
     -p 80:80 \
@@ -110,15 +116,9 @@ docker run -d \
 
 ## 贡献代码
 
-代码贡献有很多形式，从提交问题，撰写文档，到提交代码，我们欢迎任何形式的贡献！
-
 项目编译需要使用 Visual Studio 2019，你可以从这里下载 [Visual Studio Community 2019](https://www.visualstudio.com/downloads/)
 
-- 1、Fork
-- 2、创建您的特性分支 (`git checkout -b my-new-feature`)
-- 3、提交您的改动 (`git commit -am 'Added some feature'`)
-- 4、将您的修改记录提交到远程 `git` 仓库 (`git push origin my-new-feature`)
-- 5、然后到 github 网站的该 `git` 远程仓库的 `my-new-feature` 分支下发起 Pull Request（请提交到 `dev` 分支，不要直接提交到 `master` 分支）
+代码贡献有很多形式，从提交问题，撰写文档，到提交代码，我们欢迎任何形式的贡献！
 
 ## 系统更新
 
@@ -134,6 +134,6 @@ SSCMS 产品将每隔两月发布新的正式版本，我们将在每次迭代�
 
 ## License
 
-[GNU GENERAL PUBLIC LICENSE 3.0](LICENSE)
+[GNU Affero General Public License v3.0](LICENSE)
 
 Copyright (C) 2003-2020 SSCMS

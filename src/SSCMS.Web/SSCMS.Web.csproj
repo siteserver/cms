@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Version>7.0.2</Version>
-    <UserSecretsId>be371ebf-a970-4d7c-8db5-77392513935f</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <ApplicationIcon>logo.ico</ApplicationIcon>
