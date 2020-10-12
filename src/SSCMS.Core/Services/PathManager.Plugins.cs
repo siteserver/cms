@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SSCMS.Configuration;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
@@ -16,7 +15,7 @@ namespace SSCMS.Core.Services
             return packagesPath;
         }
 
-        public string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
+        public string PluginsPath => _pluginManager.DirectoryPath;
 
         public string GetPluginPath(string pluginId, params string[] paths)
         {

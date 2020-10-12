@@ -10,8 +10,11 @@ RUN tar -xzf sscms-7.0.2-linux-x64.tar.gz
 RUN rm sscms-7.0.2-linux-x64.tar.gz -f
 RUN cp -r /sscms/wwwroot/sitefiles/assets /sscms/assets
 RUN rm -rf /sscms/wwwroot/sitefiles/assets
+RUN cp -r /sscms/wwwroot/sitefiles/resources /sscms/resources
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build /sscms .
 ENTRYPOINT ["dotnet", "SSCMS.Web.dll"]
+
+# docker build -f Dockerfile.core -t sscms/core .

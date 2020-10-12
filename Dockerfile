@@ -25,4 +25,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SSCMS.Web.dll"]
 
-# docker build -t dev .
+# docker build -t sscms/core .

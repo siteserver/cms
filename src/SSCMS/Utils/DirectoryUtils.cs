@@ -25,7 +25,7 @@ namespace SSCMS.Utils
             public const string Library = "library";
             public const string BackupFiles = "backupfiles";
             public const string TemporaryFiles = "temporaryfiles";
-            public const string Plugins = "plugins";
+            public const string Resources = "resources";
 
             public const string Home = "home";
             public const string Administrators = "administrators";

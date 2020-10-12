@@ -6,6 +6,7 @@ namespace SSCMS.Services
 {
     public partial interface IPluginManager
     {
+        string DirectoryPath { get; }
         List<IPlugin> Plugins { get; }
         List<IPlugin> EnabledPlugins { get; }
         List<IPlugin> NetCorePlugins { get; }

@@ -63,24 +63,35 @@ namespace SSCMS.Core.Utils
 
         public static void Init(string contentRootPath)
         {
-            if (SettingsManager.RunningInContainer) return;
-
-            var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
-            if (FileUtils.IsFileExists(filePath))
+            if (SettingsManager.RunningInContainer)
             {
-                var json = FileUtils.ReadText(filePath);
-                if (json.Contains(@"""SecurityKey"": """","))
+                if (!DirectoryUtils.IsDirectoryExists(PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
+                    DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Resources)))
                 {
-                    var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
-                    FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
+                    DirectoryUtils.Copy(PathUtils.Combine(contentRootPath, DirectoryUtils.SiteFiles.Resources),
+                        PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
+                            DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Resources));
                 }
             }
             else
             {
-                var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
+                var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
+                if (FileUtils.IsFileExists(filePath))
+                {
+                    var json = FileUtils.ReadText(filePath);
+                    if (json.Contains(@"""SecurityKey"": """","))
+                    {
+                        var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
+                        FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
+                    }
+                }
+                else
+                {
+                    var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
 
-                SaveSettings(contentRootPath, false, false, securityKey, DatabaseType.MySql.GetValue(),
-                    string.Empty, string.Empty, string.Empty, null, null);
+                    SaveSettings(contentRootPath, false, false, securityKey, DatabaseType.MySql.GetValue(),
+                        string.Empty, string.Empty, string.Empty, null, null);
+                }
             }
         }
 

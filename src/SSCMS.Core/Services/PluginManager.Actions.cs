@@ -9,7 +9,7 @@ namespace SSCMS.Core.Services
         public void Install(string pluginId, string version)
         {
             var packagesPath = PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.Packages);
-            var pluginPath = PathUtils.Combine(_directoryPath, pluginId);
+            var pluginPath = PathUtils.Combine(DirectoryPath, pluginId);
 
             var zipFilePath = CloudUtils.Dl.DownloadPlugin(packagesPath, pluginId, version);
 
@@ -19,7 +19,7 @@ namespace SSCMS.Core.Services
 
         public void UnInstall(string pluginId)
         {
-            var pluginPath = PathUtils.Combine(_directoryPath, pluginId);
+            var pluginPath = PathUtils.Combine(DirectoryPath, pluginId);
             try
             {
                 DirectoryUtils.DeleteDirectoryIfExists(pluginPath);

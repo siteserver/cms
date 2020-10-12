@@ -197,7 +197,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            var extendName = ColumnsManager.GetExtendName(nameof(type), no - 1);
+                            var extendName = ColumnsManager.GetExtendName(type, no - 1);
                             picUrl = contentInfo.Get<string>(extendName);
                         }
                     }

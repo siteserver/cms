@@ -70,57 +70,6 @@ namespace SSCMS.Core.Services
         public bool Containerized { get; }
         public int CPUCores { get; }
 
-        public void Reload()
-        {
-            var envSecurityKey = GetEnvironmentVariable(EnvSecurityKey);
-            var envDatabaseType = GetEnvironmentVariable(EnvDatabaseType);
-            var envDatabaseHost = GetEnvironmentVariable(EnvDatabaseHost);
-            var envDatabasePort = GetEnvironmentVariable(EnvDatabasePort);
-            var envDatabaseUser = GetEnvironmentVariable(EnvDatabaseUser);
-            var envDatabasePassword = GetEnvironmentVariable(EnvDatabasePassword);
-            var envDatabaseName = GetEnvironmentVariable(EnvDatabaseName);
-            var envDatabaseConnectionString = GetEnvironmentVariable(EnvDatabaseConnectionString);
-            var envRedisConnectionString = GetEnvironmentVariable(EnvRedisConnectionString);
-
-            var isEnvironment = IsEnvironment(envSecurityKey, envDatabaseType, envDatabaseConnectionString,
-                envDatabaseHost, envDatabaseUser, envDatabasePassword, envDatabaseName);
-
-            if (isEnvironment)
-            {
-                IsProtectData = false;
-                SecurityKey = envSecurityKey;
-                DatabaseType = TranslateUtils.ToEnum(envDatabaseType, DatabaseType.MySql);
-                DatabaseConnectionString = DatabaseType == DatabaseType.SQLite
-                    ? $"Data Source={Constants.LocalDbContainerVirtualPath};Version=3;"
-                    : envDatabaseConnectionString;
-                RedisConnectionString = envRedisConnectionString;
-                if (string.IsNullOrEmpty(DatabaseConnectionString))
-                {
-                    var port = TranslateUtils.ToInt(envDatabasePort);
-                    DatabaseConnectionString = InstallUtils.GetDatabaseConnectionString(DatabaseType, envDatabaseHost,
-                        port == 0, port,
-                        envDatabaseUser, envDatabasePassword, envDatabaseName);
-                }
-            }
-            else
-            {
-                IsProtectData = _config.GetValue(nameof(IsProtectData), false);
-                SecurityKey = _config.GetValue<string>(nameof(SecurityKey));
-                DatabaseType = TranslateUtils.ToEnum(
-                    IsProtectData
-                        ? Decrypt(_config.GetValue<string>("Database:Type"))
-                        : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
-                DatabaseConnectionString = DatabaseType == DatabaseType.SQLite
-                    ? $"Data Source={Constants.LocalDbHostVirtualPath};Version=3;"
-                    : IsProtectData
-                        ? Decrypt(_config.GetValue<string>("Database:ConnectionString"))
-                        : _config.GetValue<string>("Database:ConnectionString");
-                RedisConnectionString = IsProtectData
-                    ? Decrypt(_config.GetValue<string>("Redis:ConnectionString"))
-                    : _config.GetValue<string>("Redis:ConnectionString");
-            }
-        }
-
         public bool IsProtectData { get; private set; }
 
         public string SecurityKey { get; private set; }

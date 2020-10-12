@@ -13,6 +13,7 @@ namespace SSCMS.Configuration
         public const string AdminDirectory = "ss-admin";
         public const string HomeDirectory = "home";
         public const string WwwrootDirectory = "wwwroot";
+        public const string PluginsDirectory = "plugins";
         public const string DefaultLanguage = "en";
         public const string EncryptStingIndicator = "0secret0";
         public const string ActionsLoginSuccess = "LoginSuccess";

@@ -2,7 +2,7 @@ version: "3.7"
 
 volumes:
 
-  volume-postgres:
+  volume-mysql:
     driver: local
 
   volume-sscms:
@@ -10,31 +10,32 @@ volumes:
 
 services:
 
-  sscms-postgres:
-    image: postgres
+  sscms-mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
-      - "5432:5432"
+      - "3306:3306"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres-password
+      MYSQL_ROOT_PASSWORD: mysql-password
+      MYSQL_DATABASE: mysql-db
     volumes:
-      - volume-postgres:/var/lib/postgresql/data
+      - volume-mysql:/var/lib/mysql
 
   sscms-core:
     depends_on:
-      - sscms-postgres
+      - sscms-mysql
     image: "sscms/core"
     restart: always
     ports:
       - "80:80"
     environment:
       SSCMS_SECURITY_KEY: e2a3d303-ac9b-41ff-9154-930710af0845
-      SSCMS_DATABASE_TYPE: PostgreSQL
-      SSCMS_DATABASE_HOST: sscms-postgres
-      SSCMS_DATABASE_USER: postgres
-      SSCMS_DATABASE_PASSWORD: postgres-password
-      SSCMS_DATABASE_NAME: postgres
+      SSCMS_DATABASE_TYPE: MySQL
+      SSCMS_DATABASE_HOST: sscms-mysql
+      SSCMS_DATABASE_USER: root
+      SSCMS_DATABASE_PASSWORD: mysql-password
+      SSCMS_DATABASE_NAME: mysql-db
     volumes:
       - volume-sscms:/app/wwwroot
 

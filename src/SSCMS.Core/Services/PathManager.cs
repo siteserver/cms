@@ -14,6 +14,7 @@ namespace SSCMS.Core.Services
     {
         private readonly ICacheManager<string> _cacheManager;
         private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISpecialRepository _specialRepository;
         private readonly ITemplateLogRepository _templateLogRepository;
@@ -23,10 +24,11 @@ namespace SSCMS.Core.Services
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public PathManager(ICacheManager<string> cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public PathManager(ICacheManager<string> cacheManager, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
             _databaseManager = databaseManager;
             _specialRepository = specialRepository;
             _templateLogRepository = templateLogRepository;

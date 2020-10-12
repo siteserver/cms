@@ -14,14 +14,16 @@ namespace SSCMS.Core.Services
     {
         private readonly IConfiguration _config;
         private readonly ISettingsManager _settingsManager;
-        private readonly string _directoryPath;
 
         public PluginManager(IConfiguration config, ISettingsManager settingsManager)
         {
             _config = config;
             _settingsManager = settingsManager;
 
-            _directoryPath = PathUtils.Combine(settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Plugins);
+            DirectoryPath = _settingsManager.Containerized
+                ? PathUtils.Combine(settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName,
+                    Constants.PluginsDirectory)
+                : PathUtils.Combine(settingsManager.ContentRootPath, Constants.PluginsDirectory);
         }
 
         public void Load()
@@ -32,9 +34,9 @@ namespace SSCMS.Core.Services
             {
                 _config
             };
-            if (!_settingsManager.IsDisablePlugins && DirectoryUtils.IsDirectoryExists(_directoryPath))
+            if (!_settingsManager.IsDisablePlugins && DirectoryUtils.IsDirectoryExists(DirectoryPath))
             {
-                foreach (var folderPath in DirectoryUtils.GetDirectoryPaths(_directoryPath))
+                foreach (var folderPath in DirectoryUtils.GetDirectoryPaths(DirectoryPath))
                 {
                     if (string.IsNullOrEmpty(folderPath)) continue;
                     var configPath = PathUtils.Combine(folderPath, Constants.PackageFileName);
@@ -80,6 +82,8 @@ namespace SSCMS.Core.Services
         //        return assembly == null ? null : NetCorePlugins.FirstOrDefault(x => x.Assembly.FullName == assembly.FullName);
         //    }
         //}
+
+        public string DirectoryPath { get; }
 
         public List<IPlugin> Plugins { get; private set; }
 

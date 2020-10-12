@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -47,7 +48,7 @@ namespace SSCMS.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddOptions();
+            services.AddDataProtection().DisableAutomaticKeyGeneration();
 
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
