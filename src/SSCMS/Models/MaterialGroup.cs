@@ -8,7 +8,7 @@ namespace SSCMS.Models
     public class MaterialGroup : Entity
     {
         [DataColumn]
-        public MaterialType LibraryType { get; set; }
+        public MaterialType MaterialType { get; set; }
 
         [DataColumn]
         public string GroupName { get; set; }

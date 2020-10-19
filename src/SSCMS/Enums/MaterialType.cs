@@ -7,8 +7,6 @@ namespace SSCMS.Enums
     [JsonConverter(typeof(StringEnumConverter))]
     public enum MaterialType
     {
-        [DataEnum(DisplayName = "内容")]
-        Content,
         [DataEnum(DisplayName = "图文消息")]
         Message,
         [DataEnum(DisplayName = "图文消息")]

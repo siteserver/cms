@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core.Collections;
@@ -29,14 +28,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
             _site = site;
         }
 
-        public async Task ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, int adminId, string guid)
-        {
-            if (!FileUtils.IsFileExists(filePath)) return;
-            var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
-
-            await ImportContentsAsync(feed.Entries, channel, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminId, guid);
-        }
-
         public async Task<List<int>> ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             if (!FileUtils.IsFileExists(filePath)) return null;
@@ -50,7 +41,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
             await ImportContentsAsync(entries, channel, taxis, 0, 0, true, true, 0, isOverride, adminId, guid);
         }
 
-        // 内部消化掉错误
         private async Task ImportContentsAsync(AtomEntryCollection entries, Channel channel, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, string guid)
         {
             if (importStart > 1 || importCount > 0)
@@ -245,6 +235,16 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LastHitsDate));
                     var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Downloads)));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Title));
+
+                    var subTitle = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.SubTitle));
+                    var imageUrl = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.ImageUrl));
+                    var videoUrl = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.VideoUrl));
+                    var fileUrl = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.FileUrl));
+                    var body = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Body), "Content" });
+                    var summary = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Summary));
+                    var author = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Author));
+                    var source = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Source));
+
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Top), "IsTop" }));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Recommend), "IsRecommend" }));
                     var isHot = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Hot), "IsHot" }));
@@ -280,6 +280,14 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate),
                         Downloads = downloads,
                         Title = AtomUtility.Decrypt(title),
+                        SubTitle = AtomUtility.Decrypt(subTitle),
+                        ImageUrl = AtomUtility.Decrypt(imageUrl),
+                        VideoUrl = AtomUtility.Decrypt(videoUrl),
+                        FileUrl = AtomUtility.Decrypt(fileUrl),
+                        Body = AtomUtility.Decrypt(body),
+                        Summary = AtomUtility.Decrypt(summary),
+                        Author = AtomUtility.Decrypt(author),
+                        Source = AtomUtility.Decrypt(source),
                         Top = isTop,
                         Recommend = isRecommend,
                         Hot = isHot,
@@ -360,65 +368,24 @@ namespace SSCMS.Core.Utils.Serialization.Components
             return contentIdList;
         }
 
-        public async Task<bool> ExportContentsAsync(Site site, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
-        {
-            var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var feed = AtomUtility.GetEmptyFeed();
-
-            if (contentIdList == null)
-            {
-                contentIdList = await _databaseManager.ContentRepository.GetContentIdsAsync(site, channelInfo, isPeriods, dateFrom, dateTo, checkedState);
-            }
-            if (!contentIdList.Any()) return false;
-
-            var collection = new NameValueCollection();
-
-            foreach (var contentId in contentIdList)
-            {
-                var contentInfo = await _databaseManager.ContentRepository.GetAsync(site, channelInfo, contentId);
-                try
-                {
-                    await _pathManager.PutImagePathsAsync(site, contentInfo, collection);
-                }
-                catch
-                {
-                    // ignored
-                }
-                var entry = ExportContentInfo(contentInfo);
-                feed.Entries.Add(entry);
-            }
-            feed.Save(filePath);
-
-            foreach (string imageUrl in collection.Keys)
-            {
-                var sourceFilePath = collection[imageUrl];
-                var destFilePath = _pathManager.ParsePath(_siteContentDirectoryPath, imageUrl);
-                DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
-                FileUtils.MoveFile(sourceFilePath, destFilePath, true);
-            }
-
-            return true;
-        }
-
-        public async Task<bool> ExportContentsAsync(Site site, List<Content> contentInfoList)
+        public async Task<bool> ExportContentsAsync(Site site, List<Content> contents)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var feed = AtomUtility.GetEmptyFeed();
 
             var collection = new NameValueCollection();
 
-            foreach (var contentInfo in contentInfoList)
+            foreach (var content in contents)
             {
                 try
                 {
-                    await _pathManager.PutImagePathsAsync(site, contentInfo, collection);
+                    await _pathManager.PutImagePathsAsync(site, content, collection);
                 }
                 catch
                 {
                     // ignored
                 }
-                var entry = ExportContentInfo(contentInfo);
+                var entry = ExportContent(content);
                 feed.Entries.Add(entry);
             }
 
@@ -435,7 +402,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             return true;
         }
 
-        public AtomEntry ExportContentInfo(Content content)
+        public AtomEntry ExportContent(Content content)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
@@ -460,6 +427,15 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Downloads), content.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Title), AtomUtility.Encrypt(content.Title));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.SubTitle), AtomUtility.Encrypt(content.SubTitle));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.ImageUrl), AtomUtility.Encrypt(content.ImageUrl));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.VideoUrl), AtomUtility.Encrypt(content.VideoUrl));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.FileUrl), AtomUtility.Encrypt(content.FileUrl));
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Body), "Content" }, AtomUtility.Encrypt(content.Body));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Summary), AtomUtility.Encrypt(content.Summary));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Author), AtomUtility.Encrypt(content.Author));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Source), AtomUtility.Encrypt(content.Source));
+
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Top), "IsTop" }, content.Top.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Recommend), "IsRecommend" }, content.Recommend.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Hot), "IsHot" }, content.Hot.ToString());

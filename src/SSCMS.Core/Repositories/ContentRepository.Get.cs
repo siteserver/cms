@@ -63,12 +63,12 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<int> GetFirstContentIdAsync(string tableName, int channelId)
+        public async Task<int> GetFirstContentIdAsync(Site site, IChannelSummary channel)
         {
-            var repository = GetRepository(tableName);
+            var repository = GetRepository(site, channel);
             return await repository.GetAsync<int>(Q
                 .Select(nameof(Content.Id))
-                .Where(nameof(Content.ChannelId), channelId)
+                .Where(nameof(Content.ChannelId), channel.Id)
                 .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id))
             );
         }

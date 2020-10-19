@@ -87,6 +87,7 @@
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";
             public const string TemplatesMatch = "site_templatesMatch";
+            public const string TemplatesIncludes = "site_templatesIncludes";
             public const string TemplatesAssets = "site_templatesAssets";
             public const string TemplatesPreview = "site_templatesPreview";
             public const string TemplatesReference = "site_templatesReference";

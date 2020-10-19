@@ -7,7 +7,5 @@
         void AddOrUpdateAbsolute(string key, TCacheValue value, int minutes);
 
         void AddOrUpdate(string key, TCacheValue value);
-
-        void AddOrUpdateFileWatcher(string filePath, TCacheValue value);
     }
 }

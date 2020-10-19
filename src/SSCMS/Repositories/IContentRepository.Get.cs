@@ -14,7 +14,7 @@ namespace SSCMS.Repositories
     {
         Task<int> GetMaxTaxisAsync(Site site, Channel channel, bool isTop);
 
-        Task<int> GetFirstContentIdAsync(string tableName, int channelId);
+        Task<int> GetFirstContentIdAsync(Site site, IChannelSummary channel);
 
         List<(int AdminId, int AddCount, int UpdateCount)> GetDataSetOfAdminExcludeRecycle(string tableName,
             int siteId, DateTime begin, DateTime end);

@@ -12,12 +12,10 @@ namespace SSCMS.Core.Repositories
     public partial class TemplateRepository : ITemplateRepository
     {
         private readonly Repository<Template> _repository;
-        private readonly ITemplateLogRepository _templateLogRepository;
 
-        public TemplateRepository(ISettingsManager settingsManager, ITemplateLogRepository templateLogRepository)
+        public TemplateRepository(ISettingsManager settingsManager)
         {
             _repository = new Repository<Template>(settingsManager.Database, settingsManager.Redis);
-            _templateLogRepository = templateLogRepository;
         }
 
         public IDatabase Database => _repository.Database;
@@ -26,52 +24,48 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task<int> InsertAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId)
+        public async Task<int> InsertAsync(Template template)
         {
             if (template.DefaultTemplate)
             {
-                var defaultTemplate = await GetDefaultTemplateAsync(site.Id, template.TemplateType);
+                var defaultTemplate = await GetDefaultTemplateAsync(template.SiteId, template.TemplateType);
                 if (defaultTemplate != null)
                 {
                     defaultTemplate.DefaultTemplate = false;
                     await _repository.UpdateAsync(defaultTemplate, Q
-                        .CachingRemove(GetListKey(site.Id))
+                        .CachingRemove(GetListKey(template.SiteId))
                         .CachingRemove(GetEntityKey(defaultTemplate.Id))
                     );
                 }
             }
 
             template.Id = await _repository.InsertAsync(template, Q
-                .CachingRemove(GetListKey(site.Id))
+                .CachingRemove(GetListKey(template.SiteId))
             );
-
-            await pathManager.WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
 
             return template.Id;
         }
 
-        public async Task UpdateAsync(IPathManager pathManager, Site site, Template template, string templateContent, int adminId)
+        public async Task UpdateAsync(Template template)
         {
             var original = await GetAsync(template.Id);
             if (original.DefaultTemplate != template.DefaultTemplate && template.DefaultTemplate)
             {
-                var defaultTemplate = await GetDefaultTemplateAsync(site.Id, template.TemplateType);
+                var defaultTemplate = await GetDefaultTemplateAsync(template.SiteId, template.TemplateType);
                 if (defaultTemplate != null)
                 {
                     defaultTemplate.DefaultTemplate = false;
                     await _repository.UpdateAsync(defaultTemplate, Q
-                        .CachingRemove(GetListKey(site.Id))
+                        .CachingRemove(GetListKey(template.SiteId))
                         .CachingRemove(GetEntityKey(defaultTemplate.Id))
                     );
                 }
             }
 
             await _repository.UpdateAsync(template, Q
-                .CachingRemove(GetListKey(site.Id))
+                .CachingRemove(GetListKey(template.SiteId))
                 .CachingRemove(GetEntityKey(template.Id))
             );
-
-            await pathManager.WriteContentToTemplateFileAsync(site, template, templateContent, adminId);
         }
 
         public async Task SetDefaultAsync(int templateId)
@@ -108,43 +102,43 @@ namespace SSCMS.Core.Repositories
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public async Task CreateDefaultTemplateAsync(IPathManager pathManager, Site site, int adminId)
+        public async Task CreateDefaultTemplateAsync(int siteId)
         {
-            await InsertAsync(pathManager, site, new Template
+            await InsertAsync(new Template
             {
                 Id = 0,
-                SiteId = site.Id,
+                SiteId = siteId,
                 TemplateName = "系统首页模板",
                 TemplateType = TemplateType.IndexPageTemplate,
                 RelatedFileName = "T_系统首页模板.html",
                 CreatedFileFullName = "@/index.html",
                 CreatedFileExtName = ".html",
                 DefaultTemplate = true
-            }, string.Empty, adminId);
+            });
 
-            await InsertAsync(pathManager, site, new Template
+            await InsertAsync(new Template
             {
                 Id = 0,
-                SiteId = site.Id,
+                SiteId = siteId,
                 TemplateName = "系统栏目模板",
                 TemplateType = TemplateType.ChannelTemplate,
                 RelatedFileName = "T_系统栏目模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
                 DefaultTemplate = true
-            }, string.Empty, adminId);
+            });
 
-            await InsertAsync(pathManager, site, new Template
+            await InsertAsync(new Template
             {
                 Id = 0,
-                SiteId = site.Id,
+                SiteId = siteId,
                 TemplateName = "系统内容模板",
                 TemplateType = TemplateType.ContentTemplate,
                 RelatedFileName = "T_系统内容模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
                 DefaultTemplate = true
-            }, string.Empty, adminId);
+            });
         }
     }
 }

@@ -142,8 +142,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
             _site.IsSeparatedWeb = false;
             _site.IsCreateDoubleClick = false;
 
-			_site.SiteType = AtomUtility.GetDcElementContent(feed.AdditionalElements,
-                nameof(Site.SiteType));
+			//_site.SiteType = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+   //             nameof(Site.SiteType));
             _site.ImageUrl = AtomUtility.GetDcElementContent(feed.AdditionalElements,
                 nameof(Site.ImageUrl));
             _site.Keywords = AtomUtility.GetDcElementContent(feed.AdditionalElements,

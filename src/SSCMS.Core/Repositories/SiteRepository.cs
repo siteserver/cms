@@ -36,7 +36,7 @@ namespace SSCMS.Core.Repositories
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public async Task<int> InsertSiteAsync(IPathManager pathManager, Channel channel, Site site, int adminId)
+        public async Task<int> InsertSiteAsync(Channel channel, Site site, int adminId)
         {
             await _channelRepository.InsertChannelAsync(null, channel);
 
@@ -50,7 +50,7 @@ namespace SSCMS.Core.Repositories
             channel.SiteId = site.Id;
             await _channelRepository.UpdateAsync(channel);
 
-            await _templateRepository.CreateDefaultTemplateAsync(pathManager, site, adminId);
+            await _templateRepository.CreateDefaultTemplateAsync(site.Id);
 
             return channel.Id;
         }

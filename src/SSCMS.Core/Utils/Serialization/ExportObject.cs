@@ -41,6 +41,7 @@ namespace SSCMS.Core.Utils.Serialization
                 var srcPath = PathUtils.Combine(sitePath, directoryName);
                 var destPath = PathUtils.Combine(siteTemplatePath, directoryName);
 
+                if (StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.Site.Template)) continue;
                 if (!isAllFiles && !ListUtils.ContainsIgnoreCase(directories, directoryName)) continue;
 
                 var isSiteDirectory = false;
@@ -62,11 +63,15 @@ namespace SSCMS.Core.Utils.Serialization
                 }
             }
 
+            var templateFileNames = await _databaseManager.TemplateRepository.GetRelatedFileNamesAsync(_site.Id, TemplateType.IndexPageTemplate);
+            templateFileNames.AddRange(await _databaseManager.TemplateRepository.GetRelatedFileNamesAsync(_site.Id, TemplateType.IndexPageTemplate));
+
             foreach (var fileName in fileNames)
             {
                 var srcPath = PathUtils.Combine(sitePath, fileName);
                 var destPath = PathUtils.Combine(siteTemplatePath, fileName);
 
+                if (ListUtils.ContainsIgnoreCase(templateFileNames, fileName)) continue;
                 if (!isAllFiles && !ListUtils.ContainsIgnoreCase(files, fileName)) continue;
 
                 FileUtils.CopyFile(srcPath, destPath);
@@ -130,19 +135,6 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(filesDirectoryPath);
         }
 
-        public async Task<string> ExportSingleTableStyleAsync(string tableName, int relatedIdentity)
-        {
-            var filePath = _pathManager.GetTemporaryFilesPath("tableStyle.zip");
-            var styleDirectoryPath = _pathManager.GetTemporaryFilesPath("TableStyle");
-
-            await TableStyleIe.SingleExportTableStylesAsync(_databaseManager, tableName, _site.Id, relatedIdentity, styleDirectoryPath);
-            _pathManager.CreateZip(filePath, styleDirectoryPath);
-
-            DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
-
-            return PathUtils.GetFileName(filePath);
-        }
-
         public static async Task<string> ExportRootSingleTableStyleAsync(IPathManager pathManager, IDatabaseManager databaseManager, int siteId, string tableName, List<int> relatedIdentities)
         {
             var filePath = pathManager.GetTemporaryFilesPath("tableStyle.zip");
@@ -161,10 +153,6 @@ namespace SSCMS.Core.Utils.Serialization
             await configIe.ExportAsync();
         }
 
-        /// <summary>
-        /// 导出网站模板至指定的文件地址
-        /// </summary>
-        /// <param name="filePath"></param>
         public async Task ExportTemplatesAsync(string filePath)
         {
             var templateIe = new TemplateIe(_pathManager, _databaseManager, _caching, _site, filePath);
@@ -207,8 +195,6 @@ namespace SSCMS.Core.Utils.Serialization
             return PathUtils.GetFileName(filePath);
         }
 
-
-        // 导出网站所有相关辅助表以及除提交表单外的所有表样式
         public async Task ExportTablesAndStylesAsync(string tableDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
@@ -225,10 +211,6 @@ namespace SSCMS.Core.Utils.Serialization
             await styleIe.ExportTableStylesAsync(_site.Id, _databaseManager.SiteRepository.TableName);
         }
 
-
-        /// <summary>
-        /// 导出网站内容至默认的临时文件地址
-        /// </summary>
         public async Task ExportSiteContentAsync(string siteContentDirectoryPath, bool isSaveContents, bool isSaveAllChannels, IList<int> channelIdArrayList)
         {
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -340,24 +322,6 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
 
             return PathUtils.GetFileName(filePath);
-        }
-
-        public async Task<bool> ExportContentsAsync(string filePath, int channelId, List<int> contentIdArrayList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
-        {
-            var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
-
-            FileUtils.DeleteFileIfExists(filePath);
-            DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
-
-            var contentIe = new ContentIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
-            var isExport = await contentIe.ExportContentsAsync(_site, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
-            if (isExport)
-            {
-                _pathManager.CreateZip(filePath, siteContentDirectoryPath);
-                DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
-            }
-            return isExport;
         }
 
         public async Task<bool> ExportContentsAsync(string filePath, List<Content> contentInfoList)

@@ -33,14 +33,14 @@ namespace SSCMS.Core.Repositories
         public async Task<int> InsertAsync(MaterialGroup group)
         {
             return await _repository.InsertAsync(group, Q
-                .CachingRemove(CacheKey(group.LibraryType))
+                .CachingRemove(CacheKey(group.MaterialType))
             );
         }
 
         public async Task<bool> UpdateAsync(MaterialGroup group)
         {
             return await _repository.UpdateAsync(group, Q
-                .CachingRemove(CacheKey(group.LibraryType))
+                .CachingRemove(CacheKey(group.MaterialType))
             );
         }
 
@@ -58,7 +58,7 @@ namespace SSCMS.Core.Repositories
                 new MaterialGroup
                 {
                     Id = 0,
-                    LibraryType = type,
+                    MaterialType = type,
                     GroupName = "全部"
                 }
             };
@@ -67,12 +67,12 @@ namespace SSCMS.Core.Repositories
             groups.AddRange(sites.Select(site => new MaterialGroup
             {
                 Id = -site.Id,
-                LibraryType = type,
+                MaterialType = type,
                 GroupName = site.SiteName
             }));
 
             var list = await _repository.GetAllAsync(Q
-                .Where(nameof(MaterialGroup.LibraryType), type.GetValue())
+                .Where(nameof(MaterialGroup.MaterialType), type.GetValue())
                 .OrderBy(nameof(MaterialGroup.Id))
                 .CachingGet(CacheKey(type))
             );

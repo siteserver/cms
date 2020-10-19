@@ -76,11 +76,6 @@ namespace SSCMS.Core.Utils.Serialization
             var siteIe = new SiteIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
             await siteIe.ImportChannelsAndContentsAsync(filePath, isImportContents, false, 0, _adminId, guid);
         }
-
-
-        /// <summary>
-        /// 从指定的地址导入网站模板至站点中
-        /// </summary>
         public async Task ImportTemplatesAsync(string filePath, bool overwrite, int adminId, string guid)
         {
             var templateIe = new TemplateIe(_pathManager, _databaseManager, _caching, _site, filePath);
@@ -223,19 +218,6 @@ namespace SSCMS.Core.Utils.Serialization
             }
         }
 
-        public async Task ImportContentsByZipFileAsync(Channel channel, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel, string guid)
-        {
-            var siteContentDirectoryPath = _pathManager.GetTemporaryFilesPath("contents");
-            DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
-
-            _pathManager.ExtractZip(zipFilePath, siteContentDirectoryPath);
-
-            var taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, false);
-
-            await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel, guid);
-        }
-
         public async Task<List<int>> ImportContentsByZipFileAsync(Channel channel, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var siteContentDirectoryPath = _pathManager.GetTemporaryFilesPath("contents");
@@ -247,74 +229,6 @@ namespace SSCMS.Core.Utils.Serialization
             var taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, false);
 
             return await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
-        }
-
-        public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
-        {
-            var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-            var excelObject = new ExcelObject(_databaseManager, _pathManager);
-            var contentInfoList = await excelObject.GetContentsByCsvFileAsync(csvFilePath, _site, channelInfo);
-            contentInfoList.Reverse();
-
-            if (importStart > 1 || importCount > 0)
-            {
-                var theList = new List<Content>();
-
-                if (importStart == 0)
-                {
-                    importStart = 1;
-                }
-                if (importCount == 0)
-                {
-                    importCount = contentInfoList.Count;
-                }
-
-                var firstIndex = contentInfoList.Count - importStart - importCount + 1;
-                if (firstIndex <= 0)
-                {
-                    firstIndex = 0;
-                }
-
-                var addCount = 0;
-                for (var i = 0; i < contentInfoList.Count; i++)
-                {
-                    if (addCount >= importCount) break;
-                    if (i >= firstIndex)
-                    {
-                        theList.Add(contentInfoList[i]);
-                        addCount++;
-                    }
-                }
-
-                contentInfoList = theList;
-            }
-
-            foreach (var contentInfo in contentInfoList)
-            {
-                contentInfo.Checked = isChecked;
-                contentInfo.CheckedLevel = checkedLevel;
-                if (isOverride)
-                {
-                    var existsIds = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channelInfo, contentInfo.Title);
-                    if (existsIds.Count > 0)
-                    {
-                        foreach (var id in existsIds)
-                        {
-                            contentInfo.Id = id;
-                            await _databaseManager.ContentRepository.UpdateAsync(_site, channelInfo, contentInfo);
-                        }
-                    }
-                    else
-                    {
-                        contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channelInfo, contentInfo);
-                    }
-                }
-                else
-                {
-                    contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channelInfo, contentInfo);
-                }
-                //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
-            }
         }
 
         public async Task<List<int>> ImportContentsByCsvFileAsync(Channel channel, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
@@ -360,83 +274,6 @@ namespace SSCMS.Core.Utils.Serialization
             return contentInfoList.Select(x => x.Id).ToList();
         }
 
-        public async Task ImportContentsByTxtZipFileAsync(int channelId, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
-        {
-            var directoryPath = _pathManager.GetTemporaryFilesPath("contents");
-            DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
-
-            _pathManager.ExtractZip(zipFilePath, directoryPath);
-
-            var channelInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-
-            var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, _site, channelInfo);
-
-            if (importStart > 1 || importCount > 0)
-            {
-                var theList = new List<Content>();
-
-                if (importStart == 0)
-                {
-                    importStart = 1;
-                }
-                if (importCount == 0)
-                {
-                    importCount = contentInfoList.Count;
-                }
-
-                var firstIndex = contentInfoList.Count - importStart - importCount + 1;
-                if (firstIndex <= 0)
-                {
-                    firstIndex = 0;
-                }
-
-                var addCount = 0;
-                for (var i = 0; i < contentInfoList.Count; i++)
-                {
-                    if (addCount >= importCount) break;
-                    if (i >= firstIndex)
-                    {
-                        theList.Add(contentInfoList[i]);
-                        addCount++;
-                    }
-                }
-
-                contentInfoList = theList;
-            }
-
-            foreach (var contentInfo in contentInfoList)
-            {
-                contentInfo.Checked = isChecked;
-                contentInfo.CheckedLevel = checkedLevel;
-
-                //int contentID = _databaseManager.ContentDAO.Insert(tableName, this.FSO.Site, contentInfo);
-
-                if (isOverride)
-                {
-                    var existsIDs = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channelInfo, contentInfo.Title);
-                    if (existsIDs.Count > 0)
-                    {
-                        foreach (int id in existsIDs)
-                        {
-                            contentInfo.Id = id;
-                            await _databaseManager.ContentRepository.UpdateAsync(_site, channelInfo, contentInfo);
-                        }
-                    }
-                    else
-                    {
-                        contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channelInfo, contentInfo);
-                    }
-                }
-                else
-                {
-                    contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channelInfo, contentInfo);
-                }
-
-                //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
-            }
-        }
-
         public async Task<List<int>> ImportContentsByTxtFileAsync(Channel channel, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var contentInfo = new Content
@@ -480,20 +317,7 @@ namespace SSCMS.Core.Utils.Serialization
             };
         }
 
-        public async Task ImportContentsAsync(Channel channel, string siteContentDirectoryPath, bool isOverride, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string guid)
-        {
-            var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
-            var sitePath = await _pathManager.GetSitePathAsync(_site);
-            var contentIe = new ContentIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
-
-            await contentIe.ImportContentsAsync(filePath, isOverride, channel, taxis, importStart, importCount, isChecked, checkedLevel, _adminId, guid);
-
-            FileUtils.DeleteFileIfExists(filePath);
-
-            DirectoryUtils.MoveDirectory(siteContentDirectoryPath, sitePath, isOverride);
-        }
-
-        public async Task<List<int>> ImportContentsAsync(Channel channel, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        private async Task<List<int>> ImportContentsAsync(Channel channel, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
             var sitePath = await _pathManager.GetSitePathAsync(_site);
@@ -508,52 +332,7 @@ namespace SSCMS.Core.Utils.Serialization
             return contentIdList;
         }
 
-        //public void ImportInputContentsByCsvFile(InputInfo inputInfo, string excelFilePath, int importStart, int importCount, bool isChecked)
-        //{
-        //    var contentInfoList = ExcelObject.GetInputContentsByCsvFile(excelFilePath, _site, inputInfo);
-        //    contentInfoList.Reverse();
-
-        //    if (importStart > 1 || importCount > 0)
-        //    {
-        //        var theList = new List<InputContentInfo>();
-
-        //        if (importStart == 0)
-        //        {
-        //            importStart = 1;
-        //        }
-        //        if (importCount == 0)
-        //        {
-        //            importCount = contentInfoList.Count;
-        //        }
-
-        //        var firstIndex = contentInfoList.Count - importStart - importCount + 1;
-        //        if (firstIndex <= 0)
-        //        {
-        //            firstIndex = 0;
-        //        }
-
-        //        var addCount = 0;
-        //        for (var i = 0; i < contentInfoList.Count; i++)
-        //        {
-        //            if (addCount >= importCount) break;
-        //            if (i >= firstIndex)
-        //            {
-        //                theList.Add(contentInfoList[i]);
-        //                addCount++;
-        //            }
-        //        }
-
-        //        contentInfoList = theList;
-        //    }
-
-        //    foreach (var contentInfo in contentInfoList)
-        //    {
-        //        contentInfo.IsChecked = isChecked;
-        //        _databaseManager.InputContentDao.Insert(contentInfo);
-        //    }
-        //}
-
-        public static IList<string> GetSiteContentFilePathList(string siteContentDirectoryPath)
+        public static IEnumerable<string> GetSiteContentFilePathList(string siteContentDirectoryPath)
         {
             var filePaths = DirectoryUtils.GetFilePaths(siteContentDirectoryPath);
             var filePathSortedList = new SortedList<string, string>();
@@ -561,8 +340,8 @@ namespace SSCMS.Core.Utils.Serialization
             {
                 var keyBuilder = new StringBuilder();
                 var fileName = StringUtils.ToLower(PathUtils.GetFileName(filePath)).Replace(".xml", "");
-                var nums = fileName.Split('_');
-                foreach (var numStr in nums)
+                var intList = fileName.Split('_');
+                foreach (var numStr in intList)
                 {
                     var count = 7 - numStr.Length;
                     if (count > 0)

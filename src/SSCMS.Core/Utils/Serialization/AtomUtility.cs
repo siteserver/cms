@@ -17,10 +17,14 @@ namespace SSCMS.Core.Utils.Serialization
 
         public static void AddDcElement(ScopedElementCollection collection, string name, string content)
         {
-            if (!string.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content)) return;
+
+            var element = GetDcElement(collection, name);
+            if (element != null)
             {
-                collection.Add(new DcElement(Prefix + name, StringUtils.ToXmlContent(content)));
+                collection.Remove(element);
             }
+            collection.Add(new DcElement(Prefix + name, StringUtils.ToXmlContent(content)));
         }
 
         public static void AddDcElement(ScopedElementCollection collection, List<string> nameList, string content)
@@ -49,6 +53,13 @@ namespace SSCMS.Core.Utils.Serialization
             var localName = Prefix + name;
             var element = additionalElements.FindScopedElementByLocalName(localName);
             return element != null ? element.Content : defaultContent;
+        }
+
+        public static ScopedElement GetDcElement(ScopedElementCollection additionalElements, string name)
+        {
+            var localName = Prefix + name;
+            var element = additionalElements.FindScopedElementByLocalName(localName);
+            return element;
         }
 
         public static string GetDcElementContent(ScopedElementCollection additionalElements, List<string> nameList, string defaultContent)

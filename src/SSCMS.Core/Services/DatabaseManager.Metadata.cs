@@ -25,6 +25,7 @@ namespace SSCMS.Core.Services
 
                 await AdministratorRepository.InsertAsync(administrator, password);
                 await AdministratorRepository.AddUserToRoleAsync(userName, PredefinedRole.ConsoleAdministrator.GetValue());
+                await UserMenuRepository.ResetAsync();
 
                 return (true, string.Empty);
             }

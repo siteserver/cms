@@ -9,7 +9,7 @@ namespace SSCMS.Repositories
 {
     public partial interface ISiteRepository : IRepository
     {
-        Task<int> InsertSiteAsync(IPathManager pathManager, Channel channel, Site site, int adminId);
+        Task<int> InsertSiteAsync(Channel channel, Site site, int adminId);
 
         Task<int> InsertAsync(Site site);
 

@@ -65,6 +65,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.RelatedFileName), template.RelatedFileName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileFullName), template.CreatedFileFullName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "Charset", "utf-8");
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.DefaultTemplate), template.DefaultTemplate.ToString());
 
             var templateContent = await _pathManager.GetTemplateContentAsync(_site, template);
@@ -139,12 +140,14 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
                 if (template.Id > 0)
                 {
-                    await _databaseManager.TemplateRepository.UpdateAsync(_pathManager, _site, template, template.Content, adminId);
+                    await _databaseManager.TemplateRepository.UpdateAsync(template);
 				}
                 else
                 {
-                    await _databaseManager.TemplateRepository.InsertAsync(_pathManager, _site, template, template.Content, adminId);
+                    template.Id = await _databaseManager.TemplateRepository.InsertAsync(template);
                 }
+
+                await _pathManager.WriteContentToTemplateFileAsync(_site, template, template.Content, adminId);
             }
 		}
 

@@ -8,6 +8,8 @@ namespace SSCMS.Services
     {
         TCacheValue Get(string key);
 
+        TCacheValue GetByFilePath(string filePath);
+
         bool Exists(string key);
     }
 }

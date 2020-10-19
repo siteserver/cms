@@ -63,15 +63,16 @@ namespace SSCMS.Core.Services
         {
             try
             {
-                var content = _cacheManager.Get(CacheUtils.GetPathKey(filePath));
+                var content = _cacheManager.GetByFilePath(filePath);
                 if (content != null) return content;
 
                 if (FileUtils.IsFileExists(filePath))
                 {
                     content = await FileUtils.ReadTextAsync(filePath);
+                    var cacheKey = CacheUtils.GetPathKey(filePath);
+                    _cacheManager.AddOrUpdateSliding(cacheKey, content, 12 * 60);
                 }
 
-                _cacheManager.AddOrUpdateFileWatcher(filePath, content);
                 return content;
             }
             catch

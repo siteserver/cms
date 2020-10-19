@@ -351,9 +351,9 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
+                var count = 0;
                 foreach (var channel in channels)
                 {
-                    var count = 0;
                     if (isDefault)
                     {
                         if (channel.ChannelTemplateId == templateId || channel.ChannelTemplateId == 0)
@@ -368,15 +368,14 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                             count++;
                         }
                     }
-
-                    return count;
                 }
+                return count;
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
+                var count = 0;
                 foreach (var channel in channels)
                 {
-                    var count = 0;
                     if (isDefault)
                     {
                         if (channel.ContentTemplateId == templateId || channel.ContentTemplateId == 0)
@@ -391,9 +390,8 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                             count++;
                         }
                     }
-
-                    return count;
                 }
+                return count;
             }
 
             return 0;
