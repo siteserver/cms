@@ -7,7 +7,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
-    public partial class UsersProfileController
+    public partial class UsersLayerProfileController
     {
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] User request)

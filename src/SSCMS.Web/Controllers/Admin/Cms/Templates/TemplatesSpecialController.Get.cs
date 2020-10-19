@@ -17,11 +17,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var specialInfoList = await _specialRepository.GetSpecialsAsync(request.SiteId);
+            var specials = await _specialRepository.GetSpecialsAsync(request.SiteId);
 
             return new ListResult
             {
-                Specials = specialInfoList,
+                Specials = specials,
                 SiteUrl = await _pathManager.GetSiteUrlAsync(site, true)
             };
         }

@@ -8,8 +8,8 @@ var data = utils.init({
 
   expandedChannelIds: [],
   filterText: '',
-  filterChannelTemplateId: 0,
-  filterContentTemplateId: 0,
+  filterChannelTemplateId: utils.getQueryInt("channelTemplateId"),
+  filterContentTemplateId: utils.getQueryInt("contentTemplateId"),
 
   defaultChannelTemplate: null,
   defaultContentTemplate: null,
@@ -40,6 +40,12 @@ var methods = {
       $this.defaultContentTemplate = _.find($this.contentTemplates, function(o) { return o.defaultTemplate; }) || {id: 0};
       $this.channelTemplateId = $this.defaultChannelTemplate.id;
       $this.contentTemplateId = $this.defaultContentTemplate.id;
+
+      if ($this.filterChannelTemplateId > 0 || $this.filterContentTemplateId > 0) {
+        setTimeout(function() {
+          $this.filter($this.filterText, $this.filterChannelTemplateId, $this.filterContentTemplateId);
+        }, 100);
+      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -198,6 +204,14 @@ var methods = {
       isChannelTemplate: false,
       templateId: this.contentTemplateId
     });
+  },
+
+  filter: function(filterText, channelTemplateId, contentTemplateId) {
+    this.$refs.tree.filter({
+      channelName: filterText,
+      channelTemplateId: channelTemplateId,
+      contentTemplateId: contentTemplateId
+    });
   }
 };
 
@@ -207,25 +221,13 @@ var $vue = new Vue({
   methods: methods,
   watch: {
     filterText: function(val) {
-      this.$refs.tree.filter({
-        channelName: val,
-        channelTemplateId: this.filterChannelTemplateId,
-        contentTemplateId: this.filterContentTemplateId
-      });
+      this.filter(val, this.filterChannelTemplateId, this.filterContentTemplateId);
     },
     filterChannelTemplateId: function(val) {
-      this.$refs.tree.filter({
-        channelName: this.filterText,
-        channelTemplateId: val,
-        contentTemplateId: this.filterContentTemplateId
-      });
+      this.filter(this.filterText, val, this.filterContentTemplateId);
     },
     filterContentTemplateId: function(val) {
-      this.$refs.tree.filter({
-        channelName: this.filterText,
-        channelTemplateId: this.filterChannelTemplateId,
-        contentTemplateId: val
-      });
+      this.filter(this.filterText, this.filterChannelTemplateId, val);
     }
   },
   created: function () {

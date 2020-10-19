@@ -6,9 +6,9 @@
 <el-form ref="form" :model="form" size="small" status-icon label-width="260px">
   <el-form-item label="管理员用户名最小长度" prop="adminUserNameMinLength" :rules="[
     { required: true, message: '请输入管理员用户名最小长度' },
-    { type: 'number', message: '管理员用户名最小长度必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.adminUserNameMinLength"></el-input>
+    <el-input v-model:number="form.adminUserNameMinLength"></el-input>
     <small class="tips">0代表不限制管理员用户名长度</small>
   </el-form-item>
   <el-form-item label="密码规则限制">
@@ -24,9 +24,9 @@
   </el-form-item>
   <el-form-item v-if="form.isAdminLockLogin" label="登录失败锁定（次）" prop="adminLockLoginCount" :rules="[
     { required: true, message: '请输入登录失败锁定' },
-    { type: 'number', message: '登录失败锁定必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.adminLockLoginCount"></el-input>
+    <el-input v-model:number="form.adminLockLoginCount"></el-input>
     <small class="tips">一旦登录失败达到指定次数之后用户就会被锁定</small>
   </el-form-item>
   <el-form-item v-if="form.isAdminLockLogin" label="用户登录锁定类型">
@@ -37,9 +37,9 @@
   </el-form-item>
   <el-form-item v-if="form.isAdminLockLogin && form.adminLockLoginType === 'Hours'" label="登录锁定时间（小时）" prop="adminLockLoginHours" :rules="[
     { required: true, message: '请输入登录锁定时间' },
-    { type: 'number', message: '登录锁定时间必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.adminLockLoginHours"></el-input>
+    <el-input v-model:number="form.adminLockLoginHours"></el-input>
   </el-form-item>
   <el-form-item label="是否强制定期更改密码">
     <el-radio v-model="form.isAdminEnforcePasswordChange" :label="true">强制</el-radio>
@@ -47,9 +47,9 @@
   </el-form-item>
   <el-form-item v-if="form.isAdminEnforcePasswordChange" label="定期强制周期（天）" prop="adminEnforcePasswordChangeDays" :rules="[
     { required: true, message: '请输入定期强制周期' },
-    { type: 'number', message: '定期强制周期必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.adminEnforcePasswordChangeDays"></el-input>
+    <el-input v-model:number="form.adminEnforcePasswordChangeDays"></el-input>
   </el-form-item>
   <el-form-item label="无操作是否自动退出">
     <el-radio v-model="form.isAdminEnforceLogout" :label="true">自动退出</el-radio>
@@ -57,9 +57,9 @@
   </el-form-item>
   <el-form-item v-if="form.isAdminEnforceLogout" label="自动退出周期（分钟）" prop="adminEnforceLogoutMinutes" :rules="[
     { required: true, message: '请输入自动退出周期' },
-    { type: 'number', message: '自动退出周期必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.adminEnforceLogoutMinutes"></el-input>
+    <el-input v-model:number="form.adminEnforceLogoutMinutes"></el-input>
   </el-form-item>
 </el-form>
 

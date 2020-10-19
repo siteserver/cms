@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils.Office;
-using SSCMS.Utils;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersController
     {
-        [HttpGet, Route(RouteExport)]
-        public async Task<ActionResult> Export()
+        [HttpPost, Route(RouteExport)]
+        public async Task<ActionResult<StringResult>> Export()
         {
             if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
             {
@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var excelObject = new ExcelObject(_databaseManager, _pathManager);
             await excelObject.CreateExcelFileForUsersAsync(filePath, null);
 
-            return this.Download(filePath);
+            var downloadUrl = _pathManager.GetRootUrlByPath(filePath);
+
+            return new StringResult
+            {
+                Value = downloadUrl
+            };
         }
     }
 }

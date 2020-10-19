@@ -10,7 +10,7 @@
     </el-form-item>
     <el-form-item label="插件排序" prop="taxis" :rules="[
       { required: true, message: '请输入插件排序' },
-      { type: 'number', message: '插件排序必须为数字值'}
+      { validator: utils.validateInt }
     ]">
       <el-input-number controls-position="right" size="small" :min="0" v-model.number="form.taxis" style="width: 100px"></el-input-number>
       <div class="tips">插件排序会影响到插件的显示顺序，0代表默认排序</div>

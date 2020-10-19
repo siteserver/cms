@@ -9,9 +9,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPut, Route(Route)]
         public async Task<ActionResult<ContentResult>> Edit([FromBody] ContentRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
+            if (request.FileType == "html")
             {
-                return Unauthorized();
+                if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesIncludes))
+                {
+                    return Unauthorized();
+                }
+            }
+            else
+            {
+                if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesAssets))
+                {
+                    return Unauthorized();
+                }
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);

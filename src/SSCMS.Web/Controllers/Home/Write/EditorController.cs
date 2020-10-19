@@ -62,6 +62,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
             public List<Select<int>> CheckedLevels { get; set; }
+            public string SiteUrl { get; set; }
         }
 
         public class PreviewRequest

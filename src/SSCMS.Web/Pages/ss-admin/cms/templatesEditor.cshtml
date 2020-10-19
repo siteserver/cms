@@ -1,43 +1,183 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #preview {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+      height: 100%;
+    }
+    #editor {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+    }
+    .toolbar {
+      position: absolute;
+      top: 15px;
+      right: 145px;
+      text-align: right;
+      z-index: 10;
+    }
+    .button {
+      font-size: 10px;
+      text-decoration: none;
+      color: rgb(80,80,80);
+      border: transparent;
+      background-color: rgb(235,235,235);
+      margin: 2px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+    .button:hover, .active {
+      color: rgb(235,235,235);
+      background-color: rgb(80,80,80);
+    }
+    .button:focus {
+      outline: none;
+    }
+    .button path {
+      stroke: rgb(80,80,80);
+    }
+    .button:hover path {
+      stroke: rgb(235,235,235);
+    }
+  </style>
+}
 
-<div style="height: 10px"></div>
+<div id="preview" :style="{ height: editorHeight, display: isPreview ? 'block' : 'none' }"></div>
+<div id="editor" :style="{ height: editorHeight, display: isPreview ? 'none' : 'block' }"></div>
 
-<el-form ref="template" :model="template" :inline="true" size="small" :rules="rules">
-  <el-form-item label="模板名称" prop="templateName">
-    <el-input v-model="template.templateName" placeholder="请输入模板名称"></el-input>
-  </el-form-item>
-  <el-form-item label="模板文件" prop="relatedFileName">
-    <el-input v-model="template.relatedFileName" placeholder="请输入模板文件"></el-input>
-    <div class="tips">路径以/分隔，文件名以T_开头</div>
-  </el-form-item>
-  <el-form-item label="生成文件名" v-if="isCreatedFileFullName()" prop="createdFileFullName">
-    <el-input v-model="template.createdFileFullName" placeholder="请输入生成文件名"></el-input>
-    <div class="tips" v-html="createdFileFullNameTips"></div>
-  </el-form-item>
-  
-  <el-form-item label="文件扩展名">
-    <el-select v-model="template.createdFileExtName" placeholder="请选择文件扩展名">
-      <el-option v-for="createdFileExtName in createdFileExtNames" :key="createdFileExtName" :label="createdFileExtName" :value="createdFileExtName"></el-option>
-    </el-select>
-    <div class="tips">文件扩展名将决定生成文件的扩展名</div>
-  </el-form-item>
-</el-form>
-
-<el-row>
-  <el-col :span="24">
-    <el-button v-if="templateId" type="text" icon="fa fa-magic" v-on:click="btnCreateClick"> 生成页面</el-button>
-    <el-button v-if="templateId" type="text" icon="el-icon-files" v-on:click="btnRestoreClick">还原历史版本</el-button>
-    <el-button type="text" icon="el-icon-brush" v-on:click="btnFormatClick">格式化代码</el-button>
-  </el-col>
-</el-row>
-
-<div id="templateContent" style="width:99%; height: 550px; border: 1px solid #d7dae2;"></div>
-
-<div style="margin: 15px 0; text-align: center">
-  <el-button type="primary" size="small" v-on:click="btnSubmitClick(false)">保 存</el-button>
-  <el-button type="success" size="small" v-on:click="btnSubmitClick(true)">保存并关闭</el-button>
+<div v-if="isPreview" class="toolbar" style="right: 30px;">
+  <button class="button active" v-on:click="btnCodeClick">代码编辑</button>
 </div>
+<div v-else class="toolbar">
+  <button class="button" v-on:click="btnPreviewClick">预 览</button>
+  <button class="button" v-on:click="btnSubmitClick(false)">保 存</button>
+  <button class="button" v-on:click="btnSubmitClick(true)">保存并关闭</button>
+  <button class="button" v-on:click="btnMoreClick">
+    <svg width="8" height="8">
+      <path d="M 0,1.5 8,1.5 M 0,4.5 8,4.5 M 0,7.5 8,7.5"></path>
+    </svg>
+  </button>
+  <br>
+  <span v-if="isMore">
+    <button v-if="templateId" class="button" v-on:click="btnCreateClick">生成页面</button>
+    <button v-if="templateId" class="button" v-on:click="btnRestoreClick">还原历史版本</button>
+    <button class="button" v-on:click="btnFormatClick">格式化代码</button>
+    <button class="button" v-on:click="btnDataSourceClick">预览数据源设置</button>
+    <button class="button" v-on:click="btnSettingsClick">模板设置</button>
+  </span>
+</div>
+
+<el-drawer
+  title="模板设置"
+  :visible.sync="panelSettings"
+  destroy-on-close
+  direction="rtl"
+  size="40%">
+  <div class="drawer__content">
+    <el-form size="small" ref="settings" :model="settings" label-width="150px">
+      <el-form-item label="模板类型">
+        {{ getTemplateType() }}
+      </el-form-item>
+      <el-form-item label="模板名称" prop="templateName" :rules="{
+        required: true, message: '请输入模板名称'
+      }">
+        <el-input v-model="settings.templateName" placeholder="请输入模板名称"></el-input>
+      </el-form-item>
+      <el-form-item label="模板文件" prop="relatedFileName" :rules="[
+        { required: true, message: '请输入模板文件' },
+        { validator: validateRelatedFileName, trigger: 'blur' }
+      ]">
+        <el-input v-model="settings.relatedFileName" placeholder="请输入模板文件"></el-input>
+        <div class="tips">路径以/分隔，文件名以T_开头</div>
+      </el-form-item>
+      <el-form-item label="生成文件名" v-if="isCreatedFileFullName()" prop="createdFileFullName" :rules="{
+        required: true, message: '请输入生成文件名'
+      }">
+        <el-input v-model="settings.createdFileFullName" placeholder="请输入生成文件名"></el-input>
+        <div class="tips" v-html="createdFileFullNameTips"></div>
+      </el-form-item>
+      <el-form-item label="文件扩展名">
+        <el-select v-model="settings.createdFileExtName" placeholder="请选择文件扩展名">
+          <el-option v-for="createdFileExtName in createdFileExtNames" :key="createdFileExtName" :label="createdFileExtName" :value="createdFileExtName"></el-option>
+        </el-select>
+        <div class="tips">文件扩展名将决定生成文件的扩展名</div>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnSettingsSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnSettingsCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+<el-drawer
+  title="预览数据源设置"
+  :visible.sync="panelDataSource"
+  destroy-on-close
+  direction="rtl"
+  size="40%">
+  <div class="drawer__content">
+    <el-form size="small" ref="dataSource" :model="dataSource" label-width="80px">
+      <el-form-item label="栏目" prop="channelIds" :rules="{
+        required: true, message: '请选择栏目'
+      }">
+        <el-cascader
+          v-model="dataSource.channelIds"
+          :multiple="false"
+          v-on:change="handleDataSourceChannelChange"
+          :options="channels"
+          :props="{ checkStrictly: true }"
+          placeholder="请选择栏目">
+          <span slot-scope="{ node, data }">
+            {{ node.label }} ({{ data.count }})
+          </span>
+        </el-cascader>
+      </el-form-item>
+      <el-form-item v-if="templateType === 'ContentTemplate'" label="内容" prop="contentId" :rules="{
+        required: true, message: '请选择内容'
+      }">
+        <el-table
+          :data="contents"
+          style="width: 100%;"
+          size="small"
+          row-key="id"
+          stripe>
+          <el-table-column prop="id" label="选择" width="80">
+            <template slot-scope="scope">
+              <el-radio name="contentId" v-model="dataSource.contentId" :label="scope.row.key"></el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="内容标题"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span v-html="scope.row.value"></span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnDataSourceSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnDataSourceCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
 
 @section Scripts{
   <script src="/sitefiles/assets/lib/monaco-editor/min/vs/loader.js"></script>

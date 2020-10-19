@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/users';
+var $urlExport = $url + '/actions/export';
 var $urlUpload = $apiUrl + '/settings/users/actions/import';
 
 var data = utils.init({
@@ -39,6 +40,11 @@ var methods = {
     });
   },
 
+  getGroupName: function (groupId) {
+    var group = _.find(this.groups, function (x) { return x.id === groupId; });
+    return group ? group.groupName :'默认用户组';
+  },
+
   btnViewClick: function(userId) {
     utils.openLayer({
       title: '查看资料',
@@ -47,11 +53,17 @@ var methods = {
   },
 
   btnAddClick: function() {
-    utils.addTab('添加用户', utils.getSettingsUrl('usersProfile'));
+    utils.openLayer({
+      title: '添加用户',
+      url: utils.getSettingsUrl('usersLayerProfile')
+    });
   },
 
   btnEditClick: function(row) {
-    utils.addTab('编辑用户', utils.getSettingsUrl('usersProfile', {userId: row.id}));
+    utils.openLayer({
+      title: '编辑用户',
+      url: utils.getSettingsUrl('usersLayerProfile', {userId: row.id})
+    });
   },
 
   btnPasswordClick: function(row) {
@@ -62,7 +74,16 @@ var methods = {
   },
 
   btnExportClick: function() {
-    window.open($apiUrl + $url + '/actions/export');
+    utils.loading(this, true);
+    $api.post($urlExport).then(function (response) {
+      var res = response.data;
+
+      window.open(res.value);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiDelete: function(item) {

@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/administrators';
+var $urlExport = $url + '/actions/export';
 var $urlUpload = $apiUrl + '/settings/administrators/actions/import';
 
 var data = utils.init({
@@ -238,7 +239,7 @@ var methods = {
 
   btnExportClick: function() {
     utils.loading(this, true);
-    $api.post($url + '/actions/export').then(function (response) {
+    $api.post($urlExport).then(function (response) {
       var res = response.data;
 
       window.open(res.value);

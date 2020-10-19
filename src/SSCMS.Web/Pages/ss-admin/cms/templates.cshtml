@@ -47,20 +47,6 @@
             placeholder="请输入模板名称或者文件名"
           ></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-dropdown
-            v-on:command="btnAddClick">
-            <el-button type="text" :underline="false" style="font-size: 14px">
-              新增模板<i class="el-icon-arrow-down el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="IndexPageTemplate">新增首页模板</el-dropdown-item>
-              <el-dropdown-item command="ChannelTemplate">新增栏目模板</el-dropdown-item>
-              <el-dropdown-item command="ContentTemplate">新增内容模板</el-dropdown-item>
-              <el-dropdown-item command="FileTemplate">新增单页模板</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-form-item>
       </el-form>
 
       <el-table :data="templates" style="width: 100%" :row-class-name="tableRowClassName">
@@ -68,7 +54,8 @@
           <template slot-scope="scope">
             <el-link
               :underline="false"
-              v-on:click="btnEditClick(scope.row)"
+              :href="getEditorUrl(scope.row.templateType, scope.row.id)"
+              target="_blank"
               type="primary">
               {{ scope.row.templateName }}
               <el-tag size="mini" type="danger" v-if="scope.row.defaultTemplate">
@@ -90,7 +77,15 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="useCount" width="80" align="center" label="使用次数">
+        <el-table-column width="80" align="center" label="使用次数">
+          <template slot-scope="scope">
+            <el-link
+              :underline="false"
+              v-on:click="btnUserCountClick(scope.row)"
+              type="primary">
+              {{ scope.row.useCount }}
+            </el-link>
+          </template>
         </el-table-column>
         <el-table-column label="模板类型" width="80">
           <template slot-scope="scope">
@@ -101,7 +96,8 @@
           <template slot-scope="scope">
             <el-link
               :underline="false"
-              v-on:click="btnEditClick(scope.row)"
+              :href="getEditorUrl(scope.row.templateType, scope.row.id)"
+              target="_blank"
               type="primary">
               编辑
             </el-link>
@@ -139,30 +135,42 @@
       <el-divider></el-divider>
       <div style="height: 10px"></div>
 
-      <el-button
-        size="small"
+      <el-link
         type="primary"
-        v-on:click="btnAddClick('IndexPageTemplate')">
+        :underline="false"
+        class="el-button el-button--primary el-button--small"
+        style="color: #fff"
+        target="_blank"
+        :href="getEditorUrl('IndexPageTemplate', 0)">
         新增首页模板
-      </el-button>
-      <el-button
-        size="small"
+      </el-link>
+      <el-link
         type="primary"
-        v-on:click="btnAddClick('ChannelTemplate')">
+        :underline="false"
+        class="el-button el-button--primary el-button--small"
+        style="color: #fff"
+        target="_blank"
+        :href="getEditorUrl('ChannelTemplate', 0)">
         新增栏目模板
-      </el-button>
-      <el-button
-        size="small"
+      </el-link>
+      <el-link
         type="primary"
-        v-on:click="btnAddClick('ContentTemplate')">
+        :underline="false"
+        class="el-button el-button--primary el-button--small"
+        style="color: #fff"
+        target="_blank"
+        :href="getEditorUrl('ContentTemplate', 0)">
         新增内容模板
-      </el-button>
-      <el-button
-        size="small"
+      </el-link>
+      <el-link
         type="primary"
-        v-on:click="btnAddClick('FileTemplate')">
+        :underline="false"
+        class="el-button el-button--primary el-button--small"
+        style="color: #fff"
+        target="_blank"
+        :href="getEditorUrl('FileTemplate', 0)">
         新增单页模板
-      </el-button>
+      </el-link>
     </el-main>
   </el-container>
 </el-container>

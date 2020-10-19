@@ -1,4 +1,6 @@
 ﻿var $url = '/cms/templates/templatesSpecial';
+var $urlUpload = $apiUrl + $url + '/actions/upload';
+var $urlDownload = $url + '/actions/download';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -12,7 +14,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function () {
+  apiGet: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -23,7 +25,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.specials = res.value;
+      $this.specials = res.specials;
       $this.siteUrl = res.siteUrl;
     }).catch(function (error) {
       utils.error(error);
@@ -40,7 +42,7 @@ var methods = {
       var res = response.data;
 
       $this.panel = true;
-      $this.uploadUrl = $apiUrl + '/cms/templates/special/actions/upload?siteId=' + $this.siteId + '&guid=' + res.guid;
+      $this.uploadUrl = $urlUpload + '?siteId=' + $this.siteId + '&guid=' + res.guid;
       if (specialId === 0) {
         $this.form = {
           siteId: $this.siteId,
@@ -84,7 +86,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.specials = res.value;
+      $this.specials = res.specials;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -101,7 +103,7 @@ var methods = {
 
       utils.success($this.form.id === 0 ? '专题添加成功！' : '专题修改成功！');
       $this.form = null;
-      $this.specials = res.value;
+      $this.specials = res.specials;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -131,7 +133,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url + '/actions/download', {
+    $api.post($urlDownload, {
       siteId: this.siteId,
       specialId: item.id
     }).then(function (response) {
@@ -225,6 +227,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.apiList();
+    this.apiGet();
   }
 });

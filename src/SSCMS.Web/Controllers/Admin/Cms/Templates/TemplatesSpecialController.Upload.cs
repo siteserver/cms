@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<StringResult>> SpecialUpload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<StringResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 Types.SitePermissions.Specials))

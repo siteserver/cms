@@ -35,6 +35,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             foreach (var channelId in channelIdList)
             {
                 await _contentRepository.TrashContentsAsync(site, channelId, adminId);
+            }
+
+            foreach (var channelId in channelIdList)
+            {
                 await _channelRepository.DeleteAsync(site, channelId, adminId);
             }
 

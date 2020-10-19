@@ -86,11 +86,17 @@
     </el-select>
     <div class="tips">取值范围10%--100% (100%为不透明)</div>
   </el-form-item>
-  <el-form-item v-if="form.isWaterMark" label="图片最小宽度" prop="waterMarkMinWidth" :rules="{ required: true, message: '请输入图片最小宽度' }">
+  <el-form-item v-if="form.isWaterMark" label="图片最小宽度" prop="waterMarkMinWidth" :rules="[
+    { required: true, message: '请输入图片最小宽度' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.waterMarkMinWidth" placeholder="请输入图片最小宽度"></el-input>
     <div class="tips">需要添加水印的图片的最小宽度，单位为像素，（0代表不限制）</div>
   </el-form-item>
-  <el-form-item v-if="form.isWaterMark" label="图片最小高度" prop="waterMarkMinHeight" :rules="{ required: true, message: '请输入图片最小高度' }">
+  <el-form-item v-if="form.isWaterMark" label="图片最小高度" prop="waterMarkMinHeight" :rules="[
+    { required: true, message: '请输入图片最小高度' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.waterMarkMinHeight" placeholder="请输入图片最小高度"></el-input>
     <div class="tips">需要添加水印的图片的最小高度，单位为像素，（0代表不限制）</div>
   </el-form-item>
@@ -110,7 +116,10 @@
       <el-option v-for="name in families" :key="name" :value="name" :label="name"></el-option>
     </el-select>
   </el-form-item>
-  <el-form-item v-if="form.isWaterMark && !form.isImageWaterMark" label="文字水印文字大小（像素）" prop="waterMarkFontSize" :rules="{ required: true, message: '请输入文字水印文字大小' }">
+  <el-form-item v-if="form.isWaterMark && !form.isImageWaterMark" label="文字水印文字大小（像素）" prop="waterMarkFontSize" :rules="[
+    { required: true, message: '请输入文字水印文字大小' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.waterMarkFontSize" placeholder="请输入文字水印文字大小"></el-input>
   </el-form-item>
   <el-form-item v-if="form.isWaterMark && form.isImageWaterMark" label="图片水印文件" prop="waterMarkImagePath" :rules="{ required: true, message: '请上传图片水印文件' }">

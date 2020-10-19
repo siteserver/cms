@@ -35,10 +35,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             _siteRepository = siteRepository;
         }
 
+        public class GetRequest : SiteRequest
+        {
+            public string FileType { get; set; }
+        }
+
         public class GetResult
         {
             public List<Cascade<string>> Directories { get; set; }
-            public List<KeyValuePair<string, string>> Files { get; set; }
+            public List<AssetFile> Files { get; set; }
             public string SiteUrl { get; set; }
             public string IncludeDir { get; set; }
             public string CssDir { get; set; }
@@ -48,6 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public class FileRequest
         {
             public int SiteId { get; set; }
+            public string FileType { get; set; }
             public string DirectoryPath { get; set; }
             public string FileName { get; set; }
         }
@@ -55,14 +61,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public class ConfigRequest
         {
             public int SiteId { get; set; }
+            public string FileType { get; set; }
             public string IncludeDir { get; set; }
             public string CssDir { get; set; }
             public string JsDir { get; set; }
         }
 
-        private async Task GetDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<KeyValuePair<string, string>> files, Site site, string virtualPath, string extName)
+        public class AssetFile
         {
-            extName = "." + extName;
+            public string DirectoryPath { get; set; }
+            public string FileName { get; set; }
+            public string FileType { get; set; }
+        }
+
+        private async Task GetDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<AssetFile> files, Site site, string virtualPath, string fileType)
+        {
+            var extName = "." + fileType;
             var directoryPath = await _pathManager.GetSitePathAsync(site, virtualPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
             var fileNames = DirectoryUtils.GetFileNames(directoryPath);
@@ -70,7 +84,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             {
                 if (StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(fileName), extName))
                 {
-                    files.Add(new KeyValuePair<string, string>(virtualPath, fileName));
+                    files.Add(new AssetFile
+                    {
+                        DirectoryPath = virtualPath,
+                        FileName = fileName,
+                        FileType = fileType
+                    });
                 }
             }
 
@@ -84,7 +103,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             dir.Children = new List<Cascade<string>>();
             foreach (var directoryName in children)
             {
-                await GetDirectoriesAndFilesAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), extName);
+                await GetDirectoriesAndFilesAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), fileType);
             }
 
             directories.Add(dir);

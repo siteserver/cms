@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Article);
+            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Image);
             var count = await _materialImageRepository.GetCountAsync(request.GroupId, request.Keyword);
             var images = await _materialImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
 

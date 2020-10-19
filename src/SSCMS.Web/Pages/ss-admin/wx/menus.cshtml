@@ -101,7 +101,7 @@
           </el-form-item>
           <el-form-item label="排序" prop="taxis" :rules="[
             { required: true, message: '请输入排序' },
-            { type: 'number', message: '排序必须为数字' }
+            { validator: utils.validateInt }
           ]">
             <el-input v-model.number="wxMenu.taxis"></el-input>
           </el-form-item>

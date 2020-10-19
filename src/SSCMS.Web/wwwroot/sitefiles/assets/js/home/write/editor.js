@@ -12,6 +12,7 @@ var data = utils.init({
   collapseMore: ['translations'],
 
   site: null,
+  siteUrl: null,
   channel: null,
   groupNames: null,
   tagNames: null,
@@ -144,6 +145,7 @@ var methods = {
 
   loadEditor: function(res) {
     this.site = res.site;
+    this.siteUrl = res.siteUrl;
     this.channel = res.channel;
     this.groupNames = res.groupNames;
     this.tagNames = res.tagNames;
@@ -340,6 +342,7 @@ var methods = {
     var data = [];
     for (var i = 0; i <= count; i++) {
       var imageUrl = this.form[utils.getExtendName(style.attributeName, i)];
+      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
       data.push({
         "src": imageUrl
       });

@@ -210,6 +210,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         {
             var channel = await _channelRepository.GetAsync(channelId);
             var contentIdList = await _contentRepository.GetContentIdsAsync(site, channel);
+            contentIdList.Reverse();
 
             var translateType = isDeleteAfterTranslate
                 ? TranslateType.Cut

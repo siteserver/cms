@@ -25,7 +25,8 @@ var methods = {
     utils.loading(this, true);
     $api.get($url, {
       params: {
-        siteId: this.siteId
+        siteId: this.siteId,
+        fileType: this.fileType
       }
     }).then(function (response) {
       var res = response.data;
@@ -51,8 +52,9 @@ var methods = {
     $api.delete($url, {
       data: {
         siteId: this.siteId,
-        directoryPath: file.key,
-        fileName: file.value
+        fileType: this.fileType,
+        directoryPath: file.directoryPath,
+        fileName: file.fileName
       }
     }).then(function (response) {
       var res = response.data;
@@ -140,7 +142,7 @@ var methods = {
 
     utils.alertDelete({
       title: '删除文件',
-      text: '此操作将删除文件 ' + file.key + '/' + file.value + '，确认吗？',
+      text: '此操作将删除文件 ' + file.directoryPath + '/' + file.fileName + '，确认吗？',
       callback: function () {
         $this.apiDelete(file);
       }
@@ -152,21 +154,21 @@ var methods = {
   },
 
   btnEditClick: function(file) {
-    utils.addTab('编辑' + ':' + file.key + '/' + file.value, this.getEditorUrl(file.key, file.value, ''));
+    utils.addTab('编辑' + ':' + file.directoryPath + '/' + file.fileName, this.getEditorUrl(file.directoryPath, file.fileName, file.fileType));
   },
 
-  getEditorUrl: function(directoryPath, fileName, extName) {
+  getEditorUrl: function(directoryPath, fileName, fileType) {
     return utils.getCmsUrl('templatesAssetsEditor', {
       siteId: this.siteId,
       directoryPath: directoryPath,
       fileName: fileName,
-      extName: extName,
+      fileType: fileType,
       tabName: utils.getTabName()
     });
   },
 
-  getPageUrl: function(virtualPath) {
-    return this.siteUrl + '/' + virtualPath;
+  getPageUrl: function(directoryPath) {
+    return this.siteUrl + '/' + directoryPath;
   },
 
   reload: function() {
@@ -177,19 +179,19 @@ var methods = {
       var isDirectoryPath = true;
       var isKeyword = true;
       if ($this.fileType != 'All') {
-        isFileType = _.endsWith(o.value, $this.fileType);
+        isFileType = _.endsWith(o.fileName, $this.fileType);
       }
       if ($this.directoryPaths.length > 0) {
         isDirectoryPath = false;
         for (var i = 0; i < $this.directoryPaths.length; i++) {
           var directoryPath = $this.directoryPaths[i][$this.directoryPaths[i].length - 1];
-          if (o.key == directoryPath) {
+          if (o.directoryPath == directoryPath) {
             isDirectoryPath = true;
           }
         }
       }
       if ($this.keyword) {
-        isKeyword = (o.key || '').indexOf($this.keyword) !== -1 || (o.value || '').indexOf($this.keyword) !== -1;
+        isKeyword = (o.directoryPath || '').indexOf($this.keyword) !== -1 || (o.fileName || '').indexOf($this.keyword) !== -1;
       }
       
       return isFileType && isDirectoryPath && isKeyword;
@@ -199,6 +201,7 @@ var methods = {
   btnConfigClick: function() {
     this.configForm = {
       siteId: this.siteId,
+      fileType: this.fileType,
       includeDir: this.includeDir,
       cssDir: this.cssDir,
       jsDir: this.jsDir

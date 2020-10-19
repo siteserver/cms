@@ -19,9 +19,9 @@
   </el-form-item>
   <el-form-item label="密码最小长度" prop="userPasswordMinLength" :rules="[
     { required: true, message: '请输入密码最小长度' },
-    { type: 'number', message: '密码最小长度必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.userPasswordMinLength"></el-input>
+    <el-input v-model:number="form.userPasswordMinLength"></el-input>
     <small class="tips">0代表不限制密码长度</small>
   </el-form-item>
   <el-form-item label="密码规则限制">
@@ -34,9 +34,9 @@
   
   <el-form-item label="同一IP注册间隔限制（单位：分钟）" prop="userRegistrationMinMinutes" :rules="[
     { required: true, message: '请输入同一IP注册间隔限制' },
-    { type: 'number', message: '同一IP注册间隔限制必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.userRegistrationMinMinutes"></el-input>
+    <el-input v-model:number="form.userRegistrationMinMinutes"></el-input>
     <small class="tips">同一IP在本时间间隔内将只能注册一个账号，0 为不限制</small>
   </el-form-item>
 
@@ -46,9 +46,9 @@
   </el-form-item>
   <el-form-item v-if="form.isUserLockLogin" label="登录失败锁定（次）" prop="userLockLoginCount" :rules="[
     { required: true, message: '请输入登录失败锁定' },
-    { type: 'number', message: '登录失败锁定必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.userLockLoginCount"></el-input>
+    <el-input v-model:number="form.userLockLoginCount"></el-input>
     <small class="tips">一旦登录失败达到指定次数之后用户就会被锁定</small>
   </el-form-item>
   <el-form-item v-if="form.isUserLockLogin" label="用户登录锁定类型">
@@ -59,9 +59,9 @@
   </el-form-item>
   <el-form-item v-if="form.isUserLockLogin && form.userLockLoginType === 'Hours'" label="登录锁定时间（小时）" prop="userLockLoginHours" :rules="[
     { required: true, message: '请输入登录锁定时间' },
-    { type: 'number', message: '登录锁定时间必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.userLockLoginHours"></el-input>
+    <el-input v-model:number="form.userLockLoginHours"></el-input>
   </el-form-item>
 </el-form>
 

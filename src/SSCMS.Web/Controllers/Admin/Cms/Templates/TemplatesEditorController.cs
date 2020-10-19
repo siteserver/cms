@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
-using Datory;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -19,33 +20,88 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     {
         private const string Route = "cms/templates/templatesEditor";
         private const string RouteCreate = "cms/templates/templatesEditor/actions/create";
+        private const string RouteSettings = "cms/templates/templatesEditor/actions/settings";
+        private const string RoutePreview = "cms/templates/templatesEditor/actions/preview";
+        private const string RouteGetContents = "cms/templates/templatesEditor/actions/getContents";
 
-        private readonly IAuthManager _authManager;
+		private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
+        private readonly IParseManager _parseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly ITemplateRepository _templateRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public TemplatesEditorController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
+        public TemplatesEditorController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IParseManager parseManager, ISiteRepository siteRepository, ITemplateRepository templateRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;
-            _siteRepository = siteRepository;
+            _parseManager = parseManager;
+			_siteRepository = siteRepository;
             _templateRepository = templateRepository;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
         }
 
-		public class GetResult
-		{
-			public Template Template { get; set; }
-		}
-
-		public class TemplateRequest
-		{
+		public class SettingsForm
+        {
 			public int SiteId { get; set; }
 			public int TemplateId { get; set; }
 			public TemplateType TemplateType { get; set; }
+			public string TemplateName { get; set; }
+            public string RelatedFileName { get; set; }
+            public string CreatedFileFullName { get; set; }
+            public string CreatedFileExtName { get; set; }
 		}
+
+		public class GetResult
+		{
+			public SettingsForm Settings { get; set; }
+			public string Content { get; set; }
+            public Cascade<int> Channels { get; set; }
+			public List<int> ChannelIds { get; set; }
+			public int ChannelId { get; set; }
+            public IEnumerable<KeyValuePair<int, string>> Contents { get; set; }
+			public int ContentId { get; set; }
+		}
+
+		public class GetContentsRequest : SiteRequest
+        {
+            public int ChannelId { get; set; }
+        }
+
+        public class GetContentsResult
+        {
+            public IEnumerable<KeyValuePair<int, string>> Contents { get; set; }
+			public int ContentId { get; set; }
+        }
+
+		public class TemplateRequest : SiteRequest
+		{
+			public int TemplateId { get; set; }
+			public TemplateType TemplateType { get; set; }
+		}
+
+		public class SettingsResult
+        {
+            public SettingsForm Settings { get; set; }
+		}
+
+		public class SubmitRequest : SiteRequest
+		{
+			public int TemplateId { get; set; }
+            public string Content { get; set; }
+		}
+
+        public class PreviewRequest : SiteRequest
+        {
+            public int TemplateId { get; set; }
+            public int ChannelId { get; set; }
+			public int ContentId { get; set; }
+			public string Content { get; set; }
+        }
 
 		private string GetTemplateFileExtension(Template template)
 		{
@@ -76,127 +132,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 			}
 		}
 
-		private async Task<ActionResult<GetResult>> SaveAsync(Site site, Template request)
-		{
-			if (request.TemplateType != TemplateType.ChannelTemplate)
-			{
-				if (!request.CreatedFileFullName.StartsWith("~") && !request.CreatedFileFullName.StartsWith("@"))
-				{
-					request.CreatedFileFullName = PageUtils.Combine("@", request.CreatedFileFullName);
-				}
-			}
-			else
-			{
-				request.CreatedFileFullName = request.CreatedFileFullName.TrimStart('~', '@');
-				request.CreatedFileFullName = request.CreatedFileFullName.Replace("/", string.Empty);
-			}
-
-			Template template;
-
-			var adminId = _authManager.AdminId;
-			if (request.Id > 0)
-			{
-				var templateId = request.Id;
-				template = await _templateRepository.GetAsync(templateId);
-				if (template.TemplateName != request.TemplateName)
-				{
-					var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, template.TemplateType);
-					if (templateNameList.Contains(request.TemplateName))
-					{
-						return this.Error("模板修改失败，模板名称已存在！");
-					}
-				}
-				Template previousTemplate = null;
-				var isChanged = false;
-				if (PathUtils.RemoveExtension(template.RelatedFileName) != PathUtils.RemoveExtension(request.RelatedFileName))//文件名改变
-				{
-					var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, template.TemplateType);
-					foreach (var fileName in fileNameList)
-					{
-						var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
-						if (StringUtils.EqualsIgnoreCase(fileNameWithoutExtension, request.RelatedFileName))
-						{
-							return this.Error("模板修改失败，模板文件已存在！");
-						}
-					}
-
-					isChanged = true;
-				}
-
-				if (GetTemplateFileExtension(template) != request.CreatedFileExtName)//文件后缀改变
-				{
-					isChanged = true;
-				}
-
-				if (isChanged)
-				{
-					previousTemplate = new Template
-					{
-						Id = template.Id,
-						SiteId = template.SiteId,
-						TemplateName = template.TemplateName,
-						TemplateType = template.TemplateType,
-						RelatedFileName = template.RelatedFileName,
-						CreatedFileFullName = template.CreatedFileFullName,
-						CreatedFileExtName = template.CreatedFileExtName,
-						DefaultTemplate = template.DefaultTemplate
-					};
-				}
-
-				template.TemplateName = request.TemplateName;
-				template.RelatedFileName = request.RelatedFileName + request.CreatedFileExtName;
-				template.CreatedFileExtName = request.CreatedFileExtName;
-				template.CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName;
-
-				await _templateRepository.UpdateAsync(_pathManager, site, template, request.Content, adminId);
-				if (previousTemplate != null)
-				{
-					FileUtils.DeleteFileIfExists(await _pathManager.GetTemplateFilePathAsync(site, previousTemplate));
-				}
-				await CreatePagesAsync(template);
-
-				await _authManager.AddSiteLogAsync(request.SiteId,
-					$"修改{template.TemplateType.GetDisplayName()}",
-					$"模板名称:{template.TemplateName}");
-			}
-			else
-			{
-				var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, request.TemplateType);
-				if (templateNameList.Contains(request.TemplateName))
-				{
-					return this.Error("模板添加失败，模板名称已存在！");
-				}
-				var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, request.TemplateType);
-				if (ListUtils.ContainsIgnoreCase(fileNameList, request.RelatedFileName))
-				{
-					return this.Error("模板添加失败，模板文件已存在！");
-				}
-
-				template = new Template
-				{
-					SiteId = request.SiteId,
-					TemplateName = request.TemplateName,
-					TemplateType = request.TemplateType,
-					RelatedFileName = request.RelatedFileName + request.CreatedFileExtName,
-					CreatedFileExtName = request.CreatedFileExtName,
-					CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName,
-					DefaultTemplate = false
-				};
-
-				template.Id = await _templateRepository.InsertAsync(_pathManager, site, template, request.Content, adminId);
-				await CreatePagesAsync(template);
-				await _authManager.AddSiteLogAsync(request.SiteId,
-					$"添加{template.TemplateType.GetDisplayName()}",
-					$"模板名称:{template.TemplateName}");
-			}
-
-			return new GetResult
-			{
-				Template = await GetTemplateResultAsync(template, site)
-			};
-		}
-
-		private async Task<Template> GetTemplateResultAsync(Template templateInfo, Site site)
+        private async Task<SettingsForm> GetSettingsAsync(Template templateInfo, Site site)
 		{
 			var template = new Template
 			{
@@ -220,7 +156,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 				template.CreatedFileExtName = ".html";
 			}
 
-			return template;
+            return new SettingsForm
+            {
+                SiteId = site.Id,
+                TemplateId = template.Id,
+                TemplateType = template.TemplateType,
+                TemplateName = template.TemplateName,
+                RelatedFileName = template.RelatedFileName,
+                CreatedFileFullName = template.CreatedFileFullName,
+                CreatedFileExtName = template.CreatedFileExtName
+            };
 		}
     }
 }

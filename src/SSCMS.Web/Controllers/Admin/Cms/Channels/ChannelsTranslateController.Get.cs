@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsTranslateController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> GetConfig([FromQuery] SiteRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.ChannelsTranslate))
             {

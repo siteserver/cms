@@ -55,10 +55,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public class SubmitRequest
         {
             public string Guid { get; set; }
+            public string SiteType { get; set; }
             public string CreateType { get; set; }
             public string CreateTemplateId { get; set; }
             public string SiteName { get; set; }
-            public string SiteType { get; set; }
             public bool Root { get; set; }
             public int ParentId { get; set; }
             public string SiteDir { get; set; }

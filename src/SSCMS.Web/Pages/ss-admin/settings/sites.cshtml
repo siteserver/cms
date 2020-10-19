@@ -86,7 +86,9 @@
           <el-option v-for="parent in sites" v-if="parent.id !== editForm.siteId" :label="parent.siteName" :value="parent.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="taxis" label="站点排序">
+      <el-form-item prop="taxis" label="站点排序" :rules="[
+        { validator: utils.validateInt }
+      ]">
         <el-input v-model.number="editForm.taxis"></el-input>
         <div class="tips">站点将根据排序从小到大排列</div>
       </el-form-item>

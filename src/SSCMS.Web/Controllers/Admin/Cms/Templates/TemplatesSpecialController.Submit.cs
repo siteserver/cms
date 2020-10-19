@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -12,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesSpecialController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<ObjectResult<IEnumerable<Special>>>> SpecialSubmit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     Types.SitePermissions.Specials))
@@ -126,11 +124,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             await _createManager.CreateSpecialAsync(request.SiteId, specialId);
 
-            var specialInfoList = await _specialRepository.GetSpecialsAsync(request.SiteId);
-
-            return new ObjectResult<IEnumerable<Special>>
+            var specials = await _specialRepository.GetSpecialsAsync(request.SiteId);
+            foreach (var special in specials)
             {
-                Value = specialInfoList
+                var filePath = PathUtils.Combine(await _pathManager.GetSpecialDirectoryPathAsync(site, special.Url), "index.html");
+                special.Set("editable", FileUtils.IsFileExists(filePath));
+            }
+
+            return new SubmitResult
+            {
+                Specials = specials
             };
         }
     }

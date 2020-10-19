@@ -10,9 +10,9 @@
   </el-form-item>
   <el-form-item v-if="form.isTimeThreshold" label="日志保留天数" prop="timeThreshold" :rules="[
     { required: true, message: '请输入日志保留天数' },
-    { type: 'number', message: '日志保留天数必须为数字值'}
+    { validator: utils.validateInt }
   ]">
-    <el-input v-model="form.timeThreshold"></el-input>
+    <el-input v-model:number="form.timeThreshold"></el-input>
     <small class="tips">设置为60天，则默认只保留60天的日志，60天之前的日志将被系统自动删除</small>
   </el-form-item>
   <el-form-item label="站点日志">

@@ -2,10 +2,9 @@
 @{ Layout = "_Layout"; }
 
 <el-container>
-  <el-aside width="100px">
+  <el-aside v-if="fileType != 'html'" width="100px">
     <el-tabs v-model="fileType" tab-position="left" style="height: 100%;" v-on:tab-click="reload">
       <el-tab-pane label="全部" name="All"></el-tab-pane>
-      <el-tab-pane label="包含文件" name="html"></el-tab-pane>
       <el-tab-pane label="样式文件" name="css"></el-tab-pane>
       <el-tab-pane label="脚本文件" name="js"></el-tab-pane>
     </el-tabs>
@@ -30,19 +29,6 @@
             placeholder="请输入文件夹路径名称或文件名称"
           ></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-dropdown
-            v-on:command="btnAddClick">
-            <el-button type="text" :underline="false">
-              新增文件<i class="el-icon-arrow-down el-icon--right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="html">新增包含文件</el-dropdown-item>
-              <el-dropdown-item command="css">新增样式文件</el-dropdown-item>
-              <el-dropdown-item command="js">新增脚本文件</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-form-item>
       </el-form>
 
       <el-table :data="files" style="width: 100%">
@@ -52,7 +38,7 @@
               :underline="false"
               v-on:click="btnEditClick(scope.row)"
               type="primary">
-              {{ scope.row.key + '/' + scope.row.value }}
+              {{ scope.row.directoryPath + '/' + scope.row.fileName }}
             </el-link>
           </template>
         </el-table-column>
@@ -60,7 +46,7 @@
           <template slot-scope="scope">
             <el-link
               :underline="false"
-              :href="getPageUrl(scope.row.key + '/' + scope.row.value)"
+              :href="getPageUrl(scope.row.directoryPath + '/' + scope.row.fileName)"
               target="_blank"
               type="primary">
               查看
@@ -73,7 +59,6 @@
             </el-link>
             <el-link
               :underline="false"
-              :disabled="scope.row.default"
               type="danger"
               v-on:click="btnDeleteClick(scope.row)">
               删除
@@ -86,7 +71,7 @@
       <el-divider></el-divider>
       <div style="height: 10px"></div>
 
-      <el-button v-if="fileType == 'All' || fileType == 'html'" size="small" type="primary" v-on:click="btnAddClick('html')">
+      <el-button v-if="fileType == 'html'" size="small" type="primary" v-on:click="btnAddClick('html')">
         新增包含文件
       </el-button>
       <el-button v-if="fileType == 'All' || fileType == 'css'" size="small" type="primary" v-on:click="btnAddClick('css')">
@@ -112,25 +97,13 @@
   direction="rtl"
   size="50%">
   <div class="drawer__content">
-    <el-form ref="configForm" :model="configForm" label-width="150px" :rules="{
+    <el-form v-if="fileType == 'html'" ref="configForm" :model="configForm" label-width="150px" :rules="{
         includeDir: [
           { required: true, message: '请输入包含文件文件夹路径', trigger: 'blur' }
-        ],
-        cssDir: [
-          { required: true, message: '请输入样式文件文件夹路径', trigger: 'blur' }
-        ],
-        jsDir: [
-          { required: true, message: '请输入脚本文件文件夹路径', trigger: 'blur' }
         ]
       }">
       <el-form-item label="包含文件文件夹路径" prop="includeDir">
         <el-input v-model="configForm.includeDir" placeholder="请输入包含文件文件夹路径"></el-input>
-      </el-form-item>
-      <el-form-item label="样式文件文件夹路径" prop="cssDir">
-        <el-input v-model="configForm.cssDir" placeholder="请输入样式文件文件夹路径"></el-input>
-      </el-form-item>
-      <el-form-item label="脚本文件文件夹路径" prop="jsDir">
-        <el-input v-model="configForm.jsDir" placeholder="请输入脚本文件文件夹路径"></el-input>
       </el-form-item>
 
       <el-divider></el-divider>
@@ -139,6 +112,27 @@
         <el-button size="small" v-on:click="btnConfigCancelClick">取 消</el-button>
       </div>
     </el-form>
+    <el-form v-else ref="configForm" :model="configForm" label-width="150px" :rules="{
+      cssDir: [
+        { required: true, message: '请输入样式文件文件夹路径', trigger: 'blur' }
+      ],
+      jsDir: [
+        { required: true, message: '请输入脚本文件文件夹路径', trigger: 'blur' }
+      ]
+    }">
+    <el-form-item label="样式文件文件夹路径" prop="cssDir">
+      <el-input v-model="configForm.cssDir" placeholder="请输入样式文件文件夹路径"></el-input>
+    </el-form-item>
+    <el-form-item label="脚本文件文件夹路径" prop="jsDir">
+      <el-input v-model="configForm.jsDir" placeholder="请输入脚本文件文件夹路径"></el-input>
+    </el-form-item>
+
+    <el-divider></el-divider>
+    <div class="drawer__footer">
+      <el-button type="primary" v-on:click="btnConfigSubmitClick" size="small">确 定</el-button>
+      <el-button size="small" v-on:click="btnConfigCancelClick">取 消</el-button>
+    </div>
+  </el-form>
   </div>
 </el-drawer>
 

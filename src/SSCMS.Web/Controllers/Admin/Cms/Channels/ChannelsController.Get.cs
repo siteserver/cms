@@ -64,12 +64,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+
             return new ChannelResult
             {
                 Entity = entity,
                 LinkTypes = linkTypes,
                 TaxisTypes = taxisTypes,
-                Styles = styles
+                Styles = styles,
+                SiteUrl = siteUrl
             };
         }
     }

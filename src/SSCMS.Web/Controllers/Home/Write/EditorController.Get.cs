@@ -60,6 +60,8 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             //await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);
 
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, false);
+
             return new GetResult
             {
                 Content = content,
@@ -68,7 +70,8 @@ namespace SSCMS.Web.Controllers.Home.Write
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 Styles = styles,
-                CheckedLevels = checkedLevels
+                CheckedLevels = checkedLevels,
+                SiteUrl = siteUrl
             };
         }
     }

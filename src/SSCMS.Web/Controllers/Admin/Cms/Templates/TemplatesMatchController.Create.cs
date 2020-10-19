@@ -18,22 +18,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var adminId = _authManager.AdminId;
             if (request.IsChannelTemplate && request.IsChildren)
             {
-                await CreateChannelChildrenTemplateAsync(site, request, adminId);
+                await CreateChannelChildrenTemplateAsync(site, request);
             }
             else if (request.IsChannelTemplate && !request.IsChildren)
             {
-                await CreateChannelTemplateAsync(site, request, adminId);
+                await CreateChannelTemplateAsync(request);
             }
             else if (!request.IsChannelTemplate && request.IsChildren)
             {
-                await CreateContentChildrenTemplateAsync(site, request, adminId);
+                await CreateContentChildrenTemplateAsync(request);
             }
             else if (!request.IsChannelTemplate && !request.IsChildren)
             {
-                await CreateContentTemplateAsync(site, request, adminId);
+                await CreateContentTemplateAsync(request);
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, "生成并匹配栏目模版");

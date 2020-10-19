@@ -27,7 +27,10 @@
     <el-input v-model="form.audioUploadExtensions" placeholder="请输入上传音频类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
-  <el-form-item label="上传音频最大大小（KB）" prop="audioUploadTypeMaxSize" :rules="{ required: true, message: '请输入上传音频最大大小' }">
+  <el-form-item label="上传音频最大大小（KB）" prop="audioUploadTypeMaxSize" :rules="[
+    { required: true, message: '请输入上传音频最大大小' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.audioUploadTypeMaxSize" placeholder="请输入上传音频最大大小"></el-input>
   </el-form-item>
 

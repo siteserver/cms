@@ -28,6 +28,7 @@ var data = utils.init({
   editTaxisTypes: [],
   editEditor: null,
   styles: [],
+  siteUrl: null,
   isTemplateEditable: false,
 
   deletePanel: false,
@@ -150,6 +151,7 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.styles = res.styles;
+      $this.siteUrl = res.siteUrl;
       $this.editPanel = true;
       setTimeout(function () {
         $this.loadEditor();

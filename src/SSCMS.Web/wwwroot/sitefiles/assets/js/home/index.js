@@ -53,13 +53,15 @@ var methods = {
             sideMenuIds.push(ids[i]);
           }
         }
-        if (!$this.menu) {
+        if (!$this.menu && $this.menus.length > 0) {
           $this.menu = $this.menus[0];
         }
 
-        $this.btnTopMenuClick($this.menu);
-        if (sideMenuIds.length > 0) {
-          $this.btnSideMenuClick(sideMenuIds.join('/'));
+        if ($this.menu) {
+          $this.btnTopMenuClick($this.menu);
+          if (sideMenuIds.length > 0) {
+            $this.btnSideMenuClick(sideMenuIds.join('/'));
+          }
         }
 
         document.title = $this.homeTitle;
@@ -80,12 +82,10 @@ var methods = {
   },
 
   ready: function () {
-    var $this = this;
-
-    window.onresize = $this.winResize;
+    window.onresize = this.winResize;
     window.onresize();
 
-    utils.loading($this, false);
+    utils.loading(this, false);
   },
 
   openContextMenu: function(e) {

@@ -54,7 +54,7 @@
   </el-form-item>
   <el-form-item label="翻页中生成的静态页面最大数（页）" prop="createStaticMaxPage" :rules="[
     { required: true, message: '请输入翻页中生成的静态页面最大数' },
-    { type: 'number', message: '翻页中生成的静态页面最大数必须为数字值'}
+    { validator: utils.validateInt }
   ]">
     <el-input v-model.number="form.createStaticMaxPage" placeholder="请输入翻页中生成的静态页面最大数"></el-input>
     <div class="tips">设置翻页中生成的静态页面最大数，剩余页面将动态获取；设置为0代表将静态页面全部生成</div>

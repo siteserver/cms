@@ -158,14 +158,6 @@ var methods = {
     });
   },
 
-  btnEditClick(template) {
-    utils.addTab('编辑' + ':' + template.templateName, this.getEditorUrl(template.templateType, template.id));
-  },
-
-  btnAddClick: function(templateType) {
-    utils.addTab('新增' + this.getTemplateType(templateType), this.getEditorUrl(templateType, 0));
-  },
-
   getEditorUrl: function(templateType, templateId) {
     return utils.getCmsUrl('templatesEditor', {
       siteId: this.siteId,
@@ -173,6 +165,20 @@ var methods = {
       templateType: templateType,
       tabName: utils.getTabName()
     });
+  },
+
+  btnUserCountClick(template) {
+    if (template.templateType == 'ChannelTemplate') {
+      utils.addTab('匹配模板', utils.getCmsUrl('templatesMatch', {
+        siteId: this.siteId,
+        channelTemplateId: template.id
+      }));
+    } else if (template.templateType == 'ContentTemplate') {
+      utils.addTab('匹配模板', utils.getCmsUrl('templatesMatch', {
+        siteId: this.siteId,
+        contentTemplateId: template.id
+      }));
+    }
   },
 
   reload: function() {

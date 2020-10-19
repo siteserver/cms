@@ -82,6 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<Select<string>> LinkTypes { get; set; }
             public IEnumerable<Select<string>> TaxisTypes { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
+            public string SiteUrl { get; set; }
         }
 
         public class ImportRequest : ChannelRequest

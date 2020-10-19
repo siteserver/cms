@@ -72,5 +72,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public bool IsEditOnly { get; set; }
             public bool IsUploadOnly { get; set; }
         }
+
+        public class SubmitResult
+        {
+            public List<Special> Specials { get; set; }
+        }
     }
 }

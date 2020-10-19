@@ -73,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var adminId = _authManager.AdminId;
 
-            var siteId = await _siteRepository.InsertSiteAsync(_pathManager, channelInfo, new Site
+            var siteId = await _siteRepository.InsertSiteAsync(channelInfo, new Site
             {
                 SiteName = request.SiteName,
                 SiteType = request.SiteType,

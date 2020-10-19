@@ -19,6 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
+            
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 var count = await _contentRepository.GetCountAsync(site, summary);

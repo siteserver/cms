@@ -1,5 +1,7 @@
 ﻿var $url = '/cms/settings/settingsStyleRelatedField';
 var $urlImport = '/cms/settings/settingsStyleRelatedField/actions/import';
+var $urlItems = $url + '/items';
+var $urlItemsOrder = $urlItems + '/actions/order';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -52,7 +54,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.get($url + '/items', {
+    $api.get($urlItems, {
       params: {
         siteId: this.siteId,
         relatedFieldId: relatedFieldId
@@ -258,7 +260,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url + '/items', {
+    $api.delete($urlItems, {
       data: {
         siteId: this.siteId,
         relatedFieldId: this.itemsRelatedField.id,
@@ -280,7 +282,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url + '/items', {
+    $api.post($urlItems, {
       siteId: this.siteId,
       relatedFieldId: this.itemsRelatedField.id,
       parentId: this.itemsParentId,
@@ -302,7 +304,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url + '/items/actions/order', {
+    $api.post($urlItemsOrder, {
       siteId: this.siteId,
       relatedFieldId: this.itemsRelatedField.id,
       id: id,
@@ -323,7 +325,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url + '/items', {
+    $api.put($urlItems, {
       siteId: this.siteId,
       relatedFieldId: this.itemsRelatedField.id,
       id: this.itemsEditForm.id,

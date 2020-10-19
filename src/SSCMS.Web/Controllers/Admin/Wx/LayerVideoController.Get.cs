@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Article);
+            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Video);
             var count = await _materialVideoRepository.GetCountAsync(request.GroupId, request.Keyword);
             var videos = await _materialVideoRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
 

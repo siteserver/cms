@@ -27,13 +27,22 @@
     <el-input v-model="form.imageUploadExtensions" placeholder="请输入上传图片类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
-  <el-form-item label="上传图片最大大小（KB）" prop="imageUploadTypeMaxSize" :rules="{ required: true, message: '请输入上传图片最大大小' }">
+  <el-form-item label="上传图片最大大小（KB）" prop="imageUploadTypeMaxSize" :rules="[
+    { required: true, message: '请输入上传图片最大大小' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.imageUploadTypeMaxSize" placeholder="请输入上传图片最大大小"></el-input>
   </el-form-item>
-  <el-form-item label="缩略图（小）最大宽度（像素）" prop="photoSmallWidth" :rules="{ required: true, message: '请输入缩略图（小）最大宽度' }">
+  <el-form-item label="缩略图（小）最大宽度（像素）" prop="photoSmallWidth" :rules="[
+    { required: true, message: '请输入缩略图（小）最大宽度' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.photoSmallWidth" placeholder="请输入缩略图（小）最大宽度"></el-input>
   </el-form-item>
-  <el-form-item label="缩略图（中）最大宽度（像素）" prop="photoMiddleWidth" :rules="{ required: true, message: '请输入缩略图（中）最大宽度' }">
+  <el-form-item label="缩略图（中）最大宽度（像素）" prop="photoMiddleWidth" :rules="[
+    { required: true, message: '请输入缩略图（中）最大宽度' },
+    { validator: utils.validateInt }
+  ]">
     <el-input v-model.number="form.photoMiddleWidth" placeholder="请输入缩略图（中）最大宽度"></el-input>
   </el-form-item>
 

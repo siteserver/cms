@@ -12,7 +12,7 @@
   </el-form-item>
   <el-form-item label="默认每页显示内容数" prop="pageSize" :rules="[
     { required: true, message: '请输入默认每页显示内容数' },
-    { type: 'number', message: '默认每页显示内容数必须为数字值'}
+    { validator: utils.validateInt }
   ]">
     <el-input v-model.number="form.pageSize" placeholder="请输入默认每页显示内容数"></el-input>
     <div class="tips">设置管理默认每页显示内容数</div>
@@ -26,7 +26,7 @@
   </el-form-item>
   <el-form-item v-if="form.isAutoPageInTextEditor" label="内容自动分页每页字数" prop="autoPageWordNum" :rules="[
     { required: true, message: '请输入内容自动分页每页字数' },
-    { type: 'number', message: '内容自动分页每页字数必须为数字值'}
+    { validator: utils.validateInt }
   ]">
     <el-input v-model.number="form.autoPageWordNum" placeholder="请输入内容自动分页每页字数"></el-input>
     <div class="tips">在此设置内容自动分页的每页字数，修改此项需要重新生成内容页面</div>

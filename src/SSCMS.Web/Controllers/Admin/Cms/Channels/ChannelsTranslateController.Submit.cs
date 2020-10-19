@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsTranslateController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Translate([FromBody] SubmitRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.ChannelsTranslate))
             {

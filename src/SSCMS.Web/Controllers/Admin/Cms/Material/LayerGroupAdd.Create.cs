@@ -21,18 +21,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            if (await _materialGroupRepository.IsExistsAsync(request.LibraryType, request.GroupName))
+            if (await _materialGroupRepository.IsExistsAsync(request.MaterialType, request.GroupName))
             {
                 return this.Error("分组名称已存在，请使用其他名称");
             }
 
             await _materialGroupRepository.InsertAsync(new MaterialGroup
             {
-                LibraryType = request.LibraryType,
+                MaterialType = request.MaterialType,
                 GroupName = request.GroupName
             });
 
-            var groups = await _materialGroupRepository.GetAllAsync(request.LibraryType);
+            var groups = await _materialGroupRepository.GetAllAsync(request.MaterialType);
 
             return new CreateResult
             {

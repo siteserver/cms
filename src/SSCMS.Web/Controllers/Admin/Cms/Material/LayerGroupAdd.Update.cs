@@ -24,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
             if (group.GroupName != request.GroupName)
             {
-                if (await _materialGroupRepository.IsExistsAsync(group.LibraryType, request.GroupName))
+                if (await _materialGroupRepository.IsExistsAsync(group.MaterialType, request.GroupName))
                 {
                     return this.Error("分组名称已存在，请使用其他名称");
                 }
@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 await _materialGroupRepository.UpdateAsync(group);
             }
 
-            var groups = await _materialGroupRepository.GetAllAsync(group.LibraryType);
+            var groups = await _materialGroupRepository.GetAllAsync(group.MaterialType);
 
             return new UpdateResult
             {

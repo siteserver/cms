@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -22,11 +23,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 "删除专题",
                 $"专题名称:{specialInfo.Title}");
 
-            var specialInfoList = await _specialRepository.GetSpecialsAsync(request.SiteId);
+            var specials = await _specialRepository.GetSpecialsAsync(request.SiteId);
+            foreach (var special in specials)
+            {
+                var filePath = PathUtils.Combine(await _pathManager.GetSpecialDirectoryPathAsync(site, special.Url), "index.html");
+                special.Set("editable", FileUtils.IsFileExists(filePath));
+            }
 
             return new DeleteResult
             {
-                Specials = specialInfoList
+                Specials = specials
             };
         }
     }

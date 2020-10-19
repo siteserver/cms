@@ -12,7 +12,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   directoryPath: utils.getQueryString("directoryPath"),
   fileName: utils.getQueryString("fileName"),
-  extName: utils.getQueryString("extName"),
+  fileType: utils.getQueryString("fileType"),
   tabName: utils.getQueryString("tabName"),
   form: {
     path: null
@@ -30,13 +30,13 @@ var methods = {
         params: {
           siteId: this.siteId,
           directoryPath: this.directoryPath,
-          fileName: this.fileName
+          fileName: this.fileName,
+          fileType: this.fileType
         }
       }).then(function (response) {
         var res = response.data;
 
         $this.form.path = res.path;
-        $this.extName = res.extName;
         $this.setEditorContent(res.content);
       }).catch(function (error) {
         utils.error(error);
@@ -54,7 +54,7 @@ var methods = {
     var data = {
       siteId: this.siteId,
       path: this.form.path,
-      extName: this.extName,
+      fileType: this.fileType,
       content: this.getEditorContent(),
       directoryPath: this.directoryPath,
       fileName: this.fileName
@@ -107,22 +107,22 @@ var methods = {
   },
 
   getFileType: function() {
-    if (this.extName === '.html') {
+    if (this.fileType === 'html') {
       return '包含文件';
-    } else if (this.extName === '.css') {
+    } else if (this.fileType === 'css') {
       return '样式文件';
-    } else if (this.extName === '.js') {
+    } else if (this.fileType === 'js') {
       return '脚本文件';
     }
     return '';
   },
 
   getFileTypeDir: function() {
-    if (this.extName === '.html') {
+    if (this.fileType === 'html') {
       return 'include/';
-    } else if (this.extName === '.css') {
+    } else if (this.fileType === 'css') {
       return 'css/';
-    } else if (this.extName === '.js') {
+    } else if (this.fileType === 'js') {
       return 'js/';
     }
     return '';
@@ -139,9 +139,9 @@ var methods = {
     } else {
       var $this = this;
       var lang = 'html';
-      if (this.extName === '.css') {
+      if (this.fileType === 'css') {
         lang = 'css';
-      } else if (this.extName === '.js') {
+      } else if (this.fileType === 'js') {
         lang = 'javascript';
       }
       setTimeout(function () {

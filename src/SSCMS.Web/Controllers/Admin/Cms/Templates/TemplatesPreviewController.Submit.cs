@@ -28,8 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 var count = await _contentRepository.GetCountAsync(site, channel);
                 if (count > 0)
                 {
-                    var tableName = _channelRepository.GetTableName(site, channel);
-                    contentId = await _contentRepository.GetFirstContentIdAsync(tableName, request.ChannelId);
+                    contentId = await _contentRepository.GetFirstContentIdAsync(site, channel);
                 }
 
                 if (contentId == 0)

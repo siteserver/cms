@@ -5,7 +5,7 @@ using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
-    public partial class UsersProfileController
+    public partial class UsersLayerProfileController
     {
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] int userId)
@@ -17,11 +17,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             var user = await _userRepository.GetByUserIdAsync(userId);
             var userStyles = await _tableStyleRepository.GetUserStylesAsync();
+            var groups = await _userGroupRepository.GetUserGroupsAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
 
             return new GetResult
             {
                 User = user,
+                Groups = groups,
                 Styles = styles
             };
         }

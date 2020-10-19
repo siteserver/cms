@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public class CreateRequest : SiteRequest
         {
             public string GroupName { get; set; }
-            public MaterialType LibraryType { get; set; }
+            public MaterialType MaterialType { get; set; }
         }
 
         public class CreateResult

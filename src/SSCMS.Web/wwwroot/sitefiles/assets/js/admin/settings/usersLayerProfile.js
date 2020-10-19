@@ -1,10 +1,11 @@
-﻿var $url = '/settings/usersProfile';
+﻿var $url = '/settings/usersLayerProfile';
 
 var data = utils.init({
   userId: utils.getQueryInt('userId'),
   uploadUrl: null,
   uploadFileList: [],
   form: null,
+  groups: null,
   styles: null
 });
 
@@ -20,6 +21,7 @@ var methods = {
       var res = response.data;
 
       $this.form = _.assign({}, res.user);
+      $this.groups = res.groups;
       $this.styles = res.styles;
       if (this.userId === 0) {
         for (var i = 0; i < res.styles.length; i++) {
@@ -44,7 +46,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, this.form).then(function (response) {
       utils.success($this.form.id > 0 ? '用户编辑成功！' : '用户添加成功！');
-      utils.removeTab();
+      utils.closeLayer(true);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -106,6 +108,10 @@ var methods = {
 
   uploadRemove(file) {
     this.form.avatarUrl = null;
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
   }
 };
 

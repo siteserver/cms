@@ -13,27 +13,30 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class UsersProfileController : ControllerBase
+    public partial class UsersLayerProfileController : ControllerBase
     {
-        private const string Route = "settings/usersProfile";
-        private const string RouteUpload = "settings/usersProfile/actions/upload";
+        private const string Route = "settings/usersLayerProfile";
+        private const string RouteUpload = "settings/usersLayerProfile/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IUserRepository _userRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public UsersProfileController(IAuthManager authManager, IPathManager pathManager, IUserRepository userRepository, ITableStyleRepository tableStyleRepository)
+        public UsersLayerProfileController(IAuthManager authManager, IPathManager pathManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _userRepository = userRepository;
+            _userGroupRepository = userGroupRepository;
             _tableStyleRepository = tableStyleRepository;
         }
 
         public class GetResult
         {
             public User User { get; set; }
+            public IEnumerable<UserGroup> Groups { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
         }
 

@@ -187,7 +187,7 @@ var utils = {
   },
 
   getUrl: function(siteUrl, url) {
-    if (url && url.startsWith('/')) return url;
+    if (url && (url.startsWith('/') || url.indexOf('://') != -1)) return url;
     siteUrl = _.trimEnd(siteUrl, '/');
     return siteUrl + '/' + _.trimStart(_.trimStart(_.trimStart(url, '~'), '@'), '/');
   },
@@ -529,11 +529,21 @@ var utils = {
     return str && val && str.indexOf(val) !== -1;
   },
 
-  validateMobile: function (rule, value,callback) {
-    if (!value){
+  validateMobile: function (rule, value, callback) {
+    if (!value) {
       callback();
-    } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)){
-      callback(new Error(rule.message));
+    } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
+      callback(new Error(rule.message || '字段必须是有效的手机号码'));
+    } else {
+      callback()
+    }
+  },
+
+  validateInt: function (rule, value, callback) {
+    if (!value) {
+      callback();
+    } else if (!/^[-]?\d+$/.test(value)) {
+      callback(new Error(rule.message || '字段必须是有效的数字值'));
     } else {
       callback()
     }
