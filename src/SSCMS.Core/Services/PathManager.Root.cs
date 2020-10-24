@@ -111,7 +111,7 @@ namespace SSCMS.Core.Services
             return GetSiteFilesUrl(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths));
         }
 
-        public string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");
+        public string DefaultAvatarUrl => GetSiteFilesUrl("assets/images/default_avatar.png");
 
         public string GetUserUploadFileName(string filePath)
         {
@@ -130,7 +130,7 @@ namespace SSCMS.Core.Services
 
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.IsProtocolUrl(imageUrl) ? imageUrl : GetUserUploadUrl(user.Id, imageUrl);
+                return PageUtils.IsAbsoluteUrl(imageUrl) ? imageUrl : GetUserUploadUrl(user.Id, imageUrl);
             }
 
             return DefaultAvatarUrl;

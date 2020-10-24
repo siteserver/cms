@@ -63,17 +63,9 @@
 
         public static class Components
         {
-            public const string Jquery = "resources/components/jquery-1.9.1.min.js";
             public const string Lodash = "resources/components/lodash-4.17.4.min.js";
             public const string JsCookie = "resources/components/js.cookie.js";
             public const string StlClient = "resources/components/stlclient.js";
-        }
-
-        public static class VueJs
-        {
-            public const string Vue = "resources/vuejs/vue-2.5.16.min.js";
-            public const string ElementCss = "resources/vuejs/element-ui/theme-chalk/index.css";
-            public const string ElementJs = "resources/vuejs/element-ui/index.js";
         }
 
         public static class JQuery

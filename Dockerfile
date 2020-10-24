@@ -17,8 +17,7 @@ RUN dotnet build "SSCMS.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "SSCMS.Web.csproj" -c Release -o /app/publish
-RUN cp -r /app/publish/wwwroot/sitefiles/assets /app/publish/assets
-RUN rm -rf /app/publish/wwwroot/sitefiles/assets
+RUN cp -r /app/publish/wwwroot/sitefiles /app/publish/sitefiles
 
 FROM base AS final
 WORKDIR /app

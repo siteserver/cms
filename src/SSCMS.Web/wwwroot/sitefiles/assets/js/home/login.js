@@ -10,7 +10,8 @@ var data = utils.init({
   captchaValue: null,
   captchaUrl: null,
   version: null,
-  homeTitle: null
+  homeTitle: null,
+  returnUrl: utils.getQueryString('returnUrl')
 });
 
 var methods = {
@@ -80,6 +81,8 @@ var methods = {
       localStorage.setItem(ACCESS_TOKEN_NAME, res.token);
       if (res.isEnforcePasswordChange) {
         $this.redirectPassword();
+      } else if ($this.returnUrl) {
+        location.href = $this.returnUrl;
       } else {
         $this.redirectIndex();
       }

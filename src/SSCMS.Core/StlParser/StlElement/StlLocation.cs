@@ -78,102 +78,99 @@ namespace SSCMS.Core.StlParser.StlElement
                 separator = contextInfo.InnerHtml;
             }
 
-            var nodeInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
+            var channel = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
 
             var builder = new StringBuilder();
 
-            var parentsPath = nodeInfo.ParentsPath;
-            var parentsCount = nodeInfo.ParentsCount;
-            if (parentsPath != null)
+            var parentsPath = channel.ParentsPath;
+            var parentsCount = channel.ParentsCount;
+            var nodePath = new List<int>(parentsPath);
+            if (isContainSelf)
             {
-                var nodePath = new List<int>(parentsPath);
-                if (isContainSelf)
+                nodePath.Add(contextInfo.ChannelId);
+            }
+            var channelIdArrayList = ListUtils.GetStringList(ListUtils.ToString(nodePath));
+            foreach (var channelIdStr in channelIdArrayList)
+            {
+                var currentId = TranslateUtils.ToInt(channelIdStr);
+                var currentNodeInfo = await databaseManager.ChannelRepository.GetAsync(currentId);
+                if (currentId == pageInfo.SiteId)
                 {
-                    nodePath.Add(contextInfo.ChannelId);
+                    var attributes = new NameValueCollection();
+                    if (!string.IsNullOrEmpty(target))
+                    {
+                        attributes["target"] = target;
+                    }
+                    if (!string.IsNullOrEmpty(linkClass))
+                    {
+                        attributes["class"] = linkClass;
+                    }
+                    var url = await parseManager.PathManager.GetIndexPageUrlAsync(pageInfo.Site, pageInfo.IsLocal);
+                    if (url.Equals(PageUtils.UnClickableUrl))
+                    {
+                        attributes["target"] = string.Empty;
+                    }
+                    attributes["href"] = url;
+                    var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+
+                    TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+
+                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+
+                    if (parentsCount > 0)
+                    {
+                        builder.Append(separator);
+                    }
                 }
-                var channelIdArrayList = ListUtils.GetStringList(ListUtils.ToString(nodePath));
-                foreach (var channelIdStr in channelIdArrayList)
+                else if (currentId == contextInfo.ChannelId)
                 {
-                    var currentId = TranslateUtils.ToInt(channelIdStr);
-                    var currentNodeInfo = await databaseManager.ChannelRepository.GetAsync(currentId);
-                    if (currentId == pageInfo.SiteId)
+                    var attributes = new NameValueCollection();
+                    if (!string.IsNullOrEmpty(target))
                     {
-                        var attributes = new NameValueCollection();
-                        if (!string.IsNullOrEmpty(target))
-                        {
-                            attributes["target"] = target;
-                        }
-                        if (!string.IsNullOrEmpty(linkClass))
-                        {
-                            attributes["class"] = linkClass;
-                        }
-                        var url = await parseManager.PathManager.GetIndexPageUrlAsync(pageInfo.Site, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnClickableUrl))
-                        {
-                            attributes["target"] = string.Empty;
-                        }
-                        attributes["href"] = url;
-                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
-
-                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
-
-                        builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
-
-                        if (parentsCount > 0)
-                        {
-                            builder.Append(separator);
-                        }
+                        attributes["target"] = target;
                     }
-                    else if (currentId == contextInfo.ChannelId)
+                    if (!string.IsNullOrEmpty(linkClass))
                     {
-                        var attributes = new NameValueCollection();
-                        if (!string.IsNullOrEmpty(target))
-                        {
-                            attributes["target"] = target;
-                        }
-                        if (!string.IsNullOrEmpty(linkClass))
-                        {
-                            attributes["class"] = linkClass;
-                        }
-                        var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnClickableUrl))
-                        {
-                            attributes["target"] = string.Empty;
-                        }
-                        attributes["href"] = url;
-                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
-
-                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
-
-                        builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+                        attributes["class"] = linkClass;
                     }
-                    else
+                    var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
+                    if (url.Equals(PageUtils.UnClickableUrl))
                     {
-                        var attributes = new NameValueCollection();
-                        if (!string.IsNullOrEmpty(target))
-                        {
-                            attributes["target"] = target;
-                        }
-                        if (!string.IsNullOrEmpty(linkClass))
-                        {
-                            attributes["class"] = linkClass;
-                        }
-                        var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnClickableUrl))
-                        {
-                            attributes["target"] = string.Empty;
-                        }
-                        attributes["href"] = url;
-                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        attributes["target"] = string.Empty;
+                    }
+                    attributes["href"] = url;
+                    var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                    TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 
-                        builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+                }
+                else
+                {
+                    var attributes = new NameValueCollection();
+                    if (!string.IsNullOrEmpty(target))
+                    {
+                        attributes["target"] = target;
+                    }
+                    if (!string.IsNullOrEmpty(linkClass))
+                    {
+                        attributes["class"] = linkClass;
+                    }
+                    var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
+                    if (url.Equals(PageUtils.UnClickableUrl))
+                    {
+                        attributes["target"] = string.Empty;
+                    }
+                    attributes["href"] = url;
+                    var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        if (parentsCount > 0)
-                        {
-                            builder.Append(separator);
-                        }
+                    TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+
+                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+
+                    if (parentsCount > 0)
+                    {
+                        builder.Append(separator);
                     }
                 }
             }

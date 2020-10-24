@@ -26,7 +26,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private const string RouteUpload = "cms/channels/channels/actions/upload";
         private const string RouteImport = "cms/channels/channels/actions/import";
         private const string RouteExport = "cms/channels/channels/actions/export";
-        private const string RouteOrder = "cms/channels/channels/actions/order";
         private const string RouteDrop = "cms/channels/channels/actions/drop";
         private const string RouteColumns = "cms/channels/channels/actions/columns";
 
@@ -74,28 +73,24 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public List<ContentColumn> Columns { get; set; }
             public int CommandsWidth { get; set; }
             public bool IsTemplateEditable { get; set; }
+            public IEnumerable<Select<string>> LinkTypes { get; set; }
+            public IEnumerable<Select<string>> TaxisTypes { get; set; }
+            public string SiteUrl { get; set; }
         }
 
         public class ChannelResult
         {
             public Entity Entity { get; set; }
-            public IEnumerable<Select<string>> LinkTypes { get; set; }
-            public IEnumerable<Select<string>> TaxisTypes { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
-            public string SiteUrl { get; set; }
+            public string FilePath { get; set; }
+            public string ChannelFilePathRule { get; set; }
+            public string ContentFilePathRule { get; set; }
         }
 
         public class ImportRequest : ChannelRequest
         {
             public string FileName { get; set; }
             public bool IsOverride { get; set; }
-        }
-
-        public class OrderRequest : ChannelRequest
-        {
-            public int ParentId { get; set; }
-            public int Taxis { get; set; }
-            public bool IsUp { get; set; }
         }
 
         public class DropRequest : SiteRequest

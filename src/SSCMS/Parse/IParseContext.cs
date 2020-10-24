@@ -66,5 +66,7 @@ namespace SSCMS.Parse
         T Get<T>(string key);
 
         Task<string> ParseAsync(string template);
+
+        Task<string> GetCurrentUrlAsync();
     }
 }

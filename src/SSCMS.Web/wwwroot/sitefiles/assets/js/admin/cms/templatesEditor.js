@@ -15,7 +15,6 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   templateId: utils.getQueryInt("templateId"),
   templateType: utils.getQueryString("templateType"),
-  tabName: utils.getQueryString("tabName"),
   createdFileFullNameTips: '以“~/”开头代表系统根目录，以“@/”开头代表站点根目录',
   channels: null,
   contents: null,
@@ -97,7 +96,9 @@ var methods = {
 
       utils.success('模板代码保存成功!');
       if (isClose) {
-        $this.closeAndReload();
+        setTimeout(function () {
+          window.close();
+        }, 1000);
       }
     }).catch(function (error) {
       utils.error(error);
@@ -138,12 +139,14 @@ var methods = {
     utils.loading(this, true);
     $api.post($urlPreview, {
       siteId: this.siteId,
-      channelId: this.dataSource.channelId,
-      contentId: this.dataSource.contentId,
-      templateId: this.settings.templateId,
+      channelId: this.dataSource.channelId || 0,
+      contentId: this.dataSource.contentId || 0,
+      templateId: this.settings.templateId || 0,
       content: this.content
     }).then(function (response) {
       var res = response.data;
+      var baseUrl = res.baseUrl;
+      var html = res.html; 
 
       var preview = document.getElementById('preview');
       if (preview.children.length > 0) {
@@ -161,9 +164,9 @@ var methods = {
       // workaround for chrome bug
       // http://code.google.com/p/chromium/issues/detail?id=35980#c12
 
-      value = res.value.replace(
-        "<script>",
-        "<script>if ( window.innerWidth === 0 ) { window.innerWidth = parent.innerWidth; window.innerHeight = parent.innerHeight; }"
+      value = html.replace(
+        "<head>",
+        "<head><base href='" + baseUrl + "' /><script>if ( window.innerWidth === 0 ) { window.innerWidth = parent.innerWidth; window.innerHeight = parent.innerHeight; }</script>"
       );
 
       content.open();
@@ -215,15 +218,6 @@ var methods = {
     if (this.templateType === 'ContentTemplate') {
       this.apiGetContents();
     }
-  },
-
-  closeAndReload: function() {
-    var tabVue = utils.getTabVue(this.tabName);
-    if (tabVue) {
-      tabVue.apiList();
-    }
-    utils.removeTab();
-    utils.openTab(this.tabName);
   },
 
   isCreatedFileFullName: function() {

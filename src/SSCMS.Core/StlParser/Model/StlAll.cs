@@ -81,8 +81,8 @@ namespace SSCMS.Core.StlParser.Model
                 typeof(StlItemTemplate)
             },
             {
-                StlMaterial.ElementName,
-                typeof(StlMaterial)
+                StlLayer.ElementName,
+                typeof(StlLayer)
             },
             {
                 StlLoading.ElementName,
@@ -95,6 +95,10 @@ namespace SSCMS.Core.StlParser.Model
             {
                 StlMarquee.ElementName,
                 typeof(StlMarquee)
+            },
+            {
+                StlMaterial.ElementName,
+                typeof(StlMaterial)
             },
             {
                 StlNavigation.ElementName,

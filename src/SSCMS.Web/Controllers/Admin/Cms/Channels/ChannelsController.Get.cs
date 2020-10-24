@@ -26,15 +26,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var channel = await _channelRepository.GetAsync(channelId);
 
-            var linkTypes = _pathManager.GetLinkTypeSelects();
-            var taxisTypes = new List<Select<string>>
-            {
-                new Select<string>(TaxisType.OrderByTaxisDesc),
-                new Select<string>(TaxisType.OrderByTaxis),
-                new Select<string>(TaxisType.OrderByAddDateDesc),
-                new Select<string>(TaxisType.OrderByAddDate)
-            };
-
             var styles = await GetInputStylesAsync(channel);
             var entity = new Entity(channel.ToDictionary());
             foreach (var style in styles)
@@ -64,15 +55,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+            var filePath = string.IsNullOrEmpty(channel.FilePath) ? await _pathManager.GetInputChannelUrlAsync(site, channel, false) : channel.FilePath;
+            var channelFilePathRule = string.IsNullOrEmpty(channel.ChannelFilePathRule) ? await _pathManager.GetChannelFilePathRuleAsync(site, channelId) : channel.ChannelFilePathRule;
+            var contentFilePathRule = string.IsNullOrEmpty(channel.ContentFilePathRule) ? await _pathManager.GetContentFilePathRuleAsync(site, channelId) : channel.ContentFilePathRule;
 
             return new ChannelResult
             {
                 Entity = entity,
-                LinkTypes = linkTypes,
-                TaxisTypes = taxisTypes,
                 Styles = styles,
-                SiteUrl = siteUrl
+                FilePath = filePath,
+                ChannelFilePathRule = channelFilePathRule,
+                ContentFilePathRule = contentFilePathRule
             };
         }
     }

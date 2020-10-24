@@ -45,8 +45,6 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string OnError = nameof(OnError);
 
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
-        public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
-        public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";        //用户或管理员是否已登录
         private const string TypeChannelName = "ChannelName";			                            //栏目名称
         private const string TypeChannelIndex = "ChannelIndex";			                            //栏目索引
         private const string TypeTemplateName = "TemplateName";			                            //模板名称
@@ -65,8 +63,6 @@ namespace SSCMS.Core.StlParser.StlElement
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
             {TypeIsUserLoggin, "用户是否已登录"},
-            {TypeIsAdministratorLoggin, "管理员是否已登录"},
-            {TypeIsUserOrAdministratorLoggin, "用户或管理员是否已登录"},
             {TypeChannelName, "栏目名称"},
             {TypeChannelIndex, "栏目索引"},
             {TypeTemplateName, "模板名称"},
@@ -173,9 +169,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
 
-            if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin))
+            if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin))
             {
                 return await ParseDynamicAsync(parseManager, testType, testValue, testOperate, loading,
                     yes, no, onBeforeSend, onSuccess, onComplete, onError);

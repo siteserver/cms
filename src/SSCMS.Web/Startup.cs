@@ -231,16 +231,16 @@ namespace SSCMS.Web
             options.DefaultFileNames.Add("index.html");
             app.UseDefaultFiles(options);
 
-            if (settingsManager.Containerized)
-            {
-                app.Map($"/{DirectoryUtils.SiteFiles.DirectoryName}/assets", assets =>
-                {
-                    assets.UseStaticFiles(new StaticFileOptions
-                    {
-                        FileProvider = new PhysicalFileProvider(PathUtils.Combine(settingsManager.ContentRootPath, "assets"))
-                    });
-                });
-            }
+            //if (settingsManager.Containerized)
+            //{
+            //    app.Map($"/{DirectoryUtils.SiteFiles.DirectoryName}/assets", assets =>
+            //    {
+            //        assets.UseStaticFiles(new StaticFileOptions
+            //        {
+            //            FileProvider = new PhysicalFileProvider(PathUtils.Combine(settingsManager.ContentRootPath, "assets"))
+            //        });
+            //    });
+            //}
 
             app.UseStaticFiles();
 

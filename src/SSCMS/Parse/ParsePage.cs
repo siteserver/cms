@@ -156,6 +156,7 @@ namespace SSCMS.Parse
 
             public const string Vue = nameof(Vue);
             public const string VueElement = nameof(VueElement);
+            public const string Layer = nameof(Layer);
         }
 
         private async Task<string> GetJsCodeAsync(string pageJsName)
@@ -166,7 +167,7 @@ namespace SSCMS.Parse
             {
                 if (Site.IsCreateWithJQuery)
                 {
-                    var jsUrl = _pathManager.GetSiteFilesUrl(Resources.Components.Jquery);
+                    var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.JqueryJs);
 
                     retVal =
                         $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
@@ -338,18 +339,25 @@ wnd_frame.src=url;}}
             }
             else if (pageJsName == Const.Vue)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.VueJs.Vue);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.VueJs);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.VueElement)
             {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.VueJs.ElementCss);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.VueJs.ElementJs);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Libraries.ElementCss);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.ElementJs);
 
                 retVal =
                     $@"<link href=""{cssUrl}"" rel=""stylesheet"" /><script type=""text/javascript"" src=""{jsUrl}""></script>";
+            }
+            else if (pageJsName == Const.Layer)
+            {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.LayerJs);
+
+                retVal =
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
 
             return retVal;

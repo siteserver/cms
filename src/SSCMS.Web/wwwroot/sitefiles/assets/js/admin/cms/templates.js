@@ -162,8 +162,7 @@ var methods = {
     return utils.getCmsUrl('templatesEditor', {
       siteId: this.siteId,
       templateId: templateId,
-      templateType: templateType,
-      tabName: utils.getTabName()
+      templateType: templateType
     });
   },
 

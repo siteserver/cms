@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Parse;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -51,6 +53,14 @@ namespace SSCMS.Core.Context
             var builder = new StringBuilder(template);
             await ParseManager.ParseInnerContentAsync(builder);
             return builder.ToString();
+        }
+
+        public async Task<string> GetCurrentUrlAsync()
+        {
+            var contextInfo = ParseManager.ContextInfo;
+            var pageInfo = ParseManager.PageInfo;
+            var contentInfo = await ParseManager.GetContentAsync();
+            return await StlParserUtility.GetStlCurrentUrlAsync(ParseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
         }
     }
 }

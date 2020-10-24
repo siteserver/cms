@@ -90,7 +90,7 @@
       <thead class="has-gutter">
         <tr class="">
           <th colspan="1" rowspan="1" class="is-leaf">
-            <div class="cell">栏目名称</div>
+            <div class="cell">栏目名称（提示：可以对栏目进行拖拽操作）</div>
           </th>
           <th 
             v-for="column in columns"
@@ -192,12 +192,6 @@
               <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
                 编辑
               </el-link>
-              <el-link :underline="false" v-if="data.channel.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, true)">
-                上升
-              </el-link>
-              <el-link :underline="false" v-if="data.channel.parentId > 0" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnOrderClick(data, false)">
-                下降
-              </el-link>
               <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
                 删除
               </el-link>
@@ -236,10 +230,6 @@
   </el-button>
 
   <div style="height: 5px"></div>
-
-  <el-alert type="info">
-    提示：可以对栏目进行拖拽管理
-  </el-alert>
 </el-row>
 
 <el-drawer
@@ -389,7 +379,7 @@
 
 <el-drawer
   id="editForm"
-  v-if="form"
+  v-if="editPanel && form"
   title="编辑栏目"
   :visible.sync="editPanel"
   destroy-on-close

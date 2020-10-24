@@ -69,6 +69,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var isTemplateEditable =
                 await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates);
 
+            var linkTypes = _pathManager.GetLinkTypeSelects();
+            var taxisTypes = new List<Select<string>>
+            {
+                new Select<string>(TaxisType.OrderByTaxisDesc),
+                new Select<string>(TaxisType.OrderByTaxis),
+                new Select<string>(TaxisType.OrderByAddDateDesc),
+                new Select<string>(TaxisType.OrderByAddDate)
+            };
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+
             return new ChannelsResult
             {
                 Channel = cascade,
@@ -78,7 +88,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 ContentTemplates = contentTemplates,
                 Columns = columns,
                 CommandsWidth = commandsWidth,
-                IsTemplateEditable = isTemplateEditable
+                IsTemplateEditable = isTemplateEditable,
+                LinkTypes = linkTypes,
+                TaxisTypes = taxisTypes,
+                SiteUrl = siteUrl
             };
         }
 

@@ -65,13 +65,10 @@ namespace SSCMS.Core.Utils
         {
             if (SettingsManager.RunningInContainer)
             {
-                if (!DirectoryUtils.IsDirectoryExists(PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
-                    DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Resources)))
-                {
-                    DirectoryUtils.Copy(PathUtils.Combine(contentRootPath, DirectoryUtils.SiteFiles.Resources),
-                        PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
-                            DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Resources));
-                }
+                var contentSiteFilesPath = PathUtils.Combine(contentRootPath, DirectoryUtils.SiteFiles.DirectoryName);
+                var wwwrootSiteFilesPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
+                    DirectoryUtils.SiteFiles.DirectoryName);
+                DirectoryUtils.Copy(contentSiteFilesPath, wwwrootSiteFilesPath, true);
             }
             else
             {
@@ -81,13 +78,16 @@ namespace SSCMS.Core.Utils
                     var json = FileUtils.ReadText(filePath);
                     if (json.Contains(@"""SecurityKey"": """","))
                     {
-                        var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
-                        FileUtils.WriteText(filePath, json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
+                        var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) +
+                                          StringUtils.GetShortGuid(false);
+                        FileUtils.WriteText(filePath,
+                            json.Replace(@"""SecurityKey"": """",", $@"""SecurityKey"": ""{securityKey}"","));
                     }
                 }
                 else
                 {
-                    var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false);
+                    var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) +
+                                      StringUtils.GetShortGuid(false);
 
                     SaveSettings(contentRootPath, false, false, securityKey, DatabaseType.MySql.GetValue(),
                         string.Empty, string.Empty, string.Empty, null, null);

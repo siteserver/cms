@@ -5,32 +5,32 @@ namespace SSCMS.Parse
 {
     public class ParseContext
     {
-        public ParseContext(ParsePage pageInfo)
+        public ParseContext(ParsePage page)
         {
-            Site = pageInfo.Site;
-            ChannelId = pageInfo.PageChannelId;
-            ContentId = pageInfo.PageContentId;
+            Site = page.Site;
+            ChannelId = page.PageChannelId;
+            ContentId = page.PageContentId;
         }
 
         //用于clone
-        private ParseContext(ParseContext contextInfo)
+        private ParseContext(ParseContext context)
         {
-            ContextType = contextInfo.ContextType;
-            Site = contextInfo.Site;
-            ChannelId = contextInfo.ChannelId;
-            ContentId = contextInfo.ContentId;
-            Channel = contextInfo.Channel;
-            Content = contextInfo.Content;
+            ContextType = context.ContextType;
+            Site = context.Site;
+            ChannelId = context.ChannelId;
+            ContentId = context.ContentId;
+            Channel = context.Channel;
+            Content = context.Content;
 
-            IsInnerElement = contextInfo.IsInnerElement;
-            IsStlEntity = contextInfo.IsStlEntity;
-            PageItemIndex = contextInfo.PageItemIndex;
-            ItemContainer = contextInfo.ItemContainer;
-            ContainerClientId = contextInfo.ContainerClientId;
+            IsInnerElement = context.IsInnerElement;
+            IsStlEntity = context.IsStlEntity;
+            PageItemIndex = context.PageItemIndex;
+            ItemContainer = context.ItemContainer;
+            ContainerClientId = context.ContainerClientId;
 
-            OuterHtml = contextInfo.OuterHtml;
-            InnerHtml = contextInfo.InnerHtml;
-            Attributes = contextInfo.Attributes;
+            OuterHtml = context.OuterHtml;
+            InnerHtml = context.InnerHtml;
+            Attributes = context.Attributes;
         }
 
         public ParseContext Clone(string outerHtml, string innerHtml, NameValueCollection attributes)

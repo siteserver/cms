@@ -58,7 +58,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
 		public class GetResult
 		{
-			public SettingsForm Settings { get; set; }
+            public SettingsForm Settings { get; set; }
 			public string Content { get; set; }
             public Cascade<int> Channels { get; set; }
 			public List<int> ChannelIds { get; set; }
@@ -101,6 +101,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public int ChannelId { get; set; }
 			public int ContentId { get; set; }
 			public string Content { get; set; }
+        }
+
+        public class PreviewResult
+        {
+            public string BaseUrl { get; set; }
+            public string Html { get; set; }
         }
 
 		private string GetTemplateFileExtension(Template template)
