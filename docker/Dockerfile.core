@@ -8,7 +8,7 @@ WORKDIR /sscms
 RUN wget https://dl.sscms.com/cms/7.0.4/sscms-7.0.4-linux-x64.tar.gz
 RUN tar -xzf sscms-7.0.4-linux-x64.tar.gz
 RUN rm sscms-7.0.4-linux-x64.tar.gz -f
-RUN cp -r /sscms/wwwroot/sitefiles /sscms/sitefiles
+RUN mv /sscms/wwwroot /sscms/_wwwroot
 
 FROM base AS final
 WORKDIR /app

@@ -65,10 +65,25 @@ namespace SSCMS.Core.Utils
         {
             if (SettingsManager.RunningInContainer)
             {
-                var contentSiteFilesPath = PathUtils.Combine(contentRootPath, DirectoryUtils.SiteFiles.DirectoryName);
-                var wwwrootSiteFilesPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
-                    DirectoryUtils.SiteFiles.DirectoryName);
-                DirectoryUtils.Copy(contentSiteFilesPath, wwwrootSiteFilesPath, true);
+                //var contentSiteFilesPath = PathUtils.Combine(contentRootPath, DirectoryUtils.SiteFiles.DirectoryName);
+                //var wwwrootSiteFilesPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
+                //    DirectoryUtils.SiteFiles.DirectoryName);
+                //DirectoryUtils.Copy(contentSiteFilesPath, wwwrootSiteFilesPath, true);
+
+                var directoryPath = PathUtils.Combine(contentRootPath, "_wwwroot");
+                foreach (var folderName in DirectoryUtils.GetDirectoryNames(directoryPath))
+                {
+                    var sourcePath = PathUtils.Combine(directoryPath, folderName);
+                    var targetPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, folderName);
+                    DirectoryUtils.Copy(sourcePath, targetPath, true);
+                }
+
+                foreach (var fileName in DirectoryUtils.GetFileNames(directoryPath))
+                {
+                    var sourcePath = PathUtils.Combine(directoryPath, fileName);
+                    var targetPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, fileName);
+                    FileUtils.CopyFile(sourcePath, targetPath, false);
+                }
             }
             else
             {
