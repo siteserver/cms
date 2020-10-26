@@ -395,11 +395,6 @@ namespace SSCMS.Core.StlParser.Utility
             return contextInfo.PageItemIndex + dbItemIndex + 1;
         }
 
-        public static string GetAjaxDivId(int updaterId)
-        {
-            return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
-        }
-
         public static async Task<string> GetStlCurrentUrlAsync(IParseManager parseManager, Site site, int channelId, int contentId, Content content, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;

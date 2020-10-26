@@ -419,8 +419,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 return string.Empty;
             }
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.StlClient);
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
+            var elementId = StringUtils.GetElementId();
 
             //运行解析以便为页面生成所需JS引用
             if (!string.IsNullOrEmpty(yes))
@@ -439,7 +439,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 ChannelId = contextInfo.ChannelId,
                 ContentId = contextInfo.ContentId,
                 TemplateId = pageInfo.Template.Id,
-                AjaxDivId = ajaxDivId,
+                ElementId = elementId,
                 LoadingTemplate = loading,
                 SuccessTemplate = yes,
                 FailureTemplate = no,

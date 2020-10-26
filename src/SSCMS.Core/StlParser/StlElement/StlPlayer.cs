@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
-using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -126,13 +125,13 @@ namespace SSCMS.Core.StlParser.StlElement
             imageUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
             var extension = PathUtils.GetExtension(playUrl);
-            var uniqueId = pageInfo.UniqueId;
+            var elementId = StringUtils.GetElementId();
 
             var fileType = FileUtils.GetType(extension);
 
             if (FileUtils.IsFlash(extension))
             {
-                return await StlFlash.ParseAsync(parseManager);
+                return await StlPdf.ParseAsync(parseManager);
             }
 
             if (FileUtils.IsImage(extension))
@@ -142,37 +141,36 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (fileType == FileType.Avi)
             {
-                return ParseAvi(uniqueId, width, height, isAutoPlay, playUrl);
+                return ParseAvi(elementId, width, height, isAutoPlay, playUrl);
             }
 
             if (fileType == FileType.Mpg)
             {
-                return ParseMpg(uniqueId, width, height, isAutoPlay, playUrl);
+                return ParseMpg(elementId, width, height, isAutoPlay, playUrl);
             }
 
             if (fileType == FileType.Rm || fileType == FileType.Rmb || fileType == FileType.Rmvb)
             {
-                return ParseRm(contextInfo, uniqueId, width, height, isAutoPlay, playUrl);
+                return ParseRm(contextInfo, elementId, width, height, isAutoPlay, playUrl);
             }
 
             if (fileType == FileType.Wmv)
             {
-                return ParseWmv(uniqueId, width, height, isAutoPlay, playUrl);
+                return ParseWmv(elementId, width, height, isAutoPlay, playUrl);
             }
 
             if (fileType == FileType.Wma)
             {
-                return ParseWma(uniqueId, isAutoPlay, playUrl);
+                return ParseWma(elementId, isAutoPlay, playUrl);
             }
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
             {
                 await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcJwPlayer6);
-                var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
                 return $@"
-<div id='{ajaxElementId}'></div>
+<div id='{elementId}'></div>
 <script type='text/javascript'>
-	jwplayer('{ajaxElementId}').setup({{
+	jwplayer('{elementId}').setup({{
         autostart: {StringUtils.ToLower(isAutoPlay.ToString())},
 		file: ""{playUrl}"",
 		width: ""{width}"",
@@ -185,7 +183,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
             {
-                var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
                 await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcFlowPlayer);
 
                 var imageHtml = string.Empty;
@@ -196,9 +193,9 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 var swfUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.FlowPlayer.Swf);
                 return $@"
-<a href=""{playUrl}"" style=""display:block;{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" id=""player_{ajaxElementId}"">{imageHtml}</a>
+<a href=""{playUrl}"" style=""display:block;{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" id=""{elementId}"">{imageHtml}</a>
 <script language=""javascript"">
-    flowplayer(""player_{ajaxElementId}"", ""{swfUrl}"", {{
+    flowplayer(""{elementId}"", ""{swfUrl}"", {{
         clip:  {{
             autoPlay: {StringUtils.ToLower(isAutoPlay.ToString())}
         }}
@@ -210,10 +207,10 @@ namespace SSCMS.Core.StlParser.StlElement
             return await StlVideo.ParseAsync(parseManager);
         }
 
-        private static string ParseAvi(int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseAvi(string elementId, int width, int height, bool isAutoPlay, string playUrl)
         {
             return $@"
-<object id=""palyer_{uniqueId}"" width=""{width}"" height=""{height}"" border=""0"" classid=""clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"">
+<object id=""{elementId}"" width=""{width}"" height=""{height}"" border=""0"" classid=""clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"">
 <param name=""ShowDisplay"" value=""0"">
 <param name=""ShowControls"" value=""1"">
 <param name=""AutoStart"" value=""{(isAutoPlay ? "1" : "0")}"">
@@ -232,10 +229,10 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseMpg(int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseMpg(string elementId, int width, int height, bool isAutoPlay, string playUrl)
         {
             return $@"
-<object classid=""clsid:05589FA1-C356-11CE-BF01-00AA0055595A"" id=""palyer_{uniqueId}"" width=""{width}"" height=""{height}"">
+<object classid=""clsid:05589FA1-C356-11CE-BF01-00AA0055595A"" id=""{elementId}"" width=""{width}"" height=""{height}"">
 <param name=""Appearance"" value=""0"">
 <param name=""AutoStart"" value=""{(isAutoPlay ? "true" : "false")}"">
 <param name=""AllowChangeDisplayMode"" value=""-1"">
@@ -268,7 +265,7 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseRm(ParseContext contextInfo, int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseRm(ParseContext contextInfo, string elementId, int width, int height, bool isAutoPlay, string playUrl)
         {
             if (string.IsNullOrEmpty(contextInfo.Attributes["ShowDisplay"]))
             {
@@ -313,7 +310,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return $@"
-<object id=""video_{uniqueId}"" width=""{width}"" height=""{height}"" border=""0"" classid=""clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"">
+<object id=""{elementId}"" width=""{width}"" height=""{height}"" border=""0"" classid=""clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"">
 {paramBuilder}
 <embed{embedBuilder}>
 </embed>
@@ -321,10 +318,10 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseWmv(int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseWmv(string elementId, int width, int height, bool isAutoPlay, string playUrl)
         {
             return $@"
-<object id=""palyer_{uniqueId}"" WIDTH=""{width}"" HEIGHT=""{height}"" classid=""CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95"" codebase=""http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,5,715"" standby=""Loading Microsoft Windows Media Player components..."" type=""application/x-oleobject"" align=""right"" hspace=""5"">
+<object id=""{elementId}"" WIDTH=""{width}"" HEIGHT=""{height}"" classid=""CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95"" codebase=""http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,5,715"" standby=""Loading Microsoft Windows Media Player components..."" type=""application/x-oleobject"" align=""right"" hspace=""5"">
 <param name=""AutoRewind"" value=""1"">
 <param name=""ShowControls"" value=""1"">
 <param name=""ShowPositionControls"" value=""0"">
@@ -347,10 +344,10 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseWma(int uniqueId, bool isAutoPlay, string playUrl)
+        private static string ParseWma(string elementId, bool isAutoPlay, string playUrl)
         {
             return $@"
-<object classid=""clsid:22D6F312-B0F6-11D0-94AB-0080C74C7E95"" id=""palyer_{uniqueId}"">
+<object classid=""clsid:22D6F312-B0F6-11D0-94AB-0080C74C7E95"" id=""{elementId}"">
 <param name=""Filename"" value=""{playUrl}"">
 <param name=""PlayCount"" value=""1"">
 <param name=""AutoStart"" value=""{(isAutoPlay ? "1" : "0")}"">

@@ -9,6 +9,7 @@ using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -253,7 +254,6 @@ namespace SSCMS.Core.StlParser.StlElement
         private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
         {
             var pageInfo = ParseManager.PageInfo;
-            var contextInfo = ParseManager.ContextInfo;
 
             var loading = ListInfo.LoadingTemplate;
             if (string.IsNullOrEmpty(loading))
@@ -268,14 +268,14 @@ namespace SSCMS.Core.StlParser.StlElement
 </div>";
             }
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+            var elementId = StringUtils.GetElementId();
             var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl();
             var apiParameters = ParseManager.PathManager.GetPageContentsApiParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
 
             var builder = new StringBuilder();
-            builder.Append($@"<div id=""{ajaxDivId}"">");
+            builder.Append($@"<div id=""{elementId}"">");
             builder.Append($@"<div class=""loading"">{loading}</div>");
             builder.Append($@"<div class=""yes"">{string.Empty}</div>");
             builder.Append("</div>");
@@ -283,8 +283,8 @@ namespace SSCMS.Core.StlParser.StlElement
             builder.Append($@"
 <script type=""text/javascript"" language=""javascript"">
 $(document).ready(function(){{
-    $(""#{ajaxDivId} .loading"").show();
-    $(""#{ajaxDivId} .yes"").hide();
+    $(""#{elementId} .loading"").show();
+    $(""#{elementId} .yes"").hide();
 
     var url = '{apiUrl}';
     var parameters = {apiParameters};
@@ -297,13 +297,13 @@ $(document).ready(function(){{
         data: JSON.stringify(parameters),
         dataType: 'json',
         success: function(res) {{
-            $(""#{ajaxDivId} .loading"").hide();
-            $(""#{ajaxDivId} .yes"").show();
-            $(""#{ajaxDivId} .yes"").html(res);
+            $(""#{elementId} .loading"").hide();
+            $(""#{elementId} .yes"").show();
+            $(""#{elementId} .yes"").html(res);
         }},
         error: function(e) {{
-            $(""#{ajaxDivId} .loading"").hide();
-            $(""#{ajaxDivId} .yes"").hide();
+            $(""#{elementId} .loading"").hide();
+            $(""#{elementId} .yes"").hide();
         }}
     }});
 }});

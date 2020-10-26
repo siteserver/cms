@@ -93,10 +93,10 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
             var builder = new StringBuilder();
-            var uniqueId = pageInfo.UniqueId;
+            var elementId = StringUtils.GetElementId();
             var isHeader = StringUtils.EqualsIgnoreCase(type, TypeHead);
 
             var htmlDoc = new HtmlDocument();
@@ -109,7 +109,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     builder.Append($@"
 <script language=javascript>
-function stl_tab_{uniqueId}(tabName, no){{
+function stl_tab_{elementId}(tabName, no){{
 	for ( i = 1; i <= {htmlNodes.Count}; i++){{
 		var el = jQuery('#{tabName}_tabContent_' + i);
 		var li = $('#{tabName}_tabHeader_' + i);
@@ -158,11 +158,11 @@ function stl_tab_{uniqueId}(tabName, no){{
                         attributes["id"] = $"{tabName}_tabHeader_{count}";
                         if (StringUtils.EqualsIgnoreCase(action, ActionMouseOver))
                         {
-                            attributes["onmouseover"] = $"stl_tab_{uniqueId}('{tabName}', {count});return false;";
+                            attributes["onmouseover"] = $"stl_tab_{elementId}('{tabName}', {count});return false;";
                         }
                         else
                         {
-                            attributes["onclick"] = $"stl_tab_{uniqueId}('{tabName}', {count});return false;";
+                            attributes["onclick"] = $"stl_tab_{elementId}('{tabName}', {count});return false;";
                         }
                         if (current != 0)
                         {

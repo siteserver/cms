@@ -263,32 +263,32 @@ namespace SSCMS.Core.StlParser.StlElement
                         isTopText = (TranslateUtils.ToBool(isTopText)) ? "0" : "1";
                     }
 
-                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
+                    var elementId = StringUtils.GetElementId();
                     var paramBuilder = new StringBuilder();
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
+                        $@"so_{elementId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
+                        $@"so_{elementId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(Constants.ReturnAndNewline);
+                        $@"so_{elementId}.addParam(""menu"", ""false"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(Constants.ReturnAndNewline);
+                        $@"so_{elementId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(Constants.ReturnAndNewline);
 
                     var bcastrUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Bcastr);
 
                     string scriptHtml = $@"
-<div id=""flashcontent_{uniqueId}""></div>
+<div id=""flashcontent_{elementId}""></div>
 <script type=""text/javascript"">
 var files_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
 var links_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
 var texts_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{bcastrUrl}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{elementId} = new SWFObject(""{bcastrUrl}"", ""flash_{elementId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
-so_{uniqueId}.write(""flashcontent_{uniqueId}"");
+so_{elementId}.write(""flashcontent_{elementId}"");
 </script>
 ";
-                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueId);
+                    scriptHtml = scriptHtml.Replace("uniqueID", elementId);
 
                     parsedContent = scriptHtml;
                 }
@@ -316,31 +316,31 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
+                    var elementId = StringUtils.GetElementId();
                     var paramBuilder = new StringBuilder();
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowFullScreen"", ""true"");").Append(Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowScriptAccess"", ""always"");").Append(Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{elementId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{elementId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{elementId}.addParam(""allowFullScreen"", ""true"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{elementId}.addParam(""allowScriptAccess"", ""always"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{elementId}.addParam(""menu"", ""false"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(Constants.ReturnAndNewline);
+                        $@"so_{elementId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(Constants.ReturnAndNewline);
 
                     var aliUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Ali);
 
                     string scriptHtml = $@"
-<div id=""flashcontent_{uniqueId}""></div>
+<div id=""flashcontent_{elementId}""></div>
 <script type=""text/javascript"">
 var urls_uniqueID='{ListUtils.ToString(navigationUrls, "|")}';
 var imgs_uniqueID='{ListUtils.ToString(imageUrls, "|")}';
 var titles_uniqueID='{ListUtils.ToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{aliUrl}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{elementId} = new SWFObject(""{aliUrl}"", ""flash_{elementId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
-so_{uniqueId}.write(""flashcontent_{uniqueId}"");
+so_{elementId}.write(""flashcontent_{elementId}"");
 </script>
 ";
-                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueId);
+                    scriptHtml = scriptHtml.Replace("uniqueID", elementId);
 
                     parsedContent = scriptHtml;
                 }
@@ -461,7 +461,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
 ";
 
-                    parsedContent = scriptHtml.Replace("fv_", $"fv{pageInfo.UniqueId}_");
+                    parsedContent = scriptHtml.Replace("fv_", $"fv{StringUtils.GetElementId()}_");
                 }
                 else
                 {
@@ -499,8 +499,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     {
                         titles = ListUtils.ToString(titleCollection, "|");
                     }
-                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
-                    attributes["id"] = uniqueId;
+                    var elementId = StringUtils.GetElementId();
+                    attributes["id"] = elementId;
                     var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
 
                     var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.BaiRongFlash.Js);
@@ -532,7 +532,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 	uniqueID_FocusFlash.write(""uniqueID"");
 </script>
 ";
-                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueId);
+                    scriptHtml = scriptHtml.Replace("uniqueID", elementId);
 
                     parsedContent = divHtml + scriptHtml;
                 }

@@ -57,10 +57,6 @@ namespace SSCMS.Core.StlParser.Model
                 typeof(StlFile)
             },
             {
-                StlFlash.ElementName,
-                typeof(StlFlash)
-            },
-            {
                 StlFocusViewer.ElementName,
                 typeof(StlFocusViewer)
             },
@@ -127,6 +123,10 @@ namespace SSCMS.Core.StlParser.Model
             {
                 StlPageSqlContents.ElementName,
                 typeof(StlPageSqlContents)
+            },
+            {
+                StlPdf.ElementName,
+                typeof(StlPdf)
             },
             {
                 StlPlayer.ElementName,

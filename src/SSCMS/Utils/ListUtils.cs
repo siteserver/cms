@@ -50,6 +50,20 @@ namespace SSCMS.Utils
             return list;
         }
 
+        public static List<T> AddIfNotExists<T>(List<T> list, T value)
+        {
+            if (list == null)
+            {
+                list = new List<T>();
+            }
+
+            if (!list.Contains(value))
+            {
+                list.Add(value);
+            }
+            return list;
+        }
+
         public static int Count<T>(List<T> list)
         {
             return list?.Count ?? 0;

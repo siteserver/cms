@@ -238,8 +238,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var channel = await databaseManager.ChannelRepository.GetAsync(channelId);
 
-            var uniqueId = "Select_" + pageInfo.UniqueId;
-            attributes["id"] = uniqueId;
+            var elementId = StringUtils.GetElementId();
+            attributes["id"] = elementId;
 
             string scriptHtml;
             if (openWin)
@@ -247,20 +247,20 @@ namespace SSCMS.Core.StlParser.StlElement
                 scriptHtml = $@"
 <script language=""javascript"" type=""text/javascript"">
 <!--
-function {uniqueId}_jumpMenu(targ,selObj)
+function {elementId}_jumpMenu(targ,selObj)
 {"{"} //v3.0
 window.open(selObj.options[selObj.selectedIndex].value);
 selObj.selectedIndex=0;
 {"}"}
 //-->
 </script>";
-                attributes["onchange"] = $"{uniqueId}_jumpMenu('parent',this)";
+                attributes["onchange"] = $"{elementId}_jumpMenu('parent',this)";
             }
             else
             {
                 scriptHtml =
-                    $"<script language=\"JavaScript\">function {uniqueId}_jumpMenu(targ,selObj,restore){{eval(targ+\".location=\'\"+selObj.options[selObj.selectedIndex].value+\"\'\");if (restore) selObj.selectedIndex=0;}}</script>";
-                attributes["onchange"] = $"{uniqueId}_jumpMenu('self',this, 0)";
+                    $"<script language=\"JavaScript\">function {elementId}_jumpMenu(targ,selObj,restore){{eval(targ+\".location=\'\"+selObj.options[selObj.selectedIndex].value+\"\'\");if (restore) selObj.selectedIndex=0;}}</script>";
+                attributes["onchange"] = $"{elementId}_jumpMenu('self',this, 0)";
             }
 
             var htmlBuilder = new StringBuilder();

@@ -21,15 +21,15 @@ namespace SSCMS.Core.StlParser.StlEntity
             var parsedContent = string.Empty;
             try
             {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var entityValue = StlParserUtility.GetValueFromEntity(stlEntity);
                 var attributeName = entityName.Substring(9, entityName.Length - 10);
 
-                var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                var functionName = $"stlRequest_{ajaxDivId}";
-                parsedContent = $@"<span id=""{ajaxDivId}""></span>";
+                var elementId = StringUtils.GetElementId();
+                var functionName = $"stlRequest_{elementId}";
+                parsedContent = $@"<span id=""{elementId}""></span>";
 
                 var builder = new StringBuilder();
                 builder.Append($@"
@@ -42,7 +42,7 @@ $(function(){{
         var reg = new RegExp(""(^|&){attributeName}=([^&]*)(&|$)""); 
         var r = queryString.substring(1).match(reg);
         var v = decodeURI(decodeURI(r[2]));
-        if (r) $(""#{ajaxDivId}"").text(v);");
+        if (r) $(""#{elementId}"").text(v);");
 
                 if (!string.IsNullOrEmpty(entityValue))
                 {

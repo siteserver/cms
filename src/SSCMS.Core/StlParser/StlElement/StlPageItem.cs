@@ -422,12 +422,12 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     TranslateUtils.AddAttributesIfNotExists(selectAttributes, attributes);
 
-                    var uniqueId = "PageSelect_" + pageInfo.UniqueId;
-                    selectAttributes["id"] = uniqueId;
+                    var elementId = StringUtils.GetElementId();
+                    selectAttributes["id"] = elementId;
 
                     var scriptHtml =
-                        $"<script language=\"JavaScript\">function {uniqueId}_jumpMenu(targ,selObj,restore){{eval(targ+\".location=\'\"+selObj.options[selObj.selectedIndex].value+\"\'\");if (restore) selObj.selectedIndex=0;}}</script>";
-                    selectAttributes["onchange"] = $"{uniqueId}_jumpMenu('self',this,0)";
+                        $"<script language=\"JavaScript\">function {elementId}_jumpMenu(targ,selObj,restore){{eval(targ+\".location=\'\"+selObj.options[selObj.selectedIndex].value+\"\'\");if (restore) selObj.selectedIndex=0;}}</script>";
+                    selectAttributes["onchange"] = $"{elementId}_jumpMenu('self',this,0)";
 
                     var builder = new StringBuilder();
                     using (var htmlSelect = new HtmlSelect(builder, selectAttributes))
@@ -917,8 +917,8 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     TranslateUtils.AddAttributesIfNotExists(selectAttributes, attributes);
                     
-                    var uniqueId = "PageSelect_" + parseManager.PageInfo.UniqueId;
-                    selectAttributes["id"] = uniqueId;
+                    var elementId = StringUtils.GetElementId();
+                    selectAttributes["id"] = elementId;
                     selectAttributes["onchange"] = clickString;
                     selectAttributes["style"] = "display:none";
 

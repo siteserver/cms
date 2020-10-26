@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Model;
@@ -89,10 +90,8 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 nodePath.Add(contextInfo.ChannelId);
             }
-            var channelIdArrayList = ListUtils.GetStringList(ListUtils.ToString(nodePath));
-            foreach (var channelIdStr in channelIdArrayList)
+            foreach (var currentId in nodePath.Distinct())
             {
-                var currentId = TranslateUtils.ToInt(channelIdStr);
                 var currentNodeInfo = await databaseManager.ChannelRepository.GetAsync(currentId);
                 if (currentId == pageInfo.SiteId)
                 {

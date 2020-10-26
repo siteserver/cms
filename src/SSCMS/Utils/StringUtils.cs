@@ -793,5 +793,10 @@ namespace SSCMS.Utils
 
             return parsedContent;
         }
+
+        public static string GetElementId()
+        {
+            return "e_" + GetShortGuid(false);
+        }
     }
 }

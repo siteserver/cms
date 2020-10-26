@@ -92,7 +92,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private static async Task<string> ParseImplAsync(IParseManager parseManager, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
-            await parseManager.PageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.StlClient);
+            await parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
 
             //运行解析以便为页面生成所需JS引用
             if (!string.IsNullOrEmpty(template))
@@ -107,7 +107,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 ChannelId = parseManager.ContextInfo.ChannelId,
                 ContentId = parseManager.ContextInfo.ContentId,
                 TemplateId = parseManager.PageInfo.Template.Id,
-                AjaxDivId = StlParserUtility.GetAjaxDivId(parseManager.PageInfo.UniqueId),
+                ElementId = StringUtils.GetElementId(),
                 LoadingTemplate = loading,
                 SuccessTemplate = template,
                 OnBeforeSend = onBeforeSend,
@@ -136,7 +136,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
             await parseManager.InitAsync(siteInfo, dynamicInfo.ChannelId, dynamicInfo.ContentId, templateInfo);
 
-            parseManager.PageInfo.UniqueId = 1000;
             parseManager.PageInfo.User = dynamicInfo.User;
 
             var templateContent = StlRequestEntities.ParseRequestEntities(dynamicInfo.QueryString, template);
@@ -162,7 +161,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var pageHtml = await pageContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         contentBuilder.Replace(stlPageContentsElementReplaceString, pageHtml);
 
-                        await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                        await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.ElementId);
 
                         break;
                     }
@@ -185,7 +184,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var pageHtml = await pageChannelsElementParser.ParseAsync(currentPageIndex, pageCount);
                     contentBuilder.Replace(stlPageChannelsElementReplaceString, pageHtml);
 
-                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.ElementId);
 
                     break;
                 }
@@ -207,7 +206,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                     contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
 
-                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.AjaxDivId);
+                    await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.ElementId);
 
                     break;
                 }

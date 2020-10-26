@@ -18,8 +18,8 @@ namespace SSCMS.Services
 
         Task ReplacePageElementsInChannelPageAsync(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum);
 
-        Task ReplacePageElementsInSearchPageAsync(StringBuilder parsedBuilder, List<string> labelList, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum);
+        Task ReplacePageElementsInSearchPageAsync(StringBuilder parsedBuilder, List<string> labelList, string elementId, int currentPageIndex, int pageCount, int totalNum);
 
-        Task ReplacePageElementsInDynamicPageAsync(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId);
+        Task ReplacePageElementsInDynamicPageAsync(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string elementId);
     }
 }

@@ -112,7 +112,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 height = "height:120px;";
             }
 
-            var uniqueId = "Marquee_" + pageInfo.UniqueId;
+            var elementId = StringUtils.GetElementId();
             if (direction.Equals(DirectionVertical))
             {
                 topHtml = $@"
@@ -184,12 +184,12 @@ if (uniqueID_isMar){{
 </script>";
             }
 
-            if (!pageInfo.FootCodes.ContainsKey(ElementName + uniqueId))
+            if (!pageInfo.FootCodes.ContainsKey(ElementName + elementId))
             {
-                pageInfo.FootCodes.Add(ElementName + uniqueId, scripts.Replace("uniqueID", uniqueId));
+                pageInfo.FootCodes.Add(ElementName + elementId, scripts.Replace("uniqueID", elementId));
             }
 
-            return topHtml.Replace("uniqueID", uniqueId) + scrollHtml + bottomHtml.Replace("uniqueID", uniqueId);
+            return topHtml.Replace("uniqueID", elementId) + scrollHtml + bottomHtml.Replace("uniqueID", elementId);
         }
 	}
 }

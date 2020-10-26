@@ -103,8 +103,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 return playUrl;
             }
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcMediaElement);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.JsAcMediaElement);
 
             var url = parseManager.PathManager.GetSiteFilesUrl(Resources.MediaElement.Swf);
 

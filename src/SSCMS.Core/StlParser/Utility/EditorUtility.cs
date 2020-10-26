@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Parse;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.Utility
 {
@@ -13,24 +14,24 @@ namespace SSCMS.Core.StlParser.Utility
                 await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Vue);
                 await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.VueElement);
 
-                var uniqueId = pageInfo.UniqueId;
+                var elementId = StringUtils.GetElementId();
                 parsedContent = parsedContent.Replace("<p>", "<div>");
                 parsedContent = parsedContent.Replace("</p>", "</div>");
                 parsedContent = $@"
-<div id=""vue_{uniqueId}""></div>
+<div id=""vue_{elementId}""></div>
 <script type=""text/javascript"">
-var templates_{uniqueId} = '{parsedContent}';
-var container_{uniqueId} = $(templates_{uniqueId});
-var elements_{uniqueId} = container_{uniqueId}.find('[data-vue]');
-for(var i = 0; i < elements_{uniqueId}.length; i++) {{
-  var element = $(elements_{uniqueId}[i]);
+var templates_{elementId} = '{parsedContent}';
+var container_{elementId} = $(templates_{elementId});
+var elements_{elementId} = container_{elementId}.find('[data-vue]');
+for(var i = 0; i < elements_{elementId}.length; i++) {{
+  var element = $(elements_{elementId}[i]);
   var vueHtml = decodeURIComponent(element.data('vue'));
-  templates_{uniqueId} = templates_{uniqueId}.replace(elements_{uniqueId}[i].outerHTML, vueHtml);
+  templates_{elementId} = templates_{elementId}.replace(elements_{elementId}[i].outerHTML, vueHtml);
 }}
-$('#vue_{uniqueId}').html(templates_{uniqueId});
+$('#vue_{elementId}').html(templates_{elementId});
 
-var $vue_{uniqueId} = new Vue({{
-  el: ""#vue_{uniqueId}"",
+var $vue_{elementId} = new Vue({{
+  el: ""#vue_{elementId}"",
   data: {{
     show: false
   }},

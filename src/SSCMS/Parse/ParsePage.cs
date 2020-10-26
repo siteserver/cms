@@ -46,14 +46,6 @@ namespace SSCMS.Parse
 
         public Dictionary<string, object> PluginItems { get; private set; }
 
-        private int _uniqueId;
-
-        public int UniqueId
-        {
-            get => _uniqueId++;
-            set => _uniqueId = value;
-        }
-
         public ParsePage Clone()
         {
             return new ParsePage(_pathManager, Config, PageChannelId, PageContentId, Site, Template, PluginItems)
@@ -79,7 +71,6 @@ namespace SSCMS.Parse
             Config = config;
             Site = site;
             User = null;
-            _uniqueId = 1;
             ChannelItems = new Stack<KeyValuePair<int, Channel>>(5);
             ContentItems = new Stack<KeyValuePair<int, Content>>(5);
             SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5);
@@ -157,6 +148,7 @@ namespace SSCMS.Parse
             public const string Vue = nameof(Vue);
             public const string VueElement = nameof(VueElement);
             public const string Layer = nameof(Layer);
+            public const string PdfObject = nameof(PdfObject);
         }
 
         private async Task<string> GetJsCodeAsync(string pageJsName)
@@ -356,6 +348,12 @@ wnd_frame.src=url;}}
             {
                 var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.LayerJs);
 
+                retVal =
+                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
+            }
+            else if (pageJsName == Const.PdfObject)
+            {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.PdfObjectJs);
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }

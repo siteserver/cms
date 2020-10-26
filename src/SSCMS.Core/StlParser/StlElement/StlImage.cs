@@ -229,7 +229,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 var extension = PathUtils.GetExtension(picUrl);
                 if (FileUtils.IsFlash(extension))
                 {
-                    parsedContent = await StlFlash.ParseAsync(parseManager);
+                    parsedContent = await StlPdf.ParseAsync(parseManager);
                 }
                 else if (FileUtils.IsPlayer(extension))
                 {

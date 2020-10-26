@@ -87,8 +87,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Layer);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Layer);
 
             var type = 1;
             var content = string.Empty;
@@ -101,10 +101,10 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 await parseManager.ParseInnerContentAsync(innerBuilder);
-                var uniqueId = "Layer_" + pageInfo.UniqueId;
-                pageInfo.BodyCodes.Add(uniqueId,
-                    $@"<div id=""{uniqueId}"" style=""display: none"">{innerBuilder}</div>");
-                content = $"$('#{uniqueId}')";
+                var elementId = StringUtils.GetElementId();
+                pageInfo.BodyCodes.Add(elementId,
+                    $@"<div id=""{elementId}"" style=""display: none"">{innerBuilder}</div>");
+                content = $"$('#{elementId}')";
             }
 
             var area = string.Empty;

@@ -17,15 +17,15 @@ namespace SSCMS.Core.StlParser.Model
             var display = inline ? "inline-block" : "block";
 
             return $@"
-<span id=""{AjaxDivId}_loading"">{LoadingTemplate}</span>
-<span id=""{AjaxDivId}_success"" style=""display: none""></span>
-<span id=""{AjaxDivId}_failure"" style=""display: none""></span>
+<span id=""{ElementId}_loading"">{LoadingTemplate}</span>
+<span id=""{ElementId}_success"" style=""display: none""></span>
+<span id=""{ElementId}_failure"" style=""display: none""></span>
 <script type=""text/javascript"" language=""javascript"">
-function stlDynamic{AjaxDivId}(page)
+function stlDynamic{ElementId}(page)
 {{
-    document.getElementById('{AjaxDivId}_loading').style.display = '{display}';
-    document.getElementById('{AjaxDivId}_success').style.display = 'none';
-    document.getElementById('{AjaxDivId}_failure').style.display = 'none';
+    document.getElementById('{ElementId}_loading').style.display = '{display}';
+    document.getElementById('{ElementId}_success').style.display = 'none';
+    document.getElementById('{ElementId}_failure').style.display = 'none';
     {OnBeforeSend}
     stlClient.post('{apiUrl}?' + StlClient.getQueryString(), {{
         value: '{values}',
@@ -34,11 +34,11 @@ function stlDynamic{AjaxDivId}(page)
         if (!err) {{
             if (data.value) {{
                 {OnSuccess}
-                document.getElementById('{AjaxDivId}_success').innerHTML = data.html;
-                document.getElementById('{AjaxDivId}_success').style.display = '{display}';
+                document.getElementById('{ElementId}_success').innerHTML = data.html;
+                document.getElementById('{ElementId}_success').style.display = '{display}';
             }} else {{
-                document.getElementById('{AjaxDivId}_failure').innerHTML = data.html;
-                document.getElementById('{AjaxDivId}_failure').style.display = '{display}';
+                document.getElementById('{ElementId}_failure').innerHTML = data.html;
+                document.getElementById('{ElementId}_failure').style.display = '{display}';
             }}
         }} else {{
             {OnError}
@@ -47,7 +47,7 @@ function stlDynamic{AjaxDivId}(page)
     }});
 }}
 
-function stlGetPage{AjaxDivId}(){{
+function stlGetPage{ElementId}(){{
     var page = 1;
     var queryString = document.location.search;
     if (queryString && queryString.length > 1) {{
@@ -66,9 +66,9 @@ function stlGetPage{AjaxDivId}(){{
     return page;
 }}
 
-stlDynamic{AjaxDivId}(stlGetPage{AjaxDivId}());
+stlDynamic{ElementId}(stlGetPage{ElementId}());
 
-function stlRedirect{AjaxDivId}(page)
+function stlRedirect{ElementId}(page)
 {{
     var queryString = document.location.search;
     var parameters = '';

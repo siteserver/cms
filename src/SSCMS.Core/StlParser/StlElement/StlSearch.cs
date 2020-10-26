@@ -169,16 +169,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 no = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
             }
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.StlClient);
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            var elementId = StringUtils.GetElementId();
 
             var apiUrl = GetSearchApiUrl(parseManager.SettingsManager);
-            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
+            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, elementId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"
-<div id=""{ajaxDivId}"">
+<div id=""{elementId}"">
     <div class=""stl_loading"">{loading}</div>
     <div class=""stl_yes"" style=""display:none""></div>
     <div class=""stl_no"" style=""display:none"">{no}</div>
@@ -219,25 +219,25 @@ jQuery(document).ready(function(){{
             data: JSON.stringify(parameters),
             dataType: 'json',
             success: function(res) {{
-                jQuery(""#{ajaxDivId} .stl_loading"").hide();
-                jQuery(""#{ajaxDivId} .stl_yes"").show();
-                jQuery(""#{ajaxDivId} .stl_no"").hide();
-                jQuery(""#{ajaxDivId} .stl_yes"").html(res.value);
+                jQuery(""#{elementId} .stl_loading"").hide();
+                jQuery(""#{elementId} .stl_yes"").show();
+                jQuery(""#{elementId} .stl_no"").hide();
+                jQuery(""#{elementId} .stl_yes"").html(res.value);
             }},
             error: function(e) {{
-                jQuery(""#{ajaxDivId} .stl_loading"").hide();
-                jQuery(""#{ajaxDivId} .stl_yes"").hide();
-                jQuery(""#{ajaxDivId} .stl_no"").show();
+                jQuery(""#{elementId} .stl_loading"").hide();
+                jQuery(""#{elementId} .stl_yes"").hide();
+                jQuery(""#{elementId} .stl_no"").show();
             }}
         }});
     }} else {{
-        jQuery(""#{ajaxDivId} .stl_loading"").hide();
-        jQuery(""#{ajaxDivId} .stl_yes"").hide();
-        jQuery(""#{ajaxDivId} .stl_no"").hide();
+        jQuery(""#{elementId} .stl_loading"").hide();
+        jQuery(""#{elementId} .stl_yes"").hide();
+        jQuery(""#{elementId} .stl_no"").hide();
     }}
 }});
 
-function stlRedirect{ajaxDivId}(page)
+function stlRedirect{elementId}(page)
 {{
     var queryString = document.location.search;
     if (queryString && queryString.length > 1) {{

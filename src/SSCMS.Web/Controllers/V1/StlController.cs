@@ -109,7 +109,7 @@ namespace SSCMS.Web.Controllers.V1
                 PageInfo = new ParsePage(pathManager, config, request.ChannelId, request.ContentId, Site, templateInfo,
                     new Dictionary<string, object>())
                 {
-                    UniqueId = 1000, User = await Auth.GetUserAsync()
+                    User = await Auth.GetUserAsync()
                 };
 
                 var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();

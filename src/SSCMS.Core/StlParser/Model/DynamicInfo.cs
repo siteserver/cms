@@ -54,7 +54,7 @@ namespace SSCMS.Core.StlParser.Model
         public int ChannelId { get; set; }
         public int ContentId { get; set; }
         public int TemplateId { get; set; }
-        public string AjaxDivId { get; set; }
+        public string ElementId { get; set; }
         public string LoadingTemplate { get; set; }
         public string SuccessTemplate { get; set; }
         public string FailureTemplate { get; set; }

@@ -121,7 +121,7 @@ namespace SSCMS.Core.Services
                 var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, _parseManager);
                 var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
-                await _parseManager.PageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                await _parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
                 await _parseManager.ParseAsync(contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -151,7 +151,7 @@ namespace SSCMS.Core.Services
                 var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, _parseManager);
                 var pageCount = pageChannelsElementParser.GetPageCount(out var totalNum);
 
-                await _parseManager.PageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                await _parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
                 await _parseManager.ParseAsync(contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -180,7 +180,7 @@ namespace SSCMS.Core.Services
                 var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, _parseManager);
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
-                await _parseManager.PageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                await _parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
                 await _parseManager.ParseAsync(contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
