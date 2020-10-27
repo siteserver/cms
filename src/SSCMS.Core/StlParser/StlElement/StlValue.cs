@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Services;
@@ -54,6 +55,18 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public const string TypeDate = "Date";
         public const string TypeDateOfTraditional = "DateOfTraditional";
+        public static string TypeSiteId = "SiteId";
+        public static string TypeSiteDir = "SiteDir";
+        public static string TypeSiteName = "SiteName";
+        public static string TypeSiteUrl = "SiteUrl";
+        public static string TypeRootUrl = "RootUrl";
+        public static string TypeApiUrl = "ApiUrl";
+        public static string TypeCurrentUrl = "CurrentUrl";
+        public static string TypeChannelUrl = "ChannelUrl";
+        public static string TypeHomeUrl = "HomeUrl";
+        public static string TypeLoginUrl = "LoginUrl";
+        public static string TypeRegisterUrl = "RegisterUrl";
+        public static string TypeLogoutUrl = "LogoutUrl";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
@@ -140,7 +153,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
-            string parsedContent;
+            var parsedContent = string.Empty;
 
             if (contextInfo.ContextType == ParseType.Each)
             {
@@ -169,6 +182,76 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(true);</script>";
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeRootUrl, type))//系统根目录地址
+            {
+                parsedContent = parseManager.PathManager.ParseUrl("~");
+                if (!string.IsNullOrEmpty(parsedContent))
+                {
+                    parsedContent = parsedContent.TrimEnd('/');
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeApiUrl, type))//API地址
+            {
+                parsedContent = parseManager.PathManager.GetRootUrl();
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeSiteId, type))//ID
+            {
+                parsedContent = pageInfo.SiteId.ToString();
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeSiteName, type))//名称
+            {
+                parsedContent = pageInfo.Site.SiteName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeSiteUrl, type))//域名地址
+            {
+                parsedContent = (await parseManager.PathManager.GetSiteUrlAsync(pageInfo.Site, pageInfo.IsLocal)).TrimEnd('/');
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeSiteDir, type))//文件夹
+            {
+                parsedContent = pageInfo.Site.SiteDir;
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeCurrentUrl, type))//当前页地址
+            {
+                var contentInfo = await parseManager.GetContentAsync();
+                parsedContent = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeChannelUrl, type))//栏目页地址
+            {
+                parsedContent = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, await parseManager.DatabaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId), pageInfo.IsLocal);
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeHomeUrl, type))//用户中心地址
+            {
+                parsedContent = parseManager.PathManager.GetHomeUrl(string.Empty).TrimEnd('/');
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeLoginUrl, type))
+            {
+                var contentInfo = await parseManager.GetContentAsync();
+                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                parsedContent = parseManager.PathManager.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeLogoutUrl, type))
+            {
+                var contentInfo = await parseManager.GetContentAsync();
+                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                parsedContent = parseManager.PathManager.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+            }
+            else if (StringUtils.EqualsIgnoreCase(TypeRegisterUrl, type))
+            {
+                var contentInfo = await parseManager.GetContentAsync();
+                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                parsedContent = parseManager.PathManager.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+            }
+            else if (StringUtils.StartsWithIgnoreCase(type, "TableFor"))//
+            {
+                if (StringUtils.EqualsIgnoreCase(type, "TableForContent"))
+                {
+                    parsedContent = pageInfo.Site.TableName;
+                }
+            }
+            else if (StringUtils.StartsWithIgnoreCase(type, "Site"))//
+            {
+                parsedContent = pageInfo.Site.Get<string>(type.Substring(4));
             }
             else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(type))
             {
