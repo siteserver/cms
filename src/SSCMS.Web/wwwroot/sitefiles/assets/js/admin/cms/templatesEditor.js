@@ -297,7 +297,10 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
+      utils.openLayer({
+        title: '生成进度查看',
+        url: utils.getCmsUrl('createStatus', {siteId: $this.siteId}),
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

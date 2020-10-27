@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 
-namespace SSCMS.Core.StlParser.StlEntity
+namespace SSCMS.Core.StlParser.Utility
 {
     [StlElement(Title = "STL标签实体", Description = "通过 {stl:} 实体在模板中实现STL标签")]
     public static class StlElementEntities

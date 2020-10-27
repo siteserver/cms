@@ -10,6 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="StlParser\StlEntity\**" />
+    <EmbeddedResource Remove="StlParser\StlEntity\**" />
+    <None Remove="StlParser\StlEntity\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CacheManager.Core" Version="1.2.0" />
     <PackageReference Include="CacheManager.Microsoft.Extensions.Configuration" Version="1.2.0" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
@@ -33,8 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="SSCMS" Version="7.0.3" />-->
-    <ProjectReference Include="..\SSCMS\SSCMS.csproj" />
+    <PackageReference Include="SSCMS" Version="7.0.4" />
+    <!--<ProjectReference Include="..\SSCMS\SSCMS.csproj" />-->
   </ItemGroup>
 
 </Project>

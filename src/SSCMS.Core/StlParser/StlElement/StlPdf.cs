@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SSCMS.Parse;
@@ -150,17 +151,19 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
+            fileUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, fileUrl, false);
+
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.PdfObject);
 
-            dynamic options = new { };
+            var options = new Dictionary<string, object>();
             if (!string.IsNullOrEmpty(fallbackLink))
             {
-                options.fallbackLink = fallbackLink;
+                options["fallbackLink"] = fallbackLink;
             }
-            options.forceIframe = forceIframe;
+            options["forceIframe"] = forceIframe;
             if (page > 0)
             {
-                options.page = page;
+                options["page"] = page;
             }
 
             if (full)
@@ -170,11 +173,11 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (!string.IsNullOrEmpty(height))
             {
-                options.height = height;
+                options["height"] = height;
             }
             if (!string.IsNullOrEmpty(width))
             {
-                options.width = width;
+                options["width"] = width;
             }
 
             attributes["id"] = elementId;

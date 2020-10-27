@@ -235,7 +235,6 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                             parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, ",", pageInfo.Site, styleInfo, string.Empty, null, string.Empty, true);
                         }
-
                     }
                 }
                 catch

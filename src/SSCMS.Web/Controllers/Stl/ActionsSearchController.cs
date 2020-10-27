@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.StlElement;
-using SSCMS.Core.StlParser.StlEntity;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Dto;
 using SSCMS.Enums;
@@ -66,7 +65,7 @@ namespace SSCMS.Web.Controllers.Stl
                 await _parseManager.InitAsync(site, request.SiteId, 0, templateInfo);
                 _parseManager.PageInfo.User = await _authManager.GetUserAsync();
 
-                var contentBuilder = new StringBuilder(StlRequestEntities.ParseRequestEntities(form, template));
+                var contentBuilder = new StringBuilder(StlRequest.ParseRequestEntities(form, template));
 
                 var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 

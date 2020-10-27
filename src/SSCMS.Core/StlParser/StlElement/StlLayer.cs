@@ -39,8 +39,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var funcName = string.Empty;
             var title = string.Empty;
             var url = string.Empty;
-            var width = 0;
-            var height = 0;
+            var width = string.Empty;
+            var height = string.Empty;
             var shadeClose = true;
             var offset = "auto";
 
@@ -62,11 +62,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
-                    width = TranslateUtils.ToInt(value);
+                    width = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
-                    height = TranslateUtils.ToInt(value);
+                    height = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ShadeClose))
                 {
@@ -82,7 +82,7 @@ namespace SSCMS.Core.StlParser.StlElement
         }
 
         private static async Task<string> ParseImplAsync(IParseManager parseManager, string funcName, string title,
-            string url, int width, int height, bool shadeClose, string offset)
+            string url, string width, string height, bool shadeClose, string offset)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -108,13 +108,13 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var area = string.Empty;
-            if (width > 0 || height > 0)
+            if (!string.IsNullOrEmpty(width) || !string.IsNullOrEmpty(height))
             {
-                area = height == 0
+                area = string.IsNullOrEmpty(height)
                     ? $@"
-area: '{width}px',"
+area: '{width}',"
                     : $@"
-area: ['{width}px', '{height}px'],";
+area: ['{width}', '{height}'],";
             }
 
             var offsetStr = StringUtils.StartsWith(offset, "[") ? offset : $"'{offset}'";

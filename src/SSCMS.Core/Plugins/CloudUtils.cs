@@ -83,14 +83,17 @@ namespace SSCMS.Core.Plugins
                 using (var writer = File.OpenWrite(filePath))
                 {
                     var client = new RestClient(GetCmsDownloadUrl(osArchitecture, version));
-                    var request = new RestRequest();
-                    request.ResponseWriter = responseStream =>
+                    var request = new RestRequest
                     {
-                        using (responseStream)
+                        ResponseWriter = responseStream =>
                         {
-                            responseStream.CopyTo(writer);
+                            using (responseStream)
+                            {
+                                responseStream.CopyTo(writer);
+                            }
                         }
                     };
+
                     client.DownloadData(request);
                 }
 

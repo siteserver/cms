@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
-using SSCMS.Core.StlParser.StlEntity;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -138,7 +137,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             parseManager.PageInfo.User = dynamicInfo.User;
 
-            var templateContent = StlRequestEntities.ParseRequestEntities(dynamicInfo.QueryString, template);
+            var templateContent = StlRequest.ParseRequestEntities(dynamicInfo.QueryString, template);
             var contentBuilder = new StringBuilder(templateContent);
             var stlElementList = StlParserUtility.GetStlElementList(contentBuilder.ToString());
 

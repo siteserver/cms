@@ -141,6 +141,10 @@ namespace SSCMS.Core.StlParser.Model
                 typeof(StlQueryString)
             },
             {
+                StlRequest.ElementName,
+                typeof(StlRequest)
+            },
+            {
                 StlSearch.ElementName,
                 typeof(StlSearch)
             },
@@ -171,6 +175,10 @@ namespace SSCMS.Core.StlParser.Model
             {
                 StlTags.ElementName,
                 typeof(StlTags)
+            },
+            {
+                StlUser.ElementName,
+                typeof(StlUser)
             },
             {
                 StlValue.ElementName,

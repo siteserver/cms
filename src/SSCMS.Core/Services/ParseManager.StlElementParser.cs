@@ -63,6 +63,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlPlayer.ElementName), StlPlayer.ParseAsync},
             {StringUtils.ToLower(StlPdf.ElementName), StlPdf.ParseAsync},
             {StringUtils.ToLower(StlPrinter.ElementName), StlPrinter.ParseAsync},
+            {StringUtils.ToLower(StlRequest.ElementName), StlRequest.ParseAsync},
             {StringUtils.ToLower(StlSearch.ElementName), StlSearch.ParseAsync},
             {StringUtils.ToLower(StlSearch.ElementName2), StlSearch.ParseAsync},
             {StringUtils.ToLower(StlSelect.ElementName), StlSelect.ParseAsync},
@@ -72,6 +73,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlSqlContents.ElementName), StlSqlContents.ParseAsync},
             {StringUtils.ToLower(StlTabs.ElementName), StlTabs.ParseAsync},
             {StringUtils.ToLower(StlTags.ElementName), StlTags.ParseAsync},
+            {StringUtils.ToLower(StlUser.ElementName), StlUser.ParseAsync},
             {StringUtils.ToLower(StlValue.ElementName), StlValue.ParseAsync},
             {StringUtils.ToLower(StlVideo.ElementName), StlVideo.ParseAsync},
             {StringUtils.ToLower(StlZoom.ElementName), StlZoom.ParseAsync}

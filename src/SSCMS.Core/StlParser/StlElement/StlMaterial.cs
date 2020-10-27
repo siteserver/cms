@@ -133,7 +133,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return await ParseImplAsync(parseManager, type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string title, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string name, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
@@ -145,9 +145,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     parsedContent = await parseManager.DatabaseManager.MaterialArticleRepository.GetBodyByIdAsync(id);
                 }
-                else if (!string.IsNullOrEmpty(title))
+                else if (!string.IsNullOrEmpty(name))
                 {
-                    parsedContent = await parseManager.DatabaseManager.MaterialArticleRepository.GetBodyByTitleAsync(title);
+                    parsedContent = await parseManager.DatabaseManager.MaterialArticleRepository.GetBodyByTitleAsync(name);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, MaterialType.Image.GetValue()))
@@ -156,9 +156,42 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     parsedContent = await parseManager.DatabaseManager.MaterialImageRepository.GetUrlByIdAsync(id);
                 }
-                else if (!string.IsNullOrEmpty(title))
+                else if (!string.IsNullOrEmpty(name))
                 {
-                    parsedContent = await parseManager.DatabaseManager.MaterialImageRepository.GetUrlByTitleAsync(title);
+                    parsedContent = await parseManager.DatabaseManager.MaterialImageRepository.GetUrlByTitleAsync(name);
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, MaterialType.Audio.GetValue()))
+            {
+                if (id > 0)
+                {
+                    parsedContent = await parseManager.DatabaseManager.MaterialAudioRepository.GetUrlByIdAsync(id);
+                }
+                else if (!string.IsNullOrEmpty(name))
+                {
+                    parsedContent = await parseManager.DatabaseManager.MaterialAudioRepository.GetUrlByTitleAsync(name);
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, MaterialType.Video.GetValue()))
+            {
+                if (id > 0)
+                {
+                    parsedContent = await parseManager.DatabaseManager.MaterialVideoRepository.GetUrlByIdAsync(id);
+                }
+                else if (!string.IsNullOrEmpty(name))
+                {
+                    parsedContent = await parseManager.DatabaseManager.MaterialVideoRepository.GetUrlByTitleAsync(name);
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, MaterialType.File.GetValue()))
+            {
+                if (id > 0)
+                {
+                    parsedContent = await parseManager.DatabaseManager.MaterialFileRepository.GetUrlByIdAsync(id);
+                }
+                else if (!string.IsNullOrEmpty(name))
+                {
+                    parsedContent = await parseManager.DatabaseManager.MaterialFileRepository.GetUrlByTitleAsync(name);
                 }
             }
 
