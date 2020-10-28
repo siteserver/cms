@@ -146,3 +146,4 @@ jobs:
     inputs:
       targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-win'
+      
