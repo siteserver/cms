@@ -99,7 +99,7 @@ jobs:
     displayName: Push image
     inputs:
       containerRegistry: |
-        $(dockerHub)
+        docker
       repository: $(imageName)
       command: push
       tags: |
