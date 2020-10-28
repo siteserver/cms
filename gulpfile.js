@@ -8,11 +8,9 @@ const rename = require('gulp-rename');
 const replace = require('gulp-string-replace');
 const filter = require('gulp-filter');
 const runSequence = require('gulp4-run-sequence');
+const ALY = require('aliyun-sdk');
 
-var ALY = require('aliyun-sdk');
-
-var os = '';
-
+let os = '';
 const version = process.env.PRODUCTVERSION || '';
 const timestamp = (new Date()).getTime();
 let publishDir = '';
@@ -69,6 +67,7 @@ function transform(file, html) {
 }
 
 function publish(fileName) {
+  console.log('bucket:' + process.env.OSS_BUCKET_NAME);
   var ossStream = require('aliyun-oss-upload-stream')(new ALY.OSS({
     accessKeyId: process.env.OSS_ACCESS_KEY_ID,
     secretAccessKey: process.env.OSS_SECRET_ACCESS_KEY,
