@@ -63,10 +63,25 @@ jobs:
       tarCompression: 'gz'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.tar.gz'
-  - task: PublishBuildArtifacts@1
+  - task: ArchiveFiles@2
     inputs:
-      pathtoPublish: './publish/dist' 
+      rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-linux'
+  - task: GithubRelease@0 
+    displayName: 'Create GitHub Release'      
+    inputs:
+      gitHubConnection: siteserver
+      repositoryName: siteserver/cms
+      tag: $(productVersion)
+      assets: |
+        ./publish/dist/sscms-$(productVersion)-linux-x64.tar.gz
+        ./publish/dist/sscms-$(productVersion)-linux-x64.zip
 
 - job: Windows
   pool:

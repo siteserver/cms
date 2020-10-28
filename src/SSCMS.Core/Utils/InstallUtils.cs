@@ -66,33 +66,32 @@ namespace SSCMS.Core.Utils
         {
             if (SettingsManager.RunningInContainer)
             {
-                //var contentSiteFilesPath = PathUtils.Combine(contentRootPath, DirectoryUtils.SiteFiles.DirectoryName);
-                //var wwwrootSiteFilesPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory,
-                //    DirectoryUtils.SiteFiles.DirectoryName);
-                //DirectoryUtils.Copy(contentSiteFilesPath, wwwrootSiteFilesPath, true);
-
-                var entryAssembly = Assembly.GetExecutingAssembly();
-                var version = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                    .InformationalVersion;
-                var versionPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, DirectoryUtils.SiteFiles.DirectoryName, $"{version}.txt");
-                if (!FileUtils.IsFileExists(versionPath))
+                var sourcePath = PathUtils.Combine(contentRootPath, "_wwwroot", DirectoryUtils.SiteFiles.DirectoryName, "version.txt");
+                var sourceVersion = FileUtils.IsFileExists(sourcePath) ? FileUtils.ReadText(sourcePath) : string.Empty;
+                var targetPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, DirectoryUtils.SiteFiles.DirectoryName, "version.txt");
+                var targetVersion = FileUtils.IsFileExists(targetPath) ? FileUtils.ReadText(targetPath) : string.Empty;
+                if (sourceVersion != targetVersion)
                 {
                     var directoryPath = PathUtils.Combine(contentRootPath, "_wwwroot");
                     foreach (var folderName in DirectoryUtils.GetDirectoryNames(directoryPath))
                     {
-                        var sourcePath = PathUtils.Combine(directoryPath, folderName);
-                        var targetPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, folderName);
-                        DirectoryUtils.Copy(sourcePath, targetPath, true);
+                        DirectoryUtils.Copy(
+                            PathUtils.Combine(directoryPath, folderName),
+                            PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, folderName),
+                            true
+                        );
                     }
 
                     foreach (var fileName in DirectoryUtils.GetFileNames(directoryPath))
                     {
-                        var sourcePath = PathUtils.Combine(directoryPath, fileName);
-                        var targetPath = PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, fileName);
-                        FileUtils.CopyFile(sourcePath, targetPath, false);
+                        FileUtils.CopyFile(
+                            PathUtils.Combine(directoryPath, fileName),
+                            PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, fileName),
+                            false
+                        );
                     }
 
-                    FileUtils.WriteText(versionPath, string.Empty);
+                    FileUtils.WriteText(targetPath, sourceVersion);
                 }
             }
             else
