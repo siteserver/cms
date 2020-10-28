@@ -10,9 +10,6 @@ variables:
   netCoreSdkVersion: '3.1.201'
   buildConfiguration: 'Release'
   productVersion: '7.0.4'
-  OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
-  OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-  OSS_BUCKET_NAME: $(ossBucketName)
 
 jobs:
 
@@ -39,6 +36,10 @@ jobs:
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-osx-x64.zip'
   - script: npm run publish-osx-x64-zip
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_NAME: $(ossBucketName)
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
@@ -68,6 +69,10 @@ jobs:
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.tar.gz'
   - script: npm run publish-linux-x64-tgz
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_NAME: $(ossBucketName)
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
@@ -75,6 +80,10 @@ jobs:
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
   - script: npm run publish-linux-x64-zip
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_NAME: $(ossBucketName)
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
@@ -118,6 +127,10 @@ jobs:
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-win-x64.zip'
   - script: npm run publish-win-x64-zip
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_NAME: $(ossBucketName)
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-win-x86' 
@@ -125,6 +138,10 @@ jobs:
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-win-x86.zip'
   - script: npm run publish-win-x86-zip
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_NAME: $(ossBucketName)
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
