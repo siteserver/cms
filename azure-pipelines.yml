@@ -10,6 +10,9 @@ variables:
   netCoreSdkVersion: '3.1.201'
   buildConfiguration: 'Release'
   productVersion: '7.0.4'
+  OSS_ACCESS_KEY_ID: $(OSS_ACCESS_KEY_ID)
+  OSS_SECRET_ACCESS_KEY: $(OSS_SECRET_ACCESS_KEY)
+  OSS_BUCKET_NAME: $(OSS_BUCKET_NAME)
 
 jobs:
 
