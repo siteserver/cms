@@ -89,12 +89,7 @@ jobs:
     inputs:
       targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-linux'
-  - task: Docker@2
-    displayName: Build an image
-    inputs:
-      repository: $(imageName)
-      command: build
-      Dockerfile: docker/Dockerfile.core
+  - script: docker build -f docker/Dockerfile.core --no-cache -t $(imageName):latest -t $(imageName):$(productVersion) .
   - task: Docker@2
     displayName: Push image
     inputs:
