@@ -35,6 +35,7 @@ jobs:
       archiveType: 'zip'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-osx-x64.zip'
+  - script: npm run publish-osx-x64-zip
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
@@ -63,25 +64,18 @@ jobs:
       tarCompression: 'gz'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.tar.gz'
+  - script: npm run publish-linux-x64-tgz
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
       archiveType: 'zip'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
+  - script: npm run publish-linux-x64-zip
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-linux'
-  - task: GithubRelease@0 
-    displayName: 'Create GitHub Release'      
-    inputs:
-      gitHubConnection: github-pipeline
-      repositoryName: siteserver/cms
-      tag: $(productVersion)
-      assets: |
-        ./publish/dist/sscms-$(productVersion)-linux-x64.tar.gz
-        ./publish/dist/sscms-$(productVersion)-linux-x64.zip
 
 - job: Windows
   pool:
@@ -104,7 +98,6 @@ jobs:
   - script: dotnet publish ./build-win-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64
   - script: dotnet publish ./build-win-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64
   - script: npm run copy-win-x64
-
   - script: npm run build-win-x86
   - task: NuGetCommand@2
     inputs:
@@ -115,19 +108,20 @@ jobs:
   - script: dotnet publish ./build-win-x86/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86
   - script: dotnet publish ./build-win-x86/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86
   - script: npm run copy-win-x86
-  
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-win-x64' 
       archiveType: 'zip'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-win-x64.zip'
+  - script: npm run publish-win-x64-zip
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-win-x86' 
       archiveType: 'zip'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-win-x86.zip'
+  - script: npm run publish-win-x86-zip
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'

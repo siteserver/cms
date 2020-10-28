@@ -9,6 +9,8 @@ const replace = require('gulp-string-replace');
 const filter = require('gulp-filter');
 const runSequence = require('gulp4-run-sequence');
 
+var ALY = require('aliyun-sdk');
+
 var os = '';
 
 const version = process.env.PRODUCTVERSION ? (process.env.PRODUCTVERSION + '-') : '';
@@ -64,6 +66,25 @@ function transform(file, html) {
 
   file.contents = Buffer.from(result, 'utf8');
   return file;
+}
+
+function publish(fileName) {
+  var ossStream = require('aliyun-oss-upload-stream')(new ALY.OSS({
+    accessKeyId: process.env.OSS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.OSS_SECRET_ACCESS_KEY,
+    endpoint: 'http://oss-cn-beijing.aliyuncs.com',
+    apiVersion: '2013-10-15'
+  }));
+
+  var upload = ossStream.upload({
+    Bucket: process.env.OSS_BUCKET_NAME,
+    Key: `cms/${version}/${fileName}`
+  });
+  
+  upload.minPartSize(1048576);
+  
+  var read = fs.createReadStream(`./publish/dist/${fileName}`);
+  read.pipe(upload);
 }
 
 // build tasks
@@ -282,4 +303,24 @@ gulp.task("copy-win-x86", async function (callback) {
     "copy-css",
     "copy-js"
   );
+});
+
+gulp.task("publish-osx-x64-zip", async function () {
+  publish(`sscms-${version}-osx-x64.zip`);
+});
+
+gulp.task("publish-linux-x64-tgz", async function () {
+  publish(`sscms-${version}-linux-x64.tar.gz`);
+});
+
+gulp.task("publish-linux-x64-zip", async function () {
+  publish(`sscms-${version}-linux-x64.zip`);
+});
+
+gulp.task("publish-win-x64-zip", async function () {
+  publish(`sscms-${version}-win-x64.zip`);
+});
+
+gulp.task("publish-win-x86-zip", async function () {
+  publish(`sscms-${version}-win-x86.zip`);
 });
