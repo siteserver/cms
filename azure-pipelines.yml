@@ -9,6 +9,7 @@ trigger:
 variables:
   netCoreSdkVersion: '3.1.201'
   buildConfiguration: 'Release'
+  imageName: 'sscms/core'
   productVersion: '7.0.4'
 
 jobs:
@@ -88,6 +89,22 @@ jobs:
     inputs:
       targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-linux'
+  - task: Docker@2
+    displayName: Build an image
+    inputs:
+      repository: $(imageName)
+      command: build
+      Dockerfile: docker/Dockerfile.core
+  - task: Docker@2
+    displayName: Push image
+    inputs:
+      containerRegistry: |
+        $(dockerHub)
+      repository: $(imageName)
+      command: push
+      tags: |
+        latest
+        $(productVersion)
 
 - job: Windows
   pool:
