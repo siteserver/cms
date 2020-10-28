@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -61,12 +62,24 @@ namespace SSCMS.Core.Repositories
 
             return null;
         }
+        private async Task<User> GetAsync(Query query)
+        {
+            var user = await _repository.GetAsync(query);
+
+            if (user != null && string.IsNullOrEmpty(user.DisplayName))
+            {
+                user.DisplayName = user.UserName;
+            }
+
+            return user;
+        }
 
         public async Task<User> GetByUserIdAsync(int userId)
         {
             if (userId <= 0) return null;
 
-            return await _repository.GetAsync(userId, Q
+            return await GetAsync(Q
+                .Where(nameof(User.Id), userId)
                 .CachingGet(GetCacheKeyByUserId(userId))
             );
         }
@@ -75,7 +88,7 @@ namespace SSCMS.Core.Repositories
         {
             if (string.IsNullOrWhiteSpace(userName)) return null;
 
-            return await _repository.GetAsync(Q
+            return await GetAsync(Q
                 .Where(nameof(User.UserName), userName)
                 .CachingGet(GetCacheKeyByUserName(userName))
             );
@@ -85,7 +98,7 @@ namespace SSCMS.Core.Repositories
         {
             if (string.IsNullOrWhiteSpace(mobile)) return null;
 
-            return await _repository.GetAsync(Q
+            return await GetAsync(Q
                 .Where(nameof(User.Mobile), mobile)
                 .CachingGet(GetCacheKeyByMobile(mobile))
             );
@@ -95,7 +108,7 @@ namespace SSCMS.Core.Repositories
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
 
-            return await _repository.GetAsync(Q
+            return await GetAsync(Q
                 .Where(nameof(User.Email), email)
                 .CachingGet(GetCacheKeyByEmail(email))
             );

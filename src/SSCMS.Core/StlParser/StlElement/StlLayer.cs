@@ -63,10 +63,18 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
                     width = value;
+                    if (!string.IsNullOrEmpty(width) && char.IsDigit(width[^1]))
+                    {
+                        width += "px";
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
                     height = value;
+                    if (!string.IsNullOrEmpty(height) && char.IsDigit(height[^1]))
+                    {
+                        height += "px";
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ShadeClose))
                 {
@@ -75,6 +83,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, Offset))
                 {
                     offset = value;
+                    if (!string.IsNullOrEmpty(offset) && char.IsDigit(offset[^1]))
+                    {
+                        offset += "px";
+                    }
                 }
             }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -63,22 +64,35 @@ namespace SSCMS.Core.Repositories
             return null;
         }
 
+        private async Task<Administrator> GetAsync(Query query)
+        {
+            var admin = await _repository.GetAsync(query);
+
+            if (admin != null && string.IsNullOrEmpty(admin.DisplayName))
+            {
+                admin.DisplayName = admin.UserName;
+            }
+
+            return admin;
+        }
+
         public async Task<Administrator> GetByUserIdAsync(int userId)
         {
             if (userId <= 0) return null;
 
-            var cacheKey = GetCacheKeyByUserId(userId);
-            return await _repository.GetAsync(userId, Q.CachingGet(cacheKey));
+            return await GetAsync(Q
+                .Where(nameof(Administrator.Id), userId)
+                .CachingGet(GetCacheKeyByUserId(userId))
+            );
         }
 
         public async Task<Administrator> GetByUserNameAsync(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName)) return null;
 
-            var cacheKey = GetCacheKeyByUserName(userName);
-            return await _repository.GetAsync(Q
+            return await GetAsync(Q
                 .Where(nameof(Administrator.UserName), userName)
-                .CachingGet(cacheKey)
+                .CachingGet(GetCacheKeyByUserName(userName))
             );
         }
 
@@ -86,10 +100,9 @@ namespace SSCMS.Core.Repositories
         {
             if (string.IsNullOrWhiteSpace(mobile)) return null;
 
-            var cacheKey = GetCacheKeyByMobile(mobile);
-            return await _repository.GetAsync(Q
+            return await GetAsync(Q
                 .Where(nameof(Administrator.Mobile), mobile)
-                .CachingGet(cacheKey)
+                .CachingGet(GetCacheKeyByMobile(mobile))
             );
         }
 
@@ -98,7 +111,7 @@ namespace SSCMS.Core.Repositories
             if (string.IsNullOrWhiteSpace(email)) return null;
 
             var cacheKey = GetCacheKeyByEmail(email);
-            return await _repository.GetAsync(Q
+            return await GetAsync(Q
                 .Where(nameof(Administrator.Email), email)
                 .CachingGet(cacheKey)
             );

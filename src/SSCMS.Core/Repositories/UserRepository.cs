@@ -484,7 +484,7 @@ namespace SSCMS.Core.Repositories
                 }
             }
 
-            var userEntity = await _repository.GetAsync(user.Id);
+            var userEntity = await GetByUserIdAsync(user.Id);
 
             if (!CheckPassword(password, isPasswordMd5, userEntity.Password, userEntity.PasswordFormat, userEntity.PasswordSalt))
             {
