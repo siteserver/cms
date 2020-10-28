@@ -35,9 +35,9 @@ jobs:
       archiveType: 'zip'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-osx-x64.zip'
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     inputs:
-      pathtoPublish: './publish/dist' 
+      targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-osx'
 
 - job: Linux
@@ -76,7 +76,7 @@ jobs:
   - task: GithubRelease@0 
     displayName: 'Create GitHub Release'      
     inputs:
-      gitHubConnection: cms
+      gitHubConnection: github-pipeline
       repositoryName: siteserver/cms
       tag: $(productVersion)
       assets: |
@@ -128,7 +128,7 @@ jobs:
       archiveType: 'zip'
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-win-x86.zip'
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     inputs:
-      pathtoPublish: './publish/dist' 
+      targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-win'
