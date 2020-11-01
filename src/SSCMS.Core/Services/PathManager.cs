@@ -12,7 +12,7 @@ namespace SSCMS.Core.Services
 {
     public partial class PathManager : IPathManager
     {
-        private readonly ICacheManager<string> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IPluginManager _pluginManager;
         private readonly IDatabaseManager _databaseManager;
@@ -24,7 +24,7 @@ namespace SSCMS.Core.Services
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public PathManager(ICacheManager<string> cacheManager, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public PathManager(ICacheManager cacheManager, ISettingsManager settingsManager, IPluginManager pluginManager, IDatabaseManager databaseManager, ISpecialRepository specialRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;

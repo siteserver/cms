@@ -21,12 +21,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteUnZip = "settings/sitesTemplates/actions/unZip";
         private const string RouteUpload = "settings/sitesTemplates/actions/upload";
 
-        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
 
-        public SitesTemplatesController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager)
+        public SitesTemplatesController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

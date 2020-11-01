@@ -1,11 +1,11 @@
 ﻿namespace SSCMS.Services
 {
-    public partial interface ICacheManager<TCacheValue>
+    public partial interface ICacheManager
     {
-        void AddOrUpdateSliding(string key, TCacheValue value, int minutes);
+        void AddOrUpdateSliding<T>(string key, T value, int minutes);
 
-        void AddOrUpdateAbsolute(string key, TCacheValue value, int minutes);
+        void AddOrUpdateAbsolute<T>(string key, T value, int minutes);
 
-        void AddOrUpdate(string key, TCacheValue value);
+        void AddOrUpdate<T>(string key, T value);
     }
 }

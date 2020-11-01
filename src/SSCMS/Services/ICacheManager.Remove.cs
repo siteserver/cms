@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SSCMS.Services
+﻿namespace SSCMS.Services
 {
-    public partial interface ICacheManager<TCacheValue>
+    public partial interface ICacheManager
     {
         void Remove(string key);
         void Clear();

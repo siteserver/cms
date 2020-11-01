@@ -2,7 +2,7 @@
 
 namespace SSCMS.Services
 {
-    public partial interface ICacheManager<TCacheValue>
+    public partial interface ICacheManager
     {
         IReadOnlyCacheManagerConfiguration Configuration { get; }
     }

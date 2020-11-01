@@ -13,6 +13,6 @@ namespace SSCMS.Services
 
         Task<string> GetIncludeContentAsync(Site site, string file);
 
-        Task<string> GetContentByFilePathAsync(string filePath);
+        string GetContentByFilePath(string filePath);
     }
 }

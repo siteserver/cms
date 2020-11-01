@@ -20,14 +20,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
         private static readonly string CacheKey = CacheUtils.GetClassKey(typeof(TemplatesPreviewController));
 
-        private readonly ICacheManager<string> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IParseManager _parseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public TemplatesPreviewController(ICacheManager<string> cacheManager, IAuthManager authManager, IParseManager parseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public TemplatesPreviewController(ICacheManager cacheManager, IAuthManager authManager, IParseManager parseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteImport = "settings/administrators/actions/import";
         private const string RouteExport = "settings/administrators/actions/export";
 
-        private readonly ICacheManager<object> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly ISiteRepository _siteRepository;
         private readonly IAdministratorsInRolesRepository _administratorsInRolesRepository;
 
-        public AdministratorsController(ICacheManager<object> cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
+        public AdministratorsController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, IRoleRepository roleRepository, ISiteRepository siteRepository, IAdministratorsInRolesRepository administratorsInRolesRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

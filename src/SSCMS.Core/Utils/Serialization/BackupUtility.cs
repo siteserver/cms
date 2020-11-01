@@ -62,7 +62,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static async Task RecoverySiteAsync(ICacheManager<object> cacheManager, IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int adminId, string guid)
+        public static async Task RecoverySiteAsync(ICacheManager cacheManager, IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int adminId, string guid)
         {
             var importObject = new ImportObject(pathManager, databaseManager, caching, site, adminId);
 

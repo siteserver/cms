@@ -15,11 +15,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
     {
         private const string Route = "settings/utilitiesCache";
 
-        private readonly Services.ICacheManager<object> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public UtilitiesCacheController(Services.ICacheManager<object> cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
+        public UtilitiesCacheController(ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

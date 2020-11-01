@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SSCMS.Services
+﻿namespace SSCMS.Services
 {
-    public partial interface ICacheManager<TCacheValue>
+    public partial interface ICacheManager
     {
-        TCacheValue Get(string key);
+        T Get<T>(string key) where T : class;
 
-        TCacheValue GetByFilePath(string filePath);
+        string GetByFilePath(string filePath);
 
         bool Exists(string key);
     }

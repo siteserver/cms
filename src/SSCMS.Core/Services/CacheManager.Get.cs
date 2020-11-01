@@ -1,53 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
+using Microsoft.Extensions.FileProviders;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
-    public partial class CacheManager<TCacheValue>
+    public partial class CacheManager
     {
-        private static readonly Dictionary<string, FileSystemWatcher> _fileDependencies =
-            new Dictionary<string, FileSystemWatcher>(StringComparer.OrdinalIgnoreCase);
-
-        public TCacheValue Get(string key)
+        public T Get<T>(string key) where T : class
         {
-            return _cacheManager.Get(key);
+            return _cacheManager.Get(key) as T;
         }
 
-        public TCacheValue GetByFilePath(string filePath)
+        public string GetByFilePath(string filePath)
         {
             if (string.IsNullOrEmpty(filePath)) return default;
 
             var cacheKey = CacheUtils.GetPathKey(filePath);
-            var value = _cacheManager.Get(cacheKey);
+            var value = _cacheManager.Get<string>(cacheKey);
 
-            if (!_fileDependencies.ContainsKey(cacheKey))
+            if (value != null) return value;
+
+            if (FileUtils.IsFileExists(filePath))
             {
+                value = FileUtils.ReadText(filePath);
+                AddOrUpdateSliding(cacheKey, value, 12 * 60);
+
                 var directoryPath = DirectoryUtils.GetDirectoryPath(filePath);
                 var fileName = PathUtils.GetFileName(filePath);
-                var watcher = new FileSystemWatcher
+                var fileProvider = new PhysicalFileProvider(directoryPath);
+
+                Action<object> callback = null;
+                callback = _ =>
                 {
-                    Filter = fileName,
-                    Path = directoryPath,
-                    EnableRaisingEvents = true
+                    // The order here is important. We need to take the token and then apply our changes BEFORE
+                    // registering. This prevents us from possible having two change updates to process concurrently.
+                    //
+                    // If the file changes after we take the token, then we'll process the update immediately upon
+                    // registering the callback.
+                    var token = fileProvider.Watch(fileName);
+                    Remove(cacheKey);
+                    token.RegisterChangeCallback(callback, null);
                 };
 
-                watcher.Changed += (sender, e) =>
-                {
-                    Remove(cacheKey);
-                };
-                watcher.Renamed += (sender, e) =>
-                {
-                    Remove(cacheKey);
-                };
-                watcher.Deleted += (sender, e) =>
-                {
-                    Remove(cacheKey);
-                };
-
-                _fileDependencies[cacheKey] = watcher;
+                fileProvider.Watch(fileName).RegisterChangeCallback(callback, null);
             }
 
             return value;

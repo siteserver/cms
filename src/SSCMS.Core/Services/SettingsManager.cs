@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using Datory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;

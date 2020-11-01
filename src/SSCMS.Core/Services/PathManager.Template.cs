@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -50,35 +49,18 @@ namespace SSCMS.Core.Services
         public async Task<string> GetTemplateContentAsync(Site site, Template template)
         {
             var filePath = await GetTemplateFilePathAsync(site, template);
-            return await GetContentByFilePathAsync(filePath);
+            return GetContentByFilePath(filePath);
         }
 
         public async Task<string> GetIncludeContentAsync(Site site, string file)
         {
             var filePath = await ParseSitePathAsync(site, AddVirtualToPath(file));
-            return await GetContentByFilePathAsync(filePath);
+            return GetContentByFilePath(filePath);
         }
 
-        public async Task<string> GetContentByFilePathAsync(string filePath)
+        public string GetContentByFilePath(string filePath)
         {
-            try
-            {
-                var content = _cacheManager.GetByFilePath(filePath);
-                if (content != null) return content;
-
-                if (FileUtils.IsFileExists(filePath))
-                {
-                    content = await FileUtils.ReadTextAsync(filePath);
-                    var cacheKey = CacheUtils.GetPathKey(filePath);
-                    _cacheManager.AddOrUpdateSliding(cacheKey, content, 12 * 60);
-                }
-
-                return content;
-            }
-            catch
-            {
-                return string.Empty;
-            }
+            return _cacheManager.GetByFilePath(filePath);
         }
     }
 }

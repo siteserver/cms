@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -18,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string Route = "cms/contents/contentsLayerImport";
         private const string RouteUpload = "cms/contents/contentsLayerImport/actions/upload";
 
-        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
@@ -26,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ContentsLayerImportController(ICacheManager<CacheUtils.Process> cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerImportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

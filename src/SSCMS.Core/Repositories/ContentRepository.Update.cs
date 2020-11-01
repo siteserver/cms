@@ -3,7 +3,6 @@ using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
-using SSCMS.Services;
 
 namespace SSCMS.Core.Repositories
 {

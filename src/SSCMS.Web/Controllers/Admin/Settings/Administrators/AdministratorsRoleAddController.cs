@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private const string RouteSiteId = "settings/administratorsRoleAdd/{siteId:int}";
         private const string RouteRoleId = "settings/administratorsRoleAdd/{roleId:int}";
 
-        private readonly ICacheManager<object> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
 
-        public AdministratorsRoleAddController(ICacheManager<object> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
+        public AdministratorsRoleAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;

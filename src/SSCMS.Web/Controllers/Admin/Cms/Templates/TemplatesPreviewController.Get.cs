@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 };
             });
 
-            var content = _cacheManager.Get(CacheKey);
+            var content = _cacheManager.Get<string>(CacheKey);
 
             return new GetResult
             {

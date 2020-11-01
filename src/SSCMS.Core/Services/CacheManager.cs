@@ -2,11 +2,11 @@
 
 namespace SSCMS.Core.Services
 {
-    public partial class CacheManager<TCacheValue> : SSCMS.Services.ICacheManager<TCacheValue>
+    public partial class CacheManager : SSCMS.Services.ICacheManager
     {
-        private readonly ICacheManager<TCacheValue> _cacheManager;
+        private readonly ICacheManager<object> _cacheManager;
 
-        public CacheManager(ICacheManager<TCacheValue> cacheManager)
+        public CacheManager(ICacheManager<object> cacheManager)
         {
             _cacheManager = cacheManager;
         }

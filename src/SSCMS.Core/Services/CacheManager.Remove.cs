@@ -1,6 +1,6 @@
 ﻿namespace SSCMS.Core.Services
 {
-    public partial class CacheManager<TCacheValue>
+    public partial class CacheManager
     {
         public void Remove(string key)
         {

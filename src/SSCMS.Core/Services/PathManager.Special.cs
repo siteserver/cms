@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -92,7 +90,7 @@ namespace SSCMS.Core.Services
 
                     var template = new Template
                     {
-                        Content = GetSpecialContentByFilePath(htmlFilePath),
+                        Content = _cacheManager.GetByFilePath(htmlFilePath),
                         CreatedFileExtName = ".html",
                         CreatedFileFullName = PathUtils.Combine(special.Url, relatedPath),
                         Id = 0,
@@ -108,28 +106,6 @@ namespace SSCMS.Core.Services
             }
 
             return list;
-        }
-
-        private string GetSpecialContentByFilePath(string filePath)
-        {
-            try
-            {
-                var content = _cacheManager.GetByFilePath(filePath);
-                if (content != null) return content;
-
-                if (FileUtils.IsFileExists(filePath))
-                {
-                    content = FileUtils.ReadText(filePath, Encoding.UTF8);
-                    var cacheKey = CacheUtils.GetPathKey(filePath);
-                    _cacheManager.AddOrUpdateSliding(cacheKey, content, 12 * 60);
-                }
-
-                return content;
-            }
-            catch
-            {
-                return string.Empty;
-            }
         }
     }
 }

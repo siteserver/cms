@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public const string Route = "settings/sitesAdd";
         private const string RouteProcess = "settings/sitesAdd/actions/process";
 
-        private readonly ICacheManager<CacheUtils.Process> _cacheManager;
+        private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public SitesAddController(ICacheManager<CacheUtils.Process> cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;

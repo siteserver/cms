@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SSCMS.Models;
+﻿using SSCMS.Models;
 
 namespace SSCMS.Services
 {

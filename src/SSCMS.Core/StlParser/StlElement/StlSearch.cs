@@ -156,17 +156,17 @@ namespace SSCMS.Core.StlParser.StlElement
             if (string.IsNullOrEmpty(loading))
             {
                 var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.LoadingTemplatePath);
-                loading = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
+                loading = parseManager.PathManager.GetContentByFilePath(filePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
                 var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.YesTemplatePath);
-                yes = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
+                yes = parseManager.PathManager.GetContentByFilePath(filePath);
             }
             if (string.IsNullOrEmpty(no))
             {
                 var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.NoTemplatePath);
-                no = await parseManager.PathManager.GetContentByFilePathAsync(filePath);
+                no = parseManager.PathManager.GetContentByFilePath(filePath);
             }
 
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);

@@ -103,7 +103,7 @@ namespace SSCMS.Core.Extensions
 
         public static void AddServices(this IServiceCollection services)
         {
-            services.AddScoped(typeof(SSCMS.Services.ICacheManager<>), typeof(CacheManager<>));
+            services.AddScoped<ICacheManager, Services.CacheManager>();
             services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IPathManager, PathManager>();
             services.AddScoped<ICreateManager, CreateManager>();
