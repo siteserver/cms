@@ -66,7 +66,7 @@ function transform(file, html) {
   return file;
 }
 
-function publish(fileName) {
+function writeOss(bucket, key, fileName) {
   var ossStream = require('aliyun-oss-upload-stream')(new ALY.OSS({
     accessKeyId: process.env.OSS_ACCESS_KEY_ID,
     secretAccessKey: process.env.OSS_SECRET_ACCESS_KEY,
@@ -75,8 +75,8 @@ function publish(fileName) {
   }));
 
   var upload = ossStream.upload({
-    Bucket: process.env.OSS_BUCKET_NAME,
-    Key: `cms/${version}/${fileName}`
+    Bucket: bucket,
+    Key: key
   });
   
   upload.minPartSize(1048576);
@@ -296,21 +296,29 @@ gulp.task("copy-win-x86", async function (callback) {
 });
 
 gulp.task("publish-osx-x64-zip", async function () {
-  publish(`sscms-${version}-osx-x64.zip`);
+  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-osx-x64.zip`, `sscms-${version}-osx-x64.zip`);
 });
 
 gulp.task("publish-linux-x64-tgz", async function () {
-  publish(`sscms-${version}-linux-x64.tar.gz`);
+  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.tar.gz`, `sscms-${version}-linux-x64.tar.gz`);
 });
 
 gulp.task("publish-linux-x64-zip", async function () {
-  publish(`sscms-${version}-linux-x64.zip`);
+  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.zip`, `sscms-${version}-linux-x64.zip`);
+  var fileName = 'ci.js';
+  var json = `var ci = {
+    version: ${version},
+    releaseDate: ${new Date().Format("yyyy年M日d")}
+  };`;
+  
+  fs.writeFileSync(`./publish/dist/${fileName}`, json);
+  writeOss(process.env.OSS_BUCKET_WWW, `js/${fileName}`, fileName);
 });
 
 gulp.task("publish-win-x64-zip", async function () {
-  publish(`sscms-${version}-win-x64.zip`);
+  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x64.zip`, `sscms-${version}-win-x64.zip`);
 });
 
 gulp.task("publish-win-x86-zip", async function () {
-  publish(`sscms-${version}-win-x86.zip`);
+  writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x86.zip`, `sscms-${version}-win-x86.zip`);
 });

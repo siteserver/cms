@@ -85,12 +85,28 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            if (_settingsManager.DatabaseType == DatabaseType.SQLite)
+            if (_settingsManager.Containerized)
             {
-                var filePath = _pathManager.ParsePath(_settingsManager.ContentRootPath, Constants.LocalDbHostVirtualPath);
-                if (!FileUtils.IsFileExists(filePath))
+                if (_settingsManager.DatabaseType == DatabaseType.SQLite)
                 {
-                    await FileUtils.WriteTextAsync(filePath, string.Empty);
+                    var filePath = PathUtils.Combine(_settingsManager.ContentRootPath,
+                        Constants.LocalDbContainerVirtualPath.Substring(1));
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        await FileUtils.WriteTextAsync(filePath, string.Empty);
+                    }
+                }
+            }
+            else
+            {
+                if (_settingsManager.DatabaseType == DatabaseType.SQLite)
+                {
+                    var filePath = PathUtils.Combine(_settingsManager.ContentRootPath,
+                        Constants.LocalDbHostVirtualPath.Substring(1));
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        await FileUtils.WriteTextAsync(filePath, string.Empty);
+                    }
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -67,7 +68,7 @@ namespace SSCMS.Core.Utils
 
         public static string GetPathKey(string filePath)
         {
-            return $"ss:{StringUtils.ToLower(filePath)}";
+            return $"ss:{StringUtils.ToLower(filePath)}:{DateUtils.GetUnixTimestamp(File.GetLastWriteTime(filePath))}";
         }
 
         public static string GetClassKey(Type type, params string[] values)

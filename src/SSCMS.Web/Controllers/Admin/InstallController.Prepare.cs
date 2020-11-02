@@ -27,8 +27,8 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 if (_settingsManager.DatabaseType == DatabaseType.SQLite)
                 {
-                    var filePath = _pathManager.ParsePath(_settingsManager.ContentRootPath,
-                        Constants.LocalDbContainerVirtualPath);
+                    var filePath = PathUtils.Combine(_settingsManager.ContentRootPath,
+                        Constants.LocalDbContainerVirtualPath.Substring(1));
                     if (!FileUtils.IsFileExists(filePath))
                     {
                         await FileUtils.WriteTextAsync(filePath, string.Empty);
@@ -39,7 +39,7 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 if (request.DatabaseType == DatabaseType.SQLite)
                 {
-                    var filePath = _pathManager.ParsePath(_settingsManager.ContentRootPath, Constants.LocalDbHostVirtualPath);
+                    var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.LocalDbHostVirtualPath.Substring(1));
                     if (!FileUtils.IsFileExists(filePath))
                     {
                         await FileUtils.WriteTextAsync(filePath, string.Empty);

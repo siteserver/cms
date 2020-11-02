@@ -40,66 +40,12 @@ jobs:
     env:
       OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
       OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_NAME: $(ossBucketName)
+      OSS_BUCKET_DL: $(ossBucketDl)
+      OSS_BUCKET_WWW: $(ossBucketWww)
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-osx'
-
-- job: Linux
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
-  - task: UseDotNet@2
-    inputs:
-      version: $(netCoreSdkVersion)
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '12.x'
-  - script: npm install
-  - script: npm run build-linux-x64
-  - script: dotnet build ./build-linux-x64/build.sln -c $(buildConfiguration)
-  - script: dotnet publish ./build-linux-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64
-  - script: dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64
-  - script: npm run copy-linux-x64
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
-      archiveType: 'tar'
-      tarCompression: 'gz'
-      includeRootFolder: false
-      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.tar.gz'
-  - script: npm run publish-linux-x64-tgz
-    env:
-      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
-      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_NAME: $(ossBucketName)
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
-      archiveType: 'zip'
-      includeRootFolder: false
-      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
-  - script: npm run publish-linux-x64-zip
-    env:
-      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
-      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_NAME: $(ossBucketName)
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: './publish/dist'
-      artifactName: 'sscms-$(productVersion)-linux'
-  - script: docker build -f docker/Dockerfile.core --no-cache -t $(imageName):latest -t $(imageName):$(productVersion) .
-  - task: Docker@2
-    displayName: Push image
-    inputs:
-      containerRegistry: |
-        docker
-      repository: $(imageName)
-      command: push
-      tags: |
-        latest
-        $(productVersion)
 
 - job: Windows
   pool:
@@ -142,7 +88,8 @@ jobs:
     env:
       OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
       OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_NAME: $(ossBucketName)
+      OSS_BUCKET_DL: $(ossBucketDl)
+      OSS_BUCKET_WWW: $(ossBucketWww)
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-win-x86' 
@@ -153,9 +100,66 @@ jobs:
     env:
       OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
       OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_NAME: $(ossBucketName)
+      OSS_BUCKET_DL: $(ossBucketDl)
+      OSS_BUCKET_WWW: $(ossBucketWww)
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
       artifactName: 'sscms-$(productVersion)-win'
       
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      version: $(netCoreSdkVersion)
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '12.x'
+  - script: npm install
+  - script: npm run build-linux-x64
+  - script: dotnet build ./build-linux-x64/build.sln -c $(buildConfiguration)
+  - script: dotnet publish ./build-linux-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64
+  - script: dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64
+  - script: npm run copy-linux-x64
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
+      archiveType: 'tar'
+      tarCompression: 'gz'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.tar.gz'
+  - script: npm run publish-linux-x64-tgz
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_DL: $(ossBucketDl)
+      OSS_BUCKET_WWW: $(ossBucketWww)
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: './publish/sscms-$(productVersion)-linux-x64' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-linux-x64.zip'
+  - script: npm run publish-linux-x64-zip
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_DL: $(ossBucketDl)
+      OSS_BUCKET_WWW: $(ossBucketWww)
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: './publish/dist'
+      artifactName: 'sscms-$(productVersion)-linux'
+  - script: docker build -f docker/Dockerfile.core --no-cache -t $(imageName):latest -t $(imageName):$(productVersion) .
+  - task: Docker@2
+    displayName: Push image
+    inputs:
+      containerRegistry: |
+        docker
+      repository: $(imageName)
+      command: push
+      tags: |
+        latest
+        $(productVersion)

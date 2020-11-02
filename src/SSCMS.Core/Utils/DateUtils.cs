@@ -10,8 +10,14 @@ namespace SSCMS.Core.Utils
 	{
         public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
+        private static readonly DateTime JanFirst1970 = new DateTime(1970, 1, 1);
 
-	    public static DateTime GetExpiresAt(TimeSpan expiresAt)
+        public static int GetUnixTimestamp(DateTime dateTime)
+        {
+            return (int)dateTime.Subtract(JanFirst1970).TotalSeconds;
+        }
+
+        public static DateTime GetExpiresAt(TimeSpan expiresAt)
 	    {
 	        return DateTime.UtcNow.Add(expiresAt);
 	    }
@@ -230,41 +236,41 @@ namespace SSCMS.Core.Utils
         /// <returns></returns>
         private static long DateDiff(string interval, DateTime startDate, DateTime endDate)
         {
-            long retval = 0;
+            long retVal = 0;
             var ts = new TimeSpan(endDate.Ticks - startDate.Ticks);
             if (interval == "second")
             {
-                retval = (long)ts.TotalSeconds;
+                retVal = (long)ts.TotalSeconds;
             }
             else if (interval == "minute")
             {
-                retval = (long) ts.TotalMinutes;
+                retVal = (long) ts.TotalMinutes;
             }
             else if (interval == "hour")
             {
-                retval = (long) ts.TotalHours;
+                retVal = (long) ts.TotalHours;
             }
             else if (interval == "day")
             {
-                retval = ts.Days;
+                retVal = ts.Days;
             }
             else if (interval == "week")
             {
-                retval = ts.Days / 7;
+                retVal = ts.Days / 7;
             }
             else if (interval == "month")
             {
-                retval = ts.Days / 30;
+                retVal = ts.Days / 30;
             }
             else if (interval == "quarter")
             {
-                retval = ts.Days / 30 / 3;
+                retVal = ts.Days / 30 / 3;
             }
             else if (interval == "year")
             {
-                retval = ts.Days / 365;
+                retVal = ts.Days / 365;
             }
-            return retval;
+            return retVal;
         }
     }
 }
