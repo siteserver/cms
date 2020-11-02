@@ -305,15 +305,6 @@ gulp.task("publish-linux-x64-tgz", async function () {
 
 gulp.task("publish-linux-x64-zip", async function () {
   writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.zip`, `sscms-${version}-linux-x64.zip`);
-  var fileName = 'ci.js';
-  var date = new Date();
-  var json = `var ci = {
-    version: ${version},
-    releaseDate: ${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日
-  };`;
-  
-  fs.writeFileSync(`./publish/dist/${fileName}`, json);
-  writeOss(process.env.OSS_BUCKET_WWW, `assets/js/${fileName}`, fileName);
 });
 
 gulp.task("publish-win-x64-zip", async function () {
@@ -322,4 +313,15 @@ gulp.task("publish-win-x64-zip", async function () {
 
 gulp.task("publish-win-x86-zip", async function () {
   writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-win-x86.zip`, `sscms-${version}-win-x86.zip`);
+
+  var fileName = 'ci.js';
+  var date = new Date();
+  date.setHours(date.getHours() + 8);
+  var json = `var ci = {
+  version: '${version}',
+  releaseDate: '${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日'
+};`;
+  
+  fs.writeFileSync(`./publish/dist/${fileName}`, json);
+  writeOss(process.env.OSS_BUCKET_WWW, `assets/js/${fileName}`, fileName);
 });
