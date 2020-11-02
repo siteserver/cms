@@ -313,7 +313,7 @@ gulp.task("publish-linux-x64-zip", async function () {
   };`;
   
   fs.writeFileSync(`./publish/dist/${fileName}`, json);
-  writeOss(process.env.OSS_BUCKET_WWW, `js/${fileName}`, fileName);
+  writeOss(process.env.OSS_BUCKET_WWW, `assets/js/${fileName}`, fileName);
 });
 
 gulp.task("publish-win-x64-zip", async function () {
