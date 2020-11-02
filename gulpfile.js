@@ -306,9 +306,10 @@ gulp.task("publish-linux-x64-tgz", async function () {
 gulp.task("publish-linux-x64-zip", async function () {
   writeOss(process.env.OSS_BUCKET_DL, `cms/${version}/sscms-${version}-linux-x64.zip`, `sscms-${version}-linux-x64.zip`);
   var fileName = 'ci.js';
+  var date = new Date();
   var json = `var ci = {
     version: ${version},
-    releaseDate: ${new Date().Format("yyyy年M日d")}
+    releaseDate: ${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日
   };`;
   
   fs.writeFileSync(`./publish/dist/${fileName}`, json);
