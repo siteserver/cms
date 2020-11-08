@@ -18,6 +18,8 @@ var data = utils.init({
     homeLogoUrl: null,
     homeDefaultAvatarUrl: null,
     userRegistrationAttributes: [],
+    isUserRegistrationMobile: null,
+    isUserRegistrationEmail: null,
     isUserRegistrationGroup: null,
     isHomeAgreement: null,
     homeAgreementHtml: null,
@@ -43,6 +45,8 @@ var methods = {
       $this.form.homeLogoUrl = res.config.homeLogoUrl;
       $this.form.homeDefaultAvatarUrl = res.config.homeDefaultAvatarUrl;
       $this.form.userRegistrationAttributes = res.config.userRegistrationAttributes || [];
+      $this.form.isUserRegistrationMobile = res.config.isUserRegistrationMobile;
+      $this.form.isUserRegistrationEmail = res.config.isUserRegistrationEmail;
       $this.form.isUserRegistrationGroup = res.config.isUserRegistrationGroup;
       $this.form.isHomeAgreement = res.config.isHomeAgreement;
       $this.form.homeAgreementHtml = res.config.homeAgreementHtml;
@@ -73,6 +77,8 @@ var methods = {
       homeLogoUrl: this.form.homeLogoUrl,
       homeDefaultAvatarUrl: this.form.homeDefaultAvatarUrl,
       userRegistrationAttributes: this.form.userRegistrationAttributes,
+      isUserRegistrationMobile: this.form.isUserRegistrationMobile,
+      isUserRegistrationEmail: this.form.isUserRegistrationEmail,
       isUserRegistrationGroup: this.form.isUserRegistrationGroup,
       isHomeAgreement: this.form.isHomeAgreement,
       homeAgreementHtml: this.form.homeAgreementHtml,
@@ -90,6 +96,10 @@ var methods = {
 
   getUserRegistrationAttribute: function (val) {
     return val;
+  },
+
+  btnUsersStyleClick: function () {
+    utils.addTab('用户字段', utils.getSettingsUrl('usersStyle'));
   },
   
   btnSubmitClick: function () {

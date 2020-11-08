@@ -17,16 +17,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         private const string Route = "settings/usersConfig";
 
         private readonly IAuthManager _authManager;
+        private readonly ISmsManager _smsManager;
         private readonly IConfigRepository _configRepository;
 
-        public UsersConfigController(IAuthManager authManager, IConfigRepository configRepository)
+        public UsersConfigController(IAuthManager authManager, ISmsManager smsManager, IConfigRepository configRepository)
         {
             _authManager = authManager;
+            _smsManager = smsManager;
             _configRepository = configRepository;
         }
 
         public class GetResult
         {
+            public bool IsSmsEnabled { get; set; }
             public Config Config { get; set; }
         }
 
@@ -35,6 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             public bool IsUserRegistrationAllowed { get; set; }
             public bool IsUserRegistrationChecked { get; set; }
             public bool IsUserUnRegistrationAllowed { get; set; }
+            public bool IsUserForceVerifyMobile { get; set; }
             public int UserPasswordMinLength { get; set; }
             public PasswordRestriction UserPasswordRestriction { get; set; }
             public int UserRegistrationMinMinutes { get; set; }

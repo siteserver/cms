@@ -47,6 +47,8 @@ namespace SSCMS.Repositories
 
         Task<(Administrator administrator, string userName, string errorMessage)> ValidateAsync(string account, string password, bool isPasswordMd5);
 
+        Task<(bool Success, string ErrorMessage)> ValidateLockAsync(Administrator administrator);
+
         Task<int> GetCountAsync();
 
         Task<List<Administrator>> GetAdministratorsAsync(int offset, int limit);

@@ -23,6 +23,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
             config.HomeLogoUrl = request.HomeLogoUrl;
             config.HomeDefaultAvatarUrl = request.HomeDefaultAvatarUrl;
             config.UserRegistrationAttributes = request.UserRegistrationAttributes;
+            config.IsUserRegistrationMobile = request.IsUserRegistrationMobile;
+            config.IsUserRegistrationEmail = request.IsUserRegistrationEmail;
             config.IsUserRegistrationGroup = request.IsUserRegistrationGroup;
             config.IsHomeAgreement = request.IsHomeAgreement;
             config.HomeAgreementHtml = request.HomeAgreementHtml;

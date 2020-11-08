@@ -85,7 +85,13 @@
             </div>
           </td>
           <td rowspan="1" colspan="1">
-            <div class="cell">{{ user.mobile }}</div>
+            <div class="cell">
+              <div v-if="user.mobile">
+                {{ user.mobile }}
+                <el-tag v-if="user.mobileVerified">已验证</el-tag>
+                <el-tag v-else type="warning">待验证</el-tag>
+              </div>
+            </div>
           </td>
         </tr>
         <tr class="el-table__row">

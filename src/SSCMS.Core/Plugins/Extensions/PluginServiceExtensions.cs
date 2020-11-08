@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SSCMS.Core.Services;
@@ -23,16 +24,35 @@ namespace SSCMS.Core.Plugins.Extensions
             //    }
             //}
 
+            //var instances = pluginManager.GetExtensions<IPluginConfigureServices>();
+            //if (instances != null)
+            //{
+            //    foreach (var plugin in instances)
+            //    {
+            //        plugin.ConfigureServices(services);
+            //    }
+            //}
+
+            return pluginManager;
+        }
+
+        public static void AddPluginServices(this IServiceCollection services, IPluginManager pluginManager)
+        {
             var instances = pluginManager.GetExtensions<IPluginConfigureServices>();
             if (instances != null)
             {
                 foreach (var plugin in instances)
                 {
-                    plugin.ConfigureServices(services);
+                    try
+                    {
+                        plugin.ConfigureServices(services);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
-
-            return pluginManager;
         }
 
         //private static void ConfigureServices(Assembly assembly, IServiceCollection services)

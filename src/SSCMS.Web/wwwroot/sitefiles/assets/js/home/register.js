@@ -1,9 +1,15 @@
 var $url = '/register';
 var $urlCaptcha = '/register/captcha';
 var $urlCaptchaCheck = '/register/captcha/actions/check';
+var $urlSendSms = '/register/actions/sendSms';
+var $urlVerifyMobile = '/register/actions/verifyMobile';
 
 var data = utils.init({
   returnUrl: decodeURIComponent(utils.getQueryString('returnUrl')),
+  isSmsEnabled: null,
+  isUserVerifyMobile: null,
+  isUserRegistrationMobile: null,
+  isUserRegistrationEmail: null,
   isUserRegistrationGroup: null,
   isHomeAgreement: null,
   homeAgreementHtml: null,
@@ -12,7 +18,13 @@ var data = utils.init({
   isAgreement: false,
   captchaToken: null,
   captchaUrl: null,
-  form: null
+  countdown: 0,
+  form: {
+    mobile: '',
+    code: '',
+    captchaValue: '',
+    groupId: 0
+  }
 });
 
 var methods = {
@@ -32,10 +44,10 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.form = {
-        captchaValue: '',
-        groupId: 0
-      };
+      $this.isSmsEnabled = res.isSmsEnabled;
+      $this.isUserVerifyMobile = res.isUserVerifyMobile;
+      $this.isUserRegistrationMobile = res.isUserRegistrationMobile;
+      $this.isUserRegistrationEmail = res.isUserRegistrationEmail;
       $this.isUserRegistrationGroup = res.isUserRegistrationGroup;
       $this.isHomeAgreement = res.isHomeAgreement;
       $this.homeAgreementHtml = res.homeAgreementHtml;
@@ -49,7 +61,31 @@ var methods = {
 
       $this.apiCaptchaReload();
     }).catch(function (error) {
-      utils.error(error, {redirect: true});
+      utils.notifyError(error, {redirect: true});
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiSendSms: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlSendSms, {
+      mobile: this.form.mobile
+    }).then(function (response) {
+      var res = response.data;
+
+      utils.notifySuccess('验证码发送成功，10分钟内有效');
+      $this.countdown = 60;
+      var interval = setInterval(function () {
+        $this.countdown -= 1;
+        if ($this.countdown <= 0){
+          clearInterval(interval);
+        }
+      }, 1000);
+    }).catch(function (error) {
+      utils.notifyError(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -83,7 +119,7 @@ var methods = {
       $this.form.captchaValue = '';
       $this.captchaUrl = $apiUrl + $urlCaptcha + '?token=' + $this.captchaToken;
     }).catch(function (error) {
-      utils.error(error);
+      utils.notifyError(error);
     }).then(function () {
       utils.loading($this, false);
     });
@@ -101,7 +137,22 @@ var methods = {
     }).catch(function (error) {
       $this.apiCaptchaReload();
       utils.loading($this, false);
-      utils.error(error);
+      utils.notifyError(error);
+    });
+  },
+
+  apiVerifyMobile: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlVerifyMobile, {
+      mobile: this.form.mobile,
+      code: this.form.code
+    }).then(function (response) {
+      $this.apiSubmit();
+    }).catch(function (error) {
+      utils.loading($this, false);
+      utils.notifyError(error);
     });
   },
 
@@ -141,8 +192,25 @@ var methods = {
     }).catch(function (error) {
       $this.apiCaptchaReload();
       utils.loading($this, false);
-      utils.error(error);
+      utils.notifyError(error);
     });
+  },
+
+  isMobile: function (value) {
+    return /^1[3|4|5|7|8][0-9]\d{8}$/.test(value);
+  },
+
+  btnSendSmsClick: function () {
+    if (this.countdown > 0) return;
+    if (!this.form.mobile) {
+      utils.notifyError('手机号码不能为空');
+      return;
+    } else if (!this.isMobile(this.form.mobile)) {
+      utils.notifyError('请输入有效的手机号码');
+      return;
+    }
+
+    this.apiSendSms();
   },
 
   btnRegisterClick: function () {
@@ -150,7 +218,11 @@ var methods = {
 
     this.$refs.form.validate(function(valid) {
       if (valid) {
-        $this.apiCheckCaptcha();
+        if ($this.isMobileCode) {
+          $this.apiVerifyMobile();
+        } else {
+          $this.apiCheckCaptcha();
+        }
       }
     });
   },
@@ -174,6 +246,14 @@ var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
+  computed: {
+    isMobile: function () {
+      return this.isUserVerifyMobile || this.isUserRegistrationMobile;
+    },
+    isMobileCode: function () {
+      return this.isUserVerifyMobile || (this.isSmsEnabled && this.isUserRegistrationMobile);
+    }
+  },
   created: function () {
     this.apiGet();
   }

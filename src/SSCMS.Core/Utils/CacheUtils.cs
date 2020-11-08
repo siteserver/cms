@@ -111,25 +111,5 @@ namespace SSCMS.Core.Utils
         {
             return $"ss:{tableName}:list:{type}:{ListUtils.ToString(identities, ":")}";
         }
-
-        public static string GetCountKey(string tableName, int siteId)
-        {
-            return $"ss:{tableName}:count:{siteId}";
-        }
-
-        public static string GetCountKey(string tableName, int siteId, int channelId)
-        {
-            return $"ss:{tableName}:count:{siteId}:{channelId}";
-        }
-
-        public static string GetCountKey(string tableName, int siteId, int channelId, int adminId)
-        {
-            return $"ss:{tableName}:count:{siteId}:{channelId}:{adminId}";
-        }
-
-        public static string GetCountKey(string tableName, int siteId, int channelId, params string[] identities)
-        {
-            return $"ss:{tableName}:count:{siteId}:{channelId}:{ListUtils.ToString(identities, ":")}";
-        }
     }
 }

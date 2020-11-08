@@ -129,6 +129,9 @@ namespace SSCMS.Web
             services.AddServices();
             services.AddWxManager(_config);
 
+            services.AddPseudoServices();
+            services.AddPluginServices(pluginManager);
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services
                 .AddControllers()

@@ -20,8 +20,19 @@ namespace SSCMS.Web.Controllers.Home
                 .Where(x => ListUtils.ContainsIgnoreCase(config.UserRegistrationAttributes, x.AttributeName))
                 .Select(x => new InputStyle(x));
 
+            var isUserVerifyMobile = false;
+            var isSmsEnabled = await _smsManager.IsEnabledAsync();
+            if (isSmsEnabled && config.IsUserForceVerifyMobile)
+            {
+                isUserVerifyMobile = true;
+            }
+
             return new GetResult
             {
+                IsSmsEnabled = isSmsEnabled,
+                IsUserVerifyMobile = isUserVerifyMobile,
+                IsUserRegistrationMobile = config.IsUserRegistrationMobile,
+                IsUserRegistrationEmail = config.IsUserRegistrationEmail,
                 IsUserRegistrationGroup = config.IsUserRegistrationGroup,
                 IsHomeAgreement = config.IsHomeAgreement,
                 HomeAgreementHtml = config.HomeAgreementHtml,

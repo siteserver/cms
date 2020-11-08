@@ -19,6 +19,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             if (request.Id == 0)
             {
+                if (!string.IsNullOrEmpty(request.Mobile))
+                {
+                    var exists = await _userRepository.IsMobileExistsAsync(request.Mobile);
+                    if (exists)
+                    {
+                        return this.Error("此手机号码已注册，请更换手机号码");
+                    }
+                }
+
                 var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, string.Empty);
                 if (user == null)
                 {
@@ -29,6 +38,21 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             }
             else
             {
+                var user = await _userRepository.GetByUserIdAsync(request.Id);
+                if (!StringUtils.EqualsIgnoreCase(user.Mobile, request.Mobile))
+                {
+                    if (!string.IsNullOrEmpty(request.Mobile))
+                    {
+                        var exists = await _userRepository.IsMobileExistsAsync(request.Mobile);
+                        if (exists)
+                        {
+                            return this.Error("此手机号码已注册，请更换手机号码");
+                        }
+                    }
+
+                    request.MobileVerified = false;
+                }
+
                 var (success, errorMessage) = await _userRepository.UpdateAsync(request);
                 if (!success)
                 {

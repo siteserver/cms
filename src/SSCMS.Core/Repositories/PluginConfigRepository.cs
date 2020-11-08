@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Newtonsoft.Json;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -26,93 +28,161 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task InsertAsync(PluginConfig config)
+        private string GetCacheKey(string pluginId, int siteId, string name)
+        {
+            return CacheUtils.GetEntityKey(_repository.TableName, pluginId, $"{siteId}_{name}");
+        }
+
+        private string GetCacheKey(PluginConfig configInfo)
+        {
+            return GetCacheKey(configInfo.PluginId, configInfo.SiteId, configInfo.ConfigName);
+        }
+
+        private async Task InsertAsync(PluginConfig config)
         {
             await _repository.InsertAsync(config);
         }
 
-        public async Task DeleteAsync(string pluginId, int siteId, string configName)
+        private async Task DeleteAsync(string pluginId, int siteId, string name)
         {
             await _repository.DeleteAsync(Q
                 .Where(nameof(PluginConfig.SiteId), siteId)
                 .Where(nameof(PluginConfig.PluginId), pluginId)
-                .Where(nameof(PluginConfig.ConfigName), configName)
+                .Where(nameof(PluginConfig.ConfigName), name)
+                .CachingRemove(GetCacheKey(pluginId, siteId, name))
             );
         }
 
-        public async Task UpdateAsync(PluginConfig configInfo)
+        private async Task UpdateAsync(PluginConfig configInfo)
         {
             await _repository.UpdateAsync(Q
                 .Set(nameof(PluginConfig.ConfigValue), configInfo.ConfigValue)
                 .Where(nameof(PluginConfig.PluginId), configInfo.PluginId)
                 .Where(nameof(PluginConfig.SiteId), configInfo.SiteId)
                 .Where(nameof(PluginConfig.ConfigName), configInfo.ConfigName)
+                .CachingRemove(GetCacheKey(configInfo))
             );
         }
 
-        public async Task<string> GetValueAsync(string pluginId, int siteId, string configName)
+        private async Task<string> GetConfigValueAsync(string pluginId, int siteId, string name)
         {
             return await _repository.GetAsync<string>(Q
                 .Select(nameof(PluginConfig.ConfigValue))
                 .Where(nameof(PluginConfig.SiteId), siteId)
                 .Where(nameof(PluginConfig.PluginId), pluginId)
-                .Where(nameof(PluginConfig.ConfigName), configName)
+                .Where(nameof(PluginConfig.ConfigName), name)
+                .CachingGet(GetCacheKey(pluginId, siteId, name))
             );
         }
 
-        public async Task<bool> IsExistsAsync(string pluginId, int siteId, string configName)
+        private static JsonSerializerSettings Settings = new JsonSerializerSettings
         {
-            return await _repository.ExistsAsync(Q
-                .Where(nameof(PluginConfig.SiteId), siteId)
-                .Where(nameof(PluginConfig.PluginId), pluginId)
-                .Where(nameof(PluginConfig.ConfigName), configName)
-            );
-        }
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented
+        };
 
-        public async Task<bool> SetConfigAsync(string pluginId, int siteId, object config)
-        {
-            return await SetConfigAsync(pluginId, siteId, string.Empty, config);
-        }
-
-        public async Task<bool> SetConfigAsync(string pluginId, int siteId, string name, object config)
+        public async Task<T> GetAsync<T>(string pluginId, int siteId, string name)
         {
             if (name == null) name = string.Empty;
 
             try
             {
-                if (config == null)
+                var value = await GetConfigValueAsync(pluginId, siteId, name);
+                var typeCode = Type.GetTypeCode(typeof(T));
+                if (typeCode == TypeCode.Int32)
+                {
+                    return TranslateUtils.Get<T>(TranslateUtils.ToInt(value));
+                }
+                if (typeCode == TypeCode.Decimal)
+                {
+                    return TranslateUtils.Get<T>(TranslateUtils.ToDecimal(value));
+                }
+                if (typeCode == TypeCode.DateTime)
+                {
+                    return TranslateUtils.Get<T>(TranslateUtils.ToDateTime(value));
+                }
+                if (typeCode == TypeCode.Boolean)
+                {
+                    return TranslateUtils.Get<T>(TranslateUtils.ToBool(value));
+                }
+                if (typeCode == TypeCode.String)
+                {
+                    return TranslateUtils.Get<T>(value);
+                }
+                if (!string.IsNullOrEmpty(value))
+                {
+                    return JsonConvert.DeserializeObject<T>(value, Settings);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _errorLogRepository.AddErrorLogAsync(pluginId, ex);
+            }
+            return default;
+        }
+
+        public async Task<T> GetAsync<T>(string pluginId, string name)
+        {
+            return await GetAsync<T>(pluginId, 0, name);
+        }
+
+        [Obsolete]
+        public async Task<T> GetConfigAsync<T>(string pluginId, int siteId, string name)
+        {
+            return await GetAsync<T>(pluginId, siteId, name);
+        }
+
+        [Obsolete]
+        public async Task<T> GetConfigAsync<T>(string pluginId, string name)
+        {
+            return await GetAsync<T>(pluginId, name);
+        }
+
+        public async Task<bool> SetAsync<T>(string pluginId, int siteId, string name, T value)
+        {
+            if (name == null) name = string.Empty;
+
+            try
+            {
+                if (value == null)
                 {
                     await DeleteAsync(pluginId, siteId, name);
+                    return true;
+                }
+
+                string configValue;
+                var typeCode = Type.GetTypeCode(typeof(T));
+                if (typeCode == TypeCode.Int32 || typeCode == TypeCode.Decimal || typeCode == TypeCode.DateTime ||
+                    typeCode == TypeCode.Boolean || typeCode == TypeCode.String)
+                {
+                    configValue = value.ToString();
                 }
                 else
                 {
-                    var settings = new JsonSerializerSettings
+                    configValue = JsonConvert.SerializeObject(value, Settings);
+                }
+
+                if (await ExistsAsync(pluginId, siteId, name))
+                {
+                    var pluginConfig = new PluginConfig
                     {
-                        NullValueHandling = NullValueHandling.Ignore
+                        PluginId = pluginId,
+                        SiteId = siteId,
+                        ConfigName = name,
+                        ConfigValue = configValue
                     };
-                    var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
-                    if (await IsExistsAsync(pluginId, siteId, name))
+                    await UpdateAsync(pluginConfig);
+                }
+                else
+                {
+                    var pluginConfig = new PluginConfig
                     {
-                        var pluginConfig = new PluginConfig
-                        {
-                            PluginId = pluginId,
-                            SiteId = siteId,
-                            ConfigName = name,
-                            ConfigValue = json
-                        };
-                        await UpdateAsync(pluginConfig);
-                    }
-                    else
-                    {
-                        var pluginConfig = new PluginConfig
-                        {
-                            PluginId = pluginId,
-                            SiteId = siteId,
-                            ConfigName = name,
-                            ConfigValue = json
-                        };
-                        await InsertAsync(pluginConfig);
-                    }
+                        PluginId = pluginId,
+                        SiteId = siteId,
+                        ConfigName = name,
+                        ConfigValue = configValue
+                    };
+                    await InsertAsync(pluginConfig);
                 }
             }
             catch (Exception ex)
@@ -120,29 +190,42 @@ namespace SSCMS.Core.Repositories
                 await _errorLogRepository.AddErrorLogAsync(pluginId, ex);
                 return false;
             }
+
             return true;
         }
 
-        public async Task<T> GetConfigAsync<T>(string pluginId, int siteId, string name = "")
+        public async Task<bool> SetAsync<T>(string pluginId, string name, T config)
         {
-            if (name == null) name = string.Empty;
-
-            try
-            {
-                var value = await GetValueAsync(pluginId, siteId, name);
-                if (!string.IsNullOrEmpty(value))
-                {
-                    return JsonConvert.DeserializeObject<T>(value);
-                }
-            }
-            catch (Exception ex)
-            {
-                await _errorLogRepository.AddErrorLogAsync(pluginId, ex);
-            }
-            return default(T);
+            return await SetAsync(pluginId, 0, name, config);
         }
 
-        public async Task<bool> RemoveConfigAsync(string pluginId, int siteId, string name = "")
+        [Obsolete]
+        public async Task<bool> SetConfigAsync<T>(string pluginId, int siteId, string name, T value)
+        {
+            return await SetAsync(pluginId, siteId, name, value);
+        }
+
+        [Obsolete]
+        public async Task<bool> SetConfigAsync<T>(string pluginId, string name, T value)
+        {
+            return await SetAsync(pluginId, name, value);
+        }
+
+        public async Task<bool> ExistsAsync(string pluginId, int siteId, string name)
+        {
+            return await _repository.ExistsAsync(Q
+                .Where(nameof(PluginConfig.SiteId), siteId)
+                .Where(nameof(PluginConfig.PluginId), pluginId)
+                .Where(nameof(PluginConfig.ConfigName), name)
+            );
+        }
+
+        public async Task<bool> ExistsAsync(string pluginId, string name)
+        {
+            return await ExistsAsync(pluginId, 0, name);
+        }
+
+        public async Task<bool> RemoveAsync(string pluginId, int siteId, string name)
         {
             if (name == null) name = string.Empty;
 
@@ -156,6 +239,11 @@ namespace SSCMS.Core.Repositories
                 return false;
             }
             return true;
+        }
+
+        public async Task<bool> RemoveAsync(string pluginId, string name)
+        {
+            return await RemoveAsync(pluginId, 0, name);
         }
     }
 }

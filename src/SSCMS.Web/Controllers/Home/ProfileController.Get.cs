@@ -18,8 +18,17 @@ namespace SSCMS.Web.Controllers.Home
             var userStyles = await _tableStyleRepository.GetUserStylesAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
 
+            var isUserVerifyMobile = false;
+            var isSmsEnabled = await _smsManager.IsEnabledAsync();
+            if (isSmsEnabled && config.IsUserForceVerifyMobile)
+            {
+                isUserVerifyMobile = true;
+            }
+
             return new GetResult
             {
+                IsSmsEnabled = isSmsEnabled,
+                IsUserVerifyMobile = isUserVerifyMobile,
                 User = user,
                 Styles = styles
             };

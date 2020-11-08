@@ -451,37 +451,10 @@ namespace SSCMS.Core.Repositories
                 return (null, null, "帐号或密码错误");
             }
 
-            if (!user.Checked)
+            var (success, errorMessage) = await ValidateStateAsync(user);
+            if (!success)
             {
-                return (null, user.UserName, "此账号未审核，无法登录");
-            }
-
-            if (user.Locked)
-            {
-                return (null, user.UserName, "此账号被锁定，无法登录");
-            }
-
-            var config = await _configRepository.GetAsync();
-
-            if (config.IsUserLockLogin)
-            {
-                if (user.CountOfFailedLogin > 0 && user.CountOfFailedLogin >= config.UserLockLoginCount)
-                {
-                    var lockType = TranslateUtils.ToEnum(config.UserLockLoginType, LockType.Hours);
-                    if (lockType == LockType.Forever)
-                    {
-                        return (null, user.UserName, "此账号错误登录次数过多，已被永久锁定");
-                    }
-                    if (lockType == LockType.Hours && user.LastActivityDate.HasValue)
-                    {
-                        var ts = new TimeSpan(DateTime.Now.Ticks - user.LastActivityDate.Value.Ticks);
-                        var hours = Convert.ToInt32(config.UserLockLoginHours - ts.TotalHours);
-                        if (hours > 0)
-                        {
-                            return (null, user.UserName, $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试");
-                        }
-                    }
-                }
+                return (null, user.UserName, errorMessage);
             }
 
             var userEntity = await GetByUserIdAsync(user.Id);
@@ -493,6 +466,44 @@ namespace SSCMS.Core.Repositories
             }
 
             return (user, user.UserName, string.Empty);
+        }
+
+        public async Task<(bool success, string errorMessage)> ValidateStateAsync(User user)
+        {
+            if (!user.Checked)
+            {
+                return (false, "此账号未审核，无法登录");
+            }
+
+            if (user.Locked)
+            {
+                return (false, "此账号被锁定，无法登录");
+            }
+
+            var config = await _configRepository.GetAsync();
+
+            if (config.IsUserLockLogin)
+            {
+                if (user.CountOfFailedLogin > 0 && user.CountOfFailedLogin >= config.UserLockLoginCount)
+                {
+                    var lockType = TranslateUtils.ToEnum(config.UserLockLoginType, LockType.Hours);
+                    if (lockType == LockType.Forever)
+                    {
+                        return (false, "此账号错误登录次数过多，已被永久锁定");
+                    }
+                    if (lockType == LockType.Hours && user.LastActivityDate.HasValue)
+                    {
+                        var ts = new TimeSpan(DateTime.Now.Ticks - user.LastActivityDate.Value.Ticks);
+                        var hours = Convert.ToInt32(config.UserLockLoginHours - ts.TotalHours);
+                        if (hours > 0)
+                        {
+                            return (false, $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试");
+                        }
+                    }
+                }
+            }
+
+            return (true, null);
         }
 
         public Dictionary<DateTime, int> GetTrackingDictionary(DateTime dateFrom, DateTime dateTo, string xType)

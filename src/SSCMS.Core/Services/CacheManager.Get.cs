@@ -6,9 +6,9 @@ namespace SSCMS.Core.Services
 {
     public partial class CacheManager
     {
-        public T Get<T>(string key) where T : class
+        public T Get<T>(string key)
         {
-            return _cacheManager.Get(key) as T;
+            return TranslateUtils.Get<T>(_cacheManager.Get(key));
         }
 
         public string GetByFilePath(string filePath)

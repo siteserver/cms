@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             config.IsUserRegistrationAllowed = request.IsUserRegistrationAllowed;
             config.IsUserRegistrationChecked = request.IsUserRegistrationChecked;
             config.IsUserUnRegistrationAllowed = request.IsUserUnRegistrationAllowed;
+            config.IsUserForceVerifyMobile = request.IsUserForceVerifyMobile;
             config.UserPasswordMinLength = request.UserPasswordMinLength;
             config.UserPasswordRestriction = request.UserPasswordRestriction;
             config.UserRegistrationMinMinutes = request.UserRegistrationMinMinutes;

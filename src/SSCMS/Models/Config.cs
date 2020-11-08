@@ -55,11 +55,17 @@ namespace SSCMS.Models
 
         public List<string> UserRegistrationAttributes { get; set; }
 
+        public bool IsUserRegistrationMobile { get; set; }
+
+        public bool IsUserRegistrationEmail { get; set; }
+
         public bool IsUserRegistrationGroup { get; set; }
 
         public bool IsUserRegistrationChecked { get; set; } = true;
 
         public bool IsUserUnRegistrationAllowed { get; set; } = true;
+
+        public bool IsUserForceVerifyMobile { get; set; }
 
         public int UserPasswordMinLength { get; set; } = 6;
 

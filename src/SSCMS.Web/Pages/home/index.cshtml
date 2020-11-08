@@ -1,8 +1,20 @@
 @page
 @{ Layout = "_LayoutHome"; }
 @section Styles{
-  <link href="/sitefiles/assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="/sitefiles/assets/css/menu.css" rel="stylesheet" type="text/css" />
+  <style>
+    #header {
+      background-color: #409EFF;
+    }
+    #sidebar .el-submenu .el-menu-item:hover {
+      color: #409EFF;
+      background-color: #edf2fc
+    }
+    #sidebar .el-menu-item.is-active {
+      color: #409EFF;
+      background-color: #edf2fc
+    }
+  </style>
 }
 
 <header id="header">
@@ -18,7 +30,7 @@
 
   <template v-if="isDesktop">
 
-    <el-link v-for="topMenu in menus" class="nav" :key="topMenu.id" :underline="false" :icon="topMenu.iconClass"  v-on:click="btnTopMenuClick(topMenu)" :style="{backgroundColor: (topMenu == menu ? '#2e9c90' : '')}">
+    <el-link v-for="topMenu in menus" class="nav" :key="topMenu.id" :underline="false" :icon="topMenu.iconClass"  v-on:click="btnTopMenuClick(topMenu)" :style="{backgroundColor: (topMenu == menu ? '#146ca4' : '')}">
       {{ topMenu.text }}
     </el-link>
 

@@ -1,102 +1,118 @@
 @page
 @{ Layout = "_LayoutHome"; }
 @section Styles{
-  <link href="/sitefiles/assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
-  <link href="/sitefiles/assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
   <style>
-    .ion-person:before,
-    .ion-locked:before,
-    .ion-image:before {
-      width: 20px;
+    body {
+      background: #f5f5f5;
+    }
+    .el-tabs--top {
+      margin-top: -15px;
+    }
+    .el-input-group__append {
+      padding: 0;
+    }
+    .el-input-group__prepend {
+      padding: 0 15px;
+    }
+    .el-icon-mobile-phone:before,
+    .el-icon-user-solid:before,
+    .el-icon-lock:before,
+    .el-icon-chat-line-square:before,
+    .el-icon-picture:before {
+      width: 12px;
       font-size: 18px;
+    }
+    .wrapper-page {
+      margin: 7.5% auto;
+      max-width: 360px;
     }
   </style>
 }
 
 <div class="wrapper-page">
-  <div class="card-box">
+  <el-card class="box-card">
+    <div slot="header" class="clearfix">
+      <span>{{ homeTitle }}</span>
+    </div>
 
-    <h4 class="m-l-5">{{ homeTitle }}</h4>
+    <el-tabs v-if="isSmsEnabled" v-model="form.type" :stretch="true" v-on:tab-click="btnTypeClick">
+      <el-tab-pane label="使用账号登录" name="account"></el-tab-pane>
+      <el-tab-pane label="使用短信登录" name="mobile"></el-tab-pane>
+    </el-tabs>
 
-    <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20" method="post">
+    <el-form v-show="form.type == 'account'" ref="formAccount" :model="form" size="medium" label-width="0" status-icon>
+      <el-form-item prop="account" :rules="[{ required: true, message: '请输入用户名/手机号/邮箱' }]">
+        <el-input v-focus v-model="form.account" placeholder="请输入用户名/手机号/邮箱" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-user-solid"></i>
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="password" :rules="[{ required: true, message: '请输入密码' }]">
+        <el-input v-model="form.password" type="password" name="password" placeholder="请输入密码" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-lock"></i>
+          </template>
+        </el-input>
+      </el-form-item>
 
-      <div class="form-group row">
-        <div class="col-12">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                  <i class="fa fa-user-circle-o"></i>
-              </span>
-            </div>
-            <input v-model="account" :class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text" v-focus placeholder="请输入用户名/手机号/邮箱" autocomplete="off">
-          </div>
-        </div>
-      </div>
+      <el-form-item prop="captchaValue" :rules="[{ required: true, message: '请输入验证码' }]">
+        <el-input v-model="form.captchaValue" placeholder="请输入验证码" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-picture"></i>
+          </template>
+          <template slot="append">
+            <a href="javascript:;" v-on:click="btnCaptchaClick">
+              <img v-show="captchaUrl" style="display: none; height: 30px;" :src="captchaUrl">
+            </a>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <el-form v-show="form.type == 'mobile'" ref="formMobile" :model="form" size="medium" label-width="0" status-icon>
+      <el-form-item prop="mobile" :rules="[
+        { required: true, message: '请输入手机号码' },
+        { validator: utils.validateMobile, message: '请输入有效的手机号码' }
+      ]">
+        <el-input placeholder="请输入手机号码" v-model="form.mobile" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-mobile-phone"></i>
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="code" :rules="[{ required: true, message: '请输入短信验证码' }]">
+        <el-input v-model="form.code" autocomplete="off" placeholder="请输入短信验证码" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-chat-line-square"></i>
+          </template>
+          <template slot="append">
+            <el-link :underline="false" v-on:click.prevent="btnSendSmsClick" style="padding: 0 15px;">
+              {{ countdown > 0 ? countdown + '秒': '获取验证码' }}
+            </el-link>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-form>
 
-      <div class="form-group row">
-        <div class="col-12">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                  <i class="fa fa-key"></i>
-              </span>
-            </div>
-            <input v-model="password" :class="{ 'is-invalid': pageSubmit && !password }" class="form-control" type="password" placeholder="请输入密码" autocomplete="off">
-          </div>
-        </div>
-      </div>
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+    <div>
+      <el-checkbox v-model="form.isPersistent" style="margin-right: 10px; margin-bottom: 5px;">
+        保持登录状态
+      </el-checkbox>
+      <el-link style="float: right;" v-if="isSmsEnabled" v-on:click="redirectLostPassword" :underline="false" style="margin-left: 10px">忘记密码？</el-link>
+    </div>
+    <div style="margin: 10px 0;">
+      <el-button type="primary" style="width: 100%" v-on:click="btnSubmitClick">登 录</el-button>
+    </div>
+    <div>
+      <el-button type="default" style="width: 100%" v-on:click="btnRegisterClick">注 册</el-button>
+    </div>
 
-      <div class="form-group row">
-        <div class="col-12">
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                  <i class="fa fa-picture-o"></i>
-              </span>
-            </div>
-            <input v-model="captchaValue" :class="{ 'is-invalid': pageSubmit && !captchaValue }" class="form-control" type="text" placeholder="请输入验证码">
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-6"></div>
-        <div class="col-6">
-          <a href="javascript:;" v-on:click="reload">
-            <img v-show="captchaUrl" style="display: none" class="float-right rounded" :src="captchaUrl" align="absmiddle">
-          </a>
-        </div>
-      </div>
-
-      <div class="form-group row">
-        <div class="col-12">
-          <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">
-            登 录
-          </button>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-12">
-          <button v-on:click="btnRegisterClick" style="width: 100%" class="btn btn-default btn-large btn-custom w-md" type="submit">
-            注 册
-          </button>
-        </div>
-      </div>
-      <!-- <div class="form-group row">
-        <div class="col-12 text-right">
-          <a href="pages-recoverpw.html" class="text-primary">
-            <i class="fa fa-lock m-r-5"></i>
-            忘记密码？
-          </a>
-        </div>
-      </div> -->
-
-    </form>
-  </div>
-
+  </el-card>
 </div>
 
 @section Scripts{
-<script src="/sitefiles/assets/lib/md5-2.10.0.min.js" type="text/javascript"></script>
-<script src="/sitefiles/assets/js/home/login.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/lib/md5-2.10.0.min.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/home/login.js" type="text/javascript"></script>
 }

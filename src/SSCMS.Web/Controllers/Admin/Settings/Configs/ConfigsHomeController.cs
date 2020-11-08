@@ -44,6 +44,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
             public string HomeLogoUrl { get; set; }
             public string HomeDefaultAvatarUrl { get; set; }
             public List<string> UserRegistrationAttributes { get; set; }
+            public bool IsUserRegistrationMobile { get; set; }
+            public bool IsUserRegistrationEmail { get; set; }
             public bool IsUserRegistrationGroup { get; set; }
             public bool IsHomeAgreement { get; set; }
             public string HomeAgreementHtml { get; set; }

@@ -111,6 +111,11 @@ namespace SSCMS.Core.Extensions
             services.AddScoped<IParseManager, ParseManager>();
         }
 
+        public static void AddPseudoServices(this IServiceCollection services)
+        {
+            services.AddScoped<ISmsManager, SmsManager>();
+        }
+
         public static void AddWxManager(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSenparcGlobalServices(configuration);

@@ -14,7 +14,8 @@ namespace SSCMS.Web.Controllers.Home
 
             return new GetResult
             {
-                HomeTitle = config.HomeTitle
+                HomeTitle = config.HomeTitle,
+                IsSmsEnabled = await _smsManager.IsEnabledAsync()
             };
         }
     }

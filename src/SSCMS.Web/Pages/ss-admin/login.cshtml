@@ -6,8 +6,10 @@
   <style>
     .ion-person:before,
     .ion-locked:before,
-    .ion-image:before {
-      width: 20px;
+    .ion-image:before,
+    .ion-ipad:before,
+    .ion-chatbubble:before {
+      width: 16px;
       font-size: 18px;
     }
   </style>
@@ -16,9 +18,9 @@
 <div class="wrapper-page">
   <div class="card-box">
 
-    <h4 class="m-l-5">管理员登录</h4>
+    <h4 class="m-l-5">SSCMS 管理员登录</h4>
 
-    <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20" method="post">
+    <form v-on:submit="btnSubmitClick" class="form-horizontal m-t-20" method="post">
 
         <template v-if="pageAlert">
             <div class="alert" :class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
@@ -27,9 +29,42 @@
             </div>
         </template>
 
-        <div class="form-group row">
+        <template v-if="isSmsLogin">
+
+          <div class="form-group row">
             <div class="col-12">
                 <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="ion-ipad"></i>
+                        </span>
+                    </div>
+                    <input v-model="mobile" :class="{ 'is-invalid': pageSubmit && !mobile }" class="form-control" type="text" v-focus placeholder="请输入手机号码" autocomplete="off">
+                </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-12">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="ion-chatbubble"></i>
+                        </span>
+                    </div>
+                    <input v-model="code" :class="{ 'is-invalid': pageSubmit && !code }" class="form-control" type="text" placeholder="短信验证码" autocomplete="off">
+                    <div class="input-group-append">
+                        <span class="input-group-text" style="cursor: pointer; font-size: 14px; color: #00b19d" v-on:click="btnSendSmsClick">{{ countdown > 0 ? countdown + '秒': '获取验证码' }}</span>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+        </template>
+        <template v-else>
+
+            <div class="form-group row">
+                <div class="col-12">
+                  <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text">
                             <i class="fa fa-user-circle-o"></i>
@@ -37,67 +72,83 @@
                     </div>
                     <input v-model="account" :class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text"
                             v-focus placeholder="请输入用户名/手机号/邮箱" autocomplete="off">
+                  </div>
                 </div>
             </div>
-        </div>
-
-        <div class="form-group row">
-            <div class="col-12">
+    
+            <div class="form-group row">
+              <div class="col-12">
                 <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fa fa-key"></i>
-                        </span>
-                    </div>
-                    <input v-model="password" :class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
-                            type="password" placeholder="请输入密码" autocomplete="off">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <i class="fa fa-key"></i>
+                    </span>
+                  </div>
+                  <input v-model="password" :class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
+                          type="password" placeholder="请输入密码" autocomplete="off">
                 </div>
+              </div>
             </div>
-        </div>
-
-        <div class="form-group row">
-            <div class="col-12">
+    
+            <div class="form-group row">
+              <div class="col-12">
                 <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fa fa-picture-o"></i>
-                        </span>
-                    </div>
-                    <input v-model="captchaValue" :class="{ 'is-invalid': pageSubmit && !captchaValue }" class="form-control" type="text"
-                            placeholder="请输入验证码">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-picture-o"></i>
+                    </span>
+                  </div>
+                  <input v-model="captchaValue" :class="{ 'is-invalid': pageSubmit && !captchaValue }" class="form-control" type="text"
+                          placeholder="请输入验证码">
                 </div>
+              </div>
             </div>
-        </div>
 
-        <div class="form-group row">
-            <div class="col-6">
+            <div class="form-group row">
+              <div class="col-6">
                 <div class="checkbox checkbox-primary" style="margin-top: 25px">
-                    <input id="autoLogin" type="checkbox" v-model="isPersistent">
-                    <label for="autoLogin">
-                        下次自动登录
-                    </label>
+                  <input id="autoLogin" type="checkbox" v-model="isPersistent">
+                  <label for="autoLogin">
+                    下次自动登录
+                  </label>
                 </div>
-            </div>
-            <div class="col-6">
-                <a href="javascript:;" v-on:click="reload">
-                    <img v-show="captchaUrl" style="display: none" class="float-right rounded" :src="captchaUrl" align="absmiddle">
+              </div>
+              <div class="col-6">
+                <a href="javascript:;" v-on:click="btnCaptchaClick">
+                  <img v-show="captchaUrl" style="display: none" class="float-right rounded" :src="captchaUrl" align="absmiddle">
                 </a>
+              </div>
             </div>
-        </div>
+
+        </template>
 
         <div class="form-group row">
-            <div class="col-12">
-                <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">
-                    登
-                    录
-                </button>
+          <div class="col-12">
+            <button v-on:click="btnSubmitClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">
+                登
+                录
+            </button>
+          </div>
+        </div>
+
+        <div v-if="isSmsEnabled" class="form-group row">
+            <div class="col-sm-6">
+                <a href="javascript:;" v-on:click="redirectLostPassword" class="text-muted"><i class="fa fa-lock m-r-5"></i> 忘记密码？</a>
+            </div>
+            <div class="col-sm-6 text-right">
+                <a v-if="isSmsLogin" href="javascript:;" class="text-muted" v-on:click="isSmsLogin = false">
+                  <i class="fa fa-user-circle-o m-r-5"></i> 使用账号登录
+                </a>
+                <a v-else href="javascript:;" class="text-muted" v-on:click="isSmsLogin = true">
+                  <i class="ion-ipad m-r-5"></i> 使用短信登录
+                </a>
             </div>
         </div>
 
         <hr />
 
         <div class="text-muted text-center" v-if="adminTitle">
-            <small>{{ adminTitle }} {{ version }}</small>
+          <small>{{ adminTitle }} {{ version }}</small>
         </div>
 
     </form>

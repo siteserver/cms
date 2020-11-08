@@ -535,9 +535,23 @@ namespace SSCMS.Core.Repositories
 
             userName = administrator.UserName;
 
+            var (success, errorMessage) = await ValidateLockAsync(administrator);
+            if (!success)
+            {
+                return (null, userName, errorMessage);
+            }
+
+            return CheckPassword(password, isPasswordMd5, administrator.Password,
+                administrator.PasswordFormat, administrator.PasswordSalt)
+                ? (administrator, userName, string.Empty)
+                : (null, userName, "账号或密码错误");
+        }
+
+        public async Task<(bool Success, string ErrorMessage)> ValidateLockAsync(Administrator administrator)
+        {
             if (administrator.Locked)
             {
-                return (null, userName, "此账号被锁定，无法登录");
+                return (false, "此账号被锁定，无法登录");
             }
 
             var config = await _configRepository.GetAsync();
@@ -550,7 +564,7 @@ namespace SSCMS.Core.Repositories
                     var lockType = config.AdminLockLoginType;
                     if (lockType == LockType.Forever)
                     {
-                        return (null, userName, "此账号错误登录次数过多，已被永久锁定");
+                        return (false, "此账号错误登录次数过多，已被永久锁定");
                     }
                     if (lockType == LockType.Hours && administrator.LastActivityDate.HasValue)
                     {
@@ -558,16 +572,13 @@ namespace SSCMS.Core.Repositories
                         var hours = Convert.ToInt32(config.AdminLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {
-                            return (null, userName, $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试");
+                            return (false, $"此账号错误登录次数过多，已被锁定，请等待{hours}小时后重试");
                         }
                     }
                 }
             }
 
-            return CheckPassword(password, isPasswordMd5, administrator.Password,
-                administrator.PasswordFormat, administrator.PasswordSalt)
-                ? (administrator, userName, string.Empty)
-                : (null, userName, "账号或密码错误");
+            return (true, null);
         }
 
         private static string DecodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)

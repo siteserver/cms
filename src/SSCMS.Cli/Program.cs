@@ -68,6 +68,7 @@ namespace SSCMS.Cli
 
             var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory), entryAssembly);
             var pluginManager = services.AddPlugins(configuration, settingsManager);
+            //services.AddPluginServices(pluginManager);
 
             Application = new Application(settingsManager, pluginManager);
             services.AddSingleton<IConfiguration>(configuration);
@@ -77,6 +78,8 @@ namespace SSCMS.Cli
             services.AddServices();
             services.AddCliServices();
             services.AddCliJobs();
+
+            
 
             await Application.RunAsync(args);
 

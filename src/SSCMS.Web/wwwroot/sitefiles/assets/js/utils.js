@@ -402,7 +402,18 @@ var utils = {
     });
   },
 
-  notifyError: function (message) {
+  notifyError: function (error) {
+    if (!error) return;
+
+    var message = '';
+    if (error.response) {
+      message = utils.getErrorMessage(error);
+    } else if (typeof error === 'string') {
+      message = error;
+    } else {
+      message = error + '';
+    }
+
     utils.getRootVue().$notify.error({
       title: '错误',
       message: message

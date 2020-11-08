@@ -52,6 +52,9 @@ namespace SSCMS.Models
         public string Mobile { get; set; }
 
         [DataColumn]
+        public bool MobileVerified { get; set; }
+
+        [DataColumn]
         public string Email { get; set; }
 
         [DataColumn]

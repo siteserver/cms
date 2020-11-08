@@ -1,10 +1,12 @@
 ﻿var $url = '/settings/usersConfig';
 
 var data = utils.init({
+  isSmsEnabled: false,
   form: {
     isUserRegistrationAllowed: null,
     isUserRegistrationChecked: null,
     isUserUnRegistrationAllowed: null,
+    isUserForceVerifyMobile: null,
     userPasswordMinLength: null,
     userPasswordRestriction: null,
     userRegistrationMinMinutes: null,
@@ -24,9 +26,11 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
+      $this.isSmsEnabled = res.isSmsEnabled;
       $this.form.isUserRegistrationAllowed = res.config.isUserRegistrationAllowed;
       $this.form.isUserRegistrationChecked = res.config.isUserRegistrationChecked;
       $this.form.isUserUnRegistrationAllowed = res.config.isUserUnRegistrationAllowed;
+      $this.form.isUserForceVerifyMobile = res.config.isUserForceVerifyMobile && res.isSmsEnabled;
       $this.form.userPasswordMinLength = res.config.userPasswordMinLength;
       $this.form.userPasswordRestriction = res.config.userPasswordRestriction;
       $this.form.userRegistrationMinMinutes = res.config.userRegistrationMinMinutes;
@@ -50,6 +54,7 @@ var methods = {
       isUserRegistrationAllowed: this.form.isUserRegistrationAllowed,
       isUserRegistrationChecked: this.form.isUserRegistrationChecked,
       isUserUnRegistrationAllowed: this.form.isUserUnRegistrationAllowed,
+      isUserForceVerifyMobile: this.form.isUserForceVerifyMobile,
       userPasswordMinLength: this.form.userPasswordMinLength,
       userPasswordRestriction: this.form.userPasswordRestriction,
       userRegistrationMinMinutes: this.form.userRegistrationMinMinutes,

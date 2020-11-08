@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <Version>7.0.5</Version>
+    <Version>7.0.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -28,6 +28,25 @@
       <i class="el-icon-plus"></i>
     </el-upload>
   </el-form-item>
+  <el-form-item label="手机号码" prop="mobile" :rules="mobileValidateRules">
+    <el-input v-model="form.mobile" placeholder="请输入手机号码"></el-input>
+    <small class="tips">手机号码可用于登录、找回密码等功能</small>
+  </el-form-item>
+  <el-form-item v-if="isMobileCode" label="短信验证码" prop="code" :rules="[{ required: true, message: '请输入短信验证码' }]">
+    <el-input v-model="form.code" autocomplete="off" placeholder="请输入短信验证码">
+      <template slot="append">
+        <el-link :underline="false" v-on:click.prevent="btnSendSmsClick">
+          {{ countdown > 0 ? countdown + '秒': '获取验证码' }}
+        </el-link>
+      </template>
+    </el-input>
+  </el-form-item>
+  <el-form-item label="电子邮箱" prop="email" :rules="[
+    { type: 'email', message: '请输入有效的电子邮箱' }
+  ]">
+    <el-input v-model="form.email" placeholder="请输入电子邮箱"></el-input>
+    <small class="tips">电子邮箱可用于登录、找回密码等功能</small>
+  </el-form-item>
 
   @await Html.PartialAsync("_PartialForm")
   

@@ -1,0 +1,73 @@
+@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    body {
+      background: #f5f5f5;
+    }
+    .el-input-group__append {
+      padding: 0;
+    }
+    .el-input-group__prepend {
+      padding: 0 15px;
+    }
+    .el-icon-mobile-phone:before,
+    .el-icon-user-solid:before,
+    .el-icon-lock:before,
+    .el-icon-chat-line-square:before,
+    .el-icon-picture:before {
+      width: 12px;
+      font-size: 18px;
+    }
+    .wrapper-page {
+      margin: 7.5% auto;
+      max-width: 360px;
+    }
+  </style>
+}
+
+<div class="wrapper-page">
+  <el-card class="box-card">
+    <div slot="header" class="clearfix">
+      <span>手机验证</span>
+    </div>
+
+    <el-alert type="warning" title="为了保障账号安全，请验证您的手机号码" style="margin-bottom: 10px;"></el-alert>
+
+    <el-form ref="form" :model="form" size="medium" label-width="0" status-icon>
+      <el-form-item prop="mobile" :rules="[
+        { required: true, message: '请输入手机号码' },
+        { validator: utils.validateMobile, message: '请输入有效的手机号码' }
+      ]">
+        <el-input placeholder="请输入手机号码" v-model="form.mobile" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-mobile-phone"></i>
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="code" :rules="[{ required: true, message: '请输入短信验证码' }]">
+        <el-input v-model="form.code" autocomplete="off" placeholder="请输入短信验证码" v-on:keyup.enter.native="btnSubmitClick">
+          <template slot="prepend">
+            <i class="el-icon-chat-line-square"></i>
+          </template>
+          <template slot="append">
+            <el-link :underline="false" v-on:click.prevent="btnSendSmsClick" style="padding: 0 15px;">
+              {{ countdown > 0 ? countdown + '秒': '获取验证码' }}
+            </el-link>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-form>
+
+    <el-divider></el-divider>
+    <div style="height: 10px"></div>
+    <div style="margin: 10px 0;">
+      <el-button type="primary" style="width: 100%" v-on:click="btnSubmitClick">验 证</el-button>
+    </div>
+
+  </el-card>
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/verifyMobile.js" type="text/javascript"></script>
+}

@@ -1,27 +1,37 @@
+using System;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Models;
 
 namespace SSCMS.Repositories
 {
     public interface IPluginConfigRepository : IRepository
     {
-        Task InsertAsync(PluginConfig config);
+        Task<T> GetAsync<T>(string pluginId, int siteId, string name);
 
-        Task DeleteAsync(string pluginId, int siteId, string configName);
+        Task<T> GetAsync<T>(string pluginId, string name);
 
-        Task UpdateAsync(PluginConfig configInfo);
+        [Obsolete("GetConfigAsync is deprecated, please use GetAsync instead.")]
+        Task<T> GetConfigAsync<T>(string pluginId, int siteId, string name);
 
-        Task<string> GetValueAsync(string pluginId, int siteId, string configName);
+        [Obsolete("GetConfigAsync is deprecated, please use GetAsync instead.")]
+        Task<T> GetConfigAsync<T>(string pluginId, string name);
 
-        Task<bool> IsExistsAsync(string pluginId, int siteId, string configName);
+        Task<bool> ExistsAsync(string pluginId, int siteId, string name);
 
-        Task<bool> SetConfigAsync(string pluginId, int siteId, object config);
+        Task<bool> ExistsAsync(string pluginId, string name);
 
-        Task<bool> SetConfigAsync(string pluginId, int siteId, string name, object config);
+        Task<bool> SetAsync<T>(string pluginId, int siteId, string name, T value);
 
-        Task<T> GetConfigAsync<T>(string pluginId, int siteId, string name = "");
+        Task<bool> SetAsync<T>(string pluginId, string name, T value);
 
-        Task<bool> RemoveConfigAsync(string pluginId, int siteId, string name = "");
+        [Obsolete("SetConfigAsync is deprecated, please use SetAsync instead.")]
+        Task<bool> SetConfigAsync<T>(string pluginId, int siteId, string name, T value);
+
+        [Obsolete("SetConfigAsync is deprecated, please use SetAsync instead.")]
+        Task<bool> SetConfigAsync<T>(string pluginId, string name, T value);
+
+        Task<bool> RemoveAsync(string pluginId, int siteId, string name);
+
+        Task<bool> RemoveAsync(string pluginId, string name);
     }
 }

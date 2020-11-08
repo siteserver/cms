@@ -34,19 +34,32 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             if (administrator.Id == 0)
             {
+                if (!string.IsNullOrEmpty(request.Mobile))
+                {
+                    var exists = await _administratorRepository.IsMobileExistsAsync(request.Mobile);
+                    if (exists)
+                    {
+                        return this.Error("此手机号码已注册，请更换手机号码");
+                    }
+                }
+
                 administrator.UserName = request.UserName;
                 administrator.CreatorUserName = _authManager.AdminName;
             }
             else
             {
-                if (administrator.Mobile != request.Mobile && !string.IsNullOrEmpty(request.Mobile) && await _administratorRepository.IsMobileExistsAsync(request.Mobile))
+                if (!StringUtils.EqualsIgnoreCase(administrator.Mobile, request.Mobile))
                 {
-                    return this.Error("资料修改失败，手机号码已存在");
-                }
+                    if (!string.IsNullOrEmpty(request.Mobile))
+                    {
+                        var exists = await _administratorRepository.IsMobileExistsAsync(request.Mobile);
+                        if (exists)
+                        {
+                            return this.Error("此手机号码已注册，请更换手机号码");
+                        }
+                    }
 
-                if (administrator.Email != request.Email && !string.IsNullOrEmpty(request.Email) && await _administratorRepository.IsEmailExistsAsync(request.Email))
-                {
-                    return this.Error("资料修改失败，邮箱地址已存在");
+                    administrator.MobileVerified = false;
                 }
             }
 

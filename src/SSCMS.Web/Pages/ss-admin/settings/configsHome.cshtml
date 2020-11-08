@@ -58,17 +58,17 @@
     <el-form-item label="用户注册表单字段">
       <el-checkbox label="用户名" checked disabled></el-checkbox>
       <el-checkbox label="密码" checked disabled></el-checkbox>
+      <el-checkbox label="手机号码" v-model="form.isUserRegistrationMobile"></el-checkbox>
+      <el-checkbox label="电子邮箱" v-model="form.isUserRegistrationEmail"></el-checkbox>
+      <el-checkbox label="用户组" v-model="form.isUserRegistrationGroup"></el-checkbox>
       <el-checkbox-group v-model="form.userRegistrationAttributes">
         <el-checkbox v-for="style in styles" :key="style.attributeName" :label="style.attributeName">{{style.displayName}}</el-checkbox>
       </el-checkbox-group>
       <small class="tips">
-        字段名称及验证方式请进入 <a style="color: #00B19D; text-decoration: none;" :href="utils.getSettingsUrl('usersStyle', {returnUrl: encodeURIComponent(location.href)})">用户字段</a> 界面进行设置。
+        字段名称及验证方式请进入
+        <el-link type="primary" :underline="false" v-on:click="btnUsersStyleClick">用户字段</el-link>
+        界面进行设置
       </small>
-    </el-form-item>
-    <el-form-item label="用户注册是否选择用户组">
-      <el-radio v-model="form.isUserRegistrationGroup" :label="true">注册时可选择用户组</el-radio>
-      <el-radio v-model="form.isUserRegistrationGroup" :label="false">注册时不可选择用户组</el-radio>
-      <small class="tips">如果设置为可选择，用户注册界面将显示用户组列表</small>
     </el-form-item>
     <el-form-item label="是否显示用户协议">
       <el-radio v-model="form.isHomeAgreement" :label="true">显示用户协议</el-radio>

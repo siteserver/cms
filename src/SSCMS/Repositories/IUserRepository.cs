@@ -41,6 +41,8 @@ namespace SSCMS.Repositories
         Task<(User user, string userName, string errorMessage)> ValidateAsync(string account, string password,
             bool isPasswordMd5);
 
+        Task<(bool success, string errorMessage)> ValidateStateAsync(User user);
+
         Dictionary<DateTime, int> GetTrackingDictionary(DateTime dateFrom, DateTime dateTo, string xType);
 
         Task<int> GetCountAsync();
