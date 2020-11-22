@@ -7,7 +7,6 @@ var data = utils.init({
   files: null,
   channel: null,
   
-  
   checkAllDirectories: false,
   checkAllFiles: false,
 

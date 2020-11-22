@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using RestSharp;
+using SSCMS.Configuration;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -16,16 +17,18 @@ namespace SSCMS.Core.Plugins
             {
                 return PageUtils.Combine(Host, $"/plugins/plugin.html?id={pluginId}");
             }
+
+            public static string GetThemeUrl(string userName, string name)
+            {
+                return PageUtils.Combine(Host, $"/templates/template.html?userName={userName}&name={name}");
+            }
         }
 
         public static class Api
         {
-            private const string Host = "https://api.sscms.com";
-            // private const string Host = "http://localhost:81";
-
             public static string GetCliUrl(string relatedUrl)
             {
-                return PageUtils.Combine(Host, "v7/cli", relatedUrl);
+                return PageUtils.Combine(Constants.ApiHost, "v7/cli", relatedUrl);
             }
         }
 

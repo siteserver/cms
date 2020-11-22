@@ -108,10 +108,14 @@ var methods = {
   },
 
   apiSettings: function () {
+    this.content = this.getEditorContent();
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlSettings, this.settings).then(function (response) {
+    $api.post($urlSettings, {
+      settings: this.settings,
+      content: this.content
+    }).then(function (response) {
       var res = response.data;
 
       $this.panelSettings = false;
@@ -235,6 +239,7 @@ var methods = {
       this.contentEditor.getModel().setValue(val);
       this.contentEditor.focus();
     } else {
+      utils.loading(this, true);
       setTimeout(function () {
         require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
@@ -243,6 +248,7 @@ var methods = {
               language: 'html'
           });
           $this.contentEditor.focus();
+          utils.loading($this, false);
         });
       }, 100);
     }

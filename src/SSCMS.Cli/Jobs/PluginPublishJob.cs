@@ -129,7 +129,7 @@ namespace SSCMS.Cli.Jobs
             await Console.Out.WriteLineAsync($"Publishing {packageId} ({fileSize})...");
 
             bool success;
-            (success, failureMessage) = _apiService.PluginsPublish(plugin.Publisher, zipPath);
+            (success, failureMessage) = _apiService.PluginPublish(plugin.Publisher, zipPath);
             if (success)
             {
                 

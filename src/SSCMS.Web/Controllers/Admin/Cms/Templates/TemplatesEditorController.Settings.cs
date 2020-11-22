@@ -11,52 +11,52 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesEditorController
 	{
         [HttpPost, Route(RouteSettings)]
-        public async Task<ActionResult<SettingsResult>> Settings([FromBody] SettingsForm request)
+        public async Task<ActionResult<SettingsResult>> Settings([FromBody] SettingsRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.Settings.SiteId, Types.SitePermissions.Templates))
             {
                 return Unauthorized();
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            var site = await _siteRepository.GetAsync(request.Settings.SiteId);
             if (site == null) return NotFound();
 
-			if (request.TemplateType != TemplateType.ChannelTemplate)
+			if (request.Settings.TemplateType != TemplateType.ChannelTemplate)
 			{
-				if (!request.CreatedFileFullName.StartsWith("~") && !request.CreatedFileFullName.StartsWith("@"))
+				if (!request.Settings.CreatedFileFullName.StartsWith("~") && !request.Settings.CreatedFileFullName.StartsWith("@"))
 				{
-					request.CreatedFileFullName = PageUtils.Combine("@", request.CreatedFileFullName);
+                    request.Settings.CreatedFileFullName = PageUtils.Combine("@", request.Settings.CreatedFileFullName);
 				}
 			}
 			else
 			{
-				request.CreatedFileFullName = request.CreatedFileFullName.TrimStart('~', '@');
-				request.CreatedFileFullName = request.CreatedFileFullName.Replace("/", string.Empty);
+                request.Settings.CreatedFileFullName = request.Settings.CreatedFileFullName.TrimStart('~', '@');
+                request.Settings.CreatedFileFullName = request.Settings.CreatedFileFullName.Replace("/", string.Empty);
 			}
 
 			Template template;
 
-			if (request.TemplateId > 0)
+			if (request.Settings.TemplateId > 0)
 			{
-				var templateId = request.TemplateId;
+				var templateId = request.Settings.TemplateId;
 				template = await _templateRepository.GetAsync(templateId);
-				if (template.TemplateName != request.TemplateName)
+				if (template.TemplateName != request.Settings.TemplateName)
 				{
-					var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, template.TemplateType);
-					if (templateNameList.Contains(request.TemplateName))
+					var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.Settings.SiteId, template.TemplateType);
+					if (templateNameList.Contains(request.Settings.TemplateName))
 					{
 						return this.Error("模板修改失败，模板名称已存在！");
 					}
 				}
 				Template previousTemplate = null;
 				var isChanged = false;
-				if (PathUtils.RemoveExtension(template.RelatedFileName) != PathUtils.RemoveExtension(request.RelatedFileName))//文件名改变
+				if (PathUtils.RemoveExtension(template.RelatedFileName) != PathUtils.RemoveExtension(request.Settings.RelatedFileName))//文件名改变
 				{
-					var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, template.TemplateType);
+					var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.Settings.SiteId, template.TemplateType);
 					foreach (var fileName in fileNameList)
 					{
 						var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
-						if (StringUtils.EqualsIgnoreCase(fileNameWithoutExtension, request.RelatedFileName))
+						if (StringUtils.EqualsIgnoreCase(fileNameWithoutExtension, request.Settings.RelatedFileName))
 						{
 							return this.Error("模板修改失败，模板文件已存在！");
 						}
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 					isChanged = true;
 				}
 
-				if (GetTemplateFileExtension(template) != request.CreatedFileExtName)//文件后缀改变
+				if (GetTemplateFileExtension(template) != request.Settings.CreatedFileExtName)//文件后缀改变
 				{
 					isChanged = true;
 				}
@@ -85,10 +85,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 					};
 				}
 
-				template.TemplateName = request.TemplateName;
-				template.RelatedFileName = request.RelatedFileName + request.CreatedFileExtName;
-				template.CreatedFileExtName = request.CreatedFileExtName;
-				template.CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName;
+				template.TemplateName = request.Settings.TemplateName;
+				template.RelatedFileName = request.Settings.RelatedFileName + request.Settings.CreatedFileExtName;
+				template.CreatedFileExtName = request.Settings.CreatedFileExtName;
+				template.CreatedFileFullName = request.Settings.CreatedFileFullName + request.Settings.CreatedFileExtName;
+                template.Content = request.Content;
+
+                await _pathManager.WriteContentToTemplateFileAsync(site, template, request.Content, _authManager.AdminId);
 
 				await _templateRepository.UpdateAsync(template);
 				if (previousTemplate != null)
@@ -96,38 +99,40 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 					FileUtils.DeleteFileIfExists(await _pathManager.GetTemplateFilePathAsync(site, previousTemplate));
 				}
 
-				await _authManager.AddSiteLogAsync(request.SiteId,
+				await _authManager.AddSiteLogAsync(request.Settings.SiteId,
 					$"修改{template.TemplateType.GetDisplayName()}",
 					$"模板名称:{template.TemplateName}");
 			}
 			else
 			{
-				var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, request.TemplateType);
-				if (templateNameList.Contains(request.TemplateName))
+				var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.Settings.SiteId, request.Settings.TemplateType);
+				if (templateNameList.Contains(request.Settings.TemplateName))
 				{
 					return this.Error("模板添加失败，模板名称已存在！");
 				}
-				var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, request.TemplateType);
-				if (ListUtils.ContainsIgnoreCase(fileNameList, request.RelatedFileName))
+				var fileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.Settings.SiteId, request.Settings.TemplateType);
+				if (ListUtils.ContainsIgnoreCase(fileNameList, request.Settings.RelatedFileName))
 				{
 					return this.Error("模板添加失败，模板文件已存在！");
 				}
 
 				template = new Template
 				{
-					SiteId = request.SiteId,
-					TemplateName = request.TemplateName,
-					TemplateType = request.TemplateType,
-					RelatedFileName = request.RelatedFileName + request.CreatedFileExtName,
-					CreatedFileExtName = request.CreatedFileExtName,
-					CreatedFileFullName = request.CreatedFileFullName + request.CreatedFileExtName,
+					SiteId = request.Settings.SiteId,
+					TemplateName = request.Settings.TemplateName,
+					TemplateType = request.Settings.TemplateType,
+					RelatedFileName = request.Settings.RelatedFileName + request.Settings.CreatedFileExtName,
+					CreatedFileExtName = request.Settings.CreatedFileExtName,
+					CreatedFileFullName = request.Settings.CreatedFileFullName + request.Settings.CreatedFileExtName,
 					DefaultTemplate = false
 				};
 
 				template.Id = await _templateRepository.InsertAsync(template);
-				await _authManager.AddSiteLogAsync(request.SiteId,
+				await _authManager.AddSiteLogAsync(request.Settings.SiteId,
 					$"添加{template.TemplateType.GetDisplayName()}",
 					$"模板名称:{template.TemplateName}");
+
+                await _pathManager.WriteContentToTemplateFileAsync(site, template, request.Content, _authManager.AdminId);
 			}
 
 			var settings = await GetSettingsAsync(template, site);

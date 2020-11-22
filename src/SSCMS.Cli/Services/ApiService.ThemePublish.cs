@@ -6,7 +6,7 @@ namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, string failureMessage) PluginsPublish(string publisher, string zipPath)
+        public (bool success, string failureMessage) ThemePublish(string zipPath)
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
@@ -14,12 +14,7 @@ namespace SSCMS.Cli.Services
                 return (false, "you have not logged in");
             }
 
-            if (status.UserName != publisher)
-            {
-                return (false, $"the publisher in package.json should be '{status.UserName}'");
-            }
-
-            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginPublish)) { Timeout = -1 };
+            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlThemePublish)) { Timeout = -1 };
             var request = new RestRequest(Method.POST);
             //request.AddHeader("Content-Type", "multipart/form-data");
             request.AddHeader("Authorization", $"Bearer {status.AccessToken}");

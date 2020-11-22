@@ -18,6 +18,8 @@ namespace SSCMS.Cli.Services
         private const string RestUrlPluginSearch = "/plugin-search";
         private const string RestUrlPluginShow = "/plugin-show";
         private const string RestUrlReleases = "/releases";
+        private const string RestUrlThemePublish = "/theme-publish";
+        private const string RestUrlThemeUnPublish = "/theme-unpublish";
 
         private readonly IConfigService _configService;
 
@@ -68,9 +70,14 @@ namespace SSCMS.Cli.Services
             public string AccessToken { get; set; }
         }
 
-        public class UnPublishRequest
+        public class PluginUnPublishRequest
         {
             public string PluginId { get; set; }
+        }
+
+        public class ThemeUnPublishRequest
+        {
+            public string Name { get; set; }
         }
 
         public class SearchRequest

@@ -20,7 +20,7 @@ namespace SSCMS.Web.Controllers.Home
 
             var code = StringUtils.GetRandomInt(100000, 999999);
             var (success, errorMessage) =
-                await _smsManager.SendAsync(request.Mobile, SmsCodeType.Authentication, code);
+                await _smsManager.SendAsync(request.Mobile, SmsCodeType.Registration, code);
             if (!success)
             {
                 return this.Error(errorMessage);

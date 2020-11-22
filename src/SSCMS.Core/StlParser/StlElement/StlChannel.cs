@@ -284,6 +284,10 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
+            else if (StringUtils.EqualsIgnoreCase(type, nameof(ColumnsManager.NavigationUrl)))//栏目链接地址
+            {
+                parsedContent = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, channel, pageInfo.IsLocal);
+            }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.IndexName)) || StringUtils.EqualsIgnoreCase(type, "ChannelIndex"))
             {
                 parsedContent = channel.IndexName;

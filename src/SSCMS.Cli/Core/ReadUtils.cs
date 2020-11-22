@@ -18,6 +18,12 @@ namespace SSCMS.Cli.Core
             return !string.IsNullOrEmpty(value) ? value: GetString(text);
         }
 
+        public static List<string> GetStringList(string text)
+        {
+            var value = Prompt.GetString(text);
+            return ListUtils.GetStringList(value);
+        }
+
         public static string GetPassword(string text)
         {
             var value = Prompt.GetPassword(text);
@@ -28,6 +34,12 @@ namespace SSCMS.Cli.Core
         {
             var value = Prompt.GetInt(text);
             return value > 0 ? value : GetInt(text);
+        }
+
+        public static decimal GetDecimal(string text)
+        {
+            var value = Prompt.GetString(text);
+            return TranslateUtils.ToDecimal(value);
         }
 
         public static bool GetYesNo(string text)

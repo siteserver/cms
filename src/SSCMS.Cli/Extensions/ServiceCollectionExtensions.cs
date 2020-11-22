@@ -34,6 +34,9 @@ namespace SSCMS.Cli.Extensions
             services.AddScoped<IJobService, RegisterJob>();
             services.AddScoped<IJobService, RunJob>();
             services.AddScoped<IJobService, StatusJob>();
+            services.AddScoped<IJobService, ThemePackageJob>();
+            services.AddScoped<IJobService, ThemePublishJob>();
+            services.AddScoped<IJobService, ThemeUnPublishJob>();
             services.AddScoped<IJobService, UpdateJob>();
         }
     }

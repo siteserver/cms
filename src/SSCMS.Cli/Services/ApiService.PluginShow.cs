@@ -2,7 +2,7 @@
 {
     public partial class ApiService
     {
-        public (bool success, PluginAndUser result, string failureMessage) PluginsShow(string pluginId)
+        public (bool success, PluginAndUser result, string failureMessage) PluginShow(string pluginId)
         {
             //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginShow)) { Timeout = -1 };
             //var request = new RestRequest(Method.POST);

@@ -36,7 +36,6 @@ namespace SSCMS.Core.StlParser.StlElement
         protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Content>> dataSource)
         {
             var pageInfo = parseManager.PageInfo;
-            var contextInfo = parseManager.ContextInfo;
 
             if (dataSource == null || dataSource.Count == 0) return string.Empty;
 

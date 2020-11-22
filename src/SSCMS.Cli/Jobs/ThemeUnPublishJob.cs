@@ -7,31 +7,35 @@ using SSCMS.Plugins;
 
 namespace SSCMS.Cli.Jobs
 {
-    public class PluginUnPublishJob : IJobService
+    public class ThemeUnPublishJob : IJobService
     {
-        public string CommandName => "plugin unpublish";
+        public string CommandName => "theme unpublish";
 
+        private string _name;
         private bool _isHelp;
-
-        private readonly IApiService _apiService;
         private readonly OptionSet _options;
 
-        public PluginUnPublishJob(IApiService apiService)
+        private readonly IApiService _apiService;
+
+        public ThemeUnPublishJob(IApiService apiService)
         {
-            _apiService = apiService;
             _options = new OptionSet
             {
+                { "n|name=", "theme name",
+                    v => _name = v },
                 {
                     "h|help", "Display help",
                     v => _isHelp = v != null
                 }
             };
+
+            _apiService = apiService;
         }
 
         public void PrintUsage()
         {
             Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
-            Console.WriteLine("Summary: unpublishes a plugin. Example plugin id: sscms.hits");
+            Console.WriteLine("Summary: unpublishes a theme.");
             Console.WriteLine("Options:");
             _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
@@ -47,9 +51,16 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            if (context.Extras == null || context.Extras.Length == 0)
+            if (string.IsNullOrEmpty(_name))
             {
-                await WriteUtils.PrintErrorAsync("missing required pluginId");
+                if (context.Extras != null && context.Extras.Length > 0)
+                {
+                    _name = context.Extras[0];
+                }
+            }
+            if (string.IsNullOrEmpty(_name))
+            {
+                await WriteUtils.PrintErrorAsync("missing required name");
                 return;
             }
 
@@ -61,10 +72,10 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = _apiService.PluginUnPublish(context.Extras[0]);
+            (success, failureMessage) = _apiService.ThemeUnPublish(_name);
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync($"Plugin {context.Extras[0]} unpublished.");
+                await WriteUtils.PrintSuccessAsync($"Theme {_name} unpublished .");
             }
             else
             {

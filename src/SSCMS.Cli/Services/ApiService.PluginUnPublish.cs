@@ -6,7 +6,7 @@ namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, string failureMessage) UnPluginsPublish(string pluginId)
+        public (bool success, string failureMessage) PluginUnPublish(string pluginId)
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
@@ -18,7 +18,7 @@ namespace SSCMS.Cli.Services
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new UnPublishRequest
+            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new PluginUnPublishRequest
             {
                 PluginId = pluginId
             }), ParameterType.RequestBody);

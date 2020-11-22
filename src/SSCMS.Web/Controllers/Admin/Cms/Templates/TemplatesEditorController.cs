@@ -84,6 +84,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 			public TemplateType TemplateType { get; set; }
 		}
 
+        public class SettingsRequest
+        {
+			public SettingsForm Settings { get; set; }
+			public string Content { get; set; }
+		}
+
 		public class SettingsResult
         {
             public SettingsForm Settings { get; set; }

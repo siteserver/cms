@@ -581,7 +581,15 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(ColumnsManager.NavigationUrl)))
                 {
-                    parsedContent = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, content, pageInfo.IsLocal);
+                    if (contextInfo.Content != null)
+                    {
+                        parsedContent = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, contextInfo.Content, pageInfo.IsLocal);
+                    }
+                    else
+                    {
+                        var channelInfo = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                        parsedContent = await parseManager.PathManager.GetContentUrlAsync(pageInfo.Site, channelInfo, contextInfo.ContentId, pageInfo.IsLocal);
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.TagNames)))
                 {

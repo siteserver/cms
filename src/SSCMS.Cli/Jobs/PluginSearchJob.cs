@@ -48,7 +48,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, pluginAndUserList, failureMessage) = _apiService.PluginsSearch(string.Join(' ', context.Extras));
+            var (success, pluginAndUserList, failureMessage) = _apiService.PluginSearch(string.Join(' ', context.Extras));
 
             if (success)
             {

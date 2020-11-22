@@ -4,7 +4,7 @@ namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, List<PluginAndUser> results, string failureMessage) PluginsSearch(string word)
+        public (bool success, List<PluginAndUser> results, string failureMessage) PluginSearch(string word)
         {
             //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginSearch)) { Timeout = -1 };
             //var request = new RestRequest(Method.POST);

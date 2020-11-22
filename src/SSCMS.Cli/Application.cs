@@ -21,23 +21,20 @@ namespace SSCMS.Cli
         private readonly OptionSet _options;
         public static string CommandName { get; private set; }
         public static string[] CommandArgs { get; private set; }
-
         public static string[] CommandExtras { get; private set; }
 
         private readonly ISettingsManager _settingsManager;
-        private readonly IPluginManager _pluginManager;
 
-        public Application(ISettingsManager settingsManager, IPluginManager pluginManager)
+        public Application(ISettingsManager settingsManager)
         {
-            _settingsManager = settingsManager;
-            _pluginManager = pluginManager;
-
             _options = new OptionSet {
                 { "r|repeat=", "schedule CRON expression",
                     v => _repeat = v },
                 { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
+
+            _settingsManager = settingsManager;
         }
 
         public async Task RunAsync(string[] args)
@@ -91,22 +88,6 @@ namespace SSCMS.Cli
             CommandName = commandName;
             CommandArgs = commandArgs.ToArray();
             CommandExtras = commandExtras.ToArray();
-
-            //Console.WriteLine("欢迎使用 SiteServer Cli 命令行工具");
-            //Console.WriteLine();
-
-            // PluginManager.LoadPlugins(CliUtils.PhysicalApplicationPath);
-            // var pluginJobs = PluginJobManager.GetJobs();
-            // if (pluginJobs != null && pluginJobs.Count > 0)
-            // {
-            //     foreach (var command in pluginJobs.Keys)
-            //     {
-            //         if (!Jobs.ContainsKey(command))
-            //         {
-            //             Jobs.Add(command, pluginJobs[command]);
-            //         }
-            //     }
-            // }
 
             if (!isJobService)
             {
