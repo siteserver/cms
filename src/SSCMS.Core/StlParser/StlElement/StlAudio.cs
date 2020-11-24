@@ -12,7 +12,7 @@ namespace SSCMS.Core.StlParser.StlElement
 	{
         private StlAudio() { }
 		public const string ElementName = "stl:audio";
-        public const string EditorPlaceHolder = @"src=""../assets/editor-images/audio.png""";
+        public const string EditorPlaceHolder = @"src=""/sitefiles/assets/images/audio-clip.png""";
 
         [StlAttribute(Title = "指定存储音频地址的内容字段，默认为VideoUrl")]
         private const string Type = nameof(Type);

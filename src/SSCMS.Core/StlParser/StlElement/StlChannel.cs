@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
@@ -207,7 +208,37 @@ namespace SSCMS.Core.StlParser.StlElement
             var channelId = await dataManager.GetChannelIdByLevelAsync(parseManager.PageInfo.SiteId, parseManager.ContextInfo.ChannelId, upLevel, topLevel);
 
             channelId = await parseManager.DatabaseManager.ChannelRepository.GetChannelIdAsync(parseManager.PageInfo.SiteId, channelId, channelIndex, channelName);
-            var channel = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
+
+            if (StringUtils.StartsWithIgnoreCase(type, "up") && type.IndexOf(".", StringComparison.Ordinal) != -1)
+            {
+                if (StringUtils.StartsWithIgnoreCase(type, "up."))
+                {
+                    upLevel = 1;
+                }
+                else
+                {
+                    var upLevelStr = type.Substring(2, type.IndexOf(".", StringComparison.Ordinal) - 2);
+                    upLevel = TranslateUtils.ToInt(upLevelStr);
+                }
+                topLevel = -1;
+                type = type.Substring(type.IndexOf(".", StringComparison.Ordinal) + 1);
+            }
+            else if (StringUtils.StartsWithIgnoreCase(type, "top") && type.IndexOf(".", StringComparison.Ordinal) != -1)
+            {
+                if (StringUtils.StartsWithIgnoreCase(type, "top."))
+                {
+                    topLevel = 1;
+                }
+                else
+                {
+                    var topLevelStr = type.Substring(3, type.IndexOf(".", StringComparison.Ordinal) - 3);
+                    topLevel = TranslateUtils.ToInt(topLevelStr);
+                }
+                upLevel = 0;
+                type = type.Substring(type.IndexOf(".", StringComparison.Ordinal) + 1);
+            }
+
+            var channel = await parseManager.DatabaseManager.ChannelRepository.GetAsync(await dataManager.GetChannelIdByLevelAsync(parseManager.PageInfo.SiteId, channelId, upLevel, topLevel));
 
             if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
             {
