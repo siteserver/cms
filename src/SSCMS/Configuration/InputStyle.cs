@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SSCMS.Enums;
 using SSCMS.Models;
-using SSCMS.Utils;
 
 namespace SSCMS.Configuration
 {
@@ -22,7 +21,7 @@ namespace SSCMS.Configuration
             DisplayName = style.DisplayName;
             HelpText = style.HelpText;
             InputType = style.InputType;
-            Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
+            Rules = style.Rules;
             Items = style.Items;
             Taxis = style.Taxis;
             DefaultValue = style.DefaultValue;

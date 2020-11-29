@@ -22,16 +22,13 @@
     "through2": "^3.0.1"
   },
   "scripts": {
-    "build-osx-x64": "node ./node_modules/gulp/bin/gulp.js build-osx-x64",
+    "watch-run": "dotnet watch --project ./src/SSCMS.Web/SSCMS.Web.csproj run",
     "build-linux-x64": "node ./node_modules/gulp/bin/gulp.js build-linux-x64",
     "build-win-x64": "node ./node_modules/gulp/bin/gulp.js build-win-x64",
     "build-win-x86": "node ./node_modules/gulp/bin/gulp.js build-win-x86",
-    "copy-osx-x64": "node ./node_modules/gulp/bin/gulp.js copy-osx-x64",
     "copy-linux-x64": "node ./node_modules/gulp/bin/gulp.js copy-linux-x64",
     "copy-win-x64": "node ./node_modules/gulp/bin/gulp.js copy-win-x64",
     "copy-win-x86": "node ./node_modules/gulp/bin/gulp.js copy-win-x86",
-    "watch-run": "dotnet watch --project ./src/SSCMS.Web/SSCMS.Web.csproj run",
-    "publish-osx-x64-zip": "node ./node_modules/gulp/bin/gulp.js publish-osx-x64-zip",
     "publish-linux-x64-tgz": "node ./node_modules/gulp/bin/gulp.js publish-linux-x64-tgz",
     "publish-linux-x64-zip": "node ./node_modules/gulp/bin/gulp.js publish-linux-x64-zip",
     "publish-win-x64-zip": "node ./node_modules/gulp/bin/gulp.js publish-win-x64-zip",

@@ -199,14 +199,17 @@ namespace SSCMS.Core.Repositories
             var list = new List<int>();
             if (channel != null)
             {
-                var channelIdCollection = "0," + channel.Id;
                 if (channel.ParentsCount > 0)
                 {
-                    channelIdCollection = "0," + channel.ParentsPath + "," + channel.Id;
+                    list.Add(channel.Id);
+                    list.AddRange(channel.ParentsPath);
+                    list.Add(0);
                 }
-
-                list = ListUtils.GetIntList(channelIdCollection);
-                list.Reverse();
+                else
+                {
+                    list.Add(channel.Id);
+                    list.Add(0);
+                }
             }
             else
             {
@@ -316,14 +319,6 @@ namespace SSCMS.Core.Repositories
             {
                 style.AttributeName = nameof(Content.Body);
                 style.DisplayName = "内容";
-                style.RuleValues = TranslateUtils.JsonSerialize(new List<InputStyleRule>
-                {
-                    new InputStyleRule
-                    {
-                        Type = ValidateType.Required,
-                        Message = "内容为必填项"
-                    }
-                });
                 style.InputType = InputType.TextEditor;
                 style.Taxis = 6;
             }
@@ -346,6 +341,9 @@ namespace SSCMS.Core.Repositories
                 style.DisplayName = "来源";
                 style.Taxis = 9;
             }
+
+            style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(style.ItemValues);
+            style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
 
             return style;
         }
@@ -412,6 +410,9 @@ namespace SSCMS.Core.Repositories
                 });
                 style.Taxis = 3;
             }
+
+            style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(style.ItemValues);
+            style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
 
             return style;
         }

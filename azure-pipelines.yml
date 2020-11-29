@@ -14,39 +14,6 @@ variables:
 
 jobs:
 
-- job: macOS
-  pool:
-    vmImage: 'macOS-10.15'
-  steps:
-  - task: UseDotNet@2
-    inputs:
-      version: $(netCoreSdkVersion)
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '12.x'
-  - script: npm install
-  - script: npm run build-osx-x64
-  - script: dotnet build ./build-osx-x64/build.sln -c $(buildConfiguration)
-  - script: dotnet publish ./build-osx-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64
-  - script: dotnet publish ./build-osx-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-osx-x64
-  - script: npm run copy-osx-x64
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: './publish/sscms-$(productVersion)-osx-x64' 
-      archiveType: 'zip'
-      includeRootFolder: false
-      archiveFile: './publish/dist/sscms-$(productVersion)-osx-x64.zip'
-  - script: npm run publish-osx-x64-zip
-    env:
-      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
-      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_DL: $(ossBucketDl)
-      OSS_BUCKET_WWW: $(ossBucketWww)
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: './publish/dist'
-      artifactName: 'sscms-$(productVersion)-osx'
-
 - job: Windows
   pool:
     vmImage: 'windows-2019'
