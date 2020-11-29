@@ -10,7 +10,7 @@ var $collapseWidth = 60;
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
-  version: null,
+  cmsVersion: null,
   adminLogoUrl: null,
   adminTitle: null,
   isSuperAdmin: null,
@@ -57,7 +57,7 @@ var methods = {
       if (res.value) {
         utils.addTab('首页', utils.getRootUrl('dashboard'));
 
-        $this.version = res.version;
+        $this.cmsVersion = res.cmsVersion;
         $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
         $this.adminTitle = res.adminTitle || 'SS CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
@@ -135,48 +135,48 @@ var methods = {
     var $this = this;
 
     var pluginIds = this.plugins.map(function (x){ return x.pluginId});
-    cloud.getUpdates($this.version, pluginIds).then(function (response) {
+    cloud.getUpdates($this.cmsVersion, pluginIds).then(function (response) {
       var res = response.data;
 
       var cms = res.cms;
-      var plugins = res.plugins;
+      var releases = res.releases;
 
       if (cms) {
-        if (cloud.compareVersion($this.version, cms.version) === -1) {
+        if (cloud.compareVersion($this.cmsVersion, cms.version) === -1) {
           $this.newCms = {
-            current: $this.version,
+            current: $this.cmsVersion,
             version: cms.version,
-            published: cms.published
+            createdDate: cms.createdDate
           };
         }
       }
 
-      for (var i = 0; i < plugins.length; i++) {
-        var plugin = plugins[i];
-        if (!plugin || !plugin.version) continue;
+      for (var i = 0; i < releases.length; i++) {
+        var release = releases[i];
+        if (!release || !release.version) continue;
         
         var installedPlugins = $.grep($this.plugins, function (e) {
-          return e.pluginId == plugin.pluginId;
+          return e.pluginId == release.userName + '.' + release.name;
         });
         if (installedPlugins.length == 1) {
           var installed = installedPlugins[0];
           if (installed.version) {
-            if (cloud.compareVersion(installed.version, plugin.version) == -1) {
+            if (cloud.compareVersion(installed.version, release.version) == -1) {
               $this.newPlugins.push({
-                pluginId: plugin.pluginId,
+                pluginId: release.userName + '.' + release.name,
                 displayName: installed.displayName,
                 current: installed.version,
-                version: plugin.version,
-                published: plugin.published
+                version: release.version,
+                createdDate: release.createdDate
               });
             }
           } else {
             $this.newPlugins.push({
-              pluginId: plugin.pluginId,
+              pluginId: release.userName + '.' + release.name,
               displayName: installed.displayName,
               current: '0.0',
-              version: plugin.version,
-              published: plugin.published
+              version: release.version,
+              createdDate: release.createdDate
             });
           }
         }
@@ -246,6 +246,10 @@ var methods = {
     else if (level2) return level1.id + '/' + level2.id;
     else if (level1) return level1.id;
     return '';
+  },
+
+  getHostUrl: function() {
+    return cloud.host;
   },
 
   btnSearchClick: function() {

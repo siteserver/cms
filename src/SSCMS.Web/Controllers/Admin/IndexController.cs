@@ -71,7 +71,7 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public bool Value { get; set; }
             public string RedirectUrl { get; set; }
-            public string Version { get; set; }
+            public string CmsVersion { get; set; }
             public string OSArchitecture { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminTitle { get; set; }

@@ -4,16 +4,17 @@ var $urlActionsDelete = $url + '/actions/delete';
 var $urlActionsRestart = $url + '/actions/restart';
 
 var data = utils.init({
+  userName: utils.getQueryString('userName'),
+  name: utils.getQueryString('name'),
   pluginId: utils.getQueryString('pluginId'),
   activeName: 'overview',
-  version: null,
-  localPlugin: null,
+  cmsVersion: null,
+  plugin: null,
   content: null,
   changeLog: null,
   isShouldUpdate: false,
-  cloudPlugin: null,
-  cloudRelease: null,
-  cloudUser: null
+  extension: null,
+  release: null
 });
 
 var methods = {
@@ -22,25 +23,33 @@ var methods = {
 
     $api.get($url, {
       params: {
+        userName: this.userName,
+        name: this.name,
         pluginId: this.pluginId
       }
     }).then(function (response) {
       var res = response.data;
 
-      $this.version = res.version;
-      $this.localPlugin = res.localPlugin;
+      $this.cmsVersion = res.cmsVersion;
+      $this.plugin = res.plugin;
       $this.content = res.content;
       $this.changeLog = res.changeLog;
 
-      cloud.getPlugin($this.pluginId, $this.version).then(function (response) {
+      var publisher = $this.userName;
+      var name = $this.name;
+      if ($this.plugin) {
+        publisher = $this.plugin.publisher;
+        name = $this.plugin.name;
+      }
+
+      cloud.getExtension($this.cmsVersion, publisher, name).then(function (response) {
         var res = response.data;
 
-        $this.cloudPlugin = res.plugin;
-        $this.cloudRelease = res.release;
-        $this.cloudUser = res.user;
+        $this.extension = res.extension;
+        $this.release = res.release;
 
-        if ($this.localPlugin) {
-          $this.isShouldUpdate = cloud.compareVersion($this.localPlugin.version, $this.cloudRelease.version) == -1;
+        if ($this.plugin) {
+          $this.isShouldUpdate = cloud.compareVersion($this.plugin.version, $this.release.version) == -1;
         }
       }).catch(function (error) {
         console.log(error);
@@ -152,80 +161,71 @@ var methods = {
   },
 
   getPluginUrl: function() {
-    if (this.localPlugin && this.localPlugin.homepage) {
-      return this.localPlugin.homepage;
+    if (this.extension) {
+      return cloud.host + '/plugins/plugin.html?userName=' + encodeURIComponent(this.extension.userName) + '&name=' + encodeURIComponent(this.extension.name);
     }
-    return cloud.getPluginsUrl('plugin.html?id=' + this.pluginId);
+    return 'javascript:;';
   },
 
   getIconUrl: function () {
-    if (this.localPlugin) {
-      return this.localPlugin.icon || utils.getAssetsUrl('images/favicon.png');
-    } else if (this.cloudPlugin) {
-      return this.cloudPlugin.icon || utils.getAssetsUrl('images/favicon.png');
+    if (this.plugin) {
+      return this.plugin.iconUrl || utils.getAssetsUrl('images/favicon.png');
+    } else if (this.extension) {
+      return cloud.hostStorage + '/' + _.trim(this.extension.iconUrl, '/');
     }
-    return null;
+    return utils.getAssetsUrl('images/favicon.png');
   },
 
   getTitle: function () {
-    if (this.localPlugin) {
-      return this.localPlugin.displayName;
-    } else if (this.cloudPlugin) {
-      return this.cloudPlugin.title;
+    if (this.plugin) {
+      return this.plugin.displayName;
+    } else if (this.extension) {
+      return this.extension.displayName;
     }
     return null;
   },
 
-  getAuthor: function () {
-    if (this.localPlugin) {
-      return this.localPlugin.publisher;
-    } else if (this.cloudUser) {
-      return this.cloudUser.userName;
+  getPluginId: function () {
+    if (this.plugin) {
+      return this.plugin.publisher + '.' + this.plugin.name;
+    } else if (this.extension && this.release) {
+      return this.extension.userName + '.' + this.extension.name;
     }
     return null;
   },
 
-  getVersion: function() {
-    if (this.localPlugin) {
-      return this.localPlugin.version;
-    } else if (this.cloudRelease) {
-      return this.cloudRelease.version;
+  getVersion: function () {
+    if (this.plugin) {
+      return this.plugin.version;
+    } else if (this.release) {
+      return this.release.version;
     }
     return null;
   },
 
-  getRepository: function() {
-    if (this.localPlugin) {
-      return this.localPlugin.repository;
-    } else if (this.cloudPlugin) {
-      return this.cloudPlugin.projectUrl;
-    }
-    return null;
-  },
-
-  getSummary: function () {
-    if (this.localPlugin) {
-      return this.localPlugin.description;
-    } else if (this.cloudPlugin) {
-      return this.cloudPlugin.summary;
+  getDescription: function () {
+    if (this.plugin) {
+      return this.plugin.description;
+    } else if (this.extension) {
+      return this.extension.description;
     }
     return null;
   },
 
   getReadme: function () {
-    if (this.localPlugin) {
+    if (this.plugin) {
       return this.content;
-    } else if (this.cloudPlugin) {
-      return this.cloudPlugin.content;
+    } else if (this.extension) {
+      return this.extension.content;
     }
     return null;
   },
 
   getChangeLog: function () {
-    if (this.localPlugin) {
+    if (this.plugin) {
       return this.changeLog;
-    } else if (this.cloudPlugin) {
-      return this.cloudPlugin.changeLog;
+    } else if (this.extension) {
+      return this.extension.changeLog;
     }
     return null;
   },
@@ -236,6 +236,23 @@ var methods = {
       tagNames = plugin.tags.split(',');
     }
     return tagNames;
+  },
+
+  btnUpdateClick: function() {
+    location.href = utils.getPluginsUrl('install', {
+      isUpdate: true, 
+      pluginIds: this.plugin.pluginId
+    });
+  },
+
+  btnBuyClick: function() {
+    window.open(this.getPluginUrl());
+  },
+
+  btnInstallClick: function() {
+    location.href = utils.getPluginsUrl('install', {
+      pluginIds: this.extension.userName + '.' + this.extension.name
+    });
   }
 };
 

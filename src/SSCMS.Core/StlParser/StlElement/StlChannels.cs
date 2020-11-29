@@ -123,7 +123,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var channel = channels[i];
 
                     pageInfo.ChannelItems.Push(channel);
-                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                    var templateString = isAlternative && i % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     var parsedString = await TemplateUtility.GetChannelsItemTemplateStringAsync(templateString,
                         listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Channel);
                     builder.Append(parsedString);
@@ -173,7 +173,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var channel = channels[itemIndex];
 
                             pageInfo.ChannelItems.Push(channel);
-                            var templateString = isAlternative
+                            var templateString = isAlternative && itemIndex % 2 == 1
                                 ? listInfo.AlternatingItemTemplate
                                 : listInfo.ItemTemplate;
                             cellHtml = await TemplateUtility.GetChannelsItemTemplateStringAsync(templateString,

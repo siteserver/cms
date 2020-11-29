@@ -33,6 +33,10 @@ var methods = {
     });
   },
 
+  getDocsUrl: function() {
+    return cloud.getDocsUrl('');
+  },
+
   btnStartClick: function (e) {
     e.preventDefault();
     this.pageType = 'update';

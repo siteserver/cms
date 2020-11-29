@@ -37,7 +37,7 @@ var methods = {
     location.href = utils.getSettingsUrl('sitesAdd', {
       type: 'submit',
       createType: 'local',
-      createTemplateId: row.directoryName
+      localDirectoryName: row.directoryName
     });
   },
 

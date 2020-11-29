@@ -26,9 +26,11 @@ namespace SSCMS.Configuration
 
         public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
 
-
-        //public const string ApiHost = "https://api.sscms.com";
+#if DEBUG
         public const string ApiHost = "http://localhost:6060";
+#else
+        public const string ApiHost = "https://api.sscms.com";
+#endif
 
         public const string ApiPrefix = "/api";
         public const string ApiAdminPrefix = "/api/admin";

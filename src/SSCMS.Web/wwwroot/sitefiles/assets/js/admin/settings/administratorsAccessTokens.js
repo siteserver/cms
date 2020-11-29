@@ -65,6 +65,10 @@ var methods = {
     });
   },
 
+  getDocsUrl: function (url) {
+    return cloud.getDocsUrl(url);
+  },
+
   getItemScopes: function (item) {
     if (!item.scopes) return '';
     var itemScopes = item.scopes;

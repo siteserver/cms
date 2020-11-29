@@ -7,10 +7,10 @@ var data = utils.init({
   tag: utils.getQueryString('tag'),
   price: utils.getQueryString('price'),
   order: utils.getQueryString('order'),
-  templates: null,
+  themes: null,
   count: null,
   pages: null,
-  allTagNames: []
+  tags: []
 });
 
 var methods = {
@@ -21,51 +21,57 @@ var methods = {
       var res = response.data;
 
       $this.siteAddPermission = res.siteAddPermission;
+      $this.cloudApiGet();
+    }).catch(function (error) {
+      utils.error(error);
+      utils.loading($this, false);
+    });
+  },
+
+  cloudApiGet: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
+      var res = response.data;
+
+      $this.themes = res.themes;
+      $this.count = res.count;
+      $this.pages = res.pages;
+      $this.tags = res.tags;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
-      $this.load();
     });
   },
 
-  load: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    cloud.getTemplates(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
-        var res = response.data;
-
-        $this.templates = res.value;
-        $this.count = res.count;
-        $this.pages = res.pages;
-        $this.allTagNames = res.allTagNames;
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+  getTemplatesUrl: function() {
+    return cloud.host + '/templates/';
   },
   
-  getDisplayUrl: function (templateId) {
-    return cloud.getTemplatesUrl('template.html?id=' + templateId);
+  getDisplayUrl: function (theme) {
+    return cloud.getThemesUrl('template.html?userName=' + theme.userName + '&name=' + theme.name);
   },
 
-  btnImageClick: function(templateId) {
-    window.open(this.getDisplayUrl(templateId));
+  getCoverUrl: function (theme) {
+    return cloud.hostStorage + '/themes/' + theme.userName + '/' + theme.name + '/' + _.trim(theme.coverUrl, '/');
   },
 
-  btnPreviewClick: function (templateId) {
-    window.open(cloud.hostDemo + '/' + templateId.toLowerCase() + '/');
+  btnImageClick: function(theme) {
+    window.open(this.getDisplayUrl(theme));
   },
 
-  btnCreateClick: function(templateId) {
+  btnPreviewClick: function (theme) {
+    window.open(cloud.hostDemo + '/' + theme.userName + '/' + theme.name + '/');
+  },
+
+  btnCreateClick: function(theme) {
     location.href = utils.getSettingsUrl('sitesAdd', {
       type: 'submit',
       createType: 'cloud',
-      createTemplateId: templateId
+      cloudThemeUserName: theme.userName,
+      cloudThemeName: theme.name,
     });
   },
 
@@ -112,11 +118,11 @@ var methods = {
   },
 
   priceChanged: function () {
-    this.load();
+    this.cloudApiGet();
   },
 
   orderChanged: function () {
-    this.load();
+    this.cloudApiGet();
   }
 };
 

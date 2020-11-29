@@ -48,7 +48,6 @@ namespace SSCMS.Core.StlParser.StlElement
         protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> dataSource)
         {
             var pageInfo = parseManager.PageInfo;
-            var contextInfo = parseManager.ContextInfo;
 
             if (dataSource == null || dataSource.Count == 0) return string.Empty;
 
@@ -76,7 +75,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var dict = dataSource[i];
 
                     pageInfo.SqlItems.Push(dict);
-                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                    var templateString = isAlternative && i % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     builder.Append(await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.SqlContent));
 
                     if (isSeparator && i != dataSource.Count - 1)
@@ -92,7 +91,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else
             {
-                bool isAlternative = !string.IsNullOrEmpty(listInfo.AlternatingItemTemplate);
+                var isAlternative = !string.IsNullOrEmpty(listInfo.AlternatingItemTemplate);
 
                 var tableAttributes = listInfo.GetTableAttributes();
                 var cellAttributes = listInfo.GetCellAttributes();
@@ -116,24 +115,28 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     while (true)
                     {
-                        using (var tr = table.AddRow(null))
+                        using var tr = table.AddRow();
+                        for (var cell = 1; cell <= columns; cell++)
                         {
-                            for (var cell = 1; cell <= columns; cell++)
+                            var cellHtml = string.Empty;
+                            if (itemIndex < dataSource.Count)
                             {
-                                var cellHtml = string.Empty;
-                                if (itemIndex < dataSource.Count)
-                                {
-                                    var dict = dataSource[itemIndex];
+                                var dict = dataSource[itemIndex];
 
-                                    pageInfo.SqlItems.Push(dict);
-                                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.SqlContent);
-                                }
-                                tr.AddCell(cellHtml, cellAttributes);
-                                itemIndex++;
+                                pageInfo.SqlItems.Push(dict);
+                                var templateString = isAlternative && itemIndex % 2 == 1
+                                    ? listInfo.AlternatingItemTemplate
+                                    : listInfo.ItemTemplate;
+                                cellHtml = await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString,
+                                    listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager,
+                                    ParseType.SqlContent);
                             }
-                            if (itemIndex >= dataSource.Count) break;
+
+                            tr.AddCell(cellHtml, cellAttributes);
+                            itemIndex++;
                         }
+
+                        if (itemIndex >= dataSource.Count) break;
                     }
 
                     table.EndBody();

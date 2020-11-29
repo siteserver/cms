@@ -61,6 +61,7 @@
 </div>
 <div v-else class="toolbar">
   <button class="button" v-on:click="btnPreviewClick">预 览</button>
+  <button v-if="templateId" class="button" v-on:click="btnCreateClick">生 成</button>
   <button class="button" v-on:click="btnSubmitClick(false)">保 存</button>
   <button class="button" v-on:click="btnSubmitClick(true)">保存并关闭</button>
   <button class="button" v-on:click="btnMoreClick">
@@ -70,7 +71,6 @@
   </button>
   <br>
   <span v-if="isMore">
-    <button v-if="templateId" class="button" v-on:click="btnCreateClick">生成页面</button>
     <button v-if="templateId" class="button" v-on:click="btnRestoreClick">还原历史版本</button>
     <button class="button" v-on:click="btnFormatClick">格式化代码</button>
     <button class="button" v-on:click="btnDataSourceClick">预览数据源设置</button>

@@ -20,7 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             return new GetResult
             {
-                Version = _settingsManager.Version,
+                CmsVersion = _settingsManager.Version,
                 AllPlugins = _pluginManager.Plugins,
                 Containerized = _settingsManager.Containerized
             };

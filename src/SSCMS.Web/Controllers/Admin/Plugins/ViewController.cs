@@ -31,10 +31,17 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             _pluginManager = pluginManager;
         }
 
+        public class GetRequest
+        {
+            public string UserName { get; set; }
+            public string Name { get; set; }
+            public string PluginId { get; set; }
+        }
+
         public class GetResult
         {
-            public string Version { get; set; }
-            public IPlugin LocalPlugin { get; set; }
+            public string CmsVersion { get; set; }
+            public IPlugin Plugin { get; set; }
             public string Content { get; set; }
             public string ChangeLog { get; set; }
         }

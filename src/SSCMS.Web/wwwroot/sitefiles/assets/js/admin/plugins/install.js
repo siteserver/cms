@@ -8,7 +8,7 @@ var data = utils.init({
   pageType: utils.getQueryBoolean('isUpdate') ? '升级' : '安装',
   active: 0,
   success: false,
-  version: null,
+  cmsVersion: null,
   pluginPathDict: null,
 
   percentage: 0,
@@ -41,7 +41,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.version = res.version;
+      $this.cmsVersion = res.cmsVersion;
       $this.pluginPathDict = res.pluginPathDict;
 
       $this.getPackages();
@@ -123,43 +123,20 @@ var methods = {
   getPackages: function () {
     var $this = this;
 
-    cloud.getUpdates($this.version, $this.pluginIds).then(function (response) {
+    cloud.getUpdates($this.cmsVersion, $this.pluginIds).then(function (response) {
       var res = response.data;
 
-      var plugins = res.plugins;
+      var releases = res.releases;
 
-      for (var i = 0; i < plugins.length; i++) {
-        var release = plugins[i];
+      for (var i = 0; i < releases.length; i++) {
+        var release = releases[i];
 
-        // for (var j = 0; j < release.pluginReferences.length; j++) {
-        //   var reference = release.pluginReferences[j];
+        var pluginId = release.userName + '.' + release.name;
 
-        //   if ($this.listPackageIds.indexOf(reference.id) === -1) {
-        //     $this.listPackageIds.push(reference.id);
-        //     $this.listPackages.push({
-        //       id: reference.id,
-        //       version: reference.version,
-        //       packageType: 'Plugin'
-        //     });
-        //   }
-        // }
-
-        // for (var k = 0; k < release.libraryReferences.length; k++) {
-        //   var reference = release.libraryReferences[k];
-        //   if ($this.listPackageIds.indexOf(reference.id) === -1) {
-        //     $this.listPackageIds.push(reference.id);
-        //     $this.listPackages.push({
-        //       id: reference.id,
-        //       version: reference.version,
-        //       packageType: 'Library'
-        //     });
-        //   }
-        // }
-
-        if ($this.listPackageIds.indexOf(release.pluginId) === -1) {
-          $this.listPackageIds.push(release.pluginId);
+        if ($this.listPackageIds.indexOf(pluginId) === -1) {
+          $this.listPackageIds.push(pluginId);
           $this.listPackages.push({
-            id: release.pluginId,
+            id: pluginId,
             version: release.version,
             packageType: 'Plugin'
           });

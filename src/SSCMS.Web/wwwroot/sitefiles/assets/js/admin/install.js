@@ -152,6 +152,10 @@ var methods = {
     });
   },
 
+  getDocsUrl: function() {
+    return cloud.getDocsUrl('');
+  },
+
   validatePass: function(rule, value, callback) {
     if (value === '') {
       callback(new Error('请再次输入密码'));

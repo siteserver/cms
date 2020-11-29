@@ -22,26 +22,26 @@
 </el-form>
 
 <template v-if="q">
-  <div style="margin-bottom: 10px;" v-if="plugins && plugins.length > 0">搜索到 {{plugins.length}} 个结果</div>
+  <div style="margin-bottom: 10px;" v-if="extensions && extensions.length > 0">搜索到 {{extensions.length}} 个结果</div>
   <div style="margin-bottom: 10px;" v-else>未找到搜索结果，建议更换搜索词</div>
 </template>
 
 <el-row>
-  <el-col :span="6" v-for="(plugin, index) in plugins" :key="plugin.pluginId">
+  <el-col :span="6" v-for="(item, index) in extensionWithReleases" :key="index">
     <el-card style="margin-bottom: 15px; margin-right: 15px;">
       <div slot="header" class="clearfix">
         <span>
-          <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
-            {{ plugin.title }}
+          <el-link :underline="false" type="primary" v-on:click="btnViewClick(item)">
+            {{ item.extension.displayName }}
           </el-link>
         </span>
       </div>
       <div style="text-align: center;">
-        <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
-          <el-badge :value="packageIds.indexOf(plugin.pluginId) !== -1 ? '已安装' : '未安装'" :type="packageIds.indexOf(plugin.pluginId) !== -1 ? 'primary' : 'info'">
+        <el-link :underline="false" type="primary" v-on:click="btnViewClick(item)">
+          <el-badge :value="isInstalled(item.extension) ? '已安装' : '未安装'" :type="isInstalled(item.extension) ? 'success' : 'info'">
             <el-image 
               style="width: 150px; height: 150px; cursor: pointer; margin: 10px"
-              :src="getIconUrl(plugin.iconUrl)">
+              :src="getIconUrl(item.extension.iconUrl)">
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline"></i>
               </div>
@@ -50,23 +50,20 @@
         </el-link>
       </div>
       <el-form size="mini" label-width="70px">
-        <el-form-item label="插件Id">
-          <el-link :underline="false" type="primary" v-on:click="btnViewClick(plugin)">
-            {{ plugin.pluginId }}
+        <el-form-item label="标识">
+          <el-link :underline="false" type="primary" v-on:click="btnViewClick(item)">
+            {{ item.extension.userName }}.{{ item.extension.name }}
           </el-link>
         </el-form-item>
-        <el-form-item label="最新版本">
-          {{ getLatestVersion(plugin) }}
+        <el-form-item label="插件版本">
+          {{ item.release.version }}
         </el-form-item>
-        <el-form-item label="更新时间">
-          {{ getLatestPublished(plugin) }}
-        </el-form-item>
-        <el-form-item label="标签">
-          <span v-for="tagName in getTagNames(plugin)" style="margin-right: 2px;">{{ tagName }}</span>
+        <el-form-item label="发布时间">
+          {{ item.release.createdDate }}
         </el-form-item>
       </el-form>
-      <div :title="plugin.summary" class="cell" style="font-size: 14px; text-align: left; overflow-y: hidden; height: 15px;; height: 35px; overflow: hidden">
-        {{ plugin.summary }}
+      <div :title="item.extension.description" class="cell" style="font-size: 14px; text-align: left; overflow-y: hidden; height: 15px;; height: 35px; overflow: hidden">
+        {{ item.extension.description }}
       </div>
     </el-card>
   </el-col>

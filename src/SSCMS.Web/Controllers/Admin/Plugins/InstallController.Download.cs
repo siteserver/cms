@@ -27,9 +27,12 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 }
             }
 
-            _pluginManager.Install(request.PluginId, request.Version);
+            var userName = request.PluginId.Split('.')[0];
+            var name = request.PluginId.Split('.')[1];
 
-            await _authManager.AddAdminLogAsync("安装插件", $"插件:{request.PluginId}");
+            _pluginManager.Install(userName, name, request.Version);
+
+            await _authManager.AddAdminLogAsync("安装插件", $"插件:{userName}.{name}");
 
             return new BoolResult
             {

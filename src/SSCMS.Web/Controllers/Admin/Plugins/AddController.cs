@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
         public class GetResult
         {
-            public string Version { get; set; }
+            public string CmsVersion { get; set; }
             public IEnumerable<string> PackageIds { get; set; }
             public bool Containerized { get; set; }
         }

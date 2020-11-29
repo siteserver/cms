@@ -9,14 +9,17 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
     public partial class ViewController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery] string pluginId)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }
 
-            var plugin = _pluginManager.GetPlugin(pluginId);
+            var plugin = _pluginManager.GetPlugin(!string.IsNullOrEmpty(request.PluginId)
+                ? request.PluginId
+                : $"{request.UserName}.{request.Name}");
+
             var content = string.Empty;
             var changeLog = string.Empty;
 
@@ -36,8 +39,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             return new GetResult
             {
-                Version = _settingsManager.Version,
-                LocalPlugin = plugin,
+                CmsVersion = _settingsManager.Version,
+                Plugin = plugin,
                 Content = content,
                 ChangeLog = changeLog
             };

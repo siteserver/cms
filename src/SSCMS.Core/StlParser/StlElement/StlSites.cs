@@ -74,7 +74,6 @@ namespace SSCMS.Core.StlParser.StlElement
         private static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Site>> sites)
         {
             var pageInfo = parseManager.PageInfo;
-            var contextInfo = parseManager.ContextInfo;
 
             if (sites == null || sites.Count == 0) return string.Empty;
 
@@ -102,7 +101,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var site = sites[i];
 
                     pageInfo.SiteItems.Push(site);
-                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                    var templateString = isAlternative && i % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     var parsedString = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, parseManager, ParseType.Site);
                     builder.Append(parsedString);
 
@@ -142,7 +141,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 while (true)
                 {
-                    using var tr = table.AddRow(null);
+                    using var tr = table.AddRow();
                     for (var cell = 1; cell <= columns; cell++)
                     {
                         var cellHtml = string.Empty;
@@ -151,7 +150,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var site = sites[itemIndex];
 
                             pageInfo.SiteItems.Push(site);
-                            var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                            var templateString = isAlternative && itemIndex % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                             cellHtml = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, parseManager, ParseType.Site);
                         }
                         tr.AddCell(cellHtml, cellAttributes);

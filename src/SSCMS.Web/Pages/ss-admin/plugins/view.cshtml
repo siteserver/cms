@@ -44,7 +44,7 @@
   <el-row :gutter="20">
     <el-col :span="4" align="center">
       <a :href="getPluginUrl()" target="_blank">
-        <el-badge :value="localPlugin ? '已安装' : '未安装'" :type="localPlugin ? 'primary' : 'info'">
+        <el-badge :value="plugin ? '已安装' : '未安装'" :type="plugin ? 'primary' : 'info'">
           <img :src="getIconUrl()" style="height: 128px; width: 128px;">
         </el-badge>
       </a>
@@ -52,65 +52,67 @@
     <el-col :span="20">
       <div class="header">
         {{ getTitle() }}
-        <small>{{ pluginId }}</small>
       </div>
   
       <el-divider></el-divider>
   
       <div class="summary">
         <template>
-          作者: <el-link type="primary" :underline="false"> {{ getAuthor() }} </el-link>
-        </template>
-        <template>
-          <span class="divider">|</span>
-          版本: <el-link type="primary" :underline="false"> {{ getVersion() }} </el-link>
+          插件Id：<el-link type="primary" :underline="false"> {{ getPluginId() }} </el-link>
+          <span style="color: #999; margin: 0 5px"> | </span>
+          版本：<el-link type="primary" :underline="false"> {{ getVersion() }} </el-link>
+          <template v-if="!plugin && extension && extension.price">
+            <span style="color: #999; margin: 0 5px"> | </span>
+            价格：<el-link type="primary" :underline="false">
+              ￥{{ extension.price.toFixed(2) }}
+            </el-link>
+          </template>
         </template>
       </div>
 
-      <template v-if="cloudPlugin && cloudPlugin.tags">
+      <template v-if="extension && extension.tags">
         <div class="summary">
           标签： 
-          <el-link type="primary" :underline="false" style="margin-right: 5px" v-for="tagName in getTagNames(cloudPlugin)" :href="utils.getPluginsUrl('add', {q: tagName})">
+          <el-link type="primary" :underline="false" style="margin-right: 5px" v-for="tagName in getTagNames(extension)" :href="utils.getPluginsUrl('add', {q: tagName})">
             {{ tagName }}
           </el-link>
         </div>
       </template>
       
       <div class="summary">
-        {{ getSummary() }}
+        {{ getDescription() }}
       </div>
 
       <el-alert
-        v-if="cloudPlugin && isShouldUpdate"
+        v-if="extension && isShouldUpdate"
         style="margin-bottom: 15px;"
-        :title="'系统检测到插件新版本，当前版本：' + cloudPlugin.version + '，新版本：' + cloudRelease.version"
+        :title="'系统检测到插件新版本，当前版本：' + extension.version + '，新版本：' + release.version"
         type="warning">
       </el-alert>
 
       <div class="summary">
-        <template v-if="localPlugin">
-          <el-button v-on:click="btnDisablePlugin(localPlugin)" type="warning" plain size="small">
-            {{ localPlugin.disabled ? '启用' : '禁用' }}
+        <template v-if="plugin">
+          <el-button v-on:click="btnDisablePlugin(plugin)" type="warning" plain size="small">
+            {{ plugin.disabled ? '启用' : '禁用' }}
           </el-button>
-          <el-button v-on:click="btnDeletePlugin(localPlugin)" type="danger" plain size="small">
+          <el-button v-on:click="btnDeletePlugin(plugin)" type="danger" plain size="small">
             卸载插件
           </el-button>
         </template>
         
-        <template v-if="cloudPlugin">
-          <el-button type="primary" v-if="isShouldUpdate" v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: plugin.pluginId});return false;" size="small">
+        <template v-if="extension">
+          <el-button type="primary" v-if="isShouldUpdate" v-on:click="btnUpdateClick" size="small">
             升级插件
           </el-button>
-          <el-button type="primary" v-else-if="!localPlugin && cloudPlugin.price" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: cloudPlugin.pluginId});return false;" size="small">
-            购买并安装插件
+          <el-button type="primary" v-else-if="!plugin && extension.price" v-on:click="btnBuyClick" size="small">
+            购买并下载安装
           </el-button>
-          <el-button type="primary" v-else-if="!localPlugin" v-on:click="location.href = utils.getPluginsUrl('install', {pluginIds: cloudPlugin.pluginId});return false;" size="small">
+          <el-button type="primary" v-else-if="!plugin" v-on:click="btnInstallClick" size="small">
             安装插件
           </el-button>
         </template>
 
         <el-link :href="getPluginUrl()" type="primary" style="margin-left: 5px;" :underline="false" size="small" target="_blank">插件主页</el-link>
-        <el-link v-if="getRepository()" :href="getRepository()" type="primary" style="margin-left: 5px;" :underline="false" size="small" target="_blank">源码仓库</el-link>
       </div>
     </el-col>
   </el-row>
@@ -124,81 +126,137 @@
     <el-tab-pane v-if="getChangeLog()" label="发行说明" name="changelog">
       <article class="markdown-body" v-html="getChangeLog()"></article>
     </el-tab-pane>
+    <el-tab-pane v-if="extension" label="插件详情" name="Details"></el-tab-pane>
   </el-tabs>
 
-  <!-- <el-row :gutter="20">
-    <el-col :span="18">
-     
-    </el-col>
-    <el-col :span="6">
-      <div class="page-title-box">
-        <h4 class="page-title">插件详情</h4>
-      </div>
-      <table class="table m-0 m-t-25">
-        <tbody>
-          <tr>
-            <th scope="row">版本发行说明</th>
-            <td>{{ release.releaseNotes }}</td>
-          </tr>
-          <tr>
-            <th scope="row">更新日期</th>
-            <td>{{ release.published }}</td>
-          </tr>
-          <tr>
-            <th scope="row">插件Id</th>
-            <td>{{ plugin.pluginId }}</td>
-          </tr>
-          <tr>
-            <th scope="row">版本号</th>
-            <td>{{ release.version }}</td>
-          </tr>
-          <tr v-if="user">
-            <th scope="row">作者</th>
-            <td>{{ user.displayName || user.userName }}</td>
-          </tr>
-          <tr v-if="plugin">
-            <th scope="row">标签</th>
-            <td>{{ plugin.tags }}</td>
-          </tr>
-          <tr v-if="plugin">
-            
-          </tr>
-          <tr v-if="plugin">
-            <th scope="row">版权</th>
-            <td>{{ plugin.copyright }}</td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <div v-if="(release.pluginReferences && release.pluginReferences.length > 0) || (release.libraryReferences && release.libraryReferences.length > 0)">
-        <div class="page-title-box">
-            <h4 class="page-title"> 依赖项 </h4>
-        </div>
-        <p class="text-muted font-13 m-b-25"> 此插件依赖的类库以及其他插件 </p>
-        <table class="table m-0">
-            <thead>
-            <tr>
-                <th>依赖项</th>
-                <th>版本</th>
-                <th>类型</th>
+  <template v-if="activeName == 'Details'">
+    <div
+      class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition"
+      style="width: 100%;">
+      <div class="el-table__body-wrapper is-scrolling-none">
+        <table
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          class="el-table__body"
+          width="100%">
+          <colgroup>
+            <col width="180" />
+            <col />
+          </colgroup>
+          <tbody>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>插件作者</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">{{ extension.userName }}</div>
+              </td>
             </tr>
-            </thead>
-            <tbody>
-            <tr v-for="reference in release.pluginReferences">
-                <td>{{ reference.id }}</td>
-                <td>{{ reference.version }}</td>
-                <td>插件</td>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>插件名称</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">{{ extension.name }}</div>
+              </td>
             </tr>
-            <tr v-for="reference in release.libraryReferences">
-                <td>{{ reference.id }}</td>
-                <td>{{ reference.version }}</td>
-                <td>类库</td>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>显示名称</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">{{ extension.displayName }}</div>
+              </td>
             </tr>
-            </tbody>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>插件价格</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <span v-if="extension.price == 0">免 费</span>
+                  <span v-else>￥{{ extension.price.toFixed(2) }}</span>
+                </div>
+              </td>
+            </tr>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>插件简介</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">{{ extension.description }}</div>
+              </td>
+            </tr>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>开源许可</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">{{ extension.license }}</div>
+              </td>
+            </tr>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>项目地址</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <el-link v-if="extension.projectUrl" type="primary" :underline="false" :href="extension.projectUrl" target="_blank">
+                    {{ extension.projectUrl }}
+                  </el-link>
+                </div>
+              </td>
+            </tr>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>分类</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell" v-if="extension.categories">
+                  <el-link v-for="category in extension.categories" type="primary" :underline="false" style="margin-right: 5px">
+                    {{ category }}
+                  </el-link>
+                </div>
+              </td>
+            </tr>
+            <tr class="el-table__row">
+              <td rowspan="1" colspan="1">
+                <div class="cell">
+                  <strong>标签</strong>
+                </div>
+              </td>
+              <td rowspan="1" colspan="1">
+                <div class="cell" v-if="extension.keywords">
+                  <el-link v-for="tag in extension.keywords" type="primary" :underline="false" style="margin-right: 5px">
+                    {{ tag }}
+                  </el-link>
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
-    </el-col>
-  </el-row> -->
+      <div class="el-table__column-resize-proxy" style="display: none;"></div>
+    </div>
+  </template>
+
 </div>
 
 @section Scripts{

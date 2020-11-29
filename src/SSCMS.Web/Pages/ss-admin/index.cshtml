@@ -7,7 +7,7 @@
 <header id="header">
   
   <div class="logo">
-    <a :href="cloud.host" target="_blank">
+    <a :href="getHostUrl()" target="_blank">
       <img :src="adminLogoUrl" />
     </a>
   </div>
@@ -23,7 +23,7 @@
       <el-popover
         v-if="newCms || newPlugins.length > 0"
         placement="bottom"
-        width="420"
+        width="480"
         trigger="hover">
 
         <div v-if="newCms">
@@ -40,7 +40,7 @@
                 <el-tag type="success">{{ scope.row.version }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="published" label="发布日期"></el-table-column>
+            <el-table-column prop="createdDate" label="发布日期" width="140"></el-table-column>
           </el-table>
 
           <el-row style="text-align: center; padding: 10px 0;">
@@ -66,7 +66,7 @@
                 <el-tag type="success">{{ scope.row.version }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="published" label="发布日期" width="100"></el-table-column>
+            <el-table-column prop="createdDate" label="发布日期" width="140"></el-table-column>
           </el-table>
 
           <el-row style="text-align: center; padding: 10px 0;">

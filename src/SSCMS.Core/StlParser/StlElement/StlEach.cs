@@ -127,7 +127,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     var each = eachList[i];
 
                     pageInfo.EachItems.Push(each);
-                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                    var templateString = isAlternative && i % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     builder.Append(await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Each));
 
                     if (isSeparator && i != eachList.Count - 1)
@@ -175,7 +175,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var each = eachList[itemIndex];
 
                             pageInfo.EachItems.Push(each);
-                            var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                            var templateString = isAlternative && itemIndex % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                             cellHtml = await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseManager, ParseType.Each);
                         }
                         tr.AddCell(cellHtml, cellAttributes);

@@ -7,7 +7,7 @@
   </el-alert>
   <div style="height: 10px"></div>
 
-  <el-button v-on:click="btnCreateClick('empty')" plain size="small" type="primary">创建空站点</el-button>
+  <el-button v-on:click="btnCreateEmptyClick" plain size="small" type="primary">创建空站点</el-button>
   <p class="tips">
     点击按钮创建空站点，站点的栏目、内容及模板需要手动添加
   </p>
@@ -35,7 +35,7 @@
       <template slot-scope="scope">
         <el-link
           :underline="false"
-          v-on:click="btnCreateClick('local', scope.row.directoryName)"
+          v-on:click="btnCreateLocalClick(scope.row.directoryName)"
           type="primary">
           创建站点
         </el-link>
@@ -77,7 +77,7 @@
       </el-form>
     </el-col>
     <el-col :span="4" align="right">
-      <el-link :underline="false" type="primary" target="_blank" :href="cloud.getTemplatesUrl('')">官网模板中心</el-link>
+      <el-link :underline="false" type="primary" target="_blank" :href="getTemplatesUrl()">官网模板中心</el-link>
     </el-col>
   </el-row>
   <el-row>
@@ -89,7 +89,7 @@
       全部
     </el-tag>
     <el-tag
-      v-for="tagName in allTagNames"
+      v-for="tagName in tags"
       :key="tagName"
       type="success"
       style="cursor: pointer; margin: 0 3px 6px 0;"
@@ -102,22 +102,22 @@
   <div style="height: 10px"></div>
 
   <el-row>
-    <el-col :span="6" v-for="(template, index) in templates" :key="template.templateId">
+    <el-col :span="6" v-for="(theme, index) in themes" :key="index">
       <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
         <el-image 
           style="width: 100%; min-height: 120px; max-height: 240px; cursor: pointer;"
-          v-on:click="btnImageClick(template.templateId)"
-          :src="cloud.getTemplatesUrl(template.imageUrl)">
+          v-on:click="btnImageClick(theme)"
+          :src="getCoverUrl(theme)">
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline"></i>
           </div>
         </el-image>
         <div style="padding: 14px;">
-          <div :title="template.description">{{ template.templateId }}</div>
+          <div :title="theme.summary">{{ theme.name }}</div>
           
           <div style="margin-top: 10px;">
-            <el-button plain type="info" v-on:click="btnPreviewClick(template.templateId)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
-            <el-button plain type="primary" v-on:click="btnCreateClick('cloud', template.templateId)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">创建站点</el-button>
+            <el-button plain type="info" v-on:click="btnPreviewClick(theme)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
+            <el-button plain type="primary" v-on:click="btnCreateCloudClick(theme.userName, theme.name)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">创建站点</el-button>
           </div>
         </div>
       </el-card>
@@ -145,10 +145,10 @@
 <template v-else-if="pageType == 'submit'">
 
   <el-alert v-if="this.form.createType == 'cloud'">
-    使用在线站点模板创建站点，站点模板：<el-link size="mini" type="primary" :underline="false" :href="this.getDisplayUrl(this.form.createTemplateId)" target="_blank">{{ this.form.createTemplateId }}</el-link>
+    使用在线站点模板创建站点，站点模板：<el-link size="mini" type="primary" :underline="false" :href="this.getDisplayUrl(this.form.cloudThemeUserName, this.form.cloudThemeName)" target="_blank">{{ this.form.cloudThemeName }}</el-link>
   </el-alert>
   <el-alert v-else-if="this.form.createType === 'local'">
-    使用本地站点模板创建站点，站点模板：{{this.form.createTemplateId}}
+    使用本地站点模板创建站点，站点模板：{{this.form.localDirectoryName}}
   </el-alert>
   <el-alert v-else="this.form.createType">
     创建空站点（不使用站点模板）

@@ -14,17 +14,19 @@ var data = utils.init({
   tag: utils.getQueryString('tag'),
   price: utils.getQueryString('price'),
   order: utils.getQueryString('order'),
-  templates: null,
+  themes: null,
   count: null,
   pages: null,
-  allTagNames: [],
+  tags: [],
   
   parentIds: [0],
   form: {
     guid: null,
     siteType: null,
     createType: utils.getQueryString('createType'),
-    createTemplateId: utils.getQueryString('createTemplateId'),
+    localDirectoryName: utils.getQueryString('localDirectoryName'),
+    cloudThemeUserName: utils.getQueryString('cloudThemeUserName'),
+    cloudThemeName: utils.getQueryString('cloudThemeName'),
     siteName: '',
     root: false,
     parentId: 0,
@@ -121,16 +123,24 @@ var methods = {
     });
   },
 
-  getDisplayUrl: function (templateId) {
-    return cloud.getTemplatesUrl('template.html?id=' + templateId);
+  getTemplatesUrl: function() {
+    return cloud.host + '/templates/';
   },
 
-  btnImageClick: function(templateId) {
-    window.open(this.getDisplayUrl(templateId));
+  getDisplayUrl: function (userName, name) {
+    return cloud.getThemesUrl('template.html?userName=' + userName + '&name=' + name);
   },
 
-  btnPreviewClick: function (templateId) {
-    window.open(cloud.hostDemo + '/' + templateId.toLowerCase() + '/');
+  getCoverUrl: function (theme) {
+    return cloud.hostStorage + '/themes/' + theme.userName + '/' + theme.name + '/' + _.trim(theme.coverUrl, '/');
+  },
+
+  btnImageClick: function(theme) {
+    window.open(this.getDisplayUrl(theme.userName, theme.name));
+  },
+
+  btnPreviewClick: function (theme) {
+    window.open(cloud.hostDemo + '/' + theme.userName + '/' + theme.name + '/');
   },
 
   getPageUrl: function (page) {
@@ -187,13 +197,13 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud.getTemplates(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
+    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
         var res = response.data;
 
-        $this.templates = res.value;
+        $this.themes = res.themes;
         $this.count = res.count;
         $this.pages = res.pages;
-        $this.allTagNames = res.allTagNames;
+        $this.tags = res.tags;
       })
       .catch(function (error) {
         utils.error(error);
@@ -218,9 +228,21 @@ var methods = {
     this.pageType = 'selectType';
   },
 
-  btnCreateClick: function (createType, templateId) {
-    this.form.createType = createType;
-    this.form.createTemplateId = templateId;
+  btnCreateEmptyClick: function () {
+    this.form.createType = 'empty';
+    this.pageType = 'submit';
+  },
+
+  btnCreateLocalClick: function (localDirectoryName) {
+    this.form.createType = 'local';
+    this.form.localDirectoryName = localDirectoryName;
+    this.pageType = 'submit';
+  },
+
+  btnCreateCloudClick: function (userName, name) {
+    this.form.createType = 'cloud';
+    this.form.cloudThemeUserName = userName;
+    this.form.cloudThemeName = name;
     this.pageType = 'submit';
   },
 

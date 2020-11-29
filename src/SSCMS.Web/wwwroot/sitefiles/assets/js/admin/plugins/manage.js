@@ -5,7 +5,7 @@ var $urlActionsRestart = $url + '/actions/restart';
 
 var data = utils.init({
   pageType: utils.getQueryString("pageType"),
-  version: null,
+  cmsVersion: null,
   allPlugins: null,
   containerized: null,
   plugins: null,
@@ -28,7 +28,7 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.version = res.version;
+      $this.cmsVersion = res.cmsVersion;
       $this.allPlugins = res.allPlugins;
       $this.containerized = res.containerized;
 
@@ -56,23 +56,22 @@ var methods = {
 
       var pluginIds = $this.enabledPlugins.map(function(x) { return x.pluginId });
 
-      cloud.getUpdates($this.version, pluginIds).then(function (response) {
+      cloud.getUpdates($this.cmsVersion, pluginIds).then(function (response) {
         var res = response.data;
   
-        var plugins = res.plugins;
-
-        for (var i = 0; i < plugins.length; i++) {
-          var releaseInfo = plugins[i];
+        var releases = res.releases;
+        for (var i = 0; i < releases.length; i++) {
+          var release = releases[i];
 
           var installedPlugins = $.grep($this.enabledPlugins, function (e) {
-            return e.pluginId == releaseInfo.pluginId;
+            return e.pluginId == release.userName + '.' + release.name;
           });
           if (installedPlugins.length == 1) {
             var installedPlugin = installedPlugins[0];
-            installedPlugin.updatePlugin = releaseInfo;
+            installedPlugin.updatePlugin = release;
 
             if (installedPlugin && installedPlugin.version) {
-              if (cloud.compareVersion(installedPlugin.version, releaseInfo.version) == -1) {
+              if (cloud.compareVersion(installedPlugin.version, release.version) == -1) {
                 $this.updatePlugins.push(installedPlugin);
                 $this.updatePluginIds.push(installedPlugin.pluginId);
               }
@@ -247,8 +246,11 @@ var methods = {
     this.apiRestart();
   },
 
-  btnViewClick: function(plugin) {
-    utils.addTab('插件：' + plugin.pluginId, utils.getPluginsUrl('view', {pluginId: plugin.pluginId}));
+  btnViewClick: function(displayName, userName, name) {
+    utils.addTab(displayName, utils.getPluginsUrl('view', {
+      userName: userName,
+      name: name
+    }));
   }
 };
 

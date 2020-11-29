@@ -133,7 +133,7 @@ namespace SSCMS.Cli.Jobs
             if (success)
             {
                 
-                await WriteUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at {CloudUtils.Www.GetPluginUrl(plugin.PluginId)} (might take a few minutes for it to show up).");
+                await WriteUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at {CloudUtils.Www.GetPluginUrl(plugin.Publisher, plugin.Name)}.");
             }
             else
             {

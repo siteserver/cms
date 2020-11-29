@@ -105,7 +105,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             if (request.CreateType == "local")
             {
                 var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
-                await manager.ImportSiteTemplateToEmptySiteAsync(site, request.CreateTemplateId, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
+                await manager.ImportSiteTemplateToEmptySiteAsync(site, request.LocalDirectoryName, request.IsImportContents, request.IsImportTableStyles, adminId, request.Guid);
 
                 caching.SetProcess(request.Guid, "生成站点页面...");
                 await _createManager.CreateByAllAsync(site.Id);
@@ -117,14 +117,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             {
                 caching.SetProcess(request.Guid, "开始下载模板压缩包，可能需要几分钟，请耐心等待...");
 
-                var filePath = _pathManager.GetSiteTemplatesPath($"T_{request.CreateTemplateId}.zip");
+                var filePath = _pathManager.GetSiteTemplatesPath($"T_{request.CloudThemeName}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
-                var downloadUrl = CloudUtils.Dl.GetTemplateDownloadUrl(request.CreateTemplateId);
+                var downloadUrl = CloudUtils.Dl.GetThemesDownloadUrl(request.CloudThemeUserName, request.CloudThemeName);
                 WebClientUtils.Download(downloadUrl, filePath);
 
                 caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");
 
-                var siteTemplateDir = $"T_{request.CreateTemplateId}";
+                var siteTemplateDir = $"T_{request.CloudThemeName}";
                 var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
                 DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
                 _pathManager.ExtractZip(filePath, directoryPath);

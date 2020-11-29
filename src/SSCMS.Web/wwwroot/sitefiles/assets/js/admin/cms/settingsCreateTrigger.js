@@ -65,6 +65,8 @@ var methods = {
   },
 
   btnEditClick: function(data) {
+    var $this = this;
+
     this.editForm = {
       siteId: this.siteId,
       channelId: data.value,
@@ -73,6 +75,9 @@ var methods = {
       createChannelIdsIfContentChanged: data.createChannelIdsIfContentChanged,
     };
     this.editPanel = true;
+    setTimeout(function () {
+      $this.$refs.channelsTree.setCheckedKeys($this.editForm.createChannelIdsIfContentChanged);
+    }, 100);
   },
 
   handleTreeChanged: function() {

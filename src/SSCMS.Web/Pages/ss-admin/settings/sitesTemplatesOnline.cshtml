@@ -29,7 +29,7 @@
     </el-form>
   </el-col>
   <el-col :span="4" align="right">
-    <el-link :underline="false" type="primary" target="_blank" :href="cloud.getTemplatesUrl('')">官网模板中心</el-link>
+    <el-link :underline="false" type="primary" target="_blank" :href="getTemplatesUrl()">官网模板中心</el-link>
   </el-col>
 </el-row>
 <el-row>
@@ -41,12 +41,12 @@
     全部
   </el-tag>
   <el-tag
-    v-for="tagName in allTagNames"
+    v-for="tagName in tags"
     :key="tagName"
     type="success"
     style="cursor: pointer; margin: 0 3px 6px 0;"
     v-on:click="btnRedirectClick(getTagUrl(tagName))"
-    :effect="tag == tagName ? 'dark' : 'plain'">
+    :effect="tagName == tag ? 'dark' : 'plain'">
     {{ tagName }}
   </el-tag>
 </el-row>
@@ -54,22 +54,22 @@
 <div style="height: 10px"></div>
 
 <el-row>
-  <el-col :span="6" v-for="(template, index) in templates" :key="template.templateId">
+  <el-col :span="6" v-for="(theme, index) in themes" :key="index">
     <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
       <el-image 
         style="width: 100%; min-height: 120px; max-height: 240px; cursor: pointer;"
-        v-on:click="btnImageClick(template.templateId)"
-        :src="cloud.getTemplatesUrl(template.imageUrl)">
+        v-on:click="btnImageClick(theme)"
+        :src="getCoverUrl(theme)">
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline"></i>
         </div>
       </el-image>
       <div style="padding: 14px;">
-        <div :title="template.description">{{ template.templateId }}</div>
+        <div :title="theme.summary">{{ theme.name }}</div>
         
         <div style="margin-top: 10px;">
-          <el-button plain type="info" v-on:click="btnPreviewClick(template.templateId)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
-          <el-button plain type="primary" v-if="siteAddPermission" v-on:click="btnCreateClick(template.templateId)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">创建站点</el-button>
+          <el-button plain type="info" v-on:click="btnPreviewClick(theme)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
+          <el-button plain type="primary" v-if="siteAddPermission" v-on:click="btnCreateClick(theme)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">创建站点</el-button>
         </div>
       </div>
     </el-card>

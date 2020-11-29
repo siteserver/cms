@@ -1,6 +1,5 @@
 var cloud = _.extend(axios.create({
-  baseURL: 'https://api.sscms.com/v7',
-  // baseURL: 'http://localhost:81/v7',
+  baseURL: 'http://localhost:6060/v7',
   headers: {
     Authorization: "Bearer " + localStorage.getItem('ss_cloud_access_token'),
   },
@@ -10,6 +9,10 @@ var cloud = _.extend(axios.create({
   hostDemo: 'https://demo.sscms.com',
   hostStorage: 'https://storage.sscms.com',
 
+  getDocsUrl: function(relatedUrl) {
+    return this.host + '/docs/v7/' + relatedUrl;
+  },
+
   getPluginIconUrl: function (plugin) {
     if (!plugin.icon) return utils.getAssetsUrl('images/favicon.png');
     if (plugin.success && !plugin.disabled) {
@@ -18,29 +21,22 @@ var cloud = _.extend(axios.create({
     return this.hostStorage + '/plugins/' + plugin.pluginId + '/logo' + plugin.icon.substring(plugin.icon.lastIndexOf('.'));
   },
 
-  getTemplatesUrl: function(relatedUrl) {
-    return this.host + '/templates/' + relatedUrl;
-  },
-
   getPluginsUrl: function(relatedUrl) {
     return this.host + '/plugins/' + relatedUrl;
   },
 
-  getDocsUrl: function(relatedUrl) {
-    return this.host + '/docs/v7/' + relatedUrl;
-  },
-
-  getPlugins: function(word) {
-    return this.post('cms/plugins', {
+  getExtensions: function(cmsVersion, word) {
+    return this.post('cms/extensions', {
+      cmsVersion: cmsVersion,
       word: word
     });
   },
 
-  getPlugin: function(pluginId, version) {
-    return this.get('cms/plugins/' + pluginId, {
-      params: {
-        version: version
-      }
+  getExtension: function(cmsVersion, userName, name) {
+    return this.post('cms/extensions/actions/getExtension', {
+      cmsVersion: cmsVersion,
+      userName: userName,
+      name: name
     }).catch(function (error) {
       if (error.response && error.response.status === 404) {
         utils.error('找不到资源，请重试或者检查计算机是否能够连接外网');
@@ -50,8 +46,12 @@ var cloud = _.extend(axios.create({
     });
   },
 
-  getTemplates: function(page, word, tag, price, order) {
-    return this.get('cms/templates', {
+  getThemesUrl: function(relatedUrl) {
+    return this.host + '/templates/' + relatedUrl;
+  },
+
+  getThemes: function(page, word, tag, price, order) {
+    return this.get('cms/themes', {
       params: {
         page: page,
         word: word,
@@ -62,13 +62,9 @@ var cloud = _.extend(axios.create({
     });
   },
 
-  getTemplate: function(templateId) {
-    return this.get('cms/templates/' + templateId);
-  },
-
-  getUpdates: function(version, pluginIds) {
-    return this.post('cms/updates', {
-      version: version,
+  getUpdates: function(cmsVersion, pluginIds) {
+    return this.post('cms/extensions/actions/getUpdates', {
+      cmsVersion: cmsVersion,
       pluginIds: pluginIds
     });
   },

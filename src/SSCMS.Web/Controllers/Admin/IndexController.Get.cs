@@ -246,7 +246,7 @@ namespace SSCMS.Web.Controllers.Admin
             return new GetResult
             {
                 Value = true,
-                Version = _settingsManager.Version,
+                CmsVersion = _settingsManager.Version,
                 OSArchitecture = _settingsManager.OSArchitecture,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminTitle = config.AdminTitle,

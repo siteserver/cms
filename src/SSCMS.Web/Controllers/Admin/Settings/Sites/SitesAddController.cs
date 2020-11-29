@@ -5,7 +5,6 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
-using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -57,7 +56,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public string Guid { get; set; }
             public string SiteType { get; set; }
             public string CreateType { get; set; }
-            public string CreateTemplateId { get; set; }
+            public string LocalDirectoryName { get; set; }
+            public string CloudThemeUserName { get; set; }
+            public string CloudThemeName { get; set; }
             public string SiteName { get; set; }
             public bool Root { get; set; }
             public int ParentId { get; set; }
@@ -74,33 +75,33 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public string Guid { get; set; }
         }
 
-        private static void AddSite(List<KeyValuePair<int, string>> siteList, Site site, Dictionary<int, List<Site>> parentWithChildren, int level)
-        {
-            if (level > 1) return;
-            var padding = string.Empty;
-            for (var i = 0; i < level; i++)
-            {
-                padding += "　";
-            }
-            if (level > 0)
-            {
-                padding += "└ ";
-            }
+        //private static void AddSite(List<KeyValuePair<int, string>> siteList, Site site, Dictionary<int, List<Site>> parentWithChildren, int level)
+        //{
+        //    if (level > 1) return;
+        //    var padding = string.Empty;
+        //    for (var i = 0; i < level; i++)
+        //    {
+        //        padding += "　";
+        //    }
+        //    if (level > 0)
+        //    {
+        //        padding += "└ ";
+        //    }
 
-            if (parentWithChildren.ContainsKey(site.Id))
-            {
-                var children = parentWithChildren[site.Id];
-                siteList.Add(new KeyValuePair<int, string>(site.Id, padding + site.SiteName + $"({children.Count})"));
-                level++;
-                foreach (var subSite in children)
-                {
-                    AddSite(siteList, subSite, parentWithChildren, level);
-                }
-            }
-            else
-            {
-                siteList.Add(new KeyValuePair<int, string>(site.Id, padding + site.SiteName));
-            }
-        }
+        //    if (parentWithChildren.ContainsKey(site.Id))
+        //    {
+        //        var children = parentWithChildren[site.Id];
+        //        siteList.Add(new KeyValuePair<int, string>(site.Id, padding + site.SiteName + $"({children.Count})"));
+        //        level++;
+        //        foreach (var subSite in children)
+        //        {
+        //            AddSite(siteList, subSite, parentWithChildren, level);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        siteList.Add(new KeyValuePair<int, string>(site.Id, padding + site.SiteName));
+        //    }
+        //}
     }
 }

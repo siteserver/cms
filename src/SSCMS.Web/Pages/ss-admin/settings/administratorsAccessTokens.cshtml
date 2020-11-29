@@ -41,7 +41,7 @@ style="width: 100%">
   <el-button size="mini" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
     添加新密钥
   </el-button>
-  <el-link style="float: right" :underline="false" type="primary" :href="cloud.getDocsUrl('api/')" target="_blank">
+  <el-link style="float: right" :underline="false" type="primary" :href="getDocsUrl('api/')" target="_blank">
     SiteServer REST API
   </el-link>
 </el-row>
@@ -65,7 +65,7 @@ style="width: 100%">
         </el-select>
         <div class="tips">
           关联管理员定义API密钥的访问权限，API密钥的访问权限将被限制在此管理员的权限范围内
-          <el-link :underline="false" style="font-size: 12px;" type="primary" :href="cloud.getDocsUrl('api/')" target="_blank">阅读更多</el-link>
+          <el-link :underline="false" style="font-size: 12px;" type="primary" :href="getDocsUrl('api/')" target="_blank">阅读更多</el-link>
         </div>
       </el-form-item>
       <el-form-item label="授权范围" prop="scopes" :rules="{ required: true, message: '请选择授权范围' }">
@@ -76,7 +76,7 @@ style="width: 100%">
 
         <div class="tips">
           授权范围定义API密钥可访问的API地址，API密钥能够访问的API地址将被限制在授权范围内
-          <el-link :underline="false" style="font-size: 12px;" type="primary" :href="cloud.getDocsUrl('api/')" target="_blank">阅读更多</el-link>
+          <el-link :underline="false" style="font-size: 12px;" type="primary" :href="getDocsUrl('api/')" target="_blank">阅读更多</el-link>
         </div>
       </el-form-item>
 
