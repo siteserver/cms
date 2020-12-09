@@ -190,7 +190,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
-    this.uploadUrl = $urlUpload;
+    this.uploadUrl = $apiUrl + $urlUpload;
     this.apiGet();
   }
 });

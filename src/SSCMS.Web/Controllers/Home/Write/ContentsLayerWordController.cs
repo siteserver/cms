@@ -14,8 +14,8 @@ namespace SSCMS.Web.Controllers.Home.Write
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerWordController : ControllerBase
     {
-        private const string Route = "contentsLayerWord";
-        private const string RouteUpload = "contentsLayerWord/actions/upload";
+        private const string Route = "write/contentsLayerWord";
+        private const string RouteUpload = "write/contentsLayerWord/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

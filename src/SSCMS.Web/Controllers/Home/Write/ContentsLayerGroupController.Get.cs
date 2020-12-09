@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] ChannelRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Delete))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Delete))
             {
                 return Unauthorized();
             }

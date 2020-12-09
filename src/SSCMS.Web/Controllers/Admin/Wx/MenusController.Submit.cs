@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpPost, Route(Route)]
         public async Task<ActionResult<WxMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.WxMenus))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.WxMenus))
             {
                 return Unauthorized();
             }

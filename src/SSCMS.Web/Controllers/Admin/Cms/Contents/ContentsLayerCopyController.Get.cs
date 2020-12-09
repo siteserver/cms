@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 
@@ -13,8 +12,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
+                    MenuUtils.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }

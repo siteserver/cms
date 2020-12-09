@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteLock)]
         public async Task<ActionResult<BoolResult>> Lock([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

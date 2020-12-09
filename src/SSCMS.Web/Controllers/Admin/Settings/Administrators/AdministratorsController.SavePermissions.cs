@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
@@ -12,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RoutePermissions)]
         public async Task<ActionResult<SavePermissionsResult>> SavePermissions([FromRoute] int adminId, [FromBody] SavePermissionsRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

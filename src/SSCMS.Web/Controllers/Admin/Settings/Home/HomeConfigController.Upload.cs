@@ -1,19 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Settings.Home
 {
-    public partial class ConfigsHomeController
+    public partial class HomeConfigController
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromForm] IFormFile file)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsConfigsHome))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsHomeConfig))
             {
                 return Unauthorized();
             }

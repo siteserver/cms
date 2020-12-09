@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(Route)]
         public async Task<ActionResult<IntResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

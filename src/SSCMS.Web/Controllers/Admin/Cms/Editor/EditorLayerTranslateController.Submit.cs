@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }

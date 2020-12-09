@@ -14,8 +14,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         {
 
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.View))
+                    MenuUtils.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.View))
             {
                 return Unauthorized();
             }

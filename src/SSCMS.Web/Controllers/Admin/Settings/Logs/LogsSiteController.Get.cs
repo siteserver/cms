@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SiteLogPageResult>> Get([FromBody] SearchRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsSite))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsLogsSite))
             {
                 return Unauthorized();
             }

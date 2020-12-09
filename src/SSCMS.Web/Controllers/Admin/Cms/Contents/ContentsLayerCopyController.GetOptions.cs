@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -10,8 +10,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody] GetOptionsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Translate))
+                    MenuUtils.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Translate))
             {
                 return Unauthorized();
             }
@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, Types.ContentPermissions.Add);
+            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
 
             var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);

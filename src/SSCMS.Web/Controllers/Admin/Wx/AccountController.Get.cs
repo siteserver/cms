@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Wx;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -11,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] int siteId)
         {
-            if (!await _authManager.HasSitePermissionsAsync(siteId, Types.SitePermissions.WxAccount))
+            if (!await _authManager.HasSitePermissionsAsync(siteId, MenuUtils.SitePermissions.WxAccount))
             {
                 return Unauthorized();
             }

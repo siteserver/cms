@@ -88,7 +88,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var siteTemplateUrl = StringUtils.TrimSlash(_pathManager.GetSiteTemplatesUrl(string.Empty));
             var siteAddPermission =
-                await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd);
+                await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSitesAdd);
 
             return new ListResult
             {

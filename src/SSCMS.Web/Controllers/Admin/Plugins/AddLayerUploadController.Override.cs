@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Utils;
 
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsOverride)]
         public async Task<ActionResult<BoolResult>> Override([FromBody] OverrideRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsAdd))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsAdd))
             {
                 return Unauthorized();
             }

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsConfig))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsLogsConfig))
             {
                 return Unauthorized();
             }

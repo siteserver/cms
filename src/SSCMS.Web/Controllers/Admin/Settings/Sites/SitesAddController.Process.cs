@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
@@ -10,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpPost, Route(RouteProcess)]
         public async Task<ActionResult<CacheUtils.Process>> Process([FromBody] ProcessRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesAdd))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSitesAdd))
             {
                 return Unauthorized();
             }

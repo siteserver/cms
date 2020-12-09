@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         [HttpPost, Route(RouteAll)]
         public async Task<ActionResult<BoolResult>> CreateAll([FromBody] SiteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.CreateAll))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.CreateAll))
             {
                 return Unauthorized();
             }

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
@@ -12,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public async Task<ActionResult<PreviewResult>> Preview([FromBody] PreviewRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                Types.SitePermissions.MaterialMessage))
+                MenuUtils.SitePermissions.MaterialMessage))
             {
                 return Unauthorized();
             }

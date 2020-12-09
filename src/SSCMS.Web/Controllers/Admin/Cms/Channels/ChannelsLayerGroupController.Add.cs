@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<List<int>>> Add([FromBody] AddRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Channels))
+                    MenuUtils.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

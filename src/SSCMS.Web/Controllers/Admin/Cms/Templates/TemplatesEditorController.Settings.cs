@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteSettings)]
         public async Task<ActionResult<SettingsResult>> Settings([FromBody] SettingsRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.Settings.SiteId, Types.SitePermissions.Templates))
+            if (!await _authManager.HasSitePermissionsAsync(request.Settings.SiteId, MenuUtils.SitePermissions.Templates))
             {
                 return Unauthorized();
             }

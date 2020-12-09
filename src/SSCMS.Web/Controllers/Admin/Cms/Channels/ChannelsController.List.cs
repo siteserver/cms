@@ -17,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<ChannelsResult>> List([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Channels))
+                    MenuUtils.SitePermissions.Channels))
             {
                 return Unauthorized();
             }
@@ -67,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var commandsWidth = 160 + 40 * max;
             var isTemplateEditable =
-                await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Templates);
+                await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates);
 
             var linkTypes = _pathManager.GetLinkTypeSelects();
             var taxisTypes = new List<Select<string>>

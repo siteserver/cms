@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ItemsResult>> ItemsAdd([FromBody] ItemsAddRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                Types.SitePermissions.SettingsStyleRelatedField))
+                MenuUtils.SitePermissions.SettingsStyleRelatedField))
             {
                 return Unauthorized();
             }

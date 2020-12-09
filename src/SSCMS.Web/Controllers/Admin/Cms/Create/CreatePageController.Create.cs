@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Create
 {
@@ -15,27 +15,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             var permission = string.Empty;
             if (request.Type == CreateType.Index)
             {
-                permission = Types.SitePermissions.CreateIndex;
+                permission = MenuUtils.SitePermissions.CreateIndex;
             }
             else if (request.Type == CreateType.Channel)
             {
-                permission = Types.SitePermissions.CreateChannels;
+                permission = MenuUtils.SitePermissions.CreateChannels;
             }
             else if (request.Type == CreateType.Content)
             {
-                permission = Types.SitePermissions.CreateContents;
+                permission = MenuUtils.SitePermissions.CreateContents;
             }
             else if (request.Type == CreateType.File)
             {
-                permission = Types.SitePermissions.CreateFiles;
+                permission = MenuUtils.SitePermissions.CreateFiles;
             }
             else if (request.Type == CreateType.Special)
             {
-                permission = Types.SitePermissions.CreateSpecials;
+                permission = MenuUtils.SitePermissions.CreateSpecials;
             }
             else if (request.Type == CreateType.All)
             {
-                permission = Types.SitePermissions.CreateAll;
+                permission = MenuUtils.SitePermissions.CreateAll;
             }
 
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, permission))

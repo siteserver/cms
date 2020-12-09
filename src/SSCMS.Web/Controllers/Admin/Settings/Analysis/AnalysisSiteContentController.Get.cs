@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
 {
@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAnalysisSiteContent))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAnalysisSiteContent))
             {
                 return Unauthorized();
             }

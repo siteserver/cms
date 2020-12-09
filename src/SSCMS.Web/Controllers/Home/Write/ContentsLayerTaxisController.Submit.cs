@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Edit))
             {
                 return Unauthorized();
             }

@@ -22,14 +22,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteCreate = "cms/templates/templatesMatch/actions/create";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesMatchController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
+        public TemplatesMatchController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -59,7 +61,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public bool IsChildren { get; set; }
         }
 
-        private async Task CreateChannelTemplateAsync(CreateRequest request)
+        private async Task CreateChannelTemplateAsync(Site site, CreateRequest request)
         {
             var defaultChannelTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ChannelTemplate);
             var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ChannelTemplate);
@@ -85,7 +87,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                 if (channelTemplateId != -1)
                 {
-                    var templateInfo = new Template
+                    var template = new Template
                     {
                         Id = 0,
                         SiteId = request.SiteId,
@@ -97,15 +99,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                         DefaultTemplate = false
                     };
 
-                    if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                    if (ListUtils.ContainsIgnoreCase(relatedFileNameList, template.RelatedFileName))
                     {
                         continue;
                     }
-                    if (templateNameList.Contains(templateInfo.TemplateName))
+                    if (templateNameList.Contains(template.TemplateName))
                     {
                         continue;
                     }
-                    var insertedTemplateId = await _templateRepository.InsertAsync(templateInfo);
+                    var insertedTemplateId = await _templateRepository.InsertAsync(template);
+                    template.Id = insertedTemplateId;
                     if (nodeInfo.ParentId > 0)
                     {
                         nodeInfo.ChannelTemplateId = insertedTemplateId;
@@ -114,6 +117,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                         //TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
                         //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(channelId, insertedTemplateID);
                     }
+
+                    await _pathManager.WriteContentToTemplateFileAsync(site, template, string.Empty, _authManager.AdminId);
 
                 }
             }
@@ -127,7 +132,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             {
                 var nodeInfo = await _channelRepository.GetAsync(channelId);
 
-                var templateInfo = new Template
+                var template = new Template
                 {
                     Id = 0,
                     SiteId = request.SiteId,
@@ -139,15 +144,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     DefaultTemplate = false
                 };
 
-                if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                if (ListUtils.ContainsIgnoreCase(relatedFileNameList, template.RelatedFileName))
                 {
                     continue;
                 }
-                if (templateNameList.Contains(templateInfo.TemplateName))
+                if (templateNameList.Contains(template.TemplateName))
                 {
                     continue;
                 }
-                var insertedTemplateId = await _templateRepository.InsertAsync(templateInfo);
+                var insertedTemplateId = await _templateRepository.InsertAsync(template);
+                template.Id = insertedTemplateId;
                 var childChannelIdList = await _channelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.Descendant);
                 foreach (var childChannelId in childChannelIdList)
                 {
@@ -158,10 +164,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     //TemplateManager.UpdateChannelTemplateId(SiteId, childChannelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childChannelId, insertedTemplateID);
                 }
+
+                await _pathManager.WriteContentToTemplateFileAsync(site, template, string.Empty, _authManager.AdminId);
             }
         }
 
-        private async Task CreateContentTemplateAsync(CreateRequest request)
+        private async Task CreateContentTemplateAsync(Site site, CreateRequest request)
         {
             var defaultContentTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(request.SiteId, TemplateType.ContentTemplate);
             var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ContentTemplate);
@@ -182,7 +190,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                 if (contentTemplateId != -1)
                 {
-                    var templateInfo = new Template
+                    var template = new Template
                     {
                         Id = 0,
                         SiteId = request.SiteId,
@@ -193,19 +201,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                         CreatedFileExtName = ".html",
                         DefaultTemplate = false
                     };
-                    if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                    if (ListUtils.ContainsIgnoreCase(relatedFileNameList, template.RelatedFileName))
                     {
                         continue;
                     }
-                    if (templateNameList.Contains(templateInfo.TemplateName))
+                    if (templateNameList.Contains(template.TemplateName))
                     {
                         continue;
                     }
-                    var insertedTemplateId = await _templateRepository.InsertAsync(templateInfo);
+                    var insertedTemplateId = await _templateRepository.InsertAsync(template);
+                    template.Id = insertedTemplateId;
 
                     var channelInfo = await _channelRepository.GetAsync(channelId);
                     channelInfo.ContentTemplateId = insertedTemplateId;
                     await _channelRepository.UpdateContentTemplateIdAsync(channelInfo);
+
+                    await _pathManager.WriteContentToTemplateFileAsync(site, template, string.Empty, _authManager.AdminId);
 
                     //TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(channelId, insertedTemplateID);
@@ -213,7 +224,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
         }
 
-        private async Task CreateContentChildrenTemplateAsync(CreateRequest request)
+        private async Task CreateContentChildrenTemplateAsync(Site site, CreateRequest request)
         {
             var relatedFileNameList = await _templateRepository.GetRelatedFileNamesAsync(request.SiteId, TemplateType.ContentTemplate);
             var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ContentTemplate);
@@ -221,7 +232,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             {
                 var nodeInfo = await _channelRepository.GetAsync(channelId);
 
-                var templateInfo = new Template
+                var template = new Template
                 {
                     Id = 0,
                     SiteId = request.SiteId,
@@ -233,15 +244,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     DefaultTemplate = false
                 };
 
-                if (ListUtils.ContainsIgnoreCase(relatedFileNameList, templateInfo.RelatedFileName))
+                if (ListUtils.ContainsIgnoreCase(relatedFileNameList, template.RelatedFileName))
                 {
                     continue;
                 }
-                if (templateNameList.Contains(templateInfo.TemplateName))
+                if (templateNameList.Contains(template.TemplateName))
                 {
                     continue;
                 }
-                var insertedTemplateId = await _templateRepository.InsertAsync(templateInfo);
+                var insertedTemplateId = await _templateRepository.InsertAsync(template);
+                template.Id = insertedTemplateId;
                 var childChannelIdList = await _channelRepository.GetChannelIdsAsync(request.SiteId, channelId, ScopeType.Descendant);
                 foreach (var childChannelId in childChannelIdList)
                 {
@@ -252,6 +264,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     //TemplateManager.UpdateContentTemplateId(SiteId, childChannelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childChannelId, insertedTemplateID);
                 }
+
+                await _pathManager.WriteContentToTemplateFileAsync(site, template, string.Empty, _authManager.AdminId);
             }
         }
     }

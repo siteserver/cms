@@ -1,4 +1,4 @@
-﻿var $url = '/settings/configsHomeMenu';
+﻿var $url = '/settings/homeMenus';
 
 var data = utils.init({
   userMenus: null,
@@ -15,6 +15,9 @@ var methods = {
       return x.id == index;
     });
     this.userMenu = _.assign({}, userMenu);
+    if (!this.userMenu.groupIds) {
+      this.userMenu.groupIds = [];
+    }
     this.defaultActive = index;
   },
 
@@ -42,6 +45,9 @@ var methods = {
   btnMenuClick: function(menu) {
     this.defaultActive = this.defaultOpeneds.join('/');
     this.userMenu = _.assign({}, menu);
+    if (!this.userMenu.groupIds) {
+      this.userMenu.groupIds = [];
+    }
   },
 
   getIndex: function (level1, level2, level3) {

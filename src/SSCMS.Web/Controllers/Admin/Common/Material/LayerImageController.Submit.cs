@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         public async Task<ActionResult<List<SubmitResult>>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.MaterialImage))
+                    MenuUtils.SitePermissions.MaterialImage))
             {
                 return Unauthorized();
             }

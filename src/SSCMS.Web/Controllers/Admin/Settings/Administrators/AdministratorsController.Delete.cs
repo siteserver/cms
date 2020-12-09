@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] IdRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

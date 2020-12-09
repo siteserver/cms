@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public async Task<ActionResult<GetChannelsResult>> GetChannels([FromQuery] SiteRequest request)
         {
             var channels = new List<object>();
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.SiteId, Types.ContentPermissions.Add);
+            var channelIdList = await _authManager.GetChannelIdsAsync(request.SiteId, MenuUtils.ContentPermissions.Add);
             foreach (var permissionChannelId in channelIdList)
             {
                 var permissionChannelInfo = await _channelRepository.GetAsync(permissionChannelId);

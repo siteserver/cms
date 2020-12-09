@@ -9,6 +9,7 @@ using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -136,35 +137,35 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content));
                 foreach (var permission in contentPermissionList)
                 {
-                    if (permission.Id == Types.ContentPermissions.CheckLevel1)
+                    if (permission.Id == MenuUtils.ContentPermissions.CheckLevel1)
                     {
                         if (site.CheckContentLevel < 1)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Types.ContentPermissions.CheckLevel2)
+                    else if (permission.Id == MenuUtils.ContentPermissions.CheckLevel2)
                     {
                         if (site.CheckContentLevel < 2)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Types.ContentPermissions.CheckLevel3)
+                    else if (permission.Id == MenuUtils.ContentPermissions.CheckLevel3)
                     {
                         if (site.CheckContentLevel < 3)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Types.ContentPermissions.CheckLevel4)
+                    else if (permission.Id == MenuUtils.ContentPermissions.CheckLevel4)
                     {
                         if (site.CheckContentLevel < 4)
                         {
                             continue;
                         }
                     }
-                    else if (permission.Id == Types.ContentPermissions.CheckLevel5)
+                    else if (permission.Id == MenuUtils.ContentPermissions.CheckLevel5)
                     {
                         if (site.CheckContentLevel < 5)
                         {
@@ -239,23 +240,23 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     {
                         if (permission.Id == contentPermission)
                         {
-                            if (contentPermission == Types.ContentPermissions.CheckLevel1)
+                            if (contentPermission == MenuUtils.ContentPermissions.CheckLevel1)
                             {
                                 if (site.CheckContentLevel < 1) continue;
                             }
-                            else if (contentPermission == Types.ContentPermissions.CheckLevel2)
+                            else if (contentPermission == MenuUtils.ContentPermissions.CheckLevel2)
                             {
                                 if (site.CheckContentLevel < 2) continue;
                             }
-                            else if (contentPermission == Types.ContentPermissions.CheckLevel3)
+                            else if (contentPermission == MenuUtils.ContentPermissions.CheckLevel3)
                             {
                                 if (site.CheckContentLevel < 3) continue;
                             }
-                            else if (contentPermission == Types.ContentPermissions.CheckLevel4)
+                            else if (contentPermission == MenuUtils.ContentPermissions.CheckLevel4)
                             {
                                 if (site.CheckContentLevel < 4) continue;
                             }
-                            else if (contentPermission == Types.ContentPermissions.CheckLevel5)
+                            else if (contentPermission == MenuUtils.ContentPermissions.CheckLevel5)
                             {
                                 if (site.CheckContentLevel < 5) continue;
                             }

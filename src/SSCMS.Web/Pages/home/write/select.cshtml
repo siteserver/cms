@@ -1,0 +1,59 @@
+@page
+@{ Layout = "_LayoutHome"; }
+
+<el-alert
+  v-if="pageType === 'Unauthorized'"
+  title="提示"
+  type="warning"
+  description="您的投稿权限尚未开通，请联系管理员解决。"
+  :closable="false"
+  show-icon>
+</el-alert>
+
+<template v-else>
+  
+  <div style="height: 10px"></div>
+
+  <el-form size="small" label-width="100px">
+    <el-form-item label="站点" prop="siteId" :rules="{ required: true, message: '请选择投稿站点' }">
+      <el-select
+        ref="siteId"
+        v-model="siteId"
+        filterable
+        v-on:change="handleSiteIdChange"
+        placeholder="请选择投稿站点">
+        <el-option
+          v-for="site in sites"
+          :key="site.value"
+          :label="site.label"
+          :value="site.value">
+        </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="栏目" prop="channelIds">
+      <el-cascader
+        ref="channelIds"
+        v-model="channelIds"
+        :options="[root]"
+        :props="{ multiple: false, checkStrictly: true }"
+        filterable
+        placeholder="请选择栏目">
+        <span slot-scope="{ node, data }">
+          {{ node.label }} ({{ data.count }})
+        </span>
+      </el-cascader>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" icon="el-icon-circle-plus-outline" :disabled="channelId == 0" v-on:click="btnAddClick">
+        添加
+      </el-button>
+      <el-button type="primary" icon="el-icon-tickets" :disabled="channelId == 0" v-on:click="btnImportClick">
+        导入Word
+      </el-button>
+    </el-form-item>
+  </el-form>
+
+</template>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/write/select.js" type="text/javascript"></script> }

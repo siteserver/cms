@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, Types.ChannelPermissions.Add))
+            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, MenuUtils.ChannelPermissions.Add))
             {
                 return Unauthorized();
             }

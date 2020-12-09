@@ -71,7 +71,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.styles = res.value;
+      $this.styles = res.styles;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -14,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<ChannelResult>> Get(int siteId, int channelId)
         {
             if (!await _authManager.HasSitePermissionsAsync(siteId,
-                    Types.SitePermissions.Channels))
+                    MenuUtils.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

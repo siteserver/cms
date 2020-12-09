@@ -16,6 +16,7 @@ namespace SSCMS.Core.StlParser.Utility
 
                 var elementId = StringUtils.GetElementId();
                 parsedContent = parsedContent.Replace("<p>", "<div>");
+                parsedContent = parsedContent.Replace("<p ", "<div ");
                 parsedContent = parsedContent.Replace("</p>", "</div>");
                 parsedContent = $@"
 <div id=""vue_{elementId}""></div>

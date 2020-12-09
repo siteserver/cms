@@ -55,6 +55,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
         public class GetResult
         {
+            public bool Unauthorized { get; set; }
             public Content Content { get; set; }
             public Site Site { get; set; }
             public Channel Channel { get; set; }

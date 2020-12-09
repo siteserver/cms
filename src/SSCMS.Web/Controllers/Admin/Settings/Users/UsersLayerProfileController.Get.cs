@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] int userId)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }

@@ -15,8 +15,8 @@ namespace SSCMS.Web.Controllers.Home.Write
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsController : ControllerBase
     {
+        private const string Route = "write/contents";
         private const string RouteList = "write/contents/actions/list";
-        private const string RouteTree = "write/contents/actions/tree";
         private const string RouteCreate = "write/contents/actions/create";
         private const string RouteColumns = "write/contents/actions/columns";
 
@@ -55,7 +55,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
         public class ListRequest : SiteRequest
         {
-            public int? ChannelId { get; set; }
+            public int ChannelId { get; set; }
             public int Page { get; set; }
             public bool IsCheckedLevels { get; set; }
             public List<int> CheckedLevels { get; set; }
@@ -70,12 +70,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public int PageSize { get; set; }
         }
 
-        public class TreeRequest : SiteRequest
-        {
-            public bool Reload { get; set; }
-        }
-
-        public class TreePermissions
+        public class GetPermissions
         {
             public bool IsAdd { get; set; }
             public bool IsDelete { get; set; }
@@ -87,8 +82,9 @@ namespace SSCMS.Web.Controllers.Home.Write
             public bool IsChannelEdit { get; set; }
         }
 
-        public class TreeResult
+        public class GetResult
         {
+            public bool Unauthorized { get; set; }
             public List<Select<int>> Sites { get; set; }
             public int SiteId { get; set; }
             public string SiteName { get; set; }
@@ -98,7 +94,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
             public List<ContentColumn> Columns { get; set; }
-            public TreePermissions Permissions { get; set; }
+            public GetPermissions Permissions { get; set; }
         }
     }
 }

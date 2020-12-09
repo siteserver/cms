@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public async Task<ActionResult<ChannelResult>> Get(int siteId, int channelId)
         {
             if (!await _authManager.HasSitePermissionsAsync(siteId,
-                Types.SitePermissions.SettingsCreateRule))
+                MenuUtils.SitePermissions.SettingsCreateRule))
             {
                 return Unauthorized();
             }

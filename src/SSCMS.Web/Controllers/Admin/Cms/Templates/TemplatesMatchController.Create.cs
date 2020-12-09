@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Enums;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<GetResult>> Create([FromBody] CreateRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.TemplatesMatch))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.TemplatesMatch))
             {
                 return Unauthorized();
             }
@@ -24,15 +24,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
             else if (request.IsChannelTemplate && !request.IsChildren)
             {
-                await CreateChannelTemplateAsync(request);
+                await CreateChannelTemplateAsync(site, request);
             }
             else if (!request.IsChannelTemplate && request.IsChildren)
             {
-                await CreateContentChildrenTemplateAsync(request);
+                await CreateContentChildrenTemplateAsync(site, request);
             }
             else if (!request.IsChannelTemplate && !request.IsChildren)
             {
-                await CreateContentTemplateAsync(request);
+                await CreateContentTemplateAsync(site, request);
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, "生成并匹配栏目模版");

@@ -100,7 +100,7 @@ var methods = {
           });
           editor.attributeName = style.attributeName;
           editor.ready(function () {
-            editor.addListener("contentChange", function () {
+            this.addListener("contentChange", function () {
               $this.form[this.attributeName] = this.getContent();
             });
           });

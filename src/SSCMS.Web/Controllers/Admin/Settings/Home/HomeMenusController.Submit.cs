@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Core.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Settings.Home
 {
-    public partial class ConfigsHomeMenuController
+    public partial class HomeMenusController
     {
         [HttpPost, Route(Route)]
         public async Task<ActionResult<UserMenusResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsConfigsHomeMenu))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsHomeMenus))
             {
                 return Unauthorized();
             }

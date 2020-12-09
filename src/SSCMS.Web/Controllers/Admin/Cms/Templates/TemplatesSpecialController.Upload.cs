@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<StringResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                Types.SitePermissions.Specials))
+                MenuUtils.SitePermissions.Specials))
             {
                 return Unauthorized();
             }

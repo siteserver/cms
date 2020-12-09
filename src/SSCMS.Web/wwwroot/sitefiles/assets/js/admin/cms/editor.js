@@ -105,8 +105,7 @@ var methods = {
         channelId: $this.channelId,
         contentId: $this.contentId
       }
-    })
-    .then(function(response) {
+    }).then(function(response) {
       var res = response.data;
 
       $this.site = res.site;
@@ -161,7 +160,7 @@ var methods = {
             });
             editor.styleIndex = i;
             editor.ready(function () {
-              editor.addListener("contentChange", function () {
+              this.addListener("contentChange", function () {
                 var style = $this.styles[this.styleIndex];
                 $this.form[_.lowerFirst(style.attributeName)] = this.getContent();
               });
@@ -169,11 +168,9 @@ var methods = {
           }
         }
       }, 100);
-    })
-    .catch(function(error) {
+    }).catch(function(error) {
       utils.error(error);
-    })
-    .then(function() {
+    }).then(function() {
       utils.loading($this, false);
     });
   },
@@ -192,11 +189,9 @@ var methods = {
       var res = response.data;
 
       $this.closeAndRedirect();
-    })
-    .catch(function(error) {
+    }).catch(function(error) {
       utils.error(error);
-    })
-    .then(function() {
+    }).then(function() {
       utils.loading($this, false);
     });
   },
@@ -215,11 +210,9 @@ var methods = {
 
       $this.isPreviewSaving = false;
       window.open(res.url);
-    })
-    .catch(function(error) {
+    }).catch(function(error) {
       utils.error(error);
-    })
-    .then(function() {
+    }).then(function() {
       utils.loading($this, false);
     });
   },
@@ -238,11 +231,9 @@ var methods = {
       var res = response.data;
 
       $this.closeAndRedirect();
-    })
-    .catch(function(error) {
+    }).catch(function(error) {
       utils.error(error);
-    })
-    .then(function() {
+    }).then(function() {
       utils.loading($this, false);
     });
   },

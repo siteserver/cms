@@ -95,9 +95,44 @@ namespace SSCMS.Core.Repositories
             return false;
         }
 
-        public async Task<Site> GetSiteByDirectoryAsync(string siteDir)
+        public async Task<Site> GetSiteByDirectoryAsync(string directory)
         {
-            var summaries = await GetSummariesAsync();
+            if (string.IsNullOrEmpty(directory))
+            {
+                var summaries = await GetSummariesAsync();
+                foreach (var summary in summaries)
+                {
+                    if (summary.Root)
+                    {
+                        return await GetAsync(summary.Id);
+                    }
+                }
+                return null;
+            }
+
+            var dirs = ListUtils.GetStringList(directory.Trim('/'), '/');
+            var parentId = 0;
+
+            Site site = null;
+            foreach (var dir in dirs)
+            {
+                site = await GetSiteAsync(parentId, dir);
+                if (site != null)
+                {
+                    parentId = site.Id;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return site;
+        }
+
+        private async Task<Site> GetSiteAsync(int parentId, string siteDir)
+        {
+            var summaries = await GetSummariesAsync(parentId);
             foreach (var summary in summaries)
             {
                 if (StringUtils.EqualsIgnoreCase(summary.SiteDir, siteDir))

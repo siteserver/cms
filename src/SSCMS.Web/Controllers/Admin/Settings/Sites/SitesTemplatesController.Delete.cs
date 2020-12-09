@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 
@@ -11,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsSitesTemplates))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSitesTemplates))
             {
                 return Unauthorized();
             }

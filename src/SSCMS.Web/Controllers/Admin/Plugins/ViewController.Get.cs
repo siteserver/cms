@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }

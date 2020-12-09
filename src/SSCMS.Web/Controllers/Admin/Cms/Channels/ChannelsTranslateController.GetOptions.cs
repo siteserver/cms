@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody] GetOptionsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                Types.SitePermissions.ChannelsTranslate))
+                MenuUtils.SitePermissions.ChannelsTranslate))
             {
                 return Unauthorized();
             }

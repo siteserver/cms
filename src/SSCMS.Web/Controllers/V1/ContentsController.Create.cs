@@ -31,11 +31,11 @@ namespace SSCMS.Web.Controllers.V1
             {
                 if (request.SourceId == SourceManager.User || _authManager.IsUser)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.CheckLevel1);
                 }
                 else if (_authManager.IsAdmin)
                 {
-                    isChecked = await _authManager.HasContentPermissionsAsync(siteId, channelId, Types.ContentPermissions.CheckLevel1);
+                    isChecked = await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.CheckLevel1);
                 }
             }
 

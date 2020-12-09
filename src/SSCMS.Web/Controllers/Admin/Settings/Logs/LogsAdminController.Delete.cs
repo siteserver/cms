@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         [HttpDelete, Route(Route)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsLogsAdmin))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsLogsAdmin))
             {
                 return Unauthorized();
             }

@@ -66,7 +66,20 @@ namespace SSCMS.Core.Repositories
                     {
                         if (!list.Contains(websitePermission)) list.Add(websitePermission);
                     }
-                    sortedList[systemPermissions.SiteId] = list;
+
+                    if (sortedList.ContainsKey(systemPermissions.SiteId))
+                    {
+                        var permissions = sortedList[systemPermissions.SiteId];
+                        foreach (var item in list)
+                        {
+                            if (!permissions.Contains(item)) permissions.Add(item);
+                        }
+                        sortedList[systemPermissions.SiteId] = permissions;
+                    }
+                    else
+                    {
+                        sortedList[systemPermissions.SiteId] = list;
+                    }
                 }
             }
 

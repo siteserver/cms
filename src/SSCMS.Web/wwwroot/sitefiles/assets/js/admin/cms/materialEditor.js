@@ -90,7 +90,7 @@ var methods = {
           maximumWords: 99999999
         });
         $this.editor.ready(function () {
-          $this.editor.addListener("contentChange", function () {
+          this.addListener("contentChange", function () {
             $this.form.content = this.getContent();
           });
         });

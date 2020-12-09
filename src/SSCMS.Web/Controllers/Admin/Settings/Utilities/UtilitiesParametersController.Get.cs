@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
@@ -13,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUtilitiesParameters))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUtilitiesParameters))
             {
                 return Unauthorized();
             }

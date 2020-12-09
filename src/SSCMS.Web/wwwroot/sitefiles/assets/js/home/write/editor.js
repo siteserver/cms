@@ -1,6 +1,7 @@
 ﻿var $url = '/write/editor';
 
 var data = utils.init({
+  pageType: null,
   siteId: utils.getQueryInt('siteId'),
   channelId: utils.getQueryInt('channelId'),
   contentId: utils.getQueryInt('contentId'),
@@ -10,6 +11,7 @@ var data = utils.init({
   sideType: 'first',
   collapseSettings: ['checkedLevel', 'addDate'],
   collapseMore: ['translations'],
+  isSettings: true,
 
   site: null,
   siteUrl: null,
@@ -73,6 +75,12 @@ var methods = {
     })
     .then(function(response) {
       var res = response.data;
+
+      if (res.unauthorized) {
+        $this.pageType = 'Unauthorized';
+        utils.loading($this, false);
+        return;
+      }
 
       $this.loadEditor(res);
     })
@@ -168,7 +176,7 @@ var methods = {
     this.styles = res.styles;
     this.form = _.assign({}, res.content);
     if (this.form.checked) {
-      this.form.checkedLevel = this.site.checkContentLevel;
+      //this.form.checkedLevel = this.site.checkContentLevel;
     }
     if (this.form.top || this.form.recommend || this.form.hot || this.form.color) {
       this.collapseSettings.push('attributes');
@@ -212,7 +220,7 @@ var methods = {
           });
           editor.styleIndex = i;
           editor.ready(function () {
-            editor.addListener("contentChange", function () {
+            this.addListener("contentChange", function () {
               var style = $this.styles[this.styleIndex];
               $this.form[style.attributeName] = this.getContent();
             });
@@ -223,7 +231,7 @@ var methods = {
   },
 
   winResize: function () {
-    this.mainHeight = ($(window).height() - 52) + 'px';
+    this.mainHeight = ($(window).height() - 70) + 'px';
   },
 
   btnLayerClick: function(options) {
@@ -321,6 +329,10 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
   },
 
   btnExtendAddClick: function(style) {

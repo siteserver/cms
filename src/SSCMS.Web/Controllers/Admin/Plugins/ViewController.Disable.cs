@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Plugins;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         [HttpPost, Route(RouteActionsDisable)]
         public async Task<ActionResult<BoolResult>> Disable([FromBody] DisableRequest request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.PluginsManagement))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.PluginsManagement))
             {
                 return Unauthorized();
             }

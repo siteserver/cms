@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
@@ -12,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteExport)]
         public async Task<ActionResult<StringResult>> Export([FromBody] ChannelIdsRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.Channels))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

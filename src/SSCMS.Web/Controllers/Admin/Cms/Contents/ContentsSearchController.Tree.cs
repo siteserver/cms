@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<TreeResult>> Tree([FromBody]TreeRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.ContentsSearch))
+                    MenuUtils.SitePermissions.ContentsSearch))
             {
                 return Unauthorized();
             }
@@ -42,14 +42,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
                 var permissions = new Permissions
                 {
-                    IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Add),
-                    IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Delete),
-                    IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Edit),
-                    IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Arrange),
-                    IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Translate),
-                    IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.CheckLevel1),
-                    IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, Types.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, Types.ContentPermissions.Create),
-                    IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, Types.ChannelPermissions.Edit)
+                    IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Add),
+                    IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Delete),
+                    IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Edit),
+                    IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Arrange),
+                    IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Translate),
+                    IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.CheckLevel1),
+                    IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, MenuUtils.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Create),
+                    IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, MenuUtils.ChannelPermissions.Edit)
                 };
 
                 return new TreeResult

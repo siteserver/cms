@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] SpecialIdRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                Types.SitePermissions.Specials))
+                MenuUtils.SitePermissions.Specials))
             {
                 return Unauthorized();
             }

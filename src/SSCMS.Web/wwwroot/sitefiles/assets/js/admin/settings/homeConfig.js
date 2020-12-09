@@ -1,4 +1,4 @@
-﻿var $url = '/settings/configsHome';
+﻿var $url = '/settings/homeConfig';
 
 var data = utils.init({
   config: null,

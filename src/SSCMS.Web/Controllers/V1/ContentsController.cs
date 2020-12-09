@@ -238,7 +238,7 @@ namespace SSCMS.Web.Controllers.V1
         //        bool isAuth;
         //        if (sourceId == SourceManager.User)
         //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.ChannelPermissions.ContentView);
+        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthMenuUtils.ChannelPermissions.ContentView);
         //        }
         //        else
         //        {
@@ -246,10 +246,10 @@ namespace SSCMS.Web.Controllers.V1
         //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
         //                     request.IsUserLoggin &&
         //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         AuthTypes.ChannelPermissions.ContentView) ||
+        //                         AuthMenuUtils.ChannelPermissions.ContentView) ||
         //                     request.IsAdminLoggin &&
         //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         AuthTypes.ChannelPermissions.ContentView);
+        //                         AuthMenuUtils.ChannelPermissions.ContentView);
         //        }
         //        if (!isAuth) return Unauthorized();
 
@@ -257,7 +257,7 @@ namespace SSCMS.Web.Controllers.V1
         //        if (site == null) return this.Error("无法确定内容对应的站点");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //            AuthTypes.ChannelPermissions.ContentView)) return Unauthorized();
+        //            AuthMenuUtils.ChannelPermissions.ContentView)) return Unauthorized();
 
         //        var tableName = site.TableName;
 
@@ -294,7 +294,7 @@ namespace SSCMS.Web.Controllers.V1
         //        bool isAuth;
         //        if (sourceId == SourceManager.User)
         //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, AuthTypes.ChannelPermissions.ContentView);
+        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, AuthMenuUtils.ChannelPermissions.ContentView);
         //        }
         //        else
         //        {
@@ -302,10 +302,10 @@ namespace SSCMS.Web.Controllers.V1
         //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
         //                     request.IsUserLoggin &&
         //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         AuthTypes.ChannelPermissions.ContentView) ||
+        //                         AuthMenuUtils.ChannelPermissions.ContentView) ||
         //                     request.IsAdminLoggin &&
         //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         AuthTypes.ChannelPermissions.ContentView);
+        //                         AuthMenuUtils.ChannelPermissions.ContentView);
         //        }
         //        if (!isAuth) return Unauthorized();
 
@@ -316,7 +316,7 @@ namespace SSCMS.Web.Controllers.V1
         //        if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
 
         //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-        //            AuthTypes.ChannelPermissions.ContentView)) return Unauthorized();
+        //            AuthMenuUtils.ChannelPermissions.ContentView)) return Unauthorized();
 
         //        var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
 
@@ -354,7 +354,7 @@ namespace SSCMS.Web.Controllers.V1
         //    bool isAuth;
         //    if (sourceId == SourceManager.User)
         //    {
-        //        isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthTypes.ChannelPermissions.ContentView);
+        //        isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthMenuUtils.ChannelPermissions.ContentView);
         //    }
         //    else
         //    {
@@ -362,10 +362,10 @@ namespace SSCMS.Web.Controllers.V1
         //                     DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents) ||
         //                 req.IsUserLoggin &&
         //                 await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     AuthTypes.ChannelPermissions.ContentView) ||
+        //                     AuthMenuUtils.ChannelPermissions.ContentView) ||
         //                 req.IsAdminLoggin &&
         //                 await req.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     AuthTypes.ChannelPermissions.ContentView);
+        //                     AuthMenuUtils.ChannelPermissions.ContentView);
         //    }
         //    if (!isAuth) return Request.Unauthorized<QueryResult>();
 
@@ -373,7 +373,7 @@ namespace SSCMS.Web.Controllers.V1
         //    if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
 
         //    if (!await req.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //        AuthTypes.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
+        //        AuthMenuUtils.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
 
         //    var tableName = site.TableName;
         //    var query = GetQuery(siteId, null, request);

@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] User request)
         {
-            if (!await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsUsers))
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }

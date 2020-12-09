@@ -9,6 +9,8 @@ namespace SSCMS.Utils
     {
         public static string Md5ByFilePath(string filePath)
         {
+            if (!FileUtils.IsFileExists(filePath)) return string.Empty;
+
             using (var md5 = MD5.Create())
             {
                 using (var stream = File.OpenRead(filePath))

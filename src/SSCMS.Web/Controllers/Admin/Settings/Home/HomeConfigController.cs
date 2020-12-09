@@ -7,22 +7,22 @@ using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Settings.Home
 {
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class ConfigsHomeController : ControllerBase
+    public partial class HomeConfigController : ControllerBase
     {
-        private const string Route = "settings/configsHome";
-        private const string RouteUpload = "settings/configsHome/actions/upload";
+        private const string Route = "settings/homeConfig";
+        private const string RouteUpload = "settings/homeConfig/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ConfigsHomeController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository)
+        public HomeConfigController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;

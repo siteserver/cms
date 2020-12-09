@@ -93,53 +93,53 @@
         "type": ["app"],
         "order": 16
       },
+      "app_settings_homeConfig": {
+        "text": "用户中心设置",
+        "type": ["app"],
+        "order": 17
+      },
+      "app_settings_homeMenus": {
+        "text": "用户中心菜单",
+        "type": ["app"],
+        "order": 18
+      },
       "app_settings_analysisAdminLogin": {
         "text": "管理员登录统计",
         "type": ["app"],
-        "order": 17
+        "order": 19
       },
       "app_settings_analysisSiteContent": {
         "text": "站点内容统计",
         "type": ["app"],
-        "order": 18
+        "order": 20
       },
       "app_settings_analysisUser": {
         "text": "用户数据统计",
         "type": ["app"],
-        "order": 19
+        "order": 21
       },
       "app_settings_logsSite": {
         "text": "站点日志",
         "type": ["app"],
-        "order": 20
+        "order": 22
       },
       "app_settings_logsAdmin": {
         "text": "管理员日志",
         "type": ["app"],
-        "order": 21
+        "order": 23
       },
       "app_settings_logsUser": {
         "text": "用户日志",
         "type": ["app"],
-        "order": 22
+        "order": 24
       },
       "app_settings_logsError": {
         "text": "系统错误日志",
         "type": ["app"],
-        "order": 23
+        "order": 25
       },
       "app_settings_logsConfig": {
         "text": "日志设置",
-        "type": ["app"],
-        "order": 24
-      },
-      "app_settings_configsHome": {
-        "text": "用户中心设置",
-        "type": ["app"],
-        "order": 25
-      },
-      "app_settings_configsHomeMenu": {
-        "text": "用户中心菜单",
         "type": ["app"],
         "order": 26
       },
@@ -550,6 +550,8 @@
           "app_settings_userGroup",
           "app_settings_userStyle",
           "app_settings_userConfig",
+          "app_settings_homeConfig",
+          "app_settings_homeMenus",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
@@ -559,8 +561,6 @@
           "app_settings_logError",
           "app_settings_logConfig",
           "app_settings_configAdmin",
-          "app_settings_configHome",
-          "app_settings_configHomeMenu",
           "app_settings_utilityCache",
           "app_settings_utilityParameters",
           "app_settings_utilityEncrypt",
@@ -693,6 +693,35 @@
               }
             }
           },
+          "app_settings_home_all": {
+            "text": "用户中心",
+            "permissions": [
+              "app_settings_homeConfig",
+              "app_settings_homeMenus"
+            ],
+            "iconClass": "ion-home",
+            "order": 5,
+            "menus": {
+              "app_settings_home": {
+                "text": "进入用户中心",
+                "link": "/home/",
+                "target": "_blank",
+                "order": 1
+              },
+              "app_settings_homeConfig": {
+                "text": "用户中心设置",
+                "link": "./settings/homeConfig/",
+                "permissions": ["app_settings_homeConfig"],
+                "order": 2
+              },
+              "app_settings_homeMenus": {
+                "text": "用户中心菜单",
+                "link": "./settings/homeMenus/",
+                "permissions": ["app_settings_homeMenus"],
+                "order": 3
+              }
+            }
+          },
           "app_settings_analysis_all": {
             "text": "统计图表",
             "permissions": [
@@ -701,7 +730,7 @@
               "app_settings_analysisUser"
             ],
             "iconClass": "ion-podium",
-            "order": 5,
+            "order": 6,
             "menus": {
               "app_settings_analysisAdminLogin": {
                 "text": "管理员登录统计",
@@ -733,7 +762,7 @@
               "app_settings_logsConfig"
             ],
             "iconClass": "ion-information-circled",
-            "order": 6,
+            "order": 7,
             "menus": {
               "app_settings_logsSite": {
                 "text": "站点日志",
@@ -764,29 +793,6 @@
                 "link": "./settings/logsConfig/",
                 "permissions": ["app_settings_logsConfig"],
                 "order": 5
-              }
-            }
-          },
-          "app_settings_configs_all": {
-            "text": "系统设置",
-            "permissions": [
-              "app_settings_configsHome",
-              "app_settings_configsHomeMenu"
-            ],
-            "iconClass": "ion-wrench",
-            "order": 7,
-            "menus": {
-              "app_settings_configsHome": {
-                "text": "用户中心设置",
-                "link": "./settings/configsHome/",
-                "permissions": ["app_settings_configsHome"],
-                "order": 1
-              },
-              "app_settings_configsHomeMenu": {
-                "text": "用户中心菜单",
-                "link": "./settings/configsHomeMenu/",
-                "permissions": ["app_settings_configsHomeMenu"],
-                "order": 2
               }
             }
           },

@@ -90,28 +90,31 @@ namespace SSCMS.Core.Repositories
                 Taxis = 3
             });
 
-            //parentId = await InsertAsync(new UserMenu
-            //{
-            //    Text = "投稿中心",
-            //    Taxis = 2
-            //});
+            parentId = await InsertAsync(new UserMenu
+            {
+                Text = "投稿中心",
+                Taxis = 2,
+                IsGroup = true
+            });
 
-            //await InsertAsync(new UserMenu
-            //{
-            //    ParentId = parentId,
-            //    Text = "新增稿件",
-            //    IconClass = "ion-plus",
-            //    Link = "/home/write/editor/",
-            //    Taxis = 1
-            //});
-            //await InsertAsync(new UserMenu
-            //{
-            //    ParentId = parentId,
-            //    Text = "稿件管理",
-            //    IconClass = "ion-document-text",
-            //    Link = "/home/write/contents/",
-            //    Taxis = 2
-            //});
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "新增稿件",
+                IconClass = "ion-plus",
+                Link = "/home/write/select/",
+                Taxis = 1,
+                IsGroup = true
+            });
+            await InsertAsync(new UserMenu
+            {
+                ParentId = parentId,
+                Text = "稿件管理",
+                IconClass = "ion-document-text",
+                Link = "/home/write/contents/",
+                Taxis = 2,
+                IsGroup = true
+            });
         }
     }
 }

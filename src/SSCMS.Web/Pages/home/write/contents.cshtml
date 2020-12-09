@@ -52,12 +52,13 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="栏目" prop="channelId">
+          <el-form-item label="栏目" prop="channelIds">
             <el-cascader
-              ref="channelId"
-              v-model="channelId"
+              ref="channelIds"
+              v-model="channelIds"
               :options="[root]"
               :props="{ multiple: false, checkStrictly: true }"
+              v-on:change="handleChannelIdChange"
               filterable
               placeholder="请选择栏目">
               <span slot-scope="{ node, data }">
@@ -114,7 +115,7 @@
   </el-main>
 </el-container>
 
-<el-container v-if="pageContents">
+<el-container v-if="channelId > 0 && pageContents">
   <el-main>
     <el-divider></el-divider>
     <div style="height: 10px;"></div>

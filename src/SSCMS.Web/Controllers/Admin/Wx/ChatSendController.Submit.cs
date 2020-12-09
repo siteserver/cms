@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                Types.SitePermissions.WxChat))
+                MenuUtils.SitePermissions.WxChat))
             {
                 return Unauthorized();
             }

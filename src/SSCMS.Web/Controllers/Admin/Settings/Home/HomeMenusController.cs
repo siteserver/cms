@@ -7,21 +7,21 @@ using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Settings.Home
 {
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class ConfigsHomeMenuController : ControllerBase
+    public partial class HomeMenusController : ControllerBase
     {
-        private const string Route = "settings/configsHomeMenu";
-        private const string RouteReset = "settings/configsHomeMenu/actions/reset";
+        private const string Route = "settings/homeMenus";
+        private const string RouteReset = "settings/homeMenus/actions/reset";
 
         private readonly IAuthManager _authManager;
         private readonly IUserMenuRepository _userMenuRepository;
         private readonly IUserGroupRepository _userGroupRepository;
 
-        public ConfigsHomeMenuController(IAuthManager authManager, IUserMenuRepository userMenuRepository, IUserGroupRepository userGroupRepository)
+        public HomeMenusController(IAuthManager authManager, IUserMenuRepository userMenuRepository, IUserGroupRepository userGroupRepository)
         {
             _authManager = authManager;
             _userMenuRepository = userMenuRepository;

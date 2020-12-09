@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
@@ -11,7 +10,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.CheckLevel1))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.CheckLevel1))
             {
                 return Unauthorized();
             }
@@ -38,7 +37,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
             var allChannels =
-                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, Types.ContentPermissions.Add);
+                await _channelRepository.GetChannelsAsync(request.SiteId, _authManager, MenuUtils.ContentPermissions.Add);
 
             return new GetResult
             {

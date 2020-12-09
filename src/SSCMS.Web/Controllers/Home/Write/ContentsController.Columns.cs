@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public async Task<ActionResult<BoolResult>> Columns([FromBody] ColumnsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents))
+                    MenuUtils.SitePermissions.Contents))
             {
                 return Unauthorized();
             }

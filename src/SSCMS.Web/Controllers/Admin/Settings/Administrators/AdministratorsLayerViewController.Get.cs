@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Core.Services;
 using SSCMS.Models;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var adminId = _authManager.AdminId;
             if (adminId != admin.Id &&
-                !await _authManager.HasAppPermissionsAsync(Types.AppPermissions.SettingsAdministrators))
+                !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

@@ -181,7 +181,7 @@ namespace SSCMS.Core.Services
             {
                 appPermissions = new List<string>
                 {
-                    Types.AppPermissions.SettingsAdministrators
+                    MenuUtils.AppPermissions.SettingsAdministrators
                 };
             }
             else

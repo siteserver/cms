@@ -24,20 +24,17 @@ var data = utils.init({
   checkedColumns: [],
 
   siteId: 0,
-  channelId: null
+  channelIds: []
 });
 
 var methods = {
-  apiTree: function() {
+  apiGet: function() {
     var $this = this;
 
-    $api.post($url + '/actions/tree', {
-      siteId: this.siteId,
-      reload: false
-    }).then(function(response) {
+    $api.get($url).then(function(response) {
       var res = response.data;
 
-      if (!res.siteId) {
+      if (res.unauthorized) {
         $this.pageType = 'Unauthorized';
         utils.loading($this, false);
         return;
@@ -53,14 +50,14 @@ var methods = {
 
       $this.allCheckedLevels = res.checkedLevels;
       $this.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
-      $this.apiList($this.siteId, 1);
+      $this.apiList(1);
     }).catch(function(error) {
       utils.loading($this, false);
       utils.error(error);
     });
   },
 
-  apiList: function(useless, page, message) {
+  apiList: function(page) {
     var $this = this;
 
     utils.loading(this, true);
@@ -77,10 +74,6 @@ var methods = {
       $this.total = res.total;
       $this.pageSize = res.pageSize;
       $this.page = page;
-
-      if (message) {
-        utils.success(message);
-      }
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {
@@ -115,7 +108,7 @@ var methods = {
     if (content.checked && content.channelId > 0) return false;
     utils.openLayer({
       title: "查看内容",
-      url: utils.getCmsUrl('contentsLayerView', {
+      url: utils.getRootUrl('write/contentsLayerView', {
         siteId: this.siteId,
         channelId: Math.abs(content.channelId),
         contentId: content.id
@@ -197,7 +190,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
+      utils.addTab('生成进度查看', utils.getRootUrl('write/createStatus', {siteId: $this.siteId}));
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {
@@ -225,16 +218,16 @@ var methods = {
       query.channelContentIds = this.channelContentIdsString;
     }
 
-    options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+    options.url = utils.getRootUrl('write/contentsLayer' + options.name, query);
     utils.openLayer(options);
   },
 
   btnContentViewClick: function(contentId) {
     utils.openLayer({
       title: "查看内容",
-      url: utils.getCmsUrl('contentsLayerView', {
+      url: utils.getRootUrl('write/contentsLayerView', {
         siteId: this.siteId,
-        channelId: this.siteId,
+        channelId: this.channelId,
         contentId: contentId
       }),
       full: true
@@ -244,9 +237,9 @@ var methods = {
   btnContentStateClick: function(contentId) {
     utils.openLayer({
       title: "查看审核状态",
-      url: utils.getCmsUrl('contentsLayerState', {
+      url: utils.getRootUrl('write/contentsLayerState', {
         siteId: this.siteId,
-        channelId: this.siteId,
+        channelId: this.channelId,
         contentId: contentId
       }),
       full: true
@@ -272,8 +265,12 @@ var methods = {
     this.$refs.multipleTable.toggleRowSelection(row);
   },
 
+  handleChannelIdChange: function() {
+    this.apiList(1);
+  },
+
   handleCurrentChange: function(val) {
-    this.apiList(this.siteId, val);
+    this.apiList(val);
   },
 
   handleColumnsChange: function() {
@@ -313,6 +310,10 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   computed: {
+    channelId: function() {
+      return this.channelIds.length === 0 ? 0 : this.channelIds[this.channelIds.length - 1];
+    },
+    
     isCheckedLevels: function() {
       if (this.checkedLevels.length !== this.checkedLevels.length) return true;
       return false;
@@ -344,6 +345,6 @@ var $vue = new Vue({
     }
   },
   created: function() {
-    this.apiTree();
+    this.apiGet();
   }
 });

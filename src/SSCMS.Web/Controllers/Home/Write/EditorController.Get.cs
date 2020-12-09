@@ -14,19 +14,18 @@ namespace SSCMS.Web.Controllers.Home.Write
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    Types.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Add) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, Types.ContentPermissions.Edit))
+            var siteIds = await _authManager.GetSiteIdsAsync();
+
+            if (siteIds.Count == 0)
             {
-                return Unauthorized();
+                return new GetResult
+                {
+                    Unauthorized = true
+                };
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
-
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
 
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(site.Id);
             var tagNames = await _contentTagRepository.GetTagNamesAsync(site.Id);
@@ -64,6 +63,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             return new GetResult
             {
+                Unauthorized = false,
                 Content = content,
                 Site = site,
                 Channel = channel,

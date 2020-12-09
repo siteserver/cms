@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpPost, Route(RouteActionsStar)]
         public async Task<ActionResult<BoolResult>> Star([FromBody] StarRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, Types.SitePermissions.WxChat))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.WxChat))
             {
                 return Unauthorized();
             }
