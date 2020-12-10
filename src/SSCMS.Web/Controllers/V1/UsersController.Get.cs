@@ -12,12 +12,17 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteUser)]
         public async Task<ActionResult<User>> Get([FromRoute] int id)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers))
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers) &&
+                !(_authManager.IsUser && (id == 0 || id == _authManager.UserId)))
             {
                 return Unauthorized();
             }
 
-            if (!await _userRepository.IsExistsAsync(id)) return NotFound();
+            if (_authManager.IsUser && id == 0)
+            {
+                id = _authManager.UserId;
+            }
+            else if (!await _userRepository.IsExistsAsync(id)) return NotFound();
 
             var user = await _userRepository.GetByUserIdAsync(id);
 
