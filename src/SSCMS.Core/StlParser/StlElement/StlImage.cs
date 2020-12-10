@@ -225,13 +225,14 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                     else
                     {
-                        if (no > 1)
+                        if (no <= 1)
                         {
-                            picUrl = channel.Get<string>(type + (no - 1).ToString());
+                            picUrl = channel.Get<string>(type);
                         }
                         else
                         {
-                            picUrl = channel.Get<string>(type);
+                            var extendName = ColumnsManager.GetExtendName(type, no - 1);
+                            picUrl = channel.Get<string>(extendName);
                         }
                     }
                 }
