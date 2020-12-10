@@ -17,6 +17,8 @@ namespace SSCMS.Web.Controllers.V1
                 return Unauthorized();
             }
 
+            request.InitialParameters();
+
             var stlRequest = new StlRequest();
             await stlRequest.LoadAsync(_authManager, _pathManager, _configRepository, _siteRepository, request);
 
@@ -26,6 +28,9 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return NotFound();
             }
+
+            _parseManager.ContextInfo = stlRequest.ContextInfo;
+            _parseManager.PageInfo = stlRequest.PageInfo;
 
             elementName = $"stl:{StringUtils.ToLower(elementName)}";
 
