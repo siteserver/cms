@@ -62,10 +62,6 @@
             <el-checkbox-group v-model="form.groupNames">
               <el-checkbox v-for="groupName in groupNames" :key="groupName" :label="groupName" :value="groupName" name="groupNames"></el-checkbox>
             </el-checkbox-group>
-            <div style="height: 5px"></div>
-            <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnGroupAddClick">
-              新增内容组
-            </el-button>
           </el-collapse-item>
           <el-collapse-item title="标签" name="tagNames">
             <el-select

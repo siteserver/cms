@@ -13,6 +13,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
+            var siteIds = await _authManager.GetSiteIdsAsync();
+            if (!ListUtils.Contains(siteIds, request.SiteId)) return Unauthorized();
+
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             if (file == null)

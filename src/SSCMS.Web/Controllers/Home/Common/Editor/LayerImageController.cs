@@ -17,11 +17,13 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         private const string Route = "common/editor/layerImage";
         private const string RouteUpload = "common/editor/layerImage/actions/upload";
 
+        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerImageController(IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerImageController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
+            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }

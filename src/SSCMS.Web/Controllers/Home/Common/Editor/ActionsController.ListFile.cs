@@ -14,6 +14,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         [HttpGet, Route(RouteActionsListFile)]
         public async Task<ActionResult<ListFileResult>> ListFile([FromQuery] ListFileRequest request)
         {
+            var siteIds = await _authManager.GetSiteIdsAsync();
+            if (!ListUtils.Contains(siteIds, request.SiteId)) return Unauthorized();
+
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             var directoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.File);

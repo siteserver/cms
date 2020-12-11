@@ -5,6 +5,7 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Home.Common.Editor
 {
@@ -16,11 +17,13 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         private const string RouteId = "common/editor/layerArticle/{id}";
         private const string RouteList = "common/editor/layerArticle/list";
 
+        private readonly IAuthManager _authManager;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialArticleRepository _materialArticleRepository;
 
-        public LayerArticleController(IMaterialGroupRepository materialGroupRepository, IMaterialArticleRepository materialArticleRepository)
+        public LayerArticleController(IAuthManager authManager, IMaterialGroupRepository materialGroupRepository, IMaterialArticleRepository materialArticleRepository)
         {
+            _authManager = authManager;
             _materialGroupRepository = materialGroupRepository;
             _materialArticleRepository = materialArticleRepository;
         }

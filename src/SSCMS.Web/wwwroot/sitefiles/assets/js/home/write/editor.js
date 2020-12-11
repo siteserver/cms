@@ -10,7 +10,6 @@ var data = utils.init({
   mainHeight: '',
   sideType: 'first',
   collapseSettings: ['checkedLevel', 'addDate'],
-  collapseMore: ['translations'],
   isSettings: true,
 
   site: null,
@@ -23,18 +22,40 @@ var data = utils.init({
   channelOptions: null,
   styles: null,
   form: null,
-
-  translations: [],
   isPreviewSaving: false
 });
 
 var methods = {
-  insertEditor: function(attributeName, html)
-  {
-    if (html)
-    {
-      UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
-    }
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
   },
 
   insertText: function(attributeName, no, text) {
@@ -46,13 +67,10 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
-  addTranslation: function(transSiteId, transChannelId, transType, name) {
-    this.translations.push({
-      transSiteId: transSiteId,
-      transChannelId: transChannelId,
-      transType: transType,
-      name: name
-    });
+  insertEditor: function(attributeName, html) {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
   },
 
   updateGroups: function(res, message) {
@@ -100,8 +118,7 @@ var methods = {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
-      content: this.form,
-      translations: this.translations
+      content: this.form
     }).then(function(response) {
       var res = response.data;
 
@@ -123,8 +140,7 @@ var methods = {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
-      content: this.form,
-      translations: this.translations
+      content: this.form
     }).then(function(response) {
       var res = response.data;
 
@@ -175,8 +191,9 @@ var methods = {
 
     this.styles = res.styles;
     this.form = _.assign({}, res.content);
-    if (this.form.checked) {
-      //this.form.checkedLevel = this.site.checkContentLevel;
+    
+    if (this.form.id === 0) {
+      this.form.checkedLevel = -99;
     }
     if (this.form.top || this.form.recommend || this.form.hot || this.form.color) {
       this.collapseSettings.push('attributes');
@@ -259,12 +276,6 @@ var methods = {
     });
   },
 
-  handleTranslationClose: function(name) {
-    this.translations = _.remove(this.translations, function(n) {
-      return name !== n.name;
-    });
-  },
-
   btnSaveClick: function() {
     if (UE) {
       $.each(UE.instants, function (index, editor) {
@@ -277,27 +288,6 @@ var methods = {
     } else {
       this.apiUpdate();
     }
-  },
-
-  btnGroupAddClick: function() {
-    utils.openLayer({
-      title: '新增内容组',
-      url: utils.getCommonUrl('groupContentLayerAdd', {siteId: this.siteId}),
-      width: 500,
-      height: 300
-    });
-  },
-
-  btnTranslateAddClick: function() {
-    utils.openLayer({
-      title: "选择转移栏目",
-      url: utils.getCmsUrl('editorLayerTranslate', {
-        siteId: this.siteId,
-        channelId: this.channelId
-      }),
-      width: 550,
-      height: 400
-    });
   },
 
   btnPreviewClick: function() {
@@ -349,11 +339,11 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
-  btnExtendPreviewClick: function(style, no) {
-    var count = this.form[utils.getCountName(style.attributeName)];
+  btnExtendPreviewClick: function(attributeName, no) {
+    var count = this.form[utils.getCountName(attributeName)];
     var data = [];
     for (var i = 0; i <= count; i++) {
-      var imageUrl = this.form[utils.getExtendName(style.attributeName, i)];
+      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
       imageUrl = utils.getUrl(this.siteUrl, imageUrl);
       data.push({
         "src": imageUrl

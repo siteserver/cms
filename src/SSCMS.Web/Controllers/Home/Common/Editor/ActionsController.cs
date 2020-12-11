@@ -20,11 +20,13 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         private const string RouteActionsUploadVideo = "common/editor/actions/uploadVideo";
         private const string RouteActionsUploadScrawl = "common/editor/actions/uploadScrawl";
 
+        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public ActionsController(IPathManager pathManager, ISiteRepository siteRepository)
+        public ActionsController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
+            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }

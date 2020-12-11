@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using SSCMS.Repositories;
 
@@ -65,9 +66,9 @@ namespace SSCMS.Services
 
         int GetCount(string tableName);
 
-        IEnumerable<dynamic> GetObjects(string tableName);
+        Task<List<IDictionary<string, object>>> GetObjectsAsync(string tableName);
 
-        IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit);
+        Task<List<IDictionary<string, object>>> GetPageObjectsAsync(string tableName, string identityColumnName, int offset, int limit);
 
         string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString,
             int offset, int limit);

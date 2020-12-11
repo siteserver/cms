@@ -114,9 +114,8 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
-
-            await DataBackupJob.Backup(_settingsManager.Database, _databaseManager, _includes, _excludes, _maxRows, treeInfo);
+            var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
+            await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo, errorLogFilePath);
 
             var restoreConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _to);
             if (!FileUtils.IsFileExists(restoreConfigPath))
