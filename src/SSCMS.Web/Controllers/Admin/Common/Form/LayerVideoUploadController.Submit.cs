@@ -53,7 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 });
             }
 
-            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerVideoUploadController)), new Options
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(Home.Common.Form.LayerVideoUploadController)), new Options
             {
                 IsChangeFileName = true,
                 IsLibrary = true
@@ -61,7 +61,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
             options.IsChangeFileName = request.IsChangeFileName;
             options.IsLibrary = request.IsLibrary;
-            site.Set(nameof(LayerVideoUploadController), TranslateUtils.JsonSerialize(options));
+            site.Set(nameof(Home.Common.Form.LayerVideoUploadController), TranslateUtils.JsonSerialize(options));
 
             await _siteRepository.UpdateAsync(site);
 

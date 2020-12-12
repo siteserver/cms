@@ -21,9 +21,9 @@ namespace SSCMS.Web.Controllers.Home.Write
             }
 
             var sites = new List<Select<int>>();
-            foreach (var siteId in siteIds)
+            foreach (var id in siteIds)
             {
-                var permissionSite = await _siteRepository.GetAsync(siteId);
+                var permissionSite = await _siteRepository.GetAsync(id);
                 sites.Add(new Select<int>
                 {
                     Value = permissionSite.Id,
@@ -31,15 +31,26 @@ namespace SSCMS.Web.Controllers.Home.Write
                 });
             }
 
-            var site = await _siteRepository.GetAsync(siteIds[0]);
+            var siteId = siteIds[0];
+            var site = await _siteRepository.GetAsync(siteId);
 
-            var channel = await _channelRepository.GetAsync(site.Id);
+            var channel = await _channelRepository.GetAsync(siteId);
+
+            var enabledChannelIds = await _authManager.GetChannelIdsAsync(site.Id);
+            var visibleChannelIds = await _authManager.GetVisibleChannelIdsAsync(enabledChannelIds);
+
             var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await _contentRepository.GetCountAsync(site, summary);
+                var visible = visibleChannelIds.Contains(summary.Id);
+                var disabled = !enabledChannelIds.Contains(summary.Id);
+                var current = await _contentRepository.GetSummariesAsync(site, summary);
+
+                if (!visible) return null;
+
                 return new
                 {
-                    Count = count
+                    current.Count,
+                    Disabled = disabled
                 };
             });
 

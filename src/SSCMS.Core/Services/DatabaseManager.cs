@@ -417,27 +417,29 @@ SELECT * FROM (
             //return GetIntResult();
         }
 
-        public IEnumerable<dynamic> GetObjects(string tableName)
+        public async Task<List<IDictionary<string, object>>> GetObjectsAsync(string tableName)
         {
-            IEnumerable<dynamic> objects;
+            List<IDictionary<string, object>> objects;
             var sqlString = $"select * from {tableName}";
 
-            using (var connection = _settingsManager.Database.GetConnection())
+            await using (var connection = _settingsManager.Database.GetConnection())
             {
-                objects = connection.Query(sqlString, null, null, false).ToList();
+                objects = (from row in await connection.QueryAsync(sqlString)
+                    select (IDictionary<string, object>) row).AsList();
             }
 
             return objects;
         }
 
-        public IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit)
+        public async Task<List<IDictionary<string, object>>> GetPageObjectsAsync(string tableName, string identityColumnName, int offset, int limit)
         {
-            IEnumerable<dynamic> objects;
+            List<IDictionary<string, object>> objects;
             var sqlString = GetPageSqlString(tableName, "*", string.Empty, $"ORDER BY {identityColumnName} ASC", offset, limit);
 
-            using (var connection = _settingsManager.Database.GetConnection())
+            await using (var connection = _settingsManager.Database.GetConnection())
             {
-                objects = connection.Query(sqlString, null, null, false).ToList();
+                objects = (from row in await connection.QueryAsync(sqlString)
+                    select (IDictionary<string, object>)row).AsList();
             }
 
             return objects;

@@ -12,6 +12,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<NameTitle>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
+            var siteIds = await _authManager.GetSiteIdsAsync();
+            if (!ListUtils.Contains(siteIds, request.SiteId)) return Unauthorized();
+
             if (file == null)
             {
                 return this.Error("请选择有效的文件上传");

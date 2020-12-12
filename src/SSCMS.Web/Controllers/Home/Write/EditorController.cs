@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
-using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -79,20 +78,12 @@ namespace SSCMS.Web.Controllers.Home.Write
             public string Url { get; set; }
         }
 
-        public class Translation
-        {
-            public int TransSiteId { get; set; }
-            public int TransChannelId { get; set; }
-            public TranslateType TransType { get; set; }
-        }
-
         public class SaveRequest
         {
             public int SiteId { get; set; }
             public int ChannelId { get; set; }
             public int ContentId { get; set; }
             public Content Content { get; set; }
-            public List<Translation> Translations { get; set; }
         }
     }
 }

@@ -17,11 +17,13 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         private const string Route = "common/editor/layerWord";
         private const string RouteUpload = "common/editor/layerWord/actions/upload";
 
+        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerWordController(IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerWordController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
+            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }

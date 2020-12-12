@@ -90,7 +90,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 }
             }
 
-            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageUploadController)), new Options
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(Home.Common.Form.LayerImageUploadController)), new Options
             {
                 IsEditor = true,
                 IsLibrary = true,
@@ -106,7 +106,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             options.ThumbWidth = request.ThumbWidth;
             options.ThumbHeight = request.ThumbHeight;
             options.IsLinkToOriginal = request.IsLinkToOriginal;
-            site.Set(nameof(LayerImageUploadController), TranslateUtils.JsonSerialize(options));
+            site.Set(nameof(Home.Common.Form.LayerImageUploadController), TranslateUtils.JsonSerialize(options));
 
             await _siteRepository.UpdateAsync(site);
 

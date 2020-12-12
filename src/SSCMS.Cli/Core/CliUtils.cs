@@ -24,7 +24,7 @@ namespace SSCMS.Cli.Core
             }
         }
 
-        public static string CreateErrorLogFile(string commandName, ISettingsManager settingsManager)
+        public static string DeleteErrorLogFileIfExists(string commandName, ISettingsManager settingsManager)
         {
             var filePath = PathUtils.Combine(settingsManager.ContentRootPath, $"{commandName}.error.log");
             FileUtils.DeleteFileIfExists(filePath);
@@ -88,11 +88,6 @@ namespace SSCMS.Cli.Core
         public static string GetOsUserPluginsDirectoryPath(params string[] paths)
         {
             return PathUtils.GetOsUserProfileDirectoryPath("plugins", PageUtils.Combine(paths));
-        }
-
-        public static string GetOsUserTempDirectoryPath(params string[] paths)
-        {
-            return PathUtils.GetOsUserProfileDirectoryPath("temp", PageUtils.Combine(paths));
         }
     }
 }

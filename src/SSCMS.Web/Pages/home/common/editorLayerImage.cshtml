@@ -1,0 +1,49 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+
+<el-upload
+  :action="uploadUrl"
+  :headers="{Authorization: 'Bearer ' + $token}"
+  list-type="picture-card"
+  :before-upload="uploadBefore"
+  :on-preview="uploadPictureCardPreview"
+  :on-progress="uploadProgress"
+  :on-success="uploadSuccess"
+  :on-error="uploadError"
+  :on-remove="uploadRemove"
+  :multiple="true">
+  <i class="el-icon-plus"></i>
+</el-upload>
+
+<el-dialog :visible.sync="dialogVisible">
+  <img width="100%" :src="dialogImageUrl" alt="">
+</el-dialog>
+
+<div style="height: 10px"></div>
+
+<el-form ref="form" :model="form" size="small">
+  <el-form-item>
+    <el-checkbox label="生成缩略图" v-model="form.isThumb"></el-checkbox>
+  </el-form-item>
+  <el-form-item v-if="form.isThumb" label="缩略图最大宽度">
+    <el-input  v-model="form.thumbWidth"></el-input>
+  </el-form-item>
+  <el-form-item v-if="form.isThumb" label="缩略图最大高度">
+    <el-input  v-model="form.thumbHeight"></el-input>
+  </el-form-item>
+  <el-form-item v-if="form.isThumb">
+    <el-checkbox label="点击缩略图显示原图" v-model="form.isLinkToOriginal"></el-checkbox>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/common/editorLayerImage.js" type="text/javascript"></script>
+}

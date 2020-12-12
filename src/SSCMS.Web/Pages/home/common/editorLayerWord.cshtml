@@ -1,0 +1,47 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+  </style>
+}
+
+<el-upload
+  drag
+  :action="uploadUrl"
+  :auto-upload="true"
+  :headers="{Authorization: 'Bearer ' + $token}"
+  :file-list="uploadList"
+  :before-upload="uploadBefore"
+  :on-progress="uploadProgress"
+  :on-success="uploadSuccess"
+  :on-error="uploadError"
+  :on-remove="uploadRemove"
+  :multiple="true">
+  <i class="el-icon-upload"></i>
+  <div class="el-upload__text">将Word文件拖到此处，或<em>点击上传</em></div>
+</el-upload>
+
+<div style="height: 10px"></div>
+
+<el-form ref="form" :model="form" label-width="120px" size="small">
+  <el-form-item label="导入设置">
+    <el-checkbox label="清除格式" v-model="form.isClearFormat"></el-checkbox>
+    <el-checkbox label="首行缩进" v-model="form.isFirstLineIndent"></el-checkbox>
+    <el-checkbox label="清除字号" v-model="form.isClearFontSize"></el-checkbox>
+    <el-checkbox label="清除字体" v-model="form.isClearFontFamily"></el-checkbox>
+    <el-checkbox label="清除图片" v-model="form.isClearImages"></el-checkbox>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/common/editorLayerWord.js" type="text/javascript"></script>
+}

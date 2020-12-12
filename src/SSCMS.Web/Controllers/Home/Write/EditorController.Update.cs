@@ -58,14 +58,6 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             await _contentRepository.UpdateAsync(site, channel, content);
 
-            if (request.Translations != null && request.Translations.Count > 0)
-            {
-                foreach (var translation in request.Translations)
-                {
-                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, content.ChannelId, content.Id, translation.TransSiteId, translation.TransChannelId, translation.TransType, _createManager, _authManager.AdminId);
-                }
-            }
-
             await _createManager.CreateContentAsync(request.SiteId, channel.Id, content.Id);
             await _createManager.TriggerContentChangedEventAsync(request.SiteId, channel.Id);
 

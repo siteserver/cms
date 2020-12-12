@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerFileUploadController)), new Options
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(Home.Common.Form.LayerFileUploadController)), new Options
             {
                 IsChangeFileName = true,
                 IsLibrary = true,

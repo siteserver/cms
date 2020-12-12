@@ -11,6 +11,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
         [HttpGet, Route(RouteActionsConfig)]
         public async Task<ActionResult<ConfigResult>> GetConfig([FromQuery]SiteRequest request)
         {
+            var siteIds = await _authManager.GetSiteIdsAsync();
+            if (!ListUtils.Contains(siteIds, request.SiteId)) return Unauthorized();
+
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             return new ConfigResult

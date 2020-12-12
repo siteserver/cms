@@ -24,16 +24,12 @@ namespace SSCMS.Cli.Jobs
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
-        private readonly IConfigRepository _configRepository;
-        private readonly IDatabaseManager _databaseManager;
         private readonly IDataRestoreService _restoreService;
         private readonly OptionSet _options;
 
-        public DataRestoreJob(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager, IDataRestoreService restoreService)
+        public DataRestoreJob(ISettingsManager settingsManager, IDataRestoreService restoreService)
         {
             _settingsManager = settingsManager;
-            _configRepository = configRepository;
-            _databaseManager = databaseManager;
             _restoreService = restoreService;
 
             _options = new OptionSet {
@@ -147,7 +143,7 @@ namespace SSCMS.Cli.Jobs
             await WriteUtils.PrintRowAsync("Restore table name", "Count");
             await WriteUtils.PrintRowLineAsync();
 
-            var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName, _settingsManager);
+            var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
 
             await _restoreService.RestoreAsync(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
 
