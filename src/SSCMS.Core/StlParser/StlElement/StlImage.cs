@@ -37,6 +37,9 @@ namespace SSCMS.Core.StlParser.StlElement
 	    [StlAttribute(Title = "显示字段存储的第几幅图片，默认为 1")]
 	    private const string No = nameof(No);
 
+        [StlAttribute(Title = "是否清除 HTML 标签")]
+        private const string IsClearTags = nameof(IsClearTags);
+
         [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
         private const string IsOriginal = nameof(IsOriginal);
         
@@ -55,6 +58,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var topLevel = -1;
             var type = nameof(Content.ImageUrl);
 		    var no = 0;
+            var isClearTags = false;
             var isOriginal = false;
             var src = string.Empty;
             var altSrc = string.Empty;
@@ -112,6 +116,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     no = TranslateUtils.ToInt(value);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsClearTags))
+                {
+                    isClearTags = TranslateUtils.ToBool(value, true);
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, IsOriginal))
                 {
                     isOriginal = TranslateUtils.ToBool(value, true);
@@ -130,10 +138,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, attributes, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, src, altSrc);
+            return await ParseImplAsync(parseManager, attributes, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, isClearTags, src, altSrc);
 		}
 
-        private static async Task<object> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, string src, string altSrc)
+        private static async Task<object> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, bool isClearTags, string src, string altSrc)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -211,7 +219,22 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     var channel = await databaseManager.ChannelRepository.GetAsync(channelId);
 
-                    picUrl = channel.ImageUrl;
+                    if (type == nameof(Content.ImageUrl))
+                    {
+                        picUrl = channel.ImageUrl;
+                    }
+                    else
+                    {
+                        if (no <= 1)
+                        {
+                            picUrl = channel.Get<string>(type);
+                        }
+                        else
+                        {
+                            var extendName = ColumnsManager.GetExtendName(type, no - 1);
+                            picUrl = channel.Get<string>(extendName);
+                        }
+                    }
                 }
                 else if (contextType == ParseType.Each)
                 {
@@ -237,8 +260,12 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    attributes["src"] = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, picUrl, pageInfo.IsLocal);
-                    parsedContent = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
+                    parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, picUrl, pageInfo.IsLocal);
+                    if (!isClearTags)
+                    {
+                        attributes["src"] = (string)parsedContent;
+                        parsedContent = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
+                    }
                 }
             }
 

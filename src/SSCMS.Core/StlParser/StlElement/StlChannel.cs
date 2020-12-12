@@ -269,7 +269,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 type = nameof(StlParserUtility.Title);
             }
-            type = StringUtils.ToLower(type);
+            //type = StringUtils.ToLower(type);
 
             var parsedContent = string.Empty;
 
