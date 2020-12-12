@@ -1,0 +1,47 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
+      margin-bottom: 10px;
+    }
+  </style>
+}
+
+<el-form label-width="120px" size="mini">
+  <el-form-item label="内容标题">
+    <el-link type="primary" :underline="false" style="top: -2px" :href="getContentUrl(content)" v-html="content.title" target="_blank" v-on:click.stop.native></el-link>
+  </el-form-item>
+  <el-form-item label="审核状态">
+    <el-link size="mini" :underline="false" style="top: -2px" :type="(content.checked ? 'primary' : 'danger')">
+      {{ state }}
+    </el-link>
+  </el-form-item>
+  <el-form-item label="审核记录">
+    <el-table
+      :data="contentChecks"
+      style="width: 100%;"
+      size="small"
+      row-key="id"
+      stripe>
+      <el-table-column prop="userName" label="审核人" width="150">
+        <template slot-scope="scope">
+          <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column prop="state" label="状态" width="150"></el-table-column>
+      <el-table-column prop="checkDate" label="审核时间" width="150"></el-table-column>
+      <el-table-column prop="reasons" label="审核原因"></el-table-column>
+    </el-table>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/write/contentsLayerState.js" type="text/javascript"></script> }

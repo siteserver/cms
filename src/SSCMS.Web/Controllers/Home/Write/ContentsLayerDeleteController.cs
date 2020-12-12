@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -14,7 +15,7 @@ namespace SSCMS.Web.Controllers.Home.Write
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerDeleteController : ControllerBase
     {
-        private const string Route = "contentsLayerDelete";
+        private const string Route = "write/contentsLayerDelete";
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
@@ -33,18 +34,17 @@ namespace SSCMS.Web.Controllers.Home.Write
 
         public class GetRequest : ChannelRequest
         {
-            public List<int> ContentIds { get; set; }
+            public string ChannelContentIds { get; set; }
         }
 
         public class GetResult
         {
-            public List<IDictionary<string, object>> Value { get; set; }
+            public IEnumerable<Content> Contents { get; set; }
         }
 
         public class SubmitRequest : ChannelRequest
         {
-            public List<int> ContentIds { get; set; }
-            public bool IsRetainFiles { get; set; }
+            public string ChannelContentIds { get; set; }
         }
     }
 }

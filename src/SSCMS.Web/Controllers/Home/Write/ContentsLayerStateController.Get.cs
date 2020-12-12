@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.View))
+            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Add))
             {
                 return Unauthorized();
             }
@@ -21,19 +21,20 @@ namespace SSCMS.Web.Controllers.Home.Write
             if (channel == null) return NotFound();
 
             var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
-            if (content == null) return NotFound();
+            if (content == null || content.UserId != _authManager.UserId) return NotFound();
 
-            var title = content.Title;
-            var checkState = CheckManager.GetCheckState(site, content);
-
-            var contentChecks =
-                await _contentCheckRepository.GetCheckListAsync(content.SiteId, content.ChannelId, request.ContentId);
+            var contentChecks = await _contentCheckRepository.GetCheckListAsync(content.SiteId, content.ChannelId, request.ContentId);
+            contentChecks.ForEach(async x =>
+            {
+                x.Set("State", CheckManager.GetCheckState(site, x.Checked, x.CheckedLevel));
+                x.Set("AdminName", await _administratorRepository.GetDisplayAsync(x.AdminId));
+            });
 
             return new GetResult
             {
                 ContentChecks = contentChecks,
-                Title = title,
-                CheckState = checkState
+                Content = content,
+                State = CheckManager.GetCheckState(site, content)
             };
         }
     }

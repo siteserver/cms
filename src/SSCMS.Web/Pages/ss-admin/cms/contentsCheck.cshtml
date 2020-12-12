@@ -443,7 +443,7 @@
         show-overflow-tooltip
         label="状态">
         <template slot-scope="scope">
-          <el-link size="mini" :underline="false" v-on:click.stop.native="btnContentStateClick(scope.row.id)" :type="(scope.row.checked ? 'primary' : 'danger')">
+          <el-link size="mini" :underline="false" v-on:click.stop.native="btnContentStateClick(scope.row)" :type="(scope.row.checked ? 'primary' : 'danger')">
             {{ scope.row.state }}
           </el-link>
         </template>

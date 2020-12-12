@@ -103,6 +103,7 @@ namespace SSCMS.Core.Repositories
             var query = Q
                 .Select(nameof(Content.ChannelId), nameof(Content.Id))
                 .Where(nameof(Content.SiteId), site.Id)
+                .Where(nameof(Content.ChannelId), ">", 0)
                 .Where(nameof(Content.UserId), userId)
                 .WhereNot(nameof(Content.SourceId), SourceManager.Preview);
 

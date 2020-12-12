@@ -10,12 +10,12 @@ var data = utils.init({
   allCheckedLevels: [],
   checkedLevels: [],
   
+  isAdd: null,
   pageContents: null,
   total: null,
   pageSize: null,
   page: 1,
   columns: null,
-  permissions: null,
   menus: null,
   
   tableMaxHeight: 999999999999,
@@ -24,7 +24,10 @@ var data = utils.init({
   checkedColumns: [],
 
   siteId: 0,
-  channelIds: []
+  channelIds: [],
+  permissions: {
+    isEdit: true
+  }
 });
 
 var methods = {
@@ -46,7 +49,6 @@ var methods = {
       $this.siteUrl = res.siteUrl;
       $this.root = res.root;
       $this.columns = res.columns;
-      $this.permissions = res.permissions;
 
       $this.allCheckedLevels = res.checkedLevels;
       $this.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
@@ -70,6 +72,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
       
+      $this.isAdd = res.isAdd;
       $this.pageContents = res.pageContents;
       $this.total = res.total;
       $this.pageSize = res.pageSize;
@@ -102,6 +105,10 @@ var methods = {
       channelId: content.channelId,
       contentId: content.id
     });
+  },
+
+  btnSearchClick: function() {
+    this.apiList(1);
   },
 
   btnTitleClick: function(content) {
@@ -144,7 +151,8 @@ var methods = {
       siteId: this.siteId,
       channelId: content.channelId,
       contentId: content.id,
-      page: this.page
+      page: this.page,
+      tabName: utils.getTabName()
     });
   },
 
@@ -152,66 +160,12 @@ var methods = {
     utils.addTab('添加内容', this.getAddUrl());
   },
 
-  btnImportClick: function (command) {
-    if (command === 'Word') {
-      this.btnLayerClick({title: '批量导入Word', name: 'Word', full: true});
-    } else if (command === 'Import') {
-      this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
-    }
-  },
-
-  btnMoreClick: function(command) {
-    if (command === 'Group') {
-      this.btnLayerClick({title: '批量设置分组', name: 'Group', width: 700, height: 400, withContents: true});
-    } else if (command === 'Tag') {
-      this.btnLayerClick({title: '批量设置标签', name: 'Tag', width: 700, height: 400, withContents: true});
-    } else if (command === 'Copy') {
-      this.btnLayerClick({title: '批量复制', name: 'Copy', withContents: true});
-    } else if (command === 'ExportAll') {
-      this.btnLayerClick({title: '导出全部', name: 'Export', full: true});
-    } else if (command === 'ExportSelected') {
-      this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
-    } else if (command === 'Arrange') {
-      this.btnLayerClick({title: '整理排序', name: 'Arrange', width: 550, height: 350});
-    } else if (command === 'Hits') {
-      this.btnLayerClick({title: '设置点击量', name: 'Hits', width: 450, height: 320, withContents: true});
-    }
-  },
-
-  btnCreateClick: function() {
-    var $this = this;
-
-    if (!this.isContentChecked) return;
-
-    utils.loading(this, true);
-    $api.post($url + "/actions/create", {
-      siteId: $this.siteId,
-      channelContentIds: this.channelContentIdsString
-    }).then(function(response) {
-      var res = response.data;
-
-      utils.addTab('生成进度查看', utils.getRootUrl('write/createStatus', {siteId: $this.siteId}));
-    }).catch(function(error) {
-      utils.error(error);
-    }).then(function() {
-      utils.loading($this, false);
-    });
-  },
-
   btnLayerClick: function(options) {
     var query = {
       siteId: this.siteId, 
+      channelId: this.channelId,
       page: this.page
     };
-
-    if (options.channelId) {
-      query.channelId = options.channelId;
-    } else {
-      query.channelId = this.siteId;
-    }
-    if (options.contentId) {
-      query.contentId = options.contentId;
-    }
 
     if (options.withContents) {
       if (!this.isContentChecked) return;
@@ -234,13 +188,13 @@ var methods = {
     });
   },
 
-  btnContentStateClick: function(contentId) {
+  btnContentStateClick: function(content) {
     utils.openLayer({
       title: "查看审核状态",
       url: utils.getRootUrl('write/contentsLayerState', {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: contentId
+        siteId: content.siteId,
+        channelId: content.channelId,
+        contentId: content.id
       }),
       full: true
     });
@@ -264,11 +218,7 @@ var methods = {
   toggleSelection: function(row) {
     this.$refs.multipleTable.toggleRowSelection(row);
   },
-
-  handleChannelIdChange: function() {
-    this.apiList(1);
-  },
-
+  
   handleCurrentChange: function(val) {
     this.apiList(val);
   },
@@ -315,7 +265,7 @@ var $vue = new Vue({
     },
     
     isCheckedLevels: function() {
-      if (this.checkedLevels.length !== this.checkedLevels.length) return true;
+      if (this.checkedLevels.length !== this.allCheckedLevels.length) return true;
       return false;
     },
 

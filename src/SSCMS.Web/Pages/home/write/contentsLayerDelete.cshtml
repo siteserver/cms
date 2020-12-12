@@ -1,0 +1,47 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+
+<el-alert type="error">此操作将删除以下 <strong> {{ contents.length }} </strong> 篇内容，确定吗？</el-alert>
+
+<el-table
+  :data="contents"
+  style="width: 100%;"
+  size="small"
+  row-key="id"
+  stripe>
+  <el-table-column prop="id" label="内容Id" width="80"></el-table-column>
+  <el-table-column
+    label="内容标题"
+    show-overflow-tooltip>
+    <template slot-scope="scope">
+      <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" target="_blank" v-on:click.stop.native></el-link>
+    </template>
+  </el-table-column>
+  <el-table-column prop="addDate" label="添加时间"  width="150"></el-table-column>
+  <el-table-column
+    fixed="right"
+    width="90"
+    align="center"
+    show-overflow-tooltip
+    label="状态">
+    <template slot-scope="scope">
+      <el-link size="mini" :underline="false" :type="(scope.row.checked ? 'primary' : 'danger')">
+        {{ scope.row.checked ? '已审核' : '待审核' }}
+      </el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/write/contentsLayerDelete.js" type="text/javascript"></script> }

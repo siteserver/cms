@@ -1,0 +1,108 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item {
+      margin-bottom: 10px;
+    }
+  </style>
+}
+
+<el-tabs v-model="activeName">
+  <el-tab-pane label="属性" name="attributes">
+    <el-form label-width="120px" size="mini">
+      <el-form-item label="内容标题">
+        <el-link v-if="content.checked && content.channelId > 0" type="primary" :underline="false" :href="getContentUrl(content)" target="_blank" v-html="content.title" v-on:click.stop.native></el-link>
+        <span v-else v-html="content.title"></span>
+      </el-form-item>
+      <el-form-item label="审核状态">
+        <el-link size="mini" :underline="false" style="top: -2px" :type="(content.checked ? 'primary' : 'danger')">
+          {{ state }}
+        </el-link>
+      </el-form-item>
+      <el-form-item label="栏目">
+        {{ channelName }}
+      </el-form-item>
+      <el-form-item v-for="column in columns" :key="column.attributeName" v-if="isDisplay(column.attributeName)" :label="column.displayName">
+        <!-- ChannelId -->
+        <template v-if="column.attributeName === 'ChannelId'">
+          {{content.channelName}}
+        </template>
+    
+        <!-- GroupNames -->
+        <template v-else-if="column.attributeName === 'GroupNames'">
+          <template v-if="content.groupNames && groupNames" v-for="groupName in content.groupNames">
+            <el-tag v-if="groupNames.indexOf(groupName) !== -1" :key="groupName" size="mini" type="info">
+              {{ groupName }}
+            </el-tag>
+          </template>
+        </template>
+    
+        <!-- TagNames -->
+        <template v-else-if="column.attributeName === 'TagNames'">
+          <template v-if="content.tagNames && tagNames" v-for="tagName in content.tagNames">
+            <el-tag v-if="tagNames.indexOf(tagName) !== -1" :key="tagName" size="mini" type="info">
+              {{ tagName }}
+            </el-tag>
+          </template>
+        </template>
+    
+        <!-- ImageUrl -->
+        <template v-else-if="column.attributeName === 'ImageUrl'">
+          <el-link :underline="false" :href="getUrl(content.imageUrl)" target="_blank" v-on:click.stop.native>
+            <el-image v-if="content.imageUrl"  :src="getUrl(content.imageUrl)" style="max-width: 100px; max-height: 100px"></el-image>
+          </el-link>
+        </template>
+    
+        <!-- LinkUrl -->
+        <template v-else-if="column.attributeName === 'LinkUrl'">
+          <el-link v-if="content.linkUrl" :underline="false" type="primary" :href="getUrl(content.linkUrl)" target="_blank" v-on:click.stop.native>{{content.linkUrl}}</el-link>
+        </template>
+    
+        <!-- AdminId -->
+        <template v-else-if="column.attributeName === 'AdminId'">
+          <el-link v-if="content.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.adminId)">{{content.adminName}}</el-link>
+        </template>
+    
+        <!-- LastEditAdminId -->
+        <template v-else-if="column.attributeName === 'LastEditAdminId'">
+          <el-link v-if="content.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.lastEditAdminId)">{{content.lastEditAdminName}}</el-link>
+        </template>
+    
+        <!-- UserId -->
+        <template v-else-if="column.attributeName === 'UserId'">
+          <el-link v-if="content.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(content.userId)">{{content.userName}}</el-link>
+        </template>
+    
+        <!-- CheckAdminId -->
+        <template v-else-if="column.attributeName === 'CheckAdminId'">
+          <el-link v-if="content.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.checkAdminId)">{{content.checkAdminName}}</el-link>
+        </template>
+    
+        <!-- SourceId -->
+        <template v-else-if="column.attributeName === 'SourceId'">
+          {{content.sourceName}}
+        </template>
+    
+        <!-- Others -->
+        <template v-else>
+          <span v-html="content.getEntityValue(column.attributeName)"></span>
+        </template>
+    
+      </el-form-item>
+    </el-form>
+  </el-tab-pane>
+  <el-tab-pane v-for="editorColumn in editorColumns" :key="editorColumn.attributeName" :label="editorColumn.displayName" :name="editorColumn.attributeName">
+    <div v-html="content.getEntityValue(editorColumn.attributeName)"></div>
+  </el-tab-pane>
+</el-tabs>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/home/write/contentsLayerView.js" type="text/javascript"></script> }

@@ -35,12 +35,20 @@ namespace SSCMS.Web.Controllers.Home.Write
             var site = await _siteRepository.GetAsync(siteIds[0]);
 
             var channel = await _channelRepository.GetAsync(site.Id);
+            var enabledChannelIds = await _authManager.GetChannelIdsAsync(site.Id);
+            var visibleChannelIds = await _authManager.GetVisibleChannelIdsAsync(enabledChannelIds);
             var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
-                var count = await _contentRepository.GetCountAsync(site, summary);
+                var visible = visibleChannelIds.Contains(summary.Id);
+                var disabled = !enabledChannelIds.Contains(summary.Id);
+                var current = await _contentRepository.GetSummariesAsync(site, summary);
+
+                if (!visible) return null;
+
                 return new
                 {
-                    Count = count
+                    current.Count,
+                    Disabled = disabled
                 };
             });
 
@@ -51,17 +59,6 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
-            var permissions = new GetPermissions
-            {
-                IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Add),
-                IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Delete),
-                IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Edit),
-                IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Arrange),
-                IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Translate),
-                IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.CheckLevel1),
-                IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, MenuUtils.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Create),
-                IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, MenuUtils.ChannelPermissions.Edit)
-            };
 
             return new GetResult
             {
@@ -74,8 +71,7 @@ namespace SSCMS.Web.Controllers.Home.Write
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 CheckedLevels = checkedLevels,
-                Columns = columns,
-                Permissions = permissions
+                Columns = columns
             };
         }
     }

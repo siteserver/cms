@@ -304,14 +304,14 @@ var methods = {
     });
   },
 
-  btnContentStateClick: function(contentId) {
+  btnContentStateClick: function(content) {
     if (!this.permissions.isEdit) return;
     utils.openLayer({
       title: "查看审核状态",
       url: utils.getCmsUrl('contentsLayerState', {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: contentId
+        siteId: content.siteId,
+        channelId: content.channelId,
+        contentId: content.id
       }),
       full: true
     });

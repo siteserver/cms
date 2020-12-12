@@ -157,11 +157,8 @@ var methods = {
   closeAndRedirect: function(isEdit) {
     var tabVue = utils.getTabVue(this.tabName);
     if (tabVue) {
-      if (isEdit) {
-        tabVue.apiList(this.channelId, this.page, '内容保存成功！');
-      } else {
-        tabVue.apiList(this.channelId, this.page, '内容保存成功！', true);
-      }
+      utils.success('内容保存成功！');
+      tabVue.apiList(this.page);
     }
     utils.removeTab();
     utils.openTab(this.tabName);

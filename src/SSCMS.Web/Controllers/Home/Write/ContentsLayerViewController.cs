@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Home.Write
     [Route(Constants.ApiHomePrefix)]
     public partial class ContentsLayerViewController : ControllerBase
     {
-        private const string Route = "contentsLayerView";
+        private const string Route = "write/contentsLayerView";
 
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;

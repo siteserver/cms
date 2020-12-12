@@ -58,7 +58,7 @@
               v-model="channelIds"
               :options="[root]"
               :props="{ multiple: false, checkStrictly: true }"
-              v-on:change="handleChannelIdChange"
+              v-on:change="btnSearchClick"
               filterable
               placeholder="请选择栏目">
               <span slot-scope="{ node, data }">
@@ -67,7 +67,7 @@
             </el-cascader>
           </el-form-item>
           <el-form-item label="审核状态">
-            <el-checkbox-group v-model="checkedLevels">
+            <el-checkbox-group v-model="checkedLevels" v-on:change="btnSearchClick">
               <el-checkbox v-for="level in allCheckedLevels" v-key="level.label" :label="level.label">{{level.text}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
@@ -115,12 +115,27 @@
   </el-main>
 </el-container>
 
-<el-container v-if="channelId > 0 && pageContents">
+<el-container>
   <el-main>
     <el-divider></el-divider>
     <div style="height: 10px;"></div>
 
-    @await Html.PartialAsync("_PartialContentsCommands")
+    <div id="commands">
+
+      <el-button :disabled="channelId == 0 || !isAdd" size="mini" plain type="primary" icon="el-icon-circle-plus-outline" v-on:click="btnAddClick">
+        添加
+      </el-button>
+
+      <el-button :disabled="channelId == 0 || !isAdd" size="mini" icon="el-icon-tickets" v-on:click="btnLayerClick({title: '导入Word', name: 'Word', full: true})">
+        导入Word
+      </el-button>
+    
+      <el-button :disabled="total === 0 || !isContentChecked" size="mini" icon="el-icon-delete" 
+        v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})">
+        删除
+      </el-button>
+    
+    </div>
 
     <div style="height: 10px;"></div>
 

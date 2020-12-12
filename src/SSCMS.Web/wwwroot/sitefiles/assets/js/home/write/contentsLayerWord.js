@@ -1,6 +1,7 @@
 ﻿var $url = '/write/contentsLayerWord';
 
 var data = utils.init({
+  page: utils.getQueryInt('page'),
   checkedLevels: null,
   form: {
     siteId: utils.getQueryInt('siteId'),
@@ -48,8 +49,18 @@ var methods = {
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
+      utils.success('Word导入成功！');
+      if (parent.$vue.apiList) {
+        parent.$vue.apiList($this.page);
+      } else {
+        parent.location.href = utils.getRootUrl('write/contents', {
+          siteId: $this.siteId,
+          channelId: $this.channelId,
+          page: 1
+        });
+      }
+      
       utils.closeLayer();
-      parent.$vue.apiList($this.form.channelId, 1, 'Word导入成功！', true);
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {

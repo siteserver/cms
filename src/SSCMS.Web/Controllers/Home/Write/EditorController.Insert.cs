@@ -28,6 +28,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             content.ChannelId = channel.Id;
             content.AdminId = _authManager.AdminId;
             content.LastEditAdminId = _authManager.AdminId;
+            content.UserId = _authManager.UserId;
 
             content.Checked = request.Content.CheckedLevel >= site.CheckContentLevel;
             if (content.Checked)
