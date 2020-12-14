@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -23,7 +24,7 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
             {
                 return new UploadVideoResult
                 {
-                    Error = "请选择有效的文件上传"
+                    Error = Constants.ErrorUpload
                 };
             }
 
@@ -34,7 +35,14 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
             {
                 return new UploadVideoResult
                 {
-                    Error = "请选择有效的文件上传"
+                    Error = Constants.ErrorVideoExtensionAllowed
+                };
+            }
+            if (!_pathManager.IsVideoSizeAllowed(site, file.Length))
+            {
+                return new UploadVideoResult
+                {
+                    Error = Constants.ErrorVideoSizeAllowed
                 };
             }
 

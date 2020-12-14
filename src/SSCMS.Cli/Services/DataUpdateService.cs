@@ -8,9 +8,6 @@ using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater;
 using SSCMS.Cli.Updater.Tables;
-using SSCMS.Cli.Updater.Tables.GovInteract;
-using SSCMS.Cli.Updater.Tables.GovPublic;
-using SSCMS.Cli.Updater.Tables.Jobs;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -20,12 +17,10 @@ namespace SSCMS.Cli.Services
 {
     public class DataUpdateService : IDataUpdateService
     {
-        private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
 
-        public DataUpdateService(ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public DataUpdateService(IDatabaseManager databaseManager)
         {
-            _settingsManager = settingsManager;
             _databaseManager = databaseManager;
         }
 
@@ -125,69 +120,68 @@ namespace SSCMS.Cli.Services
             if (oldTableInfo.RowFiles.Count > 0)
             {
                 var i = 0;
-                using (var progress = new ProgressBar())
+                using var progress = new ProgressBar();
+                foreach (var fileName in oldTableInfo.RowFiles)
                 {
-                    foreach (var fileName in oldTableInfo.RowFiles)
+                    progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
+
+                    var newRows = new List<Dictionary<string, object>>();
+
+                    var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
+
+                    var oldRows =
+                        TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
+
+                    newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process));
+
+                    var siteIdWithRows = new Dictionary<int, List<Dictionary<string, object>>>();
+                    foreach (var siteId in siteIdList)
                     {
-                        progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
+                        siteIdWithRows.Add(siteId, new List<Dictionary<string, object>>());
+                    }
 
-                        var newRows = new List<Dictionary<string, object>>();
-
-                        var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-
-                        var oldRows =
-                            TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
-
-                        newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process));
-
-                        var siteIdWithRows = new Dictionary<int, List<Dictionary<string, object>>>();
-                        foreach (var siteId in siteIdList)
+                    foreach (var newRow in newRows)
+                    {
+                        if (newRow.ContainsKey(nameof(Content.SiteId)))
                         {
-                            siteIdWithRows.Add(siteId, new List<Dictionary<string, object>>());
-                        }
-
-                        foreach (var newRow in newRows)
-                        {
-                            if (newRow.ContainsKey(nameof(Content.SiteId)))
+                            var siteId = Convert.ToInt32(newRow[nameof(Content.SiteId)]);
+                            if (siteIdList.Contains(siteId))
                             {
-                                var siteId = Convert.ToInt32(newRow[nameof(Content.SiteId)]);
-                                if (siteIdList.Contains(siteId))
-                                {
-                                    var rows = siteIdWithRows[siteId];
-                                    rows.Add(newRow);
-                                }
+                                var rows = siteIdWithRows[siteId];
+                                rows.Add(newRow);
                             }
                         }
+                    }
 
-                        foreach (var siteId in siteIdList)
+                    foreach (var siteId in siteIdList)
+                    {
+                        var siteRows = siteIdWithRows[siteId];
+                        var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
+
+                        var siteTableInfo = splitSiteTableDict[siteId];
+                        siteTableInfo.TotalCount += siteRows.Count;
+
+                        foreach(var tableColumn in converter.NewColumns)
                         {
-                            var siteRows = siteIdWithRows[siteId];
-                            var siteTableName = await _databaseManager.ContentRepository.GetNewContentTableNameAsync();
-                            var siteTableInfo = splitSiteTableDict[siteId];
-                            siteTableInfo.TotalCount += siteRows.Count;
-
-                            foreach(var tableColumn in converter.NewColumns)
+                            if (!siteTableInfo.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
                             {
-                                if (!siteTableInfo.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
-                                {
-                                    siteTableInfo.Columns.Add(tableColumn);
-                                }
+                                siteTableInfo.Columns.Add(tableColumn);
                             }
+                        }
 
-                            if (siteRows.Count > 0)
-                            {
-                                var siteTableFileName = $"{siteTableInfo.RowFiles.Count + 1}.json";
-                                siteTableInfo.RowFiles.Add(siteTableFileName);
-                                var filePath = NewTreeInfo.GetTableContentFilePath(siteTableName, siteTableFileName);
-                                await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(siteRows));
-                            }
+                        if (siteRows.Count > 0)
+                        {
+                            var siteTableFileName = $"{siteTableInfo.RowFiles.Count + 1}.json";
+                            siteTableInfo.RowFiles.Add(siteTableFileName);
+                            var filePath = NewTreeInfo.GetTableContentFilePath(siteTableName, siteTableFileName);
+                            await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(siteRows));
                         }
                     }
                 }
             }
         }
 
-        public async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
+        public async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo)
         {
             ConvertInfo converter = null;
 
@@ -299,62 +293,6 @@ namespace SSCMS.Cli.Services
             {
                 var table = new TableUser(_databaseManager);
                 converter = table.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovInteractChannel.OldTableName, oldTableName))
-            {
-                var table = new TableGovInteractChannel();
-                converter = table.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovInteractLog.OldTableName, oldTableName))
-            {
-                converter = TableGovInteractLog.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovInteractPermissions.OldTableName, oldTableName))
-            {
-                converter = TableGovInteractPermissions.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovInteractRemark.OldTableName, oldTableName))
-            {
-                converter = TableGovInteractRemark.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovInteractReply.OldTableName, oldTableName))
-            {
-                converter = TableGovInteractReply.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovInteractType.OldTableName, oldTableName))
-            {
-                converter = TableGovInteractType.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovPublicCategory.OldTableName, oldTableName))
-            {
-                converter = TableGovPublicCategory.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovPublicCategoryClass.OldTableName, oldTableName))
-            {
-                converter = TableGovPublicCategoryClass.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovPublicIdentifierRule.OldTableName, oldTableName))
-            {
-                converter = TableGovPublicIdentifierRule.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableGovPublicIdentifierSeq.OldTableName, oldTableName))
-            {
-                converter = TableGovPublicIdentifierSeq.Converter;
-            }
-            else if (ListUtils.ContainsIgnoreCase(tableNameListForGovPublic, oldTableName))
-            {
-                var table = new TableGovPublicContent(_settingsManager);
-                converter = table.GetConverter(oldTableInfo.Columns);
-            }
-            else if (ListUtils.ContainsIgnoreCase(tableNameListForGovInteract, oldTableName))
-            {
-                var table = new TableGovInteractContent(_settingsManager);
-                converter = table.GetConverter(oldTableInfo.Columns);
-            }
-            else if (ListUtils.ContainsIgnoreCase(tableNameListForJob, oldTableName))
-            {
-                var table = new TableJobsContent(_settingsManager);
-                converter = table.GetConverter(oldTableInfo.Columns);
             }
 
             return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);

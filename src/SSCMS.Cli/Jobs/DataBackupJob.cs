@@ -19,6 +19,7 @@ namespace SSCMS.Cli.Jobs
         private List<string> _includes;
         private List<string> _excludes;
         private int _maxRows;
+        private int _pageSize;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
@@ -44,8 +45,12 @@ namespace SSCMS.Cli.Jobs
                     v => _excludes = v == null ? null : ListUtils.GetStringList(v)
                 },
                 {
-                    "max-rows=", "Maximum number of rows to backup. All data is backed up by default",
+                    "max-rows=", "Maximum number of rows to backup, all data is backed up by default",
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v)
+                },
+                {
+                    "page-size=", "The number of rows fetch at a time, 2000 by default",
+                    v => _pageSize = v == null ? CliConstants.DefaultPageSize : TranslateUtils.ToInt(v)
                 },
                 {
                     "h|help", "Display help",
@@ -130,17 +135,25 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Tracking");
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
-            await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo, errorLogFilePath);
+            var errorTableNames = await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, _pageSize, treeInfo, errorLogFilePath);
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintSuccessAsync("backup database to folder successfully!");
+            if (errorTableNames.Count == 0)
+            {
+                await WriteUtils.PrintSuccessAsync("backup database to folder successfully!");
+            }
+            else
+            {
+                await WriteUtils.PrintErrorAsync($"Database backup failed and the following table was not successfully backed up: {ListUtils.ToString(errorTableNames)}");
+            }
         }
 
-        public static async Task Backup(ISettingsManager settingsManager, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, TreeInfo treeInfo, string errorLogFilePath)
+        public static async Task<List<string>> Backup(ISettingsManager settingsManager, IDatabaseManager databaseManager, List<string> includes, List<string> excludes, int maxRows, int pageSize, TreeInfo treeInfo, string errorLogFilePath)
         {
             var allTableNames = await settingsManager.Database.GetTableNamesAsync();
 
             var tableNames = new List<string>();
+            var errorTableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
             {
@@ -183,30 +196,27 @@ namespace SSCMS.Cli.Jobs
                     if (tableInfo.TotalCount > 0)
                     {
                         var current = 1;
-                        if (tableInfo.TotalCount > CliConstants.PageSize)
+                        if (tableInfo.TotalCount > pageSize)
                         {
-                            var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / CliConstants.PageSize);
+                            var pageCount = (int)Math.Ceiling((double)tableInfo.TotalCount / pageSize);
 
-                            using (var progress = new ProgressBar())
+                            using var progress = new ProgressBar();
+                            for (; current <= pageCount; current++)
                             {
-                                for (; current <= pageCount; current++)
-                                {
-                                    progress.Report((double)(current - 1) / pageCount);
+                                progress.Report((double)(current - 1) / pageCount);
 
-                                    var fileName = $"{current}.json";
-                                    tableInfo.RowFiles.Add(fileName);
-                                    var offset = (current - 1) * CliConstants.PageSize;
-                                    var limit = tableInfo.TotalCount - offset < CliConstants.PageSize
-                                        ? tableInfo.TotalCount - offset
-                                        : CliConstants.PageSize;
+                                var fileName = $"{current}.json";
+                                tableInfo.RowFiles.Add(fileName);
+                                var offset = (current - 1) * pageSize;
+                                var limit = tableInfo.TotalCount - offset < pageSize
+                                    ? tableInfo.TotalCount - offset
+                                    : pageSize;
 
-                                    var rows = await databaseManager.GetPageObjectsAsync(tableName, identityColumnName, offset,
-                                        limit);
+                                var rows = await databaseManager.GetPageObjectsAsync(tableName, identityColumnName, offset, limit);
 
-                                    await FileUtils.WriteTextAsync(
-                                        treeInfo.GetTableContentFilePath(tableName, fileName),
-                                        TranslateUtils.JsonSerialize(rows));
-                                }
+                                await FileUtils.WriteTextAsync(
+                                    treeInfo.GetTableContentFilePath(tableName, fileName),
+                                    TranslateUtils.JsonSerialize(rows));
                             }
                         }
                         else
@@ -225,6 +235,7 @@ namespace SSCMS.Cli.Jobs
                 }
                 catch (Exception ex)
                 {
+                    errorTableNames.Add(tableName);
                     await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                     {
                         Exception = ex,
@@ -233,6 +244,8 @@ namespace SSCMS.Cli.Jobs
                     });
                 }
             }
+
+            return errorTableNames;
         }
     }
 }

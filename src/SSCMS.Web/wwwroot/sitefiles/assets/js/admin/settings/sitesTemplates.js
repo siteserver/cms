@@ -16,7 +16,7 @@ var data = utils.init({
 var error = null;
 
 var methods = {
-  getConfig: function () {
+  apiGet: function () {
     var $this = this;
 
     $api.get($url).then(function (response) {
@@ -94,8 +94,7 @@ var methods = {
       var res = response.data;
 
       utils.success('站点模板删除成功！');
-
-      $this.siteTemplateInfoList.splice($this.siteTemplateInfoList.indexOf(row.directoryName), 1);
+      $this.apiGet();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -200,6 +199,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.getConfig();
+    this.apiGet();
   }
 });

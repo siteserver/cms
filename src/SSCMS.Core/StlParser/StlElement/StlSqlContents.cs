@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Mock;
 using SSCMS.Core.StlParser.Model;
@@ -14,6 +15,12 @@ namespace SSCMS.Core.StlParser.StlElement
     public class StlSqlContents
     {
         public const string ElementName = "stl:sqlContents";
+
+        [StlAttribute(Title = "数据库类型名称")]
+        public const string DatabaseTypeName = nameof(DatabaseTypeName);
+
+        [StlAttribute(Title = "数据库类型")]
+        public const string DatabaseType = nameof(DatabaseType);
 
         [StlAttribute(Title = "数据库链接字符串名称")]
         public const string ConnectionStringName = nameof(ConnectionStringName);
@@ -28,7 +35,7 @@ namespace SSCMS.Core.StlParser.StlElement
         {
             var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.SqlContent);
             //var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.Order);
-            var dataSource = GetDataSource(parseManager, listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum,
+            var dataSource = GetDataSource(parseManager, listInfo.DatabaseType, listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum,
                 listInfo.TotalNum, listInfo.Order);
 
             if (parseManager.ContextInfo.IsStlEntity)
@@ -39,10 +46,10 @@ namespace SSCMS.Core.StlParser.StlElement
             return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
-        public static List<KeyValuePair<int, Dictionary<string, object>>> GetDataSource(IParseManager parseManager, string connectionString, string queryString, int startNum, int totalNum, string order)
+        public static List<KeyValuePair<int, Dictionary<string, object>>> GetDataSource(IParseManager parseManager, DatabaseType databaseType, string connectionString, string queryString, int startNum, int totalNum, string order)
         {
             //var sqlString = CacheManager.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, order);
-            return parseManager.DatabaseManager.ParserGetSqlDataSource(connectionString, queryString);
+            return parseManager.DatabaseManager.ParserGetSqlDataSource(databaseType, connectionString, queryString);
         }
 
         protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> dataSource)

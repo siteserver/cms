@@ -31,35 +31,32 @@ namespace SSCMS.Cli.Updater
 
         private List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
-            var columns = new List<TableColumn>();
-            var repository =
-                new Repository<Content>(_settingsManager.Database);
-            columns.AddRange(repository.TableColumns);
+            var columns = _settingsManager.Database.GetTableColumns<Content>();
 
             if (oldColumns != null && oldColumns.Count > 0)
             {
-                foreach (var tableColumnInfo in oldColumns)
+                foreach (var column in oldColumns)
                 {
-                    if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
+                    if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(NodeId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.ChannelId);
+                        column.AttributeName = nameof(SSCMS.Models.Content.ChannelId);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
+                    else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(PublishmentSystemId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.SiteId);
+                        column.AttributeName = nameof(SSCMS.Models.Content.SiteId);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
+                    else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(ContentGroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
+                        column.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(GroupNameCollection)))
+                    else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(GroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
+                        column.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
                     }
 
-                    if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
+                    if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, column.AttributeName)))
                     {
-                        columns.Add(tableColumnInfo);
+                        columns.Add(column);
                     }
                 }
             }
@@ -72,7 +69,6 @@ namespace SSCMS.Cli.Updater
             {
                 {nameof(SSCMS.Models.Content.ChannelId), nameof(NodeId)},
                 {nameof(SSCMS.Models.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(SSCMS.Models.Content.GroupNames), nameof(ContentGroupNameCollection)},
                 {nameof(SSCMS.Models.Content.GroupNames), nameof(GroupNameCollection)}
             };
 
@@ -91,6 +87,11 @@ namespace SSCMS.Cli.Updater
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
                 row["ExtendValues"] = content;
+            }
+            if (row.TryGetValue(nameof(IsChecked), out contentObj))
+            {
+                var isChecked = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(SSCMS.Models.Content.Checked)] = isChecked;
             }
 
             return row;

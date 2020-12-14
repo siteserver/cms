@@ -31,7 +31,7 @@
 <el-form ref="form" :model="form" size="mini">
   <el-form-item>
     <el-checkbox v-if="editorAttributeName" label="将图片显示在内容编辑器中" v-model="form.isEditor"></el-checkbox>
-    <el-checkbox label="添加至图片素材库" v-model="form.isLibrary"></el-checkbox>
+    <el-checkbox label="添加至图片素材库" v-model="form.isMaterial"></el-checkbox>
     <el-checkbox label="生成缩略图" v-model="form.isThumb"></el-checkbox>
   </el-form-item>
   <el-form-item v-if="form.isThumb" label="缩略图最大宽度">

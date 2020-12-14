@@ -19,19 +19,27 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IMaterialImageRepository _materialImageRepository;
 
-        public LayerImageController(IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerImageController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
         {
             _pathManager = pathManager;
             _siteRepository = siteRepository;
+            _materialImageRepository = materialImageRepository;
         }
 
-        public class SubmitRequest : SiteRequest
+        public class Options
         {
+            public bool IsMaterial { get; set; }
             public bool IsThumb { get; set; }
             public int ThumbWidth { get; set; }
             public int ThumbHeight { get; set; }
             public bool IsLinkToOriginal { get; set; }
+        }
+
+        public class SubmitRequest : Options
+        {
+            public int SiteId { get; set; }
             public List<string> FilePaths { get; set; }
         }
 

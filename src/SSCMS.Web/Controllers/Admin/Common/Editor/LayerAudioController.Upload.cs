@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -18,14 +19,18 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var fileName = Path.GetFileName(file.FileName);
 
-            if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".mp3"))
+            if (!_pathManager.IsAudioExtensionAllowed(site, PathUtils.GetExtension(fileName)))
             {
-                return this.Error("文件只能是音频格式，请选择有效的文件上传!");
+                return this.Error(Constants.ErrorAudioExtensionAllowed);
+            }
+            if (!_pathManager.IsAudioSizeAllowed(site, file.Length))
+            {
+                return this.Error(Constants.ErrorAudioSizeAllowed);
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Audio);

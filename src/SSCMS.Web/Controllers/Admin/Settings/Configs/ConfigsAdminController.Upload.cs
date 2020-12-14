@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
 
@@ -17,11 +18,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
                 return Unauthorized();
             }
 
-            if (file == null) return this.Error("请选择有效的文件上传");
+            if (file == null) return this.Error(Constants.ErrorUpload);
             var extension = PathUtils.GetExtension(file.FileName);
             if (!FileUtils.IsImage(extension))
             {
-                return this.Error("文件只能是图片格式，请选择有效的文件上传!");
+                return this.Error(Constants.ErrorImageExtensionAllowed);
             }
             var fileName = $"logo{extension}";
             var filePath = _pathManager.GetSiteFilesPath(fileName);

@@ -74,6 +74,8 @@ var methods = {
   },
 
   btnExportClick: function() {
+    var $this = this;
+    
     utils.loading(this, true);
     $api.post($urlExport).then(function (response) {
       var res = response.data;

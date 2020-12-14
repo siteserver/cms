@@ -119,25 +119,21 @@ namespace SSCMS.Services
 
         Task<string> GetContentPageFilePathAsync(Site site, int channelId, Content content, int currentPageIndex);
 
-        bool IsImageExtensionAllowed(Site site, string fileExtention);
+        bool IsImageExtensionAllowed(Site site, string fileExtension);
 
         bool IsImageSizeAllowed(Site site, long contentLength);
 
-        bool IsVideoExtensionAllowed(Site site, string fileExtention);
+        bool IsVideoExtensionAllowed(Site site, string fileExtension);
 
-        bool IsVideoSizeAllowed(Site site, int contentLength);
+        bool IsVideoSizeAllowed(Site site, long contentLength);
 
         bool IsAudioExtensionAllowed(Site site, string fileExtension);
 
-        bool IsAudioSizeAllowed(Site site, int contentLength);
+        bool IsAudioSizeAllowed(Site site, long contentLength);
 
-        bool IsFileExtensionAllowed(Site site, string fileExtention);
+        bool IsFileExtensionAllowed(Site site, string fileExtension);
 
-        bool IsFileSizeAllowed(Site site, int contentLength);
-
-        bool IsUploadExtensionAllowed(UploadType uploadType, Site site, string fileExtention);
-
-        bool IsUploadSizeAllowed(UploadType uploadType, Site site, int contentLength);
+        bool IsFileSizeAllowed(Site site, long contentLength);
 
         string GetBinDirectoryPath(string relatedPath);
 

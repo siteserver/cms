@@ -181,6 +181,16 @@ namespace SSCMS.Core.Services
             return database.GetConnection();
         }
 
+        private IDbConnection GetConnection(DatabaseType databaseType, string connectionString = null)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = _settingsManager.Database.ConnectionString;
+            }
+            var database = new Database(databaseType, connectionString);
+            return database.GetConnection();
+        }
+
         public async Task DeleteDbLogAsync()
         {
             if (_settingsManager.Database.DatabaseType == DatabaseType.MySql)
@@ -267,7 +277,7 @@ namespace SSCMS.Core.Services
             return value;
         }
 
-        public IEnumerable<IDictionary<string, object>> GetRows(string connectionString, string sqlString)
+        public IEnumerable<IDictionary<string, object>> GetRows(DatabaseType databaseType, string connectionString, string sqlString)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -278,7 +288,7 @@ namespace SSCMS.Core.Services
 
             IEnumerable<IDictionary<string, object>> rows;
 
-            using (var connection = GetConnection(connectionString))
+            using (var connection = GetConnection(databaseType, connectionString))
             {
                 rows = connection.Query(sqlString).Cast<IDictionary<string, object>>();
             }

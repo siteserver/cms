@@ -54,7 +54,7 @@ namespace SSCMS.Services
 
         string GetString(string connectionString, string sqlString);
 
-        IEnumerable<IDictionary<string, object>> GetRows(string connectionString, string sqlString);
+        IEnumerable<IDictionary<string, object>> GetRows(DatabaseType databaseType, string connectionString, string sqlString);
 
         int GetPageTotalCount(string sqlString);
 

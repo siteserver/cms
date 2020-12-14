@@ -21,11 +21,8 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
             {
                 if (string.IsNullOrEmpty(filePath)) continue;
 
-                var fileName = PathUtils.GetFileName(filePath);
-
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                 var fileUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
-
 
                 result.Add(new SubmitResult
                 {

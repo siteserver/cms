@@ -55,7 +55,12 @@
   <el-table-column
     label="管理员">
     <template slot-scope="scope">
-      <a :href="utils.getSettingsUrl('administratorsView', {userName: scope.row.userName, returnUrl: location.href})">{{scope.row.userName}}</a>
+      <el-link
+        :underline="false"
+        v-on:click="btnAdminClick(scope.row.adminName)"
+        type="primary">
+        {{ scope.row.adminName }}
+      </el-link>
     </template>
   </el-table-column>
   <el-table-column

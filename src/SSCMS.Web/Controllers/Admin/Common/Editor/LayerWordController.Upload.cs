@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
 
@@ -14,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         {
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var title = PathUtils.GetFileNameWithoutExtension(file.FileName);

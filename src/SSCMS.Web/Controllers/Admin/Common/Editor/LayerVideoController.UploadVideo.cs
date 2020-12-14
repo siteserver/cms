@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -18,14 +19,18 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var fileName = Path.GetFileName(file.FileName);
 
-            if (!PathUtils.IsExtension(PathUtils.GetExtension(fileName), ".mp4", ".flv", ".f4v", ".webm", ".m4v", ".mov", ".3gp", ".3g2"))
+            if (!_pathManager.IsVideoExtensionAllowed(site, PathUtils.GetExtension(fileName)))
             {
-                return this.Error("文件只能是主流视频格式，请选择有效的文件上传!");
+                return this.Error(Constants.ErrorVideoExtensionAllowed);
+            }
+            if (!_pathManager.IsVideoSizeAllowed(site, file.Length))
+            {
+                return this.Error(Constants.ErrorVideoSizeAllowed);
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Video);

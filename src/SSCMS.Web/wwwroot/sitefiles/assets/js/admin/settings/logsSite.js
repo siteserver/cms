@@ -87,6 +87,15 @@ var methods = {
     });
   },
 
+  btnAdminClick: function(userName) {
+    utils.openLayer({
+      title: "管理员查看",
+      url: utils.getCommonUrl('adminLayerView', {userName: userName}),
+      width: 550,
+      height: 450
+    });
+  },
+
   handleCurrentChange: function(val) {
     var $this = this;
 

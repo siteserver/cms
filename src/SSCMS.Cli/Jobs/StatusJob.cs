@@ -5,6 +5,7 @@ using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -94,6 +95,7 @@ namespace SSCMS.Cli.Jobs
             var (status, _) = _apiService.GetStatus();
             if (status != null)
             {
+                await Console.Out.WriteLineAsync($"Api host: {Constants.ApiHost}");
                 await Console.Out.WriteLineAsync($"Login user: {status.UserName}");
             }
         }

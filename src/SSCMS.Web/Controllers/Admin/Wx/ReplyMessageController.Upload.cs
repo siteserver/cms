@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -25,7 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             MaterialImage image = null;
@@ -38,7 +39,11 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 var extName = PathUtils.GetExtension(fileName);
                 if (!_pathManager.IsImageExtensionAllowed(site, extName))
                 {
-                    return this.Error("此图片格式已被禁止上传，请转换格式后上传!");
+                    return this.Error(Constants.ErrorImageExtensionAllowed);
+                }
+                if (!_pathManager.IsImageSizeAllowed(site, file.Length))
+                {
+                    return this.Error(Constants.ErrorImageSizeAllowed);
                 }
 
                 var materialFileName = PathUtils.GetMaterialFileName(fileName);
@@ -63,9 +68,13 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             {
                 var fileName = Path.GetFileName(file.FileName);
                 var fileType = PathUtils.GetExtension(fileName);
-                if (!_pathManager.IsUploadExtensionAllowed(UploadType.Audio, site, fileType))
+                if (!_pathManager.IsAudioExtensionAllowed(site, fileType))
                 {
-                    return this.Error("文件只能是音频格式，请选择有效的文件上传!");
+                    return this.Error(Constants.ErrorAudioExtensionAllowed);
+                }
+                if (!_pathManager.IsAudioSizeAllowed(site, file.Length))
+                {
+                    return this.Error(Constants.ErrorAudioSizeAllowed);
                 }
 
                 var materialFileName = PathUtils.GetMaterialFileName(fileName);
@@ -91,9 +100,13 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 var fileName = Path.GetFileName(file.FileName);
 
                 var fileType = PathUtils.GetExtension(fileName);
-                if (!_pathManager.IsUploadExtensionAllowed(UploadType.Video, site, fileType))
+                if (!_pathManager.IsVideoExtensionAllowed(site, fileType))
                 {
-                    return this.Error("文件只能是视频格式，请选择有效的文件上传!");
+                    return this.Error(Constants.ErrorVideoExtensionAllowed);
+                }
+                if (!_pathManager.IsVideoSizeAllowed(site, file.Length))
+                {
+                    return this.Error(Constants.ErrorVideoSizeAllowed);
                 }
 
                 var materialVideoName = PathUtils.GetMaterialFileName(fileName);

@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.StlElement;
@@ -34,7 +35,9 @@ namespace SSCMS.Core.StlParser.Model
 
             var listInfo = new ListInfo
             {
-                _contextType = contextType
+                _contextType = contextType,
+                DatabaseType = parseManager.SettingsManager.DatabaseType,
+                ConnectionString = parseManager.SettingsManager.DatabaseConnectionString
             };
 
             var innerHtml = contextInfo.InnerHtml;
@@ -312,17 +315,29 @@ namespace SSCMS.Core.StlParser.Model
                 {
                     listInfo.Layout = TranslateUtils.ToEnum(value, Layout.None);
                 }
-                else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionString))
+                else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseTypeName))
                 {
-                    listInfo.ConnectionString = value;
+                    var databaseType = parseManager.SettingsManager.Configuration[name];
+                    if (!string.IsNullOrEmpty(databaseType))
+                    {
+                        listInfo.DatabaseType = TranslateUtils.ToEnum(databaseType, DatabaseType.MySql);
+                    }
+                }
+                else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseType))
+                {
+                    listInfo.DatabaseType = TranslateUtils.ToEnum(value, DatabaseType.MySql);
                 }
                 else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionStringName))
                 {
-                    //listInfo.ConnectionString = WebConfigUtils.GetConnectionStringByName(value);
-                    //if (string.IsNullOrEmpty(listInfo.ConnectionString))
-                    //{
-                    //    listInfo.ConnectionString = WebConfigUtils.ConnectionString;
-                    //}
+                    var connectionString = parseManager.SettingsManager.Configuration[name];
+                    if (!string.IsNullOrEmpty(connectionString))
+                    {
+                        listInfo.ConnectionString = connectionString;
+                    }
+                }
+                else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionString))
+                {
+                    listInfo.ConnectionString = value;
                 }
                 else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.QueryString))
                 {
@@ -440,6 +455,8 @@ namespace SSCMS.Core.StlParser.Model
         public bool IsRelatedContents { get; set; }
 
         public Layout Layout { get; set; } = Layout.None;
+
+        public DatabaseType DatabaseType { get; set; } = DatabaseType.MySql;
 
         public string ConnectionString { get; set; } = string.Empty;
 

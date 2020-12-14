@@ -201,7 +201,7 @@ namespace SSCMS.Models
 
         public bool IsImageUploadChangeFileName { get; set; } = true;
 
-        public string ImageUploadExtensions { get; set; } = ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.swf,.webp";
+        public string ImageUploadExtensions { get; set; } = ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.swf,.webp,.svg";
 
         public int ImageUploadTypeMaxSize { get; set; } = 15360;
 
@@ -222,7 +222,7 @@ namespace SSCMS.Models
         public bool IsVideoUploadChangeFileName { get; set; } = true;
 
         public string VideoUploadExtensions { get; set; } =
-            ".asf,.asx,.avi,.flv,.mid,.midi,.mov,.mp3,.mp4,.mpg,.mpeg,.ogg,.ra,.rm,.rmb,.rmvb,.rp,.rt,.smi,.swf,.wav,.webm,.wma,.wmv,.viv";
+            ".asf,.asx,.avi,.flv,.mid,.midi,.mov,.mp3,.mp4,.mpg,.mpeg,.ogg,.ra,.rm,.rmb,.rmvb,.rp,.rt,.smi,.swf,.wav,.webm,.wma,.wmv,.viv,.f4v,.m4v,.3gp,.3g2";
 
         public int VideoUploadTypeMaxSize { get; set; } = 307200;
 
@@ -232,7 +232,7 @@ namespace SSCMS.Models
 
         public bool IsFileUploadChangeFileName { get; set; } = true;
 
-        public string FileUploadExtensions { get; set; } = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt,.md,.xml,.js,.css";
+        public string FileUploadExtensions { get; set; } = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt,.md,.xml,.js,.css,.html,.htm";
 
         public int FileUploadTypeMaxSize { get; set; } = 307200;
 

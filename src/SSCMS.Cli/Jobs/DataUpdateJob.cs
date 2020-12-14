@@ -89,13 +89,9 @@ namespace SSCMS.Cli.Jobs
             await WriteUtils.PrintRowLineAsync();
 
             var siteIdList = new List<int>();
-            var tableNameListForContent = new List<string>();
-            var tableNameListForGovPublic = new List<string>();
-            var tableNameListForGovInteract = new List<string>();
-            var tableNameListForJob = new List<string>();
+            var tableNames = new List<string>();
 
-            UpdateUtils.LoadSites(oldTreeInfo, siteIdList,
-                tableNameListForContent, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+            UpdateUtils.LoadSites(_settingsManager, oldTreeInfo, siteIdList, tableNames);
 
             var table = new TableContentConverter(_settingsManager);
 
@@ -122,7 +118,7 @@ namespace SSCMS.Cli.Jobs
 
                 var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
 
-                if (ListUtils.ContainsIgnoreCase(tableNameListForContent, oldTableName))
+                if (ListUtils.ContainsIgnoreCase(tableNames, oldTableName))
                 {
                     if (_contentSplit)
                     {
@@ -145,7 +141,7 @@ namespace SSCMS.Cli.Jobs
                 }
                 else
                 {
-                    var tuple = await _updateService.UpdateTableInfoAsync(oldTableName, oldTableInfo, tableNameListForGovPublic, tableNameListForGovInteract, tableNameListForJob);
+                    var tuple = await _updateService.UpdateTableInfoAsync(oldTableName, oldTableInfo);
                     if (tuple != null)
                     {
                         newTableNames.Add(tuple.Item1);
@@ -160,7 +156,7 @@ namespace SSCMS.Cli.Jobs
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = await _databaseManager.ContentRepository.GetNewContentTableNameAsync();
+                    var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
                     await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));

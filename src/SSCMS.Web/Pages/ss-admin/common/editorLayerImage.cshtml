@@ -1,5 +1,12 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {
+        width: 150px;
+    }
+  </style>
+}
 
 <el-upload
   :action="uploadUrl"
@@ -23,6 +30,7 @@
 
 <el-form ref="form" :model="form" size="small">
   <el-form-item>
+    <el-checkbox label="添加至图片素材库" v-model="form.isMaterial"></el-checkbox>
     <el-checkbox label="生成缩略图" v-model="form.isThumb"></el-checkbox>
   </el-form-item>
   <el-form-item v-if="form.isThumb" label="缩略图最大宽度">

@@ -25,7 +25,7 @@ namespace SSCMS.Web.Controllers.V1
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var fileName = PathUtils.GetFileName(file.FileName);
@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.V1
 
             if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
             {
-                return this.Error("文件只能是 Image 格式，请选择有效的文件上传");
+                return this.Error(Constants.ErrorImageExtensionAllowed);
             }
 
             await _pathManager.UploadAsync(file, filePath);

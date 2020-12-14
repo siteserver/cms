@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.Editor
@@ -26,6 +28,27 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
 
                 var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+
+                if (request.IsMaterial)
+                {
+                    var materialFileName = PathUtils.GetMaterialFileName(fileName);
+                    var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
+
+                    var directoryPath = _pathManager.ParsePath(virtualDirectoryPath);
+                    var materialFilePath = PathUtils.Combine(directoryPath, materialFileName);
+                    DirectoryUtils.CreateDirectoryIfNotExists(materialFilePath);
+
+                    FileUtils.CopyFile(filePath, materialFilePath, true);
+
+                    var image = new MaterialImage
+                    {
+                        GroupId = -request.SiteId,
+                        Title = fileName,
+                        Url = PageUtils.Combine(virtualDirectoryPath, materialFileName)
+                    };
+
+                    await _materialImageRepository.InsertAsync(image);
+                }
 
                 if (request.IsThumb)
                 {
@@ -63,6 +86,24 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                     });
                 }
             }
+
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageController)), new Options
+            {
+                IsMaterial = true,
+                IsThumb = false,
+                ThumbWidth = 1024,
+                ThumbHeight = 1024,
+                IsLinkToOriginal = true,
+            });
+
+            options.IsMaterial = request.IsMaterial;
+            options.IsThumb = request.IsThumb;
+            options.ThumbWidth = request.ThumbWidth;
+            options.ThumbHeight = request.ThumbHeight;
+            options.IsLinkToOriginal = request.IsLinkToOriginal;
+            site.Set(nameof(LayerImageController), TranslateUtils.JsonSerialize(options));
+
+            await _siteRepository.UpdateAsync(site);
 
             return result;
         }

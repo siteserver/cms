@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
 
@@ -17,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            if (file == null) return this.Error("请选择有效的文件上传");
+            if (file == null) return this.Error(Constants.ErrorUpload);
             var extension = PathUtils.GetExtension(file.FileName);
             if (!FileUtils.IsZip(extension))
             {

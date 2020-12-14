@@ -13,7 +13,19 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function (message) {
+  runTableStyleLayerAddMultiple: function() {
+    this.apiGet();
+  },
+
+  runTableStyleLayerEditor: function() {
+    this.apiGet();
+  },
+
+  runTableStyleLayerValidate: function() {
+    this.apiGet();
+  },
+
+  apiGet: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -29,9 +41,6 @@ var methods = {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
-      if (message) {
-        utils.success(message);
-      }
     });
   },
 
@@ -164,7 +173,8 @@ var methods = {
   uploadSuccess: function(res, file) {
     this.uploadList = [];
     this.uploadPanel = false;
-    this.apiList('字段导入成功！');
+    utils.success('字段导入成功！');
+    this.apiGet();
   },
 
   uploadError: function(err) {
@@ -175,7 +185,7 @@ var methods = {
   },
 
   btnExportClick: function() {
-    window.open($apiUrl + $url + '/actions/export');
+    window.open($apiUrl + $url + '/actions/export?access_token=' + $token);
   }
 };
 
@@ -184,6 +194,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.apiList();
+    this.apiGet();
   }
 });

@@ -20,6 +20,7 @@ namespace SSCMS.Cli.Jobs
         private List<string> _includes;
         private List<string> _excludes;
         private int _maxRows;
+        private int _pageSize;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
@@ -27,7 +28,8 @@ namespace SSCMS.Cli.Jobs
         private readonly IDataRestoreService _restoreService;
         private readonly OptionSet _options;
 
-        public DataSyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, IDataRestoreService restoreService)
+        public DataSyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager,
+            IDataRestoreService restoreService)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
@@ -35,20 +37,38 @@ namespace SSCMS.Cli.Jobs
 
             _options = new OptionSet
             {
-                { "d|directory=", "指定保存备份文件的文件夹名称",
-                    v => _directory = v },
-                { "from=", "指定需要备份的配置文件sscms.json路径或文件名",
-                    v => _from = v },
-                { "to=", "指定需要恢复的配置文件sscms.json路径或文件名",
-                    v => _to = v },
-                { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
-                    v => _includes = v == null ? null : ListUtils.GetStringList(v) },
-                { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                    v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
-                { "max-rows=", "指定需要备份的表的最大行数",
-                    v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
-                { "h|help",  "Display help",
-                    v => _isHelp = v != null }
+                {
+                    "d|directory=", "Backup folder name",
+                    v => _directory = v
+                },
+                {
+                    "from=", "Specify the path or file name of sscms.json configuration file that you want to backup",
+                    v => _from = v
+                },
+                {
+                    "to=", "Specify the path or file name of sscms.json configuration file that you want to restore",
+                    v => _to = v
+                },
+                {
+                    "includes=", "Include table names, separated by commas, default backup all tables",
+                    v => _includes = v == null ? null : ListUtils.GetStringList(v)
+                },
+                {
+                    "excludes=", "Exclude table names, separated by commas",
+                    v => _excludes = v == null ? null : ListUtils.GetStringList(v)
+                },
+                {
+                    "max-rows=", "Maximum number of rows to backup, all data is backed up by default",
+                    v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v)
+                },
+                {
+                    "page-size=", "The number of rows fetch at a time, 2000 by default",
+                    v => _pageSize = v == null ? CliConstants.DefaultPageSize : TranslateUtils.ToInt(v)
+                },
+                {
+                    "h|help", "Display help",
+                    v => _isHelp = v != null
+                }
             };
         }
 
@@ -115,7 +135,7 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Tracking");
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
-            await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, treeInfo, errorLogFilePath);
+            await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, _pageSize, treeInfo, errorLogFilePath);
 
             var restoreConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _to);
             if (!FileUtils.IsFileExists(restoreConfigPath))

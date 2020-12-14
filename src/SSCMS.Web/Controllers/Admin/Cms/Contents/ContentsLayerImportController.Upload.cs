@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
@@ -26,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var fileName = Path.GetFileName(file.FileName);
@@ -34,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal));
             if (!StringUtils.EqualsIgnoreCase(extendName, ".zip") && !StringUtils.EqualsIgnoreCase(extendName, ".csv") && !StringUtils.EqualsIgnoreCase(extendName, ".txt"))
             {
-                return this.Error("请选择有效的文件上传!");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);

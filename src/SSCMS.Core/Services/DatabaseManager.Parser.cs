@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using Dapper;
+using Datory;
 
 namespace SSCMS.Core.Services
 {
     public partial class DatabaseManager
     {
-        public List<KeyValuePair<int, Dictionary<string, object>>> ParserGetSqlDataSource(string connectionString, string queryString)
+        public List<KeyValuePair<int, Dictionary<string, object>>> ParserGetSqlDataSource(DatabaseType databaseType, string connectionString, string queryString)
         {
             var rows = new List<KeyValuePair<int, Dictionary<string, object>>>();
             var itemIndex = 0;
-            using (var connection = GetConnection(connectionString))
+            using (var connection = GetConnection(databaseType, connectionString))
             {
                 using var reader = connection.ExecuteReader(queryString);
                 while (reader.Read())

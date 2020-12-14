@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -18,14 +19,18 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             if (file == null)
             {
-                return this.Error("请选择有效的文件上传");
+                return this.Error(Constants.ErrorUpload);
             }
 
             var fileName = Path.GetFileName(file.FileName);
 
             if (!_pathManager.IsFileExtensionAllowed(site, PathUtils.GetExtension(fileName)))
             {
-                return this.Error("文件格式不正确，请更换文件上传!");
+                return this.Error(Constants.ErrorFileExtensionAllowed);
+            }
+            if (!_pathManager.IsFileSizeAllowed(site, file.Length))
+            {
+                return this.Error(Constants.ErrorFileSizeAllowed);
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.File);

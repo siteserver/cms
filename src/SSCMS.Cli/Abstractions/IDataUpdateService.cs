@@ -17,8 +17,6 @@ namespace SSCMS.Cli.Abstractions
         Task UpdateSplitContentsTableInfoAsync(Dictionary<int, TableInfo> splitSiteTableDict,
             List<int> siteIdList, string oldTableName, TableInfo oldTableInfo, ConvertInfo converter);
 
-        Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo,
-            List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract,
-            List<string> tableNameListForJob);
+        Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo);
     }
 }

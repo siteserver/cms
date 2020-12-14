@@ -1079,7 +1079,7 @@ namespace SSCMS.Core.Services
             return PathUtils.IsFileExtensionAllowed(site.VideoUploadExtensions, fileExtension);
         }
 
-        public bool IsVideoSizeAllowed(Site site, int contentLength)
+        public bool IsVideoSizeAllowed(Site site, long contentLength)
         {
             return contentLength <= site.VideoUploadTypeMaxSize * 1024;
         }
@@ -1089,7 +1089,7 @@ namespace SSCMS.Core.Services
             return PathUtils.IsFileExtensionAllowed(site.AudioUploadExtensions, fileExtension);
         }
 
-        public bool IsAudioSizeAllowed(Site site, int contentLength)
+        public bool IsAudioSizeAllowed(Site site, long contentLength)
         {
             return contentLength <= site.AudioUploadTypeMaxSize * 1024;
         }
@@ -1100,57 +1100,9 @@ namespace SSCMS.Core.Services
             return PathUtils.IsFileExtensionAllowed(typeCollection, fileExtension);
         }
 
-        public bool IsFileSizeAllowed(Site site, int contentLength)
+        public bool IsFileSizeAllowed(Site site, long contentLength)
         {
             return contentLength <= site.FileUploadTypeMaxSize * 1024;
-        }
-
-        public bool IsUploadExtensionAllowed(UploadType uploadType, Site site, string fileExtension)
-        {
-            if (uploadType == UploadType.Image)
-            {
-                return IsImageExtensionAllowed(site, fileExtension);
-            }
-
-            if (uploadType == UploadType.Video)
-            {
-                return IsVideoExtensionAllowed(site, fileExtension);
-            }
-
-            if (uploadType == UploadType.Audio)
-            {
-                return IsAudioExtensionAllowed(site, fileExtension);
-            }
-
-            if (uploadType == UploadType.File)
-            {
-                return IsFileExtensionAllowed(site, fileExtension);
-            }
-            return false;
-        }
-
-        public bool IsUploadSizeAllowed(UploadType uploadType, Site site, int contentLength)
-        {
-            if (uploadType == UploadType.Image)
-            {
-                return IsImageSizeAllowed(site, contentLength);
-            }
-
-            if (uploadType == UploadType.Video)
-            {
-                return IsVideoSizeAllowed(site, contentLength);
-            }
-
-            if (uploadType == UploadType.Audio)
-            {
-                return IsAudioSizeAllowed(site, contentLength);
-            }
-
-            if (uploadType == UploadType.File)
-            {
-                return IsFileSizeAllowed(site, contentLength);
-            }
-            return false;
         }
 
         public string GetBinDirectoryPath(string relatedPath)

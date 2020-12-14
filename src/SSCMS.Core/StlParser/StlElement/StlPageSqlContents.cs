@@ -133,7 +133,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
                     var pageSqlString = ParseManager.DatabaseManager.GetStlPageSqlString(SqlString, ListInfo.Order, totalNum, ListInfo.PageNum, currentPageIndex);
 
-                    var dataSource = ParseManager.DatabaseManager.ParserGetSqlDataSource(ConnectionString, pageSqlString);
+                    var dataSource = ParseManager.DatabaseManager.ParserGetSqlDataSource(ListInfo.DatabaseType, ListInfo.ConnectionString, pageSqlString);
 
                     parsedContent = await ParseElementAsync(ParseManager, ListInfo, dataSource);
                 }

@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
         public class Options
         {
             public bool IsEditor { get; set; }
-            public bool IsLibrary { get; set; }
+            public bool IsMaterial { get; set; }
             public bool IsThumb { get; set; }
             public int ThumbWidth { get; set; }
             public int ThumbHeight { get; set; }

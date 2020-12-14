@@ -10,7 +10,7 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt('siteId'),
     isEditor: false,
-    isLibrary: true,
+    isMaterial: true,
     isThumb: false,
     thumbWidth: 500,
     thumbHeight: 500,
@@ -47,7 +47,7 @@ var methods = {
       var res = response.data;
 
       $this.form.isEditor = res.isEditor;
-      $this.form.isLibrary = res.isLibrary;
+      $this.form.isMaterial = res.isMaterial;
       $this.form.isThumb = res.isThumb;
       $this.form.thumbWidth = res.thumbWidth;
       $this.form.thumbHeight = res.thumbHeight;

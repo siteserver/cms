@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Datory.Utils;
+using Microsoft.AspNetCore.Builder;
 using SSCMS.Dto;
 
 namespace SSCMS.Utils
@@ -122,6 +123,12 @@ namespace SSCMS.Utils
         public static Dictionary<string, object> ToDictionary(string json)
         {
             return Utilities.ToDictionary(json);
+        }
+
+        public static object GetValueIgnoreCase(IDictionary<string, object> dict, string key)
+        {
+            var item = dict?.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.Key, key));
+            return item?.Value;
         }
     }
 }

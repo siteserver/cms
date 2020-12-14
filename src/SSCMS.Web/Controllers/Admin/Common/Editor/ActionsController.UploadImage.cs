@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -20,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             {
                 return new UploadImageResult
                 {
-                    Error = "请选择有效的文件上传"
+                    Error = Constants.ErrorUpload
                 };
             }
 
@@ -31,7 +32,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             {
                 return new UploadImageResult
                 {
-                    Error = "请选择有效的文件上传"
+                    Error = Constants.ErrorImageExtensionAllowed
+                };
+            }
+            if (!_pathManager.IsImageSizeAllowed(site, file.Length))
+            {
+                return new UploadImageResult
+                {
+                    Error = Constants.ErrorImageSizeAllowed
                 };
             }
 
