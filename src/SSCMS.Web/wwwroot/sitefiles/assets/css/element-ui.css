@@ -123,3 +123,7 @@ body, textarea {
 .form-fixed .el-form-item--mini.el-form-item, .form-fixed .el-form-item--small.el-form-item {
   min-width: 350px;
 }
+
+.el-progress-bar__outer {
+  background-color: #909399 !important;
+}
