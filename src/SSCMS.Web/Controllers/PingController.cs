@@ -1,39 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers
 {
     [Route("api/ping")]
-    public class PingController : ControllerBase
+    public partial class PingController : ControllerBase
     {
         private const string Route = "";
+        private const string RouteIp = "ip";
+        private const string RouteStatus = "status";
 
-        //private readonly ISettingsManager _settingsManager;
-        //private readonly ITaskManager _taskManager;
+        private readonly ISettingsManager _settingsManager;
 
-        //public PingController(ISettingsManager settingsManager, ITaskManager taskManager)
-        //{
-        //    _settingsManager = settingsManager;
-        //    _taskManager = taskManager;
-        //}
-
-        [OpenApiOperation("Ping 可用性 API", "Ping用于确定 API 是否可以访问，使用GET发起请求，请求地址为/api/ping，此接口可以直接访问，无需身份验证。")]
-        [HttpGet, Route(Route)]
-        public string Get()
+        public PingController(ISettingsManager settingsManager)
         {
-            //_taskManager.Queue(async cancel =>
-            //{
-            //    var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "test.txt");
-            //    await FileUtils.WriteTextAsync(filePath, "my name");
-            //});
+            _settingsManager = settingsManager;
+        }
 
-            //_taskManager.RunOnceAt(async () =>
-            //{
-            //    var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "test.txt");
-            //    await FileUtils.WriteTextAsync(filePath, DateTime.Now.ToString(CultureInfo.InvariantCulture));
-            //}, DateTime.Now.AddSeconds(10));
-
-            return "pong";
+        public class StatusResult
+        {
+            public string Name { get; set; }
+            public string Env { get; set; }
+            public bool Containerized { get; set; }
+            public string Version { get; set; }
+            public bool IsDatabaseWorks { get; set; }
+            public bool IsRedisWorks { get; set; }
         }
     }
 }

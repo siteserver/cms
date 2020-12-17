@@ -27,7 +27,7 @@ namespace SSCMS.Core.Extensions
         {
             services.AddCacheManagerConfiguration(async settings =>
             {
-                var isBackPlane = false;
+                var isRedis = false;
                 if (!string.IsNullOrEmpty(redisConnectionString))
                 {
                     var redis = new Redis(redisConnectionString);
@@ -35,9 +35,6 @@ namespace SSCMS.Core.Extensions
                     if (isConnectionWorks)
                     {
                         settings
-                            .WithMicrosoftMemoryCacheHandle()
-                            .WithExpiration(ExpirationMode.None, TimeSpan.Zero)
-                            .And
                             .WithRedisConfiguration("redis", config =>
                             {
                                 if (!string.IsNullOrEmpty(redis.Password))
@@ -59,11 +56,11 @@ namespace SSCMS.Core.Extensions
                             .WithRedisBackplane("redis")
                             .WithRedisCacheHandle("redis");
 
-                        isBackPlane = true;
+                        isRedis = true;
                     }
                 }
 
-                if (!isBackPlane)
+                if (!isRedis)
                 {
                     settings
                         .WithMicrosoftMemoryCacheHandle()

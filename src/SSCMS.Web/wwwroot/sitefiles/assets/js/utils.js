@@ -527,6 +527,7 @@ var utils = {
       resize: !config.max,
       shadeClose: true,
       content: config.url,
+      success: config.success
     });
 
     if (config.max) {

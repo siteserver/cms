@@ -13,140 +13,58 @@
 
 <div style="height: 10px"></div>
 
-<template v-if="pageType === 'role'">
-
-  <el-form ref="form" :model="form" size="small" status-icon label-width="110px">
-    <el-form-item label="角色名称" prop="roleName" :rules="[{ required: true, message: '请输入角色名称' }]">
-      <el-input v-model="form.roleName" :disabled="roleId > 0"></el-input>
-      <small class="tips">唯一标识此角色的字符串</small>
-    </el-form-item>
-    <el-form-item label="备注">
-      <el-input v-model="form.description"></el-input>
-    </el-form-item>
-    <el-form-item label="系统权限设置">
-      <el-checkbox :indeterminate="isSystemIndeterminate" v-model="systemCheckAll" style="margin-left: 10px;" v-on:change="handleSystemCheckAllChange">全选</el-checkbox>
-      <div></div>
-      <el-checkbox-group v-model="form.checkedPermissions" v-on:change="handleCheckedPermissionsChange">
-        <el-checkbox v-for="permission in allPermissions" :label="permission" :key="permission">{{getPermissionText(permission)}}</el-checkbox>
-      </el-checkbox-group>
-    </el-form-item>
-    <el-form-item label="站点权限设置">
-      <el-alert
-        :closable="false"
-        title="点击进入站点权限设置界面，绿色代表有权限，灰色代表无权限，设置站点权限后需再次点击保存"
-        type="warning">
-      </el-alert>
-  
-      <div style="height:10px"></div>
-  
-      <el-row :gutter="20">
-        <el-col :span="8" v-for="site in sites" style="margin-bottom: 20px;">
-          <el-card>
-            <div slot="header" class="clearfix">
-              <span :class="checkedSiteIds.indexOf(site.id) !== -1 ? 'hasPermission' : 'noPermission'">{{site.siteName}}</span>
-              <el-button style="float: right; font-size: 14px;" type="text" v-on:click="btnPermissionClick(site)">权限设置</el-button>
-            </div>
-            <div :class="checkedSiteIds.indexOf(site.id) !== -1 ? 'hasPermission' : 'noPermission'">
-              文件夹：{{site.siteDir}}
-            </div>
-            <div :class="checkedSiteIds.indexOf(site.id) !== -1 ? 'hasPermission' : 'noPermission'">
-              内容表：{{site.tableName}}
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </el-form-item>
-  </el-form>
-
-  <el-divider></el-divider>
-  <div style="height: 10px"></div>
-
-  <el-row>
-    <el-col :span="24" align="center">
-      <el-button type="primary" v-on:click="btnSaveClick" size="small">保 存</el-button>
-      <el-button size="small" v-on:click="btnCloseClick">关 闭</el-button>
-    </el-col>
-  </el-row>
-
-</template>
-
-<template v-else-if="pageType === 'permissions'">
-
-  <el-form ref="form" :model="form" size="small" status-icon label-width="160px">
-    <el-form-item label="站点">
-      {{site.siteName}}
-    </el-form-item>
-
-    <el-divider></el-divider>
+<el-form ref="form" :model="form" size="small" status-icon label-width="110px">
+  <el-form-item label="角色名称" prop="roleName" :rules="[{ required: true, message: '请输入角色名称' }]">
+    <el-input v-model="form.roleName" :disabled="roleId > 0"></el-input>
+    <small class="tips">唯一标识此角色的字符串</small>
+  </el-form-item>
+  <el-form-item label="备注">
+    <el-input v-model="form.description"></el-input>
+  </el-form-item>
+  <el-form-item label="系统权限设置">
+    <el-checkbox :indeterminate="isSystemIndeterminate" v-model="systemCheckAll" style="margin-left: 10px;" v-on:change="handleSystemCheckAllChange">全选</el-checkbox>
+    <div></div>
+    <el-checkbox-group v-model="form.checkedPermissions" v-on:change="handleCheckedPermissionsChange">
+      <el-checkbox v-for="permission in allPermissions" :label="permission" :key="permission">{{getPermissionText(permission)}}</el-checkbox>
+    </el-checkbox-group>
+  </el-form-item>
+  <el-form-item label="站点权限设置">
     <el-alert
-      title="从下边选择站点菜单"
-      type="warning"
-      :closable="false">
+      :closable="false"
+      title="点击进入站点权限设置界面，绿色代表有权限，灰色代表无权限，设置站点权限后需再次点击保存"
+      type="warning">
     </el-alert>
-    <div style="height:5px"></div>
 
-    <el-form-item label="站点菜单设置">
-      <el-checkbox :indeterminate="permissionInfo.isSiteIndeterminate" v-model="permissionInfo.siteCheckAll" style="margin-left: 10px;" v-on:change="handleSiteCheckAllChange">全选</el-checkbox>
-      <div></div>
-      <el-checkbox-group v-model="permissionInfo.checkedSitePermissions" v-on:change="handleCheckedSitePermissionsChange">
-        <el-checkbox v-for="permission in permissionInfo.allSitePermissions" :label="permission" :key="permission">{{getSitePermissionText(permission)}}</el-checkbox>
-      </el-checkbox-group>
-    </el-form-item>
+    <div style="height:10px"></div>
 
-    <el-divider></el-divider>
-    <el-alert
-      title="从下边选择有权限管理的栏目"
-      type="warning"
-      :closable="false">
-    </el-alert>
-    <div style="height:5px"></div>
-    
-    <el-form-item label="可管理栏目">
-      <el-tree
-        :data="treeData"
-        ref="tree"
-        show-checkbox
-        check-strictly
-        node-key="id"
-        :check-on-click-node="false"
-        :default-expanded-keys="defaultExpandedKeys"
-        :default-checked-keys="permissionInfo.checkedChannelIds"
-        :expand-on-click-node="true"
-        v-on:check-change="handleTreeChanged">
-        <span class="custom-tree-node" slot-scope="{ node, data }">
-          {{ data.channelName }}
-        </span>
-      </el-tree>
-    </el-form-item>
+    <el-row :gutter="20">
+      <el-col :span="8" v-for="site in sites" style="margin-bottom: 20px;">
+        <el-card :class="getSitePermission(site.id) ? 'hasPermission' : 'noPermission'">
+          <div slot="header" class="clearfix">
+            <span >{{site.siteName}}</span>
+            <el-button style="float: right; font-size: 14px;" type="text" v-on:click="btnPermissionClick(site)">权限设置</el-button>
+          </div>
+          <div>
+            文件夹：{{site.siteDir}}
+          </div>
+          <div>
+            内容表：{{site.tableName}}
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </el-form-item>
+</el-form>
 
-    <el-form-item label="可管理栏目：栏目权限">
-      <el-checkbox :indeterminate="permissionInfo.isChannelIndeterminate" v-model="permissionInfo.channelCheckAll" style="margin-left: 10px;" v-on:change="handleChannelCheckAllChange">全选</el-checkbox>
-      <div></div>
-      <el-checkbox-group v-model="permissionInfo.checkedChannelPermissions" v-on:change="handleCheckedChannelPermissionsChange">
-        <el-checkbox v-for="permission in permissionInfo.allChannelPermissions" :label="permission" :key="permission">{{getChannelPermissionText(permission)}}</el-checkbox>
-      </el-checkbox-group>
-    </el-form-item>
-    <el-form-item label="可管理栏目：内容权限">
-      <el-checkbox :indeterminate="permissionInfo.isContentIndeterminate" v-model="permissionInfo.contentCheckAll" style="margin-left: 10px;" v-on:change="handleContentCheckAllChange">全选</el-checkbox>
-      <div></div>
-      <el-checkbox-group v-model="permissionInfo.checkedContentPermissions" v-on:change="handleCheckedContentPermissionsChange">
-        <el-checkbox v-for="permission in permissionInfo.allContentPermissions" :label="permission" :key="permission">{{getContentPermissionText(permission)}}</el-checkbox>
-      </el-checkbox-group>
-    </el-form-item>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
 
-  </el-form>
-
-  <el-divider></el-divider>
-  <div style="height: 10px"></div>
-
-  <el-row>
-    <el-col :span="24" align="center">
-      <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
-      <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
-    </el-col>
-  </el-row>
-
-</template>
+<el-row>
+  <el-col :span="24" align="center">
+    <el-button type="primary" v-on:click="btnSubmitClick" size="small">保 存</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
 
 @section Scripts{
 <script src="/sitefiles/assets/js/admin/settings/administratorsRoleAdd.js" type="text/javascript"></script> }

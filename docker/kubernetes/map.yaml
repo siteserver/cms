@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: sscms-config-maps
-data:
-  ASPNETCORE_ENVIRONMENT: Production
