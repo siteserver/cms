@@ -30,12 +30,12 @@ namespace SSCMS.Core.Services
 
         public async Task<string> GetAdminLevelAsync()
         {
-            if (await IsSiteAdminAsync())
+            if (await IsSuperAdminAsync())
             {
                 return "超级管理员";
             }
 
-            return await IsSiteAdminAsync() ? "站点总管理员" : "普通管理员";
+            return await IsSiteAdminAsync() ? "站点管理员" : "普通管理员";
         }
 
         public async Task<List<int>> GetSiteIdsAsync()

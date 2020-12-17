@@ -39,6 +39,14 @@ var methods = {
     });
   },
 
+  btnAdminViewClick: function(userName) {
+    utils.openLayer({
+      title: '查看资料',
+      url: utils.getCommonUrl('adminLayerView', {userName: userName}),
+      full: true
+    });
+  },
+
   btnAddClick: function() {
     utils.addTab('添加角色', utils.getSettingsUrl('administratorsRoleAdd'));
   },

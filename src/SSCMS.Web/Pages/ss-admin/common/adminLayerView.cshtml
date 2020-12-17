@@ -16,6 +16,8 @@
       <colgroup>
         <col width="180" />
         <col />
+        <col width="180" />
+        <col />
       </colgroup>
       <tbody>
         <tr class="el-table__row">
@@ -27,8 +29,6 @@
           <td rowspan="1" colspan="1">
             <div class="cell">{{ administrator.id }}</div>
           </td>
-        </tr>
-        <tr class="el-table__row">
           <td rowspan="1" colspan="1">
             <div class="cell">
               <strong>账号</strong>
@@ -47,56 +47,17 @@
           <td rowspan="1" colspan="1">
             <div class="cell">{{ administrator.displayName }}</div>
           </td>
-        </tr>
-        <tr class="el-table__row">
           <td rowspan="1" colspan="1">
             <div class="cell">
-              <strong>级别</strong>
+              <strong>头像</strong>
             </div>
           </td>
           <td rowspan="1" colspan="1">
-            <div class="cell" v-html="level"></div>
-          </td>
-        </tr>
-        <tr v-if="isOrdinaryAdmin" class="el-table__row">
-          <td rowspan="1" colspan="1">
             <div class="cell">
-              <strong>角色</strong>
+              <el-avatar :size="40" :src="administrator.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
             </div>
           </td>
-          <td rowspan="1" colspan="1">
-            <div class="cell" v-html="roleNames"></div>
-          </td>
         </tr>
-        <tr v-if="!isSuperAdmin" class="el-table__row">
-          <td rowspan="1" colspan="1">
-            <div class="cell">
-              <strong>可管理站点</strong>
-            </div>
-          </td>
-          <td rowspan="1" colspan="1">
-            <div class="cell" v-html="siteNames"></div>
-          </td>
-        </tr>
-        <tr class="el-table__row">
-          <td rowspan="1" colspan="1">
-            <div class="cell">
-              <strong>创建时间</strong>
-            </div>
-          </td>
-          <td rowspan="1" colspan="1">
-            <div class="cell">{{ administrator.creationDate }}</div>
-          </td>
-        </tr>
-        <tr class="el-table__row">
-          <td rowspan="1" colspan="1">
-            <div class="cell">
-              <strong>最后登录时间</strong>
-            </div>
-          </td>
-          <td rowspan="1" colspan="1">
-            <div class="cell">{{ administrator.lastActivityDate }}</div>
-          </td>
         </tr>
         <tr class="el-table__row">
           <td rowspan="1" colspan="1">
@@ -107,8 +68,6 @@
           <td rowspan="1" colspan="1">
             <div class="cell">{{ administrator.mobile }}</div>
           </td>
-        </tr>
-        <tr class="el-table__row">
           <td rowspan="1" colspan="1">
             <div class="cell">
               <strong>电子邮箱</strong>
@@ -116,6 +75,62 @@
           </td>
           <td rowspan="1" colspan="1">
             <div class="cell">{{ administrator.email }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>级别</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell" v-html="level"></div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>角色</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell" v-html="roleNames"></div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>可管理站点</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="3">
+            <div class="cell" v-html="siteNames"></div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>创建人</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ administrator.creatorUserName }}</div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>创建时间</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">{{ administrator.createdDate }}</div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>最后登录时间</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="3">
+            <div class="cell">{{ administrator.lastActivityDate }}</div>
           </td>
         </tr>
       </tbody>

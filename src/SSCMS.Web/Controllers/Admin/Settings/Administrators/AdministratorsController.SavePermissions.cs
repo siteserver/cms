@@ -16,11 +16,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            if (!await _authManager.IsSuperAdminAsync())
-            {
-                return Unauthorized();
-            }
-
             var adminInfo = await _administratorRepository.GetByUserIdAsync(adminId);
 
             await _administratorsInRolesRepository.RemoveUserAsync(adminInfo.UserName);

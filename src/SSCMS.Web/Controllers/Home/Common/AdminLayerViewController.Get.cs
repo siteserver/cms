@@ -27,31 +27,20 @@ namespace SSCMS.Web.Controllers.Home.Common
             var permissions = new AuthManager(_context, _settingsManager, _databaseManager);
             permissions.Init(admin);
             var level = await permissions.GetAdminLevelAsync();
-            var isSuperAdmin = await permissions.IsSuperAdminAsync();
             var siteNames = new List<string>();
-            if (!isSuperAdmin)
+            var siteIdListWithPermissions = await permissions.GetSiteIdsAsync();
+            foreach (var siteId in siteIdListWithPermissions)
             {
-                var siteIdListWithPermissions = await permissions.GetSiteIdsAsync();
-                foreach (var siteId in siteIdListWithPermissions)
-                {
-                    var site = await _siteRepository.GetAsync(siteId);
-                    siteNames.Add(site.SiteName);
-                }
+                var site = await _siteRepository.GetAsync(siteId);
+                siteNames.Add(site.SiteName);
             }
-            var isOrdinaryAdmin = !await permissions.IsSuperAdminAsync();
-            var roleNames = string.Empty;
-            if (isOrdinaryAdmin)
-            {
-                roleNames = await _administratorRepository.GetRolesAsync(admin.UserName);
-            }
+            var roleNames = await _administratorRepository.GetRolesAsync(admin.UserName);
 
             return new GetResult
             {
                 Administrator = admin,
                 Level = level,
-                IsSuperAdmin = isSuperAdmin,
                 SiteNames = ListUtils.ToString(siteNames, "<br />"),
-                IsOrdinaryAdmin = isOrdinaryAdmin,
                 RoleNames = roleNames
             };
         }

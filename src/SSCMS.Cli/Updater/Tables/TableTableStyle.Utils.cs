@@ -35,14 +35,24 @@ namespace SSCMS.Cli.Updater.Tables
             {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), _databaseManager.ChannelRepository.TableName}
         };
 
-        private static Dictionary<string, object> Process(Dictionary<string, object> row)
+        private Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue("IsVisible", out var isVisible))
+            if (row.TryGetValue(IsVisible, out var contentObj))
             {
-                if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
+                if (contentObj != null && StringUtils.EqualsIgnoreCase(contentObj.ToString(), "False"))
                 {
                     row[nameof(TableStyle.InputType)] = Enums.InputType.Hidden.GetValue();
                 }
+            }
+            if (row.TryGetValue(IsVisibleInList, out contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(TableStyle.List)] = value;
+            }
+            if (row.TryGetValue(IsHorizontal, out contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(TableStyle.Horizontal)] = value;
             }
 
             return row;

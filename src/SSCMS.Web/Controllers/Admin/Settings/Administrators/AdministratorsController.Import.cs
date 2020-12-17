@@ -62,7 +62,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                             UserName = userName,
                             DisplayName = displayName,
                             Mobile = mobile,
-                            Email = email
+                            Email = email,
+                            CreatorUserName = _authManager.UserName
                         }, password);
                         if (!isValid)
                         {

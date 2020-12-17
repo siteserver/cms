@@ -41,9 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
         {
             public Administrator Administrator { get; set; }
             public string Level { get; set; }
-            public bool IsSuperAdmin { get; set; }
             public string SiteNames { get; set; }
-            public bool IsOrdinaryAdmin { get; set; }
             public string RoleNames { get; set; }
         }
     }

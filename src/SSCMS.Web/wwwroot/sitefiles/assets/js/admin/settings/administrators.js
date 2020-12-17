@@ -101,7 +101,7 @@ var methods = {
   btnViewClick: function(row) {
     utils.openLayer({
       title: '查看资料',
-      url: utils.getSettingsUrl('administratorsLayerView', {pageType: 'admin', userId: row.id}),
+      url: utils.getCommonUrl('adminLayerView', {adminId: row.id}),
       full: true
     });
   },

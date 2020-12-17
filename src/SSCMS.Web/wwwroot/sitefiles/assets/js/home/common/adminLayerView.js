@@ -5,9 +5,7 @@ var data = utils.init({
   userName: utils.getQueryString('userName'),
   administrator: null,
   level: null,
-  isSuperAdmin: null,
   siteNames: null,
-  isOrdinaryAdmin: null,
   roleNames: null
 });
 
@@ -26,9 +24,7 @@ var methods = {
 
       $this.administrator = res.administrator;
       $this.level = res.level;
-      $this.isSuperAdmin = res.isSuperAdmin;
       $this.siteNames = res.siteNames;
-      $this.isOrdinaryAdmin = res.isOrdinaryAdmin;
       $this.roleNames = res.roleNames;
     }).catch(function (error) {
       utils.error(error);

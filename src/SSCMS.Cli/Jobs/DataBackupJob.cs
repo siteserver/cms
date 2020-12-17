@@ -19,7 +19,7 @@ namespace SSCMS.Cli.Jobs
         private List<string> _includes;
         private List<string> _excludes;
         private int _maxRows;
-        private int _pageSize;
+        private int _pageSize = CliConstants.DefaultPageSize;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
@@ -49,7 +49,7 @@ namespace SSCMS.Cli.Jobs
                     v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v)
                 },
                 {
-                    "page-size=", "The number of rows fetch at a time, 2000 by default",
+                    "page-size=", "The number of rows fetch at a time, 1000 by default",
                     v => _pageSize = v == null ? CliConstants.DefaultPageSize : TranslateUtils.ToInt(v)
                 },
                 {

@@ -78,20 +78,40 @@ namespace SSCMS.Cli.Updater
         {
             if (row.TryGetValue(nameof(Content), out var contentObj))
             {
-                var content = contentObj.ToString();
-                content = content.Replace("@upload", "@/upload");
-                row[nameof(SSCMS.Models.Content.Body)] = content;
+                var value = contentObj.ToString();
+                value = value.Replace("@upload", "@/upload");
+                row[nameof(SSCMS.Models.Content.Body)] = value;
             }
             if (row.TryGetValue(nameof(SettingsXml), out contentObj))
             {
-                var content = contentObj.ToString();
-                content = content.Replace("@upload", "@/upload");
-                row["ExtendValues"] = content;
+                var value = contentObj.ToString();
+                value = value.Replace("@upload", "@/upload");
+                row["ExtendValues"] = value;
             }
             if (row.TryGetValue(nameof(IsChecked), out contentObj))
             {
-                var isChecked = TranslateUtils.ToBool(contentObj.ToString());
-                row[nameof(SSCMS.Models.Content.Checked)] = isChecked;
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(SSCMS.Models.Content.Checked)] = value;
+            }
+            if (row.TryGetValue(nameof(IsHot), out contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(SSCMS.Models.Content.Hot)] = value;
+            }
+            if (row.TryGetValue(nameof(IsColor), out contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(SSCMS.Models.Content.Color)] = value;
+            }
+            if (row.TryGetValue(nameof(IsRecommend), out contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(SSCMS.Models.Content.Recommend)] = value;
+            }
+            if (row.TryGetValue(nameof(IsTop), out contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(SSCMS.Models.Content.Top)] = value;
             }
 
             return row;

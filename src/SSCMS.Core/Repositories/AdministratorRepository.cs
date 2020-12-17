@@ -236,10 +236,12 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(role))
             {
                 var userNames = await _administratorsInRolesRepository.GetUsersInRoleAsync(role);
-                if (userNames != null && userNames.Any())
+                if (userNames == null || userNames.Count == 0)
                 {
-                    query.WhereIn(nameof(Administrator.UserName), userNames);
+                    return new List<Administrator>();
                 }
+
+                query.WhereIn(nameof(Administrator.UserName), userNames);
             }
 
             if (!string.IsNullOrEmpty(order))

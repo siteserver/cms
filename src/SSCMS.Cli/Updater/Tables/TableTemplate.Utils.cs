@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Updater.Tables
 {
@@ -17,7 +18,8 @@ namespace SSCMS.Cli.Updater.Tables
             NewTableName = NewTableName,
             NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
+            ConvertValueDict = ConvertValueDict,
+            Process = Process
         };
 
         private string NewTableName => _databaseManager.TemplateRepository.TableName;
@@ -32,5 +34,16 @@ namespace SSCMS.Cli.Updater.Tables
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
+
+        private static Dictionary<string, object> Process(Dictionary<string, object> row)
+        {
+            if (row.TryGetValue(nameof(IsDefault), out var contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(Template.DefaultTemplate)] = value;
+            }
+
+            return row;
+        }
     }
 }

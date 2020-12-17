@@ -18,7 +18,7 @@
       <el-option label="<默认>" value=""></el-option>
       <el-option label="登录名称" value="UserName"></el-option>
       <el-option label="最后登录日期" value="LastActivityDate"></el-option>
-      <el-option label="创建日期" value="CreationDate"></el-option>
+      <el-option label="创建日期" value="CreatedDate"></el-option>
       <el-option label="登录次数" value="CountOfLogin"></el-option>
     </el-select>
   </el-form-item>
@@ -101,7 +101,6 @@
           v-on:click="btnPasswordClick(scope.row)">更改密码</el-button>
         <el-button
           size="mini"
-          v-if="isSuperAdmin"
           v-on:click="btnPermissionsClick(scope.row)">权限设置</el-button>
         <el-button
           v-if="scope.row.locked"
@@ -159,12 +158,12 @@
     <el-form ref="form" :model="permissionInfo" label-width="140px">
       <el-form-item label="管理员级别">
         <el-select v-model="permissionInfo.adminLevel" placeholder="请选择管理员级别">
-          <el-option label="超级管理员" value="SuperAdmin"></el-option>
-          <el-option label="站点管理员" value="SiteAdmin"></el-option>
+          <el-option v-if="isSuperAdmin" label="超级管理员" value="SuperAdmin"></el-option>
+          <el-option v-if="isSuperAdmin" label="站点管理员" value="SiteAdmin"></el-option>
           <el-option label="普通管理员" value="Admin"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item v-if="permissionInfo.adminLevel === 'SiteAdmin'" label="可以管理的站点">
+      <el-form-item v-if="isSuperAdmin && permissionInfo.adminLevel === 'SiteAdmin'" label="可以管理的站点">
         <el-checkbox-group v-model="permissionInfo.checkedSites">
           <el-checkbox v-for="site in permissionInfo.allSites" :label="site.id" :key="site.id">{{site.siteName}}</el-checkbox>
         </el-checkbox-group>
