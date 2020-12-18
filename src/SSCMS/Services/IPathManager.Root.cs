@@ -1,4 +1,5 @@
-﻿using SSCMS.Models;
+﻿using System.Threading.Tasks;
+using SSCMS.Models;
 
 namespace SSCMS.Services
 {
@@ -48,22 +49,24 @@ namespace SSCMS.Services
 
         string GetApiUrl(params string[] paths);
 
-        string GetDownloadApiUrl(int siteId, int channelId, int contentId, string fileUrl);
+        string GetApiUrl(Site site, bool isLocal);
 
-        string GetDownloadApiUrl(int siteId, string fileUrl);
+        string GetDownloadApiUrl(Site site, int channelId, int contentId, string fileUrl);
 
-        string GetDownloadApiUrl(bool isInner, string filePath);
+        string GetDownloadApiUrl(Site site, string fileUrl);
 
-        string GetDynamicApiUrl();
+        string GetDownloadApiUrl(string filePath);
 
-        string GetIfApiUrl();
+        string GetDynamicApiUrl(Site site);
 
-        string GetPageContentsApiUrl();
+        string GetIfApiUrl(Site site);
+
+        string GetPageContentsApiUrl(Site site);
 
         string GetPageContentsApiParameters(int siteId, int pageChannelId, int templateId, int totalNum, int pageCount,
             int currentPageIndex, string stlPageContentsElement);
 
-        string GetTriggerApiUrl(int siteId, int channelId, int contentId,
+        string GetTriggerApiUrl(Site site, int channelId, int contentId,
             int fileTemplateId, bool isRedirect);
     }
 }

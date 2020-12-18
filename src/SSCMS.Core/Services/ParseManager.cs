@@ -163,7 +163,7 @@ namespace SSCMS.Core.Services
                             fileTemplateId = PageInfo.Template.Id;
                         }
 
-                        var ajaxUrl = PathManager.GetTriggerApiUrl(PageInfo.SiteId, ContextInfo.ChannelId,
+                        var ajaxUrl = PathManager.GetTriggerApiUrl(PageInfo.Site, ContextInfo.ChannelId,
                             ContextInfo.ContentId, fileTemplateId, true);
                         if (!PageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
                         {

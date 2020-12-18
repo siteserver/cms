@@ -16,6 +16,9 @@ var data = utils.init({
     ],
     separatedAssetsUrl: [
       { required: true, message: '独立部署上传文件访问地址', trigger: 'blur' }
+    ],
+    separatedApiUrl: [
+      { required: true, message: '独立部署API访问地址', trigger: 'blur' }
     ]
   }
 });
@@ -45,7 +48,9 @@ var methods = {
       separatedWebUrl: site.separatedWebUrl,
       isSeparatedAssets: site.isSeparatedAssets,
       assetsDir: site.assetsDir,
-      separatedAssetsUrl: site.separatedAssetsUrl
+      separatedAssetsUrl: site.separatedAssetsUrl,
+      isSeparatedApi: site.isSeparatedApi,
+      separatedApiUrl: site.separatedApiUrl,
     };
     this.editPanel = true;
   },

@@ -3,6 +3,7 @@ var $urlSitePermission = '/settings/administratorsRoleAdd/actions/sitePermission
 
 var data = utils.init({
   roleId: utils.getQueryInt('roleId'),
+  tabName: utils.getQueryString('tabName'),
   pageType: null,
   form: {
     roleName: null,
@@ -58,49 +59,46 @@ var methods = {
     });
   },
 
-  apiSubmit: function () {
+  apiAdd: function () {
     var $this = this;
+    
     utils.loading(this, true);
+    $api.post($url, {
+      roleId: 0,
+      roleName: this.form.roleName,
+      description: this.form.description,
+      appPermissions: this.form.checkedPermissions,
+      sitePermissions: this.sitePermissions
+    }).then(function (response) {
+      var res = response.data;
 
-    if (this.roleId > 0) {
-      utils.loading(this, true);
-      $api.put($url + '/' + this.roleId, {
-        roleName: this.form.roleName,
-        description: this.form.description,
-        appPermissions: this.form.checkedPermissions,
-        sitePermissions: this.sitePermissions
-      }).then(function (response) {
-        var res = response.data;
-  
-        setTimeout(function() {
-          utils.removeTab();
-        }, 1000);
-        utils.success('角色保存成功！');
-      }).catch(function (error) {
-        utils.error(error);
-      }).then(function () {
-        utils.loading($this, false);
-      });
-    } else {
-      utils.loading(this, true);
-      $api.post($url, {
-        roleName: this.form.roleName,
-        description: this.form.description,
-        appPermissions: this.form.checkedPermissions,
-        sitePermissions: this.sitePermissions
-      }).then(function (response) {
-        var res = response.data;
-  
-        setTimeout(function() {
-          utils.removeTab();
-        }, 1000);
-        utils.success('角色保存成功！');
-      }).catch(function (error) {
-        utils.error(error);
-      }).then(function () {
-        utils.loading($this, false);
-      });
-    }
+      $this.closeAndRedirect(false);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiEdit: function () {
+    var $this = this;
+    
+    utils.loading(this, true);
+    $api.put($url, {
+      roleId: this.roleId,
+      roleName: this.form.roleName,
+      description: this.form.description,
+      appPermissions: this.form.checkedPermissions,
+      sitePermissions: this.sitePermissions
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.closeAndRedirect(true);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiSitePermission: function (siteId) {
@@ -133,6 +131,20 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  closeAndRedirect: function(isEdit) {
+    var tabVue = utils.getTabVue(this.tabName);
+    if (tabVue) {
+      if (isEdit) {
+        utils.success('角色编辑成功！');
+      } else {
+        utils.success('角色添加成功！');
+      }
+      tabVue.apiGet();
+    }
+    utils.removeTab();
+    utils.openTab(this.tabName);
   },
 
   getSitePermission: function(siteId) {
@@ -173,7 +185,11 @@ var methods = {
 
     this.$refs.form.validate(function(valid) {
       if (valid) {
-        $this.apiSubmit();
+        if ($this.roleId > 0) {
+          $this.apiEdit();
+        } else {
+          $this.apiAdd();
+        }
       }
     });
   },

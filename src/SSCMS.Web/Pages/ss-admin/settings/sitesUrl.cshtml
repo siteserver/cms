@@ -10,24 +10,29 @@
   <el-table-column prop="siteName" label="站点名称" :sortable="true">
     <template slot-scope="scope">
       <el-badge v-if="scope.row.root" style="margin-top: 10px;" value="主站">
-        <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
+        <el-link :underline="false" type="primary" :href="scope.row.web" target="_blank">{{scope.row.siteName}}</el-link>
       </el-badge>
-      <el-link :underline="false" type="primary" v-else :href="scope.row.siteUrl" target="_blank">{{scope.row.siteName}}</el-link>
+      <el-link :underline="false" type="primary" v-else :href="scope.row.web" target="_blank">{{scope.row.siteName}}</el-link>
     </template>
   </el-table-column>
-  <el-table-column prop="siteDir" label="站点文件夹" :sortable="true"></el-table-column>
-  <el-table-column prop="siteUrl" label="站点地址" :sortable="true">
+  <el-table-column prop="siteDir" label="站点文件夹" width="120" :sortable="true"></el-table-column>
+  <el-table-column prop="web" label="站点地址" :sortable="true">
     <template slot-scope="scope">
-      <el-link :underline="false" type="primary" :href="scope.row.siteUrl" target="_blank">{{scope.row.siteUrl}}</el-link>
+      <el-link :underline="false" type="primary" :href="scope.row.web" target="_blank">{{scope.row.web}}</el-link>
     </template>
   </el-table-column>
-  <el-table-column prop="assetsDir" label="上传文件夹" :sortable="true"></el-table-column>
-  <el-table-column prop="assetsUrl" label="上传地址" :sortable="true">
+  <el-table-column prop="assetsDir" label="上传文件夹" width="120" :sortable="true"></el-table-column>
+  <el-table-column prop="assets" label="上传地址" :sortable="true">
     <template slot-scope="scope">
-      <el-link :underline="false" type="primary" :href="scope.row.assetsUrl" target="_blank">{{scope.row.assetsUrl}}</el-link>
+      <el-link :underline="false" type="primary" :href="scope.row.assets" target="_blank">{{scope.row.assets}}</el-link>
     </template>
   </el-table-column>
-  <el-table-column align="center" label="操作" width="120">
+  <el-table-column prop="api" label="API地址" :sortable="true">
+    <template slot-scope="scope">
+      <el-link :underline="false" type="primary" :href="scope.row.api" target="_blank">{{scope.row.api}}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column align="center" label="操作" width="100">
     <template slot-scope="scope">
       <el-button-group>
         <el-button
@@ -49,6 +54,7 @@
   <div class="drawer__content">
     <el-form ref="editForm" :model="editForm" size="small" :rules="editRules" label-width="200px">
       <el-form-item label="站点名称">{{ editForm.siteName }}</el-form-item>
+
       <el-form-item label="站点部署方式">
         <el-radio-group v-model="editForm.isSeparatedWeb">
           <el-radio :label="true">站点独立部署</el-radio>
@@ -72,6 +78,18 @@
       </el-form-item>
       <el-form-item v-if="editForm.isSeparatedAssets" label="独立部署上传文件访问地址" prop="separatedAssetsUrl">
         <el-input v-model="editForm.separatedAssetsUrl"></el-input>
+      </el-form-item>
+
+      <el-form-item label="API部署方式">
+        <el-radio-group v-model="editForm.isSeparatedApi">
+          <el-radio :label="true">API独立部署</el-radio>
+          <el-radio :label="false">API与CMS部署在一起</el-radio>
+        </el-radio-group>
+        <div class="tips">设置API部署方式</div>
+      </el-form-item>
+      <el-form-item v-if="editForm.isSeparatedApi" label="独立部署API访问地址" prop="separatedApiUrl">
+        <el-input v-model="editForm.separatedApiUrl"></el-input>
+        <div class="tips">“/api”结尾字符串系统将自动添加</div>
       </el-form-item>
       
     </el-form>

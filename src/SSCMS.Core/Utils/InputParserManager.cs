@@ -276,14 +276,14 @@ namespace SSCMS.Core.Utils
             string retVal;
             if (isStlEntity)
             {
-                retVal = _pathManager.GetDownloadApiUrl(site.Id, channelId, contentId,
+                retVal = _pathManager.GetDownloadApiUrl(site, channelId, contentId,
                     fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(site.Id, channelId,
+                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(site, channelId,
                     contentId, fileUrl);
 
                 innerHtml = string.IsNullOrEmpty(innerHtml)
@@ -312,13 +312,13 @@ namespace SSCMS.Core.Utils
             string retVal;
             if (isStlEntity)
             {
-                retVal = _pathManager.GetDownloadApiUrl(site.Id, fileUrl);
+                retVal = _pathManager.GetDownloadApiUrl(site, fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl( site.Id, fileUrl);
+                linkAttributes["href"] = _pathManager.GetDownloadApiUrl( site, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

@@ -467,7 +467,7 @@ namespace SSCMS.Core.StlParser.StlElement
             };
             dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            var dynamicUrl = parseManager.PathManager.GetIfApiUrl();
+            var dynamicUrl = parseManager.PathManager.GetIfApiUrl(contextInfo.Site);
             return dynamicInfo.GetScript(dynamicUrl, true);
         }
 

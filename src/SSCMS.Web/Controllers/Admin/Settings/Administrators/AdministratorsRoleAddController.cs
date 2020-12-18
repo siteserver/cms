@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -8,8 +6,6 @@ using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
-using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -20,7 +16,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     {
         private const string Route = "settings/administratorsRoleAdd";
         private const string RouteSitePermission = "settings/administratorsRoleAdd/actions/sitePermission";
-        private const string RouteRoleId = "settings/administratorsRoleAdd/{roleId:int}";
 
         private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
@@ -65,8 +60,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             public List<SitePermissions> SitePermissions { get; set; }
         }
 
-        public class RoleRequest
+        public class SubmitRequest
         {
+            public int RoleId { get; set; }
             public string RoleName { get; set; }
             public string Description { get; set; }
             public List<string> AppPermissions { get; set; }

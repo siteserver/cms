@@ -33,16 +33,18 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public List<Site> Sites { get; set; }
         }
 
-        public class EditWebRequest : SiteRequest
+        public class SubmitRequest : SiteRequest
         {
             public bool IsSeparatedWeb { get; set; }
             public string SeparatedWebUrl { get; set; }
             public bool IsSeparatedAssets { get; set; }
             public string AssetsDir { get; set; }
             public string SeparatedAssetsUrl { get; set; }
+            public bool IsSeparatedApi { get; set; }
+            public string SeparatedApiUrl { get; set; }
         }
 
-        public class EditWebResult
+        public class SubmitResult
         {
             public List<Site> Sites { get; set; }
         }

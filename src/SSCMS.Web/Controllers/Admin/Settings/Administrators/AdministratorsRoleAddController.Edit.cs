@@ -9,16 +9,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsRoleAddController
     {
-        [HttpPut, Route(RouteRoleId)]
-        public async Task<ActionResult<BoolResult>> UpdateRole([FromRoute] int roleId, [FromBody] RoleRequest request)
+        [HttpPut, Route(Route)]
+        public async Task<ActionResult<BoolResult>> UpdateRole([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministratorsRole))
             {
                 return Unauthorized();
             }
 
-            var roleInfo = await _roleRepository.GetRoleAsync(roleId);
-            if (roleInfo.RoleName != request.RoleName)
+            var role = await _roleRepository.GetRoleAsync(request.RoleId);
+            if (role.RoleName != request.RoleName)
             {
                 if (_roleRepository.IsPredefinedRole(request.RoleName))
                 {
@@ -30,8 +30,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            await _permissionsInRolesRepository.DeleteAsync(roleInfo.RoleName);
-            await _sitePermissionsRepository.DeleteAsync(roleInfo.RoleName);
+            await _permissionsInRolesRepository.DeleteAsync(role.RoleName);
+            await _sitePermissionsRepository.DeleteAsync(role.RoleName);
 
             if (request.AppPermissions != null && request.AppPermissions.Count > 0)
             {
@@ -53,10 +53,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            roleInfo.RoleName = request.RoleName;
-            roleInfo.Description = request.Description;
+            role.RoleName = request.RoleName;
+            role.Description = request.Description;
 
-            await _roleRepository.UpdateRoleAsync(roleInfo);
+            await _roleRepository.UpdateRoleAsync(role);
 
             _cacheManager.Clear();
 

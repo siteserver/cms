@@ -171,8 +171,8 @@ var methods = {
   btnSubmitClick: function () {
     var sitePermissions = [];
     for(var i = 0; i < parent.$vue.sitePermissions.length; i++) {
-      if (parent.$vue.sitePermissions[0].siteId != this.siteId) {
-        sitePermissions.push(parent.$vue.sitePermissions[0]);
+      if (parent.$vue.sitePermissions[i].siteId != this.siteId) {
+        sitePermissions.push(parent.$vue.sitePermissions[i]);
       }
     }
 

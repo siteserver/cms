@@ -109,7 +109,7 @@ namespace SSCMS.Core.Services
                 {
                     if (stlElementInfo.IsDynamic)
                     {
-                        parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
+                        parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this, PageInfo.Site);
                     }
                     else
                     {
@@ -152,7 +152,7 @@ namespace SSCMS.Core.Services
                     {
                         if (stlElementInfo.IsDynamic)
                         {
-                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
+                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this, PageInfo.Site);
                         }
                         else
                         {
@@ -174,7 +174,7 @@ namespace SSCMS.Core.Services
                     {
                         if (stlElementInfo.IsDynamic)
                         {
-                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
+                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this, PageInfo.Site);
                         }
                         else
                         {

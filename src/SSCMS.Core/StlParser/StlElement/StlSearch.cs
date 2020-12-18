@@ -173,7 +173,7 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             var elementId = StringUtils.GetElementId();
 
-            var apiUrl = GetSearchApiUrl(parseManager.SettingsManager);
+            var apiUrl = GetSearchApiUrl(pageInfo.Site, parseManager.PathManager);
             var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, elementId, yes);
 
             var builder = new StringBuilder();
@@ -286,9 +286,10 @@ function stlRedirect{elementId}(page)
             public int Page { get; set; }
         }
 
-        public static string GetSearchApiUrl(ISettingsManager settingsManager)
+        public static string GetSearchApiUrl(Site site, IPathManager pathManager)
         {
-            return PageUtils.Combine(settingsManager.ApiHost, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
+            var apiUrl = pathManager.GetApiUrl(site, false);
+            return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
         }
 
         public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)

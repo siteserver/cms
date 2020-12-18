@@ -271,7 +271,7 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
 
             var elementId = StringUtils.GetElementId();
-            var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl();
+            var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl(pageInfo.Site);
             var apiParameters = ParseManager.PathManager.GetPageContentsApiParameters(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.Template.Id, totalNum, pageCount, currentPageIndex, StlPageContentsElement);
 
             var builder = new StringBuilder();

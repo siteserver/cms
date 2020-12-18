@@ -16,8 +16,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
             {
-                SiteUrl = await _pathManager.GetSiteUrlAsync(x, false),
-                AssetsUrl = await _pathManager.GetAssetsUrlAsync(x)
+                Web = await _pathManager.GetSiteUrlAsync(x, false),
+                Assets = await _pathManager.GetAssetsUrlAsync(x),
+                Api = _pathManager.GetApiUrl(x, false)
             });
 
             return new GetResult

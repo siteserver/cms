@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
+using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -86,10 +87,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 loading = innerBuilder.ToString();
             }
 
-            return await ParseImplAsync(parseManager, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseImplAsync(parseManager, contextInfo.Site, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, Site site, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             await parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
 
@@ -115,14 +116,14 @@ namespace SSCMS.Core.StlParser.StlElement
                 OnError = onError
             };
 
-            var dynamicUrl = parseManager.PathManager.GetDynamicApiUrl();
+            var dynamicUrl = parseManager.PathManager.GetDynamicApiUrl(site);
             return dynamicInfo.GetScript(dynamicUrl, inline);
         }
 
-        internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager)
+        internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager, Site site)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return await ParseImplAsync(parseManager, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
+            return await ParseImplAsync(parseManager, site, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
         public static async Task<string> ParseDynamicContentAsync(IParseManager parseManager, DynamicInfo dynamicInfo, string template)

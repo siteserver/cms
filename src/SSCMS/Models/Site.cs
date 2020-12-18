@@ -91,6 +91,10 @@ namespace SSCMS.Models
 
         public string SeparatedAssetsUrl { get; set; }
 
+        public bool IsSeparatedApi { get; set; }
+
+        public string SeparatedApiUrl { get; set; }
+
         public string AssetsDir { get; set; } = "upload";
 
         public string ChannelFilePathRule { get; set; } = "/channels/{@ChannelID}.html";
