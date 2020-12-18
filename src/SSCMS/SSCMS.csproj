@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Datory" Version="1.1.6" />
+    <PackageReference Include="Datory" Version="1.1.7" />
   </ItemGroup>
 
 </Project>

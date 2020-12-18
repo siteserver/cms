@@ -53,7 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 }
 
                 isRapid = !isSelected && !isNotEquals;
-                rapidValues = ListUtils.ToString(list);
+                rapidValues = ListUtils.ToStringByReturnAndNewline(list);
             }
 
             var form = new SubmitRequest

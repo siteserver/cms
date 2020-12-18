@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Datory.Utils;
 using Microsoft.AspNetCore.Builder;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 
 namespace SSCMS.Utils
@@ -80,6 +81,17 @@ namespace SSCMS.Utils
             return Utilities.GetStringList(collection);
         }
 
+        public static List<string> GetStringListByReturnAndNewline(string collection)
+        {
+            var list = new List<string>();
+            if (string.IsNullOrEmpty(collection)) return list;
+
+            var array = collection.Split(Constants.Newline);
+            list.AddRange(from item in array where !string.IsNullOrEmpty(item) select item.Trim());
+
+            return list;
+        }
+
         public static List<int> GetIntList(string collection, char split = ',')
         {
             return Utilities.GetIntList(collection, split);
@@ -118,6 +130,11 @@ namespace SSCMS.Utils
         public static string ToString(List<object> collection, string separator = ",")
         {
             return Utilities.ToString(collection, separator);
+        }
+
+        public static string ToStringByReturnAndNewline(List<string> collection)
+        {
+            return Utilities.ToString(collection, Constants.ReturnAndNewline);
         }
 
         public static Dictionary<string, object> ToDictionary(string json)

@@ -77,7 +77,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             {
                 if (request.IsRapid)
                 {
-                    foreach (var rapidValue in ListUtils.GetStringList(request.RapidValues))
+                    foreach (var rapidValue in ListUtils.GetStringListByReturnAndNewline(request.RapidValues))
                     {
                         var itemInfo = new InputStyleItem
                         {
@@ -139,7 +139,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             {
                 if (request.IsRapid)
                 {
-                    foreach (var rapidValue in ListUtils.GetStringList(request.RapidValues))
+                    foreach (var rapidValue in ListUtils.GetStringListByReturnAndNewline(request.RapidValues))
                     {
                         var itemInfo = new InputStyleItem
                         {

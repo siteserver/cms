@@ -50,8 +50,8 @@
   ref="form2"
   label-width="120px">
   <el-form-item label="选项可选值" prop="rapidValues" :rules="{ required: true, message: '请输入选项可选值' }">
-    <el-input v-model="form.rapidValues" type="textarea" placeholder="请输入选项可选值"></el-input>
-    <div class="tips">多个选项使用英文","分隔</div>
+    <el-input v-model="form.rapidValues" :rows="10" type="textarea" placeholder="请输入选项可选值"></el-input>
+    <div class="tips">多个选项使用换行分隔</div>
   </el-form-item>
 </el-form>
 
