@@ -1,29 +1,3 @@
-Object.defineProperty(Object.prototype, "getEntityValue", {
-  value: function (t) {
-    var e;
-    for (e in this) if (e.toLowerCase() == t.toLowerCase()) return this[e];
-  },
-});
-
-if (window.swal && swal.mixin) {
-  var alert = swal.mixin({
-    confirmButtonClass: "el-button el-button--primary",
-    cancelButtonClass: "el-button el-button--default",
-    buttonsStyling: false,
-  });
-}
-
-var PER_PAGE = 30;
-var DEFAULT_AVATAR_URL = '/sitefiles/assets/images/default_avatar.png';
-
-var $token = sessionStorage.getItem(ACCESS_TOKEN_NAME) || localStorage.getItem(ACCESS_TOKEN_NAME);
-var $api = axios.create({
-  baseURL: $apiUrl,
-  headers: {
-    Authorization: "Bearer " + $token,
-  },
-});
-
 var utils = {
   init: function (data) {
     return _.assign(
@@ -753,3 +727,29 @@ var utils = {
     return null;
   }
 };
+
+Object.defineProperty(Object.prototype, "getEntityValue", {
+  value: function (t) {
+    var e;
+    for (e in this) if (e.toLowerCase() == t.toLowerCase()) return this[e];
+  },
+});
+
+if (window.swal && swal.mixin) {
+  var alert = swal.mixin({
+    confirmButtonClass: "el-button el-button--primary",
+    cancelButtonClass: "el-button el-button--default",
+    buttonsStyling: false,
+  });
+}
+
+var PER_PAGE = 30;
+var DEFAULT_AVATAR_URL = '/sitefiles/assets/images/default_avatar.png';
+
+var $token = sessionStorage.getItem(ACCESS_TOKEN_NAME) || localStorage.getItem(ACCESS_TOKEN_NAME) || utils.getQueryString('accessToken');
+var $api = axios.create({
+  baseURL: $apiUrl,
+  headers: {
+    Authorization: "Bearer " + $token,
+  },
+});

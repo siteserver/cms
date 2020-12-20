@@ -204,11 +204,11 @@ namespace SSCMS.Core.Utils.Serialization
 
             foreach (var tableName in tableNameList)
             {
-                await styleIe.ExportTableStylesAsync(_site.Id, tableName);
+                await styleIe.ExportTableStylesAsync(_site.Id, true, tableName);
             }
 
-            await styleIe.ExportTableStylesAsync(_site.Id, _databaseManager.ChannelRepository.TableName);
-            await styleIe.ExportTableStylesAsync(_site.Id, _databaseManager.SiteRepository.TableName);
+            await styleIe.ExportTableStylesAsync(_site.Id, false, _databaseManager.ChannelRepository.TableName);
+            await styleIe.ExportTableStylesAsync(_site.Id, false, _databaseManager.SiteRepository.TableName);
         }
 
         public async Task ExportSiteContentAsync(string siteContentDirectoryPath, bool isSaveContents, bool isSaveAllChannels, IList<int> channelIdArrayList)
