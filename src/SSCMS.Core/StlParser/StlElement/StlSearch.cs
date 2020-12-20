@@ -288,8 +288,7 @@ function stlRedirect{elementId}(page)
 
         public static string GetSearchApiUrl(Site site, IPathManager pathManager)
         {
-            var apiUrl = pathManager.GetApiUrl(site, false);
-            return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
+            return pathManager.GetApiHostUrl(site, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
         }
 
         public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)

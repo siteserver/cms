@@ -16,8 +16,6 @@ namespace SSCMS.Configuration
         public const string PluginsDirectory = "plugins";
         public const string DefaultLanguage = "en";
         public const string EncryptStingIndicator = "0secret0";
-        public const string ActionsLoginSuccess = "LoginSuccess";
-        public const string ActionsLoginFailure = "LoginFailure";
 
         public const string LocalDbHostVirtualPath = "~/database.sqlite";
         public const string LocalDbContainerVirtualPath = "~/wwwroot/sitefiles/database.sqlite";
@@ -25,12 +23,6 @@ namespace SSCMS.Configuration
         public const int AccessTokenExpireDays = 7;
 
         public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
-
-#if DEBUG
-        public const string ApiHost = "http://localhost:6060";
-#else
-        public const string ApiHost = "https://api.sscms.com";
-#endif
 
         public const string ApiPrefix = "/api";
         public const string ApiAdminPrefix = "/api/admin";
@@ -72,7 +64,10 @@ namespace SSCMS.Configuration
 
         public const int PageSize = 25;//后台分页数
         public const string SmallImageAppendix = "s_";
-        public const string TitleImageAppendix = "t_";
+
+
+        public const string ActionsLoginSuccess = "登录成功";
+        public const string ActionsLoginFailure = "登录失败";
 
         public const string ErrorUpload = "请选择有效的文件上传!";
         public const string ErrorImageExtensionAllowed = "此图片格式已被禁止上传，请转换格式后上传!";

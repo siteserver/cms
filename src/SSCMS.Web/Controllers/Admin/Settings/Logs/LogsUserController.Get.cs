@@ -16,8 +16,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var user = await _userRepository.GetByUserNameAsync(request.UserName);
-            var userId = user?.Id ?? 0;
+            var userId = 0;
+            if (!string.IsNullOrEmpty(request.UserName))
+            {
+                var user = await _userRepository.GetByUserNameAsync(request.UserName);
+                userId = user?.Id ?? 0;
+            }
 
             var count = await _logRepository.GetUserLogsCountAsync(userId, request.Keyword, request.DateFrom, request.DateTo);
             var logs = await _logRepository.GetUserLogsAsync(userId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);

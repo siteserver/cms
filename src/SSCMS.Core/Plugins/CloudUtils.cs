@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using RestSharp;
-using SSCMS.Configuration;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -9,6 +8,12 @@ namespace SSCMS.Core.Plugins
 {
     public static class CloudUtils
     {
+#if DEBUG
+        public const string CloudApiHost = "http://localhost:6060";
+#else
+        public const string CloudApiHost = "https://api.sscms.com";
+#endif
+
         public static class Www
         {
             private const string Host = "https://sscms.com";
@@ -28,7 +33,7 @@ namespace SSCMS.Core.Plugins
         {
             public static string GetCliUrl(string relatedUrl)
             {
-                return PageUtils.Combine(Constants.ApiHost, "v7/cli", relatedUrl);
+                return PageUtils.Combine(CloudApiHost, "v7/cli", relatedUrl);
             }
         }
 

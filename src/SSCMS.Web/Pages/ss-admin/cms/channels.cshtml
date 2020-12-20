@@ -168,13 +168,23 @@
                 </template>
               </template>
               <template v-else-if="column.attributeName === 'ChannelTemplateId'">
-                <el-link :underline="false" type="primary" size="small" v-on:click.stop.native="btnTemplateEditClick(true, data.channel.channelTemplateId)">
+                <el-link
+                  v-if="isTemplateEditable && data.channel.channelTemplateId > 0"
+                  :underline="false"
+                  :href="getTemplateEditorUrl(true, data.channel.channelTemplateId)"
+                  target="_blank"
+                  type="primary">
                   {{ getTemplate(true, data.channel.channelTemplateId).templateName }}
                 </el-link>
               </template>
               <template v-else-if="column.attributeName === 'ContentTemplateId'">
-                <el-link :underline="false" type="primary" size="small" v-on:click.stop.native="btnTemplateEditClick(false, data.channel.contentTemplateId)">
-                  {{ getTemplate(false, data.channel.contentTemplateId).templateName }}
+                <el-link
+                  v-if="isTemplateEditable && data.channel.contentTemplateId > 0"
+                  :underline="false"
+                  :href="getTemplateEditorUrl(false, data.channel.contentTemplateId)"
+                  target="_blank"
+                  type="primary">
+                  {{ getTemplate(true, data.channel.contentTemplateId).templateName }}
                 </el-link>
               </template>
               <template v-else>
@@ -409,14 +419,28 @@
           <el-option label="<默认>" :value="0"></el-option>
           <el-option v-for="channelTemplate in channelTemplates" :key="channelTemplate.id" :label="channelTemplate.templateName" :value="channelTemplate.id"></el-option>
         </el-select>
-        <el-button v-if="isTemplateEditable" v-on:click.prevent="btnTemplateEditClick(true, form.channelTemplateId)">编辑</el-button>
+        <el-link
+          v-if="isTemplateEditable && form.channelTemplateId > 0"
+          :underline="false"
+          :href="getTemplateEditorUrl(true, form.channelTemplateId)"
+          target="_blank"
+          type="primary">
+          编辑
+        </el-link>
       </el-form-item>
       <el-form-item label="内容模板">
         <el-select v-model="form.contentTemplateId" placeholder="请选择内容模板">
           <el-option label="<默认>" :value="0"></el-option>
           <el-option v-for="contentTemplate in contentTemplates" :key="contentTemplate.id" :label="contentTemplate.templateName" :value="contentTemplate.id"></el-option>
         </el-select>
-        <el-button v-if="isTemplateEditable" v-on:click.prevent="btnTemplateEditClick(false, form.contentTemplateId)">编辑</el-button>
+        <el-link
+          v-if="isTemplateEditable && form.contentTemplateId > 0"
+          :underline="false"
+          :href="getTemplateEditorUrl(false, form.contentTemplateId)"
+          target="_blank"
+          type="primary">
+          编辑
+        </el-link>
       </el-form-item>
       <el-form-item label="外部链接">
         <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>

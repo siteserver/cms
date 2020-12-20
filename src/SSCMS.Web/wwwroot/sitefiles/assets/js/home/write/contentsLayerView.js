@@ -68,8 +68,7 @@ var methods = {
     utils.openLayer({
       title: "管理员查看",
       url: utils.getCommonUrl('adminLayerView', {adminId: adminId}),
-      width: 550,
-      height: 450
+      full: true
     });
   },
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
@@ -18,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             {
                 Web = await _pathManager.GetSiteUrlAsync(x, false),
                 Assets = await _pathManager.GetAssetsUrlAsync(x),
-                Api = _pathManager.GetApiUrl(x, false)
+                Api = _pathManager.GetApiHostUrl(x, Constants.ApiPrefix)
             });
 
             return new GetResult

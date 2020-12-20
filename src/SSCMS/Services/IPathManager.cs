@@ -16,6 +16,8 @@ namespace SSCMS.Services
 
         string GetHomeUrl(params string[] paths);
 
+        string GetApiHostUrl(Site site, params string[] paths);
+
         string GetUploadFileName(string fileName);
 
         Task<string> GetWebUrlAsync(Site site);

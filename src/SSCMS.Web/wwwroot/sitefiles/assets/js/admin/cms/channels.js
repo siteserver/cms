@@ -358,16 +358,12 @@ var methods = {
     return template;
   },
 
-  btnTemplateEditClick: function(isChannel, templateId) {
-    if (!this.isTemplateEditable) return;
-
-    var template = this.getTemplate(isChannel, templateId);
-    
-    utils.addTab('编辑:' + template.templateName, utils.getCmsUrl('templatesEditor', {
+  getTemplateEditorUrl: function(isChannel, templateId) {
+    return utils.getCmsUrl('templatesEditor', {
       siteId: this.siteId,
-      templateId: template.id,
+      templateId: templateId,
       templateType: isChannel ? 'ChannelTemplate' : 'ContentTemplate',
-    }));
+    });
   },
 
   btnEditAddGroupClick: function() {

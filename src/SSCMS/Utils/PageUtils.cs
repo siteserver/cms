@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using Microsoft.AspNetCore.Http;
+using SSCMS.Configuration;
 
 namespace SSCMS.Utils
 {
@@ -13,7 +14,7 @@ namespace SSCMS.Utils
     {
         public const char SeparatorChar = '/';
         public const string DoubleSeparator = "//";
-        public const string SingleSeparator = "/";
+        public const string Separator = "/";
         public const string UnClickableUrl = "javascript:;";
 
         public static string AddProtocolToUrl(string url)
@@ -436,6 +437,11 @@ namespace SSCMS.Utils
             {
                 list.Add(restriction);
             }
+        }
+
+        public static string GetLocalApiUrl(params string[] paths)
+        {
+            return Combine(Constants.ApiPrefix, PathUtils.Combine(paths));
         }
 
         private class IpList

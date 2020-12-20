@@ -37,7 +37,7 @@ namespace SSCMS.Core.Services
 
             virtualUrl = virtualUrl.StartsWith("~") ? GetRootUrl(virtualUrl.Substring(1)) : virtualUrl;
             virtualUrl = virtualUrl.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
-            virtualUrl = virtualUrl.Replace(PageUtils.DoubleSeparator, PageUtils.SingleSeparator);
+            virtualUrl = virtualUrl.Replace(PageUtils.DoubleSeparator, PageUtils.Separator);
             return virtualUrl;
         }
 
@@ -181,24 +181,9 @@ namespace SSCMS.Core.Services
             return GetHomeUploadPath(userId.ToString(), relatedPath);
         }
 
-        public string GetApiUrl(params string[] paths)
-        {
-            return PageUtils.Combine(_settingsManager.ApiHost, Constants.ApiPrefix, PathUtils.Combine(paths));
-        }
-
-        public string GetApiUrl(Site site, bool isLocal)
-        {
-            if (isLocal)
-            {
-                return GetApiUrl();
-            }
-
-            return site.IsSeparatedApi ? PageUtils.Combine(site.SeparatedApiUrl, Constants.ApiPrefix) : GetApiUrl();
-        }
-
         public string GetDownloadApiUrl(Site site, int channelId, int contentId, string fileUrl)
         {
-            var apiUrl = GetApiUrl(site, false);
+            var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"siteId", site.Id.ToString()},
@@ -210,7 +195,7 @@ namespace SSCMS.Core.Services
 
         public string GetDownloadApiUrl(Site site, string fileUrl)
         {
-            var apiUrl = GetApiUrl(site, false);
+            var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
                 {"siteId", site.Id.ToString()},
@@ -220,7 +205,7 @@ namespace SSCMS.Core.Services
 
         public string GetDownloadApiUrl(string filePath)
         {
-            var apiUrl = GetApiUrl(Constants.ApiStlPrefix, Constants.RouteStlActionsDownload);
+            var apiUrl = PageUtils.GetLocalApiUrl(Constants.ApiStlPrefix, Constants.RouteStlActionsDownload);
             return PageUtils.AddQueryString(apiUrl, new NameValueCollection
             {
                 {"filePath", _settingsManager.Encrypt(filePath)}
@@ -229,19 +214,19 @@ namespace SSCMS.Core.Services
 
         public string GetDynamicApiUrl(Site site)
         {
-            var apiUrl = GetApiUrl(site, false);
+            var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDynamic);
         }
 
         public string GetIfApiUrl(Site site)
         {
-            var apiUrl = GetApiUrl(site, false);
+            var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlRouteActionsIf);
         }
 
         public string GetPageContentsApiUrl(Site site)
         {
-            var apiUrl = GetApiUrl(site, false);
+            var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsPageContents);
         }
 
@@ -260,13 +245,13 @@ namespace SSCMS.Core.Services
 }}";
         }
 
-        public string GetTriggerApiUrl(Site site, int channelId, int contentId,
+        public string GetTriggerApiUrl(int siteId, int channelId, int contentId,
             int fileTemplateId, bool isRedirect)
         {
-            var apiUrl = GetApiUrl(site, false);
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsTrigger), new NameValueCollection
+            var apiUrl = PageUtils.GetLocalApiUrl(Constants.ApiStlPrefix);
+            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.RouteStlActionsTrigger), new NameValueCollection
             {
-                {"siteId", site.Id.ToString()},
+                {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()},
                 {"fileTemplateId", fileTemplateId.ToString()},

@@ -91,7 +91,7 @@ namespace SSCMS.Core.Repositories
                 var log = new Log
                 {
                     Id = 0,
-                    AdminId = user.Id,
+                    UserId = user.Id,
                     IpAddress = string.Empty,
                     Action = action,
                     Summary = summary

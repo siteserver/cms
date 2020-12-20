@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <Version>7.0.7</Version>
+    <Version>7.0.8</Version>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 

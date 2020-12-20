@@ -83,8 +83,6 @@ namespace SSCMS.Core.Services
 
         public IRedis Redis => new Redis(RedisConnectionString);
 
-        public string ApiHost => _config.GetValue(nameof(ApiHost), "/");
-
         public bool IsDisablePlugins => _config.GetValue(nameof(IsDisablePlugins), false);
 
         public string AdminRestrictionHost => _config.GetValue<string>("AdminRestriction:Host");

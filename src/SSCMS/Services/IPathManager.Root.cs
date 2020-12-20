@@ -47,10 +47,6 @@ namespace SSCMS.Services
 
         string GetUserAvatarUrl(User user);
 
-        string GetApiUrl(params string[] paths);
-
-        string GetApiUrl(Site site, bool isLocal);
-
         string GetDownloadApiUrl(Site site, int channelId, int contentId, string fileUrl);
 
         string GetDownloadApiUrl(Site site, string fileUrl);
@@ -66,7 +62,7 @@ namespace SSCMS.Services
         string GetPageContentsApiParameters(int siteId, int pageChannelId, int templateId, int totalNum, int pageCount,
             int currentPageIndex, string stlPageContentsElement);
 
-        string GetTriggerApiUrl(Site site, int channelId, int contentId,
+        string GetTriggerApiUrl(int siteId, int channelId, int contentId,
             int fileTemplateId, bool isRedirect);
     }
 }
