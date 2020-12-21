@@ -106,7 +106,7 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.JsAcMediaElement);
 
-            var url = parseManager.PathManager.GetSiteFilesUrl(Resources.MediaElement.Swf);
+            var url = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.MediaElement.Swf);
 
             return $@"
 <audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>

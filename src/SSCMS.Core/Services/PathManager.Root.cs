@@ -94,6 +94,13 @@ namespace SSCMS.Core.Services
             return GetRootUrl(DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths));
         }
 
+        public string GetSiteFilesUrl(Site site, params string[] paths)
+        {
+            return site == null
+                ? GetSiteFilesUrl(paths)
+                : GetApiHostUrl(site, DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths));
+        }
+
         public string GetAdministratorUploadUrl(int userId, params string[] paths)
         {
             return GetSiteFilesUrl(DirectoryUtils.SiteFiles.Administrators,

@@ -274,7 +274,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     paramBuilder.Append(
                         $@"so_{elementId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(Constants.ReturnAndNewline);
 
-                    var bcastrUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Bcastr);
+                    var bcastrUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.Flashes.Bcastr);
 
                     string scriptHtml = $@"
 <div id=""flashcontent_{elementId}""></div>
@@ -326,7 +326,7 @@ so_{elementId}.write(""flashcontent_{elementId}"");
                     paramBuilder.Append(
                         $@"so_{elementId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(Constants.ReturnAndNewline);
 
-                    var aliUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.Ali);
+                    var aliUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.Flashes.Ali);
 
                     string scriptHtml = $@"
 <div id=""flashcontent_{elementId}""></div>
@@ -503,8 +503,8 @@ so_{elementId}.write(""flashcontent_{elementId}"");
                     attributes["id"] = elementId;
                     var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
 
-                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.BaiRongFlash.Js);
-                    var focusViewerUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Flashes.FocusViewer);
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.BaiRongFlash.Js);
+                    var focusViewerUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.Flashes.FocusViewer);
 
                     var scriptHtml = $@"
 <script type=""text/javascript"" src=""{jsUrl}""></script>

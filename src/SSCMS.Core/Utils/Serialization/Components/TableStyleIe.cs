@@ -25,8 +25,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
             _directoryPath = directoryPath;
         }
 
-        
-
         public async Task ExportTableStylesAsync(int siteId, bool isContentTable, string tableName)
 		{
             var relatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);

@@ -110,6 +110,7 @@ namespace SSCMS.Core.Extensions
 
         public static void AddPseudoServices(this IServiceCollection services)
         {
+            services.AddScoped<IMailManager, MailManager>();
             services.AddScoped<ISmsManager, SmsManager>();
         }
 

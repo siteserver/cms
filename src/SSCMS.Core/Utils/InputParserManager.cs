@@ -259,7 +259,7 @@ namespace SSCMS.Core.Utils
                 }
                 else
                 {
-                    var url = _pathManager.GetSiteFilesUrl(Resources.BrPlayer.Swf);
+                    var url = _pathManager.GetSiteFilesUrl(site, Resources.BrPlayer.Swf);
                     retVal = $@"
 <embed src=""{url}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={StringUtils.ToLower(true
                         .ToString())}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>

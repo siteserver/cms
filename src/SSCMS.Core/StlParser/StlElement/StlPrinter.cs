@@ -68,8 +68,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Print.Js);
-            var iconUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.Print.IconUrl);
+            var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.Print.Js);
+            var iconUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.Print.IconUrl);
 
             if (!pageInfo.BodyCodes.ContainsKey(ParsePage.Const.JsAfStlPrinter))
             {

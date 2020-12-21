@@ -23,6 +23,8 @@ namespace SSCMS.Services
 
         string GetSiteFilesUrl(params string[] paths);
 
+        string GetSiteFilesUrl(Site site, params string[] paths);
+
         string GetAdministratorUploadPath(int userId, params string[] paths);
 
         string GetAdministratorUploadUrl(int userId, params string[] paths);

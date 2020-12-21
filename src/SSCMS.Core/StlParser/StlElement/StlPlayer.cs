@@ -191,7 +191,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     imageHtml = $@"<img src=""{imageUrl}"" style=""{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" />";
                 }
 
-                var swfUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.FlowPlayer.Swf);
+                var swfUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.FlowPlayer.Swf);
                 return $@"
 <a href=""{playUrl}"" style=""display:block;{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" id=""{elementId}"">{imageHtml}</a>
 <script language=""javascript"">

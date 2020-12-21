@@ -165,7 +165,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
                 {
-                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.DateString.Js);
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.DateString.Js);
 
                     pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
                 }
@@ -176,7 +176,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring"))
                 {
-                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(Resources.DateString.Js);
+                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.DateString.Js);
 
                     pageInfo.BodyCodes.Add("datestring", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
                 }

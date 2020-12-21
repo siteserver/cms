@@ -159,7 +159,7 @@ namespace SSCMS.Parse
             {
                 if (Site.IsCreateWithJQuery)
                 {
-                    var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.JqueryJs);
+                    var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.JqueryJs);
 
                     retVal =
                         $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
@@ -167,44 +167,44 @@ namespace SSCMS.Parse
             }
             else if (pageJsName == Const.JsCookie)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.Components.JsCookie);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Components.JsCookie);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.StlClient)
             {
-                var lodashUrl = _pathManager.GetSiteFilesUrl(Resources.Components.Lodash);
-                var clientUrl = _pathManager.GetSiteFilesUrl(Resources.Components.StlClient);
+                var lodashUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Components.Lodash);
+                var clientUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Components.StlClient);
 
                 retVal =
                     $@"<script src=""{lodashUrl}"" type=""text/javascript""></script><script src=""{clientUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BAjaxUpload)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.AjaxUpload.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.AjaxUpload.Js);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BQueryString)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.QueryString.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.QueryString.Js);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BjQueryForm)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.JQueryForm.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.JQueryForm.Js);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BShowLoading)
             {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.ShowLoading.Css);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.ShowLoading.Js);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.ShowLoading.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.ShowLoading.Js);
 
                 retVal =
                     $@"<link href=""{cssUrl}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{Resources
@@ -213,7 +213,7 @@ namespace SSCMS.Parse
             else if (pageJsName == Const.BjTemplates)
             {
                 var jsUrl =
-                    _pathManager.GetSiteFilesUrl(Resources.JQuery.JTemplates.Js);
+                    _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.JTemplates.Js);
 
                 retVal =
                     $@"<script type=""text/javascript"" charset=""{Resources.JQuery.JTemplates.Charset}"" src=""{jsUrl}""></script>";
@@ -221,15 +221,15 @@ namespace SSCMS.Parse
             else if (pageJsName == Const.BValidate)
             {
                 var jsUrl =
-                    _pathManager.GetSiteFilesUrl(Resources.JQuery.ValidateJs.Js);
+                    _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.ValidateJs.Js);
 
                 retVal =
                     $@"<script type=""text/javascript"" charset=""{Resources.JQuery.ValidateJs.Charset}"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.BBootstrap)
             {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.Bootstrap.Css);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JQuery.Bootstrap.Js);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.Bootstrap.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.Bootstrap.Js);
 
                 retVal = $@"
 <link rel=""stylesheet"" type=""text/css"" href=""{cssUrl}"">
@@ -238,36 +238,36 @@ namespace SSCMS.Parse
             }
             else if (pageJsName == Const.JsAcSwfObject)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.SwfObject.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.SwfObject.Js);
 
                 retVal =
                     $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAcJwPlayer6)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.JwPlayer6.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JwPlayer6.Js);
 
                 retVal =
                     $@"<script type=""text/javascript"" src=""{jsUrl}""></script><script type=""text/javascript"">jwplayer.key=""ABCDEFGHIJKLMOPQ"";</script>";
             }
             else if (pageJsName == Const.JsAcFlowPlayer)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.FlowPlayer.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.FlowPlayer.Js);
 
                 retVal =
                     $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAcMediaElement)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.MediaElement.Js);
-                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.MediaElement.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.MediaElement.Js);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.MediaElement.Css);
 
                 retVal =
                     $@"<script type=""text/javascript"" src=""{jsUrl}""></script><link rel=""stylesheet"" href=""{cssUrl}"" />";
             }
             else if (pageJsName == Const.JsAcAudioJs)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.AudioJs.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.AudioJs.Js);
 
                 retVal =
                     $@"<script type=""text/javascript"" src=""{jsUrl}""></script>
@@ -280,8 +280,8 @@ audiojs.events.ready(function() {{
             }
             else if (pageJsName == Const.JsAcVideoJs)
             {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Resources.VideoJs.Css);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.VideoJs.Js);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.VideoJs.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.VideoJs.Js);
 
                 retVal = $@"
 <link href=""{cssUrl}"" rel=""stylesheet"">
@@ -307,9 +307,9 @@ wnd_frame.src=url;}}
             }
             else if (pageJsName == Const.JsUserScript)
             {
-                var jsPageScriptUrl = _pathManager.GetSiteFilesUrl(Resources.Stl.JsPageScript);
-                var assetsUrl = _pathManager.GetSiteFilesUrl();
-                var jsUserScriptUrl = _pathManager.GetSiteFilesUrl(Resources.Stl.JsUserScript);
+                var jsPageScriptUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Stl.JsPageScript);
+                var assetsUrl = _pathManager.GetSiteFilesUrl(Site);
+                var jsUserScriptUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Stl.JsUserScript);
 
                 retVal = $@"
 <script type=""text/javascript"" src=""{jsPageScriptUrl}""></script>
@@ -318,42 +318,42 @@ wnd_frame.src=url;}}
             }
             else if (pageJsName == Const.JsInnerCalendar)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.DatePicker.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.DatePicker.Js);
 
                 retVal = $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAhTranslate)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Resources.TwCn.Js);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.TwCn.Js);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" charset=""{Resources.TwCn.Charset}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.Vue)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.VueJs);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.VueJs);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.VueElement)
             {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Libraries.ElementCss);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.ElementJs);
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.ElementCss);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.ElementJs);
 
                 retVal =
                     $@"<link href=""{cssUrl}"" rel=""stylesheet"" /><script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.Layer)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.LayerJs);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.LayerJs);
 
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.PdfObject)
             {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Libraries.PdfObjectJs);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.PdfObjectJs);
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
             }
