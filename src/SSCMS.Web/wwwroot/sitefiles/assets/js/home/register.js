@@ -54,7 +54,7 @@ var methods = {
       $this.styles = res.styles;
       for (var i = 0; i < res.styles.length; i++) {
         var style = res.styles[i];
-        $this.form[_.lowerFirst(style.attributeName)] = style.defaultValue;
+        $this.form[utils.toCamelCase(style.attributeName)] = style.defaultValue;
       }
       $this.form = _.assign({}, $this.form);
       $this.groups = res.groups;

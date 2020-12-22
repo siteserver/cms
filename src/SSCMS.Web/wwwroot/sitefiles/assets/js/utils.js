@@ -59,6 +59,25 @@ var utils = {
     });
   },
 
+  toCamelCase: function (s) {
+    if (!s || s[0] !== s[0].toUpperCase()) {
+      return s;
+    }
+    var chars = s.split('');
+    var values = s.split('');
+    for (var i = 0; i < chars.length; i++) {
+      if (i == 1 && chars[i] !== chars[i].toUpperCase()) {
+        return values.join('');
+      }
+      var hasNext = (i + 1) < chars.length;
+      if (i > 0 && hasNext && chars[i + 1] !== chars[i + 1].toUpperCase()) {
+        return values.join('');
+      }
+      values[i] = _.toLower(chars[i]);
+    }
+    return values.join('');
+  },
+
   toInt: function (val) {
     if (!val) return 0;
     if (typeof val === 'number') return val;
@@ -539,7 +558,7 @@ var utils = {
     var form =  _.assign({}, value);
     for (var i = 0; i < styles.length; i++) {
       var style = styles[i];
-      var name = _.lowerFirst(style.attributeName);
+      var name = utils.toCamelCase(style.attributeName);
       if (style.inputType === 'TextEditor') {
         setTimeout(function () {
           var editor = UE.getEditor(style.attributeName, {

@@ -141,7 +141,7 @@ namespace SSCMS.Web
                 .AddDataAnnotationsLocalization()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm";
                     options.SerializerSettings.ContractResolver
                         = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());

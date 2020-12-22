@@ -274,7 +274,7 @@ namespace SSCMS.Cli.Services
                 var table = new TableTableStyle(_databaseManager);
                 converter = table.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(TableContentTag.OldTableName, oldTableName))
+            else if (ListUtils.ContainsIgnoreCase(TableContentTag.OldTableNames, oldTableName))
             {
                 var table = new TableContentTag(_databaseManager);
                 converter = table.Converter;

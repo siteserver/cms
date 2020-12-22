@@ -127,3 +127,7 @@ body, textarea {
 .el-progress-bar__outer {
   background-color: #909399 !important;
 }
+
+.tips .el-link {
+  margin-top: -3px;
+}

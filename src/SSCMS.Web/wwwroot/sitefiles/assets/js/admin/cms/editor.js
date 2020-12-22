@@ -162,7 +162,7 @@ var methods = {
             editor.ready(function () {
               this.addListener("contentChange", function () {
                 var style = $this.styles[this.styleIndex];
-                $this.form[_.lowerFirst(style.attributeName)] = this.getContent();
+                $this.form[utils.toCamelCase(style.attributeName)] = this.getContent();
               });
             });
           }

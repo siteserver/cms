@@ -6,7 +6,11 @@ namespace SSCMS.Cli.Updater.Tables
 {
     public partial class TableContentTag
     {
-        public const string OldTableName = "bairong_Tags";
+        public static readonly List<string> OldTableNames = new List<string>
+        {
+            "bairong_Tags",
+            "siteserver_Tag"
+        };
 
         public ConvertInfo Converter => new ConvertInfo
         {
@@ -24,7 +28,9 @@ namespace SSCMS.Cli.Updater.Tables
             new Dictionary<string, string>
             {
                 {nameof(ContentTag.Id), nameof(TagId)},
-                {nameof(ContentTag.SiteId), nameof(PublishmentSystemId)}
+                {nameof(ContentTag.SiteId), nameof(PublishmentSystemId)},
+                {nameof(ContentTag.ContentIds), nameof(ContentIdCollection)},
+                {nameof(ContentTag.TagName), nameof(Tag)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

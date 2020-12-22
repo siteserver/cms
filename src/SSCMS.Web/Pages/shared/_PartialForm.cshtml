@@ -1,7 +1,7 @@
 <template v-for="style in styles" :key="style.attributeName">
   <!-- Image -->
   <template v-if="style.inputType === 'Image'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group>
         <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: style.attributeName, no: 0})">
           上传
@@ -9,7 +9,7 @@
         <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[_.lowerFirst(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
+        <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
           预览
         </el-button>
         <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
@@ -17,7 +17,7 @@
         </el-button>
       </el-button-group>
       <el-input
-        v-model="form[_.lowerFirst(style.attributeName)]"
+        v-model="form[utils.toCamelCase(style.attributeName)]"
         size="small"
         :placeholder="style.helpText || '请输入图片地址或点击上方按钮上传'">
       </el-input>
@@ -49,7 +49,7 @@
   </template>
   <!-- File -->
   <template v-else-if="style.inputType === 'File'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group>
         <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传附件', name: 'formLayerFileUpload', attributeName: style.attributeName, no: 0})">
           上传
@@ -62,7 +62,7 @@
         </el-button>
       </el-button-group>
       <el-input
-        v-model="form[_.lowerFirst(style.attributeName)]"
+        v-model="form[utils.toCamelCase(style.attributeName)]"
         size="small"
         :placeholder="style.helpText || '请输入附件地址或点击上方按钮上传'">
       </el-input>
@@ -91,7 +91,7 @@
   </template>
   <!-- Video -->
   <template v-else-if="style.inputType === 'Video'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group>
         <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传视频', name: 'formLayerVideoUpload', attributeName: style.attributeName, no: 0})">
           上传
@@ -104,7 +104,7 @@
         </el-button>
       </el-button-group>
       <el-input
-        v-model="form[_.lowerFirst(style.attributeName)]"
+        v-model="form[utils.toCamelCase(style.attributeName)]"
         size="small"
         :placeholder="style.helpText || '请输入视频地址或点击上方按钮上传'">
       </el-input>
@@ -133,7 +133,7 @@
   </template>
   <!-- TextEditor -->
   <template v-else-if="style.inputType === 'TextEditor'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-button-group style="margin-bottom: 2px;">
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', attributeName: style.attributeName})">
           导入Word
@@ -157,7 +157,7 @@
       <textarea
         :id="style.attributeName"
         :name="style.attributeName"
-        v-html="form[_.lowerFirst(style.attributeName)]"
+        v-html="form[utils.toCamelCase(style.attributeName)]"
         style="width: 100%;">
       </textarea>
       <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
@@ -165,9 +165,9 @@
   </template>
   <!-- TextArea -->
   <template v-else-if="style.inputType === 'TextArea'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-input
-        v-model="form[_.lowerFirst(style.attributeName)]"
+        v-model="form[utils.toCamelCase(style.attributeName)]"
         type="textarea"
         size="small"
         :placeholder="style.helpText"
@@ -177,20 +177,20 @@
   </template>
   <!-- Text -->
   <template v-else-if="style.inputType === 'Text'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-input v-model="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText"></el-input>
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-input v-model="form[utils.toCamelCase(style.attributeName)]" :placeholder="style.helpText"></el-input>
     </el-form-item>
   </template>
   <!-- Number -->
   <template v-else-if="style.inputType === 'Number'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-input v-model.number="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText"></el-input>
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-input v-model.number="form[utils.toCamelCase(style.attributeName)]" :placeholder="style.helpText"></el-input>
     </el-form-item>
   </template>
   <!-- CheckBox -->
   <template v-else-if="style.inputType === 'CheckBox'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-checkbox-group v-model="form[_.lowerFirst(style.attributeName)]">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-checkbox-group v-model="form[utils.toCamelCase(style.attributeName)]">
         <el-checkbox v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-checkbox>
       </el-checkbox-group>
       <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
@@ -198,8 +198,8 @@
   </template>
   <!-- Radio -->
   <template v-else-if="style.inputType === 'Radio'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-radio-group v-model="form[_.lowerFirst(style.attributeName)]">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-radio-group v-model="form[utils.toCamelCase(style.attributeName)]">
         <el-radio v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-radio>
       </el-radio-group>
       <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
@@ -207,8 +207,8 @@
   </template>
   <!-- SelectOne -->
   <template v-else-if="style.inputType === 'SelectOne'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-select v-model="form[_.lowerFirst(style.attributeName)]" :placeholder="style.helpText || '请选择'">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-select v-model="form[utils.toCamelCase(style.attributeName)]" :placeholder="style.helpText || '请选择'">
         <el-option
           v-for="item in style.items"
           :key="item.value"
@@ -219,8 +219,8 @@
   </template>
   <!-- SelectMultiple -->
   <template v-else-if="style.inputType === 'SelectMultiple'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
-      <el-select v-model="form[_.lowerFirst(style.attributeName)]" multiple :placeholder="style.helpText || '请选择'">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-select v-model="form[utils.toCamelCase(style.attributeName)]" multiple :placeholder="style.helpText || '请选择'">
         <el-option
           v-for="item in style.items"
           :key="item.value"
@@ -231,9 +231,9 @@
   </template>
   <!-- Date -->
   <template v-else-if="style.inputType === 'Date'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-date-picker
-        v-model="form[_.lowerFirst(style.attributeName)]"
+        v-model="form[utils.toCamelCase(style.attributeName)]"
         type="date"
         :placeholder="style.helpText || '请选择日期'">
       </el-date-picker>
@@ -241,9 +241,9 @@
   </template>
   <!-- DateTime -->
   <template v-else-if="style.inputType === 'DateTime'">
-    <el-form-item :label="style.displayName" :prop="_.lowerFirst(style.attributeName)" :rules="utils.getRules(style.rules)">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-date-picker
-        v-model="form[_.lowerFirst(style.attributeName)]"
+        v-model="form[utils.toCamelCase(style.attributeName)]"
         type="datetime"
         :placeholder="style.helpText || '请选择日期时间'">
       </el-date-picker>
