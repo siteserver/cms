@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             var adminId = _authManager.AdminId;
             templateInfo.Id = await _templateRepository.InsertAsync(templateInfo);
-            await _pathManager.WriteContentToTemplateFileAsync(site, template, content, adminId);
+            await _pathManager.WriteContentToTemplateFileAsync(site, templateInfo, content, adminId);
 
             return await GetResultAsync(site);
         }

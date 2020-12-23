@@ -236,16 +236,17 @@ namespace SSCMS.Core.Repositories
                     .Where(nameof(Content.GroupNames), groupContent)
                     .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent}")
                     .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent},")
-                    .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContent},"));
+                    .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContent},")
+                );
             }
 
             if (!string.IsNullOrEmpty(groupContentNot))
             {
                 query
-                    .WhereNot(nameof(Content.GroupNames), groupContent)
-                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent}")
-                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent},")
-                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContent},");
+                    .WhereNot(nameof(Content.GroupNames), groupContentNot)
+                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContentNot}")
+                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContentNot},")
+                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContentNot},");
             }
 
             if (!string.IsNullOrEmpty(tags))

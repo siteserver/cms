@@ -14,9 +14,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<StringResult>> Upload([FromQuery] int userId, [FromForm] IFormFile file)
         {
-            var administrator = await _administratorRepository.GetByUserIdAsync(userId);
-            if (administrator == null) return NotFound();
-
             var adminId = _authManager.AdminId;
             if (adminId != userId &&
                 !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))

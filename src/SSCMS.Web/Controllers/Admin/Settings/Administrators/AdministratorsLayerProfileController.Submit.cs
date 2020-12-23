@@ -75,6 +75,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 {
                     return this.Error($"管理员添加失败：{errorMessage}");
                 }
+
+                if (!string.IsNullOrEmpty(administrator.AvatarUrl))
+                {
+                    var fileName = PageUtils.GetFileNameFromUrl(administrator.AvatarUrl);
+                    var filePath = _pathManager.GetAdministratorUploadPath(0, fileName);
+                    var avatarFilePath = _pathManager.GetAdministratorUploadPath(administrator.Id, fileName);
+                    FileUtils.CopyFile(filePath, avatarFilePath);
+                    administrator.AvatarUrl = _pathManager.GetAdministratorUploadUrl(administrator.Id, fileName);
+                    await _administratorRepository.UpdateAsync(administrator);
+                }
+
                 await _authManager.AddAdminLogAsync("添加管理员", $"管理员:{administrator.UserName}");
             }
             else

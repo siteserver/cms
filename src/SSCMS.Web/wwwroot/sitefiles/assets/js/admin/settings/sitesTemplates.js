@@ -167,11 +167,11 @@ var methods = {
   },
 
   uploadBefore(file) {
-    var isZIP = file.type === 'application/x-zip-compressed';
-    if (!isZIP) {
-      utils.error('上传站点模板只能是 ZIP 格式!');
+    var isZip = file.name.indexOf('.zip', file.name.length - '.zip'.length) !== -1;
+    if (!isZip) {
+      utils.error('上传站点模板只能是 Zip 格式!');
     }
-    return isZIP;
+    return isZip;
   },
 
   uploadProgress: function() {

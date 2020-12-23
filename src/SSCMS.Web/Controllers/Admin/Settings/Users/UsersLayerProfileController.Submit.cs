@@ -34,6 +34,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                     return this.Error($"用户添加失败：{errorMessage}");
                 }
 
+                if (!string.IsNullOrEmpty(user.AvatarUrl))
+                {
+                    var fileName = PageUtils.GetFileNameFromUrl(user.AvatarUrl);
+                    var filePath = _pathManager.GetUserUploadPath(0, fileName);
+                    var avatarFilePath = _pathManager.GetUserUploadPath(user.Id, fileName);
+                    FileUtils.CopyFile(filePath, avatarFilePath);
+                    user.AvatarUrl = _pathManager.GetUserUploadUrl(user.Id, fileName);
+                    await _userRepository.UpdateAsync(user);
+                }
+
                 await _authManager.AddAdminLogAsync("添加用户", $"用户:{request.UserName}");
             }
             else

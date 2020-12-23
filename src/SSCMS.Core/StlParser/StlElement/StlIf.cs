@@ -67,46 +67,14 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypeItemIndex = "ItemIndex";			                                //当前项序号
         private const string TypeOddItem = "OddItem";			                                    //奇数项
 
-        public static SortedList<string, string> TypeList => new SortedList<string, string>
-        {
-            {TypeIsUserLoggin, "用户是否已登录"},
-            {TypeChannelName, "栏目名称"},
-            {TypeChannelIndex, "栏目索引"},
-            {TypeTemplateName, "模板名称"},
-            {TypTemplateType, "模板类型"},
-            {TypeTopLevel, "栏目级别"},
-            {TypeUpChannel, "上级栏目"},
-            {TypeCurrent, "当前栏目或上级栏目"},
-            {TypeSelfChannel, "当前栏目"},
-            {TypeGroupChannel, "栏目组名称"},
-            {TypeGroupContent, "内容组名称"},
-            {TypeAddDate, "添加时间"},
-            {TypeLastModifiedDate, "最后编辑时间（仅用于判断内容）"},
-            {TypeItemIndex, "当前项序号"},
-            {TypeOddItem, "奇数项"}
-        };
-
-        public const string OperateEmpty = "Empty";
-        public const string OperateNotEmpty = "NotEmpty";			                                //值不为空
-        public const string OperateEquals = "Equals";			                                    //值等于
-        public const string OperateNotEquals = "NotEquals";			                                //值不等于
-        public const string OperateGreatThan = "GreatThan";			                                //值大于
-        public const string OperateLessThan = "LessThan";			                                //值小于
-        public const string OperateIn = "In";			                                            //值属于
-        public const string OperateNotIn = "NotIn";                                                 //值不属于
-
-        public static SortedList<string, string> OperateList => new SortedList<string, string>
-        {
-            {OperateEmpty, "值为空"},
-            {OperateNotEmpty, "值不为空"},
-            {OperateEquals, "值等于"},
-            {OperateNotEquals, "值不等于"},
-            {OperateGreatThan, "值大于"},
-            {OperateLessThan, "值小于"},
-            {OperateIn, "值属于"},
-            {OperateNotIn, "值不属于"}
-        };
-
+        private const string OperateEmpty = "Empty";
+        private const string OperateNotEmpty = "NotEmpty";			                                //值不为空
+        private const string OperateEquals = "Equals";			                                    //值等于
+        private const string OperateNotEquals = "NotEquals";			                                //值不等于
+        private const string OperateGreatThan = "GreatThan";			                                //值大于
+        private const string OperateLessThan = "LessThan";			                                //值小于
+        private const string OperateIn = "In";			                                            //值属于
+        private const string OperateNotIn = "NotIn";                                                 //值不属于
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
@@ -857,7 +825,26 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (contentInfo != null)
             {
-                theValue = contentInfo.Get<string>(testTypeStr);
+                if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsTop"))
+                {
+                    theValue = contentInfo.Get<string>(nameof(Content.Top));
+                }
+                else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsRecommend"))
+                {
+                    theValue = contentInfo.Get<string>(nameof(Content.Recommend));
+                }
+                else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsColor"))
+                {
+                    theValue = contentInfo.Get<string>(nameof(Content.Color));
+                }
+                else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsHot"))
+                {
+                    theValue = contentInfo.Get<string>(nameof(Content.Hot));
+                }
+                else
+                {
+                    theValue = contentInfo.Get<string>(testTypeStr);
+                }
             }
 
             return theValue;

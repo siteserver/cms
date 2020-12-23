@@ -85,6 +85,7 @@ namespace SSCMS.Core.Services
 
         public async Task UploadAsync(IFormFile file, string filePath)
         {
+            FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             await using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
@@ -92,6 +93,7 @@ namespace SSCMS.Core.Services
 
         public async Task UploadAsync(byte[] bytes, string filePath)
         {
+            FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             await using var stream = new FileStream(filePath, FileMode.Create);
             await stream.WriteAsync(bytes);
