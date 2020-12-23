@@ -18,11 +18,11 @@ namespace SSCMS.Core.Plugins
 {
     public static class PluginUtils
     {
-        private static ConcurrentDictionary<Type, IEnumerable<Type>> _types;
+        private static readonly ConcurrentDictionary<Type, IEnumerable<Type>> Types;
 
         static PluginUtils()
         {
-            _types = new ConcurrentDictionary<Type, IEnumerable<Type>>();
+            Types = new ConcurrentDictionary<Type, IEnumerable<Type>>();
         }
 
         public static Assembly LoadAssembly(string assemblyPath)
@@ -34,34 +34,37 @@ namespace SSCMS.Core.Plugins
             var assemblyNames = AssemblyLoadContext.Default.Assemblies.Select(x => x.GetName().Name).ToList();
 
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+
+            var isValidAssembly = false;
+            var extensionType = typeof(IPluginExtension);
+            foreach (var exportedType in assembly.GetExportedTypes())
+            {
+                if (extensionType.IsAssignableFrom(exportedType) &&
+                    exportedType.GetTypeInfo().IsClass)
+                {
+                    isValidAssembly = true;
+                    break;
+                }
+            }
+
+            if (!isValidAssembly)
+            {
+                throw new Exception("未找到集成IPluginExtension接口的实现");
+            }
+
             assemblyNames.Add(assembly.GetName().Name);
 
-            var dllPath = Path.GetDirectoryName(assemblyPath);
-            var assemblyFiles = Directory.GetFiles(dllPath, "*.dll", SearchOption.TopDirectoryOnly);
-            var extensionType = typeof(IPluginExtension);
+            var dllDirectoryPath = Path.GetDirectoryName(assemblyPath);
+            var assemblyFiles = Directory.GetFiles(dllDirectoryPath, "*.dll", SearchOption.TopDirectoryOnly);
+            
             foreach (var assemblyFile in assemblyFiles)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(assemblyFile);
 
                 if (assemblyNames.Any(x => StringUtils.EqualsIgnoreCase(x, assemblyName))) continue;
 
-                var isValidAssembly = false;
-                foreach (var exportedType in assembly.GetExportedTypes())
-                {
-                    if (extensionType.IsAssignableFrom(exportedType) &&
-                        exportedType.GetTypeInfo().IsClass)
-                    {
-                        isValidAssembly = true;
-                        break;
-                    }
-                }
-
-                if (!isValidAssembly)
-                {
-                    throw new Exception("未找到集成IPluginExtension接口的实现");
-                }
-
                 AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
+
                 assemblyNames.Add(assemblyName);
             }
 
@@ -83,8 +86,8 @@ namespace SSCMS.Core.Plugins
         {
             var type = typeof(T);
 
-            if (useCaching && _types.ContainsKey(type))
-                return _types[type];
+            if (useCaching && Types.ContainsKey(type))
+                return Types[type];
 
             var implementations = new List<Type>();
 
@@ -102,7 +105,7 @@ namespace SSCMS.Core.Plugins
             }
 
             if (useCaching)
-                _types[type] = implementations;
+                Types[type] = implementations;
 
             return implementations;
         }

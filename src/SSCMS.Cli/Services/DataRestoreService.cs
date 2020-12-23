@@ -6,7 +6,6 @@ using Datory;
 using Newtonsoft.Json.Linq;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -15,17 +14,13 @@ namespace SSCMS.Cli.Services
     public class DataRestoreService : IDataRestoreService
     {
         private readonly ISettingsManager _settingsManager;
-        private readonly IConfigRepository _configRepository;
-        private readonly IDatabaseManager _databaseManager;
 
-        public DataRestoreService(ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseManager databaseManager)
+        public DataRestoreService(ISettingsManager settingsManager)
         {
             _settingsManager = settingsManager;
-            _configRepository = configRepository;
-            _databaseManager = databaseManager;
         }
 
-        public async Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        public async Task RestoreAsync(List<string> includes, List<string> excludes, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
         {
             var tableNames =
                 TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));

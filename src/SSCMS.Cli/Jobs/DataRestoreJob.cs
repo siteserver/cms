@@ -20,7 +20,6 @@ namespace SSCMS.Cli.Jobs
         private string _directory;
         private List<string> _includes;
         private List<string> _excludes;
-        private bool _dataOnly;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
@@ -39,8 +38,6 @@ namespace SSCMS.Cli.Jobs
                     v => _includes = v == null ? null : ListUtils.GetStringList(v) },
                 { "excludes=", "Exclude table names, separated by commas",
                     v => _excludes = v == null ? null : ListUtils.GetStringList(v) },
-                { "data-only",  "Restore data only",
-                    v => _dataOnly = v != null },
                 { "h|help",  "Display help",
                     v => _isHelp = v != null }
             };
@@ -145,9 +142,9 @@ namespace SSCMS.Cli.Jobs
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
 
-            await _restoreService.RestoreAsync(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
+            await _restoreService.RestoreAsync(_includes, _excludes, tablesFilePath, treeInfo, errorLogFilePath);
 
-            await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据!");
+            await WriteUtils.PrintSuccessAsync("restore database successfully!");
         }
     }
 }

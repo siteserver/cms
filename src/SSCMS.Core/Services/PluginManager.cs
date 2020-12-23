@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Configuration;
@@ -47,8 +49,22 @@ namespace SSCMS.Core.Services
                     if (PathUtils.GetFileName(folderPath) != plugin.PluginId) continue;
 
                     plugins.Add(plugin);
-
                 }
+
+                AssemblyLoadContext.Default.Resolving += (context, name) =>
+                {
+                    var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, $"{name.Name}.dll");
+                    if (FileUtils.IsFileExists(filePath))
+                    {
+                        return context.LoadFromAssemblyPath(filePath);
+                    }
+                    var files = Directory.GetFiles(DirectoryPath, $"{name.Name}.dll", SearchOption.AllDirectories);
+                    if (files != null && files.Length > 0)
+                    {
+                        return context.LoadFromAssemblyPath(files[0]);
+                    }
+                    return null;
+                };
 
                 foreach (var plugin in plugins.OrderBy(x => x.Taxis == 0 ? int.MaxValue : x.Taxis))
                 {

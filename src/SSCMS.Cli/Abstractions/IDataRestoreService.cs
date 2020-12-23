@@ -6,7 +6,7 @@ namespace SSCMS.Cli.Abstractions
 {
     public interface IDataRestoreService
     {
-        Task RestoreAsync(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath,
+        Task RestoreAsync(List<string> includes, List<string> excludes, string tablesFilePath,
             TreeInfo treeInfo, string errorLogFilePath);
     }
 }

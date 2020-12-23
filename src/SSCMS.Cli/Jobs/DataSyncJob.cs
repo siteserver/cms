@@ -158,10 +158,10 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            await _restoreService.RestoreAsync(_includes, _excludes, true, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
+            await _restoreService.RestoreAsync(_includes, _excludes, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
 
             await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintSuccessAsync("恭喜，成功同步数据!");
+            await WriteUtils.PrintSuccessAsync("sync database successfully!");
         }
     }
 }
