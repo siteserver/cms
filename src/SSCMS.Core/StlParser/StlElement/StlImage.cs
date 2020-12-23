@@ -30,7 +30,10 @@ namespace SSCMS.Core.StlParser.StlElement
         
         [StlAttribute(Title = "从首页向下的栏目级别")]
         private const string TopLevel = nameof(TopLevel);
-        
+
+        [StlAttribute(Title = "所处上下文")]
+        private const string Context = nameof(Context);
+
         [StlAttribute(Title = "指定存储图片的字段")]
         private const string Type = nameof(Type);
 
@@ -107,6 +110,10 @@ namespace SSCMS.Core.StlParser.StlElement
                     {
                         isGetPicUrlFromAttribute = true;
                     }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, Context))
+                {
+                    parseManager.ContextInfo.ContextType = TranslateUtils.ToEnum(value, ParseType.Undefined);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -261,7 +268,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 else
                 {
                     parsedContent = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, picUrl, pageInfo.IsLocal);
-                    if (!isClearTags)
+                    if (!isClearTags && !contextInfo.IsStlEntity)
                     {
                         attributes["src"] = (string)parsedContent;
                         parsedContent = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";

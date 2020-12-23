@@ -143,15 +143,30 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
                 var attributeName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.AttributeName));
+                if (string.IsNullOrEmpty(attributeName))
+                {
+                    attributeName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "Title");
+                }
+
+                if (string.IsNullOrEmpty(attributeName)) continue;
                 var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.Taxis)));
                 var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.DisplayName));
+                if (string.IsNullOrEmpty(displayName))
+                {
+                    displayName = attributeName;
+                }
                 var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.HelpText));
                 var list = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string>
                 {
                     nameof(TableStyle.List),
                     "VisibleInList"
                 }));
-                var inputType = TranslateUtils.ToEnum(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.InputType)), InputType.Text);
+                var inputTypeString = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.InputType));
+                if (string.IsNullOrEmpty(inputTypeString))
+                {
+                    inputTypeString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "FieldType");
+                }
+                var inputType = TranslateUtils.ToEnum(inputTypeString, InputType.Text);
                 var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.DefaultValue));
                 var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.Horizontal)));
 

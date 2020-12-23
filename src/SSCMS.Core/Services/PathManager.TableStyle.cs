@@ -12,7 +12,13 @@ namespace SSCMS.Core.Services
                 relatedIdentities);
         }
 
-        public async Task<string> ImportStylesAsync(string tableName, List<int> relatedIdentities, string zipFilePath)
+        public async Task ImportStylesByDirectoryAsync(string tableName, List<int> relatedIdentities, string directoryPath)
+        {
+            await ImportObject.ImportTableStyleByDirectoryAsync(_databaseManager, tableName, relatedIdentities,
+                directoryPath);
+        }
+
+        public async Task<string> ImportStylesByZipFileAsync(string tableName, List<int> relatedIdentities, string zipFilePath)
         {
             return await ImportObject.ImportTableStyleByZipFileAsync(this, _databaseManager, tableName, relatedIdentities,
                 zipFilePath);

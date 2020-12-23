@@ -113,8 +113,14 @@ namespace SSCMS.Core.Utils.Serialization
 
             pathManager.ExtractZip(zipFilePath, styleDirectoryPath);
 
-            await TableStyleIe.SingleImportTableStyleAsync(databaseManager, tableName, styleDirectoryPath, relatedIdentities);
+            await ImportTableStyleByDirectoryAsync(databaseManager, tableName, relatedIdentities, styleDirectoryPath);
+
             return styleDirectoryPath;
+        }
+
+        public static async Task ImportTableStyleByDirectoryAsync(IDatabaseManager databaseManager, string tableName, List<int> relatedIdentities, string styleDirectoryPath)
+        {
+            await TableStyleIe.SingleImportTableStyleAsync(databaseManager, tableName, styleDirectoryPath, relatedIdentities);
         }
 
         public async Task ImportConfigurationAsync(string configurationFilePath, string guid)

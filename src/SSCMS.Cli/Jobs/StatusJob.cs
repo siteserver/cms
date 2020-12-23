@@ -60,6 +60,7 @@ namespace SSCMS.Cli.Jobs
             var entryAssembly = Assembly.GetExecutingAssembly();
             await Console.Out.WriteLineAsync($"Cli location: {entryAssembly.Location}");
             await Console.Out.WriteLineAsync($"Work location: {_settingsManager.ContentRootPath}");
+            await Console.Out.WriteLineAsync($"Api host: {CloudUtils.CloudApiHost}");
 
             var configPath = CliUtils.GetConfigPath(_settingsManager);
             if (FileUtils.IsFileExists(configPath))
@@ -95,7 +96,6 @@ namespace SSCMS.Cli.Jobs
             var (status, _) = _apiService.GetStatus();
             if (status != null)
             {
-                await Console.Out.WriteLineAsync($"Api host: {CloudUtils.CloudApiHost}");
                 await Console.Out.WriteLineAsync($"Login user: {status.UserName}");
             }
         }

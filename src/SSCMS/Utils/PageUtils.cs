@@ -99,21 +99,7 @@ namespace SSCMS.Utils
             return string.IsNullOrEmpty(host) ? string.Empty : host.Trim().ToLower();
         }
 
-
-        //public static string HttpContextRootDomain
-        //{
-        //    get
-        //    {
-        //        var url = HttpContext.Current.Request.Url;
-
-        //        if (url.HostNameType != UriHostNameType.Dns) return url.Host;
-
-        //        var match = Regex.Match(url.Host, "([^.]+\\.[^.]{1,3}(\\.[^.]{1,3})?)$");
-        //        return match.Groups[1].Success ? match.Groups[1].Value : null;
-        //    }
-        //}
-
-        public static NameValueCollection GetQueryString(string url)
+        private static NameValueCollection GetQueryString(string url)
         {
             if (string.IsNullOrEmpty(url) || url.IndexOf("?", StringComparison.Ordinal) == -1) return new NameValueCollection();
 
@@ -441,7 +427,7 @@ namespace SSCMS.Utils
 
         public static string GetLocalApiUrl(params string[] paths)
         {
-            return Combine(Constants.ApiPrefix, PathUtils.Combine(paths));
+            return Combine(Constants.ApiPrefix, Combine(paths));
         }
 
         private class IpList

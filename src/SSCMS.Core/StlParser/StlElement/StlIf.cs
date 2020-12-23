@@ -29,8 +29,11 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "测试值")]
         private const string Value = nameof(Value);
 
-        [StlAttribute(Title = "输出值")]
-        private const string Output = nameof(Output);
+        [StlAttribute(Title = "判断成功输出值")]
+        private const string Yes = nameof(Yes);
+
+        [StlAttribute(Title = "判断失败输出值")]
+        private const string No = nameof(No);
 
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
@@ -55,7 +58,7 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypeTopLevel = "TopLevel";			                                    //栏目级别
         private const string TypeUpChannel = "UpChannel";			                                //上级栏目
         private const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                    //当前栏目或上级栏目
-        private const string TypeCurrent = "Current";			                    //当前栏目或上级栏目
+        private const string TypeCurrent = "Current";			                                    //当前栏目或上级栏目
         private const string TypeSelfChannel = "SelfChannel";			                            //当前栏目
         private const string TypeGroupChannel = "GroupChannel";			                            //栏目组名称
         private const string TypeGroupContent = "GroupContent";			                            //内容组名称
@@ -110,7 +113,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var testTypeStr = string.Empty;
             var testOperate = string.Empty;
             var testValue = string.Empty;
-            var output = string.Empty;
+            var yes = string.Empty;
+            var no = string.Empty;
             var onBeforeSend = string.Empty;
             var onSuccess = string.Empty;
             var onComplete = string.Empty;
@@ -136,9 +140,13 @@ namespace SSCMS.Core.StlParser.StlElement
                         testOperate = OperateEquals;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Output))
+                else if (StringUtils.EqualsIgnoreCase(name, Yes))
                 {
-                    output = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                    yes = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, No))
+                {
+                    no = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
@@ -167,18 +175,26 @@ namespace SSCMS.Core.StlParser.StlElement
                 testOperate = OperateNotEmpty;
             }
 
-            return await ParseImplAsync(parseManager, testTypeStr, testOperate, testValue, output, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseImplAsync(parseManager, testTypeStr, testOperate, testValue, yes, no, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string testType, string testOperate, string testValue, string output, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseImplAsync(IParseManager parseManager, string testType, string testOperate, string testValue, string attributeYes, string attributeNo, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            var innerHtml = !string.IsNullOrEmpty(output) ? output : contextInfo.InnerHtml; 
+            var innerHtml = contextInfo.InnerHtml; 
 
             StlParserUtility.GetLoadingYesNo(innerHtml, out var loading, out var yes, out var no);
+            if (string.IsNullOrEmpty(yes) && !string.IsNullOrEmpty(attributeYes))
+            {
+                yes = attributeYes;
+            }
+            if (string.IsNullOrEmpty(no) && !string.IsNullOrEmpty(attributeNo))
+            {
+                no = attributeNo;
+            }
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin))
             {

@@ -7,6 +7,10 @@ namespace SSCMS.Services
     {
         Task<string> ExportStylesAsync(int siteId, string tableName, List<int> relatedIdentities);
 
-        Task<string> ImportStylesAsync(string tableName, List<int> relatedIdentities, string zipFilePath);
+        Task ImportStylesByDirectoryAsync(string tableName, List<int> relatedIdentities,
+            string directoryPath);
+
+        Task<string> ImportStylesByZipFileAsync(string tableName, List<int> relatedIdentities,
+            string zipFilePath);
     }
 }
