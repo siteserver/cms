@@ -65,7 +65,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var groupContent = string.Empty;
             var groupContentNot = string.Empty;
             var tags = string.Empty;
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(TaxisType.OrderByTaxisDesc);
+            var orderByString = parseManager.DatabaseManager.GetContentOrderByString(TaxisType.OrderByTaxisDesc);
             var startNum = 1;
             var totalNum = 0;
             var isShowText = true;

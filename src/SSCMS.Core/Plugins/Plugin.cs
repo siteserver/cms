@@ -91,7 +91,7 @@ namespace SSCMS.Core.Plugins
         public string Homepage => Configuration[nameof(Homepage)];
         public string Output => Configuration[nameof(Output)];
         public string Main => Configuration[nameof(Main)];
-        public bool ApplyToSites => Configuration.GetValue(nameof(ApplyToSites), true);
+        public bool ApplyToSites => Configuration.GetValue(nameof(ApplyToSites), false);
         public bool ApplyToChannels => Configuration.GetValue(nameof(ApplyToChannels), false);
 
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));

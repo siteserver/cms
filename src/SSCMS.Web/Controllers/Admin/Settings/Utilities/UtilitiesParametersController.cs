@@ -16,12 +16,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         private const string Route = "settings/utilitiesParameters";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;
 
-        public UtilitiesParametersController(ISettingsManager settingsManager, IAuthManager authManager, IConfigRepository configRepository)
+        public UtilitiesParametersController(ISettingsManager settingsManager, IDatabaseManager databaseManager, IAuthManager authManager, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
+            _databaseManager = databaseManager;
             _authManager = authManager;
             _configRepository = configRepository;
         }

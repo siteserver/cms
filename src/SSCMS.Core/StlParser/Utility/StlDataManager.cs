@@ -152,7 +152,7 @@ namespace SSCMS.Core.StlParser.Utility
                 }
             }
             
-            return ETaxisTypeUtils.GetContentOrderByString(taxisType, orderByString);
+            return _databaseManager.GetContentOrderByString(taxisType, orderByString);
         }
     }
 }

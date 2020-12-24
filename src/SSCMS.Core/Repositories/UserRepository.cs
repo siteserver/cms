@@ -506,20 +506,161 @@ namespace SSCMS.Core.Repositories
             return (true, null);
         }
 
+        private string GetDatePartDay(string fieldName)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"DATE_FORMAT({fieldName}, '%e')";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"DATEPART([DAY], {fieldName})";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"date_part('day', {fieldName})";
+            }
+
+            return retVal;
+        }
+
+        private string GetDateDiffLessThanYears(string fieldName, string years)
+        {
+            return GetDateDiffLessThan(fieldName, years, "YEAR");
+        }
+
+        private string GetDateDiffLessThanMonths(string fieldName, string months)
+        {
+            return GetDateDiffLessThan(fieldName, months, "MONTH");
+        }
+
+        private string GetDateDiffLessThanDays(string fieldName, string days)
+        {
+            return GetDateDiffLessThan(fieldName, days, "DAY");
+        }
+
+        private int GetSecondsByUnit(string unit)
+        {
+            var seconds = 1;
+            if (unit == "MINUTE")
+            {
+                seconds = 60;
+            }
+            else if (unit == "HOUR")
+            {
+                seconds = 3600;
+            }
+            else if (unit == "DAY")
+            {
+                seconds = 86400;
+            }
+            else if (unit == "MONTH")
+            {
+                seconds = 2592000;
+            }
+            else if (unit == "YEAR")
+            {
+                seconds = 31536000;
+            }
+            return seconds;
+        }
+
+        private string GetDateDiffLessThan(string fieldName, string fieldValue, string unit)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
+            }
+
+            return retVal;
+        }
+
+        private string GetDatePartYear(string fieldName)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"DATE_FORMAT({fieldName}, '%Y')";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"DATEPART([YEAR], {fieldName})";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"date_part('year', {fieldName})";
+            }
+
+            return retVal;
+        }
+
+        private string GetDatePartMonth(string fieldName)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"DATE_FORMAT({fieldName}, '%c')";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"DATEPART([MONTH], {fieldName})";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"date_part('month', {fieldName})";
+            }
+
+            return retVal;
+        }
+
+        private string GetComparableDate(DateTime dateTime)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
+            }
+
+            return retVal;
+        }
+
         public Dictionary<DateTime, int> GetTrackingDictionary(DateTime dateFrom, DateTime dateTo, string xType)
         {
             var analysisType = TranslateUtils.ToEnum(xType, AnalysisType.Day);
             var dict = new Dictionary<DateTime, int>();
 
             var builder = new StringBuilder();
-            builder.Append($" AND CreateDate >= {SqlUtils.GetComparableDate(Database.DatabaseType, dateFrom)}");
-            builder.Append($" AND CreateDate < {SqlUtils.GetComparableDate(Database.DatabaseType, dateTo)}");
+            builder.Append($" AND CreateDate >= {GetComparableDate(dateFrom)}");
+            builder.Append($" AND CreateDate < {GetComparableDate(dateTo)}");
 
             string sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
-    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "CreateDate")} AS AddMonth, {SqlUtils.GetDatePartDay(Database.DatabaseType, "CreateDate")} AS AddDay 
+    SELECT {GetDatePartYear("CreateDate")} AS AddYear, {GetDatePartMonth("CreateDate")} AS AddMonth, {GetDatePartDay("CreateDate")} AS AddDay 
     FROM {TableName} 
-    WHERE {SqlUtils.GetDateDiffLessThanDays(Database.DatabaseType, "CreateDate", 30.ToString())} {builder}
+    WHERE {GetDateDiffLessThanDays("CreateDate", 30.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth, AddDay ORDER BY AddYear, AddMonth, AddDay
 ";//添加日统计
 
@@ -527,9 +668,9 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (
             {
                 sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
-    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreateDate")} AS AddYear, {SqlUtils.GetDatePartMonth(Database.DatabaseType, "CreateDate")} AS AddMonth 
+    SELECT {GetDatePartYear("CreateDate")} AS AddYear, {GetDatePartMonth("CreateDate")} AS AddMonth 
     FROM {TableName} 
-    WHERE {SqlUtils.GetDateDiffLessThanMonths(Database.DatabaseType, "CreateDate", 12.ToString())} {builder}
+    WHERE {GetDateDiffLessThanMonths("CreateDate", 12.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear, AddMonth ORDER BY AddYear, AddMonth
 ";//添加月统计
             }
@@ -537,9 +678,9 @@ SELECT COUNT(*) AS AddNum, AddYear, AddMonth FROM (
             {
                 sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear FROM (
-    SELECT {SqlUtils.GetDatePartYear(Database.DatabaseType, "CreateDate")} AS AddYear
+    SELECT {GetDatePartYear("CreateDate")} AS AddYear
     FROM {TableName} 
-    WHERE {SqlUtils.GetDateDiffLessThanYears(Database.DatabaseType, "CreateDate", 10.ToString())} {builder}
+    WHERE {GetDateDiffLessThanYears("CreateDate", 10.ToString())} {builder}
 ) DERIVEDTBL GROUP BY AddYear ORDER BY AddYear
 ";//添加年统计
             }

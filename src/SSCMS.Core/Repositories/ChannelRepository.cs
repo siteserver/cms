@@ -10,6 +10,7 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -212,7 +213,7 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        private static string GetGroupWhereString(DatabaseType databaseType, string group, string groupNot)
+        private string GetGroupWhereString(string group, string groupNot)
         {
             var whereStringBuilder = new StringBuilder();
             if (!string.IsNullOrEmpty(group))
@@ -227,7 +228,7 @@ namespace SSCMS.Core.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {SqlUtils.GetInStr(databaseType, "siteserver_Channel.GroupNames", trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {SqlUtils.GetInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");
+                                $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {DatabaseUtils.GetInStr(Database, "siteserver_Channel.GroupNames", trimGroup + ",")} OR {DatabaseUtils.GetInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -251,7 +252,7 @@ namespace SSCMS.Core.Repositories
                         //    $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND CHARINDEX('{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot}',siteserver_Channel.GroupNames) = 0) AND ");
 
                         whereStringBuilder.Append(
-                                $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND {SqlUtils.GetNotInStr(databaseType, "siteserver_Channel.GroupNames", trimGroupNot + ",")} AND {SqlUtils.GetNotInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroupNot + ",")} AND {SqlUtils.GetNotInStr(databaseType, "siteserver_Channel.GroupNames", "," + trimGroupNot)}) AND ");
+                                $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND {DatabaseUtils.GetNotInStr(Database, "siteserver_Channel.GroupNames", trimGroupNot + ",")} AND {DatabaseUtils.GetNotInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroupNot + ",")} AND {DatabaseUtils.GetNotInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroupNot)}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
@@ -273,9 +274,40 @@ namespace SSCMS.Core.Repositories
                     : " AND siteserver_Channel.ImageUrl = '' ");
             }
 
-            whereStringBuilder.Append(GetGroupWhereString(Database.DatabaseType, group, groupNot));
+            whereStringBuilder.Append(GetGroupWhereString(group, groupNot));
 
             return whereStringBuilder.ToString();
+        }
+
+        private string Quote(string identifier)
+        {
+            return _repository.Database.GetQuotedIdentifier(identifier);
+        }
+
+        private string GetSqlColumnInList(string columnName, List<int> idList)
+        {
+            if (idList == null || idList.Count == 0) return string.Empty;
+
+            if (idList.Count < 1000)
+            {
+                return $"{Quote(columnName)} IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+            }
+
+            var sql = new StringBuilder();
+            sql.Append(" ").Append(Quote(columnName)).Append(" IN ( ");
+            for (var i = 0; i < idList.Count; i++)
+            {
+                sql.Append(idList[i] + ",");
+                if ((i + 1) % 1000 == 0 && i + 1 < idList.Count)
+                {
+                    sql.Length -= 1;
+                    sql.Append(" ) OR ").Append(Quote(columnName)).Append(" IN (");
+                }
+            }
+            sql.Length -= 1;
+            sql.Append(" )");
+
+            return $"({sql})";
         }
 
         public async Task<List<int>> GetChannelIdsByTotalNumAsync(List<int> channelIdList, int totalNum, string orderByString, string whereString)
@@ -289,8 +321,8 @@ namespace SSCMS.Core.Repositories
             if (totalNum > 0)
             {
                 var where =
-                    $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
-                sqlString = SqlUtils.ToTopSqlString(Database.DatabaseType, TableName, "Id",
+                    $"WHERE {GetSqlColumnInList("Id", channelIdList)} {whereString})";
+                sqlString = DatabaseUtils.ToTopSqlString(Database, TableName, "Id",
                     where,
                     orderByString,
                     totalNum);
@@ -304,7 +336,7 @@ namespace SSCMS.Core.Repositories
             {
                 sqlString = $@"SELECT Id
 FROM siteserver_Channel 
-WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}
+WHERE {GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}
 ";
             }
 

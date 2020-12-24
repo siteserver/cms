@@ -423,7 +423,7 @@ namespace SSCMS.Core.Services
                         if (count == 1)
                         {
                             var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
+                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, false);
                         }
                         else
@@ -441,7 +441,7 @@ namespace SSCMS.Core.Services
                         else if (count == 1)
                         {
                             var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
+                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, false);
                         }
                         else
@@ -455,7 +455,7 @@ namespace SSCMS.Core.Services
                         if (count >= 1)
                         {
                             var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
+                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, false);
                         }
                         else
@@ -469,7 +469,7 @@ namespace SSCMS.Core.Services
                         if (count >= 1)
                         {
                             var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, ETaxisTypeUtils.GetContentOrderByString(channel.DefaultTaxisType));
+                            var contentId = _contentRepository.GetContentId(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
                             url = await GetContentUrlAsync(site, channel, contentId, false);
                         }
                         else

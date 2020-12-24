@@ -75,19 +75,17 @@ namespace SSCMS.Core.Repositories
 
         public List<(int AdminId, int AddCount, int UpdateCount)> GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
         {
-            var databaseType = _settingsManager.Database.DatabaseType;
-
             var sqlString = $@"select adminId,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
 SELECT AdminId as adminId, Count(AdminId) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON AdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
+AND LastModifiedDate BETWEEN {GetComparableDate(begin)} AND {GetComparableDate(end.AddDays(1))}
 GROUP BY AdminId
 Union
 SELECT LastEditAdminId as lastEditAdminId,0 as addCount, Count(LastEditAdminId) as updateCount FROM {tableName} 
 INNER JOIN {_administratorRepository.TableName} ON LastEditAdminId = {_administratorRepository.TableName}.Id 
 WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {SqlUtils.GetComparableDate(databaseType, begin)} AND {SqlUtils.GetComparableDate(databaseType, end.AddDays(1))}
+AND LastModifiedDate BETWEEN {GetComparableDate(begin)} AND {GetComparableDate(end.AddDays(1))}
 AND LastModifiedDate != AddDate
 GROUP BY LastEditAdminId
 ) as tmp
@@ -271,17 +269,17 @@ group by tmp.adminId";
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} >= {SqlUtils.GetComparableDate(_settingsManager.Database.DatabaseType, TranslateUtils.ToDateTime(dateFrom))} ");
+                whereBuilder.Append($" {dateAttribute} >= {GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
                 whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} <= {SqlUtils.GetComparableDate(_settingsManager.Database.DatabaseType, TranslateUtils.ToDateTime(dateTo))} ");
+                whereBuilder.Append($" {dateAttribute} <= {GetComparableDate(TranslateUtils.ToDateTime(dateTo))} ");
             }
             if (!string.IsNullOrEmpty(since))
             {
                 var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
-                whereBuilder.Append($" AND {dateAttribute} BETWEEN {SqlUtils.GetComparableDateTime(_settingsManager.Database.DatabaseType, sinceDate)} AND {SqlUtils.GetComparableNow(_settingsManager.Database.DatabaseType)} ");
+                whereBuilder.Append($" AND {dateAttribute} BETWEEN {GetComparableDateTime(sinceDate)} AND {GetComparableNow()} ");
             }
 
             var tableName = _channelRepository.GetTableName(site, channel);

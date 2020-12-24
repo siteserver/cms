@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 
 namespace SSCMS.Services
@@ -72,5 +73,11 @@ namespace SSCMS.Services
 
         string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString,
             int offset, int limit);
+
+        string GetContentOrderByString(TaxisType taxisType);
+
+        string GetContentOrderByString(TaxisType taxisType, string orderByString);
+
+        string GetDatabaseNameFormConnectionString(string connectionString);
     }
 }

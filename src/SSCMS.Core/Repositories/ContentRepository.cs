@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Datory;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -32,5 +33,70 @@ namespace SSCMS.Core.Repositories
         public string TableName => _repository.TableName;
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        private string GetComparableNow()
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = "now()";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = "getdate()";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = "current_timestamp";
+            }
+
+            return retVal;
+        }
+
+        private string GetComparableDateTime(DateTime dateTime)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+            }
+
+            return retVal;
+        }
+
+        private string GetComparableDate(DateTime dateTime)
+        {
+            var retVal = string.Empty;
+
+            if (Database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (Database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
+            }
+            else if (Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
+            }
+
+            return retVal;
+        }
+
+        private string Quote(string identifier)
+        {
+            return Database.GetQuotedIdentifier(identifier);
+        }
     }
 }
