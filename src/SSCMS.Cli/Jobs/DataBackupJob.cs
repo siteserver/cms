@@ -134,7 +134,7 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
+            var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
             var errorTableNames = await Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, _pageSize, treeInfo, errorLogFilePath);
 
             await WriteUtils.PrintRowLineAsync();

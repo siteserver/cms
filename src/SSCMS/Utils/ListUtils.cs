@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Datory.Utils;
-using Microsoft.AspNetCore.Builder;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 
@@ -54,16 +53,13 @@ namespace SSCMS.Utils
 
         public static List<T> AddIfNotExists<T>(List<T> list, T value)
         {
-            if (list == null)
-            {
-                list = new List<T>();
-            }
+            var retVal = list == null ? new List<T>() : new List<T>(list);
 
-            if (!list.Contains(value))
+            if (!retVal.Contains(value))
             {
-                list.Add(value);
+                retVal.Add(value);
             }
-            return list;
+            return retVal;
         }
 
         public static int Count<T>(List<T> list)

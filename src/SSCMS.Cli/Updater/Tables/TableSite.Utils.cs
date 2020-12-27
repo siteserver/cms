@@ -29,7 +29,7 @@ namespace SSCMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(Site.Id), nameof(PublishmentSystemId)},
+                //{nameof(Site.Id), nameof(PublishmentSystemId)},
                 {nameof(Site.SiteName), nameof(PublishmentSystemName)},
                 {nameof(Site.TableName), nameof(AuxiliaryTableForContent)},
                 {nameof(Site.SiteDir), nameof(PublishmentSystemDir)},
@@ -45,6 +45,11 @@ namespace SSCMS.Cli.Updater.Tables
             {
                 var value = TranslateUtils.ToBool(contentObj.ToString());
                 row[nameof(Site.Root)] = value;
+            }
+            if (row.TryGetValue(nameof(PublishmentSystemId), out contentObj))
+            {
+                var value = TranslateUtils.ToInt(contentObj.ToString());
+                row[nameof(Site.Id)] = value;
             }
 
             return row;

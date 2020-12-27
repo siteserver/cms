@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
-using SSCMS.Dto;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
@@ -79,40 +77,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 Total = total,
                 PageSize = site.PageSize
             };
-        }
-
-        public enum SearchType
-        {
-            All,
-            Admin,
-            User
-        }
-
-        public class ListRequest : SiteRequest
-        {
-            public SearchType SearchType { get; set; }
-            public List<int> ChannelIds { get; set; }
-            public bool IsAllContents { get; set; }
-            public DateTime? StartDate { get; set; }
-            public DateTime? EndDate { get; set; }
-            public IEnumerable<KeyValuePair<string, string>> Items { get; set; }
-            public int Page { get; set; }
-            public bool IsAdvanced { get; set; }
-            public bool IsCheckedLevels { get; set; }
-            public List<int> CheckedLevels { get; set; }
-            public bool IsTop { get; set; }
-            public bool IsRecommend { get; set; }
-            public bool IsHot { get; set; }
-            public bool IsColor { get; set; }
-            public List<string> GroupNames { get; set; }
-            public List<string> TagNames { get; set; }
-        }
-
-        public class ListResult
-        {
-            public List<Content> PageContents { get; set; }
-            public int Total { get; set; }
-            public int PageSize { get; set; }
         }
     }
 }

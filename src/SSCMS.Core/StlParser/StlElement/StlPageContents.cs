@@ -299,7 +299,7 @@ $(document).ready(function(){{
         success: function(res) {{
             $(""#{elementId} .loading"").hide();
             $(""#{elementId} .yes"").show();
-            $(""#{elementId} .yes"").html(res);
+            $(""#{elementId} .yes"").html(res.html);
         }},
         error: function(e) {{
             $(""#{elementId} .loading"").hide();

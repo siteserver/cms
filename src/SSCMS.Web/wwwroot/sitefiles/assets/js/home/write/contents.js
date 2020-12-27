@@ -15,6 +15,7 @@ var data = utils.init({
   total: null,
   pageSize: null,
   page: 1,
+  titleColumn: null,
   columns: null,
   menus: null,
   
@@ -48,6 +49,7 @@ var methods = {
       $this.siteName = res.siteName;
       $this.siteUrl = res.siteUrl;
       $this.root = res.root;
+      $this.titleColumn = res.titleColumn;
       $this.columns = res.columns;
 
       $this.allCheckedLevels = res.checkedLevels;
@@ -230,27 +232,8 @@ var methods = {
     this.apiColumns(attributeNames);
   },
 
-  getColumnWidth: function(column) {
-    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits' || column.attributeName === 'HitsByDay' || column.attributeName === 'HitsByWeek' || column.attributeName === 'HitsByMonth' || column.attributeName === 'Downloads') {
-      return 70;
-    }
-    if (column.attributeName === 'ImageUrl') {
-      return 100;
-    }
-    if (column.attributeName === 'Guid' || column.attributeName === 'SourceId') {
-      return 310;
-    }
-    if (column.attributeName === 'Title') {
-      return '';
-    }
-    return $defaultWidth;
-  },
-
-  getColumnMinWidth: function(column) {
-    if (column.attributeName === 'Title') {
-      return 400;
-    }
-    return '';
+  handleHeaderDragend: function(newWidth, oldWidth, column) {
+    
   }
 };
 

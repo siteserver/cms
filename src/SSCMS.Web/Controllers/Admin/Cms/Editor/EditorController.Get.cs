@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -37,6 +38,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     !string.IsNullOrEmpty(style.DisplayName) &&
                     !ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, style.AttributeName))
                 .Select(x => new InputStyle(x));
+            var templates =
+                await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
             var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, site.Id);
             var checkedLevels = CheckManager.GetCheckedLevelOptions(site, userIsChecked, userCheckedLevel, true);
@@ -69,6 +72,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 Styles = styles,
+                Templates = templates,
                 CheckedLevels = checkedLevels,
                 CheckedLevel = userCheckedLevel
             };

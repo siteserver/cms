@@ -86,7 +86,9 @@ namespace SSCMS.Core.Utils
             else if (templateType == TemplateType.ContentTemplate)
             {
                 var channel = await databaseManager.ChannelRepository.GetAsync(visualInfo.ChannelId);
-                visualInfo.Template = await databaseManager.TemplateRepository.GetContentTemplateAsync(visualInfo.Site.Id, channel);
+                var content =
+                    await databaseManager.ContentRepository.GetAsync(visualInfo.Site, channel, visualInfo.ContentId);
+                visualInfo.Template = await databaseManager.TemplateRepository.GetContentTemplateAsync(visualInfo.Site.Id, channel, content?.TemplateId ?? 0);
                 visualInfo.ContextType = ParseType.Content;
                 visualInfo.FilePath = await pathManager.GetContentPageFilePathAsync(visualInfo.Site, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Model;
@@ -57,9 +58,11 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypTemplateType = "TemplateType";			                            //模板类型
         private const string TypeTopLevel = "TopLevel";			                                    //栏目级别
         private const string TypeUpChannel = "UpChannel";			                                //上级栏目
+        private const string TypeSelf = "Self";			                                            //当前栏目
         private const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                    //当前栏目或上级栏目
         private const string TypeCurrent = "Current";			                                    //当前栏目或上级栏目
-        private const string TypeSelfChannel = "SelfChannel";			                            //当前栏目
+        private const string TypeIndex = "Index";			                                        //当前页面为首页
+        private const string TypeHasChildren = "HasChildren";			                            //是否下级栏目
         private const string TypeGroupChannel = "GroupChannel";			                            //栏目组名称
         private const string TypeGroupContent = "GroupContent";			                            //内容组名称
         private const string TypeAddDate = "AddDate";			                                    //添加时间
@@ -198,13 +201,22 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 isSuccess = await TestTypeUpChannelAsync(parseManager, testOperate, testValue);
             }
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeSelf))
+            {
+                isSuccess = IsBool(pageInfo.PageChannelId == contextInfo.ChannelId, testOperate, testValue);
+            }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeUpChannelOrSelf) || StringUtils.EqualsIgnoreCase(testType, TypeCurrent))
             {
                 isSuccess = await TestTypeUpChannelOrSelfAsync(parseManager, testOperate, testValue);
             }
-            else if (StringUtils.EqualsIgnoreCase(testType, TypeSelfChannel))
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeIndex))
             {
-                isSuccess = pageInfo.PageChannelId == contextInfo.ChannelId;
+                isSuccess = IsBool(contextInfo.ChannelId == pageInfo.SiteId, testOperate, testValue);
+            }
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeHasChildren))
+            {
+                var channel = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                isSuccess = IsBool(channel.ChildrenCount > 0, testOperate, testValue);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeGroupChannel))
             {
@@ -989,6 +1001,36 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                 }
                 if (!isIn)
+                {
+                    isSuccess = true;
+                }
+            }
+            return isSuccess;
+        }
+
+        private static bool IsBool(bool boolValue, string testOperate, string testValue)
+        {
+            var isSuccess = false;
+
+            if (string.IsNullOrEmpty(testValue))
+            {
+                testValue = true.ToString();
+            }
+            if (string.IsNullOrEmpty(testOperate) || StringUtils.EqualsIgnoreCase(testOperate, OperateNotEmpty))
+            {
+                testOperate = OperateEquals;
+            }
+
+            if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
+            {
+                if (boolValue == TranslateUtils.ToBool(testValue))
+                {
+                    isSuccess = true;
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals))
+            {
+                if (boolValue != TranslateUtils.ToBool(testValue))
                 {
                     isSuccess = true;
                 }

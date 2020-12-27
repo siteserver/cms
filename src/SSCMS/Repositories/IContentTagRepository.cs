@@ -9,6 +9,8 @@ namespace SSCMS.Repositories
     {
         Task InsertAsync(int siteId, string tagName);
 
+        Task InsertAsync(ContentTag tag);
+
         Task DeleteAsync(int siteId, string tagName);
 
         Task DeleteAsync(int siteId);

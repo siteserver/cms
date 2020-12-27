@@ -37,19 +37,19 @@ namespace SSCMS.Cli.Updater.Tables
 
         private Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue(IsVisible, out var contentObj))
+            if (row.TryGetValue(nameof(IsVisible), out var contentObj))
             {
                 if (contentObj != null && StringUtils.EqualsIgnoreCase(contentObj.ToString(), "False"))
                 {
                     row[nameof(TableStyle.InputType)] = Enums.InputType.Hidden.GetValue();
                 }
             }
-            if (row.TryGetValue(IsVisibleInList, out contentObj))
+            if (row.TryGetValue(nameof(IsVisibleInList), out contentObj))
             {
                 var value = TranslateUtils.ToBool(contentObj.ToString());
                 row[nameof(TableStyle.List)] = value;
             }
-            if (row.TryGetValue(IsHorizontal, out contentObj))
+            if (row.TryGetValue(nameof(IsHorizontal), out contentObj))
             {
                 var value = TranslateUtils.ToBool(contentObj.ToString());
                 row[nameof(TableStyle.Horizontal)] = value;

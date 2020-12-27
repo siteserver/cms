@@ -62,15 +62,15 @@ namespace SSCMS.Core.Services
             var count = await _contentRepository.GetCountAsync(site, channelInfo);
             if (!_channelRepository.IsCreatable(site, channelInfo, count)) return;
 
-            var templateInfo = channelId == siteId
+            var template = channelId == siteId
                 ? await _templateRepository.GetIndexPageTemplateAsync(siteId)
                 : await _templateRepository.GetChannelTemplateAsync(siteId, channelInfo);
             var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId, 0);
 
-            await _parseManager.InitAsync(site, channelId, 0, templateInfo);
+            await _parseManager.InitAsync(site, channelId, 0, template);
             _parseManager.ContextInfo.ContextType = ParseType.Channel;
 
-            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, templateInfo));
+            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -230,13 +230,13 @@ namespace SSCMS.Core.Services
                 return;
             }
 
-            var templateInfo = await _templateRepository.GetContentTemplateAsync(site.Id, channel);
-            await _parseManager.InitAsync(site, channel.Id, contentId, templateInfo);
+            var template = await _templateRepository.GetContentTemplateAsync(site.Id, channel, contentInfo.TemplateId);
+            await _parseManager.InitAsync(site, channel.Id, contentId, template);
             _parseManager.ContextInfo.ContextType = ParseType.Content;
             _parseManager.ContextInfo.SetContent(contentInfo);
 
             var filePath = await _pathManager.GetContentPageFilePathAsync(site, _parseManager.PageInfo.PageChannelId, contentInfo, 0);
-            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, templateInfo));
+            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -410,17 +410,17 @@ namespace SSCMS.Core.Services
         private async Task ExecuteFileAsync(int siteId, int fileTemplateId)
         {
             var site = await _siteRepository.GetAsync(siteId);
-            var templateInfo = await _templateRepository.GetAsync(fileTemplateId);
-            if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+            var template = await _templateRepository.GetAsync(fileTemplateId);
+            if (template == null || template.TemplateType != TemplateType.FileTemplate)
             {
                 return;
             }
 
-            await _parseManager.InitAsync(site, siteId, 0, templateInfo);
+            await _parseManager.InitAsync(site, siteId, 0, template);
 
-            var filePath = await _pathManager.ParseSitePathAsync(site, templateInfo.CreatedFileFullName);
+            var filePath = await _pathManager.ParseSitePathAsync(site, template.CreatedFileFullName);
 
-            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, templateInfo));
+            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
             await _parseManager.ParseAsync(contentBuilder, filePath, false);
             await GenerateFileAsync(filePath, contentBuilder);
         }
@@ -428,15 +428,15 @@ namespace SSCMS.Core.Services
         private async Task ExecuteSpecialAsync(int siteId, int specialId)
         {
             var site = await _siteRepository.GetAsync(siteId);
-            var templateInfoList = await _pathManager.GetSpecialTemplateListAsync(site, specialId);
+            var templates = await _pathManager.GetSpecialTemplateListAsync(site, specialId);
 
-            foreach (var templateInfo in templateInfoList)
+            foreach (var template in templates)
             {
-                await _parseManager.InitAsync(site, siteId, 0, templateInfo);
+                await _parseManager.InitAsync(site, siteId, 0, template);
 
-                var filePath = await _pathManager.ParseSitePathAsync(site, templateInfo.CreatedFileFullName);
+                var filePath = await _pathManager.ParseSitePathAsync(site, template.CreatedFileFullName);
 
-                var contentBuilder = new StringBuilder(templateInfo.Content);
+                var contentBuilder = new StringBuilder(template.Content);
                 await _parseManager.ParseAsync(contentBuilder, filePath, false);
                 await GenerateFileAsync(filePath, contentBuilder);
             }

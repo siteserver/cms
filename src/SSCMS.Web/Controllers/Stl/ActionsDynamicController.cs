@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.Model;
-using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Stl
@@ -23,18 +20,16 @@ namespace SSCMS.Web.Controllers.Stl
             _parseManager = parseManager;
         }
 
-        [HttpPost, Route(Constants.RouteStlActionsDynamic)]
-        public async Task<SubmitResult> Submit([FromBody]SubmitRequest request)
+        public class SubmitRequest
         {
-            var user = await _authManager.GetUserAsync();
+            public string Value { get; set; }
+            public int Page { get; set; }
+        }
 
-            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
-
-            return new SubmitResult
-            {
-                Value = true,
-                Html = await StlDynamic.ParseDynamicContentAsync(_parseManager, dynamicInfo, dynamicInfo.SuccessTemplate)
-            };
+        public class SubmitResult
+        {
+            public bool Value { get; set; }
+            public string Html { get; set; }
         }
     }
 }

@@ -118,7 +118,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<Template> GetChannelTemplateAsync(int siteId, Channel channel)
         {
-            var templateId = 0;
+            int templateId;
             if (siteId == channel.Id)
             {
                 templateId = await GetDefaultTemplateIdAsync(siteId, TemplateType.IndexPageTemplate);
@@ -137,15 +137,16 @@ namespace SSCMS.Core.Repositories
             return template ?? await GetDefaultTemplateAsync(siteId, TemplateType.ChannelTemplate);
         }
 
-        public async Task<Template> GetContentTemplateAsync(int siteId, Channel channel)
+        public async Task<Template> GetContentTemplateAsync(int siteId, Channel channel, int templateId)
         {
-            var templateId = 0;
-            templateId = channel.ContentTemplateId;
-
             Template template = null;
-            if (templateId != 0)
+            if (templateId > 0)
             {
                 template = await GetAsync(templateId);
+            }
+            if (template == null && channel.ContentTemplateId > 0)
+            {
+                template = await GetAsync(channel.ContentTemplateId);
             }
 
             return template ?? await GetDefaultTemplateAsync(siteId, TemplateType.ContentTemplate);

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -60,6 +62,10 @@ namespace SSCMS.Web.Controllers.Home.Write
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
 
+            var titleColumn =
+                columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
+            columns.Remove(titleColumn);
+
             return new GetResult
             {
                 Unauthorized = false,
@@ -71,6 +77,7 @@ namespace SSCMS.Web.Controllers.Home.Write
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 CheckedLevels = checkedLevels,
+                TitleColumn = titleColumn,
                 Columns = columns
             };
         }

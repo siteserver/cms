@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
         public class SubmitRequest : SiteRequest
         {
-            public List<string> TagNames { get; set; }
+            public string TagNames { get; set; }
         }
 
         public class DeleteRequest : SiteRequest

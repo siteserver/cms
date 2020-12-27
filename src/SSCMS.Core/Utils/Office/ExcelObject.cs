@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Models;
@@ -188,57 +187,62 @@ namespace SSCMS.Core.Utils.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public async Task<List<Content>> GetContentsByCsvFileAsync(string filePath, Site site, Channel channel)
+        public async Task<List<Content>> GetContentsByFileAsync(string filePath, Site site, Channel channel)
         {
-            var contentInfoList = new List<Content>();
-
-            CsvUtils.Import(filePath, out var head, out var rows);
-
-            if (rows.Count <= 0) return contentInfoList;
-
+            var contents = new List<Content>();
             var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
-            var nameValueCollection = new NameValueCollection();
-            foreach (var style in styles)
+
+            var sheet = ExcelUtils.GetDataTable(filePath);
+            if (sheet != null)
             {
-                nameValueCollection[style.DisplayName] = StringUtils.ToLower(style.AttributeName);
-            }
+                var columns = new List<string>();
 
-            var attributeNames = new List<string>();
-            foreach (var columnName in head)
-            {
-                attributeNames.Add(!string.IsNullOrEmpty(nameValueCollection[columnName])
-                    ? nameValueCollection[columnName]
-                    : columnName);
-            }
-
-            foreach (var row in rows)
-            {
-                if (row.Count != attributeNames.Count) continue;
-
-                var dict = new Dictionary<string, object>();
-
-                for (var i = 0; i < attributeNames.Count; i++)
+                for (var i = 1; i < sheet.Rows.Count; i++) //行
                 {
-                    var attributeName = attributeNames[i];
-                    if (!string.IsNullOrEmpty(attributeName))
+                    var row = sheet.Rows[i];
+
+                    if (i == 1)
                     {
-                        dict[attributeName] = row[i];
+                        for (var j = 0; j < sheet.Columns.Count; j++)
+                        {
+                            var value = row[j].ToString().Trim();
+                            columns.Add(value);
+                        }
+                        continue;
+                    }
+
+                    var dict = new Dictionary<string, object>();
+
+                    for (var j = 0; j < columns.Count; j++)
+                    {
+                        var columnName = columns[j];
+                        var value = row[j].ToString().Trim();
+
+                        var style = styles.FirstOrDefault(x =>
+                            StringUtils.EqualsIgnoreCase(x.AttributeName, columnName) ||
+                            StringUtils.EqualsIgnoreCase(x.DisplayName, columnName));
+                        var attributeName = style != null ? style.AttributeName : columnName;
+
+                        if (!string.IsNullOrEmpty(attributeName))
+                        {
+                            dict[attributeName] = value;
+                        }
+                    }
+
+                    var content = new Content();
+                    content.LoadDict(dict);
+
+                    if (!string.IsNullOrEmpty(content.Title))
+                    {
+                        content.SiteId = site.Id;
+                        content.ChannelId = channel.Id;
+
+                        contents.Add(content);
                     }
                 }
-
-                var content = new Content();
-                content.LoadDict(dict);
-
-                if (!string.IsNullOrEmpty(content.Title))
-                {
-                    content.SiteId = site.Id;
-                    content.ChannelId = channel.Id;
-
-                    contentInfoList.Add(content);
-                }
             }
 
-            return contentInfoList;
+            return contents;
         }
     }
 }

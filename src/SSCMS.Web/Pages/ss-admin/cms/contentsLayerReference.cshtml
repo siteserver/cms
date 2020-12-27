@@ -1,0 +1,31 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-alert type="warning" size="small">
+  引用内容只允许编辑标题，如果希望编辑原始内容，请点击编辑原始内容
+</el-alert>
+
+<div style="height: 10px"></div>
+
+<el-form size="small" ref="form" :model="form" label-width="120px">
+  <el-form-item label="引用自">
+    {{ sourceName }}
+    <el-button size="small" type="primary" v-on:click="btnEditOriginalClick">编辑原始内容</el-button>
+  </el-form-item>
+  <el-form-item label="内容标题" prop="title" :rules="{ required: true, message: '请输入内容标题' }">
+    <el-input v-model="form.title" placeholder="请输入内容标题"></el-input>
+  </el-form-item>
+</el-form>
+
+<div style="height: 10px"></div>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/contentsLayerReference.js" type="text/javascript"></script> }

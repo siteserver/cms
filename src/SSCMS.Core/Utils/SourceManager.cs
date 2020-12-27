@@ -9,7 +9,7 @@ namespace SSCMS.Core.Utils
         public const int Preview = -99;     //预览
         public const int Default = 0;       //正常录入
 
-        public static async Task<string> GetSourceNameAsync(IDatabaseManager databaseManager, int siteId, int sourceId)
+        public static async Task<string> GetSourceNameAsync(IDatabaseManager databaseManager, int siteId, int referenceId, int sourceId)
         {
             if (sourceId == User)
             {
@@ -20,6 +20,15 @@ namespace SSCMS.Core.Utils
                 return "预览插入";
             }
             if (sourceId <= 0) return string.Empty;
+
+            if (referenceId > 0)
+            {
+                var nodeNames = await databaseManager.ChannelRepository.GetChannelNameNavigationAsync(siteId, sourceId);
+                if (!string.IsNullOrEmpty(nodeNames))
+                {
+                    return nodeNames;
+                }
+            }
 
             var sourceSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(sourceId);
             if (sourceSiteId == siteId)
@@ -39,7 +48,7 @@ namespace SSCMS.Core.Utils
                 }
             }
 
-            return "后台录入";
+            return string.Empty;
         }
-	}
+    }
 }

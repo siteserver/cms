@@ -5,9 +5,7 @@ using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Configuration;
 using SSCMS.Plugins;
-using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -140,11 +138,18 @@ namespace SSCMS.Cli.Jobs
             await WriteUtils.PrintRowAsync("Restore table name", "Count");
             await WriteUtils.PrintRowLineAsync();
 
-            var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(CommandName, _settingsManager);
+            var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
 
-            await _restoreService.RestoreAsync(_includes, _excludes, tablesFilePath, treeInfo, errorLogFilePath);
+            var errorTableNames = await _restoreService.RestoreAsync(_includes, _excludes, tablesFilePath, treeInfo, errorLogFilePath);
 
-            await WriteUtils.PrintSuccessAsync("restore database successfully!");
+            if (errorTableNames.Count == 0)
+            {
+                await WriteUtils.PrintSuccessAsync("restore database successfully!");
+            }
+            else
+            {
+                await WriteUtils.PrintErrorAsync($"Database restore failed and the following table was not successfully restored: {ListUtils.ToString(errorTableNames)}");
+            }
         }
     }
 }

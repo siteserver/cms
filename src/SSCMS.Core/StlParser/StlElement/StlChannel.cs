@@ -205,9 +205,9 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
-            var channelId = await dataManager.GetChannelIdByLevelAsync(parseManager.PageInfo.SiteId, parseManager.ContextInfo.ChannelId, upLevel, topLevel);
+            //var channelId = await dataManager.GetChannelIdByLevelAsync(parseManager.PageInfo.SiteId, parseManager.ContextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = await parseManager.DatabaseManager.ChannelRepository.GetChannelIdAsync(parseManager.PageInfo.SiteId, channelId, channelIndex, channelName);
+            var channelId = await parseManager.DatabaseManager.ChannelRepository.GetChannelIdAsync(parseManager.PageInfo.SiteId, parseManager.ContextInfo.ChannelId, channelIndex, channelName);
 
             if (StringUtils.StartsWithIgnoreCase(type, "up") && type.IndexOf(".", StringComparison.Ordinal) != -1)
             {

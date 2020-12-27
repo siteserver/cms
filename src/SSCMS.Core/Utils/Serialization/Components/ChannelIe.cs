@@ -28,6 +28,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
         public async Task ImportChannelAsync(Channel channel, ScopedElementCollection additionalElements, int parentId, IList indexNameList)
         {
+            channel.LoadExtend(AtomUtility.GetDcElementContent(additionalElements, "ExtendValues"));
+
             channel.ChannelName = AtomUtility.GetDcElementContent(additionalElements, new List<string>{ nameof(Channel.ChannelName), "NodeName" });
             channel.SiteId = _site.Id;
             var contentModelPluginId = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.ContentModelPluginId));
@@ -66,7 +68,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             channel.Keywords = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Keywords));
             channel.Description = AtomUtility.GetDcElementContent(additionalElements, nameof(Channel.Description));
-            channel.LoadExtend(AtomUtility.GetDcElementContent(additionalElements, "ExtendValues"));
         }
 
         public async Task<AtomFeed> ExportChannelAsync(Channel channel)
@@ -99,17 +100,18 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.ContentTemplateId), channel.ContentTemplateId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.Keywords), channel.Keywords);
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(Channel.Description), channel.Description);
+            AtomUtility.AddDcElement(feed.AdditionalElements, "ExtendValues", TranslateUtils.JsonSerialize(channel.ToDictionary()));
 
-            var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
-                "ExtendValues");
-            if (!string.IsNullOrEmpty(json))
-            {
-                var dict = ListUtils.ToDictionary(json);
-                foreach (var o in dict)
-                {
-                    channel.Set(o.Key, o.Value);
-                }
-            }
+            //var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
+            //    "ExtendValues");
+            //if (!string.IsNullOrEmpty(json))
+            //{
+            //    var dict = ListUtils.ToDictionary(json);
+            //    foreach (var o in dict)
+            //    {
+            //        channel.Set(o.Key, o.Value);
+            //    }
+            //}
 
             if (channel.ChannelTemplateId != 0)
             {

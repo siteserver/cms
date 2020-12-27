@@ -13,6 +13,7 @@ var data = utils.init({
   total: null,
   pageSize: null,
   page: 1,
+  titleColumn: null,
   columns: null,
   permissions: null,
   menus: null,
@@ -53,14 +54,14 @@ var methods = {
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
       $this.checkedLevels = res.checkedLevels;
+      $this.titleColumn = res.titleColumn;
       $this.columns = res.columns;
       $this.permissions = res.permissions;
       $this.permissions.isAdd = false;
-      var titleColumn = _.find($this.columns, function(o) { return o.attributeName == 'Title'; });
       var keyword = utils.getQueryString("keyword") || '';
       $this.searchColumns.push({
-        attributeName: titleColumn.attributeName,
-        displayName: titleColumn.displayName,
+        attributeName: $this.titleColumn.attributeName,
+        displayName: $this.titleColumn.displayName,
         value: keyword
       });
 
@@ -358,35 +359,18 @@ var methods = {
     this.apiList(this.siteId, val);
   },
 
+  handleHeaderDragend: function(newWidth, oldWidth, column) {
+    if (column.columnKey) {
+      this.apiWidth(column.columnKey, newWidth);
+    }
+  },
+
   handleColumnsChange: function() {
     var listColumns = _.filter(this.columns, function(o) { return o.isList; });
     var attributeNames = _.map(listColumns, function(column) {
       return column.attributeName;
     });
     this.apiColumns(attributeNames);
-  },
-
-  getColumnWidth: function(column) {
-    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits' || column.attributeName === 'HitsByDay' || column.attributeName === 'HitsByWeek' || column.attributeName === 'HitsByMonth' || column.attributeName === 'Downloads') {
-      return 70;
-    }
-    if (column.attributeName === 'ImageUrl') {
-      return 100;
-    }
-    if (column.attributeName === 'Guid' || column.attributeName === 'SourceId') {
-      return 310;
-    }
-    if (column.attributeName === 'Title') {
-      return '';
-    }
-    return $defaultWidth;
-  },
-
-  getColumnMinWidth: function(column) {
-    if (column.attributeName === 'Title') {
-      return 400;
-    }
-    return '';
   }
 };
 

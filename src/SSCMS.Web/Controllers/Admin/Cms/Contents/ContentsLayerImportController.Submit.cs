@@ -46,17 +46,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     contentIdList.AddRange(await importObject.ImportContentsByZipFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
                 }
             }
-            else if (request.ImportType == "csv")
+            else if (request.ImportType == "excel")
             {
                 foreach (var fileName in request.FileNames)
                 {
                     var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                    if (!FileUtils.IsType(FileType.Csv, PathUtils.GetExtension(localFilePath)))
+                    if (!FileUtils.IsType(FileType.Xlsx, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    contentIdList.AddRange(await importObject.ImportContentsByCsvFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                    contentIdList.AddRange(await importObject.ImportContentsByXlsxFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
                 }
             }
             else if (request.ImportType == "txt")

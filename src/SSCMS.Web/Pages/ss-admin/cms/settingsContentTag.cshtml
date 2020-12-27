@@ -45,7 +45,7 @@
 <el-drawer
   id="form"
   v-if="form"
-  :title="form.tagName ? '修改内容标签' : '添加内容标签'"
+  title="添加内容标签"
   :visible.sync="panel"
   destroy-on-close
   direction="rtl"
@@ -53,17 +53,12 @@
   <div class="drawer__content">
     <el-form size="small" ref="form" :model="form" label-width="150px" label-position="top">
       <el-form-item label="内容标签" prop="tagNames" :rules="{ required: true, message: '请输入内容标签' }">
-        <el-select
+        <el-input
+          type="textarea"
           v-model="form.tagNames"
-          multiple
-          filterable
-          allow-create
-          default-first-option
-          placeholder="请输入内容标签"
-          style="width: 100%"
-          >
-        </el-select>
-        <div class="tips">输入标签后回车，可以批量添加多个标签</div>
+          rows="10">
+        </el-input>
+        <div class="tips">可以批量添加多个标签，多个标签使用换行分割</div>
       </el-form-item>
 
       <el-divider></el-divider>

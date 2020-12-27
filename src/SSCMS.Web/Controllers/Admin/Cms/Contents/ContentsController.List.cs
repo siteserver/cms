@@ -99,11 +99,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, MenuUtils.ChannelPermissions.Edit)
             };
 
+            var titleColumn =
+                columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
+            columns.Remove(titleColumn);
+
             return new ListResult
             {
                 PageContents = pageContents,
                 Total = total,
                 PageSize = site.PageSize,
+                TitleColumn = titleColumn,
                 Columns = columns,
                 IsAllContents = channel.IsAllContents,
                 CheckedLevels = checkedLevels,

@@ -154,6 +154,10 @@ namespace SSCMS.Core.Repositories
 
             source.ParentId = parent.Id;
             source.ParentsPath = ListUtils.AddIfNotExists(parent.ParentsPath, parent.Id);
+            if (!source.ParentsPath.Contains(source.SiteId))
+            {
+                source.ParentsPath.Insert(0, source.SiteId);
+            }
             source.ParentsCount = source.ParentsPath.Count;
 
             await UpdateAsync(source);

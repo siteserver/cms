@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Datory;
 using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -123,7 +122,6 @@ namespace SSCMS.Core.Utils
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Taxis = 0;
-                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateType.Copy.GetValue());
                 var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
                 var handlers = pluginManager.GetExtensions<PluginContentHandler>();
@@ -163,7 +161,6 @@ namespace SSCMS.Core.Utils
                 contentInfo.SourceId = contentInfo.ChannelId;
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Taxis = 0;
-                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateType.Cut.GetValue());
 
                 var newContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
 
@@ -211,52 +208,7 @@ namespace SSCMS.Core.Utils
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Taxis = 0;
-                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateType.Reference.GetValue());
-                //content.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
                 int theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
-
-                await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
-                await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
-            }
-            else if (translateType == TranslateType.ReferenceContent)
-            {
-                if (contentInfo.ReferenceId != 0) return;
-
-                await pathManager.MoveFileByContentAsync(site, targetSite, contentInfo);
-
-                contentInfo.SiteId = targetSiteId;
-                contentInfo.SourceId = contentInfo.ChannelId;
-                contentInfo.ChannelId = targetChannelId;
-                contentInfo.Taxis = 0;
-                contentInfo.ReferenceId = contentId;
-                contentInfo.Set(ColumnsManager.TranslateContentType, TranslateType.ReferenceContent.GetValue());
-                var theContentId = await databaseManager.ContentRepository.InsertAsync(targetSite, targetChannelInfo, contentInfo);
-
-                var handlers = pluginManager.GetExtensions<PluginContentHandler>();
-                foreach (var handler in handlers)
-                {
-                    try
-                    {
-                        handler.OnTranslated(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId);
-                        await handler.OnTranslatedAsync(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId);
-                    }
-                    catch (Exception ex)
-                    {
-                        await databaseManager.ErrorLogRepository.AddErrorLogAsync(ex);
-                    }
-                }
-
-                //foreach (var plugin in oldPluginManager.GetPlugins())
-                //{
-                //    try
-                //    {
-                //        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
-                //    }
-                //}
 
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
@@ -268,8 +220,7 @@ namespace SSCMS.Core.Utils
             if (channel == null || content == null) return false;
 
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
-            if (content.ReferenceId > 0 &&
-                content.Get<string>(ColumnsManager.TranslateContentType) != TranslateType.ReferenceContent.GetValue())
+            if (content.ReferenceId > 0)
             {
                 return false;
             }

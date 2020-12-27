@@ -1,5 +1,4 @@
 ﻿var $url = "/cms/contents/contents";
-var $defaultWidth = 160;
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -17,6 +16,7 @@ var data = utils.init({
   total: null,
   pageSize: null,
   page: 1,
+  titleColumn: null,
   columns: null,
   permissions: null,
   menus: null,
@@ -91,6 +91,7 @@ var methods = {
       var res = response.data;
       
       $this.pageContents = res.pageContents;
+      $this.titleColumn = res.titleColumn;
       $this.columns = res.columns;
       $this.total = res.total;
       $this.pageSize = res.pageSize;
@@ -115,12 +116,24 @@ var methods = {
   },
 
   apiColumns: function(attributeNames) {
-    var $this = this;
-
     $api.post($url + '/actions/columns', {
       siteId: this.siteId,
       channelId: this.channelId,
       attributeNames: attributeNames
+    }).then(function(response) {
+      var res = response.data;
+
+    }).catch(function(error) {
+      utils.error(error);
+    });
+  },
+
+  apiWidth: function(attributeName, width) {
+    $api.post($url + '/actions/width', {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      attributeName: attributeName,
+      width: width
     }).then(function(response) {
       var res = response.data;
 
@@ -154,6 +167,13 @@ var methods = {
   },
 
   getContentUrl: function (content) {
+    if (content.referenceId > 0 && content.sourceId > 0) {
+      return utils.getRootUrl('redirect', {
+        siteId: content.siteId,
+        channelId: content.sourceId,
+        contentId: content.referenceId
+      });
+    }
     return utils.getRootUrl('redirect', {
       siteId: content.siteId,
       channelId: content.channelId,
@@ -218,7 +238,20 @@ var methods = {
 
   btnEditClick: function(content) {
     if (!this.permissions.isEdit) return;
-    utils.addTab('编辑内容', this.getEditUrl(content));
+    if (content.referenceId > 0 && content.sourceId > 0) {
+      utils.openLayer({
+        title: "编辑引用内容",
+        url: utils.getCmsUrl('contentsLayerReference', {
+          siteId: this.siteId,
+          channelId: content.channelId,
+          contentId: content.id,
+          page: this.page,
+        }),
+        full: true
+      });
+    } else {
+      utils.addTab('编辑内容', this.getEditUrl(content));
+    }
   },
 
   btnAdminClick: function(adminId) {
@@ -366,6 +399,12 @@ var methods = {
     return data.label.indexOf(value) !== -1 || data.value + '' === value;
   },
 
+  handleHeaderDragend: function(newWidth, oldWidth, column) {
+    if (column.columnKey) {
+      this.apiWidth(column.columnKey, newWidth);
+    }
+  },
+
   handleSelectionChange: function(val) {
     this.multipleSelection = val;
   },
@@ -384,32 +423,6 @@ var methods = {
       return column.attributeName;
     });
     this.apiColumns(attributeNames);
-  },
-
-  getColumnWidth: function(column) {
-    if (typeof column === 'string') {
-      return column.length * 30;
-    }
-    if (column.attributeName === 'Sequence' || column.attributeName === 'Id' || column.attributeName === 'Hits' || column.attributeName === 'HitsByDay' || column.attributeName === 'HitsByWeek' || column.attributeName === 'HitsByMonth' || column.attributeName === 'Downloads') {
-      return 70;
-    }
-    if (column.attributeName === 'ImageUrl') {
-      return 100;
-    }
-    if (column.attributeName === 'Guid' || column.attributeName === 'SourceId') {
-      return 310;
-    }
-    if (column.attributeName === 'Title') {
-      return '';
-    }
-    return $defaultWidth;
-  },
-
-  getColumnMinWidth: function(column) {
-    if (column.attributeName === 'Title') {
-      return 400;
-    }
-    return '';
   }
 };
 

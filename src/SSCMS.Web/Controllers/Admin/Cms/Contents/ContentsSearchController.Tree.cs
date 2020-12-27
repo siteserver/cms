@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -52,6 +54,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, MenuUtils.ChannelPermissions.Edit)
                 };
 
+                var titleColumn =
+                    columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
+                columns.Remove(titleColumn);
+
                 return new TreeResult
                 {
                     Root = root,
@@ -59,6 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     GroupNames = groupNames,
                     TagNames = tagNames,
                     CheckedLevels = checkedLevels,
+                    TitleColumn = titleColumn,
                     Columns = columns,
                     Permissions = permissions
                 };
@@ -68,34 +75,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             {
                 Root = root
             };
-        }
-
-        public class TreeRequest : SiteRequest
-        {
-            public bool Reload { get; set; }
-        }
-
-        public class Permissions
-        {
-            public bool IsAdd { get; set; }
-            public bool IsDelete { get; set; }
-            public bool IsEdit { get; set; }
-            public bool IsArrange { get; set; }
-            public bool IsTranslate { get; set; }
-            public bool IsCheck { get; set; }
-            public bool IsCreate { get; set; }
-            public bool IsChannelEdit { get; set; }
-        }
-
-        public class TreeResult
-        {
-            public Cascade<int> Root { get; set; }
-            public string SiteUrl { get; set; }
-            public IEnumerable<string> GroupNames { get; set; }
-            public IEnumerable<string> TagNames { get; set; }
-            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
-            public List<ContentColumn> Columns { get; set; }
-            public Permissions Permissions { get; set; }
         }
     }
 }

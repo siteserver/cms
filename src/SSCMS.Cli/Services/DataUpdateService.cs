@@ -115,7 +115,7 @@ namespace SSCMS.Cli.Services
                 converter.NewColumns = oldTableInfo.Columns;
             }
 
-            await WriteUtils.PrintRowAsync(oldTableName, "#split-content#", oldTableInfo.TotalCount.ToString("#,0"));
+            await WriteUtils.PrintRowAsync(oldTableName, "#split-contents#", oldTableInfo.TotalCount.ToString("#,0"));
 
             if (oldTableInfo.RowFiles.Count > 0)
             {

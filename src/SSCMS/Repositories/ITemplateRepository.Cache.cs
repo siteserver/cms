@@ -33,7 +33,7 @@ namespace SSCMS.Repositories
 
         Task<Template> GetChannelTemplateAsync(int siteId, Channel channel);
 
-        Task<Template> GetContentTemplateAsync(int siteId, Channel channel);
+        Task<Template> GetContentTemplateAsync(int siteId, Channel channel, int contentTemplateId);
 
         Task<Template> GetFileTemplateAsync(int siteId, int fileTemplateId);
 

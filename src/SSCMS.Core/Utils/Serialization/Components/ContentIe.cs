@@ -414,6 +414,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }, AtomUtility.Encrypt(ListUtils.ToString(content.TagNames)));
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.SourceId), content.SourceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.ReferenceId), content.ReferenceId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.TemplateId), content.TemplateId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Checked), "IsChecked" }, content.Checked.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.CheckedLevel), content.CheckedLevel.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Hits), content.Hits.ToString());

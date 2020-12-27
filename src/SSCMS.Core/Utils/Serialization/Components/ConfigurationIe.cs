@@ -73,21 +73,28 @@ namespace SSCMS.Core.Utils.Serialization.Components
 			}
 
 			var channelGroupList = await _databaseManager.ChannelGroupRepository.GetChannelGroupsAsync(_site.Id);
-
+			var channelGroupIe = new ChannelGroupIe(_databaseManager, _caching);
             foreach (var channelGroup in channelGroupList)
 			{
-				var entry = ChannelGroupIe.Export(channelGroup);
+				var entry = channelGroupIe.Export(channelGroup);
                 feed.Entries.Add(entry);
 			}
 
 			var contentGroupList = await _databaseManager.ContentGroupRepository.GetContentGroupsAsync(_site.Id);
-
-			var contentGroupId = new ContentGroupIe(_databaseManager, _caching);
+            var contentGroupIe = new ContentGroupIe(_databaseManager, _caching);
             foreach (var contentGroup in contentGroupList)
 			{
-				var entry = contentGroupId.Export(contentGroup);
+				var entry = contentGroupIe.Export(contentGroup);
 				feed.Entries.Add(entry);
 			}
+
+            var contentTagList = await _databaseManager.ContentTagRepository.GetTagsAsync(_site.Id);
+            var contentTagIe = new ContentTagIe(_databaseManager, _caching);
+            foreach (var contentTag in contentTagList)
+            {
+                var entry = contentTagIe.Export(contentTag);
+                feed.Entries.Add(entry);
+            }
 
 			feed.Save(_filePath);
 		}
@@ -194,9 +201,14 @@ namespace SSCMS.Core.Utils.Serialization.Components
 				}
 			}
 
-            var contentGroupIe = new ContentGroupIe(_databaseManager, _caching);
+            var channelGroupIe = new ChannelGroupIe(_databaseManager, _caching);
+            await channelGroupIe.ImportAsync(feed, _site.Id, guid);
 
-			await contentGroupIe.ImportAsync(feed, _site.Id, guid);
+            var contentGroupIe = new ContentGroupIe(_databaseManager, _caching);
+            await contentGroupIe.ImportAsync(feed, _site.Id, guid);
+
+            var contentTagIe = new ContentTagIe(_databaseManager, _caching);
+            await contentTagIe.ImportAsync(feed, _site.Id, guid);
 		}
 
 	}

@@ -13,8 +13,8 @@ namespace SSCMS.Cli.Updater.Tables
             _databaseManager = databaseManager;
         }
 
-        [JsonProperty("id")]
-        public long Id { get; set; }
+        [JsonProperty("UserId")]
+        public long UserId { get; set; }
 
         [JsonProperty("userName")]
         public string UserName { get; set; }

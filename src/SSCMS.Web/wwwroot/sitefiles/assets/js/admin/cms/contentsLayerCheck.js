@@ -61,7 +61,8 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.channelId, $this.page, '内容审核成功!');
+      utils.success('内容审核成功!');
+      parent.$vue.apiList($this.channelId, $this.page);
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);

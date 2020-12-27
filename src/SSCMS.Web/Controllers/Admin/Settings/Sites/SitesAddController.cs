@@ -27,8 +27,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public SitesAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository)
+        public SitesAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository, ITemplateRepository templateRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -39,6 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
             _administratorRepository = administratorRepository;
+            _templateRepository = templateRepository;
         }
 
         public class GetResult

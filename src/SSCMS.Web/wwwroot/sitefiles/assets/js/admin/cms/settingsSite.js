@@ -54,7 +54,7 @@ var methods = {
   insertEditor: function(attributeName, html) {
     if (!attributeName) attributeName = 'Body';
     if (!html) return;
-    UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
   },
   
   apiGet: function () {
@@ -94,10 +94,7 @@ var methods = {
       for (var i = 0; i < $this.styles.length; i++) {
         var style = $this.styles[i];
         if (style.inputType === 'TextEditor') {
-          var editor = UE.getEditor(style.attributeName, {
-            allowDivTransToP: false,
-            maximumWords: 99999999
-          });
+          var editor = utils.getEditor(style.attributeName);
           editor.attributeName = style.attributeName;
           editor.ready(function () {
             this.addListener("contentChange", function () {

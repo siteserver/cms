@@ -24,9 +24,9 @@ namespace SSCMS.Cli.Core
             }
         }
 
-        public static string DeleteErrorLogFileIfExists(string commandName, ISettingsManager settingsManager)
+        public static string DeleteErrorLogFileIfExists(ISettingsManager settingsManager)
         {
-            var filePath = PathUtils.Combine(settingsManager.ContentRootPath, $"{commandName}.error.log");
+            var filePath = PathUtils.Combine(settingsManager.ContentRootPath, "sscms-cli.error.log");
             FileUtils.DeleteFileIfExists(filePath);
             return filePath;
         }

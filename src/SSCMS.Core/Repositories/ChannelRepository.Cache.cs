@@ -542,6 +542,33 @@ namespace SSCMS.Core.Repositories
             return ListUtils.ToString(channelNames, " > ");
         }
 
+        public async Task<List<int>> GetChannelIdNavigationAsync(int siteId, int channelId)
+        {
+            var channelIds = new List<int>();
+
+            if (channelId == 0) channelId = siteId;
+            else if (channelId < 0) channelId = Math.Abs(channelId);
+
+            if (channelId == siteId)
+            {
+                channelIds.Add(siteId);
+                return channelIds;
+            }
+
+            var summaries = await GetSummariesAsync(siteId);
+
+            var parentIds = new List<int>
+            {
+                channelId
+            };
+            GetParentIdsRecursive(summaries, parentIds, channelId);
+            parentIds.Reverse();
+
+            channelIds.AddRange(parentIds);
+
+            return channelIds;
+        }
+
         public async Task<bool> IsAncestorOrSelfAsync(int siteId, int parentId, int childId)
         {
             if (parentId == childId)

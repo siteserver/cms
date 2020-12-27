@@ -257,7 +257,7 @@ namespace SSCMS.Core.Services
             var referenceId = contentCurrent.ReferenceId;
             var linkUrl = contentCurrent.LinkUrl;
             var channelId = contentCurrent.ChannelId;
-            if (referenceId > 0 && TranslateType.ReferenceContent.GetValue() == contentCurrent.Get<string>(ColumnsManager.TranslateContentType))
+            if (referenceId > 0)
             {
                 if (sourceId > 0 && await _channelRepository.IsExistsAsync(sourceId))
                 {
@@ -311,9 +311,7 @@ namespace SSCMS.Core.Services
                 return GetPreviewContentUrl(site.Id, channelId, contentId);
             }
 
-            var contentInfoCurrent = await _contentRepository.GetAsync(site, channelId, contentId);
-
-            if (referenceId > 0 && TranslateType.ReferenceContent.GetValue() == contentInfoCurrent.Get<string>(ColumnsManager.TranslateContentType))
+            if (referenceId > 0)
             {
                 if (sourceId > 0 && await _channelRepository.IsExistsAsync(sourceId))
                 {

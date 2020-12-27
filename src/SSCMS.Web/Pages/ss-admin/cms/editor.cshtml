@@ -93,6 +93,14 @@
         </el-tab-pane>
         <el-tab-pane label="更多" name="second">
           <el-collapse v-model="collapseMore">
+
+            <el-collapse-item title="内容模板" name="templateId">
+              <el-select v-model="form.templateId" size="mini" placeholder="请选择内容模板">
+                <el-option label="<默认>" :value="0"></el-option>
+                <el-option v-for="template in templates" :key="template.id" :label="template.templateName" :value="template.id"></el-option>
+              </el-select>
+            </el-collapse-item>
+
             <el-collapse-item title="同时转移到" name="translates">
               <el-tag
                 v-for="translate in translates"

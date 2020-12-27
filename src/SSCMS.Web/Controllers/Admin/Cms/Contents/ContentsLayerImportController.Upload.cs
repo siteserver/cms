@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var fileName = Path.GetFileName(file.FileName);
 
             var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal));
-            if (!StringUtils.EqualsIgnoreCase(extendName, ".zip") && !StringUtils.EqualsIgnoreCase(extendName, ".csv") && !StringUtils.EqualsIgnoreCase(extendName, ".txt"))
+            if (!StringUtils.EqualsIgnoreCase(extendName, ".zip") && !StringUtils.EqualsIgnoreCase(extendName, ".xlsx") && !StringUtils.EqualsIgnoreCase(extendName, ".txt"))
             {
                 return this.Error(Constants.ErrorUpload);
             }

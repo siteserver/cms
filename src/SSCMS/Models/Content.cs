@@ -38,6 +38,9 @@ namespace SSCMS.Models
         public int ReferenceId { get; set; }
 
         [DataColumn]
+        public int TemplateId { get; set; }
+
+        [DataColumn]
         public bool Checked { get; set; }
 
         [DataColumn]

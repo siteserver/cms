@@ -6,11 +6,12 @@ var data = utils.init({
   contentId: utils.getQueryInt('contentId'),
   page: utils.getQueryInt('page'),
   tabName: utils.getQueryString('tabName'),
+  reloadChannelId: utils.getQueryInt('reloadChannelId'),
   mainHeight: '',
   isSettings: true,
   sideType: 'first',
   collapseSettings: ['checkedLevel', 'addDate'],
-  collapseMore: ['translates'],
+  collapseMore: ['templateId', 'translates'],
 
   site: null,
   siteUrl: null,
@@ -21,6 +22,7 @@ var data = utils.init({
   siteOptions: null,
   channelOptions: null,
   styles: null,
+  templates: null,
   form: null,
 
   translates: [],
@@ -72,7 +74,7 @@ var methods = {
   insertEditor: function(attributeName, html) {
     if (!attributeName) attributeName = 'Body';
     if (!html) return;
-    UE.getEditor(attributeName, {allowDivTransToP: false, maximumWords:99999999}).execCommand('insertHTML', html);
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
   },
 
   addTranslation: function(targetSiteId, targetChannelId, translateType, summary) {
@@ -119,6 +121,7 @@ var methods = {
       $this.channelOptions = res.channelOptions;
 
       $this.styles = res.styles;
+      $this.templates = res.templates;
       $this.form = _.assign({}, res.content);
       if ($this.form.checked) {
         $this.form.checkedLevel = $this.site.checkContentLevel;
@@ -154,10 +157,7 @@ var methods = {
         for (var i = 0; i < $this.styles.length; i++) {
           var style = $this.styles[i];
           if (style.inputType === 'TextEditor') {
-            var editor = UE.getEditor(style.attributeName, {
-              allowDivTransToP: false,
-              maximumWords: 99999999
-            });
+            var editor = utils.getEditor(style.attributeName);
             editor.styleIndex = i;
             editor.ready(function () {
               this.addListener("contentChange", function () {
@@ -188,7 +188,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.closeAndRedirect();
+      $this.closeAndRedirect(false);
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {
@@ -230,7 +230,7 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.closeAndRedirect();
+      $this.closeAndRedirect(true);
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {
@@ -242,9 +242,9 @@ var methods = {
     var tabVue = utils.getTabVue(this.tabName);
     if (tabVue) {
       if (isEdit) {
-        tabVue.apiList(this.channelId, this.page, '内容保存成功！');
+        tabVue.apiList(this.reloadChannelId > 0 ? this.reloadChannelId : this.channelId, this.page, '内容编辑成功！');
       } else {
-        tabVue.apiList(this.channelId, this.page, '内容保存成功！', true);
+        tabVue.apiList(this.channelId, this.page, '内容新增成功！', true);
       }
     }
     utils.removeTab();

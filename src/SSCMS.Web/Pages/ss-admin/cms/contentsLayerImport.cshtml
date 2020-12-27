@@ -27,10 +27,17 @@
 <el-form ref="form" :model="form" label-width="100px" size="small">
   <el-form-item label="导入类型">
     <el-radio v-model="form.importType" label="zip">导入压缩包</el-radio>
-    <el-radio v-model="form.importType" label="csv">导入Excel文件</el-radio>
+    <el-radio v-model="form.importType" label="excel">导入Excel文件</el-radio>
     <el-radio v-model="form.importType" label="txt">导入Txt文件</el-radio>
+
     <div v-if="form.importType === 'zip'" class="tips">请选择后台导出的压缩包，系统能够将内容以及内容相关的图片、附件等文件一并导入。</div>
-    <div v-if="form.importType === 'csv'" class="tips">请选择Excel文件，系统将导入Excel文件对应的字段数据。</div>
+    <div v-if="form.importType === 'excel'" class="tips">
+      请选择Excel文件，系统将导入Excel文件对应的字段数据。
+      <el-link :underline="false" type="primary" :href="utils.getAssetsUrl('uploadtemplates/内容导入模版.xlsx')" target="_blank">
+        <i class="el-icon-download"></i>
+        下载导入模版
+      </el-link>
+    </div>
     <div v-if="form.importType === 'txt'" class="tips">请选择以.txt结尾的纯文本文件，文件名将作为内容标题，文件内容将作为正文导入。</div>
   </el-form-item>
   <el-form-item label="导入设置">

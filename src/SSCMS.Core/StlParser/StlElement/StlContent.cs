@@ -217,16 +217,16 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (isOriginal)
             {
-                if (content.ReferenceId > 0 && content.SourceId > 0 && TranslateType.Reference.GetValue() == content.Get<string>(ColumnsManager.TranslateContentType))
+                if (content.ReferenceId > 0 && content.SourceId > 0)
                 {
                     var targetChannelId = content.SourceId;
                     //var targetSiteId = databaseManager.ChannelRepository.GetSiteId(targetChannelId);
-                    var targetSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(targetChannelId);
-                    var targetSite = await databaseManager.SiteRepository.GetAsync(targetSiteId);
-                    var targetNodeInfo = await databaseManager.ChannelRepository.GetAsync(targetChannelId);
+                    //var targetSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(targetChannelId);
+                    //var targetSite = await databaseManager.SiteRepository.GetAsync(targetSiteId);
+                    var targetChannel = await databaseManager.ChannelRepository.GetAsync(targetChannelId);
 
                     //var targetContentInfo = databaseManager.ContentRepository.GetContentInfo(tableStyle, tableName, content.ReferenceId);
-                    var targetContentInfo = await databaseManager.ContentRepository.GetAsync(targetSite, targetNodeInfo, content.ReferenceId);
+                    var targetContentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, targetChannel, content.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的

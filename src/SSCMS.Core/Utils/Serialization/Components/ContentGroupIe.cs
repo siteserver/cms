@@ -18,14 +18,14 @@ namespace SSCMS.Core.Utils.Serialization.Components
             _caching = caching;
         }
 
-        public AtomEntry Export(ContentGroup @group)
+        public AtomEntry Export(ContentGroup group)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
             AtomUtility.AddDcElement(entry.AdditionalElements, "IsContentGroup", true.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" }, @group.GroupName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroup.Taxis), @group.Taxis.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroup.Description), @group.Description);
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" }, group.GroupName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroup.Taxis), group.Taxis.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroup.Description), group.Description);
 
             return entry;
         }

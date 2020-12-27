@@ -56,12 +56,15 @@ namespace SSCMS.Cli.Updater
                     //newRow[key] = value;
                 }
 
-                if (process != null)
+                if (process != null && newRow != null)
                 {
                     newRow = process(newRow);
                 }
 
-                newRows.Add(newRow);
+                if (newRow != null)
+                {
+                    newRows.Add(newRow);
+                }
             }
 
             return newRows;

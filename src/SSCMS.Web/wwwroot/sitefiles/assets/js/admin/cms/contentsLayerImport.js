@@ -66,11 +66,11 @@ var methods = {
   },
 
   uploadBefore(file) {
-    var re = /(\.zip|\.csv|\.txt)$/i;
+    var re = /(\.zip|\.xlsx|\.txt)$/i;
     if (this.importType === 'zip') {
       re = /(\.zip)$/i;
-    } else if (this.importType === 'csv') {
-      re = /(\.csv)$/i;
+    } else if (this.importType === 'xlsx') {
+      re = /(\.xlsx)$/i;
     } else if (this.importType === 'txt') {
       re = /(\.txt)$/i;
     }

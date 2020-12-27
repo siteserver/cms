@@ -25,10 +25,9 @@ namespace SSCMS.Core.Utils
         public const string PageContent = nameof(PageContent);
         public const string NavigationUrl = nameof(NavigationUrl);
         public const string CheckState = nameof(CheckState);
-        public const string CheckAdminId = nameof(CheckAdminId);//审核人
-        public const string CheckDate = nameof(CheckDate);//审核时间
-        public const string CheckReasons = nameof(CheckReasons);//审核原因
-        public const string TranslateContentType = nameof(TranslateContentType);//转移内容类型
+        public const string CheckAdminId = nameof(CheckAdminId);                    //审核人
+        public const string CheckDate = nameof(CheckDate);                          //审核时间
+        public const string CheckReasons = nameof(CheckReasons);                    //审核原因
 
         private const string Sequence = nameof(Sequence);                            //序号
         private const string ChannelName = nameof(ChannelName);
@@ -37,17 +36,13 @@ namespace SSCMS.Core.Utils
         private const string UserName = nameof(UserName);
         private const string CheckAdminName = nameof(CheckAdminName);
         private const string SourceName = nameof(SourceName);
+        private const string TemplateName = nameof(TemplateName);
         private const string State = nameof(State);
 
         public static string GetFormatStringAttributeName(string attributeName)
         {
             return attributeName + "FormatString";
         }
-
-        //public static string GetExtendAttributeName(string attributeName)
-        //{
-        //    return attributeName + "_Extend";
-        //}
 
         public static string GetCountName(string attributeName)
         {
@@ -57,6 +52,11 @@ namespace SSCMS.Core.Utils
         public static string GetExtendName(string attributeName, int n)
         {
             return n > 0 ? $"{attributeName}{n}" : attributeName;
+        }
+
+        public static string GetColumnWidthName(string attributeName)
+        {
+            return $"{attributeName}ColumnWidth";
         }
 
         public static readonly Lazy<List<string>> MetadataAttributes = new Lazy<List<string>>(() => new List<string>
@@ -74,6 +74,7 @@ namespace SSCMS.Core.Utils
             nameof(Content.GroupNames),
             nameof(Content.TagNames),
             nameof(Content.SourceId),
+            nameof(Content.TemplateId),
             nameof(Content.ReferenceId),
             nameof(Content.Checked),
             nameof(Content.CheckedLevel),
@@ -123,6 +124,7 @@ namespace SSCMS.Core.Utils
             Sequence,
             nameof(Content.ChannelId),
             nameof(Content.SourceId),
+            nameof(Content.TemplateId),
             nameof(Content.AdminId),
             nameof(Content.LastEditAdminId),
             nameof(Content.UserId),
@@ -138,6 +140,7 @@ namespace SSCMS.Core.Utils
             nameof(Content.GroupNames),
             nameof(Content.TagNames),
             nameof(Content.SourceId),
+            nameof(Content.TemplateId),
             CheckAdminId,
             CheckDate,
             CheckReasons,
@@ -249,6 +252,12 @@ namespace SSCMS.Core.Utils
                 },
                 new TableStyle
                 {
+                    AttributeName = nameof(Content.TemplateId),
+                    DisplayName = "内容模板",
+                    Taxis = taxis++
+                },
+                new TableStyle
+                {
                     AttributeName = nameof(Content.Hits),
                     DisplayName = "点击量",
                     Taxis = taxis++
@@ -310,6 +319,30 @@ namespace SSCMS.Core.Utils
         {
             if (source == null) return null;
 
+            if (source.ReferenceId > 0 && source.SourceId > 0)
+            {
+                var contentId = source.Id;
+                var channelId = source.ChannelId;
+                var isChecked = source.Checked;
+                var checkedLevel = source.CheckedLevel;
+                var title = source.Title;
+
+                var reference =
+                    await _databaseManager.ContentRepository.GetAsync(site, source.SourceId, source.ReferenceId);
+                if (reference != null)
+                {
+                    source.LoadDict(reference.ToDictionary());
+                    source.Id = contentId;
+                    source.ChannelId = channelId;
+                    source.Checked = isChecked;
+                    source.CheckedLevel = checkedLevel;
+                    source.Title = title;
+
+                    source.SourceId = reference.ChannelId;
+                    source.ReferenceId = reference.Id;
+                }
+            }
+
             var channel = await _databaseManager.ChannelRepository.GetAsync(source.ChannelId);
             var content = await _pathManager.DecodeContentAsync(site, channel, source);
 
@@ -360,8 +393,19 @@ namespace SSCMS.Core.Utils
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))
                 {
-                    var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, source.SiteId, source.SourceId);
+                    var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, source.SiteId, source.ReferenceId, source.SourceId);
                     content.Set(SourceName, sourceName);
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.TemplateId)))
+                {
+                    if (content.TemplateId > 0)
+                    {
+                        var template = await _databaseManager.TemplateRepository.GetAsync(content.TemplateId);
+                        if (template != null && template.TemplateType == TemplateType.ContentTemplate)
+                        {
+                            content.Set(TemplateName, template.TemplateName);
+                        }
+                    }
                 }
             }
 
@@ -470,7 +514,8 @@ namespace SSCMS.Core.Utils
                 {
                     AttributeName = style.AttributeName,
                     DisplayName = style.DisplayName,
-                    InputType = style.InputType
+                    InputType = style.InputType,
+                    Width = GetColumnWidth(style.AttributeName, channel)
                 };
                 if (style.AttributeName == nameof(Content.Title))
                 {
@@ -520,6 +565,36 @@ namespace SSCMS.Core.Utils
             //}
 
             return columns;
+        }
+
+        private static int GetColumnWidth(string attributeName, Channel channel)
+        {
+            var width = channel.Get(GetColumnWidthName(attributeName), 0);
+            if (width > 0) return width;
+
+            switch (attributeName)
+            {
+                case nameof(Sequence):
+                case nameof(Content.Id):
+                case nameof(Content.Hits):
+                case nameof(Content.HitsByDay):
+                case nameof(Content.HitsByWeek):
+                case nameof(Content.HitsByMonth):
+                case nameof(Content.Downloads):
+                    return 70;
+                case nameof(Content.ImageUrl):
+                    return 100;
+                case nameof(Content.Guid):
+                case nameof(Content.SourceId):
+                    return 310;
+                case nameof(Content.AddDate):
+                case nameof(Content.CreatedDate):
+                case nameof(Content.LastHitsDate):
+                case nameof(Content.LastModifiedDate):
+                    return 140;
+                default:
+                    return 160;
+            }
         }
 
         private static List<TableStyle> GetChannelListStyles(List<TableStyle> tableStyleList)

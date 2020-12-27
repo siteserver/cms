@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Stl
 {
@@ -10,6 +14,8 @@ namespace SSCMS.Web.Controllers.Stl
     [Route(Constants.ApiPrefix + Constants.ApiStlPrefix)]
     public partial class ActionsRelatedFieldController : ControllerBase
     {
+        private const string Route = "sys/stl/actions/related_field/{siteId}";
+
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
         public ActionsRelatedFieldController(IRelatedFieldItemRepository relatedFieldItemRepository)
@@ -17,13 +23,31 @@ namespace SSCMS.Web.Controllers.Stl
             _relatedFieldItemRepository = relatedFieldItemRepository;
         }
 
-        [HttpPost, Route("sys/stl/actions/related_field/{siteId}")]
-        public async Task<string> Submit([FromBody] SubmitRequest request)
+        public class SubmitRequest : SiteRequest
         {
-            var jsonString = await GetRelatedFieldAsync(request.SiteId, request.RelatedFieldId, request.ParentId);
-            var call = request.Callback + "(" + jsonString + ")";
+            public string Callback { get; set; }
+            public int RelatedFieldId { get; set; }
+            public int ParentId { get; set; }
+        }
 
-            return call;
+        private async Task<string> GetRelatedFieldAsync(int siteId, int relatedFieldId, int parentId)
+        {
+            var jsonString = new StringBuilder();
+
+            jsonString.Append("[");
+
+            var list = await _relatedFieldItemRepository.GetRelatedFieldItemsAsync(siteId, relatedFieldId, parentId);
+            if (list.Any())
+            {
+                foreach (var itemInfo in list)
+                {
+                    jsonString.AppendFormat(@"{{""id"":""{0}"",""name"":""{1}"",""value"":""{2}""}},", itemInfo.Id, StringUtils.ToJsString(itemInfo.Label), StringUtils.ToJsString(itemInfo.Value));
+                }
+                jsonString.Length -= 1;
+            }
+
+            jsonString.Append("]");
+            return jsonString.ToString();
         }
     }
 }

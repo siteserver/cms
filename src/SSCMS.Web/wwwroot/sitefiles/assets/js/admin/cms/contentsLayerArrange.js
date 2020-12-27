@@ -18,7 +18,8 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.form.channelId, $this.page, '整理排序成功!');
+      utils.success('整理排序成功!');
+      parent.$vue.apiList($this.form.channelId, $this.page);
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);

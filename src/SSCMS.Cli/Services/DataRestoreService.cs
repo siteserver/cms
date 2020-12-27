@@ -20,10 +20,11 @@ namespace SSCMS.Cli.Services
             _settingsManager = settingsManager;
         }
 
-        public async Task RestoreAsync(List<string> includes, List<string> excludes, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        public async Task<List<string>> RestoreAsync(List<string> includes, List<string> excludes, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
         {
             var tableNames =
                 TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
+            var errorTableNames = new List<string>();
 
             foreach (var tableName in tableNames)
             {
@@ -76,6 +77,7 @@ namespace SSCMS.Cli.Services
                             }
                             catch (Exception exception)
                             {
+                                errorTableNames.Add(tableName);
                                 await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                                 {
                                     DateTime = DateTime.Now,
@@ -88,6 +90,7 @@ namespace SSCMS.Cli.Services
                 }
                 catch (Exception ex)
                 {
+                    errorTableNames.Add(tableName);
                     await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                     {
                         DateTime = DateTime.Now,
@@ -98,6 +101,8 @@ namespace SSCMS.Cli.Services
             }
 
             await WriteUtils.PrintRowLineAsync();
+
+            return errorTableNames;
 
             //if (!dataOnly)
             //{

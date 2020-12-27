@@ -30,7 +30,6 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否包含当前栏目")]
         private const string IsContainSelf = nameof(IsContainSelf);
 
-        //对“当前位置”（stl:location）元素进行解析
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var separator = " - ";

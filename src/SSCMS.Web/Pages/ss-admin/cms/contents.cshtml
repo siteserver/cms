@@ -29,6 +29,10 @@
       margin-bottom: 0;
       width: 50%;
     }
+    .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td {
+      background: rgb(230, 247, 245) !important;
+    }
+    
   
     .input-with-select .el-input-group__prepend {
       background-color: #fff;
@@ -85,6 +89,7 @@
         <el-col :span="20">
           <el-input v-model="searchForm.searchText" v-on:change="btnSearchClick" suffix-icon="el-icon-search" size="mini" placeholder="搜索关键词" class="input-with-select">
             <el-select v-model="searchForm.searchType" v-on:change="btnSearchClick" slot="prepend" placeholder="请选择">
+              <el-option :label="titleColumn.displayName" value="Title"></el-option>
               <el-option v-for="column in columns" v-if="column.isSearchable" :label="column.displayName" :value="column.attributeName"></el-option>
             </el-select>
           </el-input>
@@ -189,4 +194,5 @@
 </el-container>
 
 @section Scripts{
-<script src="/sitefiles/assets/js/admin/cms/contents.js" type="text/javascript"></script> }
+  <script src="/sitefiles/assets/js/admin/cms/contents.js" type="text/javascript"></script>
+}

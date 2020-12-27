@@ -56,16 +56,12 @@
   </el-form-item>
   <el-form-item label="复制方式" prop="copyType" :rules="{ required: true, message: '请选择复制方式' }">
     <el-radio v-model="form.copyType" label="Copy">完整复制</el-radio>
-    <el-radio v-model="form.copyType" label="Reference">引用地址</el-radio>
-    <el-radio v-model="form.copyType" label="ReferenceContent">引用内容</el-radio>
+    <el-radio :disabled="siteId !== getTransSiteId()" v-model="form.copyType" label="Reference">引用地址</el-radio>
     <div v-if="form.copyType === 'Copy'" class="tips">
       “完整复制”将创建内容的副本，并拷贝到指定栏目下，副本和原始内容之间不存在关系
     </div>
     <div v-if="form.copyType === 'Reference'" class="tips">
       “引用地址”将创建内容的副本，并拷贝到指定栏目下，内容副本仅是原内容的引用，内容副本链接将和原内容链接一致
-    </div>
-    <div v-if="form.copyType === 'ReferenceContent'" class="tips">
-      “引用内容”将创建内容的副本，并拷贝到指定栏目下，同时内容副本的数据与原内容保持同步，内容副本的链接指向副本内容
     </div>
   </el-form-item>
 </el-form>

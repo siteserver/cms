@@ -25,6 +25,7 @@ namespace SSCMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
+                {nameof(User.Id), nameof(UserId)},
                 {nameof(User.AvatarUrl), nameof(AvatarLarge)}
             };
 

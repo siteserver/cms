@@ -79,6 +79,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
+            public ContentColumn TitleColumn { get; set; }
             public List<ContentColumn> Columns { get; set; }
             public bool IsAdd { get; set; }
             public List<Content> PageContents { get; set; }

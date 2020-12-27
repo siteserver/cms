@@ -59,6 +59,16 @@ var utils = {
     });
   },
 
+  getEditor: function (attributeName) {
+    return UE.getEditor(attributeName, {
+      allowDivTransToP: false,
+      maximumWords: 99999999,
+      initialFrameWidth:null ,
+      autoHeightEnabled: true,
+      autoFloatEnabled: false
+    });
+  },
+
   toCamelCase: function (s) {
     if (!s || s[0] !== s[0].toUpperCase()) {
       return s;
@@ -505,17 +515,27 @@ var utils = {
     if (!config || !config.url) return false;
 
     if (!config.width) {
-      config.width = $(window).width() - 50;
+      config.width = ($(window).width() - 50) + 'px';
+    } else {
+      var width = config.width + '';
+      if (width.indexOf('%') == -1 && width.indexOf('px') == -1) {
+        config.width = width + 'px';
+      }
     }
     if (!config.height) {
-      config.height = $(window).height() - 50;
+      config.height = ($(window).height() - 50) + 'px';
+    } else {
+      var height = config.height + '';
+      if (height.indexOf('%') == -1 && height.indexOf('px') == -1) {
+        config.height = height + 'px';
+      }
     }
 
     var index = layer.open({
       type: 2,
       btn: null,
       title: config.title,
-      area: [config.width + "px", config.height + "px"],
+      area: [config.width, config.height],
       maxmin: !config.max,
       resize: !config.max,
       shadeClose: true,
@@ -561,10 +581,7 @@ var utils = {
       var name = utils.toCamelCase(style.attributeName);
       if (style.inputType === 'TextEditor') {
         setTimeout(function () {
-          var editor = UE.getEditor(style.attributeName, {
-            allowDivTransToP: false,
-            maximumWords: 99999999
-          });
+          var editor = utils.getEditor(style.attributeName);
           editor.attributeName = style.attributeName;
           editor.ready(function () {
             this.addListener("contentChange", function () {

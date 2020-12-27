@@ -19,6 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteTree = "cms/contents/contents/actions/tree";
         private const string RouteCreate = "cms/contents/contents/actions/create";
         private const string RouteColumns = "cms/contents/contents/actions/columns";
+        private const string RouteWidth = "cms/contents/contents/actions/width";
         private const string RouteAll = "cms/contents/contents/actions/all";
 
         private readonly IAuthManager _authManager;
@@ -93,6 +94,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public List<Content> PageContents { get; set; }
             public int Total { get; set; }
             public int PageSize { get; set; }
+            public ContentColumn TitleColumn { get; set; }
             public List<ContentColumn> Columns { get; set; }
             public bool IsAllContents { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
@@ -112,6 +114,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
+        }
+
+        public class WidthRequest : ChannelRequest
+        {
+            public string AttributeName { get; set; }
+            public string Width { get; set; }
         }
     }
 }

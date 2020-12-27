@@ -27,9 +27,22 @@
       text-align: right;
       z-index: 10;
     }
+    .nav {
+      display: block;
+      height: 38px;
+      line-height: 38px;
+      background-color: #f3f3f3;
+    }
+    .nav span {
+      font-size: 10px;
+      margin-right: 5px;
+      color: rgb(80,80,80);
+    }
     .button {
       font-size: 10px;
       text-decoration: none;
+      position: relative;
+      top: -2px;
       color: rgb(80,80,80);
       border: transparent;
       background-color: rgb(235,235,235);
@@ -53,30 +66,28 @@
   </style>
 }
 
-<div id="preview" :style="{ height: editorHeight, display: isPreview ? 'block' : 'none' }"></div>
-<div id="editor" :style="{ height: editorHeight, display: isPreview ? 'none' : 'block' }"></div>
-
 <div v-if="isPreview" class="toolbar" style="right: 30px;">
   <button class="button active" v-on:click="btnCodeClick">代码编辑</button>
 </div>
-<div v-else class="toolbar">
-  <button class="button" v-on:click="btnPreviewClick">预 览</button>
-  <button v-if="templateId" class="button" v-on:click="btnCreateClick">生 成</button>
-  <button class="button" v-on:click="btnSubmitClick(false)">保 存</button>
-  <button class="button" v-on:click="btnSubmitClick(true)">保存并关闭</button>
-  <button class="button" v-on:click="btnMoreClick">
-    <svg width="8" height="8">
-      <path d="M 0,1.5 8,1.5 M 0,4.5 8,4.5 M 0,7.5 8,7.5"></path>
-    </svg>
-  </button>
-  <br>
-  <span v-if="isMore">
-    <button v-if="templateId" class="button" v-on:click="btnRestoreClick">还原历史版本</button>
+<div v-else class="nav">
+  <div style="float: left; margin-left: 10px">
+    <span>名称：<strong>{{ templateName }}</strong></span>
+    <span>文件：<strong>{{ relatedFile }}</strong></span>
+    <span>类型：<strong>{{ getTemplateType() }}</strong></span>
+  </div>
+  <div style="float: right; padding-right: 10px;">
+    <button class="button" v-on:click="btnSubmitClick(false)">保 存</button>
+    <button class="button" v-on:click="btnPreviewClick">预 览</button>
+    <button v-if="templateId" class="button" v-on:click="btnCreateClick">生 成</button>
     <button class="button" v-on:click="btnFormatClick">格式化代码</button>
+    <button v-if="templateId" class="button" v-on:click="btnRestoreClick">还原历史版本</button>
     <button class="button" v-on:click="btnDataSourceClick">预览数据源设置</button>
     <button class="button" v-on:click="btnSettingsClick">模板设置</button>
-  </span>
+  </div>
 </div>
+
+<div id="preview" :style="{ height: winHeight + 'px', display: isPreview ? 'block' : 'none' }"></div>
+<div id="editor" :style="{ height: (winHeight - 38) + 'px', display: isPreview ? 'none' : 'block', top: '38px' }"></div>
 
 <el-drawer
   title="模板设置"

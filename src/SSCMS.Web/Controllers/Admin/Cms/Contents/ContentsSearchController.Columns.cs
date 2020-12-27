@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
@@ -28,11 +27,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             {
                 Value = true
             };
-        }
-
-        public class ColumnsRequest : SiteRequest
-        {
-            public List<string> AttributeNames { get; set; }
         }
     }
 }

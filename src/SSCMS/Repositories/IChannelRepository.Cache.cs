@@ -74,6 +74,8 @@ namespace SSCMS.Repositories
 
         Task<string> GetChannelNameNavigationAsync(int siteId, int currentChannelId, int channelId);
 
+        Task<List<int>> GetChannelIdNavigationAsync(int siteId, int channelId);
+
         Task<bool> IsAncestorOrSelfAsync(int siteId, int parentId, int childId);
 
         Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IAuthManager authManager, params string[] contentPermissions);

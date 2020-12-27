@@ -69,7 +69,7 @@ var methods = {
     $api.post($url + '/actions/options', {
       siteId: this.siteId,
       channelId: this.channelId,
-      transSiteId: this.form.transSiteIds[this.form.transSiteIds.length - 1],
+      transSiteId: this.getTransSiteId(),
     }).then(function (response) {
       var res = response.data;
 
@@ -79,6 +79,10 @@ var methods = {
       utils.loading($this, false);
       utils.error(error);
     });
+  },
+
+  getTransSiteId: function() {
+    return this.form.transSiteIds[this.form.transSiteIds.length - 1];
   },
 
   getContentUrl: function (content) {

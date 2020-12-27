@@ -51,7 +51,8 @@ var methods = {
     $api.post($url + '/actions/add', this.addForm).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.form.channelId, $this.page, '内容组设置成功!');
+      utils.success('内容组设置成功!');
+      parent.$vue.apiList($this.form.channelId, $this.page);
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);
@@ -67,7 +68,8 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.form.channelId, $this.page, '内容组设置成功!');
+      utils.success('内容组设置成功!');
+      parent.$vue.apiList($this.form.channelId, $this.page);
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);
