@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     public partial class EditorController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Insert([FromBody] SaveRequest request)
+        public async Task<ActionResult<BoolResult>> Insert([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||

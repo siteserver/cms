@@ -62,6 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+            var isCensorTextEnabled = await _censorManager.IsTextEnabledAsync();
 
             return new GetResult
             {
@@ -74,7 +75,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 Styles = styles,
                 Templates = templates,
                 CheckedLevels = checkedLevels,
-                CheckedLevel = userCheckedLevel
+                CheckedLevel = userCheckedLevel,
+                IsCensorTextEnabled = isCensorTextEnabled
             };
         }
     }

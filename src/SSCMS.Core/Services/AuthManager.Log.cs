@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -31,7 +32,8 @@ namespace SSCMS.Core.Services
 
         public async Task AddAdminLogAsync(string action)
         {
-            await _databaseManager.LogRepository.AddAdminLogAsync(await GetAdminAsync(), action);
+            var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+            await _databaseManager.LogRepository.AddAdminLogAsync(await GetAdminAsync(), ipAddress, action);
         }
 
         public async Task AddUserLogAsync(string action, string summary)
@@ -41,7 +43,8 @@ namespace SSCMS.Core.Services
 
         public async Task AddUserLogAsync(string action)
         {
-            await _databaseManager.LogRepository.AddUserLogAsync(await GetUserAsync(), action);
+            var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+            await _databaseManager.LogRepository.AddUserLogAsync(await GetUserAsync(), ipAddress, action);
         }
     }
 }

@@ -46,11 +46,11 @@
     <div class="tips">副标题字段输入两连续的英文空格，内容页中副标题将自动换行，列表页将忽略此空格</div>
   </el-form-item>
   <el-form-item label="编辑器内容敏感词自动检测">
-    <el-radio-group v-model="form.isAutoCheckKeywords">
+    <el-radio-group :disabled="!isCensorTextEnabled" v-model="form.isAutoCheckKeywords">
       <el-radio :label="true">启用自动检测</el-radio>
       <el-radio :label="false">不启用</el-radio>
     </el-radio-group>
-    <div class="tips">启用自动检测后，当点击确定按钮保存内容时，系统会自动对编辑器内容进行敏感词检测</div>
+    <div class="tips">启用自动检测后，当点击确定按钮保存内容时，系统会自动对编辑器内容进行敏感词检测（需要插件支持）</div>
   </el-form-item>
   <el-form-item label="内容审核机制" prop="checkContentLevel" :rules="{ required: true, message: '请选择内容审核机制' }">
     <el-select v-model="form.checkContentLevel" placeholder="请选择内容审核机制">

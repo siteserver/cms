@@ -75,7 +75,10 @@
                   :value="tagName">
                 </el-option>
               </el-select>
-              <small class="tips">输入文字后回车可创建新标签</small>
+              <div class="tips">输入文字后回车可创建新标签</div>
+              
+              <el-button size="small" v-on:click="btnTagsClick">从内容提取标签</el-button>
+
             </el-collapse-item>
             <el-collapse-item title="外部链接" name="linkUrl">
               <el-input v-model="form.linkUrl" name="linkUrl" placeholder="设置后链接将指向此地址" size="small" autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" data-vv-as="外部链接" v-validate="'url'"></el-input>
@@ -131,11 +134,49 @@
 <el-row align="center" style="text-align: center; padding-top:4px">
   <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
   <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
+  <el-button size="medium" v-if="isCensorTextEnabled" v-on:click="btnCensorClick">内容审查</el-button>
   <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
-  <!-- <el-button size="medium" v-on:click="getWordSpliter();return false;">提取标签</el-button>
-  <el-button size="medium" v-on:click="detection_Content();return false;">敏感词检测</el-button> -->
   <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
 </el-row>
+
+<el-dialog
+  title="内容审查结果"
+  v-if="textResult"
+  :visible.sync="dialogCensor"
+  :close-on-click-modal="false"
+  :close-on-press-escape="false"
+  :show-close="false"
+  width="60%">
+
+  <el-alert
+    v-if="textResult.suggestion == 'Review'"
+    title="疑似"
+    type="warning"
+    :closable="false"
+    show-icon>
+  </el-alert>
+  <el-alert
+    v-if="textResult.suggestion == 'Block'"
+    title="不合规"
+    type="danger"
+    :closable="false"
+    show-icon>
+  </el-alert>
+
+  <el-table v-if="textResult.items" :data="textResult.items">
+    <el-table-column prop="label" label="风险库" width="160"></el-table-column>
+    <el-table-column label="违禁词">
+      <template slot-scope="scope">
+        {{ scope.row.words.join(' , ') }}
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <span slot="footer" class="dialog-footer">
+    <el-button type="default" v-on:click="dialogCensor = false">关 闭</el-button>
+    <el-button type="warning" v-if="isCensorSave && textResult.suggestion == 'Review'" v-on:click="btnCensorSaveClick">忽略警告，继续保存</el-button>
+  </span>
+</el-dialog>
 
 @section Scripts{
   <script src="/sitefiles/assets/lib/ueditor/editor_config.js" type="text/javascript" ></script>

@@ -247,6 +247,11 @@ namespace SSCMS.Utils
             return StringUtils.EqualsIgnoreCase(".zip", typeStr);
         }
 
+        public static bool IsTxt(string typeStr)
+        {
+            return StringUtils.EqualsIgnoreCase(".txt", typeStr);
+        }
+
         public static bool IsWord(string fileExtName)
         {
             var retVal = false;

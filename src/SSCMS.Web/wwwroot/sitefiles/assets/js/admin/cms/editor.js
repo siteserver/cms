@@ -1,4 +1,7 @@
 ﻿var $url = '/cms/editor/editor';
+var $urlPreview = $url + '/actions/preview';
+var $urlCensor = $url + '/actions/censor';
+var $urlTags = $url + '/actions/tags';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -19,6 +22,7 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   checkedLevels: null,
+  isCensorTextEnabled: null,
   siteOptions: null,
   channelOptions: null,
   styles: null,
@@ -26,7 +30,11 @@ var data = utils.init({
   form: null,
 
   translates: [],
-  isPreviewSaving: false
+  isPreviewSaving: false,
+
+  dialogCensor: false,
+  isCensorSave: false,
+  textResult: null
 });
 
 var methods = {
@@ -116,6 +124,7 @@ var methods = {
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
       $this.checkedLevels = res.checkedLevels;
+      $this.isCensorTextEnabled = res.isCensorTextEnabled;
       
       $this.siteOptions = res.siteOptions;
       $this.channelOptions = res.channelOptions;
@@ -196,11 +205,62 @@ var methods = {
     });
   },
 
+  apiCensor: function(isSave) {
+    this.isCensorSave = isSave;
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlCensor, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      content: this.form
+    }).then(function(response) {
+      var res = response.data;
+
+      if (res.success) {
+        if (isSave) {
+          $this.btnCensorSaveClick();
+        } else {
+          utils.success('内容审查通过！');
+        }
+      } else {
+        $this.textResult = res.textResult;
+        $this.dialogCensor = true;
+      }
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  apiTags: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlTags, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      content: this.form.body
+    }).then(function(response) {
+      var res = response.data;
+
+      if (res.tags && res.tags.length > 0) {
+        $this.form.tagNames = _.union($this.form.tagNames, res.tags);
+        utils.success('成功提取标签！');
+      }
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
+  },
+
   apiPreview: function() {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url + '/actions/preview', {
+    $api.post($urlPreview, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
@@ -236,6 +296,14 @@ var methods = {
     }).then(function() {
       utils.loading($this, false);
     });
+  },
+
+  btnCensorSaveClick: function() {
+    if (this.contentId === 0) {
+      this.apiInsert();
+    } else {
+      this.apiUpdate();
+    }
   },
 
   closeAndRedirect: function(isEdit) {
@@ -297,15 +365,37 @@ var methods = {
     
     this.$refs.form.validate(function(valid) {
       if (valid) {
-        if ($this.contentId === 0) {
-          $this.apiInsert();
+        if ($this.site.isAutoCheckKeywords && $this.isCensorTextEnabled) {
+          $this.apiCensor(true);
         } else {
-          $this.apiUpdate();
+          $this.btnCensorSaveClick();
         }
       } else {
         utils.error('保存失败，请检查表单值是否正确');
       }
     });
+  },
+
+  btnCensorClick: function() {
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+
+    this.apiCensor(false);
+  },
+
+  btnTagsClick: function() {
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+      });
+    }
+
+    if (!this.form.body) return;
+    
+    this.apiTags();
   },
 
   btnPreviewClick: function() {

@@ -7,9 +7,9 @@ namespace SSCMS.Repositories
 {
     public interface ILogRepository : IRepository
     {
-        Task AddAdminLogAsync(Administrator admin, string action, string summary = "");
+        Task AddAdminLogAsync(Administrator admin, string ipAddress, string action, string summary = "");
 
-        Task AddUserLogAsync(User user, string action, string summary = "");
+        Task AddUserLogAsync(User user, string ipAddress, string action, string summary = "");
 
         Task DeleteIfThresholdAsync();
 

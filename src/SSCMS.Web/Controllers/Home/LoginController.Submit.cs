@@ -58,7 +58,7 @@ namespace SSCMS.Web.Controllers.Home
             ); // 记录最后登录时间、失败次数清零
 
             await _statRepository.AddCountAsync(StatType.UserLogin);
-            await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess);
+            await _logRepository.AddUserLogAsync(user, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
             var token = _authManager.AuthenticateUser(user, request.IsPersistent);
 
             var redirectToVerifyMobile = false;

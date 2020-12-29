@@ -107,7 +107,7 @@
     <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
     <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
     <!-- <el-button size="medium" v-on:click="getWordSpliter();return false;">提取标签</el-button>
-    <el-button size="medium" v-on:click="detection_Content();return false;">敏感词检测</el-button> -->
+    <el-button size="medium" v-if="isCensorTextEnabled" v-on:click="detection_Content();return false;">审 查</el-button> -->
     <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
   </el-row>
 

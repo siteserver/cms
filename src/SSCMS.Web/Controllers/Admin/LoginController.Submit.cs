@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
 
             await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
-            await _logRepository.AddAdminLogAsync(administrator, Constants.ActionsLoginSuccess);
+            await _logRepository.AddAdminLogAsync(administrator, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
 
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
             var isEnforcePasswordChange = false;

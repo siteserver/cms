@@ -2,6 +2,7 @@
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
+  isCensorTextEnabled: null,
   form: {
     isSaveImageInTextEditor: null,
     pageSize: null,
@@ -27,15 +28,16 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.form.isSaveImageInTextEditor = res.isSaveImageInTextEditor;
-      $this.form.pageSize = res.pageSize;
-      $this.form.isAutoPageInTextEditor = res.isAutoPageInTextEditor;
-      $this.form.autoPageWordNum = res.autoPageWordNum;
-      $this.form.isContentTitleBreakLine = res.isContentTitleBreakLine;
-      $this.form.isContentSubTitleBreakLine = res.isContentSubTitleBreakLine;
-      $this.form.isAutoCheckKeywords = res.isAutoCheckKeywords;
-      $this.form.checkContentLevel = res.checkContentLevel;
-      $this.form.checkContentDefaultLevel = res.checkContentDefaultLevel;
+      $this.isCensorTextEnabled = res.isCensorTextEnabled;
+      $this.form.isSaveImageInTextEditor = res.site.isSaveImageInTextEditor;
+      $this.form.pageSize = res.site.pageSize;
+      $this.form.isAutoPageInTextEditor = res.site.isAutoPageInTextEditor;
+      $this.form.autoPageWordNum = res.site.autoPageWordNum;
+      $this.form.isContentTitleBreakLine = res.site.isContentTitleBreakLine;
+      $this.form.isContentSubTitleBreakLine = res.site.isContentSubTitleBreakLine;
+      $this.form.isAutoCheckKeywords = res.site.isAutoCheckKeywords;
+      $this.form.checkContentLevel = res.site.checkContentLevel;
+      $this.form.checkContentDefaultLevel = res.site.checkContentDefaultLevel;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

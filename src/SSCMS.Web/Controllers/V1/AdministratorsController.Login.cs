@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.V1
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsAutoLogin);
 
             await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
-            await _logRepository.AddAdminLogAsync(administrator, Constants.ActionsLoginSuccess);
+            await _logRepository.AddAdminLogAsync(administrator, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
 
             var sessionId = StringUtils.Guid();
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);

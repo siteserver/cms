@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SSCMS.Repositories;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
@@ -134,9 +136,9 @@ namespace SSCMS.Core.Utils
         /// 分词
         /// </summary>
         /// <returns></returns>
-        private async Task<ArrayList> StringSpliterAsync(string[] key, int siteId)
+        private async Task<List<string>> StringSpliterAsync(string[] key, int siteId)
         {
-            var list = new ArrayList();
+            var list = new List<string>();
             var dict = await ReadContentAsync(siteId);//载入词典
             //
             for (var i = 0; i < key.Length; i++)
@@ -178,7 +180,7 @@ namespace SSCMS.Core.Utils
         /// <summary>
         /// 得到分词结果
         /// </summary>
-        public async Task<string[]> DoSplitAsync(string content, int siteId)
+        public async Task<List<string>> DoSplitAsync(string content, int siteId)
         {
             var keyList = await StringSpliterAsync(FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
             keyList.Insert(0, content);
@@ -187,7 +189,7 @@ namespace SSCMS.Core.Utils
             {
                 for (var j = 0; j < keyList.Count; j++)
                 {
-                    if (keyList[i].ToString() == keyList[j].ToString())
+                    if (keyList[i] == keyList[j])
                     {
                         if (i != j)
                         {
@@ -196,28 +198,30 @@ namespace SSCMS.Core.Utils
                     }
                 }
             }
-            return (string[])keyList.ToArray(typeof(string));
+            return keyList;
         }
+
         /// <summary>
         /// 得到分词关键字，以逗号隔开
         /// </summary>
-        public async Task<string> GetKeywordsAsync(string content, int siteId, int totalNum)
+        public async Task<List<string>> GetKeywordsAsync(string content, int siteId, int totalNum)
         {
-            var value = "";
-            var _key = await DoSplitAsync(content, siteId);
+            content = StringUtils.StripTags(content);
+            if (string.IsNullOrEmpty(content)) return new List<string>();
+
+            var tags = new List<string>();
+            var keys = await DoSplitAsync(content, siteId);
             var currentNum = 1;
-            for (var i = 1; i < _key.Length; i++)
+            for (var i = 1; i < keys.Count; i++)
             {
                 if (totalNum > 0 && currentNum > totalNum) break;
-                var key = _key[i].Trim();
-                if (key.Length == 1) continue;
-                if (i == 1)
-                    value = key;
-                else
-                    value += " " + key;
+                var key = StringUtils.Trim(keys[i]);
+                if (string.IsNullOrEmpty(key) || key.Length == 1) continue;
+
+                tags.Add(key);
                 currentNum++;
             }
-            return value;
+            return tags;
         }
     }
 }
