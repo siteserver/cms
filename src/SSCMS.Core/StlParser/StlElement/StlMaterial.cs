@@ -15,7 +15,8 @@ namespace SSCMS.Core.StlParser.StlElement
         private StlMaterial() { }
         public const string ElementName = "stl:material";
 
-        public const string EditorPlaceHolder = @"src=""/sitefiles/assets/images/material-clip.png""";
+        public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/material-clip.png""";
+        public const string EditorPlaceHolder2 = @"src=""@sitefiles/assets/images/material-clip.png""";
 
         [StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);

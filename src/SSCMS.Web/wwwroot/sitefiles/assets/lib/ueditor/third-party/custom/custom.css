@@ -1,0 +1,8 @@
+.edui-for-xiumi-connect .edui-icon {
+    background-image: url("/sitefiles/assets/lib/ueditor/third-party/custom/xiumi.png") !important;
+    background-size: contain;
+}
+.edui-for-135editor-connect .edui-icon {
+    background-image: url("/sitefiles/assets/lib/ueditor/third-party/custom/135editor.ico") !important;
+    background-size: contain;
+}

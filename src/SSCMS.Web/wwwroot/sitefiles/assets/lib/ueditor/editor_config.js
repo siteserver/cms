@@ -113,10 +113,8 @@
                 "splittorows",
                 "splittocols",
                 "charts",
-                "|",
-                "print",
-                "preview",
                 "searchreplace",
+                "|",
                 "pagebreak"
             ]
         ],

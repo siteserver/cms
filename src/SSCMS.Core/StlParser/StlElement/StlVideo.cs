@@ -19,7 +19,7 @@ namespace SSCMS.Core.StlParser.StlElement
          
 		[StlAttribute(Title = "视频地址")]
         private const string PlayUrl = nameof(PlayUrl);
-         
+
         [StlAttribute(Title = "图片地址")]
         private const string ImageUrl = nameof(ImageUrl);
          

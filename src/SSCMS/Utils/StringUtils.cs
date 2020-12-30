@@ -322,6 +322,10 @@ namespace SSCMS.Utils
             builder.Replace("src='" + replace, "src='" + to);
             builder.Replace("src=" + replace, "src=" + to);
             builder.Replace("src=&quot;" + replace, "src=&quot;" + to);
+            builder.Replace("playurl=\"" + replace, "playurl=\"" + to);
+            builder.Replace("playurl='" + replace, "playurl='" + to);
+            builder.Replace("playurl=" + replace, "playurl=" + to);
+            builder.Replace("playurl=&quot;" + replace, "playurl=&quot;" + to);
         }
 
         public static string ReplaceFirst(string replace, string input, string to)

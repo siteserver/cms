@@ -82,9 +82,10 @@ var methods = {
   },
 
   insertEditor: function(attributeName, html) {
-    if (!attributeName) attributeName = 'Body';
+    // if (!attributeName) attributeName = 'Body';
     if (!html) return;
-    utils.getEditor(attributeName).execCommand('insertHTML', html);
+    this.editEditor.txt.html(html);
+    //utils.getEditor(attributeName).execCommand('insertHTML', html);
   },
   
   setRuleText: function(rule, isChannel) {
