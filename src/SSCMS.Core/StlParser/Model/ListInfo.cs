@@ -164,7 +164,7 @@ namespace SSCMS.Core.StlParser.Model
             {
                 var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, StlListBase.ChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, StlListBase.ChannelIndex) || StringUtils.EqualsIgnoreCase(name, StlListBase.Index))
                 {
                     listInfo.ChannelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
@@ -228,6 +228,44 @@ namespace SSCMS.Core.StlParser.Model
                 {
                     listInfo.Where = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Group))
+                {
+                    if (contextType == ParseType.Channel)
+                    {
+                        listInfo.GroupChannel = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                        if (string.IsNullOrEmpty(listInfo.GroupChannel))
+                        {
+                            listInfo.GroupChannel = "__Empty__";
+                        }
+                    }
+                    else if (contextType == ParseType.Content)
+                    {
+                        listInfo.GroupContent = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                        if (string.IsNullOrEmpty(listInfo.GroupContent))
+                        {
+                            listInfo.GroupContent = "__Empty__";
+                        }
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupNot))
+                {
+                    if (contextType == ParseType.Channel)
+                    {
+                        listInfo.GroupChannelNot = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                        if (string.IsNullOrEmpty(listInfo.GroupChannelNot))
+                        {
+                            listInfo.GroupChannelNot = "__Empty__";
+                        }
+                    }
+                    else if (contextType == ParseType.Content)
+                    {
+                        listInfo.GroupContentNot = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                        if (string.IsNullOrEmpty(listInfo.GroupContentNot))
+                        {
+                            listInfo.GroupContentNot = "__Empty__";
+                        }
+                    }
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupChannel))
                 {
                     listInfo.GroupChannel = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
@@ -244,7 +282,7 @@ namespace SSCMS.Core.StlParser.Model
                         listInfo.GroupChannelNot = "__Empty__";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupContent) || StringUtils.EqualsIgnoreCase(name, "group"))
+                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupContent))
                 {
                     listInfo.GroupContent = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (string.IsNullOrEmpty(listInfo.GroupContent))
@@ -252,7 +290,7 @@ namespace SSCMS.Core.StlParser.Model
                         listInfo.GroupContent = "__Empty__";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupContentNot) || StringUtils.EqualsIgnoreCase(name, "groupNot"))
+                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupContentNot))
                 {
                     listInfo.GroupContentNot = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (string.IsNullOrEmpty(listInfo.GroupContentNot))

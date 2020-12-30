@@ -19,6 +19,7 @@ namespace SSCMS.Core.StlParser.StlElement
         public const string ElementName = "stl:focusViewer";
 
         public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeIndex = "index";
         public const string AttributeChannelName = "channelName";
         public const string AttributeScope = "scope";
         public const string AttributeGroup = "group";
@@ -92,7 +93,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var value = parseManager.ContextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex) || StringUtils.EqualsIgnoreCase(name, AttributeIndex))
                 {
                     channelIndex = value;
                 }

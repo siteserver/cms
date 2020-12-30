@@ -34,6 +34,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "栏目索引")]
         public const string ChannelIndex = nameof(ChannelIndex);
 
+        [StlAttribute(Title = "栏目索引")]
+        public const string Index = nameof(Index);
+
         [StlAttribute(Title = "栏目名称")]
         public const string ChannelName = nameof(ChannelName);
 
@@ -105,7 +108,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     siteIds = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex) || StringUtils.EqualsIgnoreCase(name, Index))
                 {
                     channelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }

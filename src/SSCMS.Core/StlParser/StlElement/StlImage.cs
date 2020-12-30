@@ -18,8 +18,11 @@ namespace SSCMS.Core.StlParser.StlElement
 
 		[StlAttribute(Title = "栏目索引")]
         private const string ChannelIndex = nameof(ChannelIndex);
-        
-		[StlAttribute(Title = "栏目名称")]
+
+        [StlAttribute(Title = "栏目索引")]
+        private const string Index = nameof(Index);
+
+        [StlAttribute(Title = "栏目名称")]
         private const string ChannelName = nameof(ChannelName);
         
 		[StlAttribute(Title = "显示父栏目")]
@@ -71,7 +74,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var value = parseManager.ContextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex) || StringUtils.EqualsIgnoreCase(name, Index))
                 {
                     channelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (!string.IsNullOrEmpty(channelIndex))
@@ -226,21 +229,14 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     var channel = await databaseManager.ChannelRepository.GetAsync(channelId);
 
-                    if (type == nameof(Content.ImageUrl))
+                    if (no <= 1)
                     {
-                        picUrl = channel.ImageUrl;
+                        picUrl = channel.Get<string>(type);
                     }
                     else
                     {
-                        if (no <= 1)
-                        {
-                            picUrl = channel.Get<string>(type);
-                        }
-                        else
-                        {
-                            var extendName = ColumnsManager.GetExtendName(type, no - 1);
-                            picUrl = channel.Get<string>(extendName);
-                        }
+                        var extendName = ColumnsManager.GetExtendName(type, no - 1);
+                        picUrl = channel.Get<string>(extendName);
                     }
                 }
                 else if (contextType == ParseType.Each)

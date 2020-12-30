@@ -19,7 +19,7 @@ using SSCMS.Configuration;
 
 namespace SSCMS.Cli
 {
-    internal static class Program
+    public static class Program
     {
         public static IApplication Application { get; private set; }
 

@@ -5,6 +5,9 @@
         [StlAttribute(Title = "栏目索引")]
         public const string ChannelIndex = nameof(ChannelIndex);
 
+        [StlAttribute(Title = "栏目索引")]
+        public const string Index = nameof(Index);
+
         [StlAttribute(Title = "栏目名称")]
         public const string ChannelName = nameof(ChannelName);
 
@@ -19,6 +22,12 @@
 
         [StlAttribute(Title = "范围")]
         public const string Scope = nameof(Scope);
+
+        [StlAttribute(Title = "指定组")]
+        public const string Group = nameof(Group);
+
+        [StlAttribute(Title = "排除组")]
+        public const string GroupNot = nameof(GroupNot);
 
         [StlAttribute(Title = "指定栏目组")]
         public const string GroupChannel = nameof(GroupChannel);

@@ -215,6 +215,8 @@ var methods = {
       this.btnLayerClick({title: '批量导入Word', name: 'Word', full: true});
     } else if (command === 'Import') {
       this.btnLayerClick({title: '批量导入', name: 'Import', full: true});
+    } else if (command === 'Add') {
+      this.btnLayerClick({title: '批量添加', name: 'Add', full: true});
     }
   },
 

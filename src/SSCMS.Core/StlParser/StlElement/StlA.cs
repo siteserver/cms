@@ -18,6 +18,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "栏目索引")]
         private const string ChannelIndex = nameof(ChannelIndex);
 
+        [StlAttribute(Title = "栏目索引")]
+        private const string Index = nameof(Index);
+
         [StlAttribute(Title = "栏目名称")]
         private const string ChannelName = nameof(ChannelName);
 
@@ -57,7 +60,7 @@ namespace SSCMS.Core.StlParser.StlElement
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
                 var value = parseManager.ContextInfo.Attributes[name];
-                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, ChannelIndex) || StringUtils.EqualsIgnoreCase(name, Index))
                 {
                     channelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (!string.IsNullOrEmpty(channelIndex))

@@ -46,11 +46,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 max = Math.Max(max, menus.Count);
 
                 var node = await _channelRepository.GetAsync(summary.Id);
+                var imageUrl = string.Empty;
+                if (!string.IsNullOrEmpty(node.ImageUrl))
+                {
+                    imageUrl = await _pathManager.ParseSiteUrlAsync(site, node.ImageUrl, true);
+                }
 
                 return new
                 {
                     Channel = node,
                     Count = count,
+                    ImageUrl = imageUrl,
                     GroupNames = groupNames,
                     Menus = menus
                 };
@@ -93,14 +99,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 TaxisTypes = taxisTypes,
                 SiteUrl = siteUrl
             };
-        }
-
-        public class ChannelColumn
-        {
-            public string AttributeName { get; set; }
-            public string DisplayName { get; set; }
-            public InputType InputType { get; set; }
-            public bool IsList { get; set; }
         }
     }
 }

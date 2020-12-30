@@ -7,6 +7,8 @@
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <Version>7.0.9</Version>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <AssemblyName>SSCMS.Cli</AssemblyName>
+    <StartupObject>SSCMS.Cli.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

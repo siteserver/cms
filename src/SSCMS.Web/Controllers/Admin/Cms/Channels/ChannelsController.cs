@@ -57,6 +57,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             _tableStyleRepository = tableStyleRepository;
         }
 
+        public class ChannelColumn
+        {
+            public string AttributeName { get; set; }
+            public string DisplayName { get; set; }
+            public InputType InputType { get; set; }
+            public bool IsList { get; set; }
+        }
+
         public class ColumnsRequest : ChannelRequest
         {
             public List<string> AttributeNames { get; set; }

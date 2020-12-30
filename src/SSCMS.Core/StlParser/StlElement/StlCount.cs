@@ -23,6 +23,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "栏目索引")]
         private const string ChannelIndex = nameof(ChannelIndex);
 
+        [StlAttribute(Title = "栏目索引")]
+        private const string Index = nameof(Index);
+
         [StlAttribute(Title = "栏目名称")]
         private const string ChannelName = nameof(ChannelName);
 
@@ -66,7 +69,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
+                else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex) || StringUtils.EqualsIgnoreCase(name, Index))
                 {
                     channelIndex = value;
                 }

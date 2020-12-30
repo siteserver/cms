@@ -28,7 +28,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
+            var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Each);
 
             return await ParseImplAsync(parseManager, listInfo);
         }

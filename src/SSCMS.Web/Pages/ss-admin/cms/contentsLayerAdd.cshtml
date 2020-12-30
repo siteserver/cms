@@ -1,0 +1,32 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px"></div>
+
+<el-form ref="form" :model="form" label-width="100px" size="small">
+  <el-form-item label="内容标题" prop="titles" :rules="{ required: true, message: '请输入内容标题' }">
+    <el-input v-model="form.titles" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}"></el-input>
+    <div class="tips">一次性录入多篇内容，内容标题之间用换行分割</div>
+  </el-form-item>
+  <el-form-item label="审核状态">
+    <el-select v-model="form.checkedLevel">
+      <el-option
+        v-for="level in checkedLevels"
+        :key="level.key"
+        :label="level.value"
+        :value="level.key"></el-option>
+    </el-select>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/cms/contentsLayerAdd.js" type="text/javascript"></script>
+}
