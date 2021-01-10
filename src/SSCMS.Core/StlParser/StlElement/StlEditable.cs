@@ -1,9 +1,9 @@
-﻿using System.Text;
+﻿using System.Collections.Specialized;
+using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
-using SSCMS.Parse;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -14,27 +14,21 @@ namespace SSCMS.Core.StlParser.StlElement
     {
         public const string ElementName = "stl:editable";
 
-        [StlAttribute(Title = "可视化编辑类型")]
-        private const string Type = nameof(Type);
-
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var type = EditableType.Text;
+            var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
                 var value = parseManager.ContextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Type))
-                {
-                    type = TranslateUtils.ToEnum(value, EditableType.Text);
-                }
+                attributes[name] = value;
             }
 
-            return await ParseAsync(parseManager, type);
+            return await ParseAsync(parseManager, attributes);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, EditableType type)
+        private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -49,13 +43,18 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(EditableType.Text, pageInfo, contextInfo);
+                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
                 var editableAttributes = VisualUtility.GetEditableAttributes(editable);
+                foreach (var key in editableAttributes.AllKeys)
+                {
+                    attributes[key] = editableAttributes[key];
+                }
 
-                return @$"<div id=""{editable.Id}"" contenteditable=""true"" {TranslateUtils.ToAttributesString(editableAttributes)}>{parsedContent}</div>";
+                attributes["id"] = editable.Id;
+                attributes["contenteditable"] = "true";
             }
 
-            return @$"<div>{parsedContent}</div>";
+            return @$"<div {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</div>";
         }
     }
 }

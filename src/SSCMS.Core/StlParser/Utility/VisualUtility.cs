@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Specialized;
-using Datory;
 using SSCMS.Parse;
 using SSCMS.Utils;
 
@@ -8,13 +7,12 @@ namespace SSCMS.Core.StlParser.Utility
 {
     public static class VisualUtility
     {
-        public static Editable GetEditable(EditableType type, ParsePage page, ParseContext context)
+        public static Editable GetEditable(ParsePage page, ParseContext context)
         {
             var editable = new Editable
             {
                 Id = StringUtils.GetElementId(),
-                Type = type,
-                ElementName = StringUtils.ReplaceStartsWithIgnoreCase(context.ElementName, "stl:", string.Empty),
+                ElementName = context.ElementName,
                 StlElement = StringUtils.Base64Encode(context.OuterHtml),
 
                 File = string.IsNullOrEmpty(page.IncludeFile)
@@ -32,7 +30,6 @@ namespace SSCMS.Core.StlParser.Utility
             {
                 ["data-element"] = "true",
                 ["data-element-id"] = editable.Id,
-                ["data-element-type"] = editable.Type.GetValue().ToLower(),
                 ["data-element-name"] = editable.ElementName
             };
             return attributes;

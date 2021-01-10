@@ -43,11 +43,11 @@ namespace SSCMS.Core.StlParser.StlElement
             return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
-        private static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Site>> sites)
+        private static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Site>> dataSource)
         {
             var pageInfo = parseManager.PageInfo;
 
-            if (sites == null || sites.Count == 0) return string.Empty;
+            if (dataSource == null || dataSource.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
             if (listInfo.Layout == ListLayout.None)
@@ -59,6 +59,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 var isAlternative = false;
                 var isSeparator = false;
+                var isSeparatorRepeat = false;
                 if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
                     isAlternative = true;
@@ -67,19 +68,28 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isSeparator = true;
                 }
-
-                for (var i = 0; i < sites.Count; i++)
+                if (!string.IsNullOrEmpty(listInfo.SeparatorRepeatTemplate))
                 {
-                    var site = sites[i];
+                    isSeparatorRepeat = true;
+                }
+
+                for (var i = 0; i < dataSource.Count; i++)
+                {
+                    var site = dataSource[i];
 
                     pageInfo.SiteItems.Push(site);
                     var templateString = isAlternative && i % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     var parsedString = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, parseManager, ParseType.Site);
                     builder.Append(parsedString);
 
-                    if (isSeparator && i != sites.Count - 1)
+                    if (isSeparator && i != dataSource.Count - 1)
                     {
                         builder.Append(listInfo.SeparatorTemplate);
+                    }
+
+                    if (isSeparatorRepeat && (i + 1) % listInfo.SeparatorRepeat == 0 && i != dataSource.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorRepeatTemplate);
                     }
                 }
 
@@ -117,9 +127,9 @@ namespace SSCMS.Core.StlParser.StlElement
                     for (var cell = 1; cell <= columns; cell++)
                     {
                         var cellHtml = string.Empty;
-                        if (itemIndex < sites.Count)
+                        if (itemIndex < dataSource.Count)
                         {
-                            var site = sites[itemIndex];
+                            var site = dataSource[itemIndex];
 
                             pageInfo.SiteItems.Push(site);
                             var templateString = isAlternative && itemIndex % 2 == 1 ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
@@ -128,7 +138,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         tr.AddCell(cellHtml, cellAttributes);
                         itemIndex++;
                     }
-                    if (itemIndex >= sites.Count) break;
+                    if (itemIndex >= dataSource.Count) break;
                 }
 
                 table.EndBody();

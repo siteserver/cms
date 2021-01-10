@@ -276,7 +276,7 @@ namespace SSCMS.Core.StlParser.StlElement
             attributes["src"] = picUrl;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(EditableType.Media, pageInfo, contextInfo);
+                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
                 var editableAttributes = VisualUtility.GetEditableAttributes(editable);
                 foreach (var key in editableAttributes.AllKeys)
                 {

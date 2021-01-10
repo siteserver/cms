@@ -5,6 +5,7 @@ using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -256,6 +257,16 @@ namespace SSCMS.Core.StlParser.StlElement
             if (contextInfo.IsStlEntity)
             {
                 return url;
+            }
+
+            if (pageInfo.EditMode == EditMode.Visual)
+            {
+                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
+                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
+                foreach (var key in editableAttributes.AllKeys)
+                {
+                    attributes[key] = editableAttributes[key];
+                }
             }
 
             return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";

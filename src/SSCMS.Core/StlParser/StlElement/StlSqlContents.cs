@@ -62,6 +62,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 var isAlternative = false;
                 var isSeparator = false;
+                var isSeparatorRepeat = false;
                 if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
                     isAlternative = true;
@@ -69,6 +70,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
                     isSeparator = true;
+                }
+                if (!string.IsNullOrEmpty(listInfo.SeparatorRepeatTemplate))
+                {
+                    isSeparatorRepeat = true;
                 }
 
                 for (var i = 0; i < dataSource.Count; i++)
@@ -82,6 +87,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (isSeparator && i != dataSource.Count - 1)
                     {
                         builder.Append(listInfo.SeparatorTemplate);
+                    }
+
+                    if (isSeparatorRepeat && (i + 1) % listInfo.SeparatorRepeat == 0 && i != dataSource.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorRepeatTemplate);
                     }
                 }
 

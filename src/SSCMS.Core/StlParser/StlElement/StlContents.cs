@@ -24,6 +24,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
             var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
             var dataSource = await GetContentsDataSourceAsync(parseManager, listInfo);
 
@@ -32,7 +34,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 return ParseEntity(dataSource);
             }
 
-            return await ParseAsync(parseManager, listInfo, dataSource);
+            var parsedContent = await ParseAsync(parseManager, listInfo, dataSource);
+            if (pageInfo.EditMode == EditMode.Visual)
+            {
+                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
+                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
+
+                return @$"<div {TranslateUtils.ToAttributesString(editableAttributes)}>{parsedContent}</div>";
+            }
+
+            return parsedContent;
         }
 
         protected static async Task<string> ParseAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Content>> dataSource)
@@ -51,6 +62,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 var isAlternative = false;
                 var isSeparator = false;
+                var isSeparatorRepeat = false;
                 if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
                     isAlternative = true;
@@ -58,6 +70,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
                     isSeparator = true;
+                }
+                if (!string.IsNullOrEmpty(listInfo.SeparatorRepeatTemplate))
+                {
+                    isSeparatorRepeat = true;
                 }
 
                 for (var i = 0; i < dataSource.Count; i++)
@@ -73,6 +89,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (isSeparator && i != dataSource.Count - 1)
                     {
                         builder.Append(listInfo.SeparatorTemplate);
+                    }
+
+                    if (isSeparatorRepeat && (i + 1) % listInfo.SeparatorRepeat == 0 && i != dataSource.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorRepeatTemplate);
                     }
                 }
 
@@ -170,7 +191,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return await parseManager.DatabaseManager.ContentRepository.ParserGetContentsDataSourceAsync(pageInfo.Site, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others, listInfo.Query);
         }
 
-        public static TaxisType GetTaxisType(string order)
+        private static TaxisType GetTaxisType(string order)
         {
             var taxisType = TaxisType.OrderByTaxisDesc;
 
