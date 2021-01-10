@@ -28,18 +28,22 @@ namespace SSCMS.Parse
             ItemContainer = context.ItemContainer;
             ContainerClientId = context.ContainerClientId;
 
+            ElementName = context.ElementName;
             OuterHtml = context.OuterHtml;
             InnerHtml = context.InnerHtml;
             Attributes = context.Attributes;
+            StartIndex = context.StartIndex;
         }
 
-        public ParseContext Clone(string outerHtml, string innerHtml, NameValueCollection attributes)
+        public ParseContext Clone(string elementName, string outerHtml, string innerHtml, NameValueCollection attributes, int startIndex)
         {
             var contextInfo = new ParseContext(this)
             {
+                ElementName = elementName,
                 OuterHtml = outerHtml,
                 InnerHtml = innerHtml,
-                Attributes = attributes
+                Attributes = attributes,
+                StartIndex = startIndex
             };
             return contextInfo;
         }
@@ -57,10 +61,13 @@ namespace SSCMS.Parse
         public int ChannelId { get; set; }
 
         public int ContentId { get; set; }
+        public string ElementName { get; set; }
 
         public string OuterHtml { get; set; }
 
         public string InnerHtml { get; set; }
+
+        public int StartIndex { get; set; }
 
         public NameValueCollection Attributes { get; set; }
 

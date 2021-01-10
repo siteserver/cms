@@ -24,7 +24,7 @@ namespace SSCMS.Cli.Updater
             return $"siteserver_Content_{siteId}";
         }
 
-        public static List<Dictionary<string, object>> UpdateRows(List<JObject> oldRows, Dictionary<string, string> convertKeyDict, Dictionary<string, string> convertValueDict, Func<Dictionary<string, object>, Dictionary<string, object>> process)
+        public static List<Dictionary<string, object>> UpdateRows(List<JObject> oldRows, Dictionary<string, string[]> convertKeyDict, Dictionary<string, string> convertValueDict, Func<Dictionary<string, object>, Dictionary<string, object>> process)
         {
             var newRows = new List<Dictionary<string, object>>();
 
@@ -33,17 +33,20 @@ namespace SSCMS.Cli.Updater
                 var newRow = TranslateUtils.ToDictionaryIgnoreCase(oldRow);
                 foreach (var key in convertKeyDict.Keys)
                 {
-                    var convertKey = convertKeyDict[key];
-                    object value;
-                    if (newRow.TryGetValue(convertKey, out value))
+                    var convertKeys = convertKeyDict[key];
+                    foreach (var convertKey in convertKeys)
                     {
-                        var valueDictKey = GetConvertValueDictKey(key, value);
-                        if (convertValueDict != null && convertValueDict.ContainsKey(valueDictKey))
+                        object value;
+                        if (newRow.TryGetValue(convertKey, out value))
                         {
-                            value = convertValueDict[valueDictKey];
-                        }
+                            var valueDictKey = GetConvertValueDictKey(key, value);
+                            if (convertValueDict != null && convertValueDict.ContainsKey(valueDictKey))
+                            {
+                                value = convertValueDict[valueDictKey];
+                            }
 
-                        newRow[key] = value;
+                            newRow[key] = value;
+                        }
                     }
                     //var value = newRow [convertKeyDict[key]];
 

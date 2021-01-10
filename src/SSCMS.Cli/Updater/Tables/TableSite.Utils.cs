@@ -26,15 +26,14 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.SiteRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
                 //{nameof(Site.Id), nameof(PublishmentSystemId)},
-                {nameof(Site.SiteName), nameof(PublishmentSystemName)},
-                {nameof(Site.TableName), nameof(AuxiliaryTableForContent)},
-                {nameof(Site.SiteDir), nameof(PublishmentSystemDir)},
-                {"IsRoot", nameof(IsHeadquarters)},
-                {nameof(Site.ParentId), nameof(ParentPublishmentSystemId)}
+                {nameof(Site.SiteName), new[] {nameof(PublishmentSystemName)}},
+                {nameof(Site.TableName), new[] {nameof(AuxiliaryTableForContent)}},
+                {nameof(Site.SiteDir), new[] {nameof(PublishmentSystemDir)}},
+                {nameof(Site.ParentId), new[] {nameof(ParentPublishmentSystemId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
@@ -42,6 +41,11 @@ namespace SSCMS.Cli.Updater.Tables
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
         {
             if (row.TryGetValue(nameof(IsHeadquarters), out var contentObj))
+            {
+                var value = TranslateUtils.ToBool(contentObj.ToString());
+                row[nameof(Site.Root)] = value;
+            }
+            if (row.TryGetValue(nameof(IsRoot), out contentObj))
             {
                 var value = TranslateUtils.ToBool(contentObj.ToString());
                 row[nameof(Site.Root)] = value;

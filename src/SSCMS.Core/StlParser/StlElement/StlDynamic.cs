@@ -1,18 +1,19 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
+using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "动态显示", Description = "通过 stl:dynamic 标签在模板中实现动态显示功能")]
-    public class StlDynamic
+    public static class StlDynamic
     {
-        private StlDynamic() { }
         public const string ElementName = "stl:dynamic";
 
         [StlAttribute(Title = "所处上下文")]
@@ -87,10 +88,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 loading = innerBuilder.ToString();
             }
 
-            return await ParseImplAsync(parseManager, contextInfo.Site, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseAsync(parseManager, contextInfo.Site, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, Site site, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             await parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
 
@@ -123,7 +124,7 @@ namespace SSCMS.Core.StlParser.StlElement
         internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager, Site site)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return await ParseImplAsync(parseManager, site, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
+            return await ParseAsync(parseManager, site, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
         public static async Task<string> ParseDynamicContentAsync(IParseManager parseManager, DynamicInfo dynamicInfo, string template)
@@ -134,7 +135,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var templateInfo = await databaseManager.TemplateRepository.GetAsync(dynamicInfo.TemplateId);
             var siteInfo = await databaseManager.SiteRepository.GetAsync(dynamicInfo.SiteId);
 
-            await parseManager.InitAsync(siteInfo, dynamicInfo.ChannelId, dynamicInfo.ContentId, templateInfo);
+            await parseManager.InitAsync(EditMode.Default, siteInfo, dynamicInfo.ChannelId, dynamicInfo.ContentId, templateInfo);
 
             parseManager.PageInfo.User = dynamicInfo.User;
 

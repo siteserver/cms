@@ -384,28 +384,31 @@ var utils = {
     );
   },
 
-  notifySuccess: function (message) {
+  notifySuccess: function (message, position) {
     utils.getRootVue().$notify.success({
       title: '成功',
-      message: message
+      message: message,
+      position: position || 'top-right'
     });
   },
 
-  notifyWarning: function (message) {
+  notifyWarning: function (message, position) {
     utils.getRootVue().$notify.warning({
       title: '警告',
-      message: message
+      message: message,
+      position: position || 'top-right'
     });
   },
 
-  notifyInfo: function (message) {
+  notifyInfo: function (message, position) {
     utils.getRootVue().$notify.info({
       title: '提示',
-      message: message
+      message: message,
+      position: position || 'top-right'
     });
   },
 
-  notifyError: function (error) {
+  notifyError: function (error, position) {
     if (!error) return;
 
     var message = '';
@@ -419,7 +422,8 @@ var utils = {
 
     utils.getRootVue().$notify.error({
       title: '错误',
-      message: message
+      message: message,
+      position: position || 'top-right'
     });
   },
 
@@ -457,6 +461,8 @@ var utils = {
           url: utils.getRootUrl("error", { uuid: uuid }),
         });
         return;
+      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        top.location.href = utils.getRootUrl('login', {status: 401});
       }
 
       utils.getRootVue().$message({

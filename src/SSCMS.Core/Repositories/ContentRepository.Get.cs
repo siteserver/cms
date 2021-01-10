@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
 using SqlKata;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -181,9 +182,9 @@ group by tmp.adminId";
             return await repository.CountAsync(query);
         }
 
-        public async Task<string> GetWhereStringByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
+        public async Task<Query> GetQueryByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
         {
-            var whereBuilder = new StringBuilder();
+            var query = Q.NewQuery();
 
             Site site = null;
             if (!string.IsNullOrEmpty(siteName))
@@ -204,20 +205,19 @@ group by tmp.adminId";
 
             if (isAllSites)
             {
-                whereBuilder.Append("(SiteId > 0) ");
+                query.Where(nameof(Content.SiteId), ">", 0);
             }
             else if (!string.IsNullOrEmpty(siteIds))
             {
-                whereBuilder.Append($"(SiteId IN ({TranslateUtils.ToSqlInStringWithoutQuote(ListUtils.GetIntList(siteIds))})) ");
+                query.WhereIn(nameof(Content.SiteId), ListUtils.GetIntList(siteIds));
             }
             else
             {
-                whereBuilder.Append($"(SiteId = {site.Id}) ");
+                query.Where(nameof(Content.SiteId), site.Id);
             }
 
             if (!string.IsNullOrEmpty(channelIds))
             {
-                whereBuilder.Append(" AND ");
                 var channelIdList = new List<int>();
                 foreach (var theChannelId in ListUtils.GetIntList(channelIds))
                 {
@@ -225,19 +225,28 @@ group by tmp.adminId";
                     channelIdList.AddRange(
                         await _channelRepository.GetChannelIdsAsync(theChannel.SiteId, theChannel.Id, ScopeType.All));
                 }
-                whereBuilder.Append(channelIdList.Count == 1
-                    ? $"(ChannelId = {channelIdList[0]}) "
-                    : $"(ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)})) ");
+
+                if (channelIdList.Count == 1)
+                {
+                    query.Where(nameof(Content.ChannelId), channelIdList[0]);
+                }
+                else
+                {
+                    query.WhereIn(nameof(Content.ChannelId), channelIdList);
+                }
             }
             else if (channelId != siteId)
             {
-                whereBuilder.Append(" AND ");
-
                 var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId, channelId, ScopeType.All);
 
-                whereBuilder.Append(channelIdList.Count == 1
-                    ? $"(ChannelId = {channelIdList[0]}) "
-                    : $"(ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)})) ");
+                if (channelIdList.Count == 1)
+                {
+                    query.Where(nameof(Content.ChannelId), channelIdList[0]);
+                }
+                else
+                {
+                    query.WhereIn(nameof(Content.ChannelId), channelIdList);
+                }
             }
 
             var typeList = new List<string>();
@@ -250,15 +259,43 @@ group by tmp.adminId";
                 typeList = ListUtils.GetStringList(type);
             }
 
+            var tableName = _channelRepository.GetTableName(site, channel);
+            var columns = await databaseManager.GetTableColumnInfoListAsync(tableName, excludeAttributes);
+
             if (!string.IsNullOrEmpty(word))
             {
-                whereBuilder.Append(" AND (");
-                foreach (var attributeName in typeList)
-                {
-                    whereBuilder.Append($"[{attributeName}] LIKE '%{AttackUtils.FilterSql(word)}%' OR ");
-                }
-                whereBuilder.Length = whereBuilder.Length - 3;
-                whereBuilder.Append(")");
+                query.Where( q =>
+                    {
+                        foreach (var attributeName in typeList)
+                        {
+                            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ListInfo.Tags)) || StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.TagNames)))
+                            {
+                                q
+                                    //.OrWhere(nameof(Content.TagNames), word)
+                                    .OrWhereLike(nameof(Content.TagNames), $"%{word}%");
+                                //.OrWhereInStr(Database.DatabaseType, nameof(Content.TagNames), $",{word}")
+                                //.OrWhereInStr(Database.DatabaseType, nameof(Content.TagNames), $",{word},")
+                                //.OrWhereInStr(Database.DatabaseType, nameof(Content.TagNames), $"{word},");
+                            }
+                            else
+                            {
+                                var column = columns.FirstOrDefault(x =>
+                                    StringUtils.EqualsIgnoreCase(x.AttributeName, attributeName));
+
+                                if (column != null && (column.DataType == DataType.VarChar || column.DataType == DataType.Text))
+                                {
+                                    q.OrWhereLike(column.AttributeName, $"%{word}%");
+                                }
+                                //else
+                                //{
+                                //    q.OrWhereLike(AttrExtendValues, $"%{attributeName}={word}%");
+                                //}
+                            }
+                        }
+
+                        return q;
+                    }
+                );
             }
 
             if (string.IsNullOrEmpty(dateAttribute))
@@ -268,53 +305,55 @@ group by tmp.adminId";
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} >= {GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ");
+                query.WhereDate(dateAttribute, ">=", dateFrom);
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} <= {GetComparableDate(TranslateUtils.ToDateTime(dateTo))} ");
+                query.WhereDate(dateAttribute, "<=", dateTo);
             }
             if (!string.IsNullOrEmpty(since))
             {
                 var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
-                whereBuilder.Append($" AND {dateAttribute} BETWEEN {GetComparableDateTime(sinceDate)} AND {GetComparableNow()} ");
+
+                query.WhereBetween(dateAttribute, sinceDate, DateTime.Now);
             }
 
-            var tableName = _channelRepository.GetTableName(site, channel);
+            
             //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(site, channel.Id);
 
-            foreach (string key in form.Keys)
+            foreach (string attributeName in form.Keys)
             {
-                if (ListUtils.ContainsIgnoreCase(excludeAttributes, key)) continue;
-                if (string.IsNullOrEmpty(form[key])) continue;
+                if (ListUtils.ContainsIgnoreCase(excludeAttributes, attributeName)) continue;
+                if (string.IsNullOrEmpty(form[attributeName])) continue;
 
-                var value = StringUtils.Trim(form[key]);
+                var value = StringUtils.Trim(form[attributeName]);
                 if (string.IsNullOrEmpty(value)) continue;
 
-                var columnInfo = await databaseManager.GetTableColumnInfoAsync(tableName, key);
-
-                if (columnInfo != null && (columnInfo.DataType == DataType.VarChar || columnInfo.DataType == DataType.Text))
+                if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ListInfo.Tags)) || StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.TagNames)))
                 {
-                    whereBuilder.Append(" AND ");
-                    whereBuilder.Append($"({key} LIKE '%{value}%')");
+                    query.Where(q => q
+                        .Where(nameof(Content.TagNames), word)
+                        .OrWhereInStr(Database.DatabaseType, nameof(Content.TagNames), $",{word}")
+                        .OrWhereInStr(Database.DatabaseType, nameof(Content.TagNames), $",{word},")
+                        .OrWhereInStr(Database.DatabaseType, nameof(Content.TagNames), $"{word},"));
                 }
-                //else
-                //{
-                //    foreach (var tableStyleInfo in styleInfoList)
-                //    {
-                //        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
-                //        {
-                //            whereBuilder.Append(" AND ");
-                //            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
-                //            break;
-                //        }
-                //    }
-                //}
+                else
+                {
+                    var column = columns.FirstOrDefault(x =>
+                        StringUtils.EqualsIgnoreCase(x.AttributeName, attributeName));
+
+                    if (column != null && (column.DataType == DataType.VarChar || column.DataType == DataType.Text))
+                    {
+                        query.WhereLike(column.AttributeName, $"%{value}%");
+                    }
+                    //else
+                    //{
+                    //    query.WhereLike(AttrExtendValues, $"%{attributeName}={value}%");
+                    //}
+                }
             }
 
-            return whereBuilder.ToString();
+            return query;
         }
 
         public async Task<string> GetNewContentTableNameAsync()

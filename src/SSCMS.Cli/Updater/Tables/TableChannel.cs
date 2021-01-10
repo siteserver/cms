@@ -49,6 +49,9 @@ namespace SSCMS.Cli.Updater.Tables
         [JsonProperty("nodeGroupNameCollection")]
         public string NodeGroupNameCollection { get; set; }
 
+        [JsonProperty("groupNameCollection")]
+        public string GroupNameCollection { get; set; }
+
         [JsonProperty("taxis")]
         public long Taxis { get; set; }
 

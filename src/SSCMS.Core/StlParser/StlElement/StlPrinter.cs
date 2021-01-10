@@ -1,17 +1,16 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "打印", Description = "通过 stl:printer 标签在模板中实现打印功能")]
-    public class StlPrinter
+    public static class StlPrinter
 	{
-        private StlPrinter() { }
         public const string ElementName = "stl:printer";
 
         [StlAttribute(Title = "页面Html 中打印标题的 Id 属性")]
@@ -60,10 +59,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, attributes, titleId, bodyId, logoId, locationId);
+            return await ParseAsync(parseManager, attributes, titleId, bodyId, logoId, locationId);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
+        private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

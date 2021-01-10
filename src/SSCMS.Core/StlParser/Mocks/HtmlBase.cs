@@ -2,7 +2,7 @@
 using System.Text;
 using SSCMS.Utils;
 
-namespace SSCMS.Core.StlParser.Mock
+namespace SSCMS.Core.StlParser.Mocks
 {
     public abstract class HtmlBase
     {

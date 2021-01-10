@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -9,10 +9,9 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "播放视频", Description = "通过 stl:video 标签在模板中显示视频播放器")]
-    public class StlVideo
+    public static class StlVideo
 	{
-        private StlVideo() { }
-		public const string ElementName = "stl:video";
+        public const string ElementName = "stl:video";
 
         [StlAttribute(Title = "指定视频的字段")]
         private const string Type = nameof(Type);
@@ -87,10 +86,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
+            return await ParseAsync(parseManager, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

@@ -19,7 +19,9 @@ namespace SSCMS.Core.Services
         /// </summary>
         public async Task ReplaceStlElementsAsync(StringBuilder parsedBuilder)
         {
-            var stlElements = StlParserUtility.GetStlElementList(parsedBuilder.ToString());
+            var templateContent = parsedBuilder.ToString();
+            var stlElements = StlParserUtility.GetStlElementList(templateContent);
+            var index = 0;
             foreach (var stlElement in stlElements)
             {
                 try
@@ -27,8 +29,11 @@ namespace SSCMS.Core.Services
                     var startIndex = parsedBuilder.ToString().IndexOf(stlElement, StringComparison.Ordinal);
                     if (startIndex == -1) continue;
 
-                    var parsedContent = await ParseStlElementAsync(stlElement);
+                    var elementIndex = templateContent.Substring(index).IndexOf(stlElement, StringComparison.Ordinal);
+                    var parsedContent = await ParseStlElementAsync(stlElement, index + elementIndex);
                     parsedBuilder.Replace(stlElement, parsedContent, startIndex, stlElement.Length);
+
+                    index += stlElement.Length + elementIndex;
                 }
                 catch
                 {
@@ -50,6 +55,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlCount.ElementName), StlCount.ParseAsync},
             {StringUtils.ToLower(StlDynamic.ElementName), StlDynamic.ParseAsync},
             {StringUtils.ToLower(StlEach.ElementName), StlEach.ParseAsync},
+            {StringUtils.ToLower(StlEditable.ElementName), StlEditable.ParseAsync},
             {StringUtils.ToLower(StlFile.ElementName), StlFile.ParseAsync},
             {StringUtils.ToLower(StlFocusViewer.ElementName), StlFocusViewer.ParseAsync},
             {StringUtils.ToLower(StlIf.ElementName), StlIf.ParseAsync},
@@ -88,11 +94,11 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlPageItems.ElementName), StlEncrypt}
         };
 
-        private async Task<string> ParseStlElementAsync(string stlElement)
+        private async Task<string> ParseStlElementAsync(string stlElement, int startIndex)
         {
             string parsedContent = null;
 
-            var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, startIndex);
 
             if (stlElementInfo != null)
             {
@@ -118,7 +124,7 @@ namespace SSCMS.Core.Services
                             if (ElementsToParseDic.TryGetValue(elementName, out var func))
                             {
                                 var contextInfo = ContextInfo;
-                                ContextInfo = ContextInfo.Clone(stlElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                                ContextInfo = ContextInfo.Clone(elementName, stlElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes, stlElementInfo.StartIndex);
 
                                 var obj = await func(this);
 

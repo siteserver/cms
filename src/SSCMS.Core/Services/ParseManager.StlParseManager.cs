@@ -18,11 +18,11 @@ namespace SSCMS.Core.Services
             ContextInfo.IsInnerElement = isInnerElement;
         }
 
-        public async Task<string> ParseTemplatePreviewAsync(string template)
+        public async Task<string> ParseTemplateWithCodesHtmlAsync(string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
             var parsedBuilder = new StringBuilder(template);
-            
+
             await ParseTemplateContentAsync(parsedBuilder);
 
             return PageInfo.HeadCodesHtml + PageInfo.BodyCodesHtml + parsedBuilder + PageInfo.FootCodesHtml;

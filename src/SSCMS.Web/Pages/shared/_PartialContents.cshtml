@@ -118,17 +118,15 @@
         <i class="el-icon-view"></i>
       </el-tooltip>
       <!-- imageUrl -->
-      <el-tooltip v-if="scope.row.imageUrl" effect="light" content="图片" placement="top">
-        <el-popover
-          v-if="scope.row.imageUrl"
-          width="400"
-          trigger="hover">
-          <el-image :src="scope.row.imageUrl"></el-image>
-          <el-link slot="reference" :underline="false">
-            <i class="el-icon-picture-outline"></i>
-          </el-link>
-        </el-popover>
-      </el-tooltip>
+      <el-popover
+        v-if="scope.row.imageUrl"
+        width="400"
+        trigger="hover">
+        <el-image :src="scope.row.imageUrl"></el-image>
+        <el-link slot="reference" :underline="false">
+          <i class="el-icon-picture-outline"></i>
+        </el-link>
+      </el-popover>
       <!-- video -->
       <el-tooltip v-if="scope.row.videoUrl" effect="light" content="视频" placement="top">
         <el-link :underline="false" :href="scope.row.videoUrl" target="_blank" v-on:click.stop>

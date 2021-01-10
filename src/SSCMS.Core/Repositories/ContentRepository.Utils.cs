@@ -40,7 +40,16 @@ namespace SSCMS.Core.Repositories
 
         private Query GetQuery(int siteId, int channelId = 0)
         {
-            var query = Q
+            return GetQuery(Q.NewQuery(), siteId, channelId);
+        }
+
+        private Query GetQuery(Query query, int siteId, int channelId = 0)
+        {
+            if (query == null)
+            {
+                query = Q.NewQuery();
+            }
+            query
                 .Where(nameof(Content.SiteId), siteId)
                 .WhereNot(nameof(Content.SourceId), SourceManager.Preview);
 

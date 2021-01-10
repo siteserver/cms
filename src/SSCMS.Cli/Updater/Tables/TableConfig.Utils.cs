@@ -19,10 +19,10 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.ConfigRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {"SystemConfig", nameof(SettingsXml)}
+                {"SystemConfig", new[] {nameof(SettingsXml)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

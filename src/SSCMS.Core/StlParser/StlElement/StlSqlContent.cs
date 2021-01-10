@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -11,9 +11,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "数据库值", Description = "通过 stl:sqlContent 标签在模板中显示数据库值")]
-    public class StlSqlContent
+    public static class StlSqlContent
 	{
-        private StlSqlContent() { }
         public const string ElementName = "stl:sqlContent";
 
         [StlAttribute(Title = "数据库类型名称")]
@@ -203,10 +202,10 @@ namespace SSCMS.Core.StlParser.StlElement
 		        return dataItem;
 		    }
 
-            return ParseImpl(parseManager, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
+            return Parse(parseManager, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 		}
 
-        private static string ParseImpl(IParseManager parseManager, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
+        private static string Parse(IParseManager parseManager, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
             var contextInfo = parseManager.ContextInfo;
 

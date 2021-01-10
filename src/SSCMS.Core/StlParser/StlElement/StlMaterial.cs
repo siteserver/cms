@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Services;
@@ -10,9 +10,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "获取素材", Description = "通过 stl:material 标签在模板中获取素材")]
-    public class StlMaterial
+    public static class StlMaterial
     {
-        private StlMaterial() { }
         public const string ElementName = "stl:material";
 
         public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/material-clip.png""";
@@ -131,10 +130,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseAsync(parseManager, type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string name, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string name, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (string.IsNullOrEmpty(type)) return string.Empty;
 

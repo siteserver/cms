@@ -24,11 +24,11 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.SitePermissionsRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(SitePermissions.SiteId), nameof(PublishmentSystemId)},
-                {"ChannelIdCollection", nameof(NodeIdCollection)}
+                {nameof(SitePermissions.SiteId), new[] {nameof(PublishmentSystemId)}},
+                {"ChannelIdCollection", new[] {nameof(NodeIdCollection)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

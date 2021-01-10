@@ -24,12 +24,12 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.RelatedFieldRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(RelatedField.Id), nameof(RelatedFieldId)},
-                {nameof(RelatedField.Title), nameof(RelatedFieldName)},
-                {nameof(RelatedField.SiteId), nameof(PublishmentSystemId)}
+                {nameof(RelatedField.Id), new[] {nameof(RelatedFieldId)}},
+                {nameof(RelatedField.Title), new[] {nameof(RelatedFieldName)}},
+                {nameof(RelatedField.SiteId), new[] {nameof(PublishmentSystemId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

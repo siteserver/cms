@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
+using SSCMS.Core.StlParser.Mocks;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Mock;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
+using SSCMS.Core.StlParser.Enums;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -30,17 +32,17 @@ namespace SSCMS.Core.StlParser.StlElement
                 return ParseEntity(dataSource);
             }
 
-            return await ParseElementAsync(parseManager, listInfo, dataSource);
+            return await ParseAsync(parseManager, listInfo, dataSource);
         }
 
-        protected static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Content>> dataSource)
+        protected static async Task<string> ParseAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Content>> dataSource)
         {
             var pageInfo = parseManager.PageInfo;
 
             if (dataSource == null || dataSource.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
-            if (listInfo.Layout == Model.Layout.None)
+            if (listInfo.Layout == ListLayout.None)
             {
                 if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
@@ -165,7 +167,7 @@ namespace SSCMS.Core.StlParser.StlElement
             channelId = await parseManager.DatabaseManager.ChannelRepository.GetChannelIdAsync(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
             var taxisType = GetTaxisType(listInfo.Order);
 
-            return await parseManager.DatabaseManager.ContentRepository.ParserGetContentsDataSourceAsync(pageInfo.Site, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Where, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return await parseManager.DatabaseManager.ContentRepository.ParserGetContentsDataSourceAsync(pageInfo.Site, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others, listInfo.Query);
         }
 
         public static TaxisType GetTaxisType(string order)

@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Datory" Version="1.1.9" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.9.4" />
     <!--<ProjectReference Include="..\..\..\Datory\src\Datory\Datory.csproj" />-->
   </ItemGroup>
 

@@ -7,11 +7,13 @@ namespace SSCMS.Services
     {
         Task<string> GetTemplateFilePathAsync(Site site, Template template);
 
-        Task WriteContentToTemplateFileAsync(Site site, Template template, string content, int adminId);
-
         Task<string> GetTemplateContentAsync(Site site, Template template);
 
+        Task WriteContentToTemplateFileAsync(Site site, Template template, string content, int adminId);
+
         Task<string> GetIncludeContentAsync(Site site, string file);
+
+        Task WriteContentToIncludeFileAsync(Site site, string file, string content);
 
         string GetContentByFilePath(string filePath);
     }

@@ -24,7 +24,6 @@
 
         <template v-if="pageAlert">
             <div class="alert" :class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
-                <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
                 <span v-html="pageAlert.html"></span>
             </div>
         </template>

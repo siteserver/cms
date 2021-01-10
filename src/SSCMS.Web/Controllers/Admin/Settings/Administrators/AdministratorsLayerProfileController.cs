@@ -26,8 +26,14 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _administratorRepository = administratorRepository;
         }
 
+        public class GetRequest
+        {
+            public string UserName { get; set; }
+        }
+
         public class GetResult
         {
+            public int UserId { get; set; }
             public string UserName { get; set; }
             public string DisplayName { get; set; }
             public string AvatarUrl { get; set; }

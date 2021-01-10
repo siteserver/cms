@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "列表项", Description = "通过 stl:itemTemplate 标签在模板中控制列表中每一项的显示内容及样式")]
-    public class StlItemTemplate
+    public static class StlItemTemplate
 	{
         public const string ElementName = "stl:itemTemplate";
 

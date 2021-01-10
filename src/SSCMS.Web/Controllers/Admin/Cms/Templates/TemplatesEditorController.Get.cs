@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var settings = await GetSettingsAsync(template, site);
-            var content = string.Empty;
+            var content = Constants.Html5Empty;
             if (template.Id > 0)
             {
                 content = await _pathManager.GetTemplateContentAsync(site, template);

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.StlParser.Mock;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
+using SSCMS.Core.StlParser.Mocks;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Services;
@@ -12,9 +12,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "下拉列表", Description = "通过 stl:select 标签在模板中显示栏目或内容下拉列表")]
-    public class StlSelect
+    public static class StlSelect
     {
-        private StlSelect() { }
         public const string ElementName = "stl:select";
 
         [StlAttribute(Title = "是否显示栏目下拉列表")]
@@ -213,10 +212,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
+            return await ParseAsync(parseManager, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
+        private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;

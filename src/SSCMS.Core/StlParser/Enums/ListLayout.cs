@@ -1,6 +1,6 @@
-namespace SSCMS.Core.StlParser.Model
+namespace SSCMS.Core.StlParser.Enums
 {
-    public enum Layout
+    public enum ListLayout
 	{
 		Table,					//表格
 		Flow,					//流

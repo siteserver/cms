@@ -8,6 +8,7 @@ if (window.top != self) {
 }
 
 var data = utils.init({
+  status: utils.getQueryInt('status'),
   pageSubmit: false,
   pageAlert: null,
   account: null,
@@ -28,6 +29,13 @@ var data = utils.init({
 var methods = {
   apiGet: function () {
     var $this = this;
+
+    if (this.status === 401) {
+      this.pageAlert = {
+        type: 'danger',
+        html: '您的账号登录已过期或失效，请重新登录'
+      };
+    }
 
     utils.loading(this, true);
     $api.get($url).then(function (response) {

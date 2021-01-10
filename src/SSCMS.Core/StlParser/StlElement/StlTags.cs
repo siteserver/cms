@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Models;
 using SSCMS.Parse;
 using SSCMS.Services;
@@ -11,9 +11,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
-    public class StlTags
+    public static class StlTags
 	{
-        private StlTags() { }
         public const string ElementName = "stl:tags";
 
         [StlAttribute(Title = "标签级别")]
@@ -56,10 +55,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, tagLevel, totalNum, isOrderByCount);
+            return await ParseAsync(parseManager, tagLevel, totalNum, isOrderByCount);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, int tagLevel, int totalNum, bool isOrderByCount)
+        private static async Task<string> ParseAsync(IParseManager parseManager, int tagLevel, int totalNum, bool isOrderByCount)
         {
             var innerHtml = StringUtils.StripTags(parseManager.ContextInfo.OuterHtml, ElementName);
 

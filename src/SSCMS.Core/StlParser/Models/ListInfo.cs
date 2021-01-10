@@ -3,15 +3,17 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SqlKata;
 using SSCMS.Configuration;
-using SSCMS.Parse;
+using SSCMS.Core.StlParser.Enums;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
+using SSCMS.Parse;
 using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Core.StlParser.Model
+namespace SSCMS.Core.StlParser.Models
 {
     public class ListInfo
     {
@@ -305,7 +307,7 @@ namespace SSCMS.Core.StlParser.Model
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Columns))
                 {
                     listInfo.Columns = TranslateUtils.ToInt(value);
-                    listInfo.Layout = Layout.Table;
+                    listInfo.Layout = ListLayout.Table;
                     if (listInfo.Columns > 1 && isSetDirection == false)
                     {
                         listInfo.Direction = "horizontal";
@@ -313,7 +315,7 @@ namespace SSCMS.Core.StlParser.Model
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Direction))
                 {
-                    listInfo.Layout = Layout.Table;
+                    listInfo.Layout = ListLayout.Table;
                     listInfo.Direction = value;
                     isSetDirection = true;
                 }
@@ -351,7 +353,7 @@ namespace SSCMS.Core.StlParser.Model
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Layout))
                 {
-                    listInfo.Layout = TranslateUtils.ToEnum(value, Layout.None);
+                    listInfo.Layout = TranslateUtils.ToEnum(value, ListLayout.None);
                 }
                 else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseTypeName))
                 {
@@ -423,6 +425,8 @@ namespace SSCMS.Core.StlParser.Model
 
         public string Where { get; set; }
 
+        public Query Query { get; set; }
+
         public string GroupChannel { get; private set; } = string.Empty;
 
         public string GroupChannelNot { get; private set; } = string.Empty;
@@ -492,7 +496,7 @@ namespace SSCMS.Core.StlParser.Model
 
         public bool IsRelatedContents { get; set; }
 
-        public Layout Layout { get; set; } = Layout.None;
+        public ListLayout Layout { get; set; } = ListLayout.None;
 
         public DatabaseType DatabaseType { get; set; } = DatabaseType.MySql;
 

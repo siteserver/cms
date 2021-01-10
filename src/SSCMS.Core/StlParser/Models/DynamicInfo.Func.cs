@@ -1,6 +1,6 @@
 ﻿using SSCMS.Utils;
 
-namespace SSCMS.Core.StlParser.Model
+namespace SSCMS.Core.StlParser.Models
 {
     public partial class DynamicInfo
     {

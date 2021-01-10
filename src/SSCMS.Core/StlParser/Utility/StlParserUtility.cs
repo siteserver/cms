@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -309,7 +309,7 @@ namespace SSCMS.Core.StlParser.Utility
             return retVal;
         }
 
-        public static StlElementInfo ParseStlElement(string stlElement)
+        public static StlElementInfo ParseStlElement(string stlElement, int startIndex)
         {
             StlElementInfo retVal = null;
 
@@ -323,7 +323,7 @@ namespace SSCMS.Core.StlParser.Utility
                     var stlNode = docNode.FirstChild;
 
                     var name = stlNode.Name;
-                    var outerHtml = stlNode.OuterHtml;
+                    //var outerHtml = stlNode.OuterHtml;
                     var innerHtml = stlNode.InnerHtml;
                     var attributesIgnoreCase = TranslateUtils.NewIgnoreCaseNameValueCollection();
 
@@ -337,7 +337,7 @@ namespace SSCMS.Core.StlParser.Utility
 
                     if (!string.IsNullOrEmpty(name))
                     {
-                        retVal = new StlElementInfo(StringUtils.ToLower(name), attributesIgnoreCase, outerHtml, innerHtml);
+                        retVal = new StlElementInfo(StringUtils.ToLower(name), attributesIgnoreCase, stlElement, innerHtml, startIndex);
                     }
                 }
             }

@@ -22,10 +22,10 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.AdministratorRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(Administrator.SiteId), nameof(PublishmentSystemId)}
+                {nameof(Administrator.SiteId), new[]{nameof(PublishmentSystemId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

@@ -1,4 +1,4 @@
-﻿var $url = '/cms/templates/templatesEditor';
+﻿﻿var $url = '/cms/templates/templatesEditor';
 var $urlSettings = $url + '/actions/settings';
 var $urlPreview = $url + '/actions/preview';
 var $urlGetContents = $url + '/actions/getContents';

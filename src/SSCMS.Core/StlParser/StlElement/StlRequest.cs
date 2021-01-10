@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -10,10 +10,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "URL地址请求", Description = "通过 stl:request 实体在模板中显示地址栏请求参数")]
-    public class StlRequest
+    public static class StlRequest
     {
-        private StlRequest() { }
-
         public const string ElementName = "stl:request";
 
         [StlAttribute(Title = "地址参数名称")]
@@ -55,10 +53,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, elementId, callback, attributes);
+            return await ParseAsync(parseManager, type, elementId, callback, attributes);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string elementId, string callback, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string elementId, string callback, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

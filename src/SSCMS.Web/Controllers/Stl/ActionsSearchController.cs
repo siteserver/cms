@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.StlElement;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Stl
             _contentRepository = contentRepository;
         }
 
-        private NameValueCollection GetPostCollection(StlSearch.SearchRequest request)
+        private NameValueCollection GetPostCollection(StlSearchRequest request)
         {
             var formCollection = new NameValueCollection();
             foreach (var key in request.GetKeys())

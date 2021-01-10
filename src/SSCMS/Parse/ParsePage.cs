@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 
@@ -16,13 +17,13 @@ namespace SSCMS.Parse
 
         public SortedDictionary<string, string> FootCodes { get; private set; }
 
-        public Config Config { get; private set; }
+        private Config Config { get; }
 
         public Site Site { get; private set; }
 
         public Dictionary<string, string> Parameters { get; set; }
 
-        public Template Template { get; private set; }
+        public Template Template { get; }
 
         public User User { get; set; }
 
@@ -33,22 +34,26 @@ namespace SSCMS.Parse
         public int PageContentId { get; private set; }
 
         public bool IsLocal { get; set; }
+        public EditMode EditMode { get; }
+        public string IncludeFile { get; set; }
+        public int EditableIndex { get; set; }
+        public List<Editable> Editables { get; }
 
-        public Stack<KeyValuePair<int, Channel>> ChannelItems { get; private set; }
+        public Stack<KeyValuePair<int, Channel>> ChannelItems { get; }
 
-        public Stack<KeyValuePair<int, Content>> ContentItems { get; private set; }
+        public Stack<KeyValuePair<int, Content>> ContentItems { get; }
 
-        public Stack<KeyValuePair<int, Dictionary<string, object>>> SqlItems { get; private set; }
+        public Stack<KeyValuePair<int, Dictionary<string, object>>> SqlItems { get; }
 
-        public Stack<KeyValuePair<int, Site>> SiteItems { get; private set; }
+        public Stack<KeyValuePair<int, Site>> SiteItems { get;  }
 
-        public Stack<KeyValuePair<int, object>> EachItems { get; private set; }
+        public Stack<KeyValuePair<int, object>> EachItems { get; }
 
-        public Dictionary<string, object> PluginItems { get; private set; }
+        public Dictionary<string, object> PluginItems { get; }
 
         public ParsePage Clone()
         {
-            return new ParsePage(_pathManager, Config, PageChannelId, PageContentId, Site, Template, PluginItems)
+            return new ParsePage(_pathManager, EditMode, Config, PageChannelId, PageContentId, Site, Template, PluginItems)
             {
                 HeadCodes = new SortedDictionary<string, string>(HeadCodes),
                 BodyCodes = new SortedDictionary<string, string>(BodyCodes),
@@ -57,7 +62,7 @@ namespace SSCMS.Parse
             };
         }
 
-        public ParsePage(IPathManager pathManager, Config config, int pageChannelId, int pageContentId, Site site, Template template, Dictionary<string, object> pluginItems)
+        public ParsePage(IPathManager pathManager, EditMode editMode, Config config, int pageChannelId, int pageContentId, Site site, Template template, Dictionary<string, object> pluginItems)
         {
             _pathManager = pathManager;
             Template = template;
@@ -65,6 +70,9 @@ namespace SSCMS.Parse
             PageChannelId = pageChannelId;
             PageContentId = pageContentId;
             IsLocal = false;
+            EditMode = editMode;
+            EditableIndex = 0;
+            Editables = new List<Editable>();
             HeadCodes = new SortedDictionary<string, string>();
             BodyCodes = new SortedDictionary<string, string>();
             FootCodes = new SortedDictionary<string, string>();

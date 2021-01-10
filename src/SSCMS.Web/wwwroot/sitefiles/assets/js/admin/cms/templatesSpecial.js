@@ -49,7 +49,7 @@ var methods = {
           id: 0,
           guid: res.guid,
           title: '',
-          url: '/special/' + $this.formatDate(),
+          url: '/special/' + $this.formatDate() + '/',
           fileNames: [],
           isEditOnly: false,
           isUploadOnly: false

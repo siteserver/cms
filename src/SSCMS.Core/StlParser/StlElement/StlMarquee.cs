@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "无间隔滚动", Description = "通过 stl:marquee 标签在模板中创建一个能够无间隔滚动的内容块")]
-    public class StlMarquee
+    public static class StlMarquee
 	{
-		private StlMarquee(){}
-		public const string ElementName = "stl:marquee";
+        public const string ElementName = "stl:marquee";
 
 		[StlAttribute(Title = "滚动延迟时间（毫秒）")]
         private const string ScrollDelay = nameof(ScrollDelay);
@@ -98,10 +97,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, scrollHtml, scrollDelay, direction, width, height);
+            return Parse(pageInfo, scrollHtml, scrollDelay, direction, width, height);
 		}
 
-        private static string ParseImpl(ParsePage pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
+        private static string Parse(ParsePage pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
         {
             string topHtml;
             string bottomHtml;

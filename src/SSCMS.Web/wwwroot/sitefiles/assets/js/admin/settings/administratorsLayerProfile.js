@@ -1,10 +1,8 @@
 ﻿var $url = '/settings/administratorsLayerProfile';
-var $pageTypeAdmin = 'admin';
-var $pageTypeUser = 'user';
 
 var data = utils.init({
-  pageType: utils.getQueryString('pageType'),
-  userId: utils.getQueryInt('userId'),
+  userName: utils.getQueryString('userName'),
+  userId: 0,
   uploadUrl: null,
   uploadFileList: [],
   form: {
@@ -24,11 +22,12 @@ var methods = {
 
     $api.get($url, {
       params: {
-        userId: this.userId
+        userName: this.userName
       }
     }).then(function (response) {
       var res = response.data;
 
+      $this.userId = res.userId;
       $this.form.userName = res.userName;
       $this.form.displayName = res.displayName;
       $this.form.avatarUrl = res.avatarUrl;
@@ -59,7 +58,7 @@ var methods = {
       mobile: this.form.mobile,
       email: this.form.email
     }).then(function (response) {
-      if ($this.userId) {
+      if ($this.userName) {
         utils.success('管理员编辑成功！');
       } else {
         utils.success('管理员新增成功！');
@@ -139,8 +138,8 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.uploadUrl = $apiUrl + $url + '/actions/upload?userId=' + this.userId;
-    if (this.userId > 0) {
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?userName=' + this.userName;
+    if (this.userName) {
       this.apiGet();
     } else {
       utils.loading(this, false);

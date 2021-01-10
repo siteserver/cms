@@ -148,17 +148,15 @@
               {{ data.label }} ({{ data.count }})
 
               <!-- imageUrl -->
-              <el-tooltip v-if="data.imageUrl" effect="light" content="图片" placement="top">
-                <el-popover
-                  v-if="data.imageUrl"
-                  width="400"
-                  trigger="hover">
-                  <el-image :src="data.imageUrl"></el-image>
-                  <el-link slot="reference" :underline="false">
-                    <i class="el-icon-picture-outline"></i>
-                  </el-link>
-                </el-popover>
-              </el-tooltip>
+              <el-popover
+                v-if="data.imageUrl"
+                width="400"
+                trigger="hover">
+                <el-image :src="data.imageUrl"></el-image>
+                <el-link slot="reference" :underline="false">
+                  <i class="el-icon-picture-outline"></i>
+                </el-link>
+              </el-popover>
 
               <!-- linkUrl -->
               <el-tooltip v-if="data.channel.linkUrl" effect="light" content="外部链接" placement="top">

@@ -91,18 +91,6 @@ var methods = {
   },
 
   uploadBefore(file) {
-    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
-    if(!re.exec(file.name))
-    {
-      utils.error('文件只能是图片格式，请选择有效的文件上传!');
-      return false;
-    }
-
-    var isLt10M = file.size / 1024 / 1024 < 10;
-    if (!isLt10M) {
-      utils.error('上传图片大小不能超过 10MB!');
-      return false;
-    }
     return true;
   },
 

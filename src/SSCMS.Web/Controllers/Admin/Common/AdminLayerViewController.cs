@@ -17,14 +17,16 @@ namespace SSCMS.Web.Controllers.Admin.Common
         private const string Route = "common/adminLayerView";
 
         private readonly IHttpContextAccessor _context;
+        private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdminLayerViewController(IHttpContextAccessor context, ISettingsManager settingsManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdminLayerViewController(IHttpContextAccessor context, ICacheManager cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
             _context = context;
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
             _administratorRepository = administratorRepository;

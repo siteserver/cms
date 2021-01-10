@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Parse;
 
@@ -14,7 +15,7 @@ namespace SSCMS.Services
         ParsePage PageInfo { get; set; }
         ParseContext ContextInfo { get; set; }
 
-        Task InitAsync(Site site, int pageChannelId, int pageContentId, Template template);
+        Task InitAsync(EditMode editMode, Site site, int pageChannelId, int pageContentId, Template template);
 
         Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic);
 

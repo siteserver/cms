@@ -12,7 +12,7 @@ namespace SSCMS.Cli.Updater
 
         public List<TableColumn> NewColumns { get; set; }
 
-        public Dictionary<string, string> ConvertKeyDict { get; set; }
+        public Dictionary<string, string[]> ConvertKeyDict { get; set; }
 
         public Dictionary<string, string> ConvertValueDict { get; set; }
 

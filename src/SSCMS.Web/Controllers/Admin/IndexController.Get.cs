@@ -73,12 +73,11 @@ namespace SSCMS.Web.Controllers.Admin
                 };
             }
 
-            if (!_authManager.IsAdmin)
+            var admin = await _authManager.GetAdminAsync();
+            if (admin == null)
             {
                 return Unauthorized();
             }
-
-            var admin = await _authManager.GetAdminAsync();
             var cacheKey = Constants.GetSessionIdCacheKey(admin.Id);
             var sessionId = await _dbCacheRepository.GetValueAsync(cacheKey);
             if (string.IsNullOrEmpty(request.SessionId) || sessionId != request.SessionId)

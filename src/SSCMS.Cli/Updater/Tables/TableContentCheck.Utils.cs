@@ -22,12 +22,12 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.ContentCheckRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(ContentCheck.Id), nameof(CheckId)},
-                {nameof(ContentCheck.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentCheck.ChannelId), nameof(NodeId)}
+                {nameof(ContentCheck.Id), new[] {nameof(CheckId)}},
+                {nameof(ContentCheck.SiteId), new[] {nameof(PublishmentSystemId)}},
+                {nameof(ContentCheck.ChannelId), new[] {nameof(NodeId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

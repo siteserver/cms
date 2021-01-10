@@ -34,6 +34,8 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        public const string AttrExtendValues = "ExtendValues";
+
         private string GetComparableNow()
         {
             var retVal = string.Empty;

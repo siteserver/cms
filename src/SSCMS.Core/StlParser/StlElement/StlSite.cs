@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -13,10 +13,9 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "获取站点值", Description = "通过 stl:site 标签在模板中显示站点值")]
-    public class StlSite
+    public static class StlSite
 	{
-        private StlSite() { }
-		public const string ElementName = "stl:site";
+        public const string ElementName = "stl:site";
 
         [StlAttribute(Title = "站点名称")]
         private const string SiteName = nameof(SiteName);
@@ -192,10 +191,10 @@ namespace SSCMS.Core.StlParser.StlElement
 		        return site;
 		    }
 
-            return await ParseImplAsync(parseManager, site, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
+            return await ParseAsync(parseManager, site, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, Site site, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;

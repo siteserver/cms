@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
+using SSCMS.Core.StlParser.Enums;
+using SSCMS.Core.StlParser.Mocks;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Mock;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
@@ -12,7 +14,7 @@ using SSCMS.Services;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "列表项循环", Description = "通过 stl:each 标签在模板中遍历指定的列表项")]
-    public class StlEach
+    public static class StlEach
     {
         public const string ElementName = "stl:each";
 
@@ -30,10 +32,10 @@ namespace SSCMS.Core.StlParser.StlElement
         {
             var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Each);
 
-            return await ParseImplAsync(parseManager, listInfo);
+            return await ParseAsync(parseManager, listInfo);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, ListInfo listInfo)
+        private static async Task<string> ParseAsync(IParseManager parseManager, ListInfo listInfo)
         {
             var pageInfo = parseManager.PageInfo;
 
@@ -104,7 +106,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var builder = new StringBuilder();
-            if (listInfo.Layout == Layout.None)
+            if (listInfo.Layout == ListLayout.None)
             {
                 if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {

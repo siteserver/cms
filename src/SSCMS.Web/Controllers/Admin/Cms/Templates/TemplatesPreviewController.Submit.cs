@@ -47,9 +47,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 TemplateType = request.TemplateType
             };
 
-            await _parseManager.InitAsync(site, request.ChannelId, contentId, templateInfo);
+            await _parseManager.InitAsync(EditMode.Preview, site, request.ChannelId, contentId, templateInfo);
 
-            var parsedContent = await _parseManager.ParseTemplatePreviewAsync(request.Content);
+            var parsedContent = await _parseManager.ParseTemplateWithCodesHtmlAsync(request.Content);
 
             return new StringResult
             {

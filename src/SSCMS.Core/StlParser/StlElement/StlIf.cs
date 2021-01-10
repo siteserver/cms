@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
-using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
+using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "条件判断", Description = "通过 stl:if 标签在模板中根据条件判断显示内容")]
-    public class StlIf
+    public static class StlIf
     {
-        private StlIf() { }
         public const string ElementName = "stl:if";
 
         [StlAttribute(Title = "测试类型")]
@@ -146,10 +145,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 testOperate = OperateNotEmpty;
             }
 
-            return await ParseImplAsync(parseManager, testTypeStr, testOperate, testValue, yes, no, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseAsync(parseManager, testTypeStr, testOperate, testValue, yes, no, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string testType, string testOperate, string testValue, string attributeYes, string attributeNo, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string testType, string testOperate, string testValue, string attributeYes, string attributeNo, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;

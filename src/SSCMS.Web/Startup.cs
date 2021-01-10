@@ -81,9 +81,6 @@ namespace SSCMS.Web
                 })
                 .AddJwtBearer(x =>
                 {
-                    //x.Audience = "8d708afe-2966-40b7-918c-a39551625958";
-                    //x.Authority = "https://login.microsoftonline.com/a1d50521-9687-4e4d-a76d-ddd53ab0c668/";
-
                     x.RequireHttpsMetadata = false;
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters

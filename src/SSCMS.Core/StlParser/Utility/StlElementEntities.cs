@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Services;
 
 namespace SSCMS.Core.StlParser.Utility

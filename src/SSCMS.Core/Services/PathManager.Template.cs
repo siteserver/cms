@@ -25,11 +25,17 @@ namespace SSCMS.Core.Services
             return filePath;
         }
 
+        public async Task<string> GetTemplateContentAsync(Site site, Template template)
+        {
+            var filePath = await GetTemplateFilePathAsync(site, template);
+            return GetContentByFilePath(filePath);
+        }
+
         public async Task WriteContentToTemplateFileAsync(Site site, Template template, string content, int adminId)
         {
             if (content == null) content = string.Empty;
             var filePath = await GetTemplateFilePathAsync(site, template);
-            FileUtils.WriteText(filePath, content);
+            await FileUtils.WriteTextAsync(filePath, content);
 
             if (template.Id > 0)
             {
@@ -46,16 +52,17 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task<string> GetTemplateContentAsync(Site site, Template template)
-        {
-            var filePath = await GetTemplateFilePathAsync(site, template);
-            return GetContentByFilePath(filePath);
-        }
-
         public async Task<string> GetIncludeContentAsync(Site site, string file)
         {
             var filePath = await ParseSitePathAsync(site, AddVirtualToPath(file));
             return GetContentByFilePath(filePath);
+        }
+
+        public async Task WriteContentToIncludeFileAsync(Site site, string file, string content)
+        {
+            if (content == null) content = string.Empty;
+            var filePath = await GetSitePathAsync(site, file);
+            await FileUtils.WriteTextAsync(filePath, content);
         }
 
         public string GetContentByFilePath(string filePath)

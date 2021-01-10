@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SSCMS.Core.StlParser.Model
+namespace SSCMS.Core.StlParser.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class StlElementAttribute : Attribute

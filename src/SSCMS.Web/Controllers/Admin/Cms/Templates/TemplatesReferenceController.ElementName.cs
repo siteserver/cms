@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates

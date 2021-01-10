@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -22,6 +23,16 @@ namespace SSCMS.Core.Services
                 new Claim(Types.Claims.Role, Types.Roles.Administrator),
                 new Claim(Types.Claims.IsPersistent, isPersistent.ToString())
             });
+        }
+
+        private static string GetTokenCacheKey(Administrator admin)
+        {
+            return $"admin:{admin.Id}:token";
+        }
+
+        private static string GetTokenCacheKey(User user)
+        {
+            return $"user:{user.Id}:token";
         }
 
         public string AuthenticateAdministrator(Administrator administrator, bool isPersistent)
@@ -56,7 +67,11 @@ namespace SSCMS.Core.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            _cacheManager.AddOrUpdate(GetTokenCacheKey(administrator), tokenString);
+
+            return tokenString;
         }
 
         public async Task<string> RefreshAdministratorTokenAsync(string accessToken)

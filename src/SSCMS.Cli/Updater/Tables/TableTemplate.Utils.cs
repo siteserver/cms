@@ -26,11 +26,11 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.TemplateRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(Template.Id), nameof(TemplateId)},
-                {nameof(Template.SiteId), nameof(PublishmentSystemId)}
+                {nameof(Template.Id), new[] {nameof(TemplateId)}},
+                {nameof(Template.SiteId), new[] {nameof(PublishmentSystemId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

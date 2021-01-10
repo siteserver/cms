@@ -67,7 +67,7 @@ namespace SSCMS.Core.Services
                 : await _templateRepository.GetChannelTemplateAsync(siteId, channelInfo);
             var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId, 0);
 
-            await _parseManager.InitAsync(site, channelId, 0, template);
+            await _parseManager.InitAsync(EditMode.Default, site, channelId, 0, template);
             _parseManager.ContextInfo.ContextType = ParseType.Channel;
 
             var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
@@ -231,7 +231,7 @@ namespace SSCMS.Core.Services
             }
 
             var template = await _templateRepository.GetContentTemplateAsync(site.Id, channel, contentInfo.TemplateId);
-            await _parseManager.InitAsync(site, channel.Id, contentId, template);
+            await _parseManager.InitAsync(EditMode.Default, site, channel.Id, contentId, template);
             _parseManager.ContextInfo.ContextType = ParseType.Content;
             _parseManager.ContextInfo.SetContent(contentInfo);
 
@@ -416,7 +416,7 @@ namespace SSCMS.Core.Services
                 return;
             }
 
-            await _parseManager.InitAsync(site, siteId, 0, template);
+            await _parseManager.InitAsync(EditMode.Default, site, siteId, 0, template);
 
             var filePath = await _pathManager.ParseSitePathAsync(site, template.CreatedFileFullName);
 
@@ -432,7 +432,7 @@ namespace SSCMS.Core.Services
 
             foreach (var template in templates)
             {
-                await _parseManager.InitAsync(site, siteId, 0, template);
+                await _parseManager.InitAsync(EditMode.Default, site, siteId, 0, template);
 
                 var filePath = await _pathManager.ParseSitePathAsync(site, template.CreatedFileFullName);
 

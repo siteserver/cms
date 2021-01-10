@@ -24,10 +24,10 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.TemplateLogRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(TemplateLog.SiteId), nameof(PublishmentSystemId)}
+                {nameof(TemplateLog.SiteId), new[] {nameof(PublishmentSystemId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

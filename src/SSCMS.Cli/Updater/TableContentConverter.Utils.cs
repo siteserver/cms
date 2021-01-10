@@ -53,6 +53,10 @@ namespace SSCMS.Cli.Updater
                     {
                         column.AttributeName = nameof(SSCMS.Models.Content.GroupNames);
                     }
+                    else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Tags)))
+                    {
+                        column.AttributeName = nameof(SSCMS.Models.Content.TagNames);
+                    }
 
                     if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, column.AttributeName)))
                     {
@@ -64,12 +68,16 @@ namespace SSCMS.Cli.Updater
             return columns;
         }
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(SSCMS.Models.Content.ChannelId), nameof(NodeId)},
-                {nameof(SSCMS.Models.Content.SiteId), nameof(PublishmentSystemId)},
-                {nameof(SSCMS.Models.Content.GroupNames), nameof(GroupNameCollection)}
+                {nameof(SSCMS.Models.Content.ChannelId), new[] {nameof(NodeId)}},
+                {nameof(SSCMS.Models.Content.SiteId), new[] {nameof(PublishmentSystemId)}},
+                {
+                    nameof(SSCMS.Models.Content.GroupNames),
+                    new[] {nameof(ContentGroupNameCollection), nameof(GroupNameCollection)}
+                },
+                {nameof(SSCMS.Models.Content.TagNames), new[] {nameof(Tags)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

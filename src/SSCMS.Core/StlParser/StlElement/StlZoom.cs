@@ -1,17 +1,16 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "文字缩放", Description = "通过 stl:zoom 标签在模板中实现文字缩放功能")]
-    public class StlZoom
+    public static class StlZoom
 	{
-        private StlZoom() { }
         public const string ElementName = "stl:zoom";
 
         [StlAttribute(Title = "页面Html 中缩放对象的 Id 属性")]
@@ -44,10 +43,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, attributes, zoomId, fontSize);
+            return await ParseAsync(parseManager, attributes, zoomId, fontSize);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, string zoomId, int fontSize)
+        private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes, string zoomId, int fontSize)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

@@ -41,6 +41,14 @@ namespace SSCMS.Utils
             return list != null && list.Remove(value);
         }
 
+        public static bool RemoveIgnoreCase(List<string> list, string value)
+        {
+            if (list == null) return false;
+
+            var item = list.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x, value));
+            return list.Remove(item);
+        }
+
         public static List<T> Add<T>(List<T> list, T value)
         {
             if (list == null)

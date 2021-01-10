@@ -22,11 +22,10 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.TableStyleRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(TableStyle.Id), nameof(TableStyleId)},
-                {nameof(TableStyle.TableName), nameof(TableName)}
+                {nameof(TableStyle.Id), new[] {nameof(TableStyleId)}}
             };
 
         private Dictionary<string, string> ConvertValueDict => new Dictionary<string, string>

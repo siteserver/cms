@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 
-namespace SSCMS.Core.StlParser.Mock
+namespace SSCMS.Core.StlParser.Mocks
 {
     public class HtmlRow : HtmlBase, IDisposable
     {

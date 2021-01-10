@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -12,10 +12,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "PDF展示", Description = "通过 stl:pdf 标签将PDF文件嵌入到HTML文档中")]
-    public class StlPdf
+    public static class StlPdf
     {
-        private StlPdf() { }
-
         public const string ElementName = "stl:pdf";
 
         [StlAttribute(Title = "指定存储PDF文件的字段")]
@@ -105,10 +103,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, no, src, fallbackLink, forceIframe, height, page, width, full, attributes);
+            return await ParseAsync(parseManager, type, no, src, fallbackLink, forceIframe, height, page, width, full, attributes);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, int no, string src, string fallbackLink, bool forceIframe, string height, int page, string width, bool full, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, int no, string src, string fallbackLink, bool forceIframe, string height, int page, string width, bool full, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

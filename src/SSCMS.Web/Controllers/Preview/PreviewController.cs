@@ -66,7 +66,7 @@ namespace SSCMS.Web.Controllers.Preview
             var site = visualInfo.Site;
             var templateInfo = visualInfo.Template;
 
-            await _parseManager.InitAsync(site, visualInfo.ChannelId, visualInfo.ContentId, templateInfo);
+            await _parseManager.InitAsync(EditMode.Preview, site, visualInfo.ChannelId, visualInfo.ContentId, templateInfo);
             _parseManager.PageInfo.IsLocal = true;
             _parseManager.ContextInfo.ContextType = visualInfo.ContextType;
 

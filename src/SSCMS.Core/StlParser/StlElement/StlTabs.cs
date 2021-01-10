@@ -3,17 +3,16 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "页签切换", Description = "通过 stl:tabs 标签在模板中显示页签切换")]
-    public class StlTabs
+    public static class StlTabs
     {
-        private StlTabs() { }
         public const string ElementName = "stl:tabs";
 
         [StlAttribute(Title = "页签名称")]
@@ -46,7 +45,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {ActionMouseOver, "鼠标移动"}
         };
 
-        internal static async Task<object> ParseAsync(IParseManager parseManager)
+        public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var tabName = string.Empty;
             var type = string.Empty;
@@ -85,10 +84,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, tabName, type, action, classActive, classNormal, current);
+            return await ParseAsync(parseManager, tabName, type, action, classActive, classNormal, current);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string tabName, string type, string action, string classActive, string classNormal, int current)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string tabName, string type, string action, string classActive, string classNormal, int current)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

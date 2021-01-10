@@ -109,7 +109,7 @@ var methods = {
   btnEditClick: function(row) {
     utils.openLayer({
       title: '编辑资料',
-      url: utils.getSettingsUrl('administratorsLayerProfile', {pageType: 'admin', userId: row.id}),
+      url: utils.getSettingsUrl('administratorsLayerProfile', {userName: row.userName}),
       full: true
     });
   },
@@ -262,7 +262,7 @@ var methods = {
   btnAddClick: function () {
     utils.openLayer({
       title: '新增管理员',
-      url: utils.getSettingsUrl('administratorsLayerProfile', {pageType: 'admin'}),
+      url: utils.getSettingsUrl('administratorsLayerProfile'),
       full: true
     });
   },

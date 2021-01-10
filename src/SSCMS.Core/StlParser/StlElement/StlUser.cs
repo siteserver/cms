@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -10,9 +10,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "显示用户信息", Description = "通过 stl:user 标签在模板中显示用户信息")]
-    public class StlUser
+    public static class StlUser
     {
-        private StlUser() { }
         public const string ElementName = "stl:user";
 
         [StlAttribute(Title = "用户属性名称")]
@@ -38,10 +37,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, attributes);
+            return await ParseAsync(parseManager, type, attributes);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

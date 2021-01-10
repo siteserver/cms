@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -12,9 +12,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
-    public class StlCount
+    public static class StlCount
 	{
-        private StlCount() { }
 		public const string ElementName = "stl:count";
 
 		[StlAttribute(Title = "需要获取值的类型")]
@@ -95,10 +94,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, channelIndex, channelName, upLevel, topLevel, scope, since);
+            return await ParseAsync(parseManager, type, channelIndex, channelName, upLevel, topLevel, scope, since);
 		}
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, string channelIndex, string channelName, int upLevel, int topLevel, ScopeType scope, string since)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string channelIndex, string channelName, int upLevel, int topLevel, ScopeType scope, string since)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;

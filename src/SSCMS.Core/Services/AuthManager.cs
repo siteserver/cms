@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Configuration;
 using SSCMS.Models;
@@ -14,14 +15,16 @@ namespace SSCMS.Core.Services
     {
         private readonly IHttpContextAccessor _context;
         private readonly ClaimsPrincipal _principal;
+        private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly List<Permission> _permissions;
 
-        public AuthManager(IHttpContextAccessor context, ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public AuthManager(IHttpContextAccessor context, ICacheManager cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _context = context;
             _principal = context.HttpContext.User;
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
             _permissions = _settingsManager.GetPermissions();
@@ -31,21 +34,56 @@ namespace SSCMS.Core.Services
         private User _user;
         private UserGroup _userGroup;
 
+        public async Task InitAsync(User user)
+        {
+            if (user == null || user.Locked || !user.Checked)
+            {
+                _user = null;
+                return;
+            }
+
+            var token = await _context.HttpContext.GetTokenAsync("access_token");
+            var cachedToken = _cacheManager.Get<string>(GetTokenCacheKey(user));
+            if (token != cachedToken)
+            {
+                _user = null;
+                return;
+            }
+
+            _user = user;
+        }
+
         public async Task<User> GetUserAsync()
         {
             if (!IsUser) return null;
             if (_user != null) return _user;
 
             _user = await _databaseManager.UserRepository.GetByUserNameAsync(UserName);
+
+            await InitAsync(_user);
+
             return _user;
         }
 
-        public void Init(Administrator administrator)
+        public async Task InitAsync(Administrator administrator)
         {
-            if (administrator != null && !administrator.Locked)
+            if (administrator == null || administrator.Locked)
             {
-                _admin = administrator;
+                _admin = null;
+                return;
             }
+
+            var token = await _context.HttpContext.GetTokenAsync("access_token");
+            var cachedToken = _cacheManager.Get<string>(GetTokenCacheKey(administrator));
+            if (token != cachedToken)
+            {
+#if RELEASE
+                _admin = null;
+                return;
+#endif
+            }
+
+            _admin = administrator;
         }
 
         public async Task<Administrator> GetAdminAsync()
@@ -81,7 +119,7 @@ namespace SSCMS.Core.Services
                 }
             }
 
-            Init(_admin);
+            await InitAsync(_admin);
 
             return _admin;
         }

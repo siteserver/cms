@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Dto;
@@ -15,7 +16,7 @@ namespace SSCMS.Web.Controllers.Stl
     public partial class ActionsSearchController
     {
         [HttpPost, Route(Constants.RouteStlActionsSearch)]
-        public async Task<ActionResult<StringResult>> Submit([FromBody] StlSearch.SearchRequest request)
+        public async Task<ActionResult<StringResult>> Submit([FromBody] StlSearchRequest request)
         {
             var template = string.Empty;
             try
@@ -39,7 +40,7 @@ namespace SSCMS.Web.Controllers.Stl
                 };
                 var site = await _siteRepository.GetAsync(request.SiteId);
 
-                await _parseManager.InitAsync(site, request.SiteId, 0, templateInfo);
+                await _parseManager.InitAsync(EditMode.Default, site, request.SiteId, 0, templateInfo);
                 _parseManager.PageInfo.User = await _authManager.GetUserAsync();
 
                 var contentBuilder = new StringBuilder(StlRequest.ParseRequestEntities(form, template));
@@ -52,9 +53,9 @@ namespace SSCMS.Web.Controllers.Stl
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = await _contentRepository.GetWhereStringByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, StlSearch.GetSearchExcludeAttributeNames, form);
+                    var query = await _contentRepository.GetQueryByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, StlSearch.GetSearchExcludeAttributeNames, form);
 
-                    var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager, request.PageNum, whereString);
+                    var stlPageContents = await StlPageContents.GetByStlSearchAsync(stlPageContentsElement, _parseManager, request.PageNum, query);
                     var (pageCount, totalNum) = stlPageContents.GetPageCount();
                     if (totalNum == 0)
                     {

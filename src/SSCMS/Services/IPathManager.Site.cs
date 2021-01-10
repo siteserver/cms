@@ -54,6 +54,8 @@ namespace SSCMS.Services
         //得到栏目经过计算后的连接地址
         Task<string> GetChannelUrlAsync(Site site, Channel channel, bool isLocal);
 
+        Task<string> GetBaseUrlAsync(Site site, Template template, int channelId, int contentId);
+
         string RemoveDefaultFileName(Site site, string url);
 
         Task<string> GetInputChannelUrlAsync(Site site, Channel node, bool isLocal);

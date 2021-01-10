@@ -51,6 +51,9 @@ namespace SSCMS.Cli.Updater.Tables
         [JsonProperty("isHeadquarters")]
         public string IsHeadquarters { get; set; }
 
+        [JsonProperty("isRoot")]
+        public string IsRoot { get; set; }
+
         [JsonProperty("parentPublishmentSystemID")]
         public long ParentPublishmentSystemId { get; set; }
 

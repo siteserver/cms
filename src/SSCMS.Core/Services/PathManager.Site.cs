@@ -505,6 +505,31 @@ namespace SSCMS.Core.Services
             return RemoveDefaultFileName(site, url);
         }
 
+        public async Task<string> GetBaseUrlAsync(Site site, Template template, int channelId, int contentId)
+        {
+            var baseUrl = string.Empty;
+            if (template.TemplateType == TemplateType.IndexPageTemplate)
+            {
+                baseUrl = await GetIndexPageUrlAsync(site, false);
+            }
+            else if (template.TemplateType == TemplateType.ChannelTemplate)
+            {
+                var channel = await _channelRepository.GetAsync(channelId);
+                baseUrl = await GetChannelUrlAsync(site, channel, false);
+            }
+            else if (template.TemplateType == TemplateType.ContentTemplate)
+            {
+                var content = await _contentRepository.GetAsync(site, channelId, contentId);
+                baseUrl = await GetContentUrlByIdAsync(site, content, false);
+            }
+            else if (template.TemplateType == TemplateType.FileTemplate)
+            {
+                baseUrl = await GetFileUrlAsync(site, template.Id, false);
+            }
+
+            return baseUrl;
+        }
+
         public string RemoveDefaultFileName(Site site, string url)
         {
             if (!site.IsCreateUseDefaultFileName || string.IsNullOrEmpty(url)) return url;

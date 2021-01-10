@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Mock;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Mocks;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -14,9 +14,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "翻页项", Description = "通过 stl:pageItem 标签在模板中显示翻页项（上一页、下一页、当前页、页跳转、页导航等）")]
-    public class StlPageItem
+    public static class StlPageItem
     {
-        private StlPageItem() { }
         public const string ElementName = "stl:pageItem";
 
         [StlAttribute(Title = "类型")]
@@ -80,7 +79,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var parsedContent = string.Empty;
             try
             {
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
 
                 if (!StringUtils.EqualsIgnoreCase(stlElementInfo.Name, ElementName)) return string.Empty;
 
@@ -552,7 +551,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var parsedContent = string.Empty;
             try
             {
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
 
                 if (!StringUtils.EqualsIgnoreCase(stlElementInfo.Name, ElementName)) return string.Empty;
 
@@ -1032,7 +1031,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var contextInfo = new ParseContext(pageInfo);
 
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
 
                 if (!StringUtils.EqualsIgnoreCase(stlElementInfo.Name, ElementName)) return string.Empty;
 

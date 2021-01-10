@@ -3,16 +3,15 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "当前位置", Description = "通过 stl:location 标签在模板中插入页面的当前位置")]
-    public class StlLocation
+    public static class StlLocation
     {
-        private StlLocation() { }
         public const string ElementName = "stl:location";
 
         [StlAttribute(Title = "当前位置分隔符")]
@@ -64,10 +63,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, separator, target, linkClass, wordNum,isContainSelf);
+            return await ParseAsync(parseManager, separator, target, linkClass, wordNum,isContainSelf);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;

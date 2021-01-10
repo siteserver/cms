@@ -24,8 +24,8 @@ namespace SSCMS.Web.Controllers.Home.Common
 
             if (admin == null) return NotFound();
 
-            var permissions = new AuthManager(_context, _settingsManager, _databaseManager);
-            permissions.Init(admin);
+            var permissions = new AuthManager(_context, _cacheManager, _settingsManager, _databaseManager);
+            await permissions.InitAsync(admin);
             var level = await permissions.GetAdminLevelAsync();
             var siteNames = new List<string>();
             var siteIdListWithPermissions = await permissions.GetSiteIdsAsync();

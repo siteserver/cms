@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Enums;
 
 namespace SSCMS.Services
 {
@@ -8,7 +9,7 @@ namespace SSCMS.Services
     {
         Task ParseTemplateContentAsync(StringBuilder parsedBuilder);
 
-        Task<string> ParseTemplatePreviewAsync(string template);
+        Task<string> ParseTemplateWithCodesHtmlAsync(string template);
 
         Task ParseInnerContentAsync(StringBuilder builder);
 

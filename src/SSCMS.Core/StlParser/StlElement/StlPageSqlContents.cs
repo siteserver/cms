@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -36,9 +37,9 @@ namespace SSCMS.Core.StlParser.StlElement
 
             try
             {
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlPageSqlContentsElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlPageSqlContentsElement, -1);
 
-                parseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                parseManager.ContextInfo = parseManager.ContextInfo.Clone(ElementName, stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes, stlElementInfo.StartIndex);
 
                 stlPageSqlContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.SqlContent);
 
@@ -90,20 +91,6 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             return pageCount;
         }
-
-        //public int GetPageCount(out int contentNum)
-        //{
-        //    var pageCount = 1;
-        //    contentNum = 0;//数据库中实际的内容数目
-        //    if (_dataSet == null) return pageCount;
-
-        //    contentNum = _dataSet.Tables[0].DefaultView.Count;
-        //    if (_listInfo.PageNum != 0 && _listInfo.PageNum < contentNum)//需要翻页
-        //    {
-        //        pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(contentNum) / Convert.ToDouble(_listInfo.PageNum)));//需要生成的总页数
-        //    }
-        //    return pageCount;
-        //}
 
         public async Task<string> ParseAsync(int totalNum, int currentPageIndex, int pageCount, bool isStatic)
         {

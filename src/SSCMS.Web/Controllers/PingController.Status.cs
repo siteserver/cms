@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace SSCMS.Web.Controllers
 {
@@ -16,8 +14,6 @@ namespace SSCMS.Web.Controllers
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var (isDatabaseWorks, _) = await _settingsManager.Database.IsConnectionWorksAsync();
             var (isRedisWorks, _) = await _settingsManager.Redis.IsConnectionWorksAsync();
-
-            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settingsManager.SecurityKey));
 
             return new StatusResult
             {

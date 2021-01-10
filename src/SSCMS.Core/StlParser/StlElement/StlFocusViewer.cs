@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Configuration;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Services;
@@ -13,9 +13,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "滚动焦点图")]
-    public class StlFocusViewer
+    public static class StlFocusViewer
     {
-        private StlFocusViewer() { }
         public const string ElementName = "stl:focusViewer";
 
         public const string AttributeChannelIndex = "channelIndex";
@@ -49,7 +48,6 @@ namespace SSCMS.Core.StlParser.StlElement
         public const string ThemeStyle3 = "Style3";
         public const string ThemeStyle4 = "Style4";
 
-        //对“flash滚动焦点图”（stl:focusViewer）元素进行解析
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             // 如果是实体标签则返回空
@@ -200,10 +198,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+            return await ParseAsync(parseManager, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, NameValueCollection attributes, string channelIndex, string channelName, ScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
+        private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes, string channelIndex, string channelName, ScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;

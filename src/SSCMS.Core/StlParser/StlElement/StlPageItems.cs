@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -10,9 +10,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "翻页项容器", Description = "通过 stl:pageItems 标签在模板中插入翻页项的容器，当不需要翻页时容器内的内容不显示")]
-    public class StlPageItems
+    public static class StlPageItems
     {
-        private StlPageItems() { }
         public const string ElementName = "stl:pageItems";
 
         [StlAttribute(Title = "所处上下文")]
@@ -27,7 +26,7 @@ namespace SSCMS.Core.StlParser.StlElement
             string parsedContent;
             try
             {
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
                 if (stlElementInfo.Attributes[Context] != null)
                 {
                     contextType = TranslateUtils.ToEnum(stlElementInfo.Attributes[Context], ParseType.Undefined);
@@ -72,7 +71,7 @@ namespace SSCMS.Core.StlParser.StlElement
             string parsedContent;
             try
             {
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
 
                 if (pageCount <= 1)
                 {
@@ -108,7 +107,7 @@ namespace SSCMS.Core.StlParser.StlElement
             string parsedContent;
             try
             {
-                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
+                var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
 
                 if (pageCount <= 1)
                 {

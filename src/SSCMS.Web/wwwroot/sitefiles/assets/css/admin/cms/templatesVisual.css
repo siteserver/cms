@@ -1,0 +1,202 @@
+/* s-element */
+
+[data-element='true']:hover { 
+  outline: 4px solid #e6f7f5;
+}
+
+.s-element-active,
+.s-element-active:hover {
+  outline: 4px solid #00b19d;
+}
+
+/* cke */
+
+.cke_show_borders, .cke_focus {border: none;}
+
+/* .st-widget */
+
+.st-widget,
+.st-widget * {
+  box-sizing: border-box;
+}
+.st-widget .st-grip {
+  cursor: move;
+  font-size: 0;
+  text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.st-widget .st-grip__bump {
+  background: rgba(70, 70, 70, 0.15);
+  border-radius: 12px;
+  display: inline-block;
+  height: 12px;
+  margin-left: 12px;
+  width: 12px;
+}
+.st-widget .st-grip__bump:first-child {
+  margin-left: 0;
+}
+.st-widget.st-toolbox {
+  background: hsla(0, 0%, 91%, 0.95);
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.35);
+  padding: 8px;
+  position: fixed;
+  width: 138px;
+}
+.st-widget .st-toolbox__grip {
+  padding: 8px 0;
+}
+.st-widget .st-tool-group {
+  padding: 4px 0;
+}
+.st-widget .st-tool-group:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+.st-widget .st-tool-group:first-child {
+  padding-top: 0;
+}
+.st-widget .st-tool {
+  color: #464646;
+  cursor: pointer;
+  float: left;
+  height: 32px;
+  margin: 4px;
+  margin-right: 4px;
+  position: relative;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  speak: none;
+  text-transform: none;
+  width: 32px;
+}
+.st-widget .st-tool .iconfont::before {
+  line-height: 32px;
+}
+.st-widget .st-tool,
+.st-widget .st-tool:after {
+  border-radius: 2px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.st-widget .st-tool:after {
+  background: #000;
+  color: #fff;
+  content: attr(data-st-tooltip);
+  display: block;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  left: -26.5px;
+  padding: 0 8px;
+  pointer-events: none;
+  position: absolute;
+  bottom: 37px;
+  font-family: arial, sans-serif;
+  font-size: 12px;
+  line-height: 20px;
+  visibility: hidden;
+  width: 85px;
+  word-break: break-word;
+}
+.st-widget .st-tool:hover:after {
+  visibility: visible;
+  transition-duration: 0s;
+  transition-timing-function: ease-in;
+  transition-delay: 2s;
+}
+.st-widget .st-tool:before {
+  line-height: 32px;
+}
+.st-widget .st-tool:nth-child(3n) {
+  margin-right: 0;
+}
+.st-widget .st-tool:hover {
+  background: hsla(0, 0%, 100%, 0.5);
+}
+.st-widget .st-tool--disabled {
+  color: rgba(70, 70, 70, 0.33);
+}
+.st-widget .st-tool--disabled:hover {
+  background: transparent;
+}
+.st-widget .st-tool--down {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+  line-height: 34px;
+}
+.st-widget .st-tool--down,
+.st-widget .st-tool--down:hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+.st-widget .st-tool--applied {
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+.st-widget .st-tool--applied:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+.st-widget .st-tool--remove:before {
+  content: "\e9ac";
+}
+.st-widget .st-tool--applied {
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+.st-widget.st-inspector {
+  background: hsla(0, 0%, 91%, 0.6);
+  border-top: 1px solid hsla(0, 0%, 100%, 0.6);
+  bottom: 0;
+  height: 32px;
+  left: 0;
+  overflow: hidden;
+  padding: 3px 16px 0;
+  position: fixed;
+  width: 100%;
+}
+.st-widget .st-inspector__tags {
+  width: calc(100% - 128px);
+}
+.st-widget .st-inspector__tags:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+.st-widget .st-inspector__tags:before {
+  color: #464646;
+  content: "\ea80";
+  display: block;
+  float: left;
+  height: 24px;
+  line-height: 24px;
+  margin-right: 16px;
+  text-align: center;
+  font-family: icon;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  speak: none;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 24px;
+}
+.st-widget .st-inspector__counter {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  height: 24px;
+  line-height: 24px;
+  margin-right: 16px;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 3px;
+  width: 128px;
+}

@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Utils;
+using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
 
 namespace SSCMS.Web.Controllers.Stl
 {

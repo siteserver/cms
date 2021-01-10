@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.StlElement;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Stl
 {
@@ -18,7 +19,7 @@ namespace SSCMS.Web.Controllers.Stl
             var channel = await _channelRepository.GetAsync(request.PageChannelId);
             var template = await _templateRepository.GetAsync(request.TemplateId);
 
-            await _parseManager.InitAsync(site, channel.Id, 0, template);
+            await _parseManager.InitAsync(EditMode.Default, site, channel.Id, 0, template);
             _parseManager.PageInfo.User = user;
 
             var stlPageContents = await StlPageContents.GetAsync(stlPageContentsElement, _parseManager);

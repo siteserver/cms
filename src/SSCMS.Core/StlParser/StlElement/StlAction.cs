@@ -2,17 +2,16 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "执行动作", Description = "通过 stl:action 标签在模板中创建链接，点击链接后将执行相应的动作")]
-    public class StlAction
+    public static class StlAction
     {
-        private StlAction() { }
         public const string ElementName = "stl:action";
 
         //繁体/简体转换
@@ -36,10 +35,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type);
+            return await ParseAsync(parseManager, type);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

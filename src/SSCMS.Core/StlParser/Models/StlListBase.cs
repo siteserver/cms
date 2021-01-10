@@ -1,4 +1,6 @@
-﻿namespace SSCMS.Core.StlParser.Model
+﻿using SSCMS.Core.StlParser.Attributes;
+
+namespace SSCMS.Core.StlParser.Models
 {
     public class StlListBase
     {

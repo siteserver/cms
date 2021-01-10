@@ -1,8 +1,8 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -11,11 +11,9 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "文件下载链接", Description = "通过 stl:file 标签在模板中显示文件下载链接")]
-    public class StlFile
+    public static class StlFile
 	{
-	    private StlFile() { }
-
-	    public const string ElementName = "stl:file";
+        public const string ElementName = "stl:file";
 
 	    [StlAttribute(Title = "指定存储附件的字段")]
 	    private const string Type = nameof(Type);
@@ -119,10 +117,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseImplAsync(parseManager, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
+            return await ParseAsync(parseManager, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
         }
 
-        private static async Task<string> ParseImplAsync(IParseManager parseManager, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;

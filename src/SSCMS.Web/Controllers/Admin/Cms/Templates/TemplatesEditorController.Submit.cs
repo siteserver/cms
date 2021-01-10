@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesEditorController
 	{
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody] PreviewRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates))
             {

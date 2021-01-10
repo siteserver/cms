@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             return new GetResult
             {
                 CheckedLevels = checkedLevels,
-                CheckedLevel = CheckManager.LevelInt.CaoGao
+                CheckedLevel = checkedLevel
             };
         }
     }

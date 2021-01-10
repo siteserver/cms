@@ -328,7 +328,17 @@ namespace SSCMS.Utils
             builder.Replace("playurl=&quot;" + replace, "playurl=&quot;" + to);
         }
 
-        public static string ReplaceFirst(string replace, string input, string to)
+        public static string ReplaceFirstByStartIndex(string input, string replace, string to, int startIndex)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+            if (input.Length <= startIndex) return input;
+
+            var pre = input.Substring(0, startIndex);
+            input = input.Substring(startIndex);
+            return pre + ReplaceFirst(input, replace, to);
+        }
+
+        private static string ReplaceFirst(string input, string replace, string to)
         {
             var pos = input.IndexOf(replace, StringComparison.Ordinal);
             if (pos > 0)
@@ -528,7 +538,6 @@ namespace SSCMS.Utils
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(value))
             {
-                //替换url中的换行符，update by sessionliang at 20151211
                 retVal = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "").Replace("\n", "");
             }
             return retVal;
@@ -617,14 +626,30 @@ namespace SSCMS.Utils
             return input.First().ToString().ToUpper() + input.Substring(1);
         }
 
+        public static string HtmlEncode(string inputString)
+        {
+            return HttpUtility.HtmlEncode(inputString);
+        }
+
         public static string HtmlDecode(string inputString)
         {
             return HttpUtility.HtmlDecode(inputString);
         }
 
-        public static string HtmlEncode(string inputString)
+        public static string Base64Encode(string plainText)
         {
-            return HttpUtility.HtmlEncode(inputString);
+            if (string.IsNullOrEmpty(plainText)) return string.Empty;
+
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string base64EncodedData)
+        {
+            if (string.IsNullOrEmpty(base64EncodedData)) return string.Empty;
+
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         public static string MaxLengthText(string inputString, int maxLength, string endString = Constants.Ellipsis)

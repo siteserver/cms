@@ -25,15 +25,18 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.ChannelRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(Channel.Id), nameof(NodeId)},
-                {nameof(Channel.ChannelName), nameof(NodeName)},
-                {nameof(Channel.SiteId), nameof(PublishmentSystemId)},
-                {nameof(Channel.IndexName), nameof(NodeIndexName)},
-                {"GroupNameCollection", nameof(NodeGroupNameCollection)},
-                {nameof(Channel.ContentModelPluginId), nameof(ContentModelId)}
+                {nameof(Channel.Id), new[] {nameof(NodeId)}},
+                {nameof(Channel.ChannelName), new[] {nameof(NodeName)}},
+                {nameof(Channel.SiteId), new[] {nameof(PublishmentSystemId)}},
+                {nameof(Channel.IndexName), new[] {nameof(NodeIndexName)}},
+                {
+                    nameof(Channel.GroupNames),
+                    new[] {nameof(NodeGroupNameCollection), nameof(GroupNameCollection)}
+                },
+                {nameof(Channel.ContentModelPluginId), new[] {nameof(ContentModelId)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>

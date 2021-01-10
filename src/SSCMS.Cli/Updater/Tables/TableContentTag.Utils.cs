@@ -24,13 +24,13 @@ namespace SSCMS.Cli.Updater.Tables
 
         private List<TableColumn> NewColumns => _databaseManager.ContentTagRepository.TableColumns;
 
-        private static readonly Dictionary<string, string> ConvertKeyDict =
-            new Dictionary<string, string>
+        private static readonly Dictionary<string, string[]> ConvertKeyDict =
+            new Dictionary<string, string[]>
             {
-                {nameof(ContentTag.Id), nameof(TagId)},
-                {nameof(ContentTag.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentTag.ContentIds), nameof(ContentIdCollection)},
-                {nameof(ContentTag.TagName), nameof(Tag)}
+                {nameof(ContentTag.Id), new[] {nameof(TagId)}},
+                {nameof(ContentTag.SiteId), new[] {nameof(PublishmentSystemId)}},
+                {nameof(ContentTag.ContentIds), new[] {nameof(ContentIdCollection)}},
+                {nameof(ContentTag.TagName), new[] {nameof(Tag)}}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

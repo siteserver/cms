@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -9,9 +9,8 @@ using SSCMS.Utils;
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "容器", Description = "通过 stl:container 标签在模板中定义容器，切换上下文")]
-    public class StlContainer
+    public static class StlContainer
     {
-        private StlContainer() { }
         public const string ElementName = "stl:container";
 
         [StlAttribute(Title = "栏目索引")]

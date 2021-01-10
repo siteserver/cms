@@ -6,7 +6,7 @@
     <template slot-scope="scope">
       <el-link
         :underline="false"
-        :href="siteUrl + '/' + scope.row.url"
+        :href="siteUrl + scope.row.url"
         target="_blank"
         type="primary">
         {{ scope.row.title }}
@@ -21,7 +21,7 @@
         :underline="false"
         type="primary"
         v-on:click="btnEditClick(scope.row)">
-        修改
+        设置
       </el-link>
       <el-link
         :underline="false"

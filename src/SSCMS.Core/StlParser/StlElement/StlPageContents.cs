@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SqlKata;
+using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
-using SSCMS.Core.StlParser.Model;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -26,7 +28,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private string StlPageContentsElement { get; set; }
         private IParseManager ParseManager { get; set; }
-        public ListInfo ListInfo { get; set; }
+        private ListInfo ListInfo { get; set; }
         private List<KeyValuePair<int, Content>> DataSource { get; set; }
 
         public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager)
@@ -37,9 +39,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 ParseManager = parseManager
             };
 
-            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement, -1);
 
-            stlPageContents.ParseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+            stlPageContents.ParseManager.ContextInfo = parseManager.ContextInfo.Clone(ElementName, stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes, stlElementInfo.StartIndex);
 
             stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
 
@@ -50,15 +52,15 @@ namespace SSCMS.Core.StlParser.StlElement
         }
 
         //API StlActionsSearchController调用
-        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager, int pageNum, string where)
+        public static async Task<StlPageContents> GetByStlSearchAsync(string stlPageContentsElement, IParseManager parseManager, int pageNum, Query query)
         {
             var stlPageContents = new StlPageContents
             {
                 ParseManager = parseManager
             };
 
-            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement);
-            parseManager.ContextInfo = parseManager.ContextInfo.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement, -1);
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone(ElementName, stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes, stlElementInfo.StartIndex);
 
             stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
 
@@ -69,7 +71,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 stlPageContents.ListInfo.PageNum = pageNum;
             }
 
-            stlPageContents.ListInfo.Where = where;
+            stlPageContents.ListInfo.Query = query;
 
             stlPageContents.DataSource = await GetContentsDataSourceAsync(parseManager, stlPageContents.ListInfo);
 
@@ -117,7 +119,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     ? DataSource.Skip(ParseManager.ContextInfo.PageItemIndex).Take(ListInfo.PageNum).ToList()
                     : DataSource;
 
-                parsedContent = await ParseElementAsync(ParseManager, ListInfo, pageChannelList);
+                parsedContent = await ParseAsync(ParseManager, ListInfo, pageChannelList);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
@@ -125,131 +127,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return parsedContent;
         }
-
-        //public async Task<(int PageCount, int TotalNum)> GetPageCountAsync()
-        //{
-        //    var pageCount = 1;
-        //    var totalNum = 0;
-        //    try
-        //    {
-        //        //totalNum = GlobalSettings.DatabaseRepository.GetPageTotalCount(SqlString);
-        //        totalNum = GlobalSettings.DatabaseRepository.GetPageTotalCount(SqlString);
-        //        if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
-        //        {
-        //            pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
-        //        }
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        await LogUtils.AddStlErrorLogAsync(PageInfo, ElementName, StlPageContentsElement, ex);
-        //    }
-        //    return (pageCount, totalNum);
-        //}
-
-        //public async Task<string> ParseAsync(int totalNum, int currentPageIndex, int pageCount, bool isStatic)
-        //{
-        //    if (isStatic)
-        //    {
-        //        var maxPage = ListInfo.MaxPage;
-        //        if (maxPage == 0)
-        //        {
-        //            maxPage = PageInfo.Site.CreateStaticMaxPage;
-        //        }
-        //        if (maxPage > 0 && currentPageIndex + 1 > maxPage)
-        //        {
-        //            return await ParseDynamicAsync(totalNum, currentPageIndex, pageCount);
-        //        }
-        //    }
-
-        //    var parsedContent = string.Empty;
-
-        //    ContextInfo.PageItemIndex = currentPageIndex * ListInfo.PageNum;
-
-        //    try
-        //    {
-        //        if (!string.IsNullOrEmpty(SqlString))
-        //        {
-        //            //var pageSqlString = GlobalSettings.DatabaseRepository.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-        //            var pageSqlString = GlobalSettings.DatabaseRepository.GetStlPageSqlString(SqlString, ListInfo.Order, totalNum, ListInfo.PageNum, currentPageIndex);
-
-        //            var datasource = GlobalSettings.DatabaseRepository.GetDataSource(pageSqlString);
-
-        //            if (ListInfo.Layout == Model.Layout.None)
-        //            {
-        //                var rptContents = new Repeater();
-
-        //                if (!string.IsNullOrEmpty(ListInfo.HeaderTemplate))
-        //                {
-        //                    rptContents.HeaderTemplate = new SeparatorTemplate(ListInfo.HeaderTemplate);
-        //                }
-        //                if (!string.IsNullOrEmpty(ListInfo.FooterTemplate))
-        //                {
-        //                    rptContents.FooterTemplate = new SeparatorTemplate(ListInfo.FooterTemplate);
-        //                }
-        //                if (!string.IsNullOrEmpty(ListInfo.SeparatorTemplate))
-        //                {
-        //                    rptContents.SeparatorTemplate = new SeparatorTemplate(ListInfo.SeparatorTemplate);
-        //                }
-        //                if (!string.IsNullOrEmpty(ListInfo.AlternatingItemTemplate))
-        //                {
-        //                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(ListInfo.AlternatingItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, PageInfo, ContextType.Content, ContextInfo);
-        //                }
-
-        //                rptContents.ItemTemplate = new RepeaterTemplate(ListInfo.ItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, PageInfo, ContextType.Content, ContextInfo);
-
-        //                rptContents.DataSource = datasource;
-        //                rptContents.DataBind();
-
-        //                if (rptContents.Items.Count > 0)
-        //                {
-        //                    parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var pdlContents = new ParsedDataList();
-
-        //                //设置显示属性
-        //                TemplateUtility.PutListInfoToMyDataList(pdlContents, ListInfo);
-
-        //                pdlContents.ItemTemplate = new DataListTemplate(ListInfo.ItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, PageInfo, ContextType.Content, ContextInfo);
-        //                if (!string.IsNullOrEmpty(ListInfo.HeaderTemplate))
-        //                {
-        //                    pdlContents.HeaderTemplate = new SeparatorTemplate(ListInfo.HeaderTemplate);
-        //                }
-        //                if (!string.IsNullOrEmpty(ListInfo.FooterTemplate))
-        //                {
-        //                    pdlContents.FooterTemplate = new SeparatorTemplate(ListInfo.FooterTemplate);
-        //                }
-        //                if (!string.IsNullOrEmpty(ListInfo.SeparatorTemplate))
-        //                {
-        //                    pdlContents.SeparatorTemplate = new SeparatorTemplate(ListInfo.SeparatorTemplate);
-        //                }
-        //                if (!string.IsNullOrEmpty(ListInfo.AlternatingItemTemplate))
-        //                {
-        //                    pdlContents.AlternatingItemTemplate = new DataListTemplate(ListInfo.AlternatingItemTemplate, ListInfo.SelectedItems, ListInfo.SelectedValues, ListInfo.SeparatorRepeatTemplate, ListInfo.SeparatorRepeat, PageInfo, ContextType.Content, ContextInfo);
-        //                }
-
-        //                pdlContents.DataSource = datasource;
-        //                pdlContents.DataKeyField = ContentAttribute.Id;
-        //                pdlContents.DataBind();
-
-        //                if (pdlContents.Items.Count > 0)
-        //                {
-        //                    parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        parsedContent = await LogUtils.AddStlErrorLogAsync(PageInfo, ElementName, StlPageContentsElement, ex);
-        //    }
-
-        //    //还原翻页为0，使得其他列表能够正确解析ItemIndex
-        //    ContextInfo.PageItemIndex = 0;
-        //    return parsedContent;
-        //}
 
         private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
         {
