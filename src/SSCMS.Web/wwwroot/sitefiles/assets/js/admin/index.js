@@ -334,7 +334,7 @@ var methods = {
     } else if (command === 'password') {
       utils.openLayer({
         title: '更改密码',
-        url: utils.getSettingsUrl('administratorsLayerPassword', {pageType: 'user', userId: this.local.userId}),
+        url: utils.getSettingsUrl('administratorsLayerPassword', {userName: this.local.userName}),
         full: true
       });
     } else if (command === 'logout') {

@@ -117,7 +117,7 @@ var methods = {
   btnPasswordClick: function(row) {
     utils.openLayer({
       title: '更改密码',
-      url: utils.getSettingsUrl('administratorsLayerPassword', {pageType: 'admin', userId: row.id}),
+      url: utils.getSettingsUrl('administratorsLayerPassword', {userName: row.userName}),
       full: true
     });
   },

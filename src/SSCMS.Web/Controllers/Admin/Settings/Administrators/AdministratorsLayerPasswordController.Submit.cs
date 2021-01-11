@@ -11,13 +11,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            var userId = request.UserId;
-            var adminId = _authManager.AdminId;
+            var userName = request.UserName;
+            var adminName = _authManager.AdminName;
 
-            if (userId == 0) userId = adminId;
-            var adminInfo = await _administratorRepository.GetByUserIdAsync(userId);
+            if (string.IsNullOrEmpty(userName)) userName = adminName;
+            var adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
             if (adminInfo == null) return NotFound();
-            if (adminId != userId &&
+            if (userName != adminName &&
                 !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();

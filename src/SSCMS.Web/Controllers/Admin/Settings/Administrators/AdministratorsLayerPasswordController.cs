@@ -26,7 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
         public class GetRequest
         {
-            public int UserId { get; set; }
+            public string UserName { get; set; }
         }
 
         public class GetResult
@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
         public class SubmitRequest
         {
-            public int UserId { get; set; }
+            public string UserName { get; set; }
             public string Password { get; set; }
         }
     }
