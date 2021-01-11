@@ -71,13 +71,7 @@ var methods = {
         location.href = utils.getRootUrl('login');
       }
     }).catch(function (error) {
-      if (error.response && error.response.status === 400) {
-        utils.error(error, {redirect: true});
-      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        location.href = utils.getRootUrl('login');
-      } else if (error.response && error.response.status === 500) {
-        utils.error(error);
-      }
+      utils.error(error);
     });
   },
 

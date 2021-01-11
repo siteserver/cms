@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -141,7 +140,11 @@ namespace SSCMS.Core.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            _cacheManager.AddOrUpdate(GetTokenCacheKey(user), tokenString);
+
+            return tokenString;
         }
 
         public async Task<string> RefreshUserTokenAsync(string accessToken)

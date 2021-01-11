@@ -4,6 +4,8 @@ var $urlCaptchaCheck = '/login/captcha/actions/check';
 var $urlSendSms = '/login/actions/sendSms';
 
 var data = utils.init({
+  status: utils.getQueryInt('status'),
+  pageAlert: null,
   captchaToken: null,
   captchaUrl: null,
   version: null,
@@ -25,6 +27,13 @@ var data = utils.init({
 var methods = {
   apiGet: function () {
     var $this = this;
+
+    if (this.status === 401) {
+      this.pageAlert = {
+        type: 'error',
+        title: '您的账号登录已过期或失效，请重新登录'
+      };
+    }
 
     utils.loading(this, true);
     $api.get($url).then(function (response) {
@@ -50,6 +59,7 @@ var methods = {
 
       $this.captchaToken = res.value;
       $this.captchaUrl = $apiUrl + $urlCaptcha + '?token=' + $this.captchaToken;
+      $this.btnTypeClick();
     }).catch(function (error) {
       utils.notifyError(error);
     }).then(function () {
@@ -139,8 +149,19 @@ var methods = {
   },
 
   btnTypeClick: function() {
+    var $this = this;
+
     this.$refs.formAccount.clearValidate();
     this.$refs.formMobile.clearValidate();
+    if (this.form.type == 'account') {
+      setTimeout(function () {
+        $this.$refs['account'].focus();
+      }, 100);
+    } else if (this.form.type == 'mobile') {
+      setTimeout(function () {
+        $this.$refs['mobile'].focus();
+      }, 100);
+    }
   },
 
   btnCaptchaClick: function () {
@@ -191,13 +212,6 @@ var methods = {
 var $vue = new Vue({
   el: '#main',
   data: data,
-  directives: {
-    focus: {
-      inserted: function (el) {
-        el.focus()
-      }
-    }
-  },
   methods: methods,
   created: function () {
     this.apiGet();

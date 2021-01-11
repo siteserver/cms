@@ -24,7 +24,7 @@
     }
     .wrapper-page {
       margin: 7.5% auto;
-      max-width: 360px;
+      max-width: 380px;
     }
   </style>
 }
@@ -40,9 +40,11 @@
       <el-tab-pane label="使用短信登录" name="mobile"></el-tab-pane>
     </el-tabs>
 
+    <el-alert v-if="pageAlert" style="margin-bottom: 10px;" :closable="false" :type="pageAlert.type" v-html="pageAlert.title"></el-alert>
+
     <el-form v-show="form.type == 'account'" ref="formAccount" :model="form" size="medium" label-width="0" status-icon>
       <el-form-item prop="account" :rules="[{ required: true, message: '请输入用户名/手机号/邮箱' }]">
-        <el-input v-focus v-model="form.account" placeholder="请输入用户名/手机号/邮箱" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
+        <el-input ref="account" v-model="form.account" placeholder="请输入用户名/手机号/邮箱" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
           <template slot="prepend">
             <i class="el-icon-user-solid"></i>
           </template>
@@ -74,7 +76,7 @@
         { required: true, message: '请输入手机号码' },
         { validator: utils.validateMobile, message: '请输入有效的手机号码' }
       ]">
-        <el-input placeholder="请输入手机号码" v-model="form.mobile" v-on:keyup.enter.native="btnSubmitClick">
+        <el-input ref="mobile" placeholder="请输入手机号码" v-model="form.mobile" v-on:keyup.enter.native="btnSubmitClick">
           <template slot="prepend">
             <i class="el-icon-mobile-phone"></i>
           </template>

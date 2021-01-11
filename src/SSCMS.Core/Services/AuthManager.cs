@@ -44,7 +44,7 @@ namespace SSCMS.Core.Services
 
             var token = await _context.HttpContext.GetTokenAsync("access_token");
             var cachedToken = _cacheManager.Get<string>(GetTokenCacheKey(user));
-            if (token != cachedToken)
+            if (!string.IsNullOrEmpty(cachedToken) && token != cachedToken)
             {
                 _user = null;
                 return;
@@ -75,12 +75,10 @@ namespace SSCMS.Core.Services
 
             var token = await _context.HttpContext.GetTokenAsync("access_token");
             var cachedToken = _cacheManager.Get<string>(GetTokenCacheKey(administrator));
-            if (token != cachedToken)
+            if (!string.IsNullOrEmpty(cachedToken) && token != cachedToken)
             {
-#if RELEASE
                 _admin = null;
                 return;
-#endif
             }
 
             _admin = administrator;

@@ -14,9 +14,13 @@ namespace SSCMS.Web.Controllers.Home
             var config = await _configRepository.GetAsync();
             if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
 
-            var menus = new List<Menu>();
             var user = await _authManager.GetUserAsync();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
             var userMenus = await _userMenuRepository.GetUserMenusAsync();
+            var menus = new List<Menu>();
 
             foreach (var menuInfo1 in userMenus)
             {
@@ -46,6 +50,7 @@ namespace SSCMS.Web.Controllers.Home
                         Target = menuInfo2.Target
                     });
                 }
+
 
                 menus.Add(new Menu
                 {
