@@ -189,7 +189,6 @@ var methods = {
                             break;
                         }
                     }
-
                     if (isval) {
                         $this.form[utils.toCamelCase(style.attributeName)] = null;
                     }
@@ -540,8 +539,8 @@ var methods = {
                 var arr = this.form[utils.toCamelCase(style.attributeName)];
                 if (Array.isArray(arr)) {
                     var str = "";
-                    for (var i = 0, len = arr.length; i < len; i++) {
-                        i == 0 ? (str = arr[i]) : (str += "," + arr[i]);
+                    for (var j = 0, len = arr.length; j < len; j++) {
+                        j == 0 ? (str = arr[j]) : (str += "," + arr[j]);
                     }
                     this.form[utils.toCamelCase(style.attributeName)] = str;
                 }
