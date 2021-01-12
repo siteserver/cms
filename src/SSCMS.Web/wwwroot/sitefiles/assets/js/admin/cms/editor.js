@@ -241,7 +241,6 @@ var methods = {
   },
 
   apiInsert: function() {
-    this.formArrToString();
     var $this = this;
 
     utils.loading(this, true);
@@ -335,7 +334,6 @@ var methods = {
   },
 
   apiUpdate: function() {
-    this.formArrToString();
     var $this = this;
 
     utils.loading(this, true);
@@ -357,6 +355,7 @@ var methods = {
   },
 
   btnCensorSaveClick: function() {
+    this.formArrToString();
     if (this.contentId === 0) {
       this.apiInsert();
     } else {
