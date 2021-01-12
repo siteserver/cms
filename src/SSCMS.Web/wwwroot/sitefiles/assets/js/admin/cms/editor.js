@@ -175,6 +175,25 @@ var methods = {
               });
             });
           }
+          else if (style.inputType === 'Radio' || style.inputType === 'SelectOne') {
+              for (var j = 0; j < style.items.length; j++) {
+                  var item = style.items[j];
+                  if (item.selected) {
+                      $this.form[utils.toCamelCase(style.attributeName)] = item.value;
+                      break;
+                  }
+              }
+          }
+          else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
+              var selectItems = [];
+              for (var j = 0; j < style.items.length; j++) {
+                  var item = style.items[j];
+                  if (item.selected) {
+                      selectItems.push(item.value);
+                  }
+              }
+              $this.form[utils.toCamelCase(style.attributeName)] = selectItems;
+          }
         }
       }, 100);
     }).catch(function(error) {
