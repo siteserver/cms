@@ -191,7 +191,7 @@
   <template v-else-if="style.inputType === 'CheckBox'">
     <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-checkbox-group v-model="form[utils.toCamelCase(style.attributeName)]">
-        <el-checkbox v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-checkbox>
+          <el-checkbox v-for="item in style.items" :key="item.value" :label="item.value">{{item.label}}</el-checkbox>
       </el-checkbox-group>
       <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
     </el-form-item>
@@ -200,7 +200,7 @@
   <template v-else-if="style.inputType === 'Radio'">
     <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
       <el-radio-group v-model="form[utils.toCamelCase(style.attributeName)]">
-        <el-radio v-for="item in style.items" :key="item.value" :label="item.label" :value="item.value"></el-radio>
+          <el-radio v-for="item in style.items" :key="item.value" :label="item.value">{{item.label}}</el-radio>
       </el-radio-group>
       <div class="tips" v-if="style.helpText">{{style.helpText}}</div>
     </el-form-item>
