@@ -276,7 +276,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = InputTypeUtils.ParseString(InputType.Text, content.SubTitle, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                     if (pageInfo.Site.IsContentSubTitleBreakLine)
                     {
-                        parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
+                        parsedContent = parsedContent?.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.Summary)))
