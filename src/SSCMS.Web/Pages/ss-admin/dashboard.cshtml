@@ -59,10 +59,12 @@
     <div class="table-responsive">
       <table class="table">
         <tbody>
-          <tr v-for="item in unCheckedList">
+          <tr v-for="unChecked in unCheckedList">
             <td>
-              <a v-bind:href="item.url"> {{ item.siteName }} 有
-                <span style="color:#f00"> {{ item.count }} </span> 篇</a>
+              <el-link type="primary" style="color: #00B19D;" :underline="false" v-on:click="btnCheckClick(unChecked.siteId)">
+                {{ unChecked.siteName }} 有
+                <span style="color:#f00"> {{ unChecked.count }} </span> 篇
+              </el-link>
             </td>
           </tr>
         </tbody>

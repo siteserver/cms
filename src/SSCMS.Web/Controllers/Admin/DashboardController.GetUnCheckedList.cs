@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
@@ -8,9 +9,9 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class DashboardController
     {
         [HttpGet, Route(RouteUnCheckedList)]
-        public async Task<ActionResult<ObjectResult<List<Checking>>>> GetUnCheckedList()
+        public async Task<ActionResult<GetUnCheckedListResult>> GetUnCheckedList()
         {
-            var checkingList = new List<Checking>();
+            var unCheckedList = new List<UnChecked>();
 
             if (await _authManager.IsSuperAdminAsync())
             {
@@ -19,8 +20,9 @@ namespace SSCMS.Web.Controllers.Admin
                     var count = await _contentRepository.GetCountCheckingAsync(site);
                     if (count > 0)
                     {
-                        checkingList.Add(new Checking
+                        unCheckedList.Add(new UnChecked
                         {
+                            SiteId = site.Id,
                             SiteName = site.SiteName,
                             Count = count
                         });
@@ -40,8 +42,9 @@ namespace SSCMS.Web.Controllers.Admin
                         var count = await _contentRepository.GetCountCheckingAsync(site);
                         if (count > 0)
                         {
-                            checkingList.Add(new Checking
+                            unCheckedList.Add(new UnChecked
                             {
+                                SiteId = site.Id,
                                 SiteName = site.SiteName,
                                 Count = count
                             });
@@ -50,9 +53,12 @@ namespace SSCMS.Web.Controllers.Admin
                 }
             }
 
-            return new ObjectResult<List<Checking>>
+            var totalCount = unCheckedList.Sum(x => x.Count);
+
+            return new GetUnCheckedListResult
             {
-                Value = checkingList
+                UnCheckedList = unCheckedList,
+                TotalCount = totalCount
             };
         }
     }

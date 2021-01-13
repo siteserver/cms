@@ -1,4 +1,5 @@
 var $url = "/dashboard";
+var $urlUnCheckedList = "/dashboard/actions/unCheckedList";
 
 var data = utils.init({
   version: null,
@@ -13,7 +14,9 @@ var data = utils.init({
   containerized: null,
   cpuCores: null,
   userName: null,
-  level: null
+  level: null,
+  unCheckedList: [],
+  unCheckedListTotalCount: 0,
 });
 
 var methods = {
@@ -37,7 +40,7 @@ var methods = {
       $this.userName = res.userName;
       $this.level = res.level;
 
-      $this.getUnCheckedList();
+      $this.apiGetUnCheckedList();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -45,19 +48,25 @@ var methods = {
     });
   },
 
-  getUnCheckedList: function () {
+  apiGetUnCheckedList: function() {
     var $this = this;
 
-    $api.get($url + '/actions/unCheckedList').then(function (response) {
+    $api.get($urlUnCheckedList).then(function (response) {
       var res = response.data;
 
-      $this.unCheckedList = res.value;
-      for (i = 0; i < $this.unCheckedList.length; i++) {
-        $this.unCheckedListTotalCount += $this.unCheckedList[i].count;
-      }
+      $this.unCheckedList = res.unCheckedList;
+      $this.unCheckedListTotalCount = res.totalCount;
     }).catch(function (error) {
       utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
     });
+  },
+
+  btnCheckClick: function(siteId) {
+    utils.addTab('内容审核', utils.getCmsUrl('contentsCheck', {
+      siteId: siteId
+    }));
   }
 };
 

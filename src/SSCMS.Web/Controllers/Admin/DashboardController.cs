@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -45,10 +46,17 @@ namespace SSCMS.Web.Controllers.Admin
             public string Level { get; set; }
         }
 
-        public class Checking
+        public class UnChecked
         {
+            public int SiteId { get; set; }
             public string SiteName { get; set; }
             public int Count { get; set; }
+        }
+
+        public class GetUnCheckedListResult
+        {
+            public List<UnChecked> UnCheckedList { get; set; }
+            public int TotalCount { get; set; }
         }
     }
 }

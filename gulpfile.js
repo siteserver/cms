@@ -79,7 +79,7 @@ function writeOss(bucket, key, fileName) {
     Key: key
   });
   
-  upload.minPartSize(1048576);
+  // upload.minPartSize(1048576);
   
   var read = fs.createReadStream(`./publish/dist/${fileName}`);
   read.pipe(upload);
