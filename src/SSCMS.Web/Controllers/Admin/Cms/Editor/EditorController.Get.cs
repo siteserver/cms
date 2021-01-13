@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 .Where(style =>
                     !string.IsNullOrEmpty(style.DisplayName) &&
                     !ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, style.AttributeName))
-                .Select(x => new InputStyle(x));
+                .Select(x => new InputStyle(x)).ToList();
             var templates =
                 await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
@@ -59,6 +60,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     AddDate = DateTime.Now,
                     CheckedLevel = site.CheckContentDefaultLevel
                 };
+                foreach (var style in styles)
+                {
+                    if (style.InputType == InputType.CheckBox || style.InputType == InputType.SelectMultiple)
+                    {
+                        var list = style.Items != null ? style.Items.Where(x => x.Selected).Select(x => x.Value).ToList() : new List<string>();
+
+                        content.Set(style.AttributeName, list);
+                    }
+                    else if (style.InputType == InputType.Radio || style.InputType == InputType.SelectOne)
+                    {
+                        var item = style.Items?.FirstOrDefault(x => x.Selected);
+                        var value = item != null ? item.Value : string.Empty;
+                        content.Set(style.AttributeName, value);
+                    }
+                }
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);

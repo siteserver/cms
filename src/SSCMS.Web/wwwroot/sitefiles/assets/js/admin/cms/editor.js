@@ -155,61 +155,6 @@ var methods = {
         $this.collapseSettings.push('linkUrl');
       }
 
-        for (var i = 0; i < $this.styles.length; i++) {
-            var style = $this.styles[i];
-            if ($this.contentId === 0) {
-                if (style.inputType === 'Radio' || style.inputType === 'SelectOne') {
-                    for (var j = 0; j < style.items.length; j++) {
-                        var item = style.items[j];
-                        if (item.selected) {
-                            $this.form[utils.toCamelCase(style.attributeName)] = item.value;
-                            break;
-                        }
-                    }
-                }
-                else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
-                    var selectItems = [];
-                    for (var j = 0; j < style.items.length; j++) {
-                        var item = style.items[j];
-                        if (item.selected) {
-                            selectItems.push(item.value);
-                        }
-                    }
-                    $this.form[utils.toCamelCase(style.attributeName)] = selectItems;
-                }
-            }
-            else {
-                if (style.inputType === 'Radio' || style.inputType === 'SelectOne') {
-                    var isval = true;
-                    var val = $this.form[utils.toCamelCase(style.attributeName)];
-                    for (var j = 0; j < style.items.length; j++) {
-                        var item = style.items[j];
-                        if (item.value === val) {
-                            isval = false;
-                            break;
-                        }
-                    }
-                    if (isval) {
-                        $this.form[utils.toCamelCase(style.attributeName)] = null;
-                    }
-                }
-                else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
-                    var selectItems = [];
-                    var val = $this.form[utils.toCamelCase(style.attributeName)];
-                    if (val) {
-                        var vals = val.split(",");
-                        for (var j = 0; j < style.items.length; j++) {
-                            var item = style.items[j];
-                            if (vals.indexOf(item.value) > -1) {
-                                selectItems.push(item.value);
-                            }
-                        }
-                    }
-                    $this.form[utils.toCamelCase(style.attributeName)] = selectItems;
-                }
-            }
-        }
-
       for (var i = 0; i < $this.styles.length; i++) {
         var style = $this.styles[i];
         if (style.inputType !== 'Image' && style.inputType !== 'File' && style.inputType !== 'Video') continue;
@@ -354,7 +299,6 @@ var methods = {
   },
 
   btnCensorSaveClick: function() {
-    this.formArrToString();
     if (this.contentId === 0) {
       this.apiInsert();
     } else {
@@ -530,23 +474,7 @@ var methods = {
       }
       ,anim: 5
     });
-    },
-
-    formArrToString: function () {
-        for (var i = 0; i < this.styles.length; i++) {
-            var style = this.styles[i];
-            if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
-                var arr = this.form[utils.toCamelCase(style.attributeName)];
-                if (Array.isArray(arr)) {
-                    var str = "";
-                    for (var j = 0, len = arr.length; j < len; j++) {
-                        j == 0 ? (str = arr[j]) : (str += "," + arr[j]);
-                    }
-                    this.form[utils.toCamelCase(style.attributeName)] = str;
-                }
-            }
-        }
-    }
+  }
 };
 
 var $vue = new Vue({

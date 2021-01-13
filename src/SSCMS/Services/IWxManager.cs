@@ -4,8 +4,16 @@ namespace SSCMS.Services
 {
     public partial interface IWxManager
     {
-        Task<(bool, string, string)> GetAccessTokenAsync(string mpAppId, string mpAppSecret);
+        string GetNonceStr();
 
-        Task<(bool, string, string)> GetAccessTokenAsync(int siteId);
+        string GetTimestamp();
+
+        Task<(bool Success, string AccessToken, string ErrorMessage)> GetAccessTokenAsync(int siteId);
+
+        Task<(bool Success, string AccessToken, string ErrorMessage)> GetAccessTokenAsync(string mpAppId, string mpAppSecret);
+
+        Task<(bool Success, string Ticket, string ErrorMessage)> GetJsApiTicketAsync(string mpAppId, string mpAppSecret);
+
+        string GetJsApiSignature(string ticket, string nonceStr, string timestamp, string url);
     }
 }

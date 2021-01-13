@@ -219,11 +219,6 @@ namespace SSCMS.Web.Controllers.V1
                     nameof(Models.Content.Id));
             }
 
-            var page = request.Page > 0 ? request.Page : 1;
-            var perPage = request.PerPage > 0 ? request.PerPage : 20;
-
-            query.ForPage(page, perPage);
-
             return query;
         }
 

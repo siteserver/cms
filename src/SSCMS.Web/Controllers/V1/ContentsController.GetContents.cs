@@ -24,7 +24,12 @@ namespace SSCMS.Web.Controllers.V1
             var tableName = site.TableName;
             var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
             var totalCount = await _contentRepository.GetCountAsync(tableName, query);
-            var summaries = await _contentRepository.GetSummariesAsync(tableName, query.ForPage(request.Page, request.PerPage));
+
+            var page = request.Page > 0 ? request.Page : 1;
+            var perPage = request.PerPage > 0 ? request.PerPage : site.PageSize;
+            query.ForPage(page, perPage);
+
+            var summaries = await _contentRepository.GetSummariesAsync(tableName, query);
 
             var contents = new List<Content>();
             foreach (var summary in summaries)
