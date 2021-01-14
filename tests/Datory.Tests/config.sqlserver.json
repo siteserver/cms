@@ -1,0 +1,6 @@
+{
+  "Database": {
+    "Type": "SqlServer",
+    "ConnectionString": ""
+  }
+}

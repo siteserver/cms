@@ -35,6 +35,16 @@ jobs:
   - script: dotnet publish ./build-win-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64
   - script: dotnet publish ./build-win-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64
   - script: npm run copy-win-x64
+  - script: npm run build-win-x86
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: './build-win-x86/build.sln'
+      feedsToUse: 'select'
+  - script: dotnet build ./build-win-x86/build.sln -c $(buildConfiguration)
+  - script: dotnet publish ./build-win-x86/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86
+  - script: dotnet publish ./build-win-x86/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x86
+  - script: npm run copy-win-x86
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: './publish/sscms-$(productVersion)-win-x64' 
@@ -42,6 +52,18 @@ jobs:
       includeRootFolder: false
       archiveFile: './publish/dist/sscms-$(productVersion)-win-x64.zip'
   - script: npm run publish-win-x64-zip
+    env:
+      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
+      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
+      OSS_BUCKET_DL: $(ossBucketDl)
+      OSS_BUCKET_WWW: $(ossBucketWww)
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: './publish/sscms-$(productVersion)-win-x86' 
+      archiveType: 'zip'
+      includeRootFolder: false
+      archiveFile: './publish/dist/sscms-$(productVersion)-win-x86.zip'
+  - script: npm run publish-win-x86-zip
     env:
       OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
       OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)

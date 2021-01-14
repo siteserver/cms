@@ -1,0 +1,6 @@
+{
+  "Database": {
+    "Type": "SQLite",
+    "ConnectionString": "Data Source=~/database.sqlite;Version=3;"
+  }
+}

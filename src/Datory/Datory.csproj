@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>Datory</PackageId>
+    <Version>1.1.0</Version>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Authors>Datory</Authors>
+    <Company>Datory</Company>
+    <Product>Datory</Product>
+    <Description>基于 Dapper 及 SqlKata 的通用数据库操作库，支持SqlServer、MySql、PostgreSql以及SQLite。</Description>
+    <PackageLicense>MIT</PackageLicense>
+    <PackageProjectUrl>https://github.com/siteserver/Datory</PackageProjectUrl>
+    <PackageIconUrl>https://www.datory.io/assets/images/favicon.png</PackageIconUrl>
+    <Copyright>Copyright © Datory 2019</Copyright>
+    <PackageTags>Datory Plugin</PackageTags>
+    <RepositoryUrl>https://github.com/siteserver/Datory</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CacheManager.Core" Version="1.2.0" />
+    <PackageReference Include="CacheManager.Microsoft.Extensions.Caching.Memory" Version="1.2.0" />
+    <PackageReference Include="CacheManager.Serialization.Json" Version="1.2.0" />
+    <PackageReference Include="CacheManager.StackExchange.Redis" Version="1.2.0" />
+    <!--<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />-->
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.1" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <!--<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />-->
+    <PackageReference Include="MySql.Data" Version="8.0.21" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Npgsql" Version="4.1.4" />
+    <PackageReference Include="SqlKata" Version="2.2.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <!--<PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />-->
+    <!--<PackageReference Include="System.Globalization" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />-->
+  </ItemGroup>
+
+</Project>
