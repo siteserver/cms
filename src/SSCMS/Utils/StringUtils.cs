@@ -827,5 +827,10 @@ namespace SSCMS.Utils
         {
             return "e_" + GetShortGuid(false);
         }
+
+        public static string ToString(object value)
+        {
+            return value?.ToString();
+        }
     }
 }

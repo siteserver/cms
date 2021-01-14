@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var templates =
                 await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
-            var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, site.Id);
+            var (userIsChecked, userCheckedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.ChannelId);
             var checkedLevels = CheckManager.GetCheckedLevelOptions(site, userIsChecked, userCheckedLevel, true);
 
             Content content;
@@ -60,19 +60,37 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     AddDate = DateTime.Now,
                     CheckedLevel = site.CheckContentDefaultLevel
                 };
-                foreach (var style in styles)
-                {
-                    if (style.InputType == InputType.CheckBox || style.InputType == InputType.SelectMultiple)
-                    {
-                        var list = style.Items != null ? style.Items.Where(x => x.Selected).Select(x => x.Value).ToList() : new List<string>();
+            }
 
-                        content.Set(style.AttributeName, list);
+            foreach (var style in styles)
+            {
+                if (style.InputType == InputType.CheckBox || style.InputType == InputType.SelectMultiple)
+                {
+                    if (request.ContentId == 0)
+                    {
+                        var value = style.Items != null
+                            ? style.Items.Where(x => x.Selected).Select(x => x.Value).ToList()
+                            : new List<string>();
+                        content.Set(style.AttributeName, value);
                     }
-                    else if (style.InputType == InputType.Radio || style.InputType == InputType.SelectOne)
+                    else
+                    {
+                        var value = content.Get(style.AttributeName);
+                        content.Set(style.AttributeName, ListUtils.ToList(value));
+                    }
+                }
+                else if (style.InputType == InputType.Radio || style.InputType == InputType.SelectOne)
+                {
+                    if (request.ContentId == 0)
                     {
                         var item = style.Items?.FirstOrDefault(x => x.Selected);
                         var value = item != null ? item.Value : string.Empty;
                         content.Set(style.AttributeName, value);
+                    }
+                    else
+                    {
+                        var value = content.Get(style.AttributeName);
+                        content.Set(style.AttributeName, StringUtils.ToString(value));
                     }
                 }
             }

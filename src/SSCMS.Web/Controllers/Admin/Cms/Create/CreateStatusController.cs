@@ -14,12 +14,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         private const string Route = "cms/create/createStatus";
         private const string RouteActionsCancel = "cms/create/createStatus/actions/cancel";
 
-        private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
 
-        public CreateStatusController(IAuthManager authManager, ICreateManager createManager)
+        public CreateStatusController(ICreateManager createManager)
         {
-            _authManager = authManager;
             _createManager = createManager;
         }
     }

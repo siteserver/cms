@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Datory.Utils;
@@ -150,6 +151,37 @@ namespace SSCMS.Utils
         {
             var item = dict?.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.Key, key));
             return item?.Value;
+        }
+
+        public static List<string> ToList(object value)
+        {
+            if (value == null) return new List<string>();
+
+            if (value is List<string> list)
+            {
+                return list;
+            }
+
+            if (value is string str)
+            {
+                return GetStringList(str);
+            }
+
+            if (value is IEnumerable enumerable)
+            {
+                var retVal = new List<string>();
+                foreach (var item in enumerable)
+                {
+                    if (item != null)
+                    {
+                        retVal.Add(item.ToString());
+                    }
+                }
+
+                return retVal;
+            }
+
+            return new List<string>();
         }
     }
 }
