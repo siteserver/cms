@@ -245,7 +245,7 @@ gulp.task("replace-localhost", function () {
 
 gulp.task("copy-linux-x64", async function (callback) {
   os = 'linux-x64';
-  publishDir = `./publish/sscms-${version}-${os}`;
+  publishDir = `./publish/sscms-${os}`;
 
   return runSequence(
     "copy-files",
@@ -258,7 +258,7 @@ gulp.task("copy-linux-x64", async function (callback) {
 
 gulp.task("copy-win-x64", async function (callback) {
   os = 'win-x64';
-  publishDir = `./publish/sscms-${version}-${os}`;
+  publishDir = `./publish/sscms-${os}`;
 
   return runSequence(
     "copy-files",
@@ -271,7 +271,7 @@ gulp.task("copy-win-x64", async function (callback) {
 
 gulp.task("copy-win-x86", async function (callback) {
   os = 'win-x86';
-  publishDir = `./publish/sscms-${version}-${os}`;
+  publishDir = `./publish/sscms-${os}`;
 
   return runSequence(
     "copy-files",
