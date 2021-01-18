@@ -31,7 +31,7 @@ namespace SSCMS.Core.StlParser.StlElement
         private ListInfo ListInfo { get; set; }
         private List<KeyValuePair<int, Content>> DataSource { get; set; }
 
-        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager)
+        public static async Task<StlPageContents> GetAsync(string stlPageContentsElement, IParseManager parseManager, Query query = null)
         {
             var stlPageContents = new StlPageContents
             {
@@ -43,7 +43,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             stlPageContents.ParseManager.ContextInfo = parseManager.ContextInfo.Clone(ElementName, stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes, stlElementInfo.StartIndex);
 
-            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
+            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content, query);
 
             //stlPageContents.SqlString = await StlDataUtility.GetStlPageContentsSqlStringAsync(stlPageContents.PageInfo.Site, channelId, stlPageContents.ListInfo);
             stlPageContents.DataSource = await GetContentsDataSourceAsync(parseManager, stlPageContents.ListInfo);

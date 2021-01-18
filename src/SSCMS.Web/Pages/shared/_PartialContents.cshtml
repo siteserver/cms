@@ -93,8 +93,8 @@
   <el-table-column type="selection" width="45" align="center"></el-table-column>
 
   <el-table-column
-    column-key="Title"
     :label="titleColumn.displayName"
+    :column-key="titleColumn.attributeName"
     :min-width="titleColumn.width"
     show-overflow-tooltip
     resizable>

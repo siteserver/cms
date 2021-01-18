@@ -45,11 +45,11 @@ namespace SSCMS.Web.Controllers.Stl
 
                 var contentBuilder = new StringBuilder(StlRequest.ParseRequestEntities(form, template));
 
-                var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
+                var stlLabelList = ParseUtils.GetStlLabels(contentBuilder.ToString());
 
-                if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
+                if (ParseUtils.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
                 {
-                    var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
+                    var stlElement = ParseUtils.GetStlElement(StlPageContents.ElementName, stlLabelList);
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
@@ -87,9 +87,9 @@ namespace SSCMS.Web.Controllers.Stl
                         };
                     }
                 }
-                else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
+                else if (ParseUtils.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
                 {
-                    var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
+                    var stlElement = ParseUtils.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
 
                     var stlPageSqlContents = await StlPageSqlContents.GetAsync(stlElement, _parseManager);
 

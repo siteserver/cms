@@ -11,7 +11,7 @@ namespace SSCMS.Core.Context
 {
     public class PluginParseContext : IParseContext
     {
-        protected readonly IParseManager ParseManager;
+        public IParseManager ParseManager { get; }
 
         public PluginParseContext(IParseManager parseManager)
         {

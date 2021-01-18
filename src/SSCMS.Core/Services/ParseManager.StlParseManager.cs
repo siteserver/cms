@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Core.StlParser.StlElement;
-using SSCMS.Core.StlParser.Utility;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -49,13 +49,13 @@ namespace SSCMS.Core.Services
             //替换分页模板
             foreach (var labelString in labelList)
             {
-                if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
+                if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageInContentPageAsync(stlElement, PageInfo.PageChannelId, PageInfo.PageContentId, currentPageIndex, pageCount);
                     parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
-                else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
+                else if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageItemInContentPageAsync(stlElement, PageInfo.PageChannelId, PageInfo.PageContentId, currentPageIndex, pageCount, pageCount);
@@ -69,13 +69,13 @@ namespace SSCMS.Core.Services
             //替换分页模板
             foreach (var labelString in labelList)
             {
-                if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
+                if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageInChannelPageAsync(stlElement, PageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
-                else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
+                else if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageItemInChannelPageAsync(stlElement, PageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
@@ -89,13 +89,13 @@ namespace SSCMS.Core.Services
             //替换分页模板
             foreach (var labelString in labelList)
             {
-                if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
+                if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageInSearchPageAsync(stlElement, ajaxDivId, PageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
-                else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
+                else if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageItemInSearchPageAsync(stlElement, ajaxDivId, currentPageIndex, pageCount, totalNum);
@@ -109,13 +109,13 @@ namespace SSCMS.Core.Services
             //替换分页模板
             foreach (var labelString in labelList)
             {
-                if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
+                if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageInDynamicPageAsync(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
-                else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
+                else if (ParseUtils.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
                     var pageHtml = await ParseStlPageItemInDynamicPageAsync(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);

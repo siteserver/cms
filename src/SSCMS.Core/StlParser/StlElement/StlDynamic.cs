@@ -7,12 +7,12 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
-using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
+using Dynamic = SSCMS.Parse.Dynamic;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "动态显示", Description = "通过 stl:dynamic 标签在模板中实现动态显示功能")]
-    public static class StlDynamic
+    public static partial class StlDynamic
     {
         public const string ElementName = "stl:dynamic";
 
@@ -91,26 +91,26 @@ namespace SSCMS.Core.StlParser.StlElement
             return await ParseAsync(parseManager, contextInfo.Site, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
+        internal static async Task<string> ParseAsync(string stlElement, IParseManager parseManager, Site site)
+        {
+            stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
+            return await ParseAsync(parseManager, site, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
+        }
+
         private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             await parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
 
-            //运行解析以便为页面生成所需JS引用
-            if (!string.IsNullOrEmpty(template))
+            var dynamicInfo = new Dynamic
             {
-                await parseManager.ParseInnerContentAsync(new StringBuilder(template));
-            }
-
-            var dynamicInfo = new DynamicInfo(parseManager.SettingsManager)
-            {
-                ElementName = ElementName,
                 SiteId = parseManager.PageInfo.SiteId,
                 ChannelId = parseManager.ContextInfo.ChannelId,
                 ContentId = parseManager.ContextInfo.ContentId,
                 TemplateId = parseManager.PageInfo.Template.Id,
                 ElementId = StringUtils.GetElementId(),
                 LoadingTemplate = loading,
-                SuccessTemplate = template,
+                YesTemplate = template,
+                IsInline = inline,
                 OnBeforeSend = onBeforeSend,
                 OnSuccess = onSuccess,
                 OnComplete = onComplete,
@@ -118,16 +118,10 @@ namespace SSCMS.Core.StlParser.StlElement
             };
 
             var dynamicUrl = parseManager.PathManager.GetDynamicApiUrl(site);
-            return dynamicInfo.GetScript(dynamicUrl, inline);
+            return await GetScriptAsync(parseManager, dynamicUrl, dynamicInfo);
         }
 
-        internal static async Task<string> ParseDynamicElementAsync(string stlElement, IParseManager parseManager, Site site)
-        {
-            stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return await ParseAsync(parseManager, site, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
-        }
-
-        public static async Task<string> ParseDynamicContentAsync(IParseManager parseManager, DynamicInfo dynamicInfo, string template)
+        public static async Task<string> ParseDynamicAsync(IParseManager parseManager, Dynamic dynamicInfo, string template)
         {
             var databaseManager = parseManager.DatabaseManager;
             if (string.IsNullOrEmpty(template)) return string.Empty;
@@ -141,18 +135,18 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var templateContent = StlRequest.ParseRequestEntities(dynamicInfo.QueryString, template);
             var contentBuilder = new StringBuilder(templateContent);
-            var stlElementList = StlParserUtility.GetStlElementList(contentBuilder.ToString());
+            var stlElementList = ParseUtils.GetStlElements(contentBuilder.ToString());
 
             var pageIndex = dynamicInfo.Page - 1;
 
             //如果标签中存在<stl:pageContents>
-            if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlElementList))
+            if (ParseUtils.IsStlElementExists(StlPageContents.ElementName, stlElementList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlElementList);
+                var stlElement = ParseUtils.GetStlElement(StlPageContents.ElementName, stlElementList);
                 var stlPageContentsElement = stlElement;
                 var stlPageContentsElementReplaceString = stlElement;
 
-                var pageContentsElementParser = await StlPageContents.GetAsync(stlPageContentsElement, parseManager);
+                var pageContentsElementParser = await StlPageContents.GetAsync(stlPageContentsElement, parseManager, dynamicInfo.Query);
                 var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -169,9 +163,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
             //如果标签中存在<stl:pageChannels>
-            else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlElementList))
+            else if (ParseUtils.IsStlElementExists(StlPageChannels.ElementName, stlElementList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlElementList);
+                var stlElement = ParseUtils.GetStlElement(StlPageChannels.ElementName, stlElementList);
                 var stlPageChannelsElement = stlElement;
                 var stlPageChannelsElementReplaceString = stlElement;
 
@@ -191,9 +185,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlElementList))
+            else if (ParseUtils.IsStlElementExists(StlPageSqlContents.ElementName, stlElementList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlElementList);
+                var stlElement = ParseUtils.GetStlElement(StlPageSqlContents.ElementName, stlElementList);
                 var stlPageSqlContentsElement = stlElement;
                 var stlPageSqlContentsElementReplaceString = stlElement;
 
@@ -212,8 +206,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     break;
                 }
             }
-
-            else if (StlParserUtility.IsStlElementExists(StlPageItems.ElementName, stlElementList))
+            else if (ParseUtils.IsStlElementExists(StlPageItems.ElementName, stlElementList))
             {
                 var pageCount = TranslateUtils.ToInt(dynamicInfo.QueryString["pageCount"]);
                 var totalNum = TranslateUtils.ToInt(dynamicInfo.QueryString["totalNum"]);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -17,8 +16,6 @@ namespace SSCMS.Core.StlParser.Utility
 {
     public static class StlParserUtility
     {
-        public const string RegexStringAll = @"{stl\.[^{}]*}|{stl:[^{}]*}|{content\.[^{}]*}|{channel\.[^{}]*}|{comment\.[^{}]*}|{request\.[^{}]*}|{sql\.[^{}]*}|{user\.[^{}]*}|{navigation\.[^{}]*}|{photo\.[^{}]*}";
-
         public const string PageContent = nameof(PageContent);
         public const string CountOfChannels = nameof(CountOfChannels);
         public const string CountOfContents = nameof(CountOfContents);
@@ -38,56 +35,7 @@ namespace SSCMS.Core.StlParser.Utility
         public const string OrderHitsByMonth = "HitsByMonth";	//月点击量
         public const string OrderRandom = "Random";            //随机
 
-        //http://weblogs.asp.net/whaggard/archive/2005/02/20/377025.aspx
-        //        public static Regex REGEX_STL_ELEMENT = new Regex(@"
-        //<stl:(\w+?)[^>]*>
-        //  (?>
-        //      <stl:\1[^>]*> (?<LEVEL>)
-        //    | 
-        //      </stl:\1[^>]*> (?<-LEVEL>)
-        //    |
-        //      (?! <stl:\1[^>]*> | </stl:\1[^>]*> ).
-        //  )*
-        //  (?(LEVEL)(?!))
-        //</stl:\1[^>]*>
-        //", ((RegexOptions.Singleline | RegexOptions.IgnoreCase) | RegexOptions.IgnorePatternWhitespace) | RegexOptions.Compiled);
-        public static readonly Regex RegexStlElement = new Regex(@"
-<stl:(\w+?)[^>]*>
-  (?>
-      <stl:\1[^>]*> (?<LEVEL>)
-    | 
-      </stl:\1[^>]*> (?<-LEVEL>)
-    |
-      (?! <stl:\1[^>]*> | </stl:\1[^>]*> ).
-  )*
-  (?(LEVEL)(?!))
-</stl:\1[^>]*>|<stl:(\w+?)[^>]*/>
-", ((RegexOptions.Singleline | RegexOptions.IgnoreCase) | RegexOptions.IgnorePatternWhitespace) | RegexOptions.Compiled);
-
-        public static List<string> GetStlLabelList(string templateContent)
-        {
-            var stlElementList = GetStlElementList(templateContent);
-            var stlEntityList = GetStlEntityList(templateContent);
-            stlElementList.AddRange(stlEntityList);
-            return stlElementList;
-        }
-
-        //需要修改
-        public static bool IsStlElementExists(string stlElementName, List<string> list)
-        {
-            var exists = false;
-            foreach (var label in list)
-            {
-                if (StringUtils.StartsWithIgnoreCase(label, $"<{stlElementName} ") || StringUtils.StartsWithIgnoreCase(
-                    label,
-                    $"<{stlElementName}>"))
-                {
-                    exists = true;
-                    break;
-                }
-            }
-            return exists;
-        }
+        
 
         public static bool IsStlChannelElementWithTypePageContent(List<string> list)
         {
@@ -133,21 +81,7 @@ namespace SSCMS.Core.StlParser.Utility
             return stlPageContentElement;
         }
 
-        public static string GetStlElement(string stlElementName, List<string> labelList)
-        {
-            var stlElement = string.Empty;
-            foreach (var labelWithDisplayModeEnNameAndChannelId in labelList)
-            {
-                if (StringUtils.StartsWithIgnoreCase(labelWithDisplayModeEnNameAndChannelId, $"<{stlElementName} ") ||
-                    StringUtils.StartsWithIgnoreCase(labelWithDisplayModeEnNameAndChannelId,
-                        $"<{stlElementName}>"))
-                {
-                    stlElement = labelWithDisplayModeEnNameAndChannelId;
-                    break;
-                }
-            }
-            return stlElement;
-        }
+        
 
         public static string GetNameFromEntity(string stlEntity)
         {
@@ -184,61 +118,9 @@ namespace SSCMS.Core.StlParser.Utility
             return content.Contains('}') && (content.IndexOf("{stl:", StringComparison.Ordinal) != -1 || content.IndexOf("{stl.", StringComparison.Ordinal) != -1 || content.IndexOf("{content.", StringComparison.Ordinal) != -1 || content.IndexOf("{channel.", StringComparison.Ordinal) != -1);
         }
 
-        public static bool IsSpecifiedStlElement(string stlElement, string elementName)
-        {
-            if (stlElement == null) return false;
-            return (StringUtils.StartsWithIgnoreCase(stlElement, $"<{elementName} ") ||
-                    StringUtils.StartsWithIgnoreCase(stlElement, $"<{elementName}>")) &&
-                   (StringUtils.EndsWithIgnoreCase(stlElement, $"</{elementName}>") ||
-                    StringUtils.EndsWithIgnoreCase(stlElement, "/>"));
-        }
-
         public static Regex GetStlEntityRegex(string entityName)
         {
             return new Regex($@"{{{entityName}.[^{{}}]*}}", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        }
-
-        /// <summary>
-        /// 得到内容中的STL元素列表
-        /// </summary>
-        public static List<string> GetStlElementList(string templateContent)
-        {
-            var stlElementList = new List<string>();
-
-            var mc = RegexStlElement.Matches(templateContent);
-            for (var i = 0; i < mc.Count; i++)
-            {
-                var stlElement = mc[i].Value;
-                stlElementList.Add(stlElement);
-            }
-
-            return stlElementList;
-        }
-
-        /// <summary>
-        /// 得到内容中的STL实体列表
-        /// </summary>
-        /// <param name="content">需要解析的内容</param>
-        /// <returns></returns>
-        public static List<string> GetStlEntityList(string content)
-        {
-            //首先需要去除<stl:项
-            //content = RegexUtils.Replace(@"<stl:(\w+)[^>]*>.*?<\/stl:\1>", content, string.Empty);
-            content = RegexStlElement.Replace(content, string.Empty);
-
-            var stlEntityList = new List<string>();
-
-            //Regex regex = new Regex(@"{[^{}]*}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            //Regex regex = new Regex(@"{stl\.[^{}]*}|{content\.[^{}]*}|{channel\.[^{}]*}|{comment\.[^{}]*}|{request\.[^{}]*}|{sql\.[^{}]*}|{navigation\.[^{}]*}", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            var regex = new Regex(RegexStringAll, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            var mc = regex.Matches(content);
-            for (var i = 0; i < mc.Count; i++)
-            {
-                var stlEntity = mc[i].Value;
-                stlEntityList.Add(stlEntity);
-            }
-
-            return stlEntityList;
         }
 
         //判断属于某种类型（type）的<stl:content>元素是否存在
@@ -251,62 +133,6 @@ namespace SSCMS.Core.StlParser.Utility
         public static bool IsStlChannelElement(string labelString, string type)
         {
             return RegexUtils.IsMatch($@"<stl:channel[^>]+type=""{type}""[^>]*>", labelString);
-        }
-
-        public static string GetInnerHtml(string stlElement)
-        {
-            var retVal = string.Empty;
-
-            try
-            {
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(stlElement);
-                var docNode = htmlDoc.DocumentNode;
-                if (docNode?.FirstChild != null)
-                {
-                    var stlNode = docNode.FirstChild;
-
-                    retVal = stlNode.InnerHtml;
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return retVal;
-        }
-
-        public static string GetInnerHtml(string stlElement, NameValueCollection attributes)
-        {
-            var retVal = string.Empty;
-
-            try
-            {
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(stlElement);
-                var docNode = htmlDoc.DocumentNode;
-                if (docNode?.FirstChild != null)
-                {
-                    var stlNode = docNode.FirstChild;
-
-                    retVal = stlNode.InnerHtml;
-
-                    if (attributes != null && stlNode.Attributes != null)
-                    {
-                        foreach (var attribute in stlNode.Attributes)
-                        {
-                            attributes[attribute.Name] = attribute.Value;
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return retVal;
         }
 
         public static StlElementInfo ParseStlElement(string stlElement, int startIndex)
@@ -433,14 +259,14 @@ namespace SSCMS.Core.StlParser.Utility
             template = string.Empty;
             if (string.IsNullOrEmpty(innerHtml)) return;
 
-            var stlElementList = GetStlElementList(innerHtml);
+            var stlElementList = ParseUtils.GetStlElements(innerHtml);
             if (stlElementList.Count > 0)
             {
                 foreach (var stlElement in stlElementList)
                 {
-                    if (IsSpecifiedStlElement(stlElement, StlLoading.ElementName))
+                    if (ParseUtils.IsSpecifiedStlElement(stlElement, StlLoading.ElementName))
                     {
-                        loading = GetInnerHtml(stlElement);
+                        loading = ParseUtils.GetInnerHtml(stlElement);
                         template = innerHtml.Replace(stlElement, string.Empty);
                     }
                 }
@@ -461,18 +287,18 @@ namespace SSCMS.Core.StlParser.Utility
             no = string.Empty;
             if (string.IsNullOrEmpty(innerHtml)) return;
 
-            var stlElementList = GetStlElementList(innerHtml);
+            var stlElementList = ParseUtils.GetStlElements(innerHtml);
             if (stlElementList.Count > 0)
             {
                 foreach (var theStlElement in stlElementList)
                 {
-                    if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
+                    if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
                     {
-                        yes = GetInnerHtml(theStlElement);
+                        yes = ParseUtils.GetInnerHtml(theStlElement);
                     }
-                    else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
+                    else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
                     {
-                        no = GetInnerHtml(theStlElement);
+                        no = ParseUtils.GetInnerHtml(theStlElement);
                     }
                 }
             }
@@ -493,22 +319,22 @@ namespace SSCMS.Core.StlParser.Utility
             no = string.Empty;
             if (string.IsNullOrEmpty(innerHtml)) return;
 
-            var stlElementList = GetStlElementList(innerHtml);
+            var stlElementList = ParseUtils.GetStlElements(innerHtml);
             if (stlElementList.Count > 0)
             {
                 foreach (var theStlElement in stlElementList)
                 {
-                    if (IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
+                    if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
                     {
-                        loading = GetInnerHtml(theStlElement);
+                        loading = ParseUtils.GetInnerHtml(theStlElement);
                     }
-                    else if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
+                    else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
                     {
-                        yes = GetInnerHtml(theStlElement);
+                        yes = ParseUtils.GetInnerHtml(theStlElement);
                     }
-                    else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
+                    else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
                     {
-                        no = GetInnerHtml(theStlElement);
+                        no = ParseUtils.GetInnerHtml(theStlElement);
                     }
                 }
             }
@@ -521,34 +347,6 @@ namespace SSCMS.Core.StlParser.Utility
             loading = StringUtils.Trim(loading);
             yes = StringUtils.Trim(yes);
             no = StringUtils.Trim(no);
-        }
-
-        public static Dictionary<string, string> GetStlElements(string innerHtml, List<string> stlElementNames)
-        {
-            var dic = new Dictionary<string, string>();
-            foreach (var stlElementName in stlElementNames)
-            {
-                dic[stlElementName] = string.Empty;
-            }
-            if (string.IsNullOrEmpty(innerHtml)) return dic;
-
-            var stlElementList = GetStlElementList(innerHtml);
-            if (stlElementList.Count > 0)
-            {
-                foreach (var theStlElement in stlElementList)
-                {
-                    foreach (var stlElementName in stlElementNames)
-                    {
-                        if (IsSpecifiedStlElement(theStlElement, stlElementName))
-                        {
-                            var template = GetInnerHtml(theStlElement);
-                            dic[stlElementName] = template;
-                        }
-                    }
-                }
-            }
-
-            return dic;
         }
     }
 }

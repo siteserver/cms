@@ -14,7 +14,7 @@ namespace SSCMS.Core.Services
         /// </summary>
         public async Task ReplaceStlEntitiesAsync(StringBuilder parsedBuilder)
         {
-            var stlEntityList = StlParserUtility.GetStlEntityList(parsedBuilder.ToString());
+            var stlEntityList = ParseUtils.GetStlEntities(parsedBuilder.ToString());
 
             foreach (var stlEntity in stlEntityList)
             {

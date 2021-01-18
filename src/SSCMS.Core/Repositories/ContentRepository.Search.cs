@@ -11,7 +11,7 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public async Task<List<ContentSummary>> Search(Site site, Channel channel, bool isAllContents, string searchType, string searchText, bool isAdvanced, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
+        public async Task<List<ContentSummary>> SearchAsync(Site site, Channel channel, bool isAllContents, string searchType, string searchText, bool isAdvanced, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = GetRepository(site, channel);
             var query = Q.Select(nameof(Content.ChannelId), nameof(Content.Id));
@@ -96,7 +96,7 @@ namespace SSCMS.Core.Repositories
             return await repository.GetAllAsync<ContentSummary>(query);
         }
 
-        public async Task<(int Total, List<ContentSummary> PageSummaries)> UserWriteSearch(int userId, Site site, int page, int? channelId, bool isCheckedLevels, List<int> checkedLevels, List<string> groupNames, List<string> tagNames)
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> UserWriteSearchAsync(int userId, Site site, int page, int? channelId, bool isCheckedLevels, List<int> checkedLevels, List<string> groupNames, List<string> tagNames)
         {
             var repository = GetRepository(site.TableName);
 
@@ -160,7 +160,7 @@ namespace SSCMS.Core.Repositories
             return (total, pageSummaries);
         }
 
-        public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearch(Site site, int page, List<int> channelIds, bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser)
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds, bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser)
         {
             var repository = GetRepository(site.TableName);
 
@@ -284,7 +284,13 @@ namespace SSCMS.Core.Repositories
             return (total, pageSummaries);
         }
 
-        public async Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearch(Site site, int page, int? channelId, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds, bool isAllContents)
+        {
+            return await AdvancedSearchAsync(site, page, channelIds, isAllContents, null, null, null, false, null, false, false,
+                false, false, null, null, false, 0, false);
+        }
+
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearchAsync(Site site, int page, int? channelId, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = GetRepository(site.TableName);
 
@@ -382,7 +388,7 @@ namespace SSCMS.Core.Repositories
             return (total, pageSummaries);
         }
 
-        public async Task<(int Total, List<ContentSummary> PageSummaries)> RecycleSearch(Site site, int page, int? channelId, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> RecycleSearchAsync(Site site, int page, int? channelId, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = GetRepository(site.TableName);
 

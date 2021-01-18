@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Datory;
+using Senparc.Weixin;
 using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Models;

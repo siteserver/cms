@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Datory;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Attributes;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
-using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
+using Dynamic = SSCMS.Parse.Dynamic;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -428,42 +429,32 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
             var elementId = StringUtils.GetElementId();
 
-            //运行解析以便为页面生成所需JS引用
-            if (!string.IsNullOrEmpty(yes))
+            var dynamicInfo = new Dynamic
             {
-                await parseManager.ParseInnerContentAsync(new StringBuilder(yes));
-            }
-            if (!string.IsNullOrEmpty(no))
-            {
-                await parseManager.ParseInnerContentAsync(new StringBuilder(no));
-            }
-
-            var dynamicInfo = new DynamicInfo(parseManager.SettingsManager)
-            {
-                ElementName = ElementName,
                 SiteId = pageInfo.SiteId,
                 ChannelId = contextInfo.ChannelId,
                 ContentId = contextInfo.ContentId,
                 TemplateId = pageInfo.Template.Id,
                 ElementId = elementId,
                 LoadingTemplate = loading,
-                SuccessTemplate = yes,
-                FailureTemplate = no,
+                YesTemplate = yes,
+                NoTemplate = no,
+                IsInline = true,
                 OnBeforeSend = onBeforeSend,
                 OnSuccess = onSuccess,
                 OnComplete = onComplete,
                 OnError = onError
             };
-            var ifInfo = new DynamicInfo.IfInfo
+            var ifInfo = new DynamicIfInfo
             {
                 Type = testType,
                 Op = testOperate,
                 Value = testValue
             };
-            dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
+            dynamicInfo.Settings = TranslateUtils.JsonSerialize(ifInfo);
 
             var dynamicUrl = parseManager.PathManager.GetIfApiUrl(contextInfo.Site);
-            return dynamicInfo.GetScript(dynamicUrl, true);
+            return await StlDynamic.GetScriptAsync(parseManager, dynamicUrl, dynamicInfo);
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)

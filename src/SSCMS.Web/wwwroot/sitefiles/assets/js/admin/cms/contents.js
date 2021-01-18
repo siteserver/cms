@@ -128,12 +128,14 @@ var methods = {
     });
   },
 
-  apiWidth: function(attributeName, width) {
+  apiWidth: function(prevAttributeName, prevWidth, nextAttributeName, nextWidth) {
     $api.post($url + '/actions/width', {
       siteId: this.siteId,
       channelId: this.channelId,
-      attributeName: attributeName,
-      width: width
+      prevAttributeName: prevAttributeName || '',
+      prevWidth: prevWidth || 0,
+      nextAttributeName: nextAttributeName || '',
+      nextWidth: nextWidth || 0
     }).then(function(response) {
       var res = response.data;
 
@@ -401,10 +403,31 @@ var methods = {
     return data.label.indexOf(value) !== -1 || data.value + '' === value;
   },
 
-  handleHeaderDragend: function(newWidth, oldWidth, column) {
-    if (column.columnKey) {
-      this.apiWidth(column.columnKey, newWidth);
+  handleHeaderDragend: function(newWidth, oldWidth, header) {
+    var prevColumn = null;
+    var nextColumn = null;
+
+    for (var i = 0; i < this.$refs.multipleTable.columns.length; i++) {
+      var column = this.$refs.multipleTable.columns[i];
+      if (!column.columnKey || !column.resizable) continue;
+      if (prevColumn) {
+        nextColumn = column;
+      } else if (column.columnKey == header.columnKey) {
+        prevColumn = column;
+      }
     }
+
+    var diff = oldWidth - newWidth;
+    if (nextColumn) {
+      nextColumn.width += diff;
+    }
+    
+    this.apiWidth(
+      prevColumn ? prevColumn.columnKey : '', 
+      prevColumn ? prevColumn.width : 0, 
+      nextColumn ? nextColumn.columnKey : '', 
+      nextColumn ? nextColumn.width : 0
+    );
   },
 
   handleSelectionChange: function(val) {

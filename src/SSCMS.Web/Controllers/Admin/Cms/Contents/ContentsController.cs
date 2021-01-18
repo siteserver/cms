@@ -118,8 +118,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class WidthRequest : ChannelRequest
         {
-            public string AttributeName { get; set; }
-            public string Width { get; set; }
+            public string PrevAttributeName { get; set; }
+            public int PrevWidth { get; set; }
+            public string NextAttributeName { get; set; }
+            public int NextWidth { get; set; }
         }
     }
 }

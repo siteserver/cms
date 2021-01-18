@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Core.StlParser.Utility;
 using SSCMS.Parse;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -41,7 +42,7 @@ namespace SSCMS.Core.Services
                 html = html.Replace(stlEntity, pageHtml);
             }
 
-            mc = StlParserUtility.RegexStlElement.Matches(html);
+            mc = ParseUtils.RegexStlElement.Matches(html);
 			for (var i = 0; i < mc.Count; i++)
 			{
 				var stlElement = mc[i].Value;
@@ -64,7 +65,7 @@ namespace SSCMS.Core.Services
                 html = html.Replace(stlEntity, pageHtml);
             }
 
-            mc = StlParserUtility.RegexStlElement.Matches(html);
+            mc = ParseUtils.RegexStlElement.Matches(html);
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlElement = mc[i].Value;
@@ -87,7 +88,7 @@ namespace SSCMS.Core.Services
                 html = html.Replace(stlEntity, pageHtml);
             }
 
-            mc = StlParserUtility.RegexStlElement.Matches(html);
+            mc = ParseUtils.RegexStlElement.Matches(html);
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlElement = mc[i].Value;

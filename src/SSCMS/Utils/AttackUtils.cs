@@ -1,8 +1,7 @@
-﻿using System;
-using Ganss.XSS;
-using SSCMS.Utils;
+﻿using Ganss.XSS;
+using System;
 
-namespace SSCMS.Core.Utils
+namespace SSCMS.Utils
 {
     public static class AttackUtils
     {

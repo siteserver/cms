@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             {
                 channelId = channel.Id;
             }
-            var (total, pageSummaries) = await _contentRepository.UserWriteSearch(_authManager.UserId, site, request.Page, channelId, request.IsCheckedLevels, request.CheckedLevels, request.GroupNames, request.TagNames);
+            var (total, pageSummaries) = await _contentRepository.UserWriteSearchAsync(_authManager.UserId, site, request.Page, channelId, request.IsCheckedLevels, request.CheckedLevels, request.GroupNames, request.TagNames);
 
             if (total > 0)
             {

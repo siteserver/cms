@@ -99,12 +99,27 @@ namespace SSCMS.Utils
             return string.IsNullOrEmpty(host) ? string.Empty : host.Trim().ToLower();
         }
 
-        private static NameValueCollection GetQueryString(string url)
+        public static NameValueCollection GetQueryString(string url)
         {
             if (string.IsNullOrEmpty(url) || url.IndexOf("?", StringComparison.Ordinal) == -1) return new NameValueCollection();
 
             var querystring = url.Substring(url.IndexOf("?", StringComparison.Ordinal) + 1);
             return TranslateUtils.ToNameValueCollection(querystring);
+        }
+
+        public static NameValueCollection GetQueryStringFilterSqlAndXss(string url)
+        {
+            if (string.IsNullOrEmpty(url) || url.IndexOf("?", StringComparison.Ordinal) == -1) return new NameValueCollection();
+
+            var attributes = new NameValueCollection();
+
+            var querystring = url.Substring(url.IndexOf("?", StringComparison.Ordinal) + 1);
+            var originals = TranslateUtils.ToNameValueCollection(querystring);
+            foreach (string key in originals.Keys)
+            {
+                attributes[key] = AttackUtils.FilterSqlAndXss(originals[key]);
+            }
+            return attributes;
         }
 
         public static string Combine(params string[] urls)

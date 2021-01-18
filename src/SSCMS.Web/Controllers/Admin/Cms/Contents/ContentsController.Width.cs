@@ -20,9 +20,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            var name = ColumnsManager.GetColumnWidthName(request.AttributeName);
-            channel.Set(name, request.Width);
-
+            if (!string.IsNullOrEmpty(request.PrevAttributeName) && request.PrevWidth > 0)
+            {
+                var prevName = ColumnsManager.GetColumnWidthName(request.PrevAttributeName);
+                channel.Set(prevName, request.PrevWidth);
+            }
+            if (!string.IsNullOrEmpty(request.NextAttributeName) && request.NextWidth > 0)
+            {
+                var nextName = ColumnsManager.GetColumnWidthName(request.NextAttributeName);
+                channel.Set(nextName, request.NextWidth);
+            }
+            
             await _channelRepository.UpdateAsync(channel);
 
             return new BoolResult

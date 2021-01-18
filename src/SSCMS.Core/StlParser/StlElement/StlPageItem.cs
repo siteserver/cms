@@ -350,7 +350,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
 
                     //pre ellipsis
-                    if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
+                    if (index > 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
                         pageUrl = contextType == ParseType.Channel ? await parseManager.PathManager.GetUrlInChannelPageAsync(type, pageInfo.Site, node, index, currentPageIndex, pageCount, pageInfo.IsLocal) : await parseManager.PathManager.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
@@ -401,7 +401,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
 
                     //pre ellipsis
-                    if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
+                    if (index - 1 < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
                         pageUrl = contextType == ParseType.Channel ? await parseManager.PathManager.GetUrlInChannelPageAsync(type, pageInfo.Site, node, index, currentPageIndex, pageCount, pageInfo.IsLocal) : await parseManager.PathManager.GetUrlInContentPageAsync(type, pageInfo.Site, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
@@ -623,18 +623,18 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(stlElementInfo.InnerHtml))
                 {
-                    var stlElementList = StlParserUtility.GetStlElementList(stlElementInfo.InnerHtml);
+                    var stlElementList = ParseUtils.GetStlElements(stlElementInfo.InnerHtml);
                     if (stlElementList.Count > 0)
                     {
                         foreach (var theStlElement in stlElementList)
                         {
-                            if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
+                            if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
                             {
-                                successTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
+                                successTemplateString = ParseUtils.GetInnerHtml(theStlElement);
                             }
-                            else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
+                            else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
                             {
-                                failureTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
+                                failureTemplateString = ParseUtils.GetInnerHtml(theStlElement);
                             }
                         }
                     }
@@ -716,8 +716,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            string pageUrl = $"javascript:{clickString}";
-                            parsedContent = await GetParsedContentAsync(parseManager, successTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseManager, successTemplateString, $"javascript:{clickString}", Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -765,147 +764,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypePageNavigation))//页导航
                 {
-                    var leftText = "[";
-                    var rightText = "]";
-                    if (hasLr)
-                    {
-                        if (!string.IsNullOrEmpty(lStr) && !string.IsNullOrEmpty(rStr))
-                        {
-                            leftText = lStr;
-                            rightText = rStr;
-                        }
-                        else if (!string.IsNullOrEmpty(lStr))
-                        {
-                            leftText = rightText = lStr;
-                        }
-                        else if (!string.IsNullOrEmpty(rStr))
-                        {
-                            leftText = rightText = rStr;
-                        }
-                    }
-                    else if (!hasLr)
-                    {
-                        leftText = rightText = string.Empty;
-                    }
-                    var pageBuilder = new StringBuilder();
-
-                    var pageLength = listNum;
-                    var pageHalf = Convert.ToInt32(listNum / 2);
-
-                    var index = currentPageIndex + 1;
-                    var totalPage = currentPageIndex + pageLength;
-                    if (totalPage > pageCount)
-                    {
-                        if (index + pageHalf < pageCount)
-                        {
-                            index = currentPageIndex + 1 - pageHalf;
-                            if (index <= 0)
-                            {
-                                index = 1;
-                                totalPage = pageCount;
-                            }
-                            else
-                            {
-                                totalPage = currentPageIndex + 1 + pageHalf;
-                            }
-                        }
-                        else
-                        {
-                            index = pageCount - pageLength > 0 ? pageCount - pageLength + 1 : 1;
-                            totalPage = pageCount;
-                        }
-                    }
-                    else
-                    {
-                        index = currentPageIndex + 1 - pageHalf;
-                        if (index <= 0)
-                        {
-                            index = 1;
-                            totalPage = pageLength;
-                        }
-                        else
-                        {
-                            totalPage = index + pageLength - 1;
-                        }
-                    }
-
-                    //pre ellipsis
-                    if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
-                    {
-                        clickString = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
-
-                        if (!string.IsNullOrEmpty(successTemplateString))
-                        {
-                            string pageUrl = $"javascript:{clickString}";
-                            pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString, pageUrl, listEllipsis));
-                        }
-                        else
-                        {
-                            pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{clickString}"" {TranslateUtils
-                                    .ToAttributesString(attributes)}>{listEllipsis}</a>");
-                        }
-                    }
-
-                    for (; index <= totalPage; index++)
-                    {
-                        if (currentPageIndex + 1 != index)
-                        {
-                            clickString = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
-                            if (!string.IsNullOrEmpty(successTemplateString))
-                            {
-                                string pageUrl = $"javascript:{clickString}";
-                                pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString, pageUrl, index.ToString()));
-                            }
-                            else
-                            {
-                                var linkAttributes = new NameValueCollection
-                                {
-                                    ["href"] = PageUtils.UnClickableUrl, 
-                                    ["onclick"] = clickString
-                                };
-                                if (!string.IsNullOrEmpty(linkClass))
-                                {
-                                    linkAttributes["class"] = linkClass;
-                                }
-                                pageBuilder.Append($@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{leftText}{index}{rightText}</a>&nbsp;");
-                            }
-                        }
-                        else
-                        {
-                            if (!string.IsNullOrEmpty(failureTemplateString))
-                            {
-                                pageBuilder.Append(await GetParsedContentAsync(parseManager, failureTemplateString, PageUtils.UnClickableUrl, index.ToString()));
-                            }
-                            else
-                            {
-                                isAddSpan = true;
-                                pageBuilder.Append(!alwaysA
-                                    ? $"{leftText}{index}{rightText}&nbsp;"
-                                    : $"<a href='javascript:void(0);'>{leftText}{index}{rightText}</a>&nbsp;");
-                            }
-                        }
-                    }
-
-                    //pre ellipsis
-                    if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
-                    {
-                        clickString = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
-
-                        if (!string.IsNullOrEmpty(successTemplateString))
-                        {
-                            string pageUrl = $"javascript:{clickString}";
-                            pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString, pageUrl, listEllipsis));
-                        }
-                        else
-                        {
-                            pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{clickString}"" {TranslateUtils
-                                    .ToAttributesString(attributes)}>{listEllipsis}</a>");
-                        }
-                    }
-
-                    parsedContent = text + pageBuilder;
+                    var html = string.Empty;
+                    (html, isAddSpan) = await ParsePageNavigationAsync(parseManager, hasLr, lStr, rStr, listNum, currentPageIndex,
+                        pageCount, listEllipsis, type, ajaxDivId, successTemplateString, failureTemplateString,
+                        linkClass, alwaysA, isAddSpan, attributes);
+                    parsedContent = text + html;
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页跳转
                 {
@@ -951,6 +814,148 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return parsedContent;
+        }
+
+        private static async Task<(string parsedContent, bool isAddSpan)> ParsePageNavigationAsync(IParseManager parseManager, bool hasLr, string lStr, string rStr, int listNum, int currentPageIndex, int pageCount, string listEllipsis, string type, string ajaxDivId, string successTemplateString, string failureTemplateString, string linkClass, bool alwaysA, bool isAddSpan, NameValueCollection attributes)
+        {
+            var leftText = "[";
+            var rightText = "]";
+            if (hasLr)
+            {
+                if (!string.IsNullOrEmpty(lStr) && !string.IsNullOrEmpty(rStr))
+                {
+                    leftText = lStr;
+                    rightText = rStr;
+                }
+                else if (!string.IsNullOrEmpty(lStr))
+                {
+                    leftText = rightText = lStr;
+                }
+                else if (!string.IsNullOrEmpty(rStr))
+                {
+                    leftText = rightText = rStr;
+                }
+            }
+            else
+            {
+                leftText = rightText = string.Empty;
+            }
+            var pageBuilder = new StringBuilder();
+
+            var pageLength = listNum;
+            var pageHalf = Convert.ToInt32(listNum / 2);
+
+            var index = currentPageIndex + 1;
+            var totalPage = currentPageIndex + pageLength;
+            if (totalPage > pageCount)
+            {
+                if (index + pageHalf < pageCount)
+                {
+                    index = currentPageIndex + 1 - pageHalf;
+                    if (index <= 0)
+                    {
+                        index = 1;
+                        totalPage = pageCount;
+                    }
+                    else
+                    {
+                        totalPage = currentPageIndex + 1 + pageHalf;
+                    }
+                }
+                else
+                {
+                    index = pageCount - pageLength > 0 ? pageCount - pageLength + 1 : 1;
+                    totalPage = pageCount;
+                }
+            }
+            else
+            {
+                index = currentPageIndex + 1 - pageHalf;
+                if (index <= 0)
+                {
+                    index = 1;
+                    totalPage = pageLength;
+                }
+                else
+                {
+                    totalPage = index + pageLength - 1;
+                }
+            }
+
+            //pre ellipsis
+            if (index > 1 && !string.IsNullOrEmpty(listEllipsis))
+            {
+                var clickString = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
+
+                if (!string.IsNullOrEmpty(successTemplateString))
+                {
+                    pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString, $"javascript:{clickString}", listEllipsis));
+                }
+                else
+                {
+                    pageBuilder.Append(
+                        $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{clickString}"" {TranslateUtils
+                            .ToAttributesString(attributes)}>{listEllipsis}</a>");
+                }
+            }
+
+            for (; index <= totalPage; index++)
+            {
+                if (currentPageIndex + 1 != index)
+                {
+                    var clickString = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
+                    if (!string.IsNullOrEmpty(successTemplateString))
+                    {
+                        pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString, $"javascript:{clickString}", index.ToString()));
+                    }
+                    else
+                    {
+                        var linkAttributes = new NameValueCollection
+                        {
+                            ["href"] = PageUtils.UnClickableUrl,
+                            ["onclick"] = clickString
+                        };
+                        if (!string.IsNullOrEmpty(linkClass))
+                        {
+                            linkAttributes["class"] = linkClass;
+                        }
+                        pageBuilder.Append($@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{leftText}{index}{rightText}</a>&nbsp;");
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(failureTemplateString))
+                    {
+                        pageBuilder.Append(await GetParsedContentAsync(parseManager, failureTemplateString, PageUtils.UnClickableUrl, index.ToString()));
+                    }
+                    else
+                    {
+                        isAddSpan = true;
+                        pageBuilder.Append(!alwaysA
+                            ? $"{leftText}{index}{rightText}&nbsp;"
+                            : $"<a href='javascript:void(0);'>{leftText}{index}{rightText}</a>&nbsp;");
+                    }
+                }
+            }
+
+            //pre ellipsis
+            if (index - 1 < pageCount && !string.IsNullOrEmpty(listEllipsis))
+            {
+                var clickString = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
+
+                if (!string.IsNullOrEmpty(successTemplateString))
+                {
+                    pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString, $"javascript:{clickString}", listEllipsis));
+                }
+                else
+                {
+                    pageBuilder.Append(
+                        $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{clickString}"" {TranslateUtils
+                            .ToAttributesString(attributes)}>{listEllipsis}</a>");
+                }
+            }
+
+            return (pageBuilder.ToString(), isAddSpan);
         }
 
         public static async Task<string> ParseEntityInSearchPageAsync(IParseManager parseManager, string stlEntity, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
@@ -1103,18 +1108,18 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 if (!string.IsNullOrEmpty(stlElementInfo.InnerHtml))
                 {
-                    var stlElementList = StlParserUtility.GetStlElementList(stlElementInfo.InnerHtml);
+                    var stlElementList = ParseUtils.GetStlElements(stlElementInfo.InnerHtml);
                     if (stlElementList.Count > 0)
                     {
                         foreach (var theStlElement in stlElementList)
                         {
-                            if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
+                            if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
                             {
-                                successTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
+                                successTemplateString = ParseUtils.GetInnerHtml(theStlElement);
                             }
-                            else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || StlParserUtility.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
+                            else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || ParseUtils.IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
                             {
-                                failureTemplateString = StlParserUtility.GetInnerHtml(theStlElement);
+                                failureTemplateString = ParseUtils.GetInnerHtml(theStlElement);
                             }
                         }
                     }
@@ -1243,146 +1248,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypePageNavigation))//页导航
                 {
-                    var leftText = "[";
-                    var rightText = "]";
-                    if (hasLr)
-                    {
-                        if (!string.IsNullOrEmpty(lStr) && !string.IsNullOrEmpty(rStr))
-                        {
-                            leftText = lStr;
-                            rightText = rStr;
-                        }
-                        else if (!string.IsNullOrEmpty(lStr))
-                        {
-                            leftText = rightText = lStr;
-                        }
-                        else if (!string.IsNullOrEmpty(rStr))
-                        {
-                            leftText = rightText = rStr;
-                        }
-                    }
-                    else if (!hasLr)
-                    {
-                        leftText = rightText = string.Empty;
-                    }
-                    var pageBuilder = new StringBuilder();
-
-                    var pageLength = listNum;
-                    var pageHalf = Convert.ToInt32(listNum / 2);
-
-                    var index = currentPageIndex + 1;
-                    var totalPage = currentPageIndex + pageLength;
-                    if (totalPage > pageCount)
-                    {
-                        if (index + pageHalf < pageCount)
-                        {
-                            index = currentPageIndex + 1 - pageHalf;
-                            if (index <= 0)
-                            {
-                                index = 1;
-                                totalPage = pageCount;
-                            }
-                            else
-                            {
-                                totalPage = currentPageIndex + 1 + pageHalf;
-                            }
-                        }
-                        else
-                        {
-                            index = pageCount - pageLength > 0 ? pageCount - pageLength + 1 : 1;
-                            totalPage = pageCount;
-                        }
-                    }
-                    else
-                    {
-                        index = currentPageIndex + 1 - pageHalf;
-                        if (index <= 0)
-                        {
-                            index = 1;
-                            totalPage = pageLength;
-                        }
-                        else
-                        {
-                            totalPage = index + pageLength - 1;
-                        }
-                    }
-
-                    //pre ellipsis
-                    if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
-                    {
-                        jsMethod = await parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
-
-                        if (!string.IsNullOrEmpty(successTemplateString))
-                        {
-                            pageBuilder = new StringBuilder(await GetParsedContentAsync(parseManager, successTemplateString, $"javascript:{jsMethod}", listEllipsis));
-                        }
-                        else
-                        {
-                            pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{jsMethod};return false;"" {TranslateUtils
-                                    .ToAttributesString(attributes)}>{listEllipsis}</a>");
-                        }
-                    }
-
-                    for (; index <= totalPage; index++)
-                    {
-                        if (currentPageIndex + 1 != index)
-                        {
-                            jsMethod = await parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
-
-                            if (!string.IsNullOrEmpty(successTemplateString))
-                            {
-                                pageBuilder.Append(await GetParsedContentAsync(parseManager, successTemplateString,
-                                    $"javascript:{jsMethod}", Convert.ToString(index)));
-                            }
-                            else
-                            {
-                                var linkAttributes = new NameValueCollection
-                                {
-                                    ["href"] = PageUtils.UnClickableUrl, 
-                                    ["onclick"] = jsMethod + ";return false;"
-                                };
-                                if (!string.IsNullOrEmpty(linkClass))
-                                {
-                                    linkAttributes["class"] = linkClass;
-                                }
-                                pageBuilder.Append($@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{leftText}{index}{rightText}</a>&nbsp;");
-                            }
-                        }
-                        else
-                        {
-                            if (!string.IsNullOrEmpty(failureTemplateString))
-                            {
-                                pageBuilder.Append(await GetParsedContentAsync(parseManager, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1)));
-                            }
-                            else
-                            {
-                                isAddSpan = true;
-                                pageBuilder.Append(!alwaysA
-                                    ? $"{leftText}{index}{rightText}&nbsp;"
-                                    : $"<a href='javascript:void(0);'>{leftText}{index}{rightText}</a>&nbsp;");
-                            }
-                        }
-                    }
-
-                    //pre ellipsis
-                    if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
-                    {
-                        jsMethod = await parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
-
-                        if (!string.IsNullOrEmpty(successTemplateString))
-                        {
-                            pageBuilder = new StringBuilder(await GetParsedContentAsync(parseManager, successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1)));
-                        }
-                        else
-                        {
-                            pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{jsMethod};return false;"" {TranslateUtils
-                                    .ToAttributesString(attributes)}>{listEllipsis}</a>");
-                        }
-                    }
-
-                    parsedContent = text + pageBuilder;
+                    var html = string.Empty;
+                    (html, isAddSpan) = await ParsePageNavigationAsync(parseManager, hasLr, lStr, rStr, listNum, currentPageIndex,
+                        pageCount, listEllipsis, type, ajaxDivId, successTemplateString, failureTemplateString,
+                        linkClass, alwaysA, isAddSpan, attributes);
+                    parsedContent = text + html;
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页跳转
                 {
@@ -1436,7 +1306,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = await parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {

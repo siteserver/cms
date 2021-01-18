@@ -20,7 +20,7 @@ namespace SSCMS.Core.Services
         public async Task ReplaceStlElementsAsync(StringBuilder parsedBuilder)
         {
             var templateContent = parsedBuilder.ToString();
-            var stlElements = StlParserUtility.GetStlElementList(templateContent);
+            var stlElements = ParseUtils.GetStlElements(templateContent);
             var index = 0;
             foreach (var stlElement in stlElements)
             {
@@ -115,7 +115,7 @@ namespace SSCMS.Core.Services
                 {
                     if (stlElementInfo.IsDynamic)
                     {
-                        parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this, PageInfo.Site);
+                        parsedContent = await StlDynamic.ParseAsync(stlElement, this, PageInfo.Site);
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace SSCMS.Core.Services
                     {
                         if (stlElementInfo.IsDynamic)
                         {
-                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this, PageInfo.Site);
+                            parsedContent = await StlDynamic.ParseAsync(stlElement, this, PageInfo.Site);
                         }
                         else
                         {
@@ -180,7 +180,7 @@ namespace SSCMS.Core.Services
                     {
                         if (stlElementInfo.IsDynamic)
                         {
-                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this, PageInfo.Site);
+                            parsedContent = await StlDynamic.ParseAsync(stlElement, this, PageInfo.Site);
                         }
                         else
                         {

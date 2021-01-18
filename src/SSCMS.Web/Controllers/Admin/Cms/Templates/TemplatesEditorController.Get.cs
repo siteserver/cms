@@ -6,6 +6,7 @@ using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -69,22 +70,25 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     template.Id, channels);
                 if (templateChannelIds.Count > 0)
                 {
-                    channelId = templateChannelIds.First();
-                    var firstChannel = await _channelRepository.GetAsync(channelId);
-                    channelIds = firstChannel.ParentsPath;
-                    channelIds.Add(channelId);
-
-                    if (template.TemplateType == TemplateType.ContentTemplate)
+                    channelId = templateChannelIds.FirstOrDefault(x => x != request.SiteId);
+                    if (channelId > 0)
                     {
-                        var contentIds = await _contentRepository.GetContentIdsCheckedAsync(site, firstChannel);
-                        foreach (var id in contentIds.Take(30))
+                        var firstChannel = await _channelRepository.GetAsync(channelId);
+                        channelIds = ListUtils.GetIntList(firstChannel.ParentsPath);
+                        channelIds.Add(channelId);
+
+                        if (template.TemplateType == TemplateType.ContentTemplate)
                         {
-                            if (contentId == 0)
+                            var contentIds = await _contentRepository.GetContentIdsCheckedAsync(site, firstChannel);
+                            foreach (var id in contentIds.Take(30))
                             {
-                                contentId = id;
+                                if (contentId == 0)
+                                {
+                                    contentId = id;
+                                }
+                                var entity = await _contentRepository.GetAsync(site, channel, id);
+                                contents.Add(new KeyValuePair<int, string>(entity.Id, entity.Title));
                             }
-                            var entity = await _contentRepository.GetAsync(site, channel, id);
-                            contents.Add(new KeyValuePair<int, string>(entity.Id, entity.Title));
                         }
                     }
                 }

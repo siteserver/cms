@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 !string.IsNullOrEmpty(request.SearchText) ||
                 request.IsAdvanced)
             {
-                summaries = await _contentRepository.Search(site, channel, channel.IsAllContents, request.SearchType, request.SearchText, request.IsAdvanced, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
+                summaries = await _contentRepository.SearchAsync(site, channel, channel.IsAllContents, request.SearchType, request.SearchText, request.IsAdvanced, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
             }
             else
             {

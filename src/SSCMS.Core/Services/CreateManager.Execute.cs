@@ -72,7 +72,7 @@ namespace SSCMS.Core.Services
 
             var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
 
-            var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
+            var stlLabelList = ParseUtils.GetStlLabels(contentBuilder.ToString());
 
             //如果标签中存在<stl:channel type="PageContent"></stl:channel>
             if (StlParserUtility.IsStlChannelElementWithTypePageContent(stlLabelList)) //内容存在
@@ -113,9 +113,9 @@ namespace SSCMS.Core.Services
                 }
             }
             //如果标签中存在<stl:pageContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
+            else if (ParseUtils.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
+                var stlElement = ParseUtils.GetStlElement(StlPageContents.ElementName, stlLabelList);
                 var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, _parseManager);
@@ -143,9 +143,9 @@ namespace SSCMS.Core.Services
                 }
             }
             //如果标签中存在<stl:pageChannels>
-            else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
+            else if (ParseUtils.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
+                var stlElement = ParseUtils.GetStlElement(StlPageChannels.ElementName, stlLabelList);
                 var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
                 var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, _parseManager);
@@ -172,9 +172,9 @@ namespace SSCMS.Core.Services
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
+            else if (ParseUtils.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
+                var stlElement = ParseUtils.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
                 var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
                 var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, _parseManager);
@@ -238,7 +238,7 @@ namespace SSCMS.Core.Services
             var filePath = await _pathManager.GetContentPageFilePathAsync(site, _parseManager.PageInfo.PageChannelId, contentInfo, 0);
             var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
 
-            var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
+            var stlLabelList = ParseUtils.GetStlLabels(contentBuilder.ToString());
 
             //如果标签中存在<stl:content type="PageContent"></stl:content>
             if (StlParserUtility.IsStlContentElementWithTypePageContent(stlLabelList)) //内容存在
@@ -317,9 +317,9 @@ namespace SSCMS.Core.Services
                 }
             }
             //如果标签中存在<stl:pageContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
+            else if (ParseUtils.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
+                var stlElement = ParseUtils.GetStlElement(StlPageContents.ElementName, stlLabelList);
                 var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = await StlPageContents.GetAsync(stlElement, _parseManager);
@@ -345,9 +345,9 @@ namespace SSCMS.Core.Services
                 }
             }
             //如果标签中存在<stl:pageChannels>
-            else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
+            else if (ParseUtils.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
+                var stlElement = ParseUtils.GetStlElement(StlPageChannels.ElementName, stlLabelList);
                 var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
                 var pageChannelsElementParser = await StlPageChannels.GetAsync(stlElement, _parseManager);
@@ -373,9 +373,9 @@ namespace SSCMS.Core.Services
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
+            else if (ParseUtils.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
             {
-                var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
+                var stlElement = ParseUtils.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
                 var stlElementTranslated = _parseManager.StlEncrypt(stlElement);
 
                 var pageSqlContentsElementParser = await StlPageSqlContents.GetAsync(stlElement, _parseManager);

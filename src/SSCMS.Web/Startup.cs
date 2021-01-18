@@ -27,6 +27,7 @@ using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -196,6 +197,15 @@ namespace SSCMS.Web
             {
                 var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                 var exception = exceptionHandlerPathFeature.Error;
+
+                try
+                {
+                    errorLogRepository.AddErrorLogAsync(exception).GetAwaiter().GetResult();
+                }
+                catch
+                {
+                    // ignored
+                }
 
                 string result;
                 if (env.IsDevelopment())

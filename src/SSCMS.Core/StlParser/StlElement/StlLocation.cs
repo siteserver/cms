@@ -63,7 +63,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, separator, target, linkClass, wordNum,isContainSelf);
+            return await ParseAsync(parseManager, separator, target, linkClass, wordNum, isContainSelf);
         }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
@@ -81,9 +81,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var builder = new StringBuilder();
 
-            var parentsPath = channel.ParentsPath;
             var parentsCount = channel.ParentsCount;
-            var nodePath = new List<int>(parentsPath);
+            var nodePath = ListUtils.GetIntList(channel.ParentsPath);
             if (isContainSelf)
             {
                 nodePath.Add(contextInfo.ChannelId);

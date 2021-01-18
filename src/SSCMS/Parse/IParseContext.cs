@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Enums;
+using SSCMS.Services;
 
 namespace SSCMS.Parse
 {
@@ -68,5 +69,7 @@ namespace SSCMS.Parse
         Task<string> ParseAsync(string template);
 
         Task<string> GetCurrentUrlAsync();
+
+        IParseManager ParseManager { get; }
     }
 }

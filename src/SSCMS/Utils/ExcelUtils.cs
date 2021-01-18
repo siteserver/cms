@@ -2,7 +2,7 @@
 using System.IO;
 using ExcelDataReader;
 
-namespace SSCMS.Core.Utils.Office
+namespace SSCMS.Utils
 {
     public static class ExcelUtils
     {

@@ -202,7 +202,10 @@ namespace SSCMS.Core.Repositories
                 if (channel.ParentsCount > 0)
                 {
                     list.Add(channel.Id);
-                    list.AddRange(channel.ParentsPath);
+                    if (channel.ParentsPath != null)
+                    {
+                        list.AddRange(channel.ParentsPath);
+                    }
                     list.Add(0);
                 }
                 else

@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Utils;
-using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
 
 namespace SSCMS.Web.Controllers.Stl
 {
@@ -14,8 +14,8 @@ namespace SSCMS.Web.Controllers.Stl
         {
             var user = await _authManager.GetUserAsync();
 
-            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
-            var ifInfo = TranslateUtils.JsonDeserialize<DynamicInfo.IfInfo>(dynamicInfo.ElementValues);
+            var dynamicInfo = StlDynamic.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
+            var ifInfo = TranslateUtils.JsonDeserialize<DynamicIfInfo>(dynamicInfo.Settings);
 
             var isSuccess = false;
             var html = string.Empty;
@@ -27,8 +27,8 @@ namespace SSCMS.Web.Controllers.Stl
                     isSuccess = _authManager.IsUser;
                 }
 
-                var template = isSuccess ? dynamicInfo.SuccessTemplate : dynamicInfo.FailureTemplate;
-                html = await StlDynamic.ParseDynamicContentAsync(_parseManager, dynamicInfo, template);
+                var template = isSuccess ? dynamicInfo.YesTemplate : dynamicInfo.NoTemplate;
+                html = await StlDynamic.ParseDynamicAsync(_parseManager, dynamicInfo, template);
             }
 
             return new GetResult

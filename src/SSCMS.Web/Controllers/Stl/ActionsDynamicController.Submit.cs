@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.StlElement;
-using DynamicInfo = SSCMS.Core.StlParser.Models.DynamicInfo;
 
 namespace SSCMS.Web.Controllers.Stl
 {
@@ -13,12 +12,13 @@ namespace SSCMS.Web.Controllers.Stl
         {
             var user = await _authManager.GetUserAsync();
 
-            var dynamicInfo = DynamicInfo.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
+            var dynamicInfo = StlDynamic.GetDynamicInfo(_settingsManager, request.Value, request.Page, user, Request.Path + Request.QueryString);
+            var template = dynamicInfo.YesTemplate;
 
             return new SubmitResult
             {
                 Value = true,
-                Html = await StlDynamic.ParseDynamicContentAsync(_parseManager, dynamicInfo, dynamicInfo.SuccessTemplate)
+                Html = await StlDynamic.ParseDynamicAsync(_parseManager, dynamicInfo, template)
             };
         }
     }

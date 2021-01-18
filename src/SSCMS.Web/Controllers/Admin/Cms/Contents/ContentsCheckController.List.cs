@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.CheckContents);
 
             var pageContents = new List<Content>();
-            var (total, pageSummaries) = await _contentRepository.CheckSearch(site, request.Page, request.ChannelId, request.StartDate, request.EndDate, request.Items, request.IsCheckedLevels, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
+            var (total, pageSummaries) = await _contentRepository.CheckSearchAsync(site, request.Page, request.ChannelId, request.StartDate, request.EndDate, request.Items, request.IsCheckedLevels, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
 
             if (total > 0)
             {

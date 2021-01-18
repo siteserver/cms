@@ -7,7 +7,6 @@ using SqlKata;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Enums;
 using SSCMS.Core.StlParser.StlElement;
-using SSCMS.Core.StlParser.Utility;
 using SSCMS.Enums;
 using SSCMS.Parse;
 using SSCMS.Services;
@@ -31,7 +30,7 @@ namespace SSCMS.Core.StlParser.Models
         private bool _isVideo;
         private bool _isFile;
 
-        public static async Task<ListInfo> GetListInfoAsync(IParseManager parseManager, ParseType contextType)
+        public static async Task<ListInfo> GetListInfoAsync(IParseManager parseManager, ParseType contextType, Query query = null)
         {
             var contextInfo = parseManager.ContextInfo;
 
@@ -39,7 +38,8 @@ namespace SSCMS.Core.StlParser.Models
             {
                 _contextType = contextType,
                 DatabaseType = parseManager.SettingsManager.DatabaseType,
-                ConnectionString = parseManager.SettingsManager.DatabaseConnectionString
+                ConnectionString = parseManager.SettingsManager.DatabaseConnectionString,
+                Query = query
             };
 
             var innerHtml = contextInfo.InnerHtml;
@@ -47,15 +47,14 @@ namespace SSCMS.Core.StlParser.Models
 
             if (!string.IsNullOrEmpty(innerHtml))
             {
-                var stlElementList = StlParserUtility.GetStlElementList(innerHtml);
+                var stlElementList = ParseUtils.GetStlElements(innerHtml);
                 if (stlElementList.Count > 0)
                 {
                     foreach (var theStlElement in stlElementList)
                     {
-                        if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlItemTemplate.ElementName))
+                        if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlItemTemplate.ElementName))
                         {
-                            var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
-                            var templateString = StlParserUtility.GetInnerHtml(theStlElement, attributes);
+                            var (templateString, attributes) = ParseUtils.GetInnerHtmlAndAttributes(theStlElement);
                             if (!string.IsNullOrEmpty(templateString))
                             {
                                 foreach (var key in attributes.AllKeys)
@@ -133,16 +132,25 @@ namespace SSCMS.Core.StlParser.Models
                             }
                             innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
-                        else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
+                        else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
                         {
-                            var innerBuilder = new StringBuilder(StlParserUtility.GetInnerHtml(theStlElement));
+                            var innerBuilder = new StringBuilder(ParseUtils.GetInnerHtml(theStlElement));
                             await parseManager.ParseInnerContentAsync(innerBuilder);
                             listInfo.LoadingTemplate = innerBuilder.ToString();
                             innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
-                        else if (contextType == ParseType.SqlContent && StlParserUtility.IsSpecifiedStlElement(theStlElement, StlQueryString.ElementName))
+                        else if (ParseUtils.IsSpecifiedStlElement(theStlElement, StlQuery.ElementName))
                         {
-                            var innerBuilder = new StringBuilder(StlParserUtility.GetInnerHtml(theStlElement));
+                            if (listInfo.Query == null)
+                            {
+                                listInfo.Query = Q.NewQuery();
+                            }
+                            listInfo.Query.AddQuery(theStlElement);
+                            innerHtml = innerHtml.Replace(theStlElement, string.Empty);
+                        }
+                        else if (contextType == ParseType.SqlContent && ParseUtils.IsSpecifiedStlElement(theStlElement, StlQueryString.ElementName))
+                        {
+                            var innerBuilder = new StringBuilder(ParseUtils.GetInnerHtml(theStlElement));
                             await parseManager.ParseInnerContentAsync(innerBuilder);
                             listInfo.QueryString = innerBuilder.ToString();
                             innerHtml = innerHtml.Replace(theStlElement, string.Empty);
