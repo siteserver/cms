@@ -182,7 +182,8 @@ namespace SSCMS.Core.Utils
                             AttributeName = tableStyle.AttributeName,
                             DisplayName = tableStyle.DisplayName,
                             InputType = tableStyle.InputType,
-                            Taxis = taxis++
+                            Taxis = taxis++,
+                            Items = tableStyle.Items
                         });
                     }
                 }
@@ -515,7 +516,8 @@ namespace SSCMS.Core.Utils
                     AttributeName = style.AttributeName,
                     DisplayName = style.DisplayName,
                     InputType = style.InputType,
-                    Width = GetColumnWidth(style.AttributeName, channel)
+                    Width = GetColumnWidth(style.AttributeName, channel),
+                    Items = style.Items
                 };
                 if (style.AttributeName == nameof(Content.Title))
                 {

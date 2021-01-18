@@ -62,7 +62,8 @@ var methods = {
       $this.searchColumns.push({
         attributeName: $this.titleColumn.attributeName,
         displayName: $this.titleColumn.displayName,
-        value: keyword
+        value: keyword,
+        inputType: ''
       });
 
       $this.searchForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });
@@ -161,7 +162,9 @@ var methods = {
       this.searchColumns.push({
         attributeName: column.attributeName,
         displayName: column.displayName,
-        value: ''
+        value: '',
+        inputType: column.inputType,
+        items: column.items
       });
     }
   },
