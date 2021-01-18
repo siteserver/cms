@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -160,7 +161,7 @@ namespace SSCMS.Core.Repositories
             return (total, pageSummaries);
         }
 
-        public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds, bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser)
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds, bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser, List<ContentColumn> columns)
         {
             var repository = GetRepository(site.TableName);
 
@@ -194,7 +195,33 @@ namespace SSCMS.Core.Repositories
                 {
                     if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
                     {
-                        query.WhereLike(item.Key, $"%{item.Value}%");
+                        if (columns != null)
+                        {
+                            var column = columns.Where(c => c.AttributeName.Equals(item.Key) && c.IsExtend).FirstOrDefault();
+                            if (column != null)
+                            {
+                                if (column.InputType == InputType.Radio || column.InputType == InputType.SelectOne)
+                                {
+                                    query.WhereJson(Database.DatabaseType, item.Key, "=", item.Value);
+                                }
+                                else if (column.InputType == InputType.CheckBox || column.InputType == InputType.SelectMultiple)
+                                {
+                                    query.WhereContainsJson(Database.DatabaseType, item.Key, item.Value);
+                                }
+                                else
+                                {
+                                    query.WhereLikeJson(Database.DatabaseType, item.Key, item.Value);
+                                }
+                            }
+                            else
+                            {
+                                query.WhereLike(item.Key, $"%{item.Value}%");
+                            }
+                        }
+                        else
+                        {
+                            query.WhereLike(item.Key, $"%{item.Value}%");
+                        }
                     }
                 }
             }
@@ -287,7 +314,7 @@ namespace SSCMS.Core.Repositories
         public async Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds, bool isAllContents)
         {
             return await AdvancedSearchAsync(site, page, channelIds, isAllContents, null, null, null, false, null, false, false,
-                false, false, null, null, false, 0, false);
+                false, false, null, null, false, 0, false, null);
         }
 
         public async Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearchAsync(Site site, int page, int? channelId, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)

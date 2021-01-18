@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Models;
 
 namespace SSCMS.Repositories
@@ -16,7 +17,7 @@ namespace SSCMS.Repositories
         Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds,
             bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items,
             bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor,
-            List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser);
+            List<string> groupNames, List<string> tagNames, bool isAdmin, int adminId, bool isUser, List<ContentColumn> columns);
 
         Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds,
             bool isAllContents);

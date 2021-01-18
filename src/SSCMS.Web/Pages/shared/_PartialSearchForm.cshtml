@@ -1,0 +1,19 @@
+<template v-for="column in searchColumns">
+    <template v-if="column.inputType === '' || column.inputType === 'Text' || column.inputType === 'Number' || column.inputType === 'TextEditor' || column.inputType === 'TextArea'">
+        <el-form-item :label="column.displayName">
+            <el-input v-model="column.value" placeholder="请输入搜索关键词">
+                <el-button slot="append" v-on:click="btnSelectColumnClick(column)" icon="el-icon-remove-outline"></el-button>
+            </el-input>
+        </el-form-item>
+    </template>
+    <template v-else-if="column.inputType === 'Radio' || column.inputType === 'SelectOne' || column.inputType === 'CheckBox' || column.inputType === 'SelectMultiple'">
+        <el-form-item :label="column.displayName">
+            <el-select v-model="column.value" clearable placeholder="请选择">
+                <el-option v-for="item in column.items"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value"></el-option>
+            </el-select>
+        </el-form-item>
+    </template>
+</template>

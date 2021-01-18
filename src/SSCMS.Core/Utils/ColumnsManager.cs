@@ -146,6 +146,14 @@ namespace SSCMS.Core.Utils
             CheckReasons,
         };
 
+        private static readonly List<InputType> CalculatedTypes = new List<InputType>
+        {
+            InputType.Radio,
+            InputType.SelectOne,
+            InputType.CheckBox,
+            InputType.SelectMultiple
+        };
+
         public static List<TableStyle> GetContentListStyles(List<TableStyle> tableStyleList)
         {
             var taxis = 1;
@@ -182,7 +190,9 @@ namespace SSCMS.Core.Utils
                             AttributeName = tableStyle.AttributeName,
                             DisplayName = tableStyle.DisplayName,
                             InputType = tableStyle.InputType,
-                            Taxis = taxis++
+                            Taxis = taxis++,
+                            Items = tableStyle.Items,
+                            Id = tableStyle.Id
                         });
                     }
                 }
@@ -348,8 +358,35 @@ namespace SSCMS.Core.Utils
 
             content.Set(State, CheckManager.GetCheckState(site, content));
 
+            var allStyles = await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel);
+            var styles = allStyles.Where(style =>
+                    !string.IsNullOrEmpty(style.DisplayName) &&
+                    ListUtils.Contains(CalculatedTypes, style.InputType))
+                .Select(x => new InputStyle(x)).ToList();
+
             foreach (var column in columns)
             {
+                if (column.IsExtend && (column.InputType == InputType.Radio || column.InputType == InputType.SelectOne))
+                {
+                    var items = styles.Where(s => s.AttributeName == column.AttributeName).Select(s => s.Items).FirstOrDefault();
+                    if (items != null)
+                    {
+                        var value = StringUtils.ToString(content.Get(column.AttributeName));
+                        var lable = items.Where(s => s.Value.Equals(value)).Select(s => s.Label).FirstOrDefault();
+                        content.Set(column.AttributeName, lable);
+                    }
+                }
+                else if (column.IsExtend && (column.InputType == InputType.CheckBox || column.InputType == InputType.SelectMultiple))
+                {
+                    var items = styles.Where(s => s.AttributeName == column.AttributeName).Select(s => s.Items).FirstOrDefault();
+                    if (items != null)
+                    {
+                        var values = ListUtils.ToList(content.Get(column.AttributeName));
+                        var lables = ListUtils.ToString(items.Where(s => values.Contains(s.Value)).Select(s => s.Label).ToList(), "、");
+                        content.Set(column.AttributeName, lables);
+                    }
+                }
+
                 if (!ListUtils.ContainsIgnoreCase(CalculatedAttributes, column.AttributeName)) continue;
 
                 if (column.InputType == InputType.TextEditor)
@@ -515,7 +552,9 @@ namespace SSCMS.Core.Utils
                     AttributeName = style.AttributeName,
                     DisplayName = style.DisplayName,
                     InputType = style.InputType,
-                    Width = GetColumnWidth(style.AttributeName, channel)
+                    Width = GetColumnWidth(style.AttributeName, channel),
+                    Items = style.Items,
+                    IsExtend = style.Id != 0
                 };
                 if (style.AttributeName == nameof(Content.Title))
                 {

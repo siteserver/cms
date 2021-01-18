@@ -217,6 +217,7 @@ namespace Datory
         {
             return NewQuery().OrWhereNotLike(column, value, caseSensitive);
         }
+
         public static Query WhereStarts(string column, string value, bool caseSensitive = false)
         {
             return NewQuery().WhereStarts(column, value, caseSensitive);
@@ -286,10 +287,12 @@ namespace Datory
         {
             return NewQuery().OrWhereBetween(column, lower, higher);
         }
+
         public static Query WhereNotBetween<T>(string column, T lower, T higher)
         {
             return NewQuery().WhereNotBetween(column, lower, higher);
         }
+
         public static Query OrWhereNotBetween<T>(string column, T lower, T higher)
         {
             return NewQuery().OrWhereNotBetween(column, lower, higher);
@@ -632,6 +635,87 @@ namespace Datory
         public static Query OrWhereNotInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
         {
             query.OrWhereRaw(GetNotInStrWhere(databaseType, columnName), inStr);
+            return query;
+        }
+
+        public static Query WhereJson(this Query query, DatabaseType databaseType, string column, string op, object value)
+        {
+            var where = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                where = $"JSON_EXTRACT(ExtendValues,'$.{column}'){op}?";
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+
+            }
+
+            if (where != string.Empty)
+                query.WhereRaw(where, value);
+
+            return query;
+        }
+
+        public static Query WhereLikeJson(this Query query, DatabaseType databaseType, string column, string value)
+        {
+            var where = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                where = $"JSON_EXTRACT(ExtendValues,'$.{column}') like ?";
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+
+            }
+
+            if (where != string.Empty)
+                query.WhereRaw(where, $"%{value}%");
+
+            return query;
+        }
+
+        public static Query WhereContainsJson(this Query query, DatabaseType databaseType, string column, string value)
+        {
+            var where = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                where = $"JSON_CONTAINS(JSON_EXTRACT(ExtendValues,'$.{column}'),JSON_ARRAY(?))";
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+
+            }
+
+            if (where != string.Empty)
+                query.WhereRaw(where, value);
+
             return query;
         }
     }

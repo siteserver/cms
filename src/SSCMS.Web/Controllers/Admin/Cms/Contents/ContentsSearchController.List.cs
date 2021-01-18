@@ -43,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     isUser = true;
                 }
 
-                (total, pageSummaries) = await _contentRepository.AdvancedSearchAsync(site, request.Page, request.ChannelIds, request.IsAllContents, request.StartDate, request.EndDate, request.Items, request.IsCheckedLevels, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames, isAdmin, adminId, isUser);
+                (total, pageSummaries) = await _contentRepository.AdvancedSearchAsync(site, request.Page, request.ChannelIds, request.IsAllContents, request.StartDate, request.EndDate, request.Items, request.IsCheckedLevels, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames, isAdmin, adminId, isUser, columns);
             }
             else
             {

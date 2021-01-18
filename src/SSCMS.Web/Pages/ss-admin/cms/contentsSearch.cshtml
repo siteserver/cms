@@ -159,13 +159,9 @@
           </el-form>
         </el-col>
         <el-col :span="24">
-          <el-form size="small" label-width="100px">
-            <el-form-item v-for="column in searchColumns" :key="column.attributeName" :label="column.displayName">
-              <el-input v-model="column.value" placeholder="请输入搜索关键词">
-                <el-button slot="append" v-on:click="btnSelectColumnClick(column)" icon="el-icon-remove-outline"></el-button>
-              </el-input>
-            </el-form-item>
-          </el-form>
+            <el-form size="small" label-width="100px">
+                @await Html.PartialAsync("_PartialSearchForm")
+            </el-form>
           <el-form size="small" label-width="100px">
             <el-form-item>
               <el-popover
