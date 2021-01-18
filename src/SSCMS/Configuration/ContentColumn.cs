@@ -11,6 +11,7 @@ namespace SSCMS.Configuration
         public int Width { get; set; }
         public bool IsList { get; set; }
         public bool IsSearchable { get; set; }
+        public bool IsExtend { get; set; }
         public List<InputStyleItem> Items { get; set; }
     }
 }

@@ -195,7 +195,7 @@ namespace SSCMS.Core.Repositories
                 {
                     if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
                     {
-                        var column = columns.Where(c => c.AttributeName.Equals(item.Key)).FirstOrDefault();
+                        var column = columns.Where(c => c.AttributeName.Equals(item.Key) && c.IsExtend).FirstOrDefault();
                         if (column != null)
                         {
                             if (column.InputType == InputType.Radio || column.InputType == InputType.SelectOne)
