@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             var site = await _siteRepository.GetAsync(siteIds[0]);
 
             var channel = await _channelRepository.GetAsync(site.Id);
-            var enabledChannelIds = await _authManager.GetChannelIdsAsync(site.Id);
+            var enabledChannelIds = await _authManager.GetContentPermissionsChannelIdsAsync(site.Id);
             var visibleChannelIds = await _authManager.GetVisibleChannelIdsAsync(enabledChannelIds);
             var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {

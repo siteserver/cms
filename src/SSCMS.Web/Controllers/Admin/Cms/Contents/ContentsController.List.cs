@@ -38,6 +38,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
+            if (channel.IsPreviewContentsExists)
+            {
+                await _contentRepository.DeletePreviewAsync(site, channel);
+            }
+
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
 

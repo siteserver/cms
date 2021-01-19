@@ -9,7 +9,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody] GetOptionsRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Translate))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
+                    MenuUtils.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId,
+                    MenuUtils.ContentPermissions.Add, MenuUtils.ContentPermissions.Edit))
             {
                 return Unauthorized();
             }
@@ -17,7 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
-            var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
+            var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
 
             var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);

@@ -13,6 +13,8 @@ namespace SSCMS.Repositories
 
         Task TrashContentsAsync(Site site, int channelId, int adminId);
 
+        Task DeletePreviewAsync(Site site, Channel channel);
+
         Task DeleteTrashAsync(Site site, int channelId, string tableName, List<int> contentIds, IPluginManager pluginManager);
 
         Task DeleteTrashAsync(Site site, IPluginManager pluginManager);

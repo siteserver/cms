@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Plugins;
@@ -85,6 +86,21 @@ namespace SSCMS.Core.Repositories
                     .Where(nameof(Content.Id), contentId)
                     .CachingRemove(cacheKeys.ToArray())
             );
+        }
+
+        public async Task DeletePreviewAsync(Site site, Channel channel)
+        {
+            if (!channel.IsPreviewContentsExists) return;
+
+            var repository = GetRepository(site, channel);
+            await repository.DeleteAsync(Q
+                .Where(nameof(Content.SiteId), site.Id)
+                .Where(nameof(Content.ChannelId), channel.Id)
+                .Where(nameof(Content.SourceId), SourceManager.Preview)
+            );
+
+            channel.IsPreviewContentsExists = false;
+            await _channelRepository.UpdateAsync(channel);
         }
 
         // 回收站 - 删除选中

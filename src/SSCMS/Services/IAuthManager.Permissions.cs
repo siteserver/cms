@@ -15,11 +15,15 @@ namespace SSCMS.Services
 
         Task<List<int>> GetSiteIdsAsync();
 
-        Task<List<int>> GetChannelIdsAsync(int siteId);
+        Task<List<int>> GetChannelPermissionsChannelIdsAsync(int siteId);
+
+        Task<List<int>> GetContentPermissionsChannelIdsAsync(int siteId);
 
         Task<List<int>> GetVisibleChannelIdsAsync(List<int> channelIdsWithPermissions);
 
-        Task<List<int>> GetChannelIdsAsync(int siteId, params string[] permissions);
+        Task<List<int>> GetChannelPermissionsChannelIdsAsync(int siteId, params string[] permissions);
+
+        Task<List<int>> GetContentPermissionsChannelIdsAsync(int siteId, params string[] permissions);
 
         Task<bool> HasAppPermissionsAsync(params string[] permissions);
 

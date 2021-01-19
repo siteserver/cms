@@ -11,7 +11,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Translate))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
+                    MenuUtils.SitePermissions.Contents) ||
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId,
+                    MenuUtils.ContentPermissions.Add, MenuUtils.ContentPermissions.Edit))
             {
                 return Unauthorized();
             }
