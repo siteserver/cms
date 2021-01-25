@@ -462,7 +462,12 @@ var utils = {
         });
         return;
       } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        top.location.href = utils.getRootUrl('login', {status: 401});
+        var location = _.trimEnd(window.location.href, '/');
+        if (_.endsWith(location, '/ss-admin') || _.endsWith(location, '/home')) {
+          top.location.href = utils.getRootUrl('login');
+        } else {
+          top.location.href = utils.getRootUrl('login', {status: 401});
+        }
       }
 
       utils.getRootVue().$message({

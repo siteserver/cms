@@ -14,6 +14,9 @@ var data = utils.init({
   fileName: utils.getQueryString("fileName"),
   fileType: utils.getQueryString("fileType"),
   tabName: utils.getQueryString("tabName"),
+  templatesAssetsIncludeDir: null,
+  templatesAssetsCssDir: null,
+  templatesAssetsJsDir: null,
   form: {
     path: null
   },
@@ -21,33 +24,30 @@ var data = utils.init({
 });
 
 var methods = {
-  apiConfig: function () {
+  apiGet: function () {
     var $this = this;
 
-    if (this.fileName) {
-      utils.loading(this, true);
-      $api.get($url, {
-        params: {
-          siteId: this.siteId,
-          directoryPath: this.directoryPath,
-          fileName: this.fileName,
-          fileType: this.fileType
-        }
-      }).then(function (response) {
-        var res = response.data;
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.siteId,
+        directoryPath: this.directoryPath,
+        fileName: this.fileName,
+        fileType: this.fileType
+      }
+    }).then(function (response) {
+      var res = response.data;
 
-        $this.form.path = res.path;
-        $this.setEditorContent(res.content);
-      }).catch(function (error) {
-        utils.error(error);
-      }).then(function () {
-        utils.loading($this, false);
-      });
-    } else {
-      this.form.path = '';
-      this.setEditorContent('');
-      utils.loading(this, false);
-    }
+      $this.templatesAssetsIncludeDir = res.templatesAssetsIncludeDir;
+      $this.templatesAssetsCssDir = res.templatesAssetsCssDir;
+      $this.templatesAssetsJsDir = res.templatesAssetsJsDir;
+      $this.form.path = res.path;
+      $this.setEditorContent(res.content);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiSubmit: function (isClose) {
@@ -119,11 +119,11 @@ var methods = {
 
   getFileTypeDir: function() {
     if (this.fileType === 'html') {
-      return 'include/';
+      return this.templatesAssetsIncludeDir + '/';
     } else if (this.fileType === 'css') {
-      return 'css/';
+      return this.templatesAssetsCssDir + '/';
     } else if (this.fileType === 'js') {
-      return 'js/';
+      return this.templatesAssetsJsDir + '/';
     }
     return '';
   },
@@ -178,6 +178,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.apiConfig();
+    this.apiGet();
   }
 });

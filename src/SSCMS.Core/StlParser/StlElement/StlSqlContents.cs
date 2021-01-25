@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Datory;
 using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.StlParser.Mocks;
 using SSCMS.Parse;
@@ -36,7 +35,20 @@ namespace SSCMS.Core.StlParser.StlElement
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.SqlContent);
-            var dataSource = GetDataSource(parseManager, listInfo.DatabaseType, listInfo.ConnectionString, listInfo.QueryString);
+
+            List<KeyValuePair<int, IDictionary<string, object>>> dataSource = null;
+            if (!string.IsNullOrEmpty(listInfo.QueryString))
+            {
+                dataSource = await parseManager.DatabaseManager.ParserGetSqlDataSourceAsync(listInfo.DatabaseType,
+                    listInfo.ConnectionString, listInfo.QueryString);
+            }
+            else if (listInfo.Query != null)
+            {
+                dataSource = await parseManager.DatabaseManager.ParserGetSqlDataSourceAsync(listInfo.DatabaseType,
+                    listInfo.ConnectionString, listInfo.Query);
+            }
+
+            if (dataSource == null) return string.Empty;
 
             if (parseManager.ContextInfo.IsStlEntity)
             {
@@ -46,7 +58,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return await ParseElementAsync(parseManager, listInfo, dataSource);
         }
 
-        internal static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> dataSource)
+        internal static async Task<string> ParseElementAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, IDictionary<string, object>>> dataSource)
         {
             var pageInfo = parseManager.PageInfo;
 
@@ -166,12 +178,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return builder.ToString();
         }
 
-        public static List<KeyValuePair<int, Dictionary<string, object>>> GetDataSource(IParseManager parseManager, DatabaseType databaseType, string connectionString, string queryString)
-        {
-            return parseManager.DatabaseManager.ParserGetSqlDataSource(databaseType, connectionString, queryString);
-        }
-
-        private static object ParseEntity(IEnumerable<KeyValuePair<int, Dictionary<string, object>>> dataSource)
+        private static object ParseEntity(IEnumerable<KeyValuePair<int, IDictionary<string, object>>> dataSource)
         {
             var list = dataSource.Select(x => x.Value).ToList();
             return list;

@@ -6,6 +6,22 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     public static partial class StlQuery
     {
+        private static void Select(Query query, QueryInfo queryInfo)
+        {
+            if (!string.IsNullOrEmpty(queryInfo.Value))
+            {
+                query.Select(ListUtils.GetStringList(queryInfo.Value).ToArray());
+            }
+        }
+
+        private static void From(Query query, QueryInfo queryInfo)
+        {
+            if (!string.IsNullOrEmpty(queryInfo.Value))
+            {
+                query.From(queryInfo.Value);
+            }
+        }
+
         private static void Limit(Query query, QueryInfo queryInfo)
         {
             if (!string.IsNullOrEmpty(queryInfo.Value))

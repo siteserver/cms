@@ -43,7 +43,7 @@ namespace SSCMS.Parse
 
         public Stack<KeyValuePair<int, Content>> ContentItems { get; }
 
-        public Stack<KeyValuePair<int, Dictionary<string, object>>> SqlItems { get; }
+        public Stack<KeyValuePair<int, IDictionary<string, object>>> SqlItems { get; }
 
         public Stack<KeyValuePair<int, Site>> SiteItems { get;  }
 
@@ -81,7 +81,7 @@ namespace SSCMS.Parse
             User = null;
             ChannelItems = new Stack<KeyValuePair<int, Channel>>(5);
             ContentItems = new Stack<KeyValuePair<int, Content>>(5);
-            SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5);
+            SqlItems = new Stack<KeyValuePair<int, IDictionary<string, object>>>(5);
             SiteItems = new Stack<KeyValuePair<int, Site>>(5);
             EachItems = new Stack<KeyValuePair<int, object>>(5);
             PluginItems = pluginItems;

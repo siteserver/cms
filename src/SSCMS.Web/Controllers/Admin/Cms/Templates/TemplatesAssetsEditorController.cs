@@ -28,18 +28,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             _siteRepository = siteRepository;
         }
 
-        public class GetResult
-        {
-            public string Path { get; set; }
-            public string Content { get; set; }
-        }
-
         public class GetRequest
         {
             public int SiteId { get; set; }
             public string DirectoryPath { get; set; }
             public string FileName { get; set; }
             public string FileType { get; set; }
+        }
+
+        public class GetResult
+        {
+            public string TemplatesAssetsIncludeDir { get; set; }
+            public string TemplatesAssetsJsDir { get; set; }
+            public string TemplatesAssetsCssDir { get; set; }
+            public string Path { get; set; }
+            public string Content { get; set; }
         }
 
         public class ContentRequest

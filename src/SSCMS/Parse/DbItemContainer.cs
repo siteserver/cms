@@ -77,7 +77,7 @@ namespace SSCMS.Parse
 
         public KeyValuePair<int, Content> ContentItem { get; private set; }
 
-        public KeyValuePair<int, Dictionary<string, object>> SqlItem { get; private set; }
+        public KeyValuePair<int, IDictionary<string, object>> SqlItem { get; private set; }
 
         public KeyValuePair<int, Site> SiteItem { get; private set; }
 

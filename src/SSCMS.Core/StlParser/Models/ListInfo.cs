@@ -365,7 +365,7 @@ namespace SSCMS.Core.StlParser.Models
                 }
                 else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseTypeName))
                 {
-                    var databaseType = parseManager.SettingsManager.Configuration[name];
+                    var databaseType = parseManager.SettingsManager.Configuration[value];
                     if (!string.IsNullOrEmpty(databaseType))
                     {
                         listInfo.DatabaseType = TranslateUtils.ToEnum(databaseType, DatabaseType.MySql);
@@ -377,7 +377,7 @@ namespace SSCMS.Core.StlParser.Models
                 }
                 else if (contextType == ParseType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionStringName))
                 {
-                    var connectionString = parseManager.SettingsManager.Configuration[name];
+                    var connectionString = parseManager.SettingsManager.Configuration[value];
                     if (!string.IsNullOrEmpty(connectionString))
                     {
                         listInfo.ConnectionString = connectionString;

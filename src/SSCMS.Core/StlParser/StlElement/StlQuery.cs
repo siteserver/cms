@@ -315,6 +315,14 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 OrWhereNotTime(query, queryInfo);
             }
+            else if (StringUtils.EqualsIgnoreCase(queryInfo.Type, nameof(Query.Select)))
+            {
+                Select(query, queryInfo);
+            }
+            else if (StringUtils.EqualsIgnoreCase(queryInfo.Type, nameof(Query.From)))
+            {
+                From(query, queryInfo);
+            }
             else if (StringUtils.EqualsIgnoreCase(queryInfo.Type, nameof(Query.Limit)))
             {
                 Limit(query, queryInfo);

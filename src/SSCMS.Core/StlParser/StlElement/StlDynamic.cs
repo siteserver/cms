@@ -19,7 +19,7 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
-        [StlAttribute(Title = "显示模式")]
+        [StlAttribute(Title = "是否在行内显示")]
         private const string Inline = nameof(Inline);
 
         [StlAttribute(Title = "动态请求发送前执行的JS代码")]

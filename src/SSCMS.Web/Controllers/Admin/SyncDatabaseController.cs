@@ -13,12 +13,14 @@ namespace SSCMS.Web.Controllers.Admin
         public const string Route = "syncDatabase";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IConfigRepository _configRepository;
 
-        public SyncDatabaseController(ISettingsManager settingsManager, IDatabaseManager databaseManager, IConfigRepository configRepository)
+        public SyncDatabaseController(ISettingsManager settingsManager, IAuthManager authManager, IDatabaseManager databaseManager, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
+            _authManager = authManager;
             _databaseManager = databaseManager;
             _configRepository = configRepository;
         }
