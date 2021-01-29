@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
@@ -352,6 +354,20 @@ namespace SSCMS.Utils
                 download = true;
             }
             return download;
+        }
+
+        public static string ContentMd5(string filePath)
+        {
+            string output;
+            using (var md5 = MD5.Create())
+            {
+                using var stream = File.OpenRead(filePath);
+                var checksum = md5.ComputeHash(stream);
+                //output = BitConverter.ToString(checksum).Replace("-", string.Empty).ToLower();
+                output = Convert.ToBase64String(checksum);
+            }
+
+            return output;
         }
     }
 }

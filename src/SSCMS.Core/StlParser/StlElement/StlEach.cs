@@ -100,7 +100,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var dataSource = new List<KeyValuePair<int, object>>();
             var index = 0;
-            foreach (string value in valueList)
+            foreach (var value in valueList)
             {
                 dataSource.Add(new KeyValuePair<int, object>(index++, value));
             }

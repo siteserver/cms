@@ -400,6 +400,15 @@ var methods = {
     this.channelIds = this.$refs.tree.getCheckedKeys();
   },
 
+  btnCheckClick: function(row) {
+    if (this.channelIds.indexOf(row.value) !== -1) {
+      this.channelIds.splice(this.channelIds.indexOf(row.value), 1);
+    } else {
+      this.channelIds.push(row.value);
+    }
+    this.$refs.tree.setCheckedKeys(this.channelIds);
+  },
+
   filterNode: function(value, data) {
     if (!value) return true;
     if (value.channelName && value.indexName && value.groupName) {

@@ -128,7 +128,7 @@
   v-on:check-change="handleCheckChange"
 >
   <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
-    <table v-on:dblclick="btnEditClick(data)" cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+    <table v-on:dblclick="btnEditClick(data)" v-on:click.ctrl.stop="btnCheckClick(data)" cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
       <colgroup>
         <col>
         <col
