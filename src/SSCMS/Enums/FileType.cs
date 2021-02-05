@@ -35,6 +35,7 @@ namespace SSCMS.Enums
         Rmb,
         Rmvb,
 		Mp3,
+        Mp4,
 		Wav,
 		Mid,
 		Midi,

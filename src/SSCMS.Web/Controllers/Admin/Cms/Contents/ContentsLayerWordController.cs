@@ -23,8 +23,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public ContentsLayerWordController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerWordController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -32,6 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         public class GetResult

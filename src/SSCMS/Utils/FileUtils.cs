@@ -349,7 +349,7 @@ namespace SSCMS.Utils
             {
                 download = true;
             }
-            else if (type == FileType.Pdf || type == FileType.Doc || type == FileType.Docx || type == FileType.Ppt || type == FileType.Pptx || type == FileType.Xls || type == FileType.Xlsx || type == FileType.Mdb)
+            else if (type == FileType.Pdf || type == FileType.Doc || type == FileType.Docx || type == FileType.Ppt || type == FileType.Pptx || type == FileType.Xls || type == FileType.Xlsx || type == FileType.Mdb || type == FileType.Mp3 || type == FileType.Mp4)
             {
                 download = true;
             }

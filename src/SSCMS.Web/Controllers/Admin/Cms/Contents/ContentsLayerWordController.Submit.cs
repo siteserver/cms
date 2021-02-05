@@ -36,27 +36,34 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             {
                 if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
-                var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                var (title, imageUrl, body) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
-
-                if (string.IsNullOrEmpty(title)) continue;
-
-                var contentInfo = new Content
+                try
                 {
-                    ChannelId = channel.Id,
-                    SiteId = request.SiteId,
-                    AdminId = adminId,
-                    LastEditAdminId = adminId,
-                    AddDate = DateTime.Now,
-                    Checked = isChecked,
-                    CheckedLevel = request.CheckedLevel,
-                    Title = title,
-                    ImageUrl = imageUrl,
-                    Body = body
-                };
+                    var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
+                    var (title, imageUrl, body) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
 
-                await _contentRepository.InsertAsync(site, channel, contentInfo);
-                contentIdList.Add(contentInfo.Id);
+                    if (string.IsNullOrEmpty(title)) continue;
+
+                    var contentInfo = new Content
+                    {
+                        ChannelId = channel.Id,
+                        SiteId = request.SiteId,
+                        AdminId = adminId,
+                        LastEditAdminId = adminId,
+                        AddDate = DateTime.Now,
+                        Checked = isChecked,
+                        CheckedLevel = request.CheckedLevel,
+                        Title = title,
+                        ImageUrl = imageUrl,
+                        Body = body
+                    };
+
+                    await _contentRepository.InsertAsync(site, channel, contentInfo);
+                    contentIdList.Add(contentInfo.Id);
+                }
+                catch (Exception ex)
+                {
+                    await _errorLogRepository.AddErrorLogAsync(ex);
+                }
             }
 
             if (isChecked)

@@ -264,6 +264,11 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
+            if (parseManager.ContextInfo.IsStlEntity)
+            {
+                return parsedContent;
+            }
+
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);
 
