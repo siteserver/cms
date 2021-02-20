@@ -7,14 +7,14 @@ namespace SSCMS.Core.Repositories
 {
     public partial class SiteLogRepository
     {
-        public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, Administrator adminInfo, string action, string summary)
+        public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, Administrator adminInfo, string ipAddress, string action, string summary)
         {
             var config = await _configRepository.GetAsync();
             if (!config.IsLogSite) return;
 
             if (siteId <= 0)
             {
-                await _logRepository.AddAdminLogAsync(adminInfo, action, summary);
+                await _logRepository.AddAdminLogAsync(adminInfo, ipAddress, action, summary);
             }
             else
             {
@@ -42,7 +42,7 @@ namespace SSCMS.Core.Repositories
                         ChannelId = channelId,
                         ContentId = contentId,
                         AdminId = adminInfo.Id,
-                        IpAddress = string.Empty,
+                        IpAddress = ipAddress,
                         Action = action,
                         Summary = summary
                     };

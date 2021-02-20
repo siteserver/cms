@@ -119,9 +119,20 @@ namespace SSCMS.Web
             });
 
             services.AddHealthChecks();
-            services.AddRazorPages()
-                .AddPluginApplicationParts(pluginManager)
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+
+            if (_env.IsDevelopment())
+            {
+                services.AddRazorPages()
+                    .AddRazorRuntimeCompilation(_ => { })
+                    .AddPluginApplicationParts(pluginManager)
+                    .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            }
+            else
+            {
+                services.AddRazorPages()
+                    .AddPluginApplicationParts(pluginManager)
+                    .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            }
 
             services.AddCache(settingsManager.Redis.ConnectionString);
             services.AddTaskQueue();

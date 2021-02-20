@@ -17,17 +17,20 @@ namespace SSCMS.Core.Services
 
         public async Task AddSiteLogAsync(int siteId, int channelId, string action, string summary)
         {
-            await _databaseManager.SiteLogRepository.AddSiteLogAsync(siteId, channelId, 0, await GetAdminAsync(), action, summary);
+            var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+            await _databaseManager.SiteLogRepository.AddSiteLogAsync(siteId, channelId, 0, await GetAdminAsync(), ipAddress, action, summary);
         }
 
         public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, string action, string summary)
         {
-            await _databaseManager.SiteLogRepository.AddSiteLogAsync(siteId, channelId, contentId, await GetAdminAsync(), action, summary);
+            var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+            await _databaseManager.SiteLogRepository.AddSiteLogAsync(siteId, channelId, contentId, await GetAdminAsync(), ipAddress, action, summary);
         }
 
         public async Task AddAdminLogAsync(string action, string summary)
         {
-            await _databaseManager.LogRepository.AddAdminLogAsync(await GetAdminAsync(), action, summary);
+            var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+            await _databaseManager.LogRepository.AddAdminLogAsync(await GetAdminAsync(), ipAddress, action, summary);
         }
 
         public async Task AddAdminLogAsync(string action)
@@ -38,7 +41,8 @@ namespace SSCMS.Core.Services
 
         public async Task AddUserLogAsync(string action, string summary)
         {
-            await _databaseManager.LogRepository.AddUserLogAsync(await GetUserAsync(), action, summary);
+            var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+            await _databaseManager.LogRepository.AddUserLogAsync(await GetUserAsync(), ipAddress, action, summary);
         }
 
         public async Task AddUserLogAsync(string action)

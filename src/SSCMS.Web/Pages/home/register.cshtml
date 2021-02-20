@@ -46,7 +46,7 @@
       </el-form-item>
 
       <el-form-item v-if="isUserRegistrationEmail" label="电子邮箱" prop="email" :rules="[
-        { required: true, message: '请输入手机号码' },
+        { required: true, message: '请输入电子邮箱' },
         { type: 'email', message: '请输入有效的电子邮箱' }
       ]">
         <el-input v-model="form.email" placeholder="请输入电子邮箱"></el-input>
