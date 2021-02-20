@@ -24,7 +24,7 @@ namespace SSCMS.Web.Controllers.V1
             await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user);
 
             await _statRepository.AddCountAsync(StatType.UserLogin);
-            await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginSuccess, string.Empty);
+            await _logRepository.AddUserLogAsync(user, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
 
             return new LoginResult
             {

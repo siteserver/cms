@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -21,7 +22,7 @@ namespace SSCMS.Web.Controllers.V1
             if (user == null) return NotFound();
 
             log.UserId = user.Id;
-            await _logRepository.AddUserLogAsync(user, log.Action, log.Summary);
+            await _logRepository.AddUserLogAsync(user, PageUtils.GetIpAddress(Request), log.Action, log.Summary);
 
             return log;
         }

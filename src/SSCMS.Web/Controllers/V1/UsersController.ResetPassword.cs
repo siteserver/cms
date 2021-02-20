@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.V1
                 return this.Error(errorMessage);
             }
 
-            await _logRepository.AddUserLogAsync(user, "修改密码", string.Empty);
+            await _logRepository.AddUserLogAsync(user, PageUtils.GetIpAddress(Request), "修改密码");
 
             return user;
         }

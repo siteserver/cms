@@ -13,6 +13,7 @@ namespace SSCMS.Web.Controllers.Home
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             User user;
+            var ipAddress = PageUtils.GetIpAddress(Request);
             if (request.IsSmsLogin)
             {
                 var codeCacheKey = GetSmsCodeCacheKey(request.Mobile);
@@ -46,7 +47,7 @@ namespace SSCMS.Web.Controllers.Home
                     user = await _userRepository.GetByUserNameAsync(userName);
                     if (user != null)
                     {
-                        await _logRepository.AddUserLogAsync(user, Constants.ActionsLoginFailure, "帐号或密码错误");
+                        await _logRepository.AddUserLogAsync(user, ipAddress, Constants.ActionsLoginFailure, "帐号或密码错误");
                     }
                     return this.Error(errorMessage);
                 }
@@ -58,7 +59,7 @@ namespace SSCMS.Web.Controllers.Home
             ); // 记录最后登录时间、失败次数清零
 
             await _statRepository.AddCountAsync(StatType.UserLogin);
-            await _logRepository.AddUserLogAsync(user, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
+            await _logRepository.AddUserLogAsync(user, ipAddress, Constants.ActionsLoginSuccess);
             var token = _authManager.AuthenticateUser(user, request.IsPersistent);
 
             var redirectToVerifyMobile = false;
