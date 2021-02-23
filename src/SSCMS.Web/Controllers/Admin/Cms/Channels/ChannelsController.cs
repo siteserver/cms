@@ -152,13 +152,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         {
             var styles = new List<InputStyle>
             {
-                new()
+                new InputStyle()
                 {
                     AttributeName = nameof(Channel.ImageUrl),
                     DisplayName = "栏目图片",
                     InputType = InputType.Image
                 },
-                new()
+                new InputStyle()
                 {
                     AttributeName = nameof(Channel.Content),
                     DisplayName = "栏目正文",
