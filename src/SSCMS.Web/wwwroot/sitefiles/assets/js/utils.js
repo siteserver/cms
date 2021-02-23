@@ -59,6 +59,24 @@ var utils = {
     });
   },
 
+  loadEditors: function (styles, form) {
+    setTimeout(function () {
+      for (var i = 0; i < styles.length; i++) {
+        var style = styles[i];
+        if (style.inputType === 'TextEditor') {
+          UE.delEditor(style.attributeName);
+          var editor = utils.getEditor(style.attributeName);
+          editor.attributeName = style.attributeName;
+          editor.ready(function () {
+            this.addListener("contentChange", function () {
+              form[this.attributeName] = this.getContent();
+            });
+          });
+        }
+      }
+    }, 100);
+  },
+
   getEditor: function (attributeName) {
     return UE.getEditor(attributeName, {
       allowDivTransToP: false,

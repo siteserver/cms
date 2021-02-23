@@ -26,7 +26,6 @@ var data = utils.init({
   form: null,
   editLinkTypes: [],
   editTaxisTypes: [],
-  editEditor: null,
   styles: [],
   siteUrl: null,
   isTemplateEditable: false,
@@ -82,10 +81,9 @@ var methods = {
   },
 
   insertEditor: function(attributeName, html) {
-    // if (!attributeName) attributeName = 'Body';
+    if (!attributeName) attributeName = 'Body';
     if (!html) return;
-    this.editEditor.txt.html(html);
-    //utils.getEditor(attributeName).execCommand('insertHTML', html);
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
   },
   
   setRuleText: function(rule, isChannel) {
@@ -158,9 +156,7 @@ var methods = {
       $this.form.contentFilePathRule = res.contentFilePathRule;
 
       $this.editPanel = true;
-      setTimeout(function () {
-        $this.loadEditor();
-      }, 100);
+      utils.loadEditors($this.styles, $this.form);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -276,39 +272,6 @@ var methods = {
     }).catch(function(error) {
       utils.error(error);
     });
-  },
-
-  loadEditor: function () {
-    var $this = this;
-
-    document.getElementById('form_Content1').innerHTML = '';
-    document.getElementById('form_Content2').innerHTML = '';
-
-    var E = window.wangEditor;
-    this.editEditor = new E('#form_Content1', '#form_Content2');
-    this.editEditor.customConfig.menus = [
-      'head',  // 标题
-      'bold',  // 粗体
-      'fontSize',  // 字号
-      'fontName',  // 字体
-      'italic',  // 斜体
-      'underline',  // 下划线
-      'strikeThrough',  // 删除线
-      'foreColor',  // 文字颜色
-      'backColor',  // 背景颜色
-      'link',  // 插入链接
-      'list',  // 列表
-      'justify',  // 对齐方式
-      'quote',  // 引用
-      'table',  // 表格
-      'undo',  // 撤销
-      'redo'  // 重复
-    ];
-    this.editEditor.customConfig.onchange = function (html) {
-      $this.form.content = html;
-    };
-    this.editEditor.create();
-    this.editEditor.txt.html(this.form.content);
   },
 
   handleColumnsChange: function() {
