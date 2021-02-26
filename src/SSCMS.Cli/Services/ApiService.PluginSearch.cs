@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
@@ -21,7 +23,8 @@ namespace SSCMS.Cli.Services
 
             //return (true, response.Data, null);
 
-            return ExecutePost<SearchRequest, List<PluginAndUser>>(RestUrlPluginSearch, new SearchRequest
+            var url = CloudUtils.Api.GetCliUrl(RestUrlPluginSearch);
+            return RestUtils.Post<SearchRequest, List<PluginAndUser>>(url, new SearchRequest
             {
                 Word = word
             });

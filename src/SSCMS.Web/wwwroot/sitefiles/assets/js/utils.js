@@ -82,7 +82,7 @@ var utils = {
       allowDivTransToP: false,
       maximumWords: 99999999,
       initialFrameWidth:null ,
-      autoHeightEnabled: true,
+      autoHeightEnabled: false,
       autoFloatEnabled: false
     });
   },

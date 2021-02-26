@@ -255,7 +255,7 @@
     :key="menu.id"
     fixed="right"
     align="center"
-    :width="menu.text.length * 30"
+    :width="menu.text.length * 20"
     show-overflow-tooltip>
     <template slot-scope="scope">
       <el-link v-if="menus" :disabled="!permissions.isEdit" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">

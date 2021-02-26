@@ -116,7 +116,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             channel.ChannelName = request.ChannelName;
             channel.IndexName = request.IndexName;
             channel.GroupNames = request.GroupNames;
-            channel.Content = request.Content;
+            //channel.Content = request.Content;
             channel.ChannelTemplateId = request.ChannelTemplateId;
             channel.ContentTemplateId = request.ContentTemplateId;
             channel.LinkUrl = request.LinkUrl;

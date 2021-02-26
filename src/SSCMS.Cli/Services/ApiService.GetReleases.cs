@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
@@ -32,7 +34,8 @@ namespace SSCMS.Cli.Services
 
             //return (true, response.Data, null);
 
-            return ExecutePost<GetReleasesRequest, GetReleasesResult>(RestUrlReleases, new GetReleasesRequest
+            var url = CloudUtils.Api.GetCliUrl(RestUrlReleases);
+            return RestUtils.Post<GetReleasesRequest, GetReleasesResult>(url, new GetReleasesRequest
             {
                 Version = version,
                 PluginIds = pluginIds

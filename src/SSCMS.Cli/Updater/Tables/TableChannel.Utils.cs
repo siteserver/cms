@@ -34,7 +34,7 @@ namespace SSCMS.Cli.Updater.Tables
                 {nameof(Channel.IndexName), new[] {nameof(NodeIndexName)}},
                 {
                     nameof(Channel.GroupNames),
-                    new[] {nameof(NodeGroupNameCollection), nameof(GroupNameCollection)}
+                    new[] { nameof(GroupNameCollection), nameof(NodeGroupNameCollection) }
                 },
                 {nameof(Channel.ContentModelPluginId), new[] {nameof(ContentModelId)}}
             };

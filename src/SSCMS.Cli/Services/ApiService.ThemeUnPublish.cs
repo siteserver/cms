@@ -1,6 +1,5 @@
-﻿using RestSharp;
-using SSCMS.Core.Plugins;
-using SSCMS.Utils;
+﻿using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
@@ -14,21 +13,27 @@ namespace SSCMS.Cli.Services
                 return (false, "you have not logged in");
             }
 
-            var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlThemeUnPublish)) { Timeout = -1 };
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(new ThemeUnPublishRequest
+            var url = CloudUtils.Api.GetCliUrl(RestUrlThemeUnPublish);
+            return RestUtils.Post(url, new ThemeUnPublishRequest
             {
                 Name = name
-            }), ParameterType.RequestBody);
-            var response = client.Execute(request);
-            if (!response.IsSuccessful)
-            {
-                return (false, StringUtils.Trim(response.Content, '"'));
-            }
+            }, status.AccessToken);
 
-            return (true, null);
+            //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlThemeUnPublish)) { Timeout = -1 };
+            //var request = new RestRequest(Method.POST);
+            //request.AddHeader("Content-Type", "application/json");
+            //request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
+            //request.AddParameter("application/json", TranslateUtils.JsonSerialize(new ThemeUnPublishRequest
+            //{
+            //    Name = name
+            //}), ParameterType.RequestBody);
+            //var response = client.Execute(request);
+            //if (!response.IsSuccessful)
+            //{
+            //    return (false, StringUtils.Trim(response.Content, '"'));
+            //}
+
+            //return (true, null);
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace SSCMS.Cli.Services
+﻿using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
+
+namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
@@ -19,7 +22,8 @@
 
             //return (true, response.Data, null);
 
-            return ExecutePost<ShowRequest, PluginAndUser>(RestUrlPluginShow, new ShowRequest
+            var url = CloudUtils.Api.GetCliUrl(RestUrlPluginShow);
+            return RestUtils.Post<ShowRequest, PluginAndUser>(url, new ShowRequest
             {
                 PluginId = pluginId
             });

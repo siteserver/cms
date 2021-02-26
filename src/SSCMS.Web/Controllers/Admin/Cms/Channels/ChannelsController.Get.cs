@@ -46,6 +46,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         string.Empty));
                     entity.Set(style.AttributeName, list);
                 }
+                else if (style.InputType == InputType.TextEditor)
+                {
+                    var value = channel.Get(style.AttributeName, string.Empty);
+                    value = await _pathManager.DecodeTextEditorAsync(site, value, true);
+                    value = UEditorUtils.TranslateToHtml(value);
+
+                    entity.Set(style.AttributeName, value);
+                }
                 else
                 {
                     entity.Set(style.AttributeName, channel.Get(style.AttributeName));
