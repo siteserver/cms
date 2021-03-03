@@ -10,8 +10,8 @@ namespace SSCMS.Cli.Services
     {
         public async Task<(bool success, string failureMessage)> LoginAsync(string account, string password)
         {
-            var url = CloudUtils.Api.GetCliUrl(RestUrlLogin);
-            var (success, result, _) = RestUtils.Post<LoginRequest, LoginResult>(url,
+            var url = GetCliUrl(RestUrlLogin);
+            var (success, result, _) = await RestUtils.PostAsync<LoginRequest, LoginResult>(url,
                 new LoginRequest
                 {
                     Account = account,

@@ -1,11 +1,11 @@
-﻿using SSCMS.Core.Plugins;
+﻿using System.Threading.Tasks;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, string failureMessage) PluginUnPublish(string pluginId)
+        public async Task<(bool success, string failureMessage)> PluginUnPublishAsync(string pluginId)
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
@@ -13,8 +13,8 @@ namespace SSCMS.Cli.Services
                 return (false, "you have not logged in");
             }
 
-            var url = CloudUtils.Api.GetCliUrl(RestUrlPluginUnPublish);
-            return RestUtils.Post(url, new PluginUnPublishRequest
+            var url = GetCliUrl(RestUrlPluginUnPublish);
+            return await RestUtils.PostAsync(url, new PluginUnPublishRequest
             {
                 PluginId = pluginId
             }, status.AccessToken);

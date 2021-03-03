@@ -60,7 +60,7 @@ namespace SSCMS.Cli.Jobs
                 ? _pathManager.PluginsPath
                 : _settingsManager.ContentRootPath;
 
-            var (status, _) = _apiService.GetStatus();
+            var (status, _) = await _apiService.GetStatusAsync();
             var publisher = status == null
                 ? ReadUtils.GetString("What's the publisher of your plugin?")
                 : status.UserName;

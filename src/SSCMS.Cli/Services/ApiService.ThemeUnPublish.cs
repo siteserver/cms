@@ -1,11 +1,11 @@
-﻿using SSCMS.Core.Plugins;
+﻿using System.Threading.Tasks;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
-    public partial class ApiService
+  public partial class ApiService
     {
-        public (bool success, string failureMessage) ThemeUnPublish(string name)
+        public async Task<(bool success, string failureMessage)> ThemeUnPublishAsync(string name)
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
@@ -13,8 +13,8 @@ namespace SSCMS.Cli.Services
                 return (false, "you have not logged in");
             }
 
-            var url = CloudUtils.Api.GetCliUrl(RestUrlThemeUnPublish);
-            return RestUtils.Post(url, new ThemeUnPublishRequest
+            var url = GetCliUrl(RestUrlThemeUnPublish);
+            return await RestUtils.PostAsync(url, new ThemeUnPublishRequest
             {
                 Name = name
             }, status.AccessToken);

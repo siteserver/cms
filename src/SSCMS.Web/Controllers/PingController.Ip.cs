@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers
@@ -6,9 +7,9 @@ namespace SSCMS.Web.Controllers
     public partial class PingController
     {
         [HttpGet, Route(RouteIp)]
-        public string Ip()
+        public async Task<string> Ip()
         {
-            return RestUtils.GetIpAddress();
+            return await RestUtils.GetIpAddressAsync();
         }
     }
 }

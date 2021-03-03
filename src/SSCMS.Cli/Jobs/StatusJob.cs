@@ -93,7 +93,7 @@ namespace SSCMS.Cli.Jobs
                 await Console.Out.WriteLineAsync($"The sscms.json file does not exist: {configPath}");
             }
 
-            var (status, _) = _apiService.GetStatus();
+            var (status, _) = await _apiService.GetStatusAsync();
             if (status != null)
             {
                 await Console.Out.WriteLineAsync($"Login user: {status.UserName}");

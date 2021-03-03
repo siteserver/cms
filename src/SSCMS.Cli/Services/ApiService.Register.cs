@@ -1,14 +1,15 @@
-﻿using SSCMS.Core.Plugins;
+﻿using System.Threading.Tasks;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, string failureMessage) Register(string userName, string mobile, string email, string password)
+        public async Task<(bool success, string failureMessage)> RegisterAsync(string userName, string mobile, string email, string password)
         {
-            var url = CloudUtils.Api.GetCliUrl(RestUrlRegister);
-            return RestUtils.Post(url, new RegisterRequest
+            var url = GetCliUrl(RestUrlRegister);
+            return await RestUtils.PostAsync(url, new RegisterRequest
             {
                 UserName = userName,
                 Mobile = mobile,

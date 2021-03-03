@@ -60,7 +60,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = _apiService.GetStatus();
+            var (status, failureMessage) = await _apiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -77,7 +77,7 @@ namespace SSCMS.Cli.Jobs
             await Console.Out.WriteLineAsync($"Theme Packaged: {filePath}");
             await Console.Out.WriteLineAsync($"Publishing theme {name} ({fileSize})...");
 
-            (success, failureMessage) = _apiService.ThemePublish(filePath);
+            (success, failureMessage) = await _apiService.ThemePublishAsync(filePath);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync($"Theme published, your theme will live at {CloudUtils.Www.GetThemeUrl(status.UserName, name)}.");

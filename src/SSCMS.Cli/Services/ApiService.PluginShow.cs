@@ -1,11 +1,12 @@
-﻿using SSCMS.Core.Plugins;
+﻿using System.Threading.Tasks;
+using SSCMS.Core.Plugins;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, PluginAndUser result, string failureMessage) PluginShow(string pluginId)
+        public async Task<(bool success, PluginAndUser result, string failureMessage)> PluginShowAsync(string pluginId)
         {
             //var client = new RestClient(CloudUtils.Api.GetCliUrl(RestUrlPluginShow)) { Timeout = -1 };
             //var request = new RestRequest(Method.POST);
@@ -22,8 +23,8 @@ namespace SSCMS.Cli.Services
 
             //return (true, response.Data, null);
 
-            var url = CloudUtils.Api.GetCliUrl(RestUrlPluginShow);
-            return RestUtils.Post<ShowRequest, PluginAndUser>(url, new ShowRequest
+            var url = GetCliUrl(RestUrlPluginShow);
+            return await RestUtils.PostAsync<ShowRequest, PluginAndUser>(url, new ShowRequest
             {
                 PluginId = pluginId
             });

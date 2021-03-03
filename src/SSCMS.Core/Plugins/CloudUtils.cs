@@ -28,14 +28,6 @@ namespace SSCMS.Core.Plugins
             }
         }
 
-        public static class Api
-        {
-            public static string GetCliUrl(string relatedUrl)
-            {
-                return PageUtils.Combine(CloudApiHost, "v7/cli", relatedUrl);
-            }
-        }
-
         public static class Dl
         {
             private const string Host = "https://dl.sscms.com";

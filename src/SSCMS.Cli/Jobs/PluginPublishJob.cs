@@ -58,7 +58,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = _apiService.GetStatus();
+            var (status, failureMessage) = await _apiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -129,7 +129,7 @@ namespace SSCMS.Cli.Jobs
             await Console.Out.WriteLineAsync($"Publishing {packageId} ({fileSize})...");
 
             bool success;
-            (success, failureMessage) = _apiService.PluginPublish(plugin.Publisher, zipPath);
+            (success, failureMessage) = await _apiService.PluginPublishAsync(plugin.Publisher, zipPath);
             if (success)
             {
                 

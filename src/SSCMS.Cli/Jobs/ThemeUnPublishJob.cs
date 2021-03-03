@@ -64,7 +64,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = _apiService.GetStatus();
+            var (status, failureMessage) = await _apiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -72,7 +72,7 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = _apiService.ThemeUnPublish(_name);
+            (success, failureMessage) = await _apiService.ThemeUnPublishAsync(_name);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync($"Theme {_name} unpublished .");

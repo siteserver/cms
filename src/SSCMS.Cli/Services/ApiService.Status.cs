@@ -1,12 +1,12 @@
-﻿using SSCMS.Cli.Models;
-using SSCMS.Core.Plugins;
+﻿using System.Threading.Tasks;
+using SSCMS.Cli.Models;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (ConfigStatus status, string failureMessage) GetStatus()
+        public async Task<(ConfigStatus status, string failureMessage)> GetStatusAsync()
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
@@ -20,8 +20,8 @@ namespace SSCMS.Cli.Services
             //request.AddHeader("Authorization", $"Bearer {status.AccessToken}");
             //var response = client.Execute<StatusResult>(request);
 
-            var url = CloudUtils.Api.GetCliUrl(RestUrlStatus);
-            var (isSuccess, result, _) = RestUtils.Get<StatusResult>(url, status.AccessToken);
+            var url = GetCliUrl(RestUrlStatus);
+            var (isSuccess, result, _) = await RestUtils.GetAsync<StatusResult>(url, status.AccessToken);
 
             if (!isSuccess || result.UserName != status.UserName)
             {

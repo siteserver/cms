@@ -1,11 +1,11 @@
-﻿using SSCMS.Core.Plugins;
+﻿using System.Threading.Tasks;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Cli.Services
 {
     public partial class ApiService
     {
-        public (bool success, string failureMessage) PluginPublish(string publisher, string zipPath)
+        public async Task<(bool success, string failureMessage)> PluginPublishAsync(string publisher, string zipPath)
         {
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
@@ -18,8 +18,8 @@ namespace SSCMS.Cli.Services
                 return (false, $"the publisher in package.json should be '{status.UserName}'");
             }
 
-            var url = CloudUtils.Api.GetCliUrl(RestUrlPluginPublish);
-            return RestUtils.Upload(url, zipPath, status.AccessToken);
+            var url = GetCliUrl(RestUrlPluginPublish);
+            return await RestUtils.UploadAsync(url, zipPath, status.AccessToken);
         }
     }
 }

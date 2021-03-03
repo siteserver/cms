@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using RestSharp;
-using SSCMS.Core.Plugins;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -13,13 +13,13 @@ namespace SSCMS.Core.Utils
             public string Message { get; set; }
         }
 
-        public static (bool success, TResult result, string failureMessage) Get<TResult>(string relatedUrl, string accessToken = null) where TResult : class
+        public static async Task<(bool success, TResult result, string failureMessage)> GetAsync<TResult>(string url, string accessToken = null) where TResult : class
 
         {
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(CloudUtils.Api.GetCliUrl(relatedUrl))
+            var client = new RestClient(url)
             {
                 Timeout = -1,
                 RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
@@ -30,7 +30,7 @@ namespace SSCMS.Core.Utils
             {
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
-            var response = client.Execute<TResult>(request);
+            var response = await client.ExecuteAsync<TResult>(request);
             if (!response.IsSuccessful)
             {
                 if (response.StatusCode == HttpStatusCode.InternalServerError)
@@ -48,13 +48,13 @@ namespace SSCMS.Core.Utils
         }
 
 
-        public static (bool success, TResult result, string failureMessage) Post<TRequest, TResult>(string relatedUrl, TRequest body, string accessToken = null) where TResult : class
+        public static async Task<(bool success, TResult result, string failureMessage)> PostAsync<TRequest, TResult>(string url, TRequest body, string accessToken = null) where TResult : class
 
         {
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(CloudUtils.Api.GetCliUrl(relatedUrl))
+            var client = new RestClient(url)
             {
                 Timeout = -1,
                 RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
@@ -66,7 +66,7 @@ namespace SSCMS.Core.Utils
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
-            var response = client.Execute<TResult>(request);
+            var response = await client.ExecuteAsync<TResult>(request);
             if (!response.IsSuccessful)
             {
                 if (response.StatusCode == HttpStatusCode.InternalServerError)
@@ -83,13 +83,13 @@ namespace SSCMS.Core.Utils
             return (true, response.Data, null);
         }
 
-        public static (bool success, string failureMessage) Post<TRequest>(string relatedUrl, TRequest body, string accessToken = null) where TRequest : class
+        public static async Task<(bool success, string failureMessage)> PostAsync<TRequest>(string url, TRequest body, string accessToken = null) where TRequest : class
 
         {
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(CloudUtils.Api.GetCliUrl(relatedUrl))
+            var client = new RestClient(url)
             {
                 Timeout = -1,
                 RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
@@ -101,7 +101,7 @@ namespace SSCMS.Core.Utils
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
             if (!response.IsSuccessful)
             {
                 if (response.StatusCode == HttpStatusCode.InternalServerError)
@@ -118,13 +118,13 @@ namespace SSCMS.Core.Utils
             return (true, null);
         }
 
-        public static (bool success, string failureMessage) Upload(string relatedUrl, string filePath, string accessToken)
+        public static async Task<(bool success, string failureMessage)> UploadAsync(string url, string filePath, string accessToken)
 
         {
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(CloudUtils.Api.GetCliUrl(relatedUrl))
+            var client = new RestClient(url)
             {
                 Timeout = -1,
                 RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
@@ -136,7 +136,7 @@ namespace SSCMS.Core.Utils
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
             request.AddFile("file", filePath);
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
 
             if (!response.IsSuccessful)
             {
@@ -179,7 +179,7 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        public static string GetIpAddress()
+        public static async Task<string> GetIpAddressAsync()
         {
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
@@ -191,7 +191,7 @@ namespace SSCMS.Core.Utils
             };
             var request = new RestRequest(Method.GET);
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteAsync(request);
             return response.Content;
         }
     }

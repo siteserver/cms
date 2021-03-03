@@ -53,7 +53,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = _apiService.GetStatus();
+            var (status, failureMessage) = await _apiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -61,7 +61,7 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = _apiService.PluginUnPublish(context.Extras[0]);
+            (success, failureMessage) = await _apiService.PluginUnPublishAsync(context.Extras[0]);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync($"Plugin {context.Extras[0]} unpublished.");

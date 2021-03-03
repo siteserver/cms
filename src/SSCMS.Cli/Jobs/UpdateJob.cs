@@ -68,7 +68,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, result, failureMessage) = _apiService.GetReleases(_settingsManager.Version, null);
+            var (success, result, failureMessage) = await _apiService.GetReleasesAsync(_settingsManager.Version, null);
             if (!success)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);

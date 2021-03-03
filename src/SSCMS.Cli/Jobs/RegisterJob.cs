@@ -80,7 +80,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, failureMessage) = _apiService.Register(_userName, _mobile, _email, _password);
+            var (success, failureMessage) = await _apiService.RegisterAsync(_userName, _mobile, _email, _password);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync("you have registered successfully, run sscms login to log in.");
