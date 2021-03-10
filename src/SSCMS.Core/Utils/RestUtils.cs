@@ -33,7 +33,11 @@ namespace SSCMS.Core.Utils
 
             var response = await client.ExecuteAsync<TResult>(request);
 
-            return response.IsSuccessful ? (true, response.Data, null) : (false, null, GetErrorMessage(response));
+            if (response.IsSuccessful) {
+              return (true, response.Data, null);
+            }
+
+            return (false, null, GetErrorMessage(response));
         }
 
 
@@ -57,7 +61,11 @@ namespace SSCMS.Core.Utils
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
             var response = await client.ExecuteAsync<TResult>(request);
 
-            return response.IsSuccessful ? (true, response.Data, null) : (false, null, GetErrorMessage(response));
+            if (response.IsSuccessful) {
+              return (true, response.Data, null);
+            }
+
+            return (false, null, GetErrorMessage(response));
         }
 
         public static async Task<(bool success, string failureMessage)> PostAsync<TRequest>(string url, TRequest body, string accessToken = null) where TRequest : class
@@ -80,7 +88,11 @@ namespace SSCMS.Core.Utils
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
             var response = await client.ExecuteAsync(request);
 
-            return response.IsSuccessful ? (true, null) : (false, GetErrorMessage(response));
+            if (response.IsSuccessful) {
+              return (true, null);
+            }
+
+            return (false, GetErrorMessage(response));
         }
 
         public static async Task<(bool success, string failureMessage)> UploadAsync(string url,
@@ -107,7 +119,11 @@ namespace SSCMS.Core.Utils
 
             var response = await client.ExecuteAsync(request);
 
-            return response.IsSuccessful ? (true, null) : (false, GetErrorMessage(response));
+            if (response.IsSuccessful) {
+              return (true, null);
+            }
+
+            return (false, GetErrorMessage(response));
         }
 
         public static void Download(string url, string filePath)
