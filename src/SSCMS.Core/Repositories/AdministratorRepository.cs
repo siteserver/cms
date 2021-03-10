@@ -483,6 +483,7 @@ namespace SSCMS.Core.Repositories
                 .Set(nameof(Administrator.SiteId), administrator.SiteId)
                 .Set(nameof(Administrator.DisplayName), administrator.DisplayName)
                 .Set(nameof(Administrator.Mobile), administrator.Mobile)
+                .Set(nameof(Administrator.MobileVerified), administrator.MobileVerified)
                 .Set(nameof(Administrator.Email), administrator.Email)
                 .Set(nameof(Administrator.AvatarUrl), administrator.AvatarUrl)
                 .Set(nameof(Administrator.UserName), administrator.UserName)

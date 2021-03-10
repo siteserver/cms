@@ -259,16 +259,24 @@ namespace SSCMS.Core.StlParser.StlElement
                 return url;
             }
 
+            var parsedContent = string.Empty;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
-                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
-                foreach (var key in editableAttributes.AllKeys)
-                {
-                    attributes[key] = editableAttributes[key];
-                }
+                var elementId = StringUtils.GetElementId();
+                VisualUtility.AddEditableToAttributes(attributes, elementId, contextInfo.ElementName);
+                parsedContent = GetParsedContent(attributes, innerHtml);
+                VisualUtility.AddEditableToPage(pageInfo, elementId, contextInfo, parsedContent);
+            }
+            else
+            {
+                parsedContent = GetParsedContent(attributes, innerHtml);
             }
 
+            return parsedContent;
+        }
+
+        private static string GetParsedContent(Dictionary<string, string> attributes, string innerHtml)
+        {
             return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
     }

@@ -33,28 +33,33 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            var parsedContent = string.Empty;
+            var innerHtml = string.Empty;
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 await parseManager.ParseInnerContentAsync(innerBuilder);
-                parsedContent = innerBuilder.ToString();
+                innerHtml = innerBuilder.ToString();
             }
 
+            var parsedContent = string.Empty;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
-                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
-                foreach (var key in editableAttributes.AllKeys)
-                {
-                    attributes[key] = editableAttributes[key];
-                }
-
-                attributes["id"] = editable.Id;
-                attributes["contenteditable"] = "true";
+                var elementId = StringUtils.GetElementId();
+                VisualUtility.AddEditableToAttributes(attributes, elementId, contextInfo.ElementName);
+                parsedContent = GetParsedContent(attributes, innerHtml);
+                VisualUtility.AddEditableToPage(pageInfo, elementId, contextInfo, parsedContent);
+            }
+            else
+            {
+                parsedContent = GetParsedContent(attributes, innerHtml);
             }
 
-            return @$"<div {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</div>";
+            return parsedContent;
+        }
+
+        private static string GetParsedContent(NameValueCollection attributes, string innerHtml)
+        {
+            return @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
         }
     }
 }
