@@ -59,31 +59,27 @@ namespace SSCMS.Web.Controllers.Stl
                     var fileUrl = _settingsManager.Decrypt(request.FileUrl);
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
                     var channel = await _channelRepository.GetAsync(request.ChannelId.Value);
-                    var content = await _contentRepository.GetAsync(site, channel, request.ContentId.Value);
 
                     await _contentRepository.AddDownloadsAsync(_channelRepository.GetTableName(site, channel), request.ChannelId.Value, request.ContentId.Value);
 
-                    if (!string.IsNullOrEmpty(content?.FileUrl))
+                    if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        if (PageUtils.IsProtocolUrl(fileUrl))
-                        {
-                            return Redirect(fileUrl);
-                        }
+                        return Redirect(fileUrl);
+                    }
 
-                        var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
-                        var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
-                        if (FileUtils.IsDownload(fileType))
+                    var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
+                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                    if (FileUtils.IsDownload(fileType))
+                    {
+                        if (FileUtils.IsFileExists(filePath))
                         {
-                            if (FileUtils.IsFileExists(filePath))
-                            {
-                                return this.Download(filePath);
-                            }
+                            return this.Download(filePath);
                         }
-                        else
-                        {
-                            var redirectUrl = await _pathManager.ParseSiteUrlAsync(site, fileUrl, false);
-                            return Redirect(redirectUrl);
-                        }
+                    }
+                    else
+                    {
+                        var redirectUrl = await _pathManager.ParseSiteUrlAsync(site, fileUrl, false);
+                        return Redirect(redirectUrl);
                     }
                 }
             }
