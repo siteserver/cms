@@ -125,7 +125,7 @@ var methods = {
       $this.tagNames = res.tagNames;
       $this.checkedLevels = res.checkedLevels;
       $this.isCensorTextEnabled = res.isCensorTextEnabled;
-      
+
       $this.siteOptions = res.siteOptions;
       $this.channelOptions = res.channelOptions;
 
@@ -157,9 +157,18 @@ var methods = {
 
       for (var i = 0; i < $this.styles.length; i++) {
         var style = $this.styles[i];
-        if (style.inputType !== 'Image' && style.inputType !== 'File' && style.inputType !== 'Video') continue;
-        
-        $this.form[utils.getCountName(style.attributeName)] = utils.toInt($this.form[utils.getCountName(style.attributeName)]);
+        if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
+          var value = $this.form[utils.toCamelCase(style.attributeName)];
+          if (!Array.isArray(value)) {
+            if (!value) {
+              $this.form[utils.toCamelCase(style.attributeName)] = [];
+            } else {
+              $this.form[utils.toCamelCase(style.attributeName)] = utils.toArray(value);
+            }
+          }
+        } else if (style.inputType === 'Image' || style.inputType === 'File' || style.inputType !== 'Video') {
+          $this.form[utils.getCountName(style.attributeName)] = utils.toInt($this.form[utils.getCountName(style.attributeName)]);
+        }
       }
 
       setTimeout(function () {
@@ -362,7 +371,7 @@ var methods = {
         editor.sync();
       });
     }
-    
+
     this.$refs.form.validate(function(valid) {
       if (valid) {
         if ($this.site.isAutoCheckKeywords && $this.isCensorTextEnabled) {
@@ -394,7 +403,7 @@ var methods = {
     }
 
     if (!this.form.body) return;
-    
+
     this.apiTags();
   },
 
@@ -408,7 +417,7 @@ var methods = {
         editor.sync();
       });
     }
-    
+
     this.$refs.form.validate(function(valid) {
       if (valid) {
         $this.apiPreview();

@@ -106,7 +106,7 @@ namespace SSCMS.Utils
 
         public static int Ceiling(int numerator, int denominator)
         {
-            return Convert.ToInt32(Math.Ceiling((double) numerator / denominator));
+            return Convert.ToInt32(Math.Ceiling((double)numerator / denominator));
         }
 
         public static DateTime ToDateTime(string dateTimeStr)
@@ -140,6 +140,16 @@ namespace SSCMS.Utils
             return datetime;
         }
 
+        public static Dictionary<string, string> ToDictionary(NameValueCollection attributes)
+        {
+            var dict = new Dictionary<string, string>();
+            if (attributes != null)
+            {
+                dict = attributes.AllKeys.ToDictionary(k => k, k => attributes[k]);
+            }
+            return dict;
+        }
+
         public static Dictionary<string, object> ToDictionary(object obj)
         {
             if (obj == null) return new Dictionary<string, object>();
@@ -163,7 +173,7 @@ namespace SSCMS.Utils
             }
             return builder.Length == 0 ? "null" : builder.ToString();
         }
-        
+
         public static NameValueCollection ToNameValueCollection(string separateString)
         {
             if (!string.IsNullOrEmpty(separateString))

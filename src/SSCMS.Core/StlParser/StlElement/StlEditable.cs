@@ -41,24 +41,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 innerHtml = innerBuilder.ToString();
             }
 
-            var parsedContent = string.Empty;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var elementId = StringUtils.GetElementId();
-                VisualUtility.AddEditableToAttributes(attributes, elementId, contextInfo.ElementName);
-                parsedContent = GetParsedContent(attributes, innerHtml);
-                VisualUtility.AddEditableToPage(pageInfo, elementId, contextInfo, parsedContent);
-            }
-            else
-            {
-                parsedContent = GetParsedContent(attributes, innerHtml);
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
             }
 
-            return parsedContent;
-        }
-
-        private static string GetParsedContent(NameValueCollection attributes, string innerHtml)
-        {
             return @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
         }
     }

@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <Version>7.0.10</Version>
+    <Version>7.0.11</Version>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <AssemblyName>SSCMS.Cli</AssemblyName>
     <StartupObject>SSCMS.Cli.Program</StartupObject>

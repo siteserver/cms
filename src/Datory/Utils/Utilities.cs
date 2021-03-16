@@ -62,6 +62,11 @@ namespace Datory.Utils
             return objects != null && objects.Count > 0 ? string.Join(separator, objects) : string.Empty;
         }
 
+        public static string ToString(JArray objects, string separator = ",")
+        {
+            return objects != null && objects.Count > 0 ? string.Join(separator, objects) : string.Empty;
+        }
+
         public static List<string> GetStringList(string collection, char split = ',')
         {
             var list = new List<string>();

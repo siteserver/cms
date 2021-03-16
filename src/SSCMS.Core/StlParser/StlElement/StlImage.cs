@@ -275,24 +275,11 @@ namespace SSCMS.Core.StlParser.StlElement
 
             attributes["src"] = picUrl;
 
-            var parsedContent = string.Empty;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var elementId = StringUtils.GetElementId();
-                VisualUtility.AddEditableToAttributes(attributes, elementId, contextInfo.ElementName);
-                parsedContent = GetParsedContent(attributes);
-                VisualUtility.AddEditableToPage(pageInfo, elementId, contextInfo, parsedContent);
-            }
-            else
-            {
-                parsedContent = GetParsedContent(attributes);
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, string.Empty);
             }
 
-            return parsedContent;
-        }
-
-        private static string GetParsedContent(NameValueCollection attributes)
-        {
             return $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
         }
     }

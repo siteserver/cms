@@ -9,36 +9,28 @@ namespace SSCMS.Core.StlParser.Utility
 {
     public static class VisualUtility
     {
-        public static void AddEditableToPage(ParsePage page, string elementId, ParseContext context, string parsedContent)
+        public static void AddEditableToPage(ParsePage page, ParseContext context, NameValueCollection attributes, string innerHtml)
         {
+            var elementId = StringUtils.GetElementId();
             var editable = new Editable
             {
-                Id = elementId,
+                ElementId = elementId,
                 ElementName = context.ElementName,
+                Attributes = TranslateUtils.ToDictionary(attributes),
+                InnerHtml = innerHtml,
                 StlElement = StringUtils.Base64Encode(context.OuterHtml),
-                EditedContent = parsedContent,
-                ParsedContent = parsedContent,
-                File = string.IsNullOrEmpty(page.IncludeFile)
+                IncludeFile = string.IsNullOrEmpty(page.IncludeFile)
                 ? string.Empty
                 : StringUtils.Base64Encode(page.IncludeFile),
-                Index = context.StartIndex,
+                StartIndex = context.StartIndex,
+                IsChanged = false
             };
             page.Editables.Add(editable);
-        }
 
-        public static void AddEditableToAttributes(Dictionary<string, string> attributes, string elementId, string elementName)
-        {
             attributes["data-element"] = "true";
             attributes["data-element-id"] = elementId;
-            attributes["data-element-name"] = elementName;
-        }
-
-        public static void AddEditableToAttributes(NameValueCollection attributes, string elementId, string elementName)
-        {
-            attributes["data-element"] = "true";
-            attributes["data-element-id"] = elementId;
-            attributes["data-element-name"] = elementName;
-            if (elementName == StlEditable.ElementName)
+            attributes["data-element-name"] = context.ElementName;
+            if (StringUtils.EqualsIgnoreCase(context.ElementName, StlEditable.ElementName))
             {
                 attributes["id"] = elementId;
                 attributes["contenteditable"] = "true";

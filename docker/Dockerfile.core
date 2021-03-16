@@ -5,15 +5,15 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /sscms
-RUN wget https://dl.sscms.com/cms/7.0.10/sscms-7.0.10-linux-x64.tar.gz
-RUN tar -xzf sscms-7.0.10-linux-x64.tar.gz
-RUN rm sscms-7.0.10-linux-x64.tar.gz -f
+RUN wget https://dl.sscms.com/cms/7.0.11/sscms-7.0.11-linux-x64.tar.gz
+RUN tar -xzf sscms-7.0.11-linux-x64.tar.gz
+RUN rm sscms-7.0.11-linux-x64.tar.gz -f
 RUN mv /sscms/wwwroot /sscms/_wwwroot
-RUN echo "7.0.10" > /sscms/_wwwroot/sitefiles/version.txt
+RUN echo "7.0.11" > /sscms/_wwwroot/sitefiles/version.txt
 
 FROM base AS final
 WORKDIR /app
 COPY --from=build /sscms .
 ENTRYPOINT ["dotnet", "SSCMS.Web.dll"]
 
-# docker build -f Dockerfile.core --no-cache -t sscms/core:latest -t sscms/core:7.0.10 .
+# docker build -f Dockerfile.core --no-cache -t sscms/core:latest -t sscms/core:7.0.11 .

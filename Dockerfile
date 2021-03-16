@@ -18,7 +18,7 @@ RUN dotnet build "SSCMS.Web.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "SSCMS.Web.csproj" -c Release -o /app/sscms
 RUN cp -r /app/sscms/wwwroot /app/sscms/_wwwroot
-RUN echo "7.0.10" > /app/sscms/_wwwroot/sitefiles/version.txt
+RUN echo "7.0.11" > /app/sscms/_wwwroot/sitefiles/version.txt
 
 FROM base AS final
 WORKDIR /app

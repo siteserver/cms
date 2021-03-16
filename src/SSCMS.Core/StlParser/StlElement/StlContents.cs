@@ -39,11 +39,9 @@ namespace SSCMS.Core.StlParser.StlElement
             var parsedContent = string.Empty;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var elementId = StringUtils.GetElementId();
-                var attributes = new NameValueCollection();
-                VisualUtility.AddEditableToAttributes(attributes, elementId, contextInfo.ElementName);
+                var attributes = new NameValueCollection(contextInfo.Attributes);
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
                 parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
-                VisualUtility.AddEditableToPage(pageInfo, elementId, contextInfo, parsedContent);
             }
             else
             {
