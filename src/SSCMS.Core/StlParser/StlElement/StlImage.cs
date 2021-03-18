@@ -13,10 +13,10 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
     public static class StlImage
-	{
-		public const string ElementName = "stl:image";
+    {
+        public const string ElementName = "stl:image";
 
-		[StlAttribute(Title = "栏目索引")]
+        [StlAttribute(Title = "栏目索引")]
         private const string ChannelIndex = nameof(ChannelIndex);
 
         [StlAttribute(Title = "栏目索引")]
@@ -24,13 +24,13 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "栏目名称")]
         private const string ChannelName = nameof(ChannelName);
-        
-		[StlAttribute(Title = "显示父栏目")]
+
+        [StlAttribute(Title = "显示父栏目")]
         private const string Parent = nameof(Parent);
-        
-		[StlAttribute(Title = "上级栏目的级别")]
+
+        [StlAttribute(Title = "上级栏目的级别")]
         private const string UpLevel = nameof(UpLevel);
-        
+
         [StlAttribute(Title = "从首页向下的栏目级别")]
         private const string TopLevel = nameof(TopLevel);
 
@@ -40,30 +40,30 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "指定存储图片的字段")]
         private const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "显示字段存储的第几幅图片，默认为 1")]
-	    private const string No = nameof(No);
+        [StlAttribute(Title = "显示字段存储的第几幅图片，默认为 1")]
+        private const string No = nameof(No);
 
         [StlAttribute(Title = "是否清除 HTML 标签")]
         private const string IsClearTags = nameof(IsClearTags);
 
         [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
         private const string IsOriginal = nameof(IsOriginal);
-        
-		[StlAttribute(Title = "显示的图片地址")]
+
+        [StlAttribute(Title = "显示的图片地址")]
         private const string Src = nameof(Src);
-        
+
         [StlAttribute(Title = "当指定的图片不存在时显示的图片地址")]
         private const string AltSrc = nameof(AltSrc);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var isGetPicUrlFromAttribute = false;
+        {
+            var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
             var type = nameof(Content.ImageUrl);
-		    var no = 0;
+            var no = 0;
             var isClearTags = false;
             var isOriginal = false;
             var src = string.Empty;
@@ -149,7 +149,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, attributes, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, isClearTags, src, altSrc);
-		}
+        }
 
         private static async Task<object> ParseAsync(IParseManager parseManager, NameValueCollection attributes,
             bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel,
@@ -274,15 +274,12 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             attributes["src"] = picUrl;
+
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
-                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
-                foreach (var key in editableAttributes.AllKeys)
-                {
-                    attributes[key] = editableAttributes[key];
-                }
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, string.Empty);
             }
+
             return $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
         }
     }

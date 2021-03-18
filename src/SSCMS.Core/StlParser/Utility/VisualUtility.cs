@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using SSCMS.Core.StlParser.StlElement;
 using SSCMS.Parse;
 using SSCMS.Utils;
 
@@ -7,32 +9,32 @@ namespace SSCMS.Core.StlParser.Utility
 {
     public static class VisualUtility
     {
-        public static Editable GetEditable(ParsePage page, ParseContext context)
+        public static void AddEditableToPage(ParsePage page, ParseContext context, NameValueCollection attributes, string innerHtml)
         {
+            var elementId = StringUtils.GetElementId();
             var editable = new Editable
             {
-                Id = StringUtils.GetElementId(),
+                ElementId = elementId,
                 ElementName = context.ElementName,
+                Attributes = TranslateUtils.ToDictionary(attributes),
+                InnerHtml = innerHtml,
                 StlElement = StringUtils.Base64Encode(context.OuterHtml),
-
-                File = string.IsNullOrEmpty(page.IncludeFile)
+                IncludeFile = string.IsNullOrEmpty(page.IncludeFile)
                 ? string.Empty
                 : StringUtils.Base64Encode(page.IncludeFile),
-                Index = context.StartIndex,
+                StartIndex = context.StartIndex,
+                IsChanged = false
             };
             page.Editables.Add(editable);
-            return editable;
-        }
 
-        public static NameValueCollection GetEditableAttributes(Editable editable)
-        {
-            var attributes = new NameValueCollection(StringComparer.OrdinalIgnoreCase)
+            attributes["data-element"] = "true";
+            attributes["data-element-id"] = elementId;
+            attributes["data-element-name"] = context.ElementName;
+            if (StringUtils.EqualsIgnoreCase(context.ElementName, StlEditable.ElementName))
             {
-                ["data-element"] = "true",
-                ["data-element-id"] = editable.Id,
-                ["data-element-name"] = editable.ElementName
-            };
-            return attributes;
+                attributes["id"] = elementId;
+                attributes["contenteditable"] = "true";
+            }
         }
 
         //public static string Parse(ParsePage page, ParseContext context, EditableType type, string parsedContent)

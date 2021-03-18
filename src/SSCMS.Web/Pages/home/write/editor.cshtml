@@ -31,8 +31,6 @@
     <el-main style="padding: 0; margin: 0">
       <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
         
-        <!-- <el-form style="margin: 10px 20px 20px 10px" size="small" label-position="left" label-width="80px"> -->
-        
         <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="80px">
           @await Html.PartialAsync("_PartialForm")
         </el-form>
@@ -102,12 +100,10 @@
   
   <el-divider></el-divider>
   
-  <el-row align="center" style="text-align: center; padding-top:4px">
+  <el-row style="text-align: center; padding-top:4px">
     <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
     <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
     <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
-    <!-- <el-button size="medium" v-on:click="getWordSpliter();return false;">提取标签</el-button>
-    <el-button size="medium" v-if="isCensorTextEnabled" v-on:click="detection_Content();return false;">审 查</el-button> -->
     <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
   </el-row>
 

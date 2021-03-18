@@ -8,6 +8,7 @@ using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Services;
 using SSCMS.Utils;
+using System.Collections.Specialized;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -48,7 +49,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var attributes = new Dictionary<string, string>();
+            var attributes = new NameValueCollection();
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
@@ -129,13 +130,13 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private static async Task<string> ParseAsync(IParseManager parseManager, string channelIndex,
             string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString,
-            string host, Dictionary<string, string> attributes)
+            string host, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            attributes.TryGetValue("id", out var htmlId);
+            var htmlId = attributes["id"];
 
             if (!string.IsNullOrEmpty(htmlId) && !string.IsNullOrEmpty(contextInfo.ContainerClientId))
             {
@@ -261,12 +262,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
-                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
-                foreach (var key in editableAttributes.AllKeys)
-                {
-                    attributes[key] = editableAttributes[key];
-                }
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
             }
 
             return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";

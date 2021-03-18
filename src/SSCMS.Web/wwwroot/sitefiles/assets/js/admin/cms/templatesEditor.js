@@ -15,6 +15,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   templateId: utils.getQueryInt("templateId"),
   templateType: utils.getQueryString("templateType"),
+  accessToken: utils.getQueryString("accessToken"),
   createdFileFullNameTips: '以“~/”开头代表系统根目录，以“@/”开头代表站点根目录',
   templateName: null,
   relatedFile: null,
@@ -283,7 +284,8 @@ var methods = {
       title: '还原历史版本',
       url: utils.getCmsUrl('templatesEditorLayerRestore', {
         siteId: this.siteId,
-        templateId: this.templateId
+        templateId: this.templateId,
+        accessToken: this.accessToken
       }),
       full: true
     });
@@ -301,7 +303,10 @@ var methods = {
 
       utils.openLayer({
         title: '生成进度查看',
-        url: utils.getCmsUrl('createStatus', {siteId: $this.siteId}),
+        url: utils.getCmsUrl('createStatus', {
+          siteId: $this.siteId,
+          accessToken: $this.accessToken
+        }),
         width: '50%',
         height: '50%'
       });

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Datory.Annotations;
@@ -123,6 +124,25 @@ namespace Datory.Utils
             try
             {
                 var type = Nullable.GetUnderlyingType(conversionType) ?? conversionType;
+                if (type == typeof(string))
+                {
+                    if (value is Enum en)
+                    {
+                        return en.GetValue();
+                    }
+                    if (value is List<string> stringList)
+                    {
+                        return Utilities.ToString(stringList);
+                    }
+                    if (value is List<int> intList)
+                    {
+                        return Utilities.ToString(intList);
+                    }
+                    if (value is JArray jArray)
+                    {
+                        return Utilities.ToString(jArray);
+                    }
+                }
                 return Convert.ChangeType(value, type);
             }
             catch

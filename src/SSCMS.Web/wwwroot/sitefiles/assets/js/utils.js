@@ -112,15 +112,19 @@ var utils = {
     return parseInt(val, 10) || 0;
   },
 
+  toArray: function (val) {
+    return (val || '').split(',');
+  },
+
   formatDate: function(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
 
-    if (month.length < 2) 
+    if (month.length < 2)
         month = '0' + month;
-    if (day.length < 2) 
+    if (day.length < 2)
         day = '0' + day;
 
     return [year, month, day].join('-');
@@ -264,7 +268,7 @@ var utils = {
     var index = $this.tabs.findIndex(function(tab) {
       return tab.url == url;
     });
-    
+
     var tab = null;
     if (index === -1) {
       tab = {
@@ -286,7 +290,7 @@ var utils = {
     if (!name) {
       name = $this.tabName;
     }
-    
+
     if ($this.tabName === name) {
       $this.activeChildMenu = null;
       $this.tabs.forEach(function(tab, index) {
@@ -298,7 +302,7 @@ var utils = {
         }
       });
     }
-    
+
     $this.tabs = $this.tabs.filter(function(tab) {
       return tab.name !== name;
     });
@@ -469,12 +473,12 @@ var utils = {
         } else {
           sessionStorage.setItem(uuid, message);
         }
-  
+
         if (options && options.redirect) {
           location.href = utils.getRootUrl("error", { uuid: uuid })
           return;
         }
-  
+
         top.utils.openLayer({
           url: utils.getRootUrl("error", { uuid: uuid }),
         });
@@ -499,7 +503,7 @@ var utils = {
         sessionStorage.setItem(uuid, JSON.stringify({
           message: error
         }));
-  
+
         location.href = utils.getRootUrl("error", { uuid: uuid });
       } else {
         utils.getRootVue().$message({
@@ -666,9 +670,9 @@ var utils = {
             message: rule.message || options.required,
           });
         } else if (ruleType === "email") {
-          array.push({ 
-            type: "email", 
-            message: rule.message || options.email 
+          array.push({
+            type: "email",
+            message: rule.message || options.email
           });
         } else if (ruleType === "mobile") {
           array.push({
@@ -676,13 +680,13 @@ var utils = {
             message: rule.message || options.mobile
           });
         } else if (ruleType === "url") {
-          array.push({ 
-            type: "url", 
+          array.push({
+            type: "url",
             message: rule.message || options.url
           });
         } else if (ruleType === "alpha") {
-          array.push({ 
-            type: "alpha", 
+          array.push({
+            type: "alpha",
             message: rule.message || options.alpha
           });
         } else if (ruleType === "alphaDash") {
@@ -731,8 +735,8 @@ var utils = {
             message: rule.message || options.excluded,
           });
         } else if (ruleType === "max") {
-          array.push({ 
-            type: "max", 
+          array.push({
+            type: "max",
             message: rule.message || options.max
           });
         } else if (ruleType === "maxValue") {
@@ -741,9 +745,9 @@ var utils = {
             message: rule.message || options.maxValue,
           });
         } else if (ruleType === "min") {
-          array.push({ 
-            type: "min", 
-            message: rule.message || options.min 
+          array.push({
+            type: "min",
+            message: rule.message || options.min
           });
         } else if (ruleType === "minValue") {
           array.push({
@@ -753,7 +757,7 @@ var utils = {
         } else if (ruleType === "regex" && rule.value) {
           var re = new RegExp(rule.value, "ig");
           var message = rule.message || options.regex;
-          array.push({ 
+          array.push({
             validator: function (rule, value, callback) {
               if (!value){
                 callback();
@@ -776,8 +780,8 @@ var utils = {
             message: rule.message || options.currency,
           });
         } else if (ruleType === "zip") {
-          array.push({ 
-            type: "zip", 
+          array.push({
+            type: "zip",
             message: rule.message || options.zip
           });
         } else if (ruleType === "idCard") {

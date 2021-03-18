@@ -33,28 +33,20 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            var parsedContent = string.Empty;
+            var innerHtml = string.Empty;
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 await parseManager.ParseInnerContentAsync(innerBuilder);
-                parsedContent = innerBuilder.ToString();
+                innerHtml = innerBuilder.ToString();
             }
 
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
-                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
-                foreach (var key in editableAttributes.AllKeys)
-                {
-                    attributes[key] = editableAttributes[key];
-                }
-
-                attributes["id"] = editable.Id;
-                attributes["contenteditable"] = "true";
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
             }
 
-            return @$"<div {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</div>";
+            return @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
         }
     }
 }

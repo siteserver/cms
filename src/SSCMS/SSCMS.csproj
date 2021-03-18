@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
-    <Version>7.0.10</Version>
+    <Version>7.0.11</Version>
     <Authors>SS CMS</Authors>
     <Company>SS CMS</Company>
     <PackageDescription>SS CMS .NET Core abstractions for developers.</PackageDescription>

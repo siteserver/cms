@@ -11,6 +11,7 @@ using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
 using SSCMS.Core.StlParser.Enums;
+using System.Collections.Specialized;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -34,13 +35,17 @@ namespace SSCMS.Core.StlParser.StlElement
                 return ParseEntity(dataSource);
             }
 
-            var parsedContent = await ParseAsync(parseManager, listInfo, dataSource);
+            var innerHtml = await ParseAsync(parseManager, listInfo, dataSource);
+            var parsedContent = string.Empty;
             if (pageInfo.EditMode == EditMode.Visual)
             {
-                var editable = VisualUtility.GetEditable(pageInfo, contextInfo);
-                var editableAttributes = VisualUtility.GetEditableAttributes(editable);
-
-                return @$"<div {TranslateUtils.ToAttributesString(editableAttributes)}>{parsedContent}</div>";
+                var attributes = new NameValueCollection(contextInfo.Attributes);
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
+                parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
+            }
+            else
+            {
+                parsedContent = innerHtml;
             }
 
             return parsedContent;

@@ -30,21 +30,14 @@ namespace SSCMS.Core.Utils
             {
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
+
             var response = await client.ExecuteAsync<TResult>(request);
-            if (!response.IsSuccessful)
-            {
-                if (response.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
-                    if (error != null)
-                    {
-                        return (false, null, error.Message);
-                    }
-                }
-                return (false, null, response.ErrorMessage);
+
+            if (response.IsSuccessful) {
+              return (true, response.Data, null);
             }
 
-            return (true, response.Data, null);
+            return (false, null, GetErrorMessage(response));
         }
 
 
@@ -67,20 +60,12 @@ namespace SSCMS.Core.Utils
             }
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
             var response = await client.ExecuteAsync<TResult>(request);
-            if (!response.IsSuccessful)
-            {
-                if (response.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
-                    if (error != null)
-                    {
-                        return (false, null, error.Message);
-                    }
-                }
-                return (false, null, response.ErrorMessage);
+
+            if (response.IsSuccessful) {
+              return (true, response.Data, null);
             }
 
-            return (true, response.Data, null);
+            return (false, null, GetErrorMessage(response));
         }
 
         public static async Task<(bool success, string failureMessage)> PostAsync<TRequest>(string url, TRequest body, string accessToken = null) where TRequest : class
@@ -102,23 +87,16 @@ namespace SSCMS.Core.Utils
             }
             request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
             var response = await client.ExecuteAsync(request);
-            if (!response.IsSuccessful)
-            {
-                if (response.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
-                    if (error != null)
-                    {
-                        return (false, error.Message);
-                    }
-                }
-                return (false, response.ErrorMessage);
+
+            if (response.IsSuccessful) {
+              return (true, null);
             }
 
-            return (true, null);
+            return (false, GetErrorMessage(response));
         }
 
-        public static async Task<(bool success, string failureMessage)> UploadAsync(string url, string filePath, string accessToken)
+        public static async Task<(bool success, string failureMessage)> UploadAsync(string url,
+            string filePath, string accessToken)
 
         {
             ServicePointManager.ServerCertificateValidationCallback +=
@@ -127,31 +105,25 @@ namespace SSCMS.Core.Utils
             var client = new RestClient(url)
             {
                 Timeout = -1,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                RemoteCertificateValidationCallback =
+                    (sender, certificate, chain, sslPolicyErrors) => true
             };
             var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
+            //request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
             {
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
+
             request.AddFile("file", filePath);
+
             var response = await client.ExecuteAsync(request);
 
-            if (!response.IsSuccessful)
-            {
-                if (response.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
-                    if (error != null)
-                    {
-                        return (false, error.Message);
-                    }
-                }
-                return (false, response.ErrorMessage);
+            if (response.IsSuccessful) {
+              return (true, null);
             }
 
-            return (true, null);
+            return (false, GetErrorMessage(response));
         }
 
         public static void Download(string url, string filePath)
@@ -193,6 +165,29 @@ namespace SSCMS.Core.Utils
 
             var response = await client.ExecuteAsync(request);
             return response.Content;
+        }
+
+        private static string GetErrorMessage(IRestResponse response)
+        {
+            var errorMessage = string.Empty;
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                var error = TranslateUtils.JsonDeserialize<InternalServerError>(response.Content);
+                if (error != null)
+                {
+                    errorMessage = error.Message;
+                }
+            }
+
+            if (string.IsNullOrEmpty(errorMessage))
+            {
+                errorMessage = response.ErrorMessage;
+            }
+            if (string.IsNullOrEmpty(errorMessage))
+            {
+                errorMessage = StringUtils.Trim(response.Content, '"');
+            }
+            return errorMessage;
         }
     }
 }
