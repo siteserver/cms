@@ -4,6 +4,8 @@ using SqlKata;
 using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Utils;
 using SSCMS.Core.StlParser.Models;
+using System.Threading.Tasks;
+using SSCMS.Services;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -27,7 +29,7 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "数据类型")]
         private const string DataType = nameof(DataType);
 
-        private static QueryInfo Parse(string stlElement)
+        private static async Task<QueryInfo> ParseAsync(IParseManager parseManager, string stlElement)
         {
             var (innerHtml, attributes) = ParseUtils.GetInnerHtmlAndAttributes(stlElement);
 
@@ -58,7 +60,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Value))
                 {
-                    query.Value = attributeValue;
+                    query.Value = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(attributeValue);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, DataType))
                 {
@@ -94,7 +96,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             {
                                 query.Queries = new List<QueryInfo>();
                             }
-                            query.Queries.Add(Parse(theStlElement));
+                            query.Queries.Add(await ParseAsync(parseManager, theStlElement));
                         }
                     }
                 }
@@ -123,9 +125,9 @@ namespace SSCMS.Core.StlParser.StlElement
             }
         }
 
-        public static Query AddQuery(this Query query, string stlElement)
+        public static async Task<Query> AddQueryAsync(this Query query, IParseManager parseManager, string stlElement)
         {
-            var queryInfo = Parse(stlElement);
+            var queryInfo = await ParseAsync(parseManager, stlElement);
             return query.AddQuery(queryInfo);
         }
 

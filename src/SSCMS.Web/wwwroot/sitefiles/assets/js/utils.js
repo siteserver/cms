@@ -83,7 +83,8 @@ var utils = {
       maximumWords: 99999999,
       initialFrameWidth:null ,
       autoHeightEnabled: false,
-      autoFloatEnabled: false
+      autoFloatEnabled: false,
+      zIndex: 2006,
     });
   },
 
@@ -597,6 +598,22 @@ var utils = {
     }
   },
 
+  validateMax: function (rule, value, callback) {
+    if (value && value.length > parseInt(rule.value)) {
+      callback(new Error(rule.message || '字段不能超过指定的长度'));
+    } else {
+      callback()
+    }
+  },
+
+  validateMin: function (rule, value, callback) {
+    if (value && value.length < parseInt(rule.value)) {
+      callback(new Error(rule.message || '字段不能低于指定的长度'));
+    } else {
+      callback()
+    }
+  },
+
   validateInt: function (rule, value, callback) {
     if (!value) {
       callback();
@@ -736,8 +753,8 @@ var utils = {
           });
         } else if (ruleType === "max") {
           array.push({
-            type: "max",
-            message: rule.message || options.max
+            validator: utils.validateMax,
+            message: rule.message || options.mobile
           });
         } else if (ruleType === "maxValue") {
           array.push({
@@ -746,8 +763,8 @@ var utils = {
           });
         } else if (ruleType === "min") {
           array.push({
-            type: "min",
-            message: rule.message || options.min
+            validator: utils.validateMin,
+            message: rule.message || options.mobile
           });
         } else if (ruleType === "minValue") {
           array.push({
@@ -791,6 +808,7 @@ var utils = {
           });
         }
       }
+
       return array;
     }
     return null;

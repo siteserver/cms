@@ -166,7 +166,7 @@ var methods = {
               $this.form[utils.toCamelCase(style.attributeName)] = utils.toArray(value);
             }
           }
-        } else if (style.inputType === 'Image' || style.inputType === 'File' || style.inputType !== 'Video') {
+        } else if (style.inputType === 'Image' || style.inputType === 'File' || style.inputType === 'Video') {
           $this.form[utils.getCountName(style.attributeName)] = utils.toInt($this.form[utils.getCountName(style.attributeName)]);
         }
       }

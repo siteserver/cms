@@ -126,6 +126,8 @@ namespace SSCMS.Core.Repositories
                 .CachingRemove(cacheKeys.ToArray())
             );
 
+            channelId = Math.Abs(channelId);
+
             var handlers = pluginManager.GetExtensions<PluginContentHandler>();
             foreach (var handler in handlers)
             {
