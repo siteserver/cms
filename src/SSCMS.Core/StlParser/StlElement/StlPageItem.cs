@@ -7,6 +7,7 @@ using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
 using SSCMS.Core.StlParser.Mocks;
 using SSCMS.Core.StlParser.Utility;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -156,6 +157,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 Channel node = null;
 
                 string pageUrl;
+                
                 if (contextType == ParseType.Channel)
                 {
                     node = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
@@ -1306,7 +1308,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = await parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                //var jsMethod = await parseManager.PathManager.GetJsMethodInDynamicPageAsync(type, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = parseManager.PathManager.GetClickStringInSearchPage(type, ajaxDivId, 0, currentPageIndex, pageCount);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {

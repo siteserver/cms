@@ -312,7 +312,7 @@ namespace SSCMS.Core.Services
 
         public string GetStlPageSqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
         {
-            var retVal = string.Empty;
+            string retVal;
 
             var temp = StringUtils.ToLower(sqlString);
             var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
@@ -335,21 +335,12 @@ namespace SSCMS.Core.Services
             if (currentPageIndex == pageCount - 1)
                 recsToRetrieve = recordsInLastPage;
 
-            orderString = orderString.ToUpper();
+            orderString = StringUtils.ToUpper(orderString);
             var orderStringReverse = orderString.Replace(" DESC", " DESC2");
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-            if (_settingsManager.Database.DatabaseType == DatabaseType.MySql)
-            {
-                retVal = $@"
-SELECT * FROM (
-    SELECT * FROM (
-        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
-    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
-) AS t2 {orderString}";
-            }
-            else if (_settingsManager.Database.DatabaseType == DatabaseType.SqlServer)
+            if (_settingsManager.Database.DatabaseType == DatabaseType.SqlServer)
             {
                 retVal = $@"
 SELECT * FROM (
@@ -359,6 +350,15 @@ SELECT * FROM (
 ) AS t2 {orderString}";
             }
             else if (_settingsManager.Database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $@"
+SELECT * FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
+    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
+) AS t2 {orderString}";
+            }
+            else
             {
                 retVal = $@"
 SELECT * FROM (

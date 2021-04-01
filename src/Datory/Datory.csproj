@@ -1,23 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>Datory</PackageId>
-    <Version>1.1.0</Version>
-    <PackageVersion>1.1.0</PackageVersion>
-    <Authors>Datory</Authors>
-    <Company>Datory</Company>
-    <Product>Datory</Product>
+    <Version>7.0.11</Version>
+    <Authors>SS CMS</Authors>
+    <Company>SS CMS</Company>
     <Description>基于 Dapper 及 SqlKata 的通用数据库操作库，支持SqlServer、MySql、PostgreSql以及SQLite。</Description>
-    <PackageLicense>MIT</PackageLicense>
-    <PackageProjectUrl>https://github.com/siteserver/Datory</PackageProjectUrl>
-    <PackageIconUrl>https://www.datory.io/assets/images/favicon.png</PackageIconUrl>
-    <Copyright>Copyright © Datory 2019</Copyright>
-    <PackageTags>Datory Plugin</PackageTags>
-    <RepositoryUrl>https://github.com/siteserver/Datory</RepositoryUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/siteserver/cms/</RepositoryUrl>
+    <PackageIconUrl>https://sscms.com/assets/images/favicon.png</PackageIconUrl>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

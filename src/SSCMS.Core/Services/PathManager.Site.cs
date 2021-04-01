@@ -653,7 +653,7 @@ namespace SSCMS.Core.Services
             return await GetSitePathAsync(site, paths);
         }
 
-        public async Task<string> GetIndexPageFilePathAsync(Site site, string createFileFullName, bool root, int currentPageIndex)
+        public async Task<string> GetIndexPageFilePathAsync(Site site, string createFileFullName, bool root)
         {
             if (string.IsNullOrEmpty(createFileFullName))
             {
@@ -678,16 +678,7 @@ namespace SSCMS.Core.Services
                 }
             }
 
-            var filePath = await ParseSitePathAsync(site, createFileFullName);
-
-            if (currentPageIndex != 0)
-            {
-                string appendix = $"_{currentPageIndex + 1}";
-                var fileName = PathUtils.GetFileNameWithoutExtension(filePath) + appendix + PathUtils.GetExtension(filePath);
-                filePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), fileName);
-            }
-
-            return filePath;
+            return await ParseSitePathAsync(site, createFileFullName);
         }
 
         public string GetBackupFilePath(Site site, BackupType backupType)
@@ -1027,13 +1018,13 @@ namespace SSCMS.Core.Services
             return filePathRule;
         }
 
-        public async Task<string> GetChannelPageFilePathAsync(Site site, int channelId, int currentPageIndex)
+        public async Task<string> GetChannelPageFilePathAsync(Site site, int channelId)
         {
             var nodeInfo = await _channelRepository.GetAsync(channelId);
             if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = await _templateRepository.GetDefaultTemplateAsync(site.Id, TemplateType.IndexPageTemplate);
-                return await GetIndexPageFilePathAsync(site, templateInfo.CreatedFileFullName, site.Root, currentPageIndex);
+                return await GetIndexPageFilePathAsync(site, templateInfo.CreatedFileFullName, site.Root);
             }
             var filePath = nodeInfo.FilePath;
 
@@ -1050,6 +1041,11 @@ namespace SSCMS.Core.Services
             }
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
+            return filePath;
+        }
+
+        public string GetPageFilePathAsync(string filePath, int currentPageIndex)
+        {
             if (currentPageIndex != 0)
             {
                 string appendix = $"_{(currentPageIndex + 1)}";

@@ -18,7 +18,7 @@ namespace SSCMS.Core.Utils
 
         public ParseType ContextType { get; private set; }
 
-        public bool IsPreview { get; private set; }
+        private bool IsPreview { get; set; }
 
         public string FilePath { get; private set; }
 
@@ -72,16 +72,28 @@ namespace SSCMS.Core.Utils
 
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                visualInfo.Template = await databaseManager.TemplateRepository.GetIndexPageTemplateAsync(visualInfo.Site.Id);
+                visualInfo.Template =
+                    await databaseManager.TemplateRepository.GetIndexPageTemplateAsync(visualInfo
+                        .Site.Id);
                 visualInfo.ContextType = ParseType.Channel;
-                visualInfo.FilePath = await pathManager.GetIndexPageFilePathAsync(visualInfo.Site, visualInfo.Template.CreatedFileFullName, visualInfo.Site.Root, visualInfo.PageIndex);
+                visualInfo.FilePath = await pathManager.GetIndexPageFilePathAsync(visualInfo.Site,
+                    visualInfo.Template.CreatedFileFullName, visualInfo.Site.Root);
+                visualInfo.FilePath = pathManager.GetPageFilePathAsync(visualInfo.FilePath,
+                    visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                var channel = await databaseManager.ChannelRepository.GetAsync(visualInfo.ChannelId);
-                visualInfo.Template = await databaseManager.TemplateRepository.GetChannelTemplateAsync(visualInfo.Site.Id, channel);
+                var channel =
+                    await databaseManager.ChannelRepository.GetAsync(visualInfo.ChannelId);
+                visualInfo.Template =
+                    await databaseManager.TemplateRepository.GetChannelTemplateAsync(
+                        visualInfo.Site.Id, channel);
                 visualInfo.ContextType = ParseType.Channel;
-                visualInfo.FilePath = await pathManager.GetChannelPageFilePathAsync(visualInfo.Site, visualInfo.ChannelId, visualInfo.PageIndex);
+                visualInfo.FilePath =
+                    await pathManager.GetChannelPageFilePathAsync(visualInfo.Site,
+                        visualInfo.ChannelId);
+                visualInfo.FilePath = pathManager.GetPageFilePathAsync(visualInfo.FilePath,
+                    visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
@@ -92,7 +104,7 @@ namespace SSCMS.Core.Utils
                 visualInfo.ContextType = ParseType.Content;
                 visualInfo.FilePath = await pathManager.GetContentPageFilePathAsync(visualInfo.Site, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
             }
-            else if (templateType == TemplateType.FileTemplate)
+            else
             {
                 visualInfo.Template = await databaseManager.TemplateRepository.GetFileTemplateAsync(visualInfo.Site.Id, fileTemplateId);
                 visualInfo.ContextType = ParseType.Undefined;

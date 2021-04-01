@@ -235,6 +235,7 @@
       <el-date-picker
         v-model="form[utils.toCamelCase(style.attributeName)]"
         type="date"
+        value-format="yyyy-MM-ddTHH:mm:ss.000Z"
         :placeholder="style.helpText || '请选择日期'">
       </el-date-picker>
     </el-form-item>
@@ -245,6 +246,7 @@
       <el-date-picker
         v-model="form[utils.toCamelCase(style.attributeName)]"
         type="datetime"
+        value-format="yyyy-MM-ddTHH:mm:ss.000Z"
         :placeholder="style.helpText || '请选择日期时间'">
       </el-date-picker>
     </el-form-item>

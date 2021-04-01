@@ -614,6 +614,15 @@ var utils = {
     }
   },
 
+  validateIdCard: function (rule, value, callback) {
+    var reg = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
+    if (!value || !reg.test(value)) {
+      callback(new Error(rule.message || '字段必须是身份证号码'));
+    } else {
+      callback()
+    }
+  },
+
   validateInt: function (rule, value, callback) {
     if (!value) {
       callback();
@@ -754,7 +763,8 @@ var utils = {
         } else if (ruleType === "max") {
           array.push({
             validator: utils.validateMax,
-            message: rule.message || options.mobile
+            message: rule.message || options.mobile,
+            value: rule.value
           });
         } else if (ruleType === "maxValue") {
           array.push({
@@ -764,7 +774,8 @@ var utils = {
         } else if (ruleType === "min") {
           array.push({
             validator: utils.validateMin,
-            message: rule.message || options.mobile
+            message: rule.message || options.mobile,
+            value: rule.value
           });
         } else if (ruleType === "minValue") {
           array.push({
@@ -803,7 +814,7 @@ var utils = {
           });
         } else if (ruleType === "idCard") {
           array.push({
-            type: "idCard",
+            validator: utils.validateIdCard,
             message: rule.message || options.idCard,
           });
         }

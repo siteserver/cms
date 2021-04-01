@@ -530,6 +530,10 @@ namespace Datory
             {
                 where = $"POSITION(? IN [{columnName}]) > 0";
             }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+                where = $"INSTR([{columnName}], ?) > 0";
+            }
             return where;
         }
 
@@ -570,6 +574,10 @@ namespace Datory
             {
                 where = $"POSITION([{columnName}] IN ?) > 0";
             }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+                where = $"INSTR(?, [{columnName}]) > 0";
+            }
             return where;
         }
 
@@ -609,6 +617,10 @@ namespace Datory
             else if (databaseType == DatabaseType.PostgreSql)
             {
                 where = $"POSITION(? IN [{columnName}]) = 0";
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+                where = $"INSTR([{columnName}], ?) = 0";
             }
             return where;
         }
