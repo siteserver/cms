@@ -84,7 +84,7 @@ var utils = {
       initialFrameWidth:null ,
       autoHeightEnabled: false,
       autoFloatEnabled: false,
-      zIndex: 2006,
+      zIndex: 2001,
     });
   },
 
