@@ -39,6 +39,29 @@ namespace SSCMS.Core.Services
             {
                 await ExecuteSpecialAsync(siteId, specialId);
             }
+            else if (createType == CreateType.All)
+            {
+                var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId);
+                foreach (var theChannelId in channelIdList)
+                {
+                    await ExecuteChannelAsync(siteId, theChannelId);
+                }
+
+                foreach (var theChannelId in channelIdList)
+                {
+                    await ExecuteContentsAsync(siteId, theChannelId);
+                }
+
+                foreach (var theSpecialId in await _specialRepository.GetAllSpecialIdsAsync(siteId))
+                {
+                    await ExecuteSpecialAsync(siteId, theSpecialId);
+                }
+
+                foreach (var theFileTemplateId in await _templateRepository.GetAllFileTemplateIdsAsync(siteId))
+                {
+                    await ExecuteFileAsync(siteId, theFileTemplateId);
+                }
+            }
         }
 
         private async Task ExecuteContentsAsync(int siteId, int channelId)

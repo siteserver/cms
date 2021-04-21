@@ -74,45 +74,6 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public List<(int AdminId, int AddCount, int UpdateCount)> GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
-        {
-            var sqlString = $@"select adminId,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
-SELECT AdminId as adminId, Count(AdminId) as addCount, 0 as updateCount FROM {tableName} 
-INNER JOIN {_administratorRepository.TableName} ON AdminId = {_administratorRepository.TableName}.Id 
-WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {GetComparableDate(begin)} AND {GetComparableDate(end.AddDays(1))}
-GROUP BY AdminId
-Union
-SELECT LastEditAdminId as lastEditAdminId,0 as addCount, Count(LastEditAdminId) as updateCount FROM {tableName} 
-INNER JOIN {_administratorRepository.TableName} ON LastEditAdminId = {_administratorRepository.TableName}.Id 
-WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {GetComparableDate(begin)} AND {GetComparableDate(end.AddDays(1))}
-AND LastModifiedDate != AddDate
-GROUP BY LastEditAdminId
-) as tmp
-group by tmp.adminId";
-
-            var list = new List<(int AdminId, int AddCount, int UpdateCount)>();
-
-            var repository = GetRepository(tableName);
-            using (var connection = repository.Database.GetConnection())
-            {
-                using (var rdr = connection.ExecuteReader(sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        var adminId = rdr.IsDBNull(0) ? 0 : rdr.GetInt32(0);
-                        var addCount = rdr.IsDBNull(1) ? 0 : rdr.GetInt32(1);
-                        var updateCount = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
-
-                        list.Add((adminId, addCount, updateCount));
-                    }
-                }
-            }
-
-            return list;
-        }
-
         public async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int adminId)
         {
             var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId, channelId, scope);

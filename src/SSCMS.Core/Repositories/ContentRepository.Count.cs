@@ -13,7 +13,10 @@ namespace SSCMS.Core.Repositories
             foreach (var channel in channels)
             {
                 var summaries = await GetSummariesAsync(site, channel);
-                count += summaries.Count(summary => !summary.Checked);
+                count += summaries.Count(summary =>
+                {
+                    return !summary.Checked && summary.CheckedLevel == 0;
+                });
             }
 
             return count;

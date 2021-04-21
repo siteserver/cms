@@ -200,7 +200,12 @@ namespace SSCMS.Core.Repositories
             var repository = GetRepository(site, channel);
 
             query = GetQuery(query, site.Id)
-                .Select(nameof(ContentSummary.Id), nameof(ContentSummary.ChannelId), nameof(ContentSummary.Checked))
+                .Select(
+                  nameof(ContentSummary.Id), 
+                  nameof(ContentSummary.ChannelId),
+                  nameof(ContentSummary.Checked),
+                  nameof(ContentSummary.CheckedLevel)
+                )
                 .WhereTrue(nameof(Content.Checked));
 
             if (isRelatedContents && contentId > 0)

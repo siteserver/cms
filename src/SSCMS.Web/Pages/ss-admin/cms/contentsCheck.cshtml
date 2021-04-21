@@ -56,16 +56,6 @@
                 style="margin-top: 10px"
                 label-width="80px"
               >
-                <el-form-item label="审核状态">
-                  <el-checkbox-group v-model="searchForm.checkedLevels">
-                    <el-checkbox
-                      v-for="level in checkedLevels"
-                      v-key="level.label"
-                      :label="level.label"
-                      >{{ level.text }}</el-checkbox
-                    >
-                  </el-checkbox-group>
-                </el-form-item>
                 <el-form-item label="内容属性">
                   <el-checkbox
                     label="置顶"
@@ -180,6 +170,24 @@
           </el-form-item>
         </el-form>
       </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
+        <el-form :inline="true" size="small" label-width="100px">
+          <el-form-item label="审核状态">
+            <el-checkbox-group v-model="searchForm.checkedLevels">
+              <el-checkbox
+                v-for="level in checkedLevels"
+                v-key="level.label"
+                :label="level.label"
+                >{{ level.text }}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+    <el-row>
       <el-col :span="24">
         <el-form :inline="true" size="small" label-width="100px">
           <el-form-item label="添加时间">
@@ -205,6 +213,8 @@
           </el-form-item>
         </el-form>
       </el-col>
+    </el-row>
+    <el-row>
       <el-col :span="24">
         <el-form size="small" label-width="100px">
           <el-form-item

@@ -186,7 +186,12 @@ namespace SSCMS.Core.Repositories
         public async Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel)
         {
             var repository = GetRepository(site, channel);
-            var query = Q.Select(nameof(Content.Id), nameof(Content.ChannelId), nameof(Content.Checked));
+            var query = Q.Select(
+              nameof(Content.Id), 
+              nameof(Content.ChannelId), 
+              nameof(Content.Checked), 
+              nameof(Content.CheckedLevel)
+            );
 
             await QueryWhereAsync(query, site, channel.Id, false);
 

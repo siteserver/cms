@@ -16,9 +16,6 @@ namespace SSCMS.Repositories
 
         Task<int> GetFirstContentIdAsync(Site site, IChannelSummary channel);
 
-        List<(int AdminId, int AddCount, int UpdateCount)> GetDataSetOfAdminExcludeRecycle(string tableName,
-            int siteId, DateTime begin, DateTime end);
-
         Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope,
             DateTime begin, DateTime end, int adminId);
 
