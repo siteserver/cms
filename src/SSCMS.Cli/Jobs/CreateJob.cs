@@ -91,8 +91,6 @@ namespace SSCMS.Cli.Jobs
             }
             await Console.Out.WriteLineAsync($"site: {site.SiteName}");
 
-            //await _createManager.CreateByAllAsync(site.Id);
-
             await _createManager.ExecuteAsync(site.Id, CreateType.All, 0, 0, 0, 0);
 
             await WriteUtils.PrintSuccessAsync("create pages successfully!");

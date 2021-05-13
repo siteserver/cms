@@ -2,6 +2,7 @@
 
 var data = utils.init({
   userName: utils.getQueryString('userName'),
+  isEnforcePasswordChange: utils.getQueryBoolean('isEnforcePasswordChange'),
   administrator: null,
   form: {
     password: null,
@@ -50,7 +51,11 @@ var methods = {
       utils.success('密码更改成功！');
 
       setTimeout(function () {
-        utils.closeLayer();
+        if ($this.isEnforcePasswordChange) {
+          window.top.location = utils.getIndexUrl();
+        } else {
+          utils.closeLayer();
+        }
       }, 1000);
     }).catch(function (error) {
       utils.error(error);

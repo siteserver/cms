@@ -118,7 +118,8 @@ var methods = {
     utils.openLayer({
       title: '更改密码',
       url: utils.getSettingsUrl('administratorsLayerPassword', {userName: row.userName}),
-      full: true
+      width: 550,
+      height: 300
     });
   },
 
@@ -131,9 +132,9 @@ var methods = {
 
       var allRoles = [];
       for (var i = 0; i < res.roles.length; i++) {
-        allRoles.push({ 
-          key: res.roles[i], 
-          label: res.roles[i], 
+        allRoles.push({
+          key: res.roles[i],
+          label: res.roles[i],
           disabled: false
         });
       }
@@ -142,7 +143,7 @@ var methods = {
         adminId: row.id,
         allRoles: allRoles,
         allSites: res.allSites,
-        
+
         adminLevel: res.adminLevel,
         checkedSites: res.checkedSites,
         checkedRoles: res.checkedRoles,
@@ -239,7 +240,7 @@ var methods = {
 
   btnExportClick: function() {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($urlExport).then(function (response) {
       var res = response.data;

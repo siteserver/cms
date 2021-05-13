@@ -129,7 +129,7 @@ var methods = {
       var res = response.data;
 
       localStorage.setItem('sessionId', res.sessionId);
-      
+
       localStorage.removeItem(ACCESS_TOKEN_NAME);
       sessionStorage.removeItem(ACCESS_TOKEN_NAME);
       if ($this.isPersistent) {
@@ -138,7 +138,7 @@ var methods = {
         sessionStorage.setItem(ACCESS_TOKEN_NAME, res.token);
       }
       if (res.isEnforcePasswordChange) {
-        $this.redirectPassword();
+        $this.redirectPassword(res.administrator.userName);
       } else {
         $this.redirectIndex();
       }
@@ -150,8 +150,13 @@ var methods = {
     });
   },
 
-  redirectPassword: function () {
-    location.href = utils.getSettingsUrl('administratorsPassword');
+  redirectPassword: function (userName) {
+    utils.openLayer({
+      title: '更改密码',
+      url: utils.getSettingsUrl('administratorsLayerPassword', {userName: userName, isEnforcePasswordChange: true}),
+      width: 550,
+      height: 300
+    });
   },
 
   redirectIndex: function () {
