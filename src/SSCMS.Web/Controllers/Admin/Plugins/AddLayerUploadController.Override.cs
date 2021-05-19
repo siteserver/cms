@@ -16,12 +16,18 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            _pluginManager.UnInstall(request.PluginId);
+            // _pluginManager.UnInstall(request.PluginId);
 
             var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
             var pluginPath = _pathManager.GetPluginPath(request.PluginId);
+            DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
             DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
             _pathManager.ExtractZip(filePath, pluginPath);
+
+            
+            // var pluginPath = _pathManager.GetPluginPath(request.PluginId);
+            // DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
+            // _pathManager.ExtractZip(filePath, pluginPath);
 
             return new BoolResult
             {

@@ -18,13 +18,15 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private const string RouteActionsRestart = "plugins/addLayerUpload/actions/restart";
 
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
 
-        public AddLayerUploadController(IHostApplicationLifetime hostApplicationLifetime, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager)
+        public AddLayerUploadController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
@@ -35,6 +37,11 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             public IPlugin OldPlugin { set; get; }
             public IPlugin NewPlugin { set; get; }
             public string FileName { set; get; }
+        }
+
+        public class RestartRequest
+        {
+            public bool IsDisablePlugins { set; get; }
         }
 
         public class OverrideRequest
