@@ -13,7 +13,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteAppend)]
         public async Task<ActionResult<List<int>>> Append([FromBody] AppendRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ParentId, MenuUtils.ChannelPermissions.Add))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
+                    MenuUtils.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

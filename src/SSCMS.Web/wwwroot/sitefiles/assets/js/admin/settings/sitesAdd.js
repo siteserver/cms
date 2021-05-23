@@ -18,7 +18,7 @@ var data = utils.init({
   count: null,
   pages: null,
   tags: [],
-  
+
   parentIds: [0],
   form: {
     guid: null,
@@ -78,7 +78,7 @@ var methods = {
     this.form.parentId = this.parentIds && this.parentIds.length > 0 ? this.parentIds[this.parentIds.length - 1] : 0;
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
-      
+
       $this.total = 1;
       $this.current = 1;
       $this.message = '站点创建成功！';
@@ -103,7 +103,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
       if ($this.success) return;
-      
+
       $this.total = res.total || 1;
       $this.current = res.current;
       $this.message = res.message;
@@ -244,6 +244,17 @@ var methods = {
     this.form.cloudThemeUserName = userName;
     this.form.cloudThemeName = name;
     this.pageType = 'submit';
+  },
+
+  getThemeUrl: function(theme) {
+    if (theme) {
+      return cloud.host + '/templates/template.html?userName=' + encodeURIComponent(theme.userName) + '&name=' + encodeURIComponent(theme.name);
+    }
+    return 'javascript:;';
+  },
+
+  btnBuyClick: function(theme) {
+    window.open(this.getThemeUrl(theme));
   },
 
   btnSubmitClick: function () {

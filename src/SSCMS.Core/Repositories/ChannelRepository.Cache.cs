@@ -594,7 +594,7 @@ namespace SSCMS.Core.Repositories
             var list = await GetChannelIdsAsync(siteId);
             foreach (var channelId in list)
             {
-                var enabled = await authManager.HasChannelPermissionsAsync(siteId, channelId, contentPermissions);
+                var enabled = await authManager.HasContentPermissionsAsync(siteId, channelId, contentPermissions);
 
                 if (enabled)
                 {

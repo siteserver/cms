@@ -79,7 +79,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         {
             public Site Site { get; set; }
             public List<Option> SitePermissions { get; set; }
-            public List<Option> ChannelPermissions { get; set; }
             public List<Option> ContentPermissions { get; set; }
             public Channel Channel { get; set; }
             public List<int> CheckedChannelIds { get; set; }

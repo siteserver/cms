@@ -55,11 +55,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             var siteList = new List<Site>();
             foreach (var permissionSiteId in await _authManager.GetSiteIdsAsync())
             {
-                if (!await _authManager.HasChannelPermissionsAsync(permissionSiteId, permissionSiteId) ||
+                if (!await _authManager.HasContentPermissionsAsync(permissionSiteId, permissionSiteId) ||
                     !await _authManager.HasSitePermissionsAsync(permissionSiteId)) continue;
 
                 var listOne =
-                    await _authManager.GetChannelPermissionsAsync(permissionSiteId, permissionSiteId);
+                    await _authManager.GetContentPermissionsAsync(permissionSiteId, permissionSiteId);
                 var listTwo = await _authManager.GetSitePermissionsAsync(permissionSiteId);
                 if (listOne != null && listOne.Count > 0 || listTwo != null && listTwo.Count > 0)
                 {

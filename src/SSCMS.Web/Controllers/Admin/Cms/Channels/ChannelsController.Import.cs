@@ -13,7 +13,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<List<int>>> Import([FromBody] ImportRequest request)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ChannelPermissions.Add))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
+                    MenuUtils.SitePermissions.Channels))
             {
                 return Unauthorized();
             }

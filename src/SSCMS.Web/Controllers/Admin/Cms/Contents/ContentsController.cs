@@ -86,7 +86,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public bool IsTranslate { get; set; }
             public bool IsCheck { get; set; }
             public bool IsCreate { get; set; }
-            public bool IsChannelEdit { get; set; }
         }
 
         public class ListResult

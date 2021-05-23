@@ -21,9 +21,6 @@ namespace SSCMS.Cli.Updater.Tables
         [JsonProperty("nodeIDCollection")]
         public string NodeIdCollection { get; set; }
 
-        [JsonProperty("channelPermissions")]
-        public string ChannelPermissions { get; set; }
-
         [JsonProperty("websitePermissions")]
         public string WebsitePermissions { get; set; }
 

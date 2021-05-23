@@ -58,7 +58,7 @@ var methods = {
 
       cloud.getUpdates($this.cmsVersion, pluginIds).then(function (response) {
         var res = response.data;
-  
+
         var releases = res.releases;
         for (var i = 0; i < releases.length; i++) {
           var release = releases[i];
@@ -168,7 +168,7 @@ var methods = {
           utils.loading($this, false);
         });
       });
-      
+
     }).catch(function (error) {
       utils.error(error);
     });
@@ -251,6 +251,19 @@ var methods = {
       userName: userName,
       name: name
     }));
+  },
+
+  btnUploadClick: function () {
+    utils.openLayer({
+      title: '离线升级插件',
+      url: utils.getPluginsUrl('addLayerUpload'),
+      width: 550,
+      height: 350
+    });
+  },
+
+  btnUpdateAllClick: function () {
+    location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: this.updatablePluginIds.join(',')});
   }
 };
 
@@ -260,5 +273,17 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.apiGet();
-  }
+  },
+  computed: {
+    updatablePluginIds: function () {
+      var pluginIds = [];
+      for (var i = 0; i < this.updatePlugins.length; i++) {
+        var plugin = this.updatePlugins[i];
+        if (plugin.price === 0) {
+          pluginIds.push(plugin.pluginId);
+        }
+      }
+      return pluginIds;
+    }
+  },
 });

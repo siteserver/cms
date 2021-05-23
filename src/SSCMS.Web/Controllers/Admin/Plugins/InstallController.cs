@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Plugins;
 using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Admin.Plugins

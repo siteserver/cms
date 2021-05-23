@@ -78,6 +78,7 @@ namespace SSCMS.Core.Plugins
         public string Name => Configuration[nameof(Name)];
         public string Version => Configuration[nameof(Version)];
         public string Publisher => Configuration[nameof(Publisher)];
+        public decimal Price => TranslateUtils.ToDecimal(Configuration[nameof(Price)]);
         public string Repository => Configuration[nameof(Repository)];
         public string DisplayName => Configuration[nameof(DisplayName)];
         public string Description => Configuration[nameof(Description)];

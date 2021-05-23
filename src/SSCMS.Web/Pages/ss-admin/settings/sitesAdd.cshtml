@@ -117,7 +117,12 @@
           
           <div style="margin-top: 10px;">
             <el-button plain type="info" v-on:click="btnPreviewClick(theme)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
-            <el-button plain type="primary" v-on:click="btnCreateCloudClick(theme.userName, theme.name)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">创建站点</el-button>
+            <el-button plain type="primary" v-if="theme.price === 0" v-on:click="btnCreateCloudClick(theme.userName, theme.name)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">
+              创建站点
+            </el-button>
+            <el-button plain type="primary" v-else v-on:click="btnBuyClick(theme)" size="mini" icon="el-icon-s-goods" style="margin: 0 5px;">
+              购买并导入
+            </el-button>
           </div>
         </div>
       </el-card>

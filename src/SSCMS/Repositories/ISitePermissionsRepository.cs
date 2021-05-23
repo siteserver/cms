@@ -17,10 +17,6 @@ namespace SSCMS.Repositories
 
         Task<Dictionary<int, List<string>>> GetSitePermissionDictionaryAsync(IEnumerable<string> roles);
 
-        Task<Dictionary<string, List<string>>> GetChannelPermissionDictionaryAsync(IList<string> roles);
-
         Task<Dictionary<string, List<string>>> GetContentPermissionDictionaryAsync(IList<string> roles);
-
-        Task<List<string>> GetChannelPermissionListIgnoreChannelIdAsync(IList<string> roles);
     }
 }

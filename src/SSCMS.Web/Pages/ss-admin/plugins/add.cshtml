@@ -22,7 +22,7 @@
 </el-form>
 
 <template v-if="q">
-  <div style="margin-bottom: 10px;" v-if="extensions && extensions.length > 0">搜索到 {{extensions.length}} 个结果</div>
+  <div style="margin-bottom: 10px;" v-if="extensionWithReleases && extensionWithReleases.length > 0">搜索到 {{extensionWithReleases.length}} 个结果</div>
   <div style="margin-bottom: 10px;" v-else>未找到搜索结果，建议更换搜索词</div>
 </template>
 

@@ -16,6 +16,7 @@ namespace SSCMS.Plugins
         string Name { get; }
         string Version { get; }
         string Publisher { get; }
+        decimal Price { get; }
         string Repository { get; }
         string DisplayName { get; }
         string Description { get; }

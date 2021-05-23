@@ -146,6 +146,10 @@ var methods = {
           }
         } else if (style.inputType === 'Image' || style.inputType === 'File' || style.inputType === 'Video') {
           $this.form[utils.getCountName(style.attributeName)] = utils.toInt($this.form[utils.getCountName(style.attributeName)]);
+        } else if (style.inputType === 'Text' || style.inputType === 'TextArea' || style.inputType === 'TextEditor') {
+          if ($this.contentId === 0) {
+            $this.form[utils.toCamelCase(style.attributeName)] = style.defaultValue;
+          }
         }
       }
 

@@ -419,31 +419,6 @@
         "type": ["wx"],
         "order": 152
       },
-      "channel_add": {
-        "text": "添加栏目",
-        "type": ["channel"],
-        "order": 101
-      },
-      "channel_edit": {
-        "text": "修改栏目",
-        "type": ["channel"],
-        "order": 102
-      },
-      "channel_delete": {
-        "text": "删除栏目",
-        "type": ["channel"],
-        "order": 103
-      },
-      "channel_translate": {
-        "text": "转移栏目",
-        "type": ["channel"],
-        "order": 104
-      },
-      "channel_create": {
-        "text": "生成栏目页面",
-        "type": ["channel"],
-        "order": 105
-      },
       "content_view": {
         "text": "浏览内容",
         "type": ["content"],
@@ -834,7 +809,6 @@
         "type": ["web", "wx"],
         "permissions": [
           "site_contents",
-          "site_channels",
           "site_channels",
           "site_contentsSearch",
           "site_contentsCheck",
