@@ -29,8 +29,8 @@ var data = utils.init({
 
 var methods = {
   insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)];
-    if (count < no) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
       this.form[utils.getCountName(attributeName)] = no;
     }
     this.form[utils.getExtendName(attributeName, no)] = text;

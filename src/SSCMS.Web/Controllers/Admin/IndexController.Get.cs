@@ -39,25 +39,8 @@ namespace SSCMS.Web.Controllers.Admin
                     return this.Error("系统启动失败，请检查 SS CMS 容器运行环境变量设置");
                 }
             }
-
-            var allowed = true;
-            if (!string.IsNullOrEmpty(_settingsManager.AdminRestrictionHost))
-            {
-                var currentHost = PageUtils.RemoveProtocolFromUrl(PageUtils.GetHost(Request));
-                if (!StringUtils.StartsWithIgnoreCase(currentHost, PageUtils.RemoveProtocolFromUrl(_settingsManager.AdminRestrictionHost)))
-                {
-                    allowed = false;
-                }
-            }
-
-            if (!allowed)
-            {
-                var ipAddress = PageUtils.GetIpAddress(Request);
-                allowed = PageUtils.IsAllowed(ipAddress,
-                    new List<string>(_settingsManager.AdminRestrictionBlockList),
-                    new List<string>(_settingsManager.AdminRestrictionAllowList));
-            }
-
+            
+            var allowed = PageUtils.IsVisitAllowed(_settingsManager, Request);
             if (!allowed)
             {
                 return this.Error($"访问已被禁止，IP地址：{PageUtils.GetIpAddress(Request)}，请与网站管理员联系开通访问权限");

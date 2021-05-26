@@ -110,6 +110,8 @@ namespace SSCMS.Core.Services
             foreach (var enabledChannelId in channelIdsWithPermissions)
             {
                 var enabledChannel = await _databaseManager.ChannelRepository.GetAsync(enabledChannelId);
+                if (enabledChannel == null) continue;
+
                 var parentIds = ListUtils.GetIntList(enabledChannel.ParentsPath);
                 foreach (var parentId in parentIds.Where(parentId => !visibleChannelIds.Contains(parentId)))
                 {

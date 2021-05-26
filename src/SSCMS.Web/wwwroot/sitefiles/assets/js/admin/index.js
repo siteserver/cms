@@ -96,7 +96,7 @@ var methods = {
         location.href = res.redirectUrl;
       }
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {redirect: true});
     });
   },
 

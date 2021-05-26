@@ -461,10 +461,32 @@ var utils = {
   error: function (error, options) {
     if (!error) return;
 
-    if (error.response) {
+    if (typeof error === 'string') {
+      if (options && options.redirect) {
+        var uuid = utils.uuid();
+        sessionStorage.setItem(uuid, JSON.stringify({
+          message: error
+        }));
+
+        top.location.href = utils.getRootUrl("error", { uuid: uuid });
+      } else {
+        utils.getRootVue().$message({
+          type: "error",
+          message: error,
+          showIcon: true
+        });
+      }
+    } else if (error.response) {
       var message = utils.getErrorMessage(error);
 
-      if (error.response && error.response.status === 500 || options && options.redirect) {
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        var location = _.trimEnd(window.location.href, '/');
+        if (_.endsWith(location, '/ss-admin') || _.endsWith(location, '/home')) {
+          top.location.href = utils.getRootUrl('login');
+        } else {
+          top.location.href = utils.getRootUrl('login', {status: 401});
+        }
+      } else if (error.response && error.response.status === 500 || options && options.redirect) {
         var uuid = utils.uuid();
 
         if (typeof message === 'string') {
@@ -476,7 +498,7 @@ var utils = {
         }
 
         if (options && options.redirect) {
-          location.href = utils.getRootUrl("error", { uuid: uuid })
+          top.location.href = utils.getRootUrl("error", { uuid: uuid })
           return;
         }
 
@@ -484,12 +506,14 @@ var utils = {
           url: utils.getRootUrl("error", { uuid: uuid }),
         });
         return;
-      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        var location = _.trimEnd(window.location.href, '/');
-        if (_.endsWith(location, '/ss-admin') || _.endsWith(location, '/home')) {
-          top.location.href = utils.getRootUrl('login');
-        } else {
-          top.location.href = utils.getRootUrl('login', {status: 401});
+      } else if (error.response && error.response.status === 400) {
+        if (options && options.redirect) {
+          var uuid = utils.uuid();
+          sessionStorage.setItem(uuid, JSON.stringify({
+            message: error
+          }));
+
+          top.location.href = utils.getRootUrl("error", { uuid: uuid });
         }
       }
 
@@ -498,21 +522,6 @@ var utils = {
         message: message,
         showIcon: true
       });
-    } else if (typeof error === 'string') {
-      if (options && options.redirect) {
-        var uuid = utils.uuid();
-        sessionStorage.setItem(uuid, JSON.stringify({
-          message: error
-        }));
-
-        location.href = utils.getRootUrl("error", { uuid: uuid });
-      } else {
-        utils.getRootVue().$message({
-          type: "error",
-          message: error,
-          showIcon: true
-        });
-      }
     } else if (typeof error === 'object') {
       utils.getRootVue().$message({
         type: "error",
