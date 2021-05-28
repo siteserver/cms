@@ -48,6 +48,7 @@ namespace SSCMS.Core.StlParser.StlElement
 <script type=""text/javascript"" language=""javascript"">
 function stlDynamic{elementId}(page)
 {{
+    var elementId = '{elementId}';
     document.getElementById('{elementId}_loading').style.display = '{display}';
     document.getElementById('{elementId}_success').style.display = 'none';
     document.getElementById('{elementId}_failure').style.display = 'none';
