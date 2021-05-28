@@ -102,6 +102,9 @@ var utils = {
       if (i > 0 && hasNext && chars[i + 1] !== chars[i + 1].toUpperCase()) {
         return values.join('');
       }
+      if (utils.isNumeric(chars[i])) {
+        return values.join('');
+      }
       values[i] = _.toLower(chars[i]);
     }
     return values.join('');
@@ -129,6 +132,10 @@ var utils = {
         day = '0' + day;
 
     return [year, month, day].join('-');
+  },
+
+  isNumeric: function(str) {
+      return /^\d+$/.test(str);
   },
 
   getQueryIntList: function (name) {
@@ -199,11 +206,11 @@ var utils = {
   },
 
   getCountName: function(attributeName) {
-    return _.camelCase(attributeName + "Count");
+    return utils.toCamelCase(attributeName + "Count");
   },
 
   getExtendName: function(attributeName, n) {
-    return _.camelCase(n ? attributeName + n : attributeName);
+    return utils.toCamelCase(n ? attributeName + n : attributeName);
   },
 
   pad: function(num) {
@@ -697,7 +704,7 @@ var utils = {
       var array = [];
       for (var i = 0; i < rules.length; i++) {
         var rule = rules[i];
-        var ruleType = _.camelCase(rule.type);
+        var ruleType = utils.toCamelCase(rule.type);
 
         if (ruleType === "required") {
           array.push({

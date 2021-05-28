@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
@@ -33,16 +34,22 @@ namespace SSCMS.Web.Controllers.V1
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly IParseManager _parseManager;
+        private readonly IDatabaseManager _databaseManager;
+        private readonly IPathManager _pathManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public ContentsController(IAuthManager authManager, ICreateManager createManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentCheckRepository contentCheckRepository)
+        public ContentsController(IAuthManager authManager, ICreateManager createManager, IParseManager parseManager, IDatabaseManager databaseManager, IPathManager pathManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _parseManager = parseManager;
+            _databaseManager = databaseManager;
+            _pathManager = pathManager;
             _accessTokenRepository = accessTokenRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;

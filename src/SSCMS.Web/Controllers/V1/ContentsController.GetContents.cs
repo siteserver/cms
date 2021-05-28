@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.V1
@@ -30,17 +31,29 @@ namespace SSCMS.Web.Controllers.V1
             query.ForPage(page, perPage);
 
             var summaries = await _contentRepository.GetSummariesAsync(tableName, query);
+            var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
+            var channel = request.ChannelId.HasValue && request.ChannelId.Value > 0
+                ? await _channelRepository.GetAsync(request.ChannelId.Value)
+                : await _channelRepository.GetAsync(request.SiteId);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var sequence = page * perPage + 1;
 
-            var contents = new List<Content>();
+            var pageContents = new List<Content>();
             foreach (var summary in summaries)
             {
                 var content = await _contentRepository.GetAsync(site, summary.ChannelId, summary.Id);
-                contents.Add(content);
+
+                var pageContent =
+                    await columnsManager.CalculateContentListAsync(sequence++, site, content.ChannelId, content, columns);
+                var navigationUrl = await _parseManager.PathManager.GetContentUrlAsync(site, content, false);
+                pageContent.Set("NavigationUrl", navigationUrl);
+
+                pageContents.Add(pageContent);
             }
 
             return new QueryResult
             {
-                Contents = contents,
+                Contents = pageContents,
                 TotalCount = totalCount
             };
         }

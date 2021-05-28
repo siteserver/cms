@@ -24,7 +24,7 @@ namespace SSCMS.Web.Controllers.V1
 
             var skip = request.Skip;
 
-            var users = await _userRepository.GetUsersAsync(null, 0, 0, null, null, skip, top);
+            var users = await _userRepository.GetUsersAsync(null, -1, 0, null, null, skip, top);
             var count = await _userRepository.GetCountAsync();
 
             return new ListResult

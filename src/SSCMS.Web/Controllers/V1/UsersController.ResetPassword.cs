@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class UsersController
     {
-        [OpenApiOperation("修改用户密码 API", "修改用户密码，使用POST发起请求，请求地址为/api/v1/users/actions/resetPassword")]
+        [OpenApiOperation("修改用户密码 API", "修改用户密码，使用POST发起请求，请求地址为/api/v1/users/{id}/actions/resetPassword")]
         [HttpPost, Route(RouteUserResetPassword)]
         public async Task<ActionResult<User>> ResetPassword([FromRoute] int id, [FromBody]ResetPasswordRequest request)
         {
