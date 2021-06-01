@@ -16,7 +16,7 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "指定视频的字段")]
         private const string Type = nameof(Type);
          
-		[StlAttribute(Title = "视频地址")]
+	[StlAttribute(Title = "视频地址")]
         private const string PlayUrl = nameof(PlayUrl);
 
         [StlAttribute(Title = "图片地址")]
@@ -132,8 +132,10 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var dict = new Dictionary<string, string>
             {
-                {"class", "video-js vjs-default-skin"},
-                {"src", videoUrl}
+                {"class", "video-js vjs-default-skin vjs-big-play-centered vjs-fluid"},
+		{"id", contentId},
+                {"src", videoUrl},
+		{"data-setup", "{}"}
             };
             if (isAutoPlay)
             {
@@ -157,7 +159,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             dict.Add("height", string.IsNullOrEmpty(height) ? "280" : height);
 
-            return $@"<video {TranslateUtils.ToAttributesString(dict)}></video>";
+            return $@"<video {TranslateUtils.ToAttributesString(dict)}><source src="videoUrl" type="type"/></video>";
         }
 	}
 }
