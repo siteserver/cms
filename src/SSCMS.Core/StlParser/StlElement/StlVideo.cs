@@ -5,40 +5,41 @@ using SSCMS.Parse;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
+using System.Collections.Specialized;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "播放视频", Description = "通过 stl:video 标签在模板中显示视频播放器")]
     public static class StlVideo
-	{
+    {
         public const string ElementName = "stl:video";
 
         [StlAttribute(Title = "指定视频的字段")]
         private const string Type = nameof(Type);
-         
-		[StlAttribute(Title = "视频地址")]
+
+        [StlAttribute(Title = "视频地址")]
         private const string PlayUrl = nameof(PlayUrl);
 
         [StlAttribute(Title = "图片地址")]
         private const string ImageUrl = nameof(ImageUrl);
-         
+
         [StlAttribute(Title = "宽度")]
         private const string Width = nameof(Width);
-         
+
         [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
-         
+
         [StlAttribute(Title = "是否自动播放")]
         private const string IsAutoPlay = nameof(IsAutoPlay);
-         
+
         [StlAttribute(Title = "是否显示播放控件")]
         private const string IsControls = nameof(IsControls);
-         
+
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
+        {
             var type = nameof(Content.VideoUrl);
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
@@ -47,6 +48,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var isAutoPlay = true;
             var isControls = true;
             var isLoop = false;
+            var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -84,12 +86,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isLoop = TranslateUtils.ToBool(value, false);
                 }
+                else
+                {
+                    attributes[name] = value;
+                }
             }
 
-            return await ParseAsync(parseManager, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
-		}
+            return await ParseAsync(parseManager, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop, attributes);
+        }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -130,34 +136,32 @@ namespace SSCMS.Core.StlParser.StlElement
 
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcVideoJs);
 
-            var dict = new Dictionary<string, string>
-            {
-                {"class", "video-js vjs-default-skin"},
-                {"src", videoUrl}
-            };
+            attributes["class"] = "video-js vjs-default-skin" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
+            attributes["src"] = videoUrl;
+
             if (isAutoPlay)
             {
-                dict.Add("autoplay", null);
+                attributes["autoplay"] = "true";
             }
             if (isControls)
             {
-                dict.Add("controls", null);
+                attributes["controls"] = "true";
             }
             if (isLoop)
             {
-                dict.Add("loop", null);
+                attributes["loop"] = "true";
             }
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                dict.Add("poster", imageUrl);
+                attributes["poster"] = imageUrl;
             }
             if (!string.IsNullOrEmpty(width))
             {
-                dict.Add("width", width);
+                attributes["width"] = width;
             }
-            dict.Add("height", string.IsNullOrEmpty(height) ? "280" : height);
+            attributes["height"] = string.IsNullOrEmpty(height) ? "280" : height;
 
-            return $@"<video {TranslateUtils.ToAttributesString(dict)}></video>";
+            return $@"<video {TranslateUtils.ToAttributesString(attributes)}></video>";
         }
-	}
+    }
 }

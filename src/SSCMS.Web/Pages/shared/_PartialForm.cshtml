@@ -251,4 +251,10 @@
       </el-date-picker>
     </el-form-item>
   </template>
+  <!-- Customize -->
+  <template v-else-if="style.inputType === 'Customize'">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <div v-html="style.customizeCode"></div>
+    </el-form-item>
+  </template>
 </template>

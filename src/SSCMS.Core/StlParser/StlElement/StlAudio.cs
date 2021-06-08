@@ -4,13 +4,14 @@ using SSCMS.Parse;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
+using System.Collections.Specialized;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "播放音频", Description = "通过 stl:audio 标签在模板中显示并播放音频文件")]
     public static class StlAudio
-	{
-		public const string ElementName = "stl:audio";
+    {
+        public const string ElementName = "stl:audio";
         public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/audio-clip.png""";
         public const string EditorPlaceHolder2 = @"src=""@sitefiles/assets/images/audio-clip.png""";
 
@@ -29,13 +30,14 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-	    public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
+        public static async Task<object> ParseAsync(IParseManager parseManager)
+        {
             var type = nameof(Content.VideoUrl);
             var playUrl = string.Empty;
             var isAutoPlay = false;
             var isPreLoad = true;
             var isLoop = false;
+            var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -61,12 +63,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isLoop = TranslateUtils.ToBool(value, false);
                 }
+                else
+                {
+                    attributes[name] = value;
+                }
             }
 
-            return await ParseAsync(parseManager, type, playUrl, isAutoPlay, isPreLoad, isLoop);
-		}
+            return await ParseAsync(parseManager, type, playUrl, isAutoPlay, isPreLoad, isLoop, attributes);
+        }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -97,7 +103,6 @@ namespace SSCMS.Core.StlParser.StlElement
 
             playUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, playUrl, pageInfo.IsLocal);
 
-            // 如果是实体标签，则只返回数字
             if (contextInfo.IsStlEntity)
             {
                 return playUrl;
@@ -108,14 +113,29 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var url = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.MediaElement.Swf);
 
+            attributes["class"] = "mejs__player" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
+            attributes["src"] = playUrl;
+
+            if (isAutoPlay)
+            {
+                attributes["autoplay"] = "true";
+            }
+            if (!isPreLoad)
+            {
+                attributes["preload"] = "none";
+            }
+            if (isLoop)
+            {
+                attributes["loop"] = "true";
+            }
+
             return $@"
-<audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
-    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{url}"">
-        <param name=""movie"" value=""{url}"" />
-        <param name=""flashvars"" value=""controls=true&file={playUrl}"" />
-    </object>
-</audio>
-";
+<audio {TranslateUtils.ToAttributesString(attributes)}>
+  <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{url}"">
+      <param name=""movie"" value=""{url}"" />
+      <param name=""flashvars"" value=""controls=true&file={playUrl}"" />
+  </object>
+</audio>";
         }
     }
 }

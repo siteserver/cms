@@ -115,8 +115,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             }
             else if (request.InputType == InputType.Customize)
             {
-                style.CustomizeLeft = request.CustomizeLeft;
-                style.CustomizeRight = request.CustomizeRight;
+                style.CustomizeCode = request.CustomizeCode;
             }
 
             await _tableStyleRepository.InsertAsync(relatedIdentities, style);
@@ -177,8 +176,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             }
             else if (request.InputType == InputType.Customize)
             {
-                style.CustomizeLeft = request.CustomizeLeft;
-                style.CustomizeRight = request.CustomizeRight;
+                style.CustomizeCode = request.CustomizeCode;
             }
 
             await _tableStyleRepository.UpdateAsync(style);

@@ -71,8 +71,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 Horizontal = style.Horizontal,
                 Items = style.Items,
                 Height = style.Height,
-                CustomizeLeft = style.CustomizeLeft,
-                CustomizeRight = style.CustomizeRight
+                CustomizeCode = style.CustomizeCode
             };
 
             return new GetResult

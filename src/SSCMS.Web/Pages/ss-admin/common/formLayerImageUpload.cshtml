@@ -28,7 +28,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form ref="form" :model="form" size="mini">
+<el-form ref="form" :model="form" size="mini" v-if="form.siteId > 0">
   <el-form-item>
     <el-checkbox v-if="editorAttributeName" label="将图片显示在内容编辑器中" v-model="form.isEditor"></el-checkbox>
     <el-checkbox label="添加至图片素材库" v-model="form.isMaterial"></el-checkbox>

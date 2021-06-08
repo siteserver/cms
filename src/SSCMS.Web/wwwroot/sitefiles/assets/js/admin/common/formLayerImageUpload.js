@@ -8,6 +8,7 @@ var data = utils.init({
   dialogImageUrl: '',
   dialogVisible: false,
   form: {
+    userId: utils.getQueryInt('userId'),
     siteId: utils.getQueryInt('siteId'),
     isEditor: false,
     isMaterial: true,
@@ -41,6 +42,7 @@ var methods = {
     utils.loading(this, true);
     $api.get($url, {
       params: {
+        userId: this.form.userId,
         siteId: this.form.siteId
       }
     }).then(function(response) {
@@ -74,7 +76,7 @@ var methods = {
           $this.parentInsert($this.no + i, result);
         }
       }
-      
+
       utils.closeLayer();
     })
     .catch(function(error) {
@@ -139,7 +141,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId;
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&userId=' + this.form.userId;
     this.apiGet();
   }
 });

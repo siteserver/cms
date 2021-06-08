@@ -89,19 +89,12 @@
   class="form-fixed"
   :model="form" 
   ref="form4"
-  label-width="120px"
-  :rules="{
-    customizeLeft: [
-      { required: true, message: '请输入左侧代码' }
-    ]
+  label-width="120px">
+  <el-form-item label="自定义代码" prop="customizeCode" :rules="{
+    required: true, message: '请输入自定义代码'
   }">
-  <el-form-item label="左侧代码" prop="customizeLeft">
-    <el-input v-model="form.customizeLeft" type="textarea" placeholder="请输入左侧代码"></el-input>
-    <div class="tips">左侧代码（Html）为包含字段名称的表单项，{Value}代表表单项的值</div>
-  </el-form-item>
-  <el-form-item label="右侧代码">
-    <el-input v-model="form.customizeRight" type="textarea" placeholder="请输入右侧代码"></el-input>
-    <div class="tips">右侧代码（Html、Css、Js）为按钮、说明等其他元素，可选</div>
+    <el-input v-model="form.customizeCode" type="textarea" placeholder="请输入自定义代码"></el-input>
+    <div class="tips">自定义代码（Html、Css、Js）为按钮、说明等其他元素</div>
   </el-form-item>
 </el-form>
 
