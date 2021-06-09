@@ -21,7 +21,7 @@ namespace SSCMS.Repositories
 
         Task<int> GetContentIdAsync(string tableName, int channelId, int taxis, bool isNextContent);
 
-        int GetContentId(string tableName, int channelId, bool isCheckedOnly, string orderByString);
+        Task<int> GetContentIdAsync(string tableName, int channelId, bool isCheckedOnly, string orderByString);
 
         Task<int> GetSequenceAsync(string tableName, int siteId, int channelId, int contentId);
 

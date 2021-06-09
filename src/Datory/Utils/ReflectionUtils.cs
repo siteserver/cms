@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Datory.Utils
 {
-    internal static class ReflectionUtils
+    public static class ReflectionUtils
     {
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> TypeProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
 

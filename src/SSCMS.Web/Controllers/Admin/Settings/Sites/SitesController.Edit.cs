@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
@@ -37,11 +38,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 tableName = request.TableHandWrite;
                 if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
                 {
-                    await _contentRepository.CreateContentTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                    var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
+                    await _contentRepository.CreateContentTableAsync(tableName, tableColumns);
                 }
                 else
                 {
-                    await _settingsManager.Database.AlterTableAsync(tableName, _contentRepository.GetTableColumns(tableName));
+                    var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
+                    await _settingsManager.Database.AlterTableAsync(tableName, tableColumns);
                 }
             }
 

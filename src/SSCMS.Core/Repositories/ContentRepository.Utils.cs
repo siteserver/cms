@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
-using Senparc.Weixin;
 using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
@@ -12,21 +12,15 @@ namespace SSCMS.Core.Repositories
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        public List<TableColumn> GetTableColumns(string tableName)
-        {
-            var repository = GetRepository(tableName);
-            return repository.TableColumns;
-        }
-
         private static readonly ConcurrentDictionary<string, Repository<Content>> TableNameRepositories = new ConcurrentDictionary<string, Repository<Content>>();
 
-        private Repository<Content> GetRepository(Site site, IChannelSummary channel)
+        private async Task<Repository<Content>> GetRepositoryAsync(Site site, IChannelSummary channel)
         {
             var tableName = _channelRepository.GetTableName(site, channel);
-            return GetRepository(tableName);
+            return await GetRepositoryAsync(tableName);
         }
 
-        private Repository<Content> GetRepository(string tableName)
+        private async Task<Repository<Content>> GetRepositoryAsync(string tableName)
         {
             if (TableNameRepositories.TryGetValue(tableName, out var repository))
             {
@@ -34,6 +28,7 @@ namespace SSCMS.Core.Repositories
             }
 
             repository = new Repository<Content>(_settingsManager.Database, tableName, _settingsManager.Redis);
+            await repository.LoadTableColumnsAsync(tableName);
 
             TableNameRepositories[tableName] = repository;
             return repository;

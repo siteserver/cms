@@ -197,7 +197,7 @@ namespace SSCMS.Core.Repositories
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
             var channel = await _channelRepository.GetAsync(channelId);
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             query = GetQuery(query, site.Id)
                 .Select(

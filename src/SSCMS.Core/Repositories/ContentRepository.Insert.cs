@@ -13,7 +13,7 @@ namespace SSCMS.Core.Repositories
             var taxis = content.Taxis;
             var updateHigher = false;
 
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             var query = Q
                 .Where(nameof(Content.ChannelId), channel.Id)
@@ -113,7 +113,7 @@ namespace SSCMS.Core.Repositories
             var tableName = _channelRepository.GetTableName(site, channel);
             if (string.IsNullOrEmpty(tableName)) return 0;
 
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             if (content.SourceId == SourceManager.Preview)
             {
                 await repository.InsertAsync(content);
