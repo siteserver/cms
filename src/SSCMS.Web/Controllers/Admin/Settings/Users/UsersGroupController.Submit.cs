@@ -61,6 +61,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 await _authManager.AddAdminLogAsync("修改用户组", $"用户组:{groupInfo.GroupName}");
             }
 
+            _cacheManager.Clear();
+
             return new GetResult
             {
                 Groups = await _userGroupRepository.GetUserGroupsAsync()

@@ -9,7 +9,7 @@ var data = utils.init({
   root: null,
   allCheckedLevels: [],
   checkedLevels: [],
-  
+
   isAdd: null,
   pageContents: null,
   total: null,
@@ -18,7 +18,7 @@ var data = utils.init({
   titleColumn: null,
   columns: null,
   menus: null,
-  
+
   tableMaxHeight: 999999999999,
   multipleSelection: [],
 
@@ -35,7 +35,11 @@ var methods = {
   apiGet: function() {
     var $this = this;
 
-    $api.get($url).then(function(response) {
+    $api.get($url, {
+      params: {
+        siteId: this.siteId
+      }
+    }).then(function(response) {
       var res = response.data;
 
       if (res.unauthorized) {
@@ -73,7 +77,7 @@ var methods = {
       checkedLevels: this.checkedLevels
     }).then(function(response) {
       var res = response.data;
-      
+
       $this.isAdd = res.isAdd;
       $this.pageContents = res.pageContents;
       $this.total = res.total;
@@ -107,6 +111,10 @@ var methods = {
       channelId: content.channelId,
       contentId: content.id
     });
+  },
+
+  handleSiteIdChange: function() {
+    this.apiGet();
   },
 
   btnSearchClick: function() {
@@ -163,7 +171,7 @@ var methods = {
 
   btnLayerClick: function(options) {
     var query = {
-      siteId: this.siteId, 
+      siteId: this.siteId,
       channelId: this.channelId,
       page: this.page
     };
@@ -219,7 +227,7 @@ var methods = {
   toggleSelection: function(row) {
     this.$refs.multipleTable.toggleRowSelection(row);
   },
-  
+
   handleCurrentChange: function(val) {
     this.apiList(val);
   },
@@ -233,7 +241,7 @@ var methods = {
   },
 
   handleHeaderDragend: function(newWidth, oldWidth, column) {
-    
+
   }
 };
 
@@ -245,7 +253,7 @@ var $vue = new Vue({
     channelId: function() {
       return this.channelIds.length === 0 ? 0 : this.channelIds[this.channelIds.length - 1];
     },
-    
+
     isCheckedLevels: function() {
       if (this.checkedLevels.length !== this.allCheckedLevels.length) return true;
       return false;

@@ -71,7 +71,7 @@ namespace SSCMS.Web.Controllers.Admin
             if (!request.IsForceLogoutAndLogin)
             {
                 var cacheState = await _dbCacheRepository.GetValueAndCreatedDateAsync(cacheKey);
-                if (!string.IsNullOrEmpty(cacheState.Item1) && cacheState.Item2 > DateTime.Now.AddHours(-1))
+                if (!string.IsNullOrEmpty(cacheState.Item1) && cacheState.Item2 > DateTime.Now.AddMinutes(-30))
                 {
                     return new SubmitResult
                     {
