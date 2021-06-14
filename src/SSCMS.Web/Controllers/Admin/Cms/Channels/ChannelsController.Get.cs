@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var channel = await _channelRepository.GetAsync(channelId);
 
-            var styles = await GetInputStylesAsync(channel);
+            var styles = await GetStylesAsync(channel);
             var entity = new Entity(channel.ToDictionary());
             foreach (var style in styles)
             {

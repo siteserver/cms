@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Datory;
+using SqlKata;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -313,46 +315,50 @@ namespace SSCMS.Core.Repositories
             }
         }
 
-        public async Task<List<int>> GetChannelIdsAsync(int siteId, int channelId, ScopeType scopeType)
+        public async Task<List<int>> GetChannelIdsAsync(int siteId, int channelId, ScopeType scopeType, Query query = null)
         {
-            if (siteId == 0 || channelId == 0) return new List<int>();
+            var channelIds = new List<int>();
+
+            if (siteId == 0 || channelId == 0) return channelIds;
 
             if (scopeType == ScopeType.Self)
             {
-                return new List<int>{ channelId };
+                channelIds = new List<int>{ channelId };
             }
-
-            if (scopeType == ScopeType.SelfAndChildren)
+            else if (scopeType == ScopeType.SelfAndChildren)
             {
                 var summaries = await GetSummariesAsync(siteId);
-                var list = GetChildIds(summaries, channelId);
-                list.Add(channelId);
-                return list;
+                channelIds = GetChildIds(summaries, channelId);
+                channelIds.Add(channelId);
             }
-
-            if (scopeType == ScopeType.Children)
+            else if (scopeType == ScopeType.Children)
             {
                 var summaries = await GetSummariesAsync(siteId);
-                return GetChildIds(summaries, channelId);
+                channelIds = GetChildIds(summaries, channelId);
             }
-
-            if (scopeType == ScopeType.Descendant)
+            else if (scopeType == ScopeType.Descendant)
             {
                 var summaries = await GetSummariesAsync(siteId);
-                var list = new List<int>();
-                GetChildIdsRecursive(summaries, list, channelId);
-                return list;
+                GetChildIdsRecursive(summaries, channelIds, channelId);
             }
-
-            if (scopeType == ScopeType.All)
+            else if (scopeType == ScopeType.All)
             {
                 var summaries = await GetSummariesAsync(siteId);
-                var list = new List<int> { channelId };
-                GetChildIdsRecursive(summaries, list, channelId);
-                return list;
+                channelIds = new List<int> { channelId };
+                GetChildIdsRecursive(summaries, channelIds, channelId);
             }
 
-            return new List<int>();
+            if (query != null)
+            {
+                var q = query.Clone();
+                q.Select(nameof(Channel.Id));
+                q.Where(nameof(Channel.SiteId), siteId);
+
+                var list = await _repository.GetAllAsync<int>(q);
+                channelIds = channelIds.Intersect<int>(list).ToList();
+            }
+
+            return channelIds;
         }
 
         public async Task<List<int>> GetChannelIdsAsync(Channel channel, ScopeType scopeType, string group, string groupNot, string contentModelPluginId)

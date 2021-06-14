@@ -79,7 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             }
 
-            var styles = await GetInputStylesAsync(channel);
+            var styles = await GetStylesAsync(channel);
             foreach (var style in styles)
             {
                 var inputType = style.InputType;

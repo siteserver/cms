@@ -36,7 +36,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var innerHtml = await ParseAsync(parseManager, listInfo, dataSource);
-            var parsedContent = string.Empty;
+            string parsedContent;
             if (pageInfo.EditMode == EditMode.Visual)
             {
                 var attributes = new NameValueCollection(contextInfo.Attributes);

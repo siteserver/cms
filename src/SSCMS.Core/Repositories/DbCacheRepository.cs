@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
@@ -38,6 +39,16 @@ namespace SSCMS.Core.Repositories
             });
         }
 
+        public async Task RemoveAsync(string cacheKey)
+        {
+            if (string.IsNullOrEmpty(cacheKey)) return;
+
+            await _repository.DeleteAsync(Q
+                .Where(nameof(DbCache.CacheKey), cacheKey)
+                .CachingRemove(cacheKey)
+            );
+        }
+
         public async Task ClearAsync()
         {
             var cacheKeys = await _repository.GetAllAsync<string>(Q
@@ -68,6 +79,16 @@ namespace SSCMS.Core.Repositories
                 .Select(nameof(DbCache.CacheValue))
                 .Where(nameof(DbCache.CacheKey), cacheKey)
                 .CachingGet(cacheKey)
+            );
+
+            return retVal;
+        }
+
+        public async Task<(string, DateTime)> GetValueAndCreatedDateAsync(string cacheKey)
+        {
+            var retVal = await _repository.GetAsync<(string, DateTime)>(Q
+                .Select(nameof(DbCache.CacheValue), nameof(DbCache.CreatedDate))
+                .Where(nameof(DbCache.CacheKey), cacheKey)
             );
 
             return retVal;

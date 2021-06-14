@@ -11,18 +11,18 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ChannelRepository
     {
-        public async Task<List<KeyValuePair<int, Channel>>> ParserGetChannelsAsync(int siteId, int pageChannelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, TaxisType order, ScopeType scopeType, bool isTotal)
+        public async Task<List<KeyValuePair<int, Channel>>> ParserGetChannelsAsync(int siteId, int pageChannelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, TaxisType order, ScopeType scopeType, bool isTotal, Query query)
         {
             var channels = new List<Channel>();
 
             List<int> channelIdList;
             if (isTotal)//从所有栏目中选择
             {
-                channelIdList = await GetChannelIdsAsync(siteId, siteId, ScopeType.All);
+                channelIdList = await GetChannelIdsAsync(siteId, siteId, ScopeType.All, query);
             }
             else
             {
-                channelIdList = await GetChannelIdsAsync(siteId, pageChannelId, scopeType);
+                channelIdList = await GetChannelIdsAsync(siteId, pageChannelId, scopeType, query);
             }
 
             foreach (var channelId in channelIdList)

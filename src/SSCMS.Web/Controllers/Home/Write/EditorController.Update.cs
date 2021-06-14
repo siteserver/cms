@@ -30,6 +30,11 @@ namespace SSCMS.Web.Controllers.Home.Write
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;
             content.LastEditAdminId = adminId;
+            content.Hits = source.Hits;
+            content.HitsByDay = source.HitsByDay;
+            content.HitsByMonth = source.HitsByMonth;
+            content.HitsByWeek = source.HitsByWeek;
+            content.LastHitsDate = source.LastHitsDate;
 
             var isChecked = request.Content.CheckedLevel >= site.CheckContentLevel;
             if (isChecked != source.Checked)

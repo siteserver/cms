@@ -3,10 +3,22 @@ var $url = '/logout';
 var data = utils.init({});
 
 var methods = {
-  logout: function () {
-    sessionStorage.removeItem(ACCESS_TOKEN_NAME);
-    localStorage.removeItem(ACCESS_TOKEN_NAME);
-    this.redirect();
+  apiSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url).then(function (response) {
+      var res = response.data;
+
+      sessionStorage.removeItem(ACCESS_TOKEN_NAME);
+      localStorage.removeItem(ACCESS_TOKEN_NAME);
+      $this.redirect();
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      $this.apiCaptcha();
+      utils.loading($this, false);
+    });
   },
 
   redirect: function () {
@@ -19,6 +31,6 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.logout();
+    this.apiSubmit();
   }
 });

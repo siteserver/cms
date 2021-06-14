@@ -23,7 +23,7 @@ var data = utils.init({
   isSmsLogin: false,
   mobile: null,
   code: null,
-  countdown: 0
+  countdown: 0,
 });
 
 var methods = {
@@ -82,7 +82,7 @@ var methods = {
       token: this.captchaToken,
       value: this.captchaValue
     }).then(function (response) {
-      $this.apiSubmit();
+      $this.apiSubmit(false);
     }).catch(function (error) {
       $this.apiCaptcha();
       utils.loading($this, false);
@@ -114,7 +114,7 @@ var methods = {
     });
   },
 
-  apiSubmit: function () {
+  apiSubmit: function (isForceLogoutAndLogin) {
     var $this = this;
 
     utils.loading(this, true);
@@ -125,22 +125,37 @@ var methods = {
       mobile: this.mobile,
       code: this.code,
       isPersistent: this.isPersistent,
+      isForceLogoutAndLogin: isForceLogoutAndLogin
     }).then(function (response) {
       var res = response.data;
 
-      localStorage.setItem('sessionId', res.sessionId);
-
-      localStorage.removeItem(ACCESS_TOKEN_NAME);
-      sessionStorage.removeItem(ACCESS_TOKEN_NAME);
-      if ($this.isPersistent) {
-        localStorage.setItem(ACCESS_TOKEN_NAME, res.token);
+      if (res.isLoginExists) {
+        $this.$confirm('该用户正在登录状态，可能是其他人正在使用或您上一次登录没有正常退出，是否强制注销并登录？', '强制登录提示', {
+          confirmButtonText: '强制注销并登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          $this.apiSubmit(true);
+        }).catch(() => {
+          $this.$message({
+            type: 'success',
+            message: '已取消登录'
+          });
+        });
       } else {
-        sessionStorage.setItem(ACCESS_TOKEN_NAME, res.token);
-      }
-      if (res.isEnforcePasswordChange) {
-        $this.redirectPassword(res.administrator.userName);
-      } else {
-        $this.redirectIndex();
+        localStorage.setItem('sessionId', res.sessionId);
+        localStorage.removeItem(ACCESS_TOKEN_NAME);
+        sessionStorage.removeItem(ACCESS_TOKEN_NAME);
+        if ($this.isPersistent) {
+          localStorage.setItem(ACCESS_TOKEN_NAME, res.token);
+        } else {
+          sessionStorage.setItem(ACCESS_TOKEN_NAME, res.token);
+        }
+        if (res.isEnforcePasswordChange) {
+          $this.redirectPassword(res.administrator.userName);
+        } else {
+          $this.redirectIndex();
+        }
       }
     }).catch(function (error) {
       utils.error(error);
@@ -202,7 +217,7 @@ var methods = {
     this.pageAlert = null;
     if (this.isSmsLogin) {
       if (!this.mobile || !this.code) return;
-      this.apiSubmit();
+      this.apiSubmit(false);
     } else {
       if (!this.account || !this.password || !this.captchaValue) return;
       this.apiCaptchaCheck();

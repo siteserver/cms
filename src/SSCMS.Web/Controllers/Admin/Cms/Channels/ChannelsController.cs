@@ -88,7 +88,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         public class ChannelResult
         {
             public Entity Entity { get; set; }
-            public IEnumerable<InputStyle> Styles { get; set; }
+            public IEnumerable<TableStyle> Styles { get; set; }
             public string FilePath { get; set; }
             public string ChannelFilePathRule { get; set; }
             public string ContentFilePathRule { get; set; }
@@ -148,17 +148,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public string Channels { get; set; }
         }
 
-        private async Task<List<InputStyle>> GetInputStylesAsync(Channel channel)
+        private async Task<List<TableStyle>> GetStylesAsync(Channel channel)
         {
-            var styles = new List<InputStyle>
+            var styles = new List<TableStyle>
             {
-                new InputStyle()
+                new TableStyle()
                 {
                     AttributeName = nameof(Channel.ImageUrl),
                     DisplayName = "栏目图片",
                     InputType = InputType.Image
                 },
-                new InputStyle()
+                new TableStyle()
                 {
                     AttributeName = nameof(Channel.Content),
                     DisplayName = "栏目正文",
@@ -166,7 +166,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 }
             };
             var tableStyles = await _tableStyleRepository.GetChannelStylesAsync(channel);
-            styles.AddRange(tableStyles.Select(x => new InputStyle(x)));
+            styles.AddRange(tableStyles);
 
             return styles;
         }
