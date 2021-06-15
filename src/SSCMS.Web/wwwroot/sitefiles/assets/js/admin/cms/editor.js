@@ -132,6 +132,13 @@ var methods = {
       $this.styles = res.styles;
       $this.templates = res.templates;
       $this.form = _.assign({}, res.content);
+
+      if (!$this.form.addDate) {
+        $this.form.addDate = new Date();
+      } else {
+        $this.form.addDate = new Date($this.form.addDate);
+      }
+
       if ($this.form.checked) {
         $this.form.checkedLevel = $this.site.checkContentLevel;
       }
