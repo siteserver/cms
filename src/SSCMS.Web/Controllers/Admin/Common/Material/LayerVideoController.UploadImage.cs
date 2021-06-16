@@ -32,11 +32,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             var fileName = Path.GetFileName(file.FileName);
 
             var extName = PathUtils.GetExtension(fileName);
-            if (!_pathManager.IsVideoExtensionAllowed(site, extName))
+            if (!_pathManager.IsImageExtensionAllowed(site, extName))
             {
                 return this.Error(Constants.ErrorVideoExtensionAllowed);
             }
-            if (!_pathManager.IsVideoSizeAllowed(site, file.Length))
+            if (!_pathManager.IsImageSizeAllowed(site, file.Length))
             {
                 return this.Error(Constants.ErrorVideoSizeAllowed);
             }

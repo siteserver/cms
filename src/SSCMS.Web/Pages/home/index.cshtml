@@ -63,7 +63,7 @@
 
 <div v-if="menu && (isDesktop || isMobileMenu)" id="sidebar" :style="{width: leftWidth + 'px'}">
 
-  <div class="title">
+  <div v-if="isDesktop" class="title">
 
     <div v-if="!isCollapse">
 
@@ -85,8 +85,72 @@
     </div>
   </div>
 
+  <div v-if="isMobileMenu">
+    <div v-for="topMenu in menus">
+      <div class="title">
+        <el-link :underline="false" :icon="topMenu.iconClass"  v-on:click="btnTopMenuClick(topMenu)" style="margin-left: -15px;">
+          {{ topMenu.text }}
+        </el-link>
+      </div>
+      <el-menu
+        v-if="menu && topMenu.id === menu.id"
+        :default-openeds="defaultOpeneds"
+        :default-active="defaultActive"
+        :unique-opened="true"
+        :collapse="isCollapse"
+        :collapse-transition="false"
+        v-on:select="btnSideMenuClick">
+
+        <template v-for="level1 in menu.children">
+          <template v-if="level1.children && level1.children.length > 0">
+
+            <el-submenu :index="level1.id">
+
+              <template v-for="level2 in level1.children">
+
+                <template v-if="level2.children && level2.children.length > 0">
+
+                  <el-submenu :index="level2.id">
+                    <template slot="title">
+                      <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                      <span>{{ level2.text }}</span>
+                    </template>
+          
+                    <template v-for="level3 in level2.children">
+                      <el-menu-item :class="{'is-active': getIndex(level1, level2, level3) == defaultActive}" :index="getIndex(level1, level2, level3)">
+                        <i v-if="level3.iconClass" :class="level3.iconClass"></i>
+                        <span>{{ level3.text }}</span>
+                      </el-menu-item>
+                    </template>
+          
+                  </el-submenu>
+          
+                </template>
+                <template v-else>
+                  <el-menu-item :class="{'is-active': getIndex(level1, level2) == defaultActive}" :index="getIndex(level1, level2)">
+                    <i v-if="level2.iconClass" :class="level2.iconClass"></i>
+                    <span>{{ level2.text }}</span>
+                  </el-menu-item>
+                </template>
+              </template>
+
+            </el-submenu>
+
+          </template>
+          <template v-else>
+            <el-menu-item :class="{'is-active': getIndex(level1) == defaultActive}" :index="getIndex(level1)">
+              <i v-if="level1.iconClass" :class="level1.iconClass"></i>
+              <span>{{ level1.text }}</span>
+            </el-menu-item>
+          </template>
+        </template>
+      </el-menu>
+
+    </div>
+  </div>
+
   <el-menu
-    v-if="menu"
+    v-else-if="menu"
     :default-openeds="defaultOpeneds"
     :default-active="defaultActive"
     :unique-opened="true"

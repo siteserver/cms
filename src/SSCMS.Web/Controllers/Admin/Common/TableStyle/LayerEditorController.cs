@@ -55,8 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             public bool Horizontal { get; set; }
             public List<InputStyleItem> Items { get; set; }
             public int Height { get; set; }
-            public string CustomizeLeft { get; set; }
-            public string CustomizeRight { get; set; }
+            public string CustomizeCode { get; set; }
         }
     }
 }

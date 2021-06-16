@@ -209,19 +209,27 @@
         {{ scope.row.updatePlugin.createdDate }}
       </template>
     </el-table-column>
-    <el-table-column label="操作" width="100" align="center">
+    <el-table-column label="操作" width="140" align="center">
       <template slot-scope="scope">
         <el-link
+          v-if="scope.row.price === 0"
           :underline="false"
           type="warning"
           :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: scope.row.pluginId})">
           升级
         </el-link>
+        <el-link
+          v-else
+          :underline="false"
+          type="warning"
+          v-on:click="btnUploadClick">
+          离线升级插件
+        </el-link>
       </template>
     </el-table-column>
   </el-table>
   
-  <div v-if="pageType === 'update'">
+  <div v-if="pageType === 'update' && updatablePluginIds.length > 0">
     <div style="height: 10px"></div>
     <el-divider></el-divider>
     <div style="height: 10px"></div>
@@ -229,7 +237,7 @@
     <el-button
       size="small"
       type="warning"
-      v-on:click="location.href = utils.getPluginsUrl('install', {isUpdate: true, pluginIds: updatePluginIds.join(',')})">
+      v-on:click="btnUpdateAllClick">
       一键升级所有插件
     </el-button>
   </div>

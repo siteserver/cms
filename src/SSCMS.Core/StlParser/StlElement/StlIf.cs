@@ -73,11 +73,13 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string OperateEmpty = "Empty";
         private const string OperateNotEmpty = "NotEmpty";			                                //值不为空
         private const string OperateEquals = "Equals";			                                    //值等于
-        private const string OperateNotEquals = "NotEquals";			                                //值不等于
-        private const string OperateGreatThan = "GreatThan";			                                //值大于
+        private const string OperateNotEquals = "NotEquals";			                            //值不等于
+        private const string OperateGreatThan = "GreatThan";			                            //值大于
         private const string OperateLessThan = "LessThan";			                                //值小于
         private const string OperateIn = "In";			                                            //值属于
-        private const string OperateNotIn = "NotIn";                                                 //值不属于
+        private const string OperateNotIn = "NotIn";                                                //值不属于
+        private const string OperateContains = "Contains";			                                //值包含
+        private const string OperateNotContains = "NotContains";                                    //值不包含
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
@@ -415,6 +417,20 @@ namespace SSCMS.Core.StlParser.StlElement
                             isSuccess = true;
                         }
                     }
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateContains))
+                    {
+                        if (StringUtils.Contains(theValue, testValue))
+                        {
+                            isSuccess = true;
+                        }
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotContains))
+                    {
+                        if (!StringUtils.Contains(theValue, testValue))
+                        {
+                            isSuccess = true;
+                        }
+                    }
                 }
             }
             
@@ -708,6 +724,21 @@ namespace SSCMS.Core.StlParser.StlElement
                     isSuccess = true;
                 }
             }
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateContains))
+            {
+                if (StringUtils.Contains(actualValue, testValue))
+                {
+                    isSuccess = true;
+                }
+            }
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotContains))
+            {
+                if (!StringUtils.Contains(actualValue, testValue))
+                {
+                    isSuccess = true;
+                }
+            }
+
             return isSuccess;
         }
 

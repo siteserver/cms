@@ -38,11 +38,12 @@
     <el-row style="height: 80px; overflow: hidden;">
       <el-col :span="20">
         <el-form :inline="true" size="small" label-width="100px">
-          <el-form-item label="站点" prop="siteId" :rules="{ required: true, message: '请选择投稿站点' }">
+          <el-form-item label="站点" prop="siteId">
             <el-select
               ref="siteId"
               v-model="siteId"
               filterable
+              v-on:change="handleSiteIdChange"
               placeholder="请选择投稿站点">
               <el-option
                 v-for="site in sites"

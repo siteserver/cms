@@ -101,14 +101,16 @@ namespace SSCMS.Core.Utils
 
         public async Task<string> GetContentByTableStyleAsync(Content content, string separator, Site site, TableStyle style, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
-            var value = content.Get<string>(style.AttributeName);
+            var obj = content.Get(style.AttributeName);
+            if (obj == null) return string.Empty;
+
             var parsedContent = string.Empty;
 
             var inputType = style.InputType;
 
             if (inputType == InputType.Date)
             {
-                var dateTime = TranslateUtils.ToDateTime(value);
+                var dateTime = TranslateUtils.ToDateTime(obj.ToString());
                 if (dateTime != Constants.SqlMinValue)
                 {
                     if (string.IsNullOrEmpty(formatString))
@@ -120,7 +122,7 @@ namespace SSCMS.Core.Utils
             }
             else if (inputType == InputType.DateTime)
             {
-                var dateTime = TranslateUtils.ToDateTime(value);
+                var dateTime = TranslateUtils.ToDateTime(obj.ToString());
                 if (dateTime != Constants.SqlMinValue)
                 {
                     if (string.IsNullOrEmpty(formatString))
@@ -133,7 +135,7 @@ namespace SSCMS.Core.Utils
             else if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)//选择类型
             {
                 var selectedTexts = new List<string>();
-                var selectedValues = ListUtils.GetStringList(value);
+                var selectedValues = ListUtils.ToList(obj);
                 var styleItems = style.Items;
                 if (styleItems != null)
                 {
@@ -150,13 +152,13 @@ namespace SSCMS.Core.Utils
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = await _pathManager.DecodeTextEditorAsync(site, value, true);
+                parsedContent = await _pathManager.DecodeTextEditorAsync(site, obj.ToString(), true);
             }
             else if (inputType == InputType.Image)
             {
                 if (no <= 1)
                 {
-                    parsedContent = await GetImageOrFlashHtmlAsync(site, value, attributes, isStlEntity);
+                    parsedContent = await GetImageOrFlashHtmlAsync(site, obj.ToString(), attributes, isStlEntity);
                 }
                 else
                 {
@@ -169,7 +171,7 @@ namespace SSCMS.Core.Utils
             {
                 if (no <= 1)
                 {
-                    parsedContent = await GetVideoHtmlAsync(site, value, attributes, isStlEntity);
+                    parsedContent = await GetVideoHtmlAsync(site, obj.ToString(), attributes, isStlEntity);
                 }
                 else
                 {
@@ -182,7 +184,7 @@ namespace SSCMS.Core.Utils
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(site, value, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = GetFileHtmlWithoutCount(site, obj.ToString(), attributes, innerHtml, isStlEntity, false, false);
                 }
                 else
                 {
@@ -193,7 +195,7 @@ namespace SSCMS.Core.Utils
             }
             else
             {
-                parsedContent = value;
+                parsedContent = obj.ToString();
             }
 
             return parsedContent;

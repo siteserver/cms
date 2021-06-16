@@ -117,7 +117,7 @@ var methods = {
           utils.loading($this, false);
         });
       });
-      
+
     }).catch(function (error) {
       utils.error(error);
     });
@@ -157,6 +157,15 @@ var methods = {
       callback: function() {
         $this.apiDelete(plugin);
       }
+    });
+  },
+
+  btnUploadClick: function () {
+    utils.openLayer({
+      title: '离线升级插件',
+      url: utils.getPluginsUrl('addLayerUpload'),
+      width: 550,
+      height: 350
     });
   },
 
@@ -240,7 +249,7 @@ var methods = {
 
   btnUpdateClick: function() {
     location.href = utils.getPluginsUrl('install', {
-      isUpdate: true, 
+      isUpdate: true,
       pluginIds: this.plugin.pluginId
     });
   },
@@ -264,3 +273,4 @@ var $vue = new Vue({
     this.apiGet();
   }
 });
+

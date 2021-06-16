@@ -94,15 +94,6 @@
             public const string WxSend = "site_wxSend";
         }
 
-        public static class ChannelPermissions
-        {
-            public const string Add = "channel_add";
-            public const string Edit = "channel_edit";
-            public const string Delete = "channel_delete";
-            public const string Translate = "channel_translate";
-            public const string Create = "channel_create";
-        }
-
         public static class ContentPermissions
         {
             public const string View = "content_view";

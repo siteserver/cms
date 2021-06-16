@@ -83,7 +83,8 @@ var utils = {
       maximumWords: 99999999,
       initialFrameWidth:null ,
       autoHeightEnabled: false,
-      autoFloatEnabled: false
+      autoFloatEnabled: false,
+      zIndex: 2001,
     });
   },
 
@@ -99,6 +100,9 @@ var utils = {
       }
       var hasNext = (i + 1) < chars.length;
       if (i > 0 && hasNext && chars[i + 1] !== chars[i + 1].toUpperCase()) {
+        return values.join('');
+      }
+      if (utils.isNumeric(chars[i])) {
         return values.join('');
       }
       values[i] = _.toLower(chars[i]);
@@ -128,6 +132,10 @@ var utils = {
         day = '0' + day;
 
     return [year, month, day].join('-');
+  },
+
+  isNumeric: function(str) {
+      return /^\d+$/.test(str);
   },
 
   getQueryIntList: function (name) {
@@ -198,11 +206,11 @@ var utils = {
   },
 
   getCountName: function(attributeName) {
-    return _.camelCase(attributeName + "Count");
+    return utils.toCamelCase(attributeName + "Count");
   },
 
   getExtendName: function(attributeName, n) {
-    return _.camelCase(n ? attributeName + n : attributeName);
+    return utils.toCamelCase(n ? attributeName + n : attributeName);
   },
 
   pad: function(num) {
@@ -460,10 +468,32 @@ var utils = {
   error: function (error, options) {
     if (!error) return;
 
-    if (error.response) {
+    if (typeof error === 'string') {
+      if (options && options.redirect) {
+        var uuid = utils.uuid();
+        sessionStorage.setItem(uuid, JSON.stringify({
+          message: error
+        }));
+
+        top.location.href = utils.getRootUrl("error", { uuid: uuid });
+      } else {
+        utils.getRootVue().$message({
+          type: "error",
+          message: error,
+          showIcon: true
+        });
+      }
+    } else if (error.response) {
       var message = utils.getErrorMessage(error);
 
-      if (error.response && error.response.status === 500 || options && options.redirect) {
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        var location = _.trimEnd(window.location.href, '/');
+        if (_.endsWith(location, '/ss-admin') || _.endsWith(location, '/home')) {
+          top.location.href = utils.getRootUrl('login');
+        } else {
+          top.location.href = utils.getRootUrl('login', {status: 401});
+        }
+      } else if (error.response && error.response.status === 500 || options && options.redirect) {
         var uuid = utils.uuid();
 
         if (typeof message === 'string') {
@@ -475,7 +505,7 @@ var utils = {
         }
 
         if (options && options.redirect) {
-          location.href = utils.getRootUrl("error", { uuid: uuid })
+          top.location.href = utils.getRootUrl("error", { uuid: uuid })
           return;
         }
 
@@ -483,12 +513,14 @@ var utils = {
           url: utils.getRootUrl("error", { uuid: uuid }),
         });
         return;
-      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        var location = _.trimEnd(window.location.href, '/');
-        if (_.endsWith(location, '/ss-admin') || _.endsWith(location, '/home')) {
-          top.location.href = utils.getRootUrl('login');
-        } else {
-          top.location.href = utils.getRootUrl('login', {status: 401});
+      } else if (error.response && error.response.status === 400) {
+        if (options && options.redirect) {
+          var uuid = utils.uuid();
+          sessionStorage.setItem(uuid, JSON.stringify({
+            message: error
+          }));
+
+          top.location.href = utils.getRootUrl("error", { uuid: uuid });
         }
       }
 
@@ -497,21 +529,6 @@ var utils = {
         message: message,
         showIcon: true
       });
-    } else if (typeof error === 'string') {
-      if (options && options.redirect) {
-        var uuid = utils.uuid();
-        sessionStorage.setItem(uuid, JSON.stringify({
-          message: error
-        }));
-
-        location.href = utils.getRootUrl("error", { uuid: uuid });
-      } else {
-        utils.getRootVue().$message({
-          type: "error",
-          message: error,
-          showIcon: true
-        });
-      }
     } else if (typeof error === 'object') {
       utils.getRootVue().$message({
         type: "error",
@@ -597,6 +614,31 @@ var utils = {
     }
   },
 
+  validateMax: function (rule, value, callback) {
+    if (value && value.length > parseInt(rule.value)) {
+      callback(new Error(rule.message || '字段不能超过指定的长度'));
+    } else {
+      callback()
+    }
+  },
+
+  validateMin: function (rule, value, callback) {
+    if (value && value.length < parseInt(rule.value)) {
+      callback(new Error(rule.message || '字段不能低于指定的长度'));
+    } else {
+      callback()
+    }
+  },
+
+  validateIdCard: function (rule, value, callback) {
+    var reg = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
+    if (!value || !reg.test(value)) {
+      callback(new Error(rule.message || '字段必须是身份证号码'));
+    } else {
+      callback()
+    }
+  },
+
   validateInt: function (rule, value, callback) {
     if (!value) {
       callback();
@@ -662,7 +704,7 @@ var utils = {
       var array = [];
       for (var i = 0; i < rules.length; i++) {
         var rule = rules[i];
-        var ruleType = _.camelCase(rule.type);
+        var ruleType = utils.toCamelCase(rule.type);
 
         if (ruleType === "required") {
           array.push({
@@ -736,8 +778,9 @@ var utils = {
           });
         } else if (ruleType === "max") {
           array.push({
-            type: "max",
-            message: rule.message || options.max
+            validator: utils.validateMax,
+            message: rule.message || options.mobile,
+            value: rule.value
           });
         } else if (ruleType === "maxValue") {
           array.push({
@@ -746,8 +789,9 @@ var utils = {
           });
         } else if (ruleType === "min") {
           array.push({
-            type: "min",
-            message: rule.message || options.min
+            validator: utils.validateMin,
+            message: rule.message || options.mobile,
+            value: rule.value
           });
         } else if (ruleType === "minValue") {
           array.push({
@@ -786,11 +830,12 @@ var utils = {
           });
         } else if (ruleType === "idCard") {
           array.push({
-            type: "idCard",
+            validator: utils.validateIdCard,
             message: rule.message || options.idCard,
           });
         }
       }
+
       return array;
     }
     return null;

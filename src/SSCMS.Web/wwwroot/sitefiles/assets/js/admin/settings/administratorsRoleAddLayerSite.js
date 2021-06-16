@@ -20,16 +20,6 @@ var methods = {
       }
     }
 
-    var channelPermissions = res.channelPermissions || [];
-    var checkedChannelPermissions = [];
-    var allChannelPermissions = [];
-    for (var i = 0; i < channelPermissions.length; i++){
-      allChannelPermissions.push(channelPermissions[i].name)
-      if (channelPermissions[i].selected){
-        checkedChannelPermissions.push(channelPermissions[i].name)
-      }
-    }
-
     var contentPermissions = res.contentPermissions || [];
     var checkedContentPermissions = [];
     var allContentPermissions = [];
@@ -50,24 +40,18 @@ var methods = {
       isSiteIndeterminate: true,
       allSitePermissions: allSitePermissions,
       checkedSitePermissions: checkedSitePermissions,
-  
-      channelPermissions: channelPermissions,
-      channelCheckAll: false,
-      isChannelIndeterminate: true,
-      allChannelPermissions: allChannelPermissions,
-      checkedChannelPermissions: checkedChannelPermissions,
 
       contentPermissions: contentPermissions,
       contentCheckAll: false,
       isContentIndeterminate: true,
       allContentPermissions: allContentPermissions,
       checkedContentPermissions: checkedContentPermissions,
-  
+
       channel: channel,
       checkedChannelIds: checkedChannelIds
     };
   },
-  
+
   handleSiteCheckAllChange: function(val) {
     this.permissionInfo.checkedSitePermissions = [];
     if (val) {
@@ -93,16 +77,6 @@ var methods = {
     return '';
   },
 
-  handleChannelCheckAllChange: function(val) {
-    this.permissionInfo.checkedChannelPermissions = [];
-    if (val) {
-      for (var i = 0; i < this.permissionInfo.channelPermissions.length; i++){
-        this.permissionInfo.checkedChannelPermissions.push(this.permissionInfo.channelPermissions[i].name)
-      }
-    }
-    this.permissionInfo.isChannelIndeterminate = false;
-  },
-
   handleContentCheckAllChange: function(val) {
     this.permissionInfo.checkedContentPermissions = [];
     if (val) {
@@ -117,25 +91,10 @@ var methods = {
     this.permissionInfo.checkedChannelIds = this.$refs.tree.getCheckedKeys();
   },
 
-  handleCheckedChannelPermissionsChange: function(value) {
-    var checkedCount = value.length;
-    this.permissionInfo.channelCheckAll = checkedCount === this.permissionInfo.channelPermissions.length;
-    this.permissionInfo.isChannelIndeterminate = checkedCount > 0 && checkedCount < this.permissionInfo.channelPermissions.length;
-  },
-
   handleCheckedContentPermissionsChange: function(value) {
     var checkedCount = value.length;
     this.permissionInfo.contentCheckAll = checkedCount === this.permissionInfo.contentPermissions.length;
     this.permissionInfo.isContentIndeterminate = checkedCount > 0 && checkedCount < this.permissionInfo.contentPermissions.length;
-  },
-
-  getChannelPermissionText: function(name) {
-    for (var i = 0; i < this.permissionInfo.channelPermissions.length; i++){
-      if (this.permissionInfo.channelPermissions[i].name === name) {
-        return this.permissionInfo.channelPermissions[i].text;
-      }
-    }
-    return '';
   },
 
   getContentPermissionText: function(name) {
@@ -163,9 +122,8 @@ var methods = {
     if (!this.isSite) return;
 
     this.permissionInfo.checkedChannelIds = sitePermission.channelIds;
-    this.permissionInfo.checkedChannelPermissions = sitePermission.channelPermissions;
-    this.permissionInfo.checkedContentPermissions = sitePermission.contentPermissions;
     this.permissionInfo.checkedSitePermissions = sitePermission.permissions;
+    this.permissionInfo.checkedContentPermissions = sitePermission.contentPermissions;
   },
 
   btnSubmitClick: function () {
@@ -180,12 +138,11 @@ var methods = {
       sitePermissions.push({
         siteId: this.siteId,
         channelIds: this.permissionInfo.checkedChannelIds,
-        channelPermissions: this.permissionInfo.checkedChannelPermissions,
-        contentPermissions: this.permissionInfo.checkedContentPermissions,
         permissions: _.union(this.permissionInfo.checkedSitePermissions),
+        contentPermissions: this.permissionInfo.checkedContentPermissions,
       });
     }
-    
+
     parent.$vue.sitePermissions = sitePermissions;
     utils.closeLayer();
   },

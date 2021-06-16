@@ -25,7 +25,7 @@ namespace SSCMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId, 0);
+                var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId);
 
                 FileUtils.DeleteFileIfExists(filePath);
 

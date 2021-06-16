@@ -17,7 +17,7 @@ namespace SSCMS.Core.Repositories
         {
             if (contentIdList == null || !contentIdList.Any()) return;
 
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             var cacheKeys = new List<string>
             {
@@ -59,7 +59,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task TrashContentAsync(Site site, Channel channel, int contentId, int adminId)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             var cacheKeys = new List<string>
             {
@@ -92,7 +92,7 @@ namespace SSCMS.Core.Repositories
         {
             if (!channel.IsPreviewContentsExists) return;
 
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
             await repository.DeleteAsync(Q
                 .Where(nameof(Content.SiteId), site.Id)
                 .Where(nameof(Content.ChannelId), channel.Id)
@@ -108,7 +108,7 @@ namespace SSCMS.Core.Repositories
         {
             if (contentIdList == null || contentIdList.Count == 0) return;
 
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
 
             var cacheKeys = new List<string>
             {
@@ -125,6 +125,8 @@ namespace SSCMS.Core.Repositories
                 .WhereIn(nameof(Content.Id), contentIdList)
                 .CachingRemove(cacheKeys.ToArray())
             );
+
+            channelId = Math.Abs(channelId);
 
             var handlers = pluginManager.GetExtensions<PluginContentHandler>();
             foreach (var handler in handlers)
@@ -162,7 +164,7 @@ namespace SSCMS.Core.Repositories
             var tableNames = await _siteRepository.GetTableNamesAsync(site);
             foreach (var tableName in tableNames)
             {
-                var repository = GetRepository(tableName);
+                var repository = await GetRepositoryAsync(tableName);
 
                 var channelIds = await repository.GetAllAsync<int>(Q
                     .Select(nameof(Content.ChannelId))
@@ -191,7 +193,7 @@ namespace SSCMS.Core.Repositories
             var tableNames = await _siteRepository.GetTableNamesAsync(site);
             foreach (var tableName in tableNames)
             {
-                var repository = GetRepository(tableName);
+                var repository = await GetRepositoryAsync(tableName);
 
                 var cacheKeys = new List<string>
                 {
@@ -221,7 +223,7 @@ namespace SSCMS.Core.Repositories
         {
             if (contentIdList == null || contentIdList.Count == 0) return;
 
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
 
             var cacheKeys = new List<string>
             {
@@ -242,7 +244,7 @@ namespace SSCMS.Core.Repositories
         private async Task DeleteReferenceContentsAsync(Site site, ContentSummary summary)
         {
             var channel = await _channelRepository.GetAsync(summary.ChannelId);
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             await repository.DeleteAsync(
                 GetQuery(site.Id, channel.Id)

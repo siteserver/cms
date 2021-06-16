@@ -308,7 +308,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<int> GetContentIdAsync(string tableName, int channelId, int taxis, bool isNextContent)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             var query = Q
                 .Select(nameof(Content.Id))
                 .Where(nameof(Content.ChannelId), channelId)
@@ -330,7 +330,7 @@ namespace SSCMS.Core.Repositories
             return await repository.GetAsync<int>(query);
         }
 
-        public int GetContentId(string tableName, int channelId, bool isCheckedOnly, string orderByString)
+        public async Task<int> GetContentIdAsync(string tableName, int channelId, bool isCheckedOnly, string orderByString)
         {
             var contentId = 0;
             var whereString = $"WHERE {Quote(nameof(Content.ChannelId))} = {channelId}";
@@ -340,7 +340,7 @@ namespace SSCMS.Core.Repositories
             }
             var sqlString = DatabaseUtils.ToTopSqlString(Database, tableName, "Id", whereString, orderByString, 1);
 
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             using (var connection = repository.Database.GetConnection())
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
@@ -361,7 +361,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<int> GetSequenceAsync(string tableName, int siteId, int channelId, int contentId)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
 
             var taxis = await repository.GetAsync<int>(GetQuery(siteId, channelId)
                 .Select(nameof(Content.Taxis))
@@ -400,7 +400,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<int> GetCountCheckedImageAsync(Site site, Channel channel)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             return await repository.CountAsync(GetQuery(site.Id, channel.Id)
                        .WhereTrue(nameof(Content.Checked))

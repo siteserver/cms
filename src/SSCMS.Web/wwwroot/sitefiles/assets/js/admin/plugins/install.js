@@ -148,7 +148,7 @@ var methods = {
           $this.installListPackage();
         }, 10000);
       });
-      
+
     }).catch(function (error) {
       utils.error(error);
     });

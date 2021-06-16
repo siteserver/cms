@@ -54,12 +54,8 @@ namespace SSCMS.Models
 
         public int Height { get; set; }
 
-        public string Width { get; set; }
-
         public bool IsFormatString { get; set; }
 
-        public string CustomizeLeft { get; set; }
-
-        public string CustomizeRight { get; set; }
+        public string CustomizeCode { get; set; }
     }
 }

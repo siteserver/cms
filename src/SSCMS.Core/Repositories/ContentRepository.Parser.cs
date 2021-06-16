@@ -197,10 +197,15 @@ namespace SSCMS.Core.Repositories
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
             var channel = await _channelRepository.GetAsync(channelId);
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             query = GetQuery(query, site.Id)
-                .Select(nameof(ContentSummary.Id), nameof(ContentSummary.ChannelId), nameof(ContentSummary.Checked))
+                .Select(
+                  nameof(ContentSummary.Id), 
+                  nameof(ContentSummary.ChannelId),
+                  nameof(ContentSummary.Checked),
+                  nameof(ContentSummary.CheckedLevel)
+                )
                 .WhereTrue(nameof(Content.Checked));
 
             if (isRelatedContents && contentId > 0)

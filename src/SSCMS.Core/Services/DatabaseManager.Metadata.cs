@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -90,11 +91,13 @@ namespace SSCMS.Core.Services
             {
                 if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
                 {
-                    await _settingsManager.Database.CreateTableAsync(tableName, ContentRepository.GetTableColumns(tableName));
+                    var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
+                    await _settingsManager.Database.CreateTableAsync(tableName, tableColumns);
                 }
                 else
                 {
-                    await AlterTableAsync(tableName, ContentRepository.GetTableColumns(tableName), string.Empty, ColumnsManager.DropAttributes.Value);
+                    var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
+                    await AlterTableAsync(tableName, tableColumns, string.Empty, ColumnsManager.DropAttributes.Value);
                 }
             }
         }

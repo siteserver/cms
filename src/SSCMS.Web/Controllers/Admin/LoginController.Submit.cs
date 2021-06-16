@@ -68,6 +68,18 @@ namespace SSCMS.Web.Controllers.Admin
             await _logRepository.AddAdminLogAsync(administrator, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
 
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);
+            if (!request.IsForceLogoutAndLogin)
+            {
+                var cacheState = await _dbCacheRepository.GetValueAndCreatedDateAsync(cacheKey);
+                if (!string.IsNullOrEmpty(cacheState.Item1) && cacheState.Item2 > DateTime.Now.AddMinutes(-30))
+                {
+                    return new SubmitResult
+                    {
+                        IsLoginExists = true,
+                    };
+                }
+            }
+
             var isEnforcePasswordChange = false;
             var sessionId = StringUtils.Guid();
             await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
@@ -92,6 +104,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             return new SubmitResult
             {
+                IsLoginExists = false,
                 Administrator = administrator,
                 SessionId = sessionId,
                 IsEnforcePasswordChange = isEnforcePasswordChange,

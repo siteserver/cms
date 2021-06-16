@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Home.Write
     public partial class ContentsController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get()
+        public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
             var siteIds = await _authManager.GetSiteIdsAsync();
 
@@ -34,7 +34,7 @@ namespace SSCMS.Web.Controllers.Home.Write
                 });
             }
 
-            var site = await _siteRepository.GetAsync(siteIds[0]);
+            var site = await _siteRepository.GetAsync(siteIds.Contains(request.SiteId) ? request.SiteId : siteIds[0]);
 
             var channel = await _channelRepository.GetAsync(site.Id);
             var enabledChannelIds = await _authManager.GetContentPermissionsChannelIdsAsync(site.Id);

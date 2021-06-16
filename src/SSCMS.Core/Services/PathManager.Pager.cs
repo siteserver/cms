@@ -31,7 +31,8 @@ namespace SSCMS.Core.Services
                 pageIndex = index - 1;
             }
 
-            var physicalPath = await GetChannelPageFilePathAsync(site, node.Id, pageIndex);
+            var physicalPath = await GetChannelPageFilePathAsync(site, node.Id);
+            physicalPath = GetPageFilePathAsync(physicalPath, pageIndex);
             return await GetSiteUrlByPhysicalPathAsync(site, physicalPath, isLocal);
         }
 
@@ -179,7 +180,19 @@ namespace SSCMS.Core.Services
                 else
                 {
                     var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
-                    var redirectUrl = contentId > 0 ? await GetContentPageFilePathAsync(site, nodeInfo.Id, contentId, pageIndex) : await GetChannelPageFilePathAsync(site, nodeInfo.Id, pageIndex);
+                    string redirectUrl;
+                    if (contentId > 0)
+                    {
+                        redirectUrl =
+                            await GetContentPageFilePathAsync(site, nodeInfo.Id, contentId,
+                                pageIndex);
+                    }
+                    else
+                    {
+                        redirectUrl = await GetChannelPageFilePathAsync(site, nodeInfo.Id);
+                        redirectUrl = GetPageFilePathAsync(redirectUrl, pageIndex);
+                    }
+                    
                     redirectUrl = await GetSiteUrlByPhysicalPathAsync(site, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";
                 }

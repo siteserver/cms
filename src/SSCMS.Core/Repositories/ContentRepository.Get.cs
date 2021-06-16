@@ -19,7 +19,7 @@ namespace SSCMS.Core.Repositories
     {
         public async Task<int> GetMaxTaxisAsync(Site site, Channel channel, bool isTop)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             var maxTaxis = 0;
             if (isTop)
@@ -56,7 +56,7 @@ namespace SSCMS.Core.Repositories
 
         private async Task<List<ContentSummary>> GetReferenceIdListAsync(string tableName, IEnumerable<int> contentIdList)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             return await repository.GetAllAsync<ContentSummary>(Q
                 .Select(nameof(Content.Id), nameof(Content.ChannelId))
                 .Where(nameof(Content.ChannelId), ">", 0)
@@ -66,51 +66,12 @@ namespace SSCMS.Core.Repositories
 
         public async Task<int> GetFirstContentIdAsync(Site site, IChannelSummary channel)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
             return await repository.GetAsync<int>(Q
                 .Select(nameof(Content.Id))
                 .Where(nameof(Content.ChannelId), channel.Id)
                 .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id))
             );
-        }
-
-        public List<(int AdminId, int AddCount, int UpdateCount)> GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
-        {
-            var sqlString = $@"select adminId,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
-SELECT AdminId as adminId, Count(AdminId) as addCount, 0 as updateCount FROM {tableName} 
-INNER JOIN {_administratorRepository.TableName} ON AdminId = {_administratorRepository.TableName}.Id 
-WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {GetComparableDate(begin)} AND {GetComparableDate(end.AddDays(1))}
-GROUP BY AdminId
-Union
-SELECT LastEditAdminId as lastEditAdminId,0 as addCount, Count(LastEditAdminId) as updateCount FROM {tableName} 
-INNER JOIN {_administratorRepository.TableName} ON LastEditAdminId = {_administratorRepository.TableName}.Id 
-WHERE {tableName}.SiteId = {siteId} AND (({tableName}.ChannelId > 0)) 
-AND LastModifiedDate BETWEEN {GetComparableDate(begin)} AND {GetComparableDate(end.AddDays(1))}
-AND LastModifiedDate != AddDate
-GROUP BY LastEditAdminId
-) as tmp
-group by tmp.adminId";
-
-            var list = new List<(int AdminId, int AddCount, int UpdateCount)>();
-
-            var repository = GetRepository(tableName);
-            using (var connection = repository.Database.GetConnection())
-            {
-                using (var rdr = connection.ExecuteReader(sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        var adminId = rdr.IsDBNull(0) ? 0 : rdr.GetInt32(0);
-                        var addCount = rdr.IsDBNull(1) ? 0 : rdr.GetInt32(1);
-                        var updateCount = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
-
-                        list.Add((adminId, addCount, updateCount));
-                    }
-                }
-            }
-
-            return list;
         }
 
         public async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int adminId)
@@ -121,7 +82,7 @@ group by tmp.adminId";
 
         private async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, int adminId)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             var query = Q.Where(nameof(Content.SiteId), siteId);
             query.WhereIn(nameof(Content.ChannelId), channelIdList);
             query.WhereBetween(nameof(Content.LastModifiedDate), begin, end.AddDays(1));
@@ -136,7 +97,7 @@ group by tmp.adminId";
 
         public async Task<List<int>> GetContentIdsBySameTitleAsync(Site site, Channel channel, string title)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             return await repository.GetAllAsync<int>(GetQuery(site.Id, channel.Id)
                 .Select(nameof(Content.Id))
@@ -152,7 +113,7 @@ group by tmp.adminId";
 
         private async Task<int> GetCountOfContentAddAsync(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, int adminId, bool? checkedState)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
 
             var query = Q.Where(nameof(Content.SiteId), siteId);
             query.WhereIn(nameof(Content.ChannelId), channelIdList);
@@ -172,13 +133,13 @@ group by tmp.adminId";
 
         public async Task<List<ContentSummary>> GetSummariesAsync(string tableName, Query query)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             return await repository.GetAllAsync<ContentSummary>(query);
         }
 
         public async Task<int> GetCountAsync(string tableName, Query query)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             return await repository.CountAsync(query);
         }
 

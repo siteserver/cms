@@ -101,7 +101,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Translate),
                 IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.CheckLevel1),
                 IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, MenuUtils.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Create),
-                IsChannelEdit = await _authManager.HasChannelPermissionsAsync(site.Id, channel.Id, MenuUtils.ChannelPermissions.Edit)
             };
 
             var titleColumn =

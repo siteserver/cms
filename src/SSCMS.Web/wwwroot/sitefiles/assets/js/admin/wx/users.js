@@ -294,6 +294,10 @@ var methods = {
     });
   },
 
+  btnTagClick: function() {
+
+  },
+
   btnBlockClick: function() {
     var $this = this;
 

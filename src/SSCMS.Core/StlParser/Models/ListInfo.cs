@@ -145,7 +145,7 @@ namespace SSCMS.Core.StlParser.Models
                             {
                                 listInfo.Query = Q.NewQuery();
                             }
-                            listInfo.Query.AddQuery(theStlElement);
+                            await listInfo.Query.AddQueryAsync(parseManager, theStlElement);
                             innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
                         else if (contextType == ParseType.SqlContent && ParseUtils.IsSpecifiedStlElement(theStlElement, StlQueryString.ElementName))

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SqlKata;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -47,7 +48,7 @@ namespace SSCMS.Repositories
 
         Task<List<string>> GetChannelIndexNamesAsync(int siteId);
 
-        Task<List<int>> GetChannelIdsAsync(int siteId, int channelId, ScopeType scopeType);
+        Task<List<int>> GetChannelIdsAsync(int siteId, int channelId, ScopeType scopeType, Query query = null);
 
         Task<List<int>> GetChannelIdsAsync(Channel channel, ScopeType scopeType, string group, string groupNot,
             string contentModelPluginId);

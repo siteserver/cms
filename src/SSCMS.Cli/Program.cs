@@ -71,13 +71,15 @@ namespace SSCMS.Cli
             //services.AddPluginServices(pluginManager);
 
             Application = new Application(settingsManager);
+            var pluginManager = services.AddPlugins(configuration, settingsManager);
             services.AddSingleton<IConfiguration>(configuration);
             services.AddCache(settingsManager.Redis.ConnectionString);
-
+            services.AddTaskQueue();
             services.AddRepositories(assemblies);
             services.AddServices();
             services.AddCliServices();
             services.AddCliJobs();
+            services.AddPluginServices(pluginManager);
 
             await Application.RunAsync(args);
         }

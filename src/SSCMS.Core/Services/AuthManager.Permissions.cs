@@ -73,37 +73,6 @@ namespace SSCMS.Core.Services
             return siteIdList;
         }
 
-        public async Task<List<int>> GetChannelPermissionsChannelIdsAsync(int siteId)
-        {
-            if (await IsSiteAdminAsync(siteId))
-            {
-                return await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
-            }
-
-            var siteChannelIdList = new List<int>();
-            var dict = await GetChannelPermissionDictAsync();
-            foreach (var dictKey in dict.Keys)
-            {
-                var kvp = ParsePermissionDictKey(dictKey);
-                if (kvp.Key == siteId)
-                {
-                    var theChannelId = kvp.Value;
-
-                    var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId, theChannelId, ScopeType.All);
-
-                    foreach (var channelId in channelIdList)
-                    {
-                        if (!siteChannelIdList.Contains(channelId))
-                        {
-                            siteChannelIdList.Add(channelId);
-                        }
-                    }
-                }
-            }
-
-            return siteChannelIdList;
-        }
-
         public async Task<List<int>> GetContentPermissionsChannelIdsAsync(int siteId)
         {
             if (await IsSiteAdminAsync(siteId))
@@ -141,6 +110,8 @@ namespace SSCMS.Core.Services
             foreach (var enabledChannelId in channelIdsWithPermissions)
             {
                 var enabledChannel = await _databaseManager.ChannelRepository.GetAsync(enabledChannelId);
+                if (enabledChannel == null) continue;
+
                 var parentIds = ListUtils.GetIntList(enabledChannel.ParentsPath);
                 foreach (var parentId in parentIds.Where(parentId => !visibleChannelIds.Contains(parentId)))
                 {
@@ -153,38 +124,6 @@ namespace SSCMS.Core.Services
             }
 
             return visibleChannelIds;
-        }
-
-        public async Task<List<int>> GetChannelPermissionsChannelIdsAsync(int siteId, params string[] permissions)
-        {
-            if (await IsSiteAdminAsync(siteId))
-            {
-                return await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
-            }
-
-            var siteChannelIdList = new List<int>();
-            var dict = await GetChannelPermissionDictAsync();
-            foreach (var dictKey in dict.Keys)
-            {
-                var kvp = ParsePermissionDictKey(dictKey);
-                var dictPermissions = dict[dictKey];
-                if (kvp.Key == siteId && dictPermissions.Any(permissions.Contains))
-                {
-                    var channelInfo = await _databaseManager.ChannelRepository.GetAsync(kvp.Value);
-
-                    var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, ScopeType.All);
-
-                    foreach (var channelId in channelIdList)
-                    {
-                        if (!siteChannelIdList.Contains(channelId))
-                        {
-                            siteChannelIdList.Add(channelId);
-                        }
-                    }
-                }
-            }
-
-            return siteChannelIdList;
         }
 
         public async Task<List<int>> GetContentPermissionsChannelIdsAsync(int siteId, params string[] permissions)
@@ -280,68 +219,6 @@ namespace SSCMS.Core.Services
         {
             var dict = await GetSitePermissionDictAsync();
             return dict.TryGetValue(siteId, out var list) ? list : new List<string>();
-        }
-
-        public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId, params string[] permissions)
-        {
-            while (true)
-            {
-                if (channelId == 0) return false;
-                if (await IsSiteAdminAsync()) return true;
-                var dictKey = GetPermissionDictKey(siteId, channelId);
-                var dict = await GetChannelPermissionDictAsync();
-                if (dict.ContainsKey(dictKey) && await HasPermissionsAsync(dict[dictKey], permissions)) return true;
-
-                var parentChannelId = await _databaseManager.ChannelRepository.GetParentIdAsync(siteId, channelId);
-                channelId = parentChannelId;
-            }
-        }
-        
-        public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId)
-        {
-            if (channelId == 0) return false;
-            if (await IsSiteAdminAsync(siteId))
-            {
-                return true;
-            }
-            var dictKey = GetPermissionDictKey(siteId, channelId);
-            var dict = await GetChannelPermissionDictAsync();
-            if (dict.ContainsKey(dictKey))
-            {
-                return true;
-            }
-
-            var parentChannelId = await _databaseManager.ChannelRepository.GetParentIdAsync(siteId, channelId);
-            return await HasChannelPermissionsAsync(siteId, parentChannelId);
-        }
-
-        public async Task<List<string>> GetChannelPermissionsAsync(int siteId, int channelId)
-        {
-            var dictKey = GetPermissionDictKey(siteId, channelId);
-            var dict = await GetChannelPermissionDictAsync();
-            return dict.TryGetValue(dictKey, out var list) ? list : new List<string>();
-        }
-
-        public async Task<List<string>> GetChannelPermissionsAsync(int siteId)
-        {
-            var list = new List<string>();
-            var dict = await GetChannelPermissionDictAsync();
-            foreach (var dictKey in dict.Keys)
-            {
-                var kvp = ParsePermissionDictKey(dictKey);
-                if (kvp.Key == siteId)
-                {
-                    foreach (var permission in dict[dictKey])
-                    {
-                        if (!list.Contains(permission))
-                        {
-                            list.Add(permission);
-                        }
-                    }
-                }
-            }
-
-            return list;
         }
 
         public async Task<bool> HasContentPermissionsAsync(int siteId, int channelId, params string[] permissions)
@@ -444,36 +321,6 @@ namespace SSCMS.Core.Services
             }
 
             return sitePermissionDict;
-        }
-
-        private async Task<Dictionary<string, List<string>>> GetChannelPermissionDictAsync()
-        {
-            var administrator = await GetAdminAsync();
-
-            if (administrator == null || administrator.Locked) return new Dictionary<string, List<string>>();
-
-            var channelPermissionDict = new Dictionary<string, List<string>>();
-
-            var roles = await GetRolesAsync();
-            if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
-            {
-                var allContentPermissionList = _permissions
-                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel))
-                    .Select(permission => permission.Id).ToList();
-
-                var siteIdList = await GetSiteIdsAsync();
-
-                foreach (var siteId in siteIdList)
-                {
-                    channelPermissionDict[GetPermissionDictKey(siteId, siteId)] = allContentPermissionList;
-                }
-            }
-            else
-            {
-                channelPermissionDict = await _databaseManager.SitePermissionsRepository.GetChannelPermissionDictionaryAsync(roles);
-            }
-
-            return channelPermissionDict;
         }
 
         private async Task<Dictionary<string, List<string>>> GetContentPermissionDictAsync()

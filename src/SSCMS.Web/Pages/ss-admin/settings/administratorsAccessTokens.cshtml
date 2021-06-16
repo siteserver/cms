@@ -7,7 +7,7 @@ style="width: 100%">
 <el-table-column prop="title" label="名称" width="150"></el-table-column>
 <el-table-column label="关联管理员">
   <template slot-scope="scope">
-    {{ adminName }}
+    <el-link :underline="false" type="primary" v-on:click="btnAdminViewClick(scope.row)">{{scope.row.adminName}}</el-link>
   </template>
 </el-table-column>
 <el-table-column label="授权范围">

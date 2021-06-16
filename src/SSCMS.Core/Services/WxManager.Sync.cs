@@ -195,7 +195,12 @@ namespace SSCMS.Core.Services
                         await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, video.media_id, ms);
                         ms.Seek(0, SeekOrigin.Begin);
 
-                        var extName = video.url.Substring(video.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                        var extName = "mp4";
+
+                        if (!string.IsNullOrEmpty(video.url))
+                        {
+                            extName = video.url.Substring(video.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                        }
 
                         var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
                         var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Video);

@@ -68,7 +68,7 @@ var methods = {
         $this.siteUrl = res.siteUrl;
         $this.previewUrl = res.previewUrl;
         $this.local = res.local;
-        
+
         var sideMenuIds = [];
         if (location.hash) {
           var ids = location.hash.substr(1).split('/');
@@ -96,7 +96,7 @@ var methods = {
         location.href = res.redirectUrl;
       }
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {redirect: true});
     });
   },
 
@@ -106,7 +106,7 @@ var methods = {
       siteId: this.siteId
     }).then(function (response) {
       var res = response.data;
-      
+
     }).catch(function (error) {
       utils.error(error);
     });
@@ -148,7 +148,7 @@ var methods = {
       for (var i = 0; i < releases.length; i++) {
         var release = releases[i];
         if (!release || !release.version) continue;
-        
+
         var installedPlugins = $.grep($this.plugins, function (e) {
           return e.pluginId == release.userName + '.' + release.name;
         });
@@ -284,7 +284,7 @@ var methods = {
       }
     }
     this.defaultOpeneds = defaultOpeneds;
-    
+
     if (menu) {
       this.btnMenuClick(menu);
     }
@@ -335,7 +335,8 @@ var methods = {
       utils.openLayer({
         title: '更改密码',
         url: utils.getSettingsUrl('administratorsLayerPassword', {userName: this.local.userName}),
-        full: true
+        width: 550,
+        height: 300
       });
     } else if (command === 'logout') {
       location.href = utils.getRootUrl('logout')

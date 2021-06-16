@@ -67,14 +67,7 @@
       </el-tree>
     </el-form-item>
 
-    <el-form-item label="可管理栏目：栏目权限">
-      <el-checkbox :indeterminate="permissionInfo.isChannelIndeterminate" v-model="permissionInfo.channelCheckAll" style="margin-left: 10px;" v-on:change="handleChannelCheckAllChange">全选</el-checkbox>
-      <div></div>
-      <el-checkbox-group v-model="permissionInfo.checkedChannelPermissions" v-on:change="handleCheckedChannelPermissionsChange">
-        <el-checkbox v-for="permission in permissionInfo.allChannelPermissions" :label="permission" :key="permission">{{getChannelPermissionText(permission)}}</el-checkbox>
-      </el-checkbox-group>
-    </el-form-item>
-    <el-form-item label="可管理栏目：内容权限">
+    <el-form-item label="内容权限（含子栏目）">
       <el-checkbox :indeterminate="permissionInfo.isContentIndeterminate" v-model="permissionInfo.contentCheckAll" style="margin-left: 10px;" v-on:change="handleContentCheckAllChange">全选</el-checkbox>
       <div></div>
       <el-checkbox-group v-model="permissionInfo.checkedContentPermissions" v-on:change="handleCheckedContentPermissionsChange">

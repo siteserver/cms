@@ -435,9 +435,6 @@
           新增栏目组
         </el-button>
       </el-form-item>
-
-      @await Html.PartialAsync("_PartialForm")
-
       <el-form-item label="栏目模板">
         <el-select v-model="form.channelTemplateId" placeholder="请选择栏目模板">
           <el-option label="<默认>" :value="0"></el-option>
@@ -494,13 +491,13 @@
         <el-input style="width: 70%" v-model="form.contentFilePathRule" placeholder="在此设置栏目页面命名规则"></el-input>
         <el-button v-on:click.prevent="btnSetClick(form.id, false, form.contentFilePathRule)">构造</el-button>
       </el-form-item>
-
       <el-form-item label="栏目关键字">
         <el-input v-model="form.keywords"></el-input>
       </el-form-item>
       <el-form-item label="栏目描述">
         <el-input type="textarea" v-model="form.description"></el-input>
       </el-form-item>
+      @await Html.PartialAsync("_PartialForm")
 
       <el-divider></el-divider>
       <div class="drawer__footer">

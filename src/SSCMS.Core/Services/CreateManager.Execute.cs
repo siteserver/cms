@@ -39,6 +39,29 @@ namespace SSCMS.Core.Services
             {
                 await ExecuteSpecialAsync(siteId, specialId);
             }
+            else if (createType == CreateType.All)
+            {
+                var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId);
+                foreach (var theChannelId in channelIdList)
+                {
+                    await ExecuteChannelAsync(siteId, theChannelId);
+                }
+
+                foreach (var theChannelId in channelIdList)
+                {
+                    await ExecuteContentsAsync(siteId, theChannelId);
+                }
+
+                foreach (var theSpecialId in await _specialRepository.GetAllSpecialIdsAsync(siteId))
+                {
+                    await ExecuteSpecialAsync(siteId, theSpecialId);
+                }
+
+                foreach (var theFileTemplateId in await _templateRepository.GetAllFileTemplateIdsAsync(siteId))
+                {
+                    await ExecuteFileAsync(siteId, theFileTemplateId);
+                }
+            }
         }
 
         private async Task ExecuteContentsAsync(int siteId, int channelId)
@@ -65,11 +88,16 @@ namespace SSCMS.Core.Services
             var template = channelId == siteId
                 ? await _templateRepository.GetIndexPageTemplateAsync(siteId)
                 : await _templateRepository.GetChannelTemplateAsync(siteId, channelInfo);
-            var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId, 0);
+            var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId);
 
             await _parseManager.InitAsync(EditMode.Default, site, channelId, 0, template);
             _parseManager.ContextInfo.ContextType = ParseType.Channel;
 
+            await ExecuteAsync(site, template, filePath);
+        }
+
+        private async Task ExecuteAsync(Site site, Template template, string filePathWithoutPage)
+        {
             var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
 
             var stlLabelList = ParseUtils.GetStlLabels(contentBuilder.ToString());
@@ -86,7 +114,7 @@ namespace SSCMS.Core.Services
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(Constants.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
 
-                await _parseManager.ParseAsync(contentBuilder, filePath, false);
+                await _parseManager.ParseAsync(contentBuilder, filePathWithoutPage, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -101,7 +129,7 @@ namespace SSCMS.Core.Services
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
                     await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, stlLabelList, currentPageIndex, pageCount, 0);
 
-                    filePath = await _pathManager.GetChannelPageFilePathAsync(site, page.PageChannelId, currentPageIndex);
+                    var filePath = _pathManager.GetPageFilePathAsync(filePathWithoutPage, currentPageIndex);
                     await GenerateFileAsync(filePath, pagedBuilder);
 
                     if (index != -1)
@@ -122,7 +150,7 @@ namespace SSCMS.Core.Services
                 var (pageCount, totalNum) = pageContentsElementParser.GetPageCount();
 
                 await _parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-                await _parseManager.ParseAsync(contentBuilder, filePath, false);
+                await _parseManager.ParseAsync(contentBuilder, filePathWithoutPage, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -135,7 +163,7 @@ namespace SSCMS.Core.Services
 
                     await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, stlLabelList, currentPageIndex, pageCount, totalNum);
 
-                    filePath = await _pathManager.GetChannelPageFilePathAsync(site, page.PageChannelId, currentPageIndex);
+                    var filePath = _pathManager.GetPageFilePathAsync(filePathWithoutPage, currentPageIndex);
 
                     await GenerateFileAsync(filePath, pagedBuilder);
 
@@ -152,7 +180,7 @@ namespace SSCMS.Core.Services
                 var pageCount = pageChannelsElementParser.GetPageCount(out var totalNum);
 
                 await _parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-                await _parseManager.ParseAsync(contentBuilder, filePath, false);
+                await _parseManager.ParseAsync(contentBuilder, filePathWithoutPage, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -165,7 +193,7 @@ namespace SSCMS.Core.Services
 
                     await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, stlLabelList, currentPageIndex, pageCount, totalNum);
 
-                    filePath = await _pathManager.GetChannelPageFilePathAsync(site, page.PageChannelId, currentPageIndex);
+                    var filePath = _pathManager.GetPageFilePathAsync(filePathWithoutPage, currentPageIndex);
                     await GenerateFileAsync(filePath, pagedBuilder);
 
                     _parseManager.PageInfo = page;
@@ -181,7 +209,7 @@ namespace SSCMS.Core.Services
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
                 await _parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-                await _parseManager.ParseAsync(contentBuilder, filePath, false);
+                await _parseManager.ParseAsync(contentBuilder, filePathWithoutPage, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -194,7 +222,7 @@ namespace SSCMS.Core.Services
 
                     await _parseManager.ReplacePageElementsInChannelPageAsync(pagedBuilder, stlLabelList, currentPageIndex, pageCount, totalNum);
 
-                    filePath = await _pathManager.GetChannelPageFilePathAsync(site, page.PageChannelId, currentPageIndex);
+                    var filePath = _pathManager.GetPageFilePathAsync(filePathWithoutPage, currentPageIndex);
                     await GenerateFileAsync(filePath, pagedBuilder);
 
                     _parseManager.PageInfo = page;
@@ -202,8 +230,8 @@ namespace SSCMS.Core.Services
             }
             else
             {
-                await _parseManager.ParseAsync(contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, contentBuilder);
+                await _parseManager.ParseAsync(contentBuilder, filePathWithoutPage, false);
+                await GenerateFileAsync(filePathWithoutPage, contentBuilder);
             }
         }
 
@@ -420,9 +448,11 @@ namespace SSCMS.Core.Services
 
             var filePath = await _pathManager.ParseSitePathAsync(site, template.CreatedFileFullName);
 
-            var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
-            await _parseManager.ParseAsync(contentBuilder, filePath, false);
-            await GenerateFileAsync(filePath, contentBuilder);
+            await ExecuteAsync(site, template, filePath);
+
+            //var contentBuilder = new StringBuilder(await _pathManager.GetTemplateContentAsync(site, template));
+            //await _parseManager.ParseAsync(contentBuilder, filePath, false);
+            //await GenerateFileAsync(filePath, contentBuilder);
         }
 
         private async Task ExecuteSpecialAsync(int siteId, int specialId)

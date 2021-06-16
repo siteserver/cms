@@ -10,6 +10,19 @@ var data = utils.init({
 });
 
 var methods = {
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
   apiGet: function () {
     var $this = this;
 
@@ -112,6 +125,63 @@ var methods = {
 
   btnCancelClick: function () {
     utils.closeLayer();
+  },
+
+  btnLayerClick: function(options) {
+    var query = {
+      userId: this.userId,
+    };
+
+    if (options.attributeName) {
+      query.attributeName = options.attributeName;
+    }
+    if (options.no) {
+      query.no = options.no;
+    }
+
+    var args = {
+      title: options.title,
+      url: utils.getCommonUrl(options.name, query)
+    };
+    if (!options.full) {
+      args.width = options.width ? options.width : 700;
+      args.height = options.height ? options.height : 500;
+    }
+
+    utils.openLayer(args);
+  },
+
+  btnExtendAddClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] + 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
+  },
+
+  btnExtendRemoveClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)];
+    this.form[utils.getCountName(style.attributeName)] = no - 1;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
+  },
+
+  btnExtendPreviewClick: function(attributeName, no) {
+    var count = this.form[utils.getCountName(attributeName)];
+    var data = [];
+    for (var i = 0; i <= count; i++) {
+      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
+      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
+      data.push({
+        "src": imageUrl
+      });
+    }
+    layer.photos({
+      photos: {
+        "start": no,
+        "data": data
+      }
+      ,anim: 5
+    });
   }
 };
 

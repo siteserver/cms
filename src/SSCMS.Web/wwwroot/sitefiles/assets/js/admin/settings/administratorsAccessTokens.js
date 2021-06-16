@@ -82,6 +82,14 @@ var methods = {
     return list.join(',');
   },
 
+  btnAdminViewClick: function(row) {
+    utils.openLayer({
+      title: '查看资料',
+      url: utils.getCommonUrl('adminLayerView', {adminId: row.id}),
+      full: true
+    });
+  },
+
   btnSubmitClick: function () {
     var $this = this;
 

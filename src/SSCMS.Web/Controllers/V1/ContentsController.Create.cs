@@ -24,8 +24,7 @@ namespace SSCMS.Web.Controllers.V1
             var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return NotFound();
 
-            var checkedLevel = request.CheckedLevel;
-
+            var checkedLevel = request.Checked ? site.CheckContentLevel : request.CheckedLevel;
             var isChecked = checkedLevel >= site.CheckContentLevel;
             if (isChecked)
             {
@@ -42,26 +41,24 @@ namespace SSCMS.Web.Controllers.V1
             var adminId = _authManager.AdminId;
             var userId = _authManager.UserId;
 
-            var contentInfo = new Content
-            {
-                SiteId = siteId,
-                ChannelId = channelId,
-                AdminId = adminId,
-                LastEditAdminId = adminId,
-                UserId = userId,
-                SourceId = request.SourceId,
-                Checked = isChecked,
-                CheckedLevel = checkedLevel
-            };
-            contentInfo.LoadDict(request.ToDictionary());
+            var content = new Content();
+            content.LoadDict(request.ToDictionary());
 
-            contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
+            content.SiteId = siteId;
+            content.ChannelId = channelId;
+            content.AdminId = adminId;
+            content.LastEditAdminId = adminId;
+            content.UserId = userId;
+            content.SourceId = request.SourceId;
+            content.Checked = isChecked;
+            content.CheckedLevel = checkedLevel;
+            content.Id = await _contentRepository.InsertAsync(site, channel, content);
 
             //foreach (var plugin in _pluginManager.GetPlugins(siteId, channelId))
             //{
             //    try
             //    {
-            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, request.ToDictionary(), contentInfo));
+            //        plugin.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, content.Id, request.ToDictionary(), content));
             //    }
             //    catch (Exception ex)
             //    {
@@ -69,16 +66,16 @@ namespace SSCMS.Web.Controllers.V1
             //    }
             //}
 
-            if (contentInfo.Checked)
+            if (content.Checked)
             {
-                await _createManager.CreateContentAsync(siteId, channelId, contentInfo.Id);
+                await _createManager.CreateContentAsync(siteId, channelId, content.Id);
                 await _createManager.TriggerContentChangedEventAsync(siteId, channelId);
             }
 
-            await _authManager.AddSiteLogAsync(siteId, channelId, contentInfo.Id, "添加内容",
-                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
+            await _authManager.AddSiteLogAsync(siteId, channelId, content.Id, "添加内容",
+                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(siteId, content.ChannelId)},内容标题:{content.Title}");
 
-            return contentInfo;
+            return content;
         }
     }
 }

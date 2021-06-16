@@ -14,7 +14,7 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "获取站点值", Description = "通过 stl:site 标签在模板中显示站点值")]
     public static class StlSite
-	{
+    {
         public const string ElementName = "stl:site";
 
         [StlAttribute(Title = "站点名称")]
@@ -23,10 +23,10 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "站点文件夹")]
         private const string SiteDir = nameof(SiteDir);
 
-	    [StlAttribute(Title = "类型")]
+        [StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "显示的格式")]
+        [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
 
         [StlAttribute(Title = "显示第几项")]
@@ -35,70 +35,72 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示多项时的分割字符串")]
         private const string Separator = nameof(Separator);
 
-	    [StlAttribute(Title = "字符开始位置")]
+        [StlAttribute(Title = "字符开始位置")]
         private const string StartIndex = nameof(StartIndex);
 
-	    [StlAttribute(Title = "指定字符长度")]
+        [StlAttribute(Title = "指定字符长度")]
         private const string Length = nameof(Length);
 
-	    [StlAttribute(Title = "显示字符的数目")]
+        [StlAttribute(Title = "显示字符的数目")]
         private const string WordNum = nameof(WordNum);
 
-	    [StlAttribute(Title = "文字超出部分显示的文字")]
+        [StlAttribute(Title = "文字超出部分显示的文字")]
         private const string Ellipsis = nameof(Ellipsis);
 
-	    [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
+        [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
         private const string Replace = nameof(Replace);
 
-	    [StlAttribute(Title = "替换replace的文字信息")]
+        [StlAttribute(Title = "替换replace的文字信息")]
         private const string To = nameof(To);
 
-	    [StlAttribute(Title = "是否清除标签信息")]
+        [StlAttribute(Title = "是否清除标签信息")]
         private const string IsClearTags = nameof(IsClearTags);
 
-	    [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
+        [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
 
-	    [StlAttribute(Title = "是否转换为小写")]
+        [StlAttribute(Title = "是否转换为小写")]
         private const string IsLower = nameof(IsLower);
 
-	    [StlAttribute(Title = "是否转换为大写")]
+        [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
+        private const string TypeId = nameof(Site.Id);
         private const string TypeSiteName = nameof(Site.SiteName);
         private const string TypeImageUrl = nameof(Site.ImageUrl);
         private const string TypeKeywords = nameof(Site.Keywords);
         private const string TypeDescription = nameof(Site.Description);
         private const string TypeSiteUrl = "SiteUrl";
 
-	    public static SortedList<string, string> TypeList => new SortedList<string, string>
-	    {
-	        {TypeSiteName, "站点名称"},
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {TypeId, "站点Id"},
+            {TypeSiteName, "站点名称"},
             {TypeImageUrl, "站点图片/LOGO"},
             {TypeKeywords, "站点关键字"},
             {TypeDescription, "站点描述"},
             {TypeSiteUrl, "站点的域名地址"}
-	    };
+        };
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var siteName = string.Empty;
-		    var siteDir = string.Empty;
+        {
+            var siteName = string.Empty;
+            var siteDir = string.Empty;
 
             var type = string.Empty;
-		    var formatString = string.Empty;
+            var formatString = string.Empty;
             var no = "0";
             string separator = null;
-		    var startIndex = 0;
-		    var length = 0;
-		    var wordNum = 0;
-		    var ellipsis = Constants.Ellipsis;
-		    var replace = string.Empty;
-		    var to = string.Empty;
-		    var isClearTags = false;
-		    var isReturnToBr = false;
-		    var isLower = false;
-		    var isUpper = false;
+            var startIndex = 0;
+            var length = 0;
+            var wordNum = 0;
+            var ellipsis = Constants.Ellipsis;
+            var replace = string.Empty;
+            var to = string.Empty;
+            var isClearTags = false;
+            var isReturnToBr = false;
+            var isLower = false;
+            var isUpper = false;
             var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
@@ -175,24 +177,24 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-		    var site = parseManager.ContextInfo.Site;
+            var site = parseManager.ContextInfo.Site;
 
-		    if (!string.IsNullOrEmpty(siteName))
-		    {
-		        site = await parseManager.DatabaseManager.SiteRepository.GetSiteBySiteNameAsync(siteName);
-		    }
-		    else if (!string.IsNullOrEmpty(siteDir))
-		    {
-		        site = await parseManager.DatabaseManager.SiteRepository.GetSiteByDirectoryAsync(siteDir);
-		    }
+            if (!string.IsNullOrEmpty(siteName))
+            {
+                site = await parseManager.DatabaseManager.SiteRepository.GetSiteBySiteNameAsync(siteName);
+            }
+            else if (!string.IsNullOrEmpty(siteDir))
+            {
+                site = await parseManager.DatabaseManager.SiteRepository.GetSiteByDirectoryAsync(siteDir);
+            }
 
-		    if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
-		    {
-		        return site;
-		    }
+            if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            {
+                return site;
+            }
 
             return await ParseAsync(parseManager, site, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
-		}
+        }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
         {
@@ -226,6 +228,10 @@ namespace SSCMS.Core.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(type, TypeSiteName))
             {
                 parsedContent = site.SiteName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, TypeId))
+            {
+                parsedContent = site.Id.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeImageUrl))
             {
@@ -324,5 +330,5 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
         }
-	}
+    }
 }

@@ -29,7 +29,7 @@ namespace SSCMS.Core.Repositories
                 var tableName = await _channelRepository.GetTableNameAsync(site, channel.Id);
                 var listKey = GetListKey(tableName, site.Id, channel.Id);
 
-                var repository = GetRepository(site, channel);
+                var repository = await GetRepositoryAsync(site, channel);
                 var cacheManager = await repository.GetCacheManagerAsync();
 
                 if (!cacheManager.Exists(listKey))
@@ -56,7 +56,7 @@ namespace SSCMS.Core.Repositories
                 if (summary != null)
                 {
                     var tableName = _channelRepository.GetTableName(site, channel);
-                    var repository = GetRepository(tableName);
+                    var repository = await GetRepositoryAsync(tableName);
                     var cacheManager = await repository.GetCacheManagerAsync();
 
                     if (!cacheManager.Exists(GetEntityKey(tableName, summary.Id)))
@@ -88,7 +88,7 @@ namespace SSCMS.Core.Repositories
         {
             if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
 
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
             return await repository.GetAsync(contentId, Q
                 .CachingGet(GetEntityKey(tableName, contentId))
             );
@@ -127,7 +127,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<int>> GetContentIdsAsync(Site site, Channel channel, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
             var query = Q
                 .Select(nameof(Content.Id))
                 .Where(nameof(Content.ChannelId), channel.Id)
@@ -155,7 +155,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<int>> GetChannelIdsCheckedByLastModifiedDateHourAsync(Site site, int hour)
         {
-            var repository = GetRepository(site.TableName);
+            var repository = await GetRepositoryAsync(site.TableName);
 
             return await repository.GetAllAsync<int>(Q
                 .Select(nameof(Content.ChannelId))
@@ -185,8 +185,13 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel)
         {
-            var repository = GetRepository(site, channel);
-            var query = Q.Select(nameof(Content.Id), nameof(Content.ChannelId), nameof(Content.Checked));
+            var repository = await GetRepositoryAsync(site, channel);
+            var query = Q.Select(
+              nameof(Content.Id), 
+              nameof(Content.ChannelId), 
+              nameof(Content.Checked), 
+              nameof(Content.CheckedLevel)
+            );
 
             await QueryWhereAsync(query, site, channel.Id, false);
 

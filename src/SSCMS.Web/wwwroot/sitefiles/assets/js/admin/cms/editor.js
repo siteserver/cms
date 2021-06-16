@@ -71,8 +71,8 @@ var methods = {
   },
 
   insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)];
-    if (count && count < no) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
       this.form[utils.getCountName(attributeName)] = no;
     }
     this.form[utils.getExtendName(attributeName, no)] = text;
@@ -132,6 +132,13 @@ var methods = {
       $this.styles = res.styles;
       $this.templates = res.templates;
       $this.form = _.assign({}, res.content);
+
+      if (!$this.form.addDate) {
+        $this.form.addDate = new Date();
+      } else {
+        $this.form.addDate = new Date($this.form.addDate);
+      }
+
       if ($this.form.checked) {
         $this.form.checkedLevel = $this.site.checkContentLevel;
       }
@@ -166,8 +173,12 @@ var methods = {
               $this.form[utils.toCamelCase(style.attributeName)] = utils.toArray(value);
             }
           }
-        } else if (style.inputType === 'Image' || style.inputType === 'File' || style.inputType !== 'Video') {
+        } else if (style.inputType === 'Image' || style.inputType === 'File' || style.inputType === 'Video') {
           $this.form[utils.getCountName(style.attributeName)] = utils.toInt($this.form[utils.getCountName(style.attributeName)]);
+        } else if (style.inputType === 'Text' || style.inputType === 'TextArea' || style.inputType === 'TextEditor') {
+          if ($this.contentId === 0) {
+            $this.form[utils.toCamelCase(style.attributeName)] = style.defaultValue;
+          }
         }
       }
 

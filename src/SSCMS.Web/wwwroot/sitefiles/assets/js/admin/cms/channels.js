@@ -72,8 +72,8 @@ var methods = {
   },
 
   insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)];
-    if (count && count < no) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
       this.form[utils.getCountName(attributeName)] = no;
     }
     this.form[utils.getExtendName(attributeName, no)] = text;
@@ -85,7 +85,7 @@ var methods = {
     if (!html) return;
     utils.getEditor(attributeName).execCommand('insertHTML', html);
   },
-  
+
   setRuleText: function(rule, isChannel) {
     if (isChannel) {
       this.form.channelFilePathRule = rule;
@@ -250,7 +250,7 @@ var methods = {
       dropType: dropType
     }).then(function (response) {
       var res = response.data;
-      
+
       // $this.apiList('栏目排序成功!', [$this.siteId, sourceId]);
       utils.success('栏目排序成功!');
     }).catch(function (error) {
@@ -297,7 +297,7 @@ var methods = {
       height: 500
     });
   },
-  
+
   getColumnWidth: function(attributeName) {
     if (attributeName === 'Id') return 80;
     if (attributeName === 'ChannelTemplateId' || attributeName === 'ContentTemplateId') return 120;
@@ -327,6 +327,7 @@ var methods = {
       siteId: this.siteId,
       templateId: templateId,
       templateType: isChannel ? 'ChannelTemplate' : 'ContentTemplate',
+      accessToken: $token
     });
   },
 

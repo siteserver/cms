@@ -107,42 +107,6 @@ namespace SSCMS.Core.Repositories
             return sortedList;
         }
 
-        public async Task<Dictionary<string, List<string>>> GetChannelPermissionDictionaryAsync(IList<string> roles)
-        {
-            var dict = new Dictionary<string, List<string>>();
-            if (roles == null) return dict;
-
-            foreach (var roleName in roles)
-            {
-                var systemPermissionsList = await GetAllAsync(roleName);
-                foreach (var systemPermissions in systemPermissionsList)
-                {
-                    if (systemPermissions.ChannelIds == null) continue;
-
-                    foreach (var channelId in systemPermissions.ChannelIds)
-                    {
-                        var key = AuthManager.GetPermissionDictKey(systemPermissions.SiteId, channelId);
-
-                        if (!dict.TryGetValue(key, out var list))
-                        {
-                            list = new List<string>();
-                            dict[key] = list;
-                        }
-
-                        if (systemPermissions.ChannelPermissions != null)
-                        {
-                            foreach (var channelPermission in systemPermissions.ChannelPermissions)
-                            {
-                                if (!list.Contains(channelPermission)) list.Add(channelPermission);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return dict;
-        }
-
         public async Task<Dictionary<string, List<string>>> GetContentPermissionDictionaryAsync(IList<string> roles)
         {
             var dict = new Dictionary<string, List<string>>();
@@ -177,32 +141,6 @@ namespace SSCMS.Core.Repositories
             }
 
             return dict;
-        }
-
-        public async Task<List<string>> GetChannelPermissionListIgnoreChannelIdAsync(IList<string> roles)
-        {
-            var list = new List<string>();
-            if (roles == null) return list;
-
-            foreach (var roleName in roles)
-            {
-                var systemPermissionsList = await GetAllAsync(roleName);
-                foreach (var systemPermissions in systemPermissionsList)
-                {
-                    if (systemPermissions.ChannelPermissions != null)
-                    {
-                        foreach (var channelPermission in systemPermissions.ChannelPermissions)
-                        {
-                            if (!list.Contains(channelPermission))
-                            {
-                                list.Add(channelPermission);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return list;
         }
     }
 }

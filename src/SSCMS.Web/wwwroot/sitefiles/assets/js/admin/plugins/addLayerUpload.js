@@ -13,33 +13,42 @@ var methods = {
   apiOverride: function(fileName) {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.post($urlActionsOverride, {
-      pluginId: this.plugin.pluginId,
-      fileName: fileName
-    }).then(function () {
-      $this.apiRestart();
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
+    $this.apiRestart(true, function() {
+      $api.post($urlActionsOverride, {
+        pluginId: $this.plugin.pluginId,
+        fileName: fileName
+      }).then(function () {
+        parent.utils.alertSuccess({
+          title: '插件更新成功',
+          text: '插件名称：' + $this.plugin.displayName + '，插件Id：' + $this.plugin.pluginId + '，插件版本：' + $this.plugin.version,
+          callback: function() {
+            $this.apiRestart(false, function() {
+              window.top.location.reload(true);
+            });
+          }
+        });
+      }).catch(function (error) {
+        utils.error(error);
+      }).then(function () {
+        utils.loading($this, false);
+      });
     });
   },
 
-  apiRestart: function () {
-    var $this = this;
-
+  apiRestart: function (isDisablePlugins, callback) {
     utils.loading(this, true);
-    $api.post($urlActionsRestart).then(function (response) {
-      setTimeout(function () {
-        parent.utils.alertSuccess({
-          title: '插件安装成功',
-          text: '插件名称：' + $this.plugin.displayName + '，插件Id：' + $this.plugin.pluginId + '，插件版本：' + $this.plugin.version,
-          callback: function() {
-            window.top.location.reload(true);
-          }
-        });
-      }, 30000);
+    $api.post($urlActionsRestart, {
+      isDisablePlugins: isDisablePlugins
+    }).then(function (response) {
+      if (isDisablePlugins) {
+        setTimeout(function () {
+          callback();
+        }, 120000);
+      } else {
+        setTimeout(function () {
+          callback();
+        }, 30000);
+      }
     }).catch(function (error) {
       utils.error(error);
     });
@@ -61,7 +70,7 @@ var methods = {
     var $this = this;
 
     this.loading && this.loading.close();
-    
+
     var oldPlugin = res.oldPlugin;
     $this.plugin = res.newPlugin;
     var fileName = res.fileName;
@@ -76,7 +85,15 @@ var methods = {
         }
       });
     } else {
-      $this.apiRestart();
+      $this.apiRestart(false, function() {
+        parent.utils.alertSuccess({
+          title: '插件安装成功',
+          text: '插件名称：' + $this.plugin.displayName + '，插件Id：' + $this.plugin.pluginId + '，插件版本：' + $this.plugin.version,
+          callback: function() {
+            window.top.location.reload(true);
+          }
+        });
+      });
     }
   },
 

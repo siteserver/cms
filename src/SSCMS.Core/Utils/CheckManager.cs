@@ -13,7 +13,7 @@ namespace SSCMS.Core.Utils
 	        public const int CaoGao = -99;//草稿
 	        public const int DaiShen = 0;//待审核
 
-            public const int Pass1 = 1;//初审通过
+          public const int Pass1 = 1;//初审通过
 	        public const int Pass2 = 2;//二审通过
 	        public const int Pass3 = 3;//三审通过
 	        public const int Pass4 = 4;//四审通过

@@ -29,7 +29,12 @@ namespace SSCMS.Web.Controllers.V1
             var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return NotFound();
 
+            await _authManager.AddSiteLogAsync(site.Id, channel.Id, id, "删除内容",
+                    $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(site.Id, channel.Id)},内容标题:{content.Title}");
+                    
+            await _createManager.DeleteContentAsync(site, content.ChannelId, content.Id);
             await _contentRepository.TrashContentAsync(site, channel, id, _authManager.AdminId);
+            await _createManager.TriggerContentChangedEventAsync(site.Id, channel.Id);
 
             return content;
         }

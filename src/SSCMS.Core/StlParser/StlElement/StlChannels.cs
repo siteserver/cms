@@ -169,7 +169,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return await parseManager.DatabaseManager.ChannelRepository.ParserGetChannelsAsync(pageInfo.SiteId, channelId,
                 listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage,
-                listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
+                listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal, listInfo.Query);
         }
 
         private static TaxisType GetChannelTaxisTypeByOrder(string orderValue)

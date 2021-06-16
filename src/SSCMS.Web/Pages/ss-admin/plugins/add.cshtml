@@ -16,13 +16,13 @@
   <el-form-item>
     <el-button type="primary" v-on:click="btnSearchClick">搜索插件</el-button>
     <el-button size="mini" type="primary" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnUploadClick">
-      离线安装
+      离线安装/更新插件
     </el-button>
   </el-form-item>
 </el-form>
 
 <template v-if="q">
-  <div style="margin-bottom: 10px;" v-if="extensions && extensions.length > 0">搜索到 {{extensions.length}} 个结果</div>
+  <div style="margin-bottom: 10px;" v-if="extensionWithReleases && extensionWithReleases.length > 0">搜索到 {{extensionWithReleases.length}} 个结果</div>
   <div style="margin-bottom: 10px;" v-else>未找到搜索结果，建议更换搜索词</div>
 </template>
 

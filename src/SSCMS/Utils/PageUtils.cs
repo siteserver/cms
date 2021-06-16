@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Configuration;
+using SSCMS.Services;
 
 namespace SSCMS.Utils
 {
@@ -366,33 +367,47 @@ namespace SSCMS.Utils
             return result;
         }
 
-        public static bool IsAllowed(string ipAddress, List<string> blockList, List<string> allowList)
+        public static bool IsVisitAllowed(ISettingsManager settingsManager, HttpRequest request)
         {
             var isAllowed = true;
 
-            if (blockList != null && blockList.Count > 0)
+            if (!string.IsNullOrEmpty(settingsManager.AdminRestrictionHost))
             {
-                var list = new IpList();
-                foreach (var restriction in blockList)
-                {
-                    AddRestrictionToIpList(list, restriction);
-                }
-                if (list.CheckNumber(ipAddress))
+                var currentHost = RemoveProtocolFromUrl(GetHost(request));
+                if (!StringUtils.StartsWithIgnoreCase(currentHost, RemoveProtocolFromUrl(settingsManager.AdminRestrictionHost)))
                 {
                     isAllowed = false;
                 }
             }
-            else if (allowList != null && allowList.Count > 0)
+
+            if (isAllowed)
             {
-                isAllowed = false;
-                var list = new IpList();
-                foreach (var restriction in allowList)
+                var userIp = GetIpAddress(request);
+
+                if (settingsManager.AdminRestrictionBlockList != null && settingsManager.AdminRestrictionBlockList.Length > 0)
                 {
-                    AddRestrictionToIpList(list, restriction);
+                    var list = new IpList();
+                    foreach (var restriction in settingsManager.AdminRestrictionBlockList)
+                    {
+                        AddRestrictionToIpList(list, restriction);
+                    }
+                    if (list.CheckNumber(userIp))
+                    {
+                        isAllowed = false;
+                    }
                 }
-                if (list.CheckNumber(ipAddress))
+                else if (settingsManager.AdminRestrictionAllowList != null && settingsManager.AdminRestrictionAllowList.Length > 0)
                 {
-                    isAllowed = true;
+                    isAllowed = false;
+                    var list = new IpList();
+                    foreach (var restriction in settingsManager.AdminRestrictionAllowList)
+                    {
+                        AddRestrictionToIpList(list, restriction);
+                    }
+                    if (list.CheckNumber(userIp))
+                    {
+                        isAllowed = true;
+                    }
                 }
             }
 
@@ -525,15 +540,6 @@ namespace SSCMS.Utils
             }
 
             /// <summary>
-            /// Adds IP numbers using a mask for range where the mask specifies the number of
-            /// fixed bits, ex. 192.168.1.0/24 which will add 192.168.1.0 - 192.168.1.255
-            /// </summary>
-            public void Add(string ipNumber, int maskLevel)
-            {
-                Add(parseIP(ipNumber), (uint)_maskList.GetKey(_maskList.IndexOfValue(maskLevel)));
-            }
-
-            /// <summary>
             /// Adds IP numbers using a from and to IP number. The method checks the range and
             /// splits it into normal ip/mask blocks.
             /// </summary>
@@ -635,19 +641,6 @@ namespace SSCMS.Utils
             }
 
             /// <summary>
-            /// Clears all lists of IP numbers
-            /// </summary>
-            public void Clear()
-            {
-                foreach (var i in _usedList)
-                {
-                    _ipRangeList[i].Clear();
-                }
-
-                _usedList.Clear();
-            }
-
-            /// <summary>
             /// Generates a list of all IP ranges in printable format
             /// </summary>
             public override string ToString()
@@ -705,15 +698,6 @@ namespace SSCMS.Utils
                 }
 
                 return found;
-            }
-
-            /// <summary>
-            /// Clears the list
-            /// </summary>
-            public void Clear()
-            {
-                _ipNumList.Clear();
-                _isSorted = false;
             }
 
             /// <summary>

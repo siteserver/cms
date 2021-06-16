@@ -32,7 +32,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissions();
 
             var sitePermissions = new List<Option>();
-            var channelPermissions = new List<Option>();
             var contentPermissions = new List<Option>();
 
             if (await _authManager.IsSuperAdminAsync())
@@ -56,17 +55,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 //        Selected = StringUtils.ContainsIgnoreCase(sitePermissionsInfo.WebsitePermissions, permission.Name)
                 //    });
                 //}
-
-                var channelPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel));
-                foreach (var permission in channelPermissionList)
-                {
-                    channelPermissions.Add(new Option
-                    {
-                        Name = permission.Id,
-                        Text = permission.Text,
-                        Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
-                    });
-                }
 
                 var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content));
                 foreach (var permission in contentPermissionList)
@@ -150,23 +138,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     }
                 }
 
-                var channelPermissionList = await _authManager.GetChannelPermissionsAsync(request.SiteId);
-                foreach (var channelPermission in channelPermissionList)
-                {
-                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel)))
-                    {
-                        if (permission.Id == channelPermission)
-                        {
-                            channelPermissions.Add(new Option
-                            {
-                                Name = permission.Id,
-                                Text = permission.Text,
-                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.ChannelPermissions, permission.Id)
-                            });
-                        }
-                    }
-                }
-
                 var contentPermissionList = await _authManager.GetContentPermissionsAsync(request.SiteId);
                 foreach (var contentPermission in contentPermissionList)
                 {
@@ -224,7 +195,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             {
                 Site = site,
                 SitePermissions = sitePermissions,
-                ChannelPermissions = channelPermissions,
                 ContentPermissions = contentPermissions,
                 Channel = channelInfo,
                 CheckedChannelIds = checkedChannelIdList

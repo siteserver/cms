@@ -83,10 +83,12 @@
         {{ getDescription() }}
       </div>
 
+      <div style="height: 10px"></div>
+
       <el-alert
         v-if="extension && isShouldUpdate"
         style="margin-bottom: 15px;"
-        :title="'系统检测到插件新版本，当前版本：' + extension.version + '，新版本：' + release.version"
+        :title="'系统检测到插件新版本，当前版本：' + '，新版本：' + release.version"
         type="warning">
       </el-alert>
 
@@ -101,8 +103,11 @@
         </template>
         
         <template v-if="extension">
-          <el-button type="primary" v-if="isShouldUpdate" v-on:click="btnUpdateClick" size="small">
+          <el-button type="primary" v-if="isShouldUpdate && plugin.price === 0" v-on:click="btnUpdateClick" size="small">
             升级插件
+          </el-button>
+          <el-button type="primary" v-if="isShouldUpdate && plugin.price > 0" v-on:click="btnUploadClick" size="small">
+            离线升级插件
           </el-button>
           <el-button type="primary" v-else-if="!plugin && extension.price" v-on:click="btnBuyClick" size="small">
             购买并下载安装

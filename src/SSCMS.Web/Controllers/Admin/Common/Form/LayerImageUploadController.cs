@@ -39,6 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
         public class SubmitRequest : Options
         {
+            public int UserId { get; set; }
             public int SiteId { get; set; }
             public List<string> FilePaths { get; set; }
         }

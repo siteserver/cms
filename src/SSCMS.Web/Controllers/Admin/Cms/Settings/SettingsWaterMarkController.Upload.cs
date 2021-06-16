@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasChannelPermissionsAsync(request.SiteId, request.SiteId, MenuUtils.SitePermissions.SettingsWaterMark))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.SettingsWaterMark))
             {
                 return Unauthorized();
             }

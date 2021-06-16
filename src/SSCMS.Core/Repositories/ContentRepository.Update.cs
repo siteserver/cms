@@ -22,7 +22,7 @@ namespace SSCMS.Core.Repositories
         {
             if (content == null) return;
 
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             if (site.IsAutoPageInTextEditor)
             {
@@ -54,7 +54,7 @@ namespace SSCMS.Core.Repositories
             var tableNames = await _siteRepository.GetAllTableNamesAsync();
             foreach (var tableName in tableNames)
             {
-                var repository = GetRepository(tableName);
+                var repository = await GetRepositoryAsync(tableName);
 
                 var list = await repository.GetAllAsync<(int ContentId, string Content)>(
                     GetQuery(site.Id)
@@ -88,7 +88,7 @@ namespace SSCMS.Core.Repositories
                 query.OrderByDesc(attributeName);
             }
 
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
             var list = await repository.GetAllAsync<(int id, bool top)>(query);
             var taxis = 0;
             var topTaxis = TaxisIsTopStartValue;
@@ -117,7 +117,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<bool> SetTaxisToUpAsync(Site site, Channel channel, int contentId, bool isTop)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             var taxis = await repository.GetAsync<int>(
                 GetQuery(site.Id, channel.Id)
@@ -165,7 +165,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task<bool> SetTaxisToDownAsync(Site site, Channel channel, int contentId, bool isTop)
         {
-            var repository = GetRepository(site, channel);
+            var repository = await GetRepositoryAsync(site, channel);
 
             var taxis = await repository.GetAsync<int>(
                 GetQuery(site.Id, channel.Id)
@@ -213,7 +213,7 @@ namespace SSCMS.Core.Repositories
 
         public async Task AddDownloadsAsync(string tableName, int channelId, int contentId)
         {
-            var repository = GetRepository(tableName);
+            var repository = await GetRepositoryAsync(tableName);
 
             await repository.IncrementAsync(nameof(Content.Downloads), Q
                 .Where(nameof(Content.Id), contentId)

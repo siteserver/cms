@@ -49,7 +49,7 @@ var methods = {
   getTemplatesUrl: function() {
     return cloud.host + '/templates/';
   },
-  
+
   getDisplayUrl: function (theme) {
     return cloud.getThemesUrl('template.html?userName=' + theme.userName + '&name=' + theme.name);
   },
@@ -123,7 +123,18 @@ var methods = {
 
   orderChanged: function () {
     this.cloudApiGet();
-  }
+  },
+
+  getThemeUrl: function(theme) {
+    if (theme) {
+      return cloud.host + '/templates/template.html?userName=' + encodeURIComponent(theme.userName) + '&name=' + encodeURIComponent(theme.name);
+    }
+    return 'javascript:;';
+  },
+
+  btnBuyClick: function(theme) {
+    window.open(this.getThemeUrl(theme));
+  },
 };
 
 var $vue = new Vue({

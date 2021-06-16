@@ -66,10 +66,12 @@ namespace SSCMS.Web.Controllers.Admin
             public string Mobile { get; set; }
             public string Code { get; set; }
             public bool IsPersistent { get; set; }
+            public bool IsForceLogoutAndLogin {get;set;}
         }
 
         public class SubmitResult
         {
+            public bool IsLoginExists { get; set; }
             public Administrator Administrator { get; set; }
             public string SessionId { get; set; }
             public bool IsEnforcePasswordChange { get; set; }
