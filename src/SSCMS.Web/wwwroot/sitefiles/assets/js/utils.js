@@ -640,10 +640,21 @@ var utils = {
   },
 
   validateChinese: function (rule, value, callback) {
-    if (!value || escape(value).indexOf("%u") === -1) {
+    if (!value) {
       callback(new Error(rule.message || '字段必须是中文'));
     } else {
-      callback()
+      var isAll = true;
+      for(var i = 0; i < value.length; i++) {
+        if (escape(value[i]).indexOf("%u") === -1) {
+          isAll = false;
+          continue;
+        }
+      }
+      if (isAll) {
+        callback()
+      } else {
+        callback(new Error(rule.message || '字段必须是中文'));
+      }
     }
   },
 
