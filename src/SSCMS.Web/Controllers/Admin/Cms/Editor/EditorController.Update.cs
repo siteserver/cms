@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
@@ -58,6 +59,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             await _contentRepository.UpdateAsync(site, channel, content);
+            await _statRepository.AddCountAsync(StatType.ContentEdit, content.SiteId);
+            await _statRepository.AddCountAsync(StatType.ContentEdit, content.SiteId, adminId);
 
             await _contentTagRepository.UpdateTagsAsync(source.TagNames, content.TagNames, request.SiteId, content.Id);
 

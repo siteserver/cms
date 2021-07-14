@@ -40,6 +40,27 @@
 
 <line-chart :chart-data="chartData"></line-chart>
 
+<el-divider></el-divider>
+
+<el-table
+  :data="adminStats"
+  style="width: 100%">
+  <el-table-column
+    label="管理员">
+    <template slot-scope="scope">
+      <el-link :underline="false" type="primary" v-on:click="btnAdminView(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+    </template>
+  </el-table-column>
+  <el-table-column
+    prop="add"
+    label="内容添加量">
+  </el-table-column>
+  <el-table-column
+    prop="edit"
+    label="内容更新量">
+  </el-table-column>
+</el-table>
+
 @section Scripts{
 <script src="/sitefiles/assets/lib/chartjs/chart-2.7.1.min.js"></script>
 <script src="/sitefiles/assets/lib/chartjs/vue-chartjs.min.js"></script>

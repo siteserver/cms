@@ -111,7 +111,7 @@ namespace SSCMS.Core.Utils.PathRules
                     var tableName = await _databaseManager.ChannelRepository.GetTableNameAsync(site, channelId);
                     value = Convert.ToString(await _databaseManager.ContentRepository.GetSequenceAsync(tableName, site.Id, channelId, contentId));
                 }
-                else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
+                else if (StringUtils.EqualsIgnoreCase(element, ParentRule))
                 {
                     var nodeInfo = await _databaseManager.ChannelRepository.GetAsync(channelId);
                     var parentInfo = await _databaseManager.ChannelRepository.GetAsync(nodeInfo.ParentId);
@@ -168,8 +168,6 @@ namespace SSCMS.Core.Utils.PathRules
                         {
                             value = addDate.Value.Month.ToString("D2");
                         }
-
-                        //value = addDate.ToString("MM");
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Day))
                     {
@@ -177,8 +175,6 @@ namespace SSCMS.Core.Utils.PathRules
                         {
                             value = addDate.Value.Day.ToString("D2");
                         }
-
-                        //value = addDate.ToString("dd");
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Hour))
                     {

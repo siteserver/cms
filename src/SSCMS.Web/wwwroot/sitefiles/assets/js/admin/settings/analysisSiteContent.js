@@ -8,6 +8,7 @@ var data = utils.init({
     dateTo: utils.getQueryString('dateTo') || utils.formatDate(new Date()),
   },
   sites: null,
+  adminStats: null,
   chartData: null,
   siteIds: [utils.getQueryInt('siteId')]
 });
@@ -21,6 +22,7 @@ var methods = {
       var res = response.data;
 
       $this.sites = res.sites;
+      $this.adminStats = res.adminStats;
 
       $this.chartData = {
         labels: res.days,
@@ -35,7 +37,7 @@ var methods = {
             backgroundColor: "#67C23A",
             data: res.editCount
           }
-          
+
         ]
       };
     })
@@ -45,6 +47,14 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
+  },
+
+  btnAdminView: function(adminId) {
+    utils.openLayer({
+      title: '管理员查看',
+      url: utils.getCommonUrl('adminLayerView', { adminId: adminId}),
+      full: true
+    })
   },
 
   btnSearchClick() {

@@ -639,6 +639,14 @@ var utils = {
     }
   },
 
+  validateChinese: function (rule, value, callback) {
+    if (!value || escape(value).indexOf("%u") === -1) {
+      callback(new Error(rule.message || '字段必须是中文'));
+    } else {
+      callback()
+    }
+  },
+
   validateInt: function (rule, value, callback) {
     if (!value) {
       callback();
@@ -815,7 +823,7 @@ var utils = {
           });
         } else if (ruleType === "chinese") {
           array.push({
-            type: "chinese",
+            validator: utils.validateChinese,
             message: rule.message || options.chinese,
           });
         } else if (ruleType === "currency") {

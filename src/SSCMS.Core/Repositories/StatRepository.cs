@@ -24,15 +24,33 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task AddCountAsync(StatType statType, int siteId = 0)
+        public async Task AddCountAsync(StatType statType)
+        {
+            await AddCountAsync(statType, 0, 0);
+        }
+
+        public async Task AddCountAsync(StatType statType, int siteId)
+        {
+            await AddCountAsync(statType, siteId, 0);
+        }
+
+        public async Task AddCountAsync(StatType statType, int siteId, int adminId)
         {
             var lowerDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             var higherDate = lowerDate.AddDays(1);
 
             var query = Q
-                .Where(nameof(Stat.SiteId), siteId)
                 .Where(nameof(Stat.StatType), statType.GetValue())
                 .WhereBetween(nameof(Stat.CreatedDate), lowerDate, higherDate);
+
+            if (siteId > 0)
+            {
+                query.Where(nameof(Stat.SiteId), siteId);
+            }
+            if (adminId > 0)
+            {
+                query.Where(nameof(Stat.AdminId), adminId);
+            }
 
             if (await _repository.ExistsAsync(query))
             {
@@ -44,15 +62,45 @@ namespace SSCMS.Core.Repositories
                 {
                     StatType = statType,
                     SiteId = siteId,
+                    AdminId = adminId,
                     Count = 1
                 });
             }
         }
 
-        public async Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate, StatType statType, int siteId = 0)
+        public async Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate, StatType statType)
+        {
+            return await GetStatsAsync(lowerDate, higherDate, statType, 0, 0);
+        }
+
+        public async Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate, StatType statType, int siteId)
+        {
+            return await GetStatsAsync(lowerDate, higherDate, statType, siteId, 0);
+        }
+
+        public async Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate, StatType statType, int siteId, int adminId)
         {
             var query = Q
                 .Where(nameof(Stat.StatType), statType.GetValue())
+                .WhereBetween(nameof(Stat.CreatedDate), lowerDate, higherDate.AddDays(1));
+
+            if (siteId > 0)
+            {
+                query.Where(nameof(Stat.SiteId), siteId);
+            }
+            if (adminId > 0)
+            {
+                query.Where(nameof(Stat.AdminId), adminId);
+            }
+
+            return await _repository.GetAllAsync(query);
+        }
+
+        public async Task<List<Stat>> GetStatsWithAdminIdAsync(DateTime lowerDate, DateTime higherDate, StatType statType, int siteId)
+        {
+            var query = Q
+                .Where(nameof(Stat.StatType), statType.GetValue())
+                .WhereNot(nameof(Stat.AdminId), 0)
                 .WhereBetween(nameof(Stat.CreatedDate), lowerDate, higherDate.AddDays(1));
 
             if (siteId > 0)

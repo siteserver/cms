@@ -14,6 +14,9 @@ namespace SSCMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
+        public int AdminId { get; set; }
+
+        [DataColumn]
         public int Count { get; set; }
     }
 }

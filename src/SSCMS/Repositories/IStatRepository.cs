@@ -9,9 +9,22 @@ namespace SSCMS.Repositories
 {
     public interface IStatRepository : IRepository
     {
-        Task AddCountAsync(StatType statType, int siteId = 0);
+        Task AddCountAsync(StatType statType);
 
-        Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate, StatType statType,
-            int siteId = 0);
+        Task AddCountAsync(StatType statType, int siteId);
+
+        Task AddCountAsync(StatType statType, int siteId, int adminId);
+
+        Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate,
+            StatType statType);
+
+        Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate,
+            StatType statType, int siteId);
+
+        Task<List<Stat>> GetStatsAsync(DateTime lowerDate, DateTime higherDate,
+            StatType statType, int siteId, int adminId);
+
+        Task<List<Stat>> GetStatsWithAdminIdAsync(DateTime lowerDate, DateTime higherDate,
+            StatType statType, int siteId);
     }
 }
