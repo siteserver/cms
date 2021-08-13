@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     public partial class EditorController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
@@ -90,6 +90,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                         var value = content.Get(style.AttributeName);
                         content.Set(style.AttributeName, StringUtils.ToString(value));
                     }
+                }
+                else if (style.InputType == InputType.Text || style.InputType == InputType.TextArea || style.InputType == InputType.TextEditor)
+                {
+                    content.Set(style.AttributeName, string.Empty);
                 }
             }
 

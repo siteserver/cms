@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <title>用户中心</title> <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> <meta name="renderer" content="webkit"> <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"> <link href="/sitefiles/assets/images/favicon.png" rel="icon" type="image/png"> <link href="/sitefiles/assets/css/font-awesome-4.7.0.min.css?v=1604819048476" rel="stylesheet" type="text/css"> <link href="/sitefiles/assets/css/ionicons-2.0.0.min.css?v=1604819048476" rel="stylesheet" type="text/css"> <link href="/sitefiles/assets/lib/elementui/default/index.css?v=1604819048476" rel="stylesheet" type="text/css"> <link href="/sitefiles/assets/css/element-ui.css?v=1604819048476" rel="stylesheet" type="text/css"> <style> body {
+      background: #f5f5f5;
+    }
+    .el-input-group__append {
+      padding: 0;
+    }
+    .el-input-group__prepend {
+      padding: 0 15px;
+    }
+    .el-icon-mobile-phone:before,
+    .el-icon-user-solid:before,
+    .el-icon-lock:before,
+    .el-icon-chat-line-square:before,
+    .el-icon-picture:before {
+      width: 12px;
+      font-size: 18px;
+    }
+    .wrapper-page {
+      margin: 7.5% auto;
+      max-width: 360px;
+    } </style> </head> <body> <div id="main"> <div v-if="this.pageLoad" style="display: none" :style="{display: ''}"> <div class="wrapper-page"> <el-card class="box-card"> <div slot="header" class="clearfix"> <span>手机验证</span> </div> <el-alert type="warning" title="为了保障账号安全，请验证您的手机号码" style="margin-bottom: 10px;"></el-alert> <el-form ref="form" :model="form" size="medium" label-width="0" status-icon> <el-form-item prop="mobile" :rules="[
+        { required: true, message: '请输入手机号码' },
+        { validator: utils.validateMobile, message: '请输入有效的手机号码' }
+      ]"> <el-input placeholder="请输入手机号码" v-model="form.mobile" v-on:keyup.enter.native="btnSubmitClick"> <template slot="prepend"> <i class="el-icon-mobile-phone"></i> </template> </el-input> </el-form-item> <el-form-item prop="code" :rules="[{ required: true, message: '请输入短信验证码' }]"> <el-input v-model="form.code" autocomplete="off" placeholder="请输入短信验证码" v-on:keyup.enter.native="btnSubmitClick"> <template slot="prepend"> <i class="el-icon-chat-line-square"></i> </template> <template slot="append"> <el-link :underline="false" v-on:click.prevent="btnSendSmsClick" style="padding: 0 15px;"> {{ countdown > 0 ? countdown + '秒': '获取验证码' }} </el-link> </template> </el-input> </el-form-item> </el-form> <el-divider></el-divider> <div style="height: 10px"></div> <div style="margin: 10px 0;"> <el-button type="primary" style="width: 100%" v-on:click="btnSubmitClick">验 证</el-button> </div> </el-card> </div> </div> <div v-else :style="{top: ($(window).height()/2 - 30) + 'px'}" v-loading="true" element-loading-text="页面加载中"></div> </div> </body> </html> <script src="/sitefiles/assets/lib/es6-promise.auto.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/axios-0.17.1.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/core-js-3.6.5.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/lodash-4.17.10.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/jquery-1.9.1.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/layer/layer-3.1.1.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/sweetalert2-7.28.4.all.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/vue-2.5.16.min.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/lib/elementui/index.js?v=1604819048476"></script> <script src="/sitefiles/assets/js/home.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/js/utils.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/js/cloud.js?v=1604819048476" type="text/javascript"></script> <script src="/sitefiles/assets/js/home/verifyMobile.js?v=1604819048476" type="text/javascript"></script> 
