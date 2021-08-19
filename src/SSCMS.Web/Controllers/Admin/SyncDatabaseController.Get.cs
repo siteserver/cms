@@ -16,10 +16,10 @@ namespace SSCMS.Web.Controllers.Admin
 
             var config = await _configRepository.GetAsync();
 
-            if (config.DatabaseVersion == _settingsManager.Version && !await _authManager.IsSuperAdminAsync())
-            {
-                return Unauthorized();
-            }
+            //if (config.DatabaseVersion == _settingsManager.Version && !await _authManager.IsSuperAdminAsync())
+            //{
+            //    return Unauthorized();
+            //}
 
             return new GetResult
             {
