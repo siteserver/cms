@@ -27,7 +27,7 @@
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0009" />
-    <PackageReference Include="RestSharp" Version="106.11.7" />
+    <PackageReference Include="RestSharp" Version="106.12.0" />
     <PackageReference Include="Senparc.Weixin" Version="6.8.101" />
     <PackageReference Include="Senparc.Weixin.WxOpen" Version="3.9.101" />
     <PackageReference Include="Senparc.Weixin.TenPay" Version="1.6.101.1" />

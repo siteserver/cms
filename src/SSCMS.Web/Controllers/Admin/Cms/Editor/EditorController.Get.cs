@@ -91,6 +91,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                         content.Set(style.AttributeName, StringUtils.ToString(value));
                     }
                 }
+                else if (style.InputType == InputType.Text || style.InputType == InputType.TextArea || style.InputType == InputType.TextEditor)
+                {
+                    if (request.ContentId == 0)
+                    {
+                        content.Set(style.AttributeName, string.Empty);
+                    }
+                }
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
