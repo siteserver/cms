@@ -1,9 +1,10 @@
 var $url = '/syncDatabase';
+var $urlVerify = '/syncDatabase/actions/verify';
 
 var data = utils.init({
   pageType: 'prepare',
   databaseVersion: null,
-  version: null
+  version: null,
 });
 
 var methods = {
@@ -23,9 +24,22 @@ var methods = {
     });
   },
 
-  apiUpdate: function () {
+  apiVerify: function (securityKey) {
     var $this = this;
 
+    $api.post($urlVerify, {
+      securityKey: securityKey
+    }).then(function (response) {
+      $this.apiSubmit();
+    }).catch(function (error) {
+      utils.error(error);
+    });
+  },
+
+  apiSubmit: function () {
+    var $this = this;
+
+    this.pageType = 'update';
     $api.post($url).then(function (response) {
       $this.pageType = 'done';
     }).catch(function (error) {
@@ -38,9 +52,19 @@ var methods = {
   },
 
   btnStartClick: function (e) {
+    var $this = this;
     e.preventDefault();
-    this.pageType = 'update';
-    this.apiUpdate();
+
+    if (this.databaseVersion === this.version) {
+      this.$prompt('请进入系统根目录，打开 sscms.json 获取 SecurityKey的值', 'SecurityKey验证', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(function(val) {
+        $this.apiVerify(val.value);
+      });
+    } else {
+      this.apiSubmit();
+    }
   }
 };
 

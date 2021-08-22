@@ -11,6 +11,7 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class SyncDatabaseController : ControllerBase
     {
         public const string Route = "syncDatabase";
+        private const string RouteVerify = "syncDatabase/actions/verify";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
@@ -29,6 +30,11 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public string DatabaseVersion { get; set; }
             public string Version { get; set; }
+        }
+
+        public class VerifyRequest
+        {
+            public string SecurityKey { get; set; }
         }
 
         public class SubmitResult
