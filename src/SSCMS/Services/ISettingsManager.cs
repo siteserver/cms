@@ -16,6 +16,7 @@ namespace SSCMS.Services
         bool Containerized { get; }
         int CPUCores { get; }
         bool IsProtectData { get; }
+        bool IsApiDocuments { get; }
         bool IsDisablePlugins { get; }
         string SecurityKey { get; }
         DatabaseType DatabaseType { get; }

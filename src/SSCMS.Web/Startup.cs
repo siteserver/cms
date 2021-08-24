@@ -163,29 +163,32 @@ namespace SSCMS.Web
                 options.SupportedUICultures = supportedCultures;
             });
 
-            //http://localhost:5000/api/swagger/v1/swagger.json
-            //http://localhost:5000/api/swagger/
-            //http://localhost:5000/api/docs/
-            services.AddOpenApiDocument(config =>
+            if (settingsManager.IsApiDocuments)
             {
-                config.PostProcess = document =>
-                {
-                    document.Info.Version = "v1";
-                    document.Info.Title = "SS CMS REST API";
-                    document.Info.Description = "SS CMS REST API Îª SS CMS Ìá¹©ÁËÒ»¸ö»ùÓÚHTTPµÄAPIµ÷ÓÃ£¬ÔÊĞí¿ª·¢ÕßÍ¨¹ı·¢ËÍºÍ½ÓÊÕJSON¶ÔÏóÀ´Ô¶³ÌÓëÕ¾µã½øĞĞ½»»¥¡£";
-                    document.Info.Contact = new NSwag.OpenApiContact
-                    {
-                        Name = "SS CMS",
-                        Email = string.Empty,
-                        Url = "https://www.sscms.com"
-                    };
-                    document.Info.License = new NSwag.OpenApiLicense
-                    {
-                        Name = "GPL-3.0",
-                        Url = "https://github.com/siteserver/cms/blob/staging/LICENSE"
-                    };
-                };
-            });
+              //http://localhost:5000/api/swagger/v1/swagger.json
+              //http://localhost:5000/api/swagger/
+              //http://localhost:5000/api/docs/
+              services.AddOpenApiDocument(config =>
+              {
+                  config.PostProcess = document =>
+                  {
+                      document.Info.Version = "v1";
+                      document.Info.Title = "SS CMS REST API";
+                      document.Info.Description = "SS CMS REST API ä¸º SS CMS æä¾›äº†ä¸€ä¸ªåŸºäºHTTPçš„APIè°ƒç”¨ï¼Œå…è®¸å¼€å‘è€…é€šè¿‡å‘é€å’Œæ¥æ”¶JSONå¯¹è±¡æ¥è¿œç¨‹ä¸ç«™ç‚¹è¿›è¡Œäº¤äº’ã€‚";
+                      document.Info.Contact = new NSwag.OpenApiContact
+                      {
+                          Name = "SS CMS",
+                          Email = string.Empty,
+                          Url = "https://www.sscms.com"
+                      };
+                      document.Info.License = new NSwag.OpenApiLicense
+                      {
+                          Name = "GPL-3.0",
+                          Url = "https://github.com/siteserver/cms/blob/staging/LICENSE"
+                      };
+                  };
+              });
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
@@ -292,9 +295,9 @@ namespace SSCMS.Web
             app.UseRequestLocalization();
 
             RegisterService.Start(senparcSetting.Value)
-                //×Ô¶¯É¨Ãè×Ô¶¨ÒåÀ©Õ¹»º´æ£¨¶şÑ¡Ò»£©
+                //è‡ªåŠ¨æ‰«æè‡ªå®šä¹‰æ‰©å±•ç¼“å­˜ï¼ˆäºŒé€‰ä¸€ï¼‰
                 .UseSenparcGlobal(true)
-                //Ö¸¶¨×Ô¶¨ÒåÀ©Õ¹»º´æ£¨¶şÑ¡Ò»£©
+                //Ö¸æŒ‡å®šè‡ªå®šä¹‰æ‰©å±•ç¼“å­˜ï¼ˆäºŒé€‰ä¸€ï¼‰
                 //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
                 ;
 

@@ -1,6 +1,5 @@
 var $url = '/login';
 var $urlCaptcha = '/login/captcha';
-var $urlCaptchaCheck = '/login/captcha/actions/check';
 var $urlSendSms = '/login/actions/sendSms';
 
 if (window.top != self) {
@@ -74,22 +73,6 @@ var methods = {
     });
   },
 
-  apiCaptchaCheck: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlCaptchaCheck, {
-      token: this.captchaToken,
-      value: this.captchaValue
-    }).then(function (response) {
-      $this.apiSubmit(false);
-    }).catch(function (error) {
-      $this.apiCaptcha();
-      utils.loading($this, false);
-      utils.error(error);
-    });
-  },
-
   apiSendSms: function () {
     var $this = this;
 
@@ -125,7 +108,9 @@ var methods = {
       mobile: this.mobile,
       code: this.code,
       isPersistent: this.isPersistent,
-      isForceLogoutAndLogin: isForceLogoutAndLogin
+      isForceLogoutAndLogin: isForceLogoutAndLogin,
+      token: this.captchaToken,
+      value: this.captchaValue
     }).then(function (response) {
       var res = response.data;
 
@@ -158,6 +143,8 @@ var methods = {
         }
       }
     }).catch(function (error) {
+      $this.apiCaptcha();
+      utils.loading($this, false);
       utils.error(error);
     }).then(function () {
       $this.apiCaptcha();
@@ -220,7 +207,7 @@ var methods = {
       this.apiSubmit(false);
     } else {
       if (!this.account || !this.password || !this.captchaValue) return;
-      this.apiCaptchaCheck();
+      this.apiSubmit(false);
     }
   }
 };

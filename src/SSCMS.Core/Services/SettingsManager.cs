@@ -70,6 +70,7 @@ namespace SSCMS.Core.Services
         public int CPUCores { get; }
 
         public bool IsProtectData { get; private set; }
+        public bool IsApiDocuments { get; private set; }
 
         public string SecurityKey { get; private set; }
 

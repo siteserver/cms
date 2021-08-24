@@ -15,7 +15,6 @@ namespace SSCMS.Web.Controllers.Admin
     {
         public const string Route = "login";
         private const string RouteCaptcha = "login/captcha";
-        private const string RouteCheckCaptcha = "login/captcha/actions/check";
         private const string RouteSendSms = "login/actions/sendSms";
 
         private readonly ISettingsManager _settingsManager;
@@ -43,12 +42,6 @@ namespace SSCMS.Web.Controllers.Admin
             _statRepository = statRepository;
         }
 
-        public class CheckRequest
-        {
-            public string Token { get; set; }
-            public string Value { get; set; }
-        }
-
         public class GetResult
         {
             public bool Success { get; set; }
@@ -67,6 +60,8 @@ namespace SSCMS.Web.Controllers.Admin
             public string Code { get; set; }
             public bool IsPersistent { get; set; }
             public bool IsForceLogoutAndLogin {get;set;}
+            public string Token { get; set; }
+            public string Value { get; set; }
         }
 
         public class SubmitResult
