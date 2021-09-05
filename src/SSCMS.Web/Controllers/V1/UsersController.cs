@@ -14,6 +14,7 @@ namespace SSCMS.Web.Controllers.V1
     {
         private const string Route = "users";
         private const string RouteActionsLogin = "users/actions/login";
+        private const string RouteActionsLogout = "users/actions/logout";
         private const string RouteUser = "users/{id:int}";
         private const string RouteUserAvatar = "users/{id:int}/avatar";
         private const string RouteUserLogs = "users/{id:int}/logs";

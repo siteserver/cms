@@ -301,13 +301,16 @@ namespace SSCMS.Web
                 //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
                 ;
 
-            app.UseOpenApi();
-            app.UseSwaggerUi3();
-            app.UseReDoc(settings =>
+            if (settingsManager.IsApiDocuments)
             {
-                settings.Path = "/api/docs";
-                settings.DocumentPath = "/swagger/v1/swagger.json";
-            });
+                app.UseOpenApi();
+                app.UseSwaggerUi3();
+                app.UseReDoc(settings =>
+                {
+                    settings.Path = "/api/docs";
+                    settings.DocumentPath = "/swagger/v1/swagger.json";
+                }); 
+            }
         }
     }
 }

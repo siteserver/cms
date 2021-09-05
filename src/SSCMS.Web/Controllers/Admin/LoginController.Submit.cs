@@ -42,16 +42,19 @@ namespace SSCMS.Web.Controllers.Admin
             }
             else
             {
-                var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
-
-                if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
+                if (!request.IsForceLogoutAndLogin)
                 {
-                    return this.Error("验证码已超时，请点击刷新验证码！");
-                }
+                  var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
 
-                if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
-                {
-                    return this.Error("验证码不正确，请重新输入！");
+                  if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
+                  {
+                      return this.Error("验证码已超时，请点击刷新验证码！");
+                  }
+
+                  if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
+                  {
+                      return this.Error("验证码不正确，请重新输入！");
+                  }
                 }
 
                 string userName;

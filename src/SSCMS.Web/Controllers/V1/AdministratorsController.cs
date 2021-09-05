@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.V1
     {
         private const string Route = "administrators";
         private const string RouteActionsLogin = "administrators/actions/login";
+        private const string RouteActionsLogout = "administrators/actions/logout";
         private const string RouteActionsResetPassword = "administrators/actions/resetPassword";
         private const string RouteAdministrator = "administrators/{id:int}";
 
