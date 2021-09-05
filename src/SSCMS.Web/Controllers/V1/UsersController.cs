@@ -27,8 +27,9 @@ namespace SSCMS.Web.Controllers.V1
         private readonly IUserRepository _userRepository;
         private readonly ILogRepository _logRepository;
         private readonly IStatRepository _statRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public UsersController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, ILogRepository logRepository, IStatRepository statRepository)
+        public UsersController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, ILogRepository logRepository, IStatRepository statRepository, IDbCacheRepository dbCacheRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -37,6 +38,7 @@ namespace SSCMS.Web.Controllers.V1
             _userRepository = userRepository;
             _logRepository = logRepository;
             _statRepository = statRepository;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         public class ListRequest

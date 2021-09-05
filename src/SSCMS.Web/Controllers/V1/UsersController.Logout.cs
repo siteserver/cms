@@ -4,13 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 
-namespace SSCMS.Web.Controllers.Admin
+namespace SSCMS.Web.Controllers.V1
 {
-    public partial class LogoutController
+    public partial class UsersController
     {
         [HttpPost, Route(RouteActionsLogout)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<BoolResult>> Logout()
         {
             var cacheKey = Constants.GetSessionIdCacheKey(_authManager.UserId);
