@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
     public partial class GroupContentLayerAddController : ControllerBase
     {
         private const string Route = "common/groupContentLayerAdd";
+        private const string RouteUpdate = "common/groupContentLayerAdd/actions/update";
 
         private readonly IAuthManager _authManager;
         private readonly IContentGroupRepository _contentGroupRepository;

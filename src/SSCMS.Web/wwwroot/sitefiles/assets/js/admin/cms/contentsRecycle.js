@@ -1,4 +1,5 @@
 ﻿var $url = "/cms/contents/contentsRecycle";
+var $urlDelete = $url + "/actions/delete";
 var $defaultWidth = 160;
 
 var data = utils.init({
@@ -8,13 +9,13 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   checkedLevels: [],
-  
+
   pageContents: null,
   total: null,
   pageSize: null,
   page: 1,
   columns: null,
-  
+
   multipleSelection: [],
 
   checkedColumns: [],
@@ -81,7 +82,7 @@ var methods = {
         });
       }
     }
-    
+
     var channelId = this.channelIds && this.channelIds.length > 0 ? this.channelIds[this.channelIds.length - 1] : null;
 
     utils.loading(this, true);
@@ -94,9 +95,9 @@ var methods = {
     }, this.searchForm);
     $api.post($url + '/actions/list', request).then(function(response) {
       var res = response.data;
-      
+
       $this.pageContents = res.pageContents;
-      
+
       $this.total = res.total;
       $this.pageSize = res.pageSize;
       $this.page = page;
@@ -130,7 +131,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
+    $api.post($urlDelete, {
       data: request
     }).then(function(response) {
       var res = response.data;
@@ -315,7 +316,7 @@ var methods = {
 
   btnLayerClick: function(options) {
     var query = {
-      siteId: this.siteId, 
+      siteId: this.siteId,
       page: this.page
     };
 

@@ -1,5 +1,6 @@
 ﻿var $url = '/settings/administratorsRoleAdd';
-var $urlSitePermission = '/settings/administratorsRoleAdd/actions/sitePermission';
+var $urlUpdate = $url + '/actions/update';
+var $urlSitePermission = $url + '/actions/sitePermission';
 
 var data = utils.init({
   roleId: utils.getQueryInt('roleId'),
@@ -61,7 +62,7 @@ var methods = {
 
   apiAdd: function () {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url, {
       roleId: 0,
@@ -82,9 +83,9 @@ var methods = {
 
   apiEdit: function () {
     var $this = this;
-    
+
     utils.loading(this, true);
-    $api.put($url, {
+    $api.post($urlUpdate, {
       roleId: this.roleId,
       roleName: this.form.roleName,
       description: this.form.description,

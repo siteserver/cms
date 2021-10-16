@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     public partial class TemplatesSpecialController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] SpecialIdRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

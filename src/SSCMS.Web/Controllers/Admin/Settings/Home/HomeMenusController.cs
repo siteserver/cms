@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
     public partial class HomeMenusController : ControllerBase
     {
         private const string Route = "settings/homeMenus";
+        private const string RouteDelete = "settings/homeMenus/actions/delete";
         private const string RouteReset = "settings/homeMenus/actions/reset";
 
         private readonly IAuthManager _authManager;

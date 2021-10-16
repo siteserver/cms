@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/templates/templatesEditorLayerRestore';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -42,12 +43,10 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        templateId: this.templateId,
-        logId: this.logId
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      templateId: this.templateId,
+      logId: this.logId
     }).then(function (response) {
       var res = response.data;
 

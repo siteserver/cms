@@ -6,7 +6,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsStyleRelatedFieldController
     {
-        [HttpDelete, Route(RouteItems)]
+        [HttpPost, Route(RouteItemsDelete)]
         public async Task<ActionResult<ItemsResult>> ItemsDelete([FromBody] ItemsDeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

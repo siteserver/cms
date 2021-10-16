@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesAssetsController : ControllerBase
     {
         private const string Route = "cms/templates/templatesAssets";
+        private const string RouteDelete = "cms/templates/templatesAssets/actions/delete";
         private const string RouteConfig = "cms/templates/templatesAssets/actions/config";
 
         private const string ExtInclude = "html";

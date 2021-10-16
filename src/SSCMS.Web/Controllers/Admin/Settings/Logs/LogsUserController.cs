@@ -14,6 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
     public partial class LogsUserController : ControllerBase
     {
         private const string Route = "settings/logsUser";
+        private const string RouteDelete = "settings/logsUser/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;

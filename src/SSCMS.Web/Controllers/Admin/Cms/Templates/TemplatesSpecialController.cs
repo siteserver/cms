@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     {
         private const string Route = "cms/templates/templatesSpecial";
         private const string RouteId = "cms/templates/templatesSpecial/{siteId:int}/{specialId:int}";
+        private const string RouteDelete = "cms/templates/templatesSpecial/actions/delete";
         private const string RouteDownload = "cms/templates/templatesSpecial/actions/download";
         private const string RouteUpload = "cms/templates/templatesSpecial/actions/upload";
 

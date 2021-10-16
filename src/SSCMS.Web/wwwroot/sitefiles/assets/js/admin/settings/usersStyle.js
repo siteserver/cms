@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/usersStyle';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   returnUrl: decodeURIComponent(utils.getQueryString('returnUrl')),
@@ -48,10 +49,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        attributeName: attributeName
-      }
+    $api.post($urlDelete, {
+      attributeName: attributeName
     }).then(function (response) {
       var res = response.data;
 

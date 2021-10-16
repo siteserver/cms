@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/homeMenus';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   userMenus: null,
@@ -36,7 +37,7 @@ var methods = {
       defaultOpeneds.push(menu.id);
     }
     this.defaultOpeneds = defaultOpeneds;
-    
+
     if (menu) {
       this.btnMenuClick(menu);
     }
@@ -83,10 +84,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        id: id
-      }
+    $api.post($urlDelete, {
+      id: id
     }).then(function (response) {
       var res = response.data;
 

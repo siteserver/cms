@@ -16,9 +16,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class AudioController : ControllerBase
     {
         private const string Route = "cms/material/audio";
-        private const string RouteActionsDeleteGroup = "cms/material/audio/actions/deleteGroup";
-        private const string RouteActionsPull = "cms/material/audio/actions/pull";
-        private const string RouteActionsDownload = "cms/material/audio/actions/download";
+        private const string RouteUpdate = "cms/material/audio/actions/update";
+        private const string RouteDelete = "cms/material/audio/actions/delete";
+        private const string RouteDeleteGroup = "cms/material/audio/actions/deleteGroup";
+        private const string RoutePull = "cms/material/audio/actions/pull";
+        private const string RouteDownload = "cms/material/audio/actions/download";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

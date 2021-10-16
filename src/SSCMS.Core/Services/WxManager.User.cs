@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Senparc.Weixin;
 using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.AdvancedAPIs.User;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
-using SSCMS.Wx;
 
 namespace SSCMS.Core.Services
 {

@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/users';
+var $urlDelete = $url + '/actions/delete';
 var $urlExport = $url + '/actions/export';
 var $urlUpload = $apiUrl + '/settings/users/actions/import';
 
@@ -75,7 +76,7 @@ var methods = {
 
   btnExportClick: function() {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($urlExport).then(function (response) {
       var res = response.data;
@@ -92,10 +93,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        id: item.id
-      }
+    $api.post($urlDelete, {
+      id: item.id
     }).then(function (response) {
       var res = response.data;
 

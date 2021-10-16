@@ -1,6 +1,10 @@
 ﻿var $url = '/cms/settings/settingsStyleRelatedField';
-var $urlImport = '/cms/settings/settingsStyleRelatedField/actions/import';
+var $urlUpdate = $url + '/actions/update';
+var $urlDelete = $url + '/actions/delete';
+var $urlImport = $url + '/actions/import';
 var $urlItems = $url + '/items';
+var $urlItemsUpdate = $urlItems + '/actions/update';
+var $urlItemsDelete = $urlItems + '/actions/delete';
 var $urlItemsOrder = $urlItems + '/actions/order';
 
 var data = utils.init({
@@ -75,11 +79,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        relatedFieldId: relatedFieldId
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      relatedFieldId: relatedFieldId
     }).then(function (response) {
       var res = response.data;
 
@@ -113,7 +115,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, this.editorForm).then(function (response) {
+    $api.post($urlUpdate, this.editorForm).then(function (response) {
       var res = response.data;
 
       $this.relatedFields = res;
@@ -216,7 +218,7 @@ var methods = {
 
   btnExportClick: function() {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url + '/actions/export', {
       siteId: this.siteId
@@ -260,12 +262,10 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($urlItems, {
-      data: {
-        siteId: this.siteId,
-        relatedFieldId: this.itemsRelatedField.id,
-        id: id
-      }
+    $api.post($urlItemsDelete, {
+      siteId: this.siteId,
+      relatedFieldId: this.itemsRelatedField.id,
+      id: id
     }).then(function (response) {
       var res = response.data;
 
@@ -325,7 +325,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($urlItems, {
+    $api.post($urlItemsUpdate, {
       siteId: this.siteId,
       relatedFieldId: this.itemsRelatedField.id,
       id: this.itemsEditForm.id,

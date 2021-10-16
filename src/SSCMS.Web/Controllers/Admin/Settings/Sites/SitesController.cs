@@ -17,6 +17,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     public partial class SitesController : ControllerBase
     {
         private const string Route = "settings/sites";
+        private const string RouteUpdate = "settings/sites/actions/update";
+        private const string RouteDelete = "settings/sites/actions/delete";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

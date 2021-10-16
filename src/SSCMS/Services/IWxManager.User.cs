@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Models;
-using SSCMS.Wx;
+using SSCMS.Dto;
 
 namespace SSCMS.Services
 {

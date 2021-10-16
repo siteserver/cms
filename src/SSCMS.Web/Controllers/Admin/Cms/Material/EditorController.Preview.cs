@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class EditorController
     {
-        [HttpPost, Route(RouteActionsPreview)]
+        [HttpPost, Route(RoutePreview)]
         public async Task<ActionResult<PreviewResult>> Preview([FromBody] PreviewRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

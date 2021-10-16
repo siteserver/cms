@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     public partial class SitesTemplatesController : ControllerBase
     {
         private const string Route = "settings/sitesTemplates";
+        private const string RouteDelete = "settings/sitesTemplates/actions/delete";
         private const string RouteZip = "settings/sitesTemplates/actions/zip";
         private const string RouteUnZip = "settings/sitesTemplates/actions/unZip";
         private const string RouteUpload = "settings/sitesTemplates/actions/upload";

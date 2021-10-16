@@ -6,7 +6,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     public partial class TemplatesAssetsEditorController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<ContentResult>> Edit([FromBody] ContentRequest request)
         {
             if (request.FileType == "html")

@@ -16,8 +16,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class MessageController : ControllerBase
     {
         private const string Route = "cms/material/message";
-        private const string RouteActionsDeleteGroup = "cms/material/message/actions/deleteGroup";
-        private const string RouteActionsPull = "cms/material/message/actions/pull";
+        private const string RouteUpdate = "cms/material/message/actions/update";
+        private const string RouteDelete = "cms/material/message/actions/delete";
+        private const string RouteDeleteGroup = "cms/material/message/actions/deleteGroup";
+        private const string RoutePull = "cms/material/message/actions/pull";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class EditorController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<BoolResult>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

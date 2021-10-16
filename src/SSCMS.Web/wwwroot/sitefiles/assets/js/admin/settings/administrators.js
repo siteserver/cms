@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/administrators';
+var $urlDelete = $url + '/actions/delete';
 var $urlExport = $url + '/actions/export';
 var $urlUpload = $apiUrl + '/settings/administrators/actions/import';
 
@@ -49,10 +50,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        id: item.id
-      }
+    $api.post($urlDelete, {
+      id: item.id
     }).then(function (response) {
       var res = response.data;
 

@@ -1,4 +1,6 @@
 ﻿var $url = '/cms/channels/channels';
+var $urlUpdate = $url + '/actions/update';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -187,11 +189,11 @@ var methods = {
     });
   },
 
-  apiEdit: function () {
+  apiUpdate: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, this.form).then(function (response) {
+    $api.post($urlUpdate, this.form).then(function (response) {
       var res = response.data;
 
       $this.editPanel = false;
@@ -206,9 +208,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: this.deleteForm
-    }).then(function (response) {
+    $api.post($urlDelete, this.deleteForm).then(function (response) {
       var res = response.data;
 
       $this.deletePanel = false;
@@ -429,7 +429,7 @@ var methods = {
     var $this = this;
     this.$refs.editForm.validate(function(valid) {
       if (valid) {
-        $this.apiEdit();
+        $this.apiUpdate();
       }
     });
   },

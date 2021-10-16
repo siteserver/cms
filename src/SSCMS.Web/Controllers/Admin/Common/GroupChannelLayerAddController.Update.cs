@@ -7,8 +7,8 @@ namespace SSCMS.Web.Controllers.Admin.Common
 {
     public partial class GroupChannelLayerAddController
     {
-        [HttpPut, Route(Route)]
-        public async Task<ActionResult<ListResult>> Edit([FromBody] EditRequest request)
+        [HttpPost, Route(RouteUpdate)]
+        public async Task<ActionResult<ListResult>> Edit([FromBody] UpdateRequest request)
         {
             var groupInfo = await _channelGroupRepository.GetAsync(request.SiteId, request.GroupId);
 

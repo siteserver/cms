@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/templates/templatesAssets';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -49,13 +50,11 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        fileType: this.fileType,
-        directoryPath: file.directoryPath,
-        fileName: file.fileName
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      fileType: this.fileType,
+      directoryPath: file.directoryPath,
+      fileName: file.fileName
     }).then(function (response) {
       var res = response.data;
 
@@ -193,7 +192,7 @@ var methods = {
       if ($this.keyword) {
         isKeyword = (o.directoryPath || '').indexOf($this.keyword) !== -1 || (o.fileName || '').indexOf($this.keyword) !== -1;
       }
-      
+
       return isFileType && isDirectoryPath && isKeyword;
     });
   },

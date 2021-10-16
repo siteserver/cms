@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/usersGroup';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   groups: null,
@@ -32,8 +33,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: { id: id}
+    $api.post($urlDelete, {
+      id: id
     }).then(function (response) {
       var res = response.data;
 
@@ -52,7 +53,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
-      
+
       $this.groups = res.groups;
       utils.success($this.form.id === -1 ? '用户组添加成功！' : '用户组修改成功！');
       $this.panel = false;

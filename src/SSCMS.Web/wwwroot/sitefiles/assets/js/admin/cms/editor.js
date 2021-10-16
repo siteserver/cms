@@ -1,4 +1,6 @@
 ﻿var $url = '/cms/editor/editor';
+var $urlInsert = $url + '/actions/insert';
+var $urlUpdate = $url + '/actions/update';
 var $urlPreview = $url + '/actions/preview';
 var $urlCensor = $url + '/actions/censor';
 var $urlTags = $url + '/actions/tags';
@@ -208,7 +210,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, {
+    $api.post($urlInsert, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
@@ -301,7 +303,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, {
+    $api.post($urlUpdate, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,

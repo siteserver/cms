@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     public partial class AdministratorsRoleController : ControllerBase
     {
         private const string Route = "settings/administratorsRole";
+        private const string RouteDelete = "settings/administratorsRole/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IRoleRepository _roleRepository;

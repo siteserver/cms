@@ -15,9 +15,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsStyleRelatedFieldController : ControllerBase
     {
         private const string Route = "cms/settings/settingsStyleRelatedField";
+        private const string RouteUpdate = "cms/settings/settingsStyleRelatedField/actions/update";
+        private const string RouteDelete = "cms/settings/settingsStyleRelatedField/actions/delete";
         private const string RouteImport = "cms/settings/settingsStyleRelatedField/actions/import";
         private const string RouteExport = "cms/settings/settingsStyleRelatedField/actions/export";
         private const string RouteItems = "cms/settings/settingsStyleRelatedField/items";
+        private const string RouteItemsUpdate = "cms/settings/settingsStyleRelatedField/items/actions/update";
+        private const string RouteItemsDelete = "cms/settings/settingsStyleRelatedField/items/actions/delete";
         private const string RouteItemsOrder = "cms/settings/settingsStyleRelatedField/items/actions/order";
 
         private readonly IAuthManager _authManager;

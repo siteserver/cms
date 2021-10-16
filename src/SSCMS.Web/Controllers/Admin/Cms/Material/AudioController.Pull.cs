@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class AudioController
     {
-        [HttpPost, Route(RouteActionsPull)]
+        [HttpPost, Route(RoutePull)]
         public async Task<ActionResult<PullResult>> Pull([FromBody] PullRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

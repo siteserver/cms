@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersStyleController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<DeleteResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsersStyle))

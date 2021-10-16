@@ -73,7 +73,7 @@ var methods = {
   apiEdit: function() {
     var $this = this;
 
-    $api.put($url, this.editForm).then(function (response) {
+    $api.post($url, this.editForm).then(function (response) {
       var res = response.data;
 
       $this.sites = res.sites;

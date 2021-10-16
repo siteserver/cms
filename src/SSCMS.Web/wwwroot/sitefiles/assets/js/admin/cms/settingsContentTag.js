@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/settings/settingsContentTag';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -41,13 +42,11 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        page: this.page,
-        perPage: this.perPage,
-        tagName: tagName
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      page: this.page,
+      perPage: this.perPage,
+      tagName: tagName
     }).then(function (response) {
       var res = response.data;
 
@@ -64,7 +63,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
-      
+
       $this.apiList('内容标签添加成功！');
       $this.panel = false;
     }).catch(function (error) {

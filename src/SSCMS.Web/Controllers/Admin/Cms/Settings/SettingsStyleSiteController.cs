@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsStyleSiteController : ControllerBase
     {
         private const string Route = "cms/settings/settingsStyleSite";
+        private const string RouteDelete = "cms/settings/settingsStyleSite/actions/delete";
         private const string RouteImport = "cms/settings/settingsStyleSite/actions/import";
         private const string RouteExport = "cms/settings/settingsStyleSite/actions/export";
 

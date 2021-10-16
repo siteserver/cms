@@ -6,7 +6,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsContentGroupController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<GetResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

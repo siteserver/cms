@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/material/layerGroupAdd';
+var $urlUpdate = $url + '/actions/update';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -41,7 +42,7 @@ var methods = {
         groupName: this.form.groupName,
       }).then(function (response) {
         var res = response.data;
-  
+
         utils.success('素材分组添加成功！');
         parent.$vue.runUpdateGroups(res.groups);
         utils.closeLayer();
@@ -51,13 +52,13 @@ var methods = {
         utils.loading($this, false);
       });
     } else {
-      $api.put($url, {
+      $api.post($urlUpdate, {
         siteId: this.siteId,
         groupId: this.groupId,
         groupName: this.form.groupName
       }).then(function (response) {
         var res = response.data;
-  
+
         utils.success('素材分组修改成功！');
         parent.$vue.runUpdateGroups(res.groups);
         utils.closeLayer();

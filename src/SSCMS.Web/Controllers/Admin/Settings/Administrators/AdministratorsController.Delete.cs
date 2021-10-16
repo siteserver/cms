@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] IdRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))

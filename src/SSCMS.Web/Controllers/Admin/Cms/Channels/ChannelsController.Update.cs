@@ -9,8 +9,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     public partial class ChannelsController
     {
-        [HttpPut, Route(Route)]
-        public async Task<ActionResult<List<int>>> Edit([FromBody] PutRequest request)
+        [HttpPost, Route(RouteUpdate)]
+        public async Task<ActionResult<List<int>>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Channels))

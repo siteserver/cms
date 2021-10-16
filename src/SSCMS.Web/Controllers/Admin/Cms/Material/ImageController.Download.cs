@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class ImageController
     {
-        [HttpGet, Route(RouteActionsDownload)]
+        [HttpGet, Route(RouteDownload)]
         public async Task<ActionResult> ActionsDownload([FromQuery] DownloadRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

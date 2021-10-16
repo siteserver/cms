@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class LayerGroupAddController : ControllerBase
     {
         private const string Route = "cms/material/layerGroupAdd";
+        private const string RouteUpdate = "cms/material/layerGroupAdd/actions/update";
 
         private readonly IAuthManager _authManager;
         private readonly IMaterialGroupRepository _materialGroupRepository;

@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesAssetsEditorController : ControllerBase
     {
         private const string Route = "cms/templates/templatesAssetsEditor";
+        private const string RouteUpdate = "cms/templates/templatesAssetsEditor/actions/update";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

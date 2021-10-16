@@ -1,5 +1,6 @@
 ﻿var $url = "/cms/material/editor";
-var $urlPreview = "/cms/material/editor/actions/preview";
+var $urlUpdate = $url + "/actions/update";
+var $urlPreview = $url + "/actions/preview";
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -78,7 +79,7 @@ var methods = {
       }
     }).then(function(response) {
       var res = response.data;
-      
+
       $this.items = res.items;
       $this.commentTypes = res.commentTypes;
       $this.siteType = res.siteType;
@@ -153,7 +154,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, {
+    $api.post($urlUpdate, {
       messageId: this.messageId,
       groupId: this.groupId,
       items: this.items
@@ -313,7 +314,7 @@ var methods = {
             return utils.error('标题及内容为必填项，请填写后提交保存！');
           }
         }
-        
+
         if ($this.messageId === 0) {
           $this.apiCreate();
         } else {

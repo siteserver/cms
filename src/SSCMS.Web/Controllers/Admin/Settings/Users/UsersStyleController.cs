@@ -14,6 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     public partial class UsersStyleController : ControllerBase
     {
         private const string Route = "settings/usersStyle";
+        private const string RouteDelete = "settings/usersStyle/actions/delete";
         private const string RouteImport = "settings/usersStyle/actions/import";
         private const string RouteExport = "settings/usersStyle/actions/export";
         private const string RouteReset = "settings/usersStyle/actions/reset";

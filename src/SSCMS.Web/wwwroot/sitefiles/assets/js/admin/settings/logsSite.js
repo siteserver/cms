@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/logsSite';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   items: null,
@@ -38,7 +39,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url).then(function (response) {
+    $api.post($urlDelete).then(function (response) {
       var res = response.data;
 
       $this.items = [];

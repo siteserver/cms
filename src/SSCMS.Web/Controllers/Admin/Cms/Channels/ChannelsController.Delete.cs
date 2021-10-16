@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
     public partial class ChannelsController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<List<int>>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

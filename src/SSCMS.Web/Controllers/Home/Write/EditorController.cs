@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Home.Write
     public partial class EditorController : ControllerBase
     {
         private const string Route = "write/editor";
+        private const string RouteUpdate = "write/editor/actions/update";
         private const string RoutePreview = "write/editor/actions/preview";
 
         private readonly IAuthManager _authManager;

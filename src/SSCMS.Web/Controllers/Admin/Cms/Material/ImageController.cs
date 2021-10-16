@@ -16,9 +16,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class ImageController : ControllerBase
     {
         private const string Route = "cms/material/image";
-        private const string RouteActionsDeleteGroup = "cms/material/image/actions/deleteGroup";
-        private const string RouteActionsPull = "cms/material/image/actions/pull";
-        private const string RouteActionsDownload = "cms/material/image/actions/download";
+        private const string RouteUpdate = "cms/material/image/actions/update";
+        private const string RouteDelete = "cms/material/image/actions/delete";
+        private const string RouteDeleteGroup = "cms/material/image/actions/deleteGroup";
+        private const string RoutePull = "cms/material/image/actions/pull";
+        private const string RouteDownload = "cms/material/image/actions/download";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

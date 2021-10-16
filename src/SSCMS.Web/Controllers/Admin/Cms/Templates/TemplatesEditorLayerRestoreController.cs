@@ -14,6 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesEditorLayerRestoreController : ControllerBase
     {
         private const string Route = "cms/templates/templatesEditorLayerRestore";
+        private const string RouteDelete = "cms/templates/templatesEditorLayerRestore/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

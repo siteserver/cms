@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/administratorsAccessTokens';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   tokens: null,
@@ -33,10 +34,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        id: item.id
-      }
+    $api.post($urlDelete, {
+      id: item.id
     }).then(function (response) {
       var res = response.data;
 

@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 {
     public partial class ReplyMessageController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

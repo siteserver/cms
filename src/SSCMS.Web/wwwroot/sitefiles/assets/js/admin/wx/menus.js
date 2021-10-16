@@ -1,6 +1,7 @@
 ﻿var $url = '/wx/menus';
-var $urlActionsPull = '/wx/menus/actions/pull';
-var $urlActionsPush = '/wx/menus/actions/push';
+var $urlDelete = $url + '/actions/delete';
+var $urlPull = $url + '/actions/pull';
+var $urlPush = $url + '/actions/push';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -37,7 +38,7 @@ var methods = {
       defaultOpeneds.push(menu.id);
     }
     this.defaultOpeneds = defaultOpeneds;
-    
+
     if (menu) {
       this.btnMenuClick(menu);
     }
@@ -79,11 +80,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        id: id
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      id: id
     }).then(function (response) {
       var res = response.data;
 
@@ -102,12 +101,12 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, {
       siteId: this.siteId,
-      id: wxMenu.id, 
-      parentId: wxMenu.parentId, 
-      taxis: wxMenu.taxis, 
-      text: wxMenu.text, 
-      menuType: wxMenu.menuType, 
-      key: wxMenu.key, 
+      id: wxMenu.id,
+      parentId: wxMenu.parentId,
+      taxis: wxMenu.taxis,
+      text: wxMenu.text,
+      menuType: wxMenu.menuType,
+      key: wxMenu.key,
       url: wxMenu.url,
       appId: wxMenu.appId,
       pagePath: wxMenu.pagePath,
@@ -129,7 +128,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlActionsPull, {
+    $api.post($urlPull, {
       siteId: this.siteId
     }).then(function (response) {
       var res = response.data;
@@ -148,7 +147,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlActionsPush, {
+    $api.post($urlPush, {
       siteId: this.siteId
     }).then(function (response) {
       var res = response.data;

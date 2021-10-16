@@ -16,9 +16,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class VideoController : ControllerBase
     {
         private const string Route = "cms/material/video";
-        private const string RouteActionsDeleteGroup = "cms/material/video/actions/deleteGroup";
-        private const string RouteActionsPull = "cms/material/video/actions/pull";
-        private const string RouteActionsDownload = "cms/material/video/actions/download";
+        private const string RouteUpdate = "cms/material/video/actions/update";
+        private const string RouteDelete = "cms/material/video/actions/delete";
+        private const string RouteDeleteGroup = "cms/material/video/actions/deleteGroup";
+        private const string RoutePull = "cms/material/video/actions/pull";
+        private const string RouteDownload = "cms/material/video/actions/download";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

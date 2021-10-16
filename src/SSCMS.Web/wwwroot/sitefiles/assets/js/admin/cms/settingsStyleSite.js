@@ -1,5 +1,6 @@
 ﻿var $url = '/cms/settings/settingsStyleSite';
-var $urlImport = '/cms/settings/settingsStyleSite/actions/import';
+var $urlDelete = $url + '/actions/delete';
+var $urlImport = $url + '/actions/import';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -56,11 +57,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        attributeName: attributeName
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      attributeName: attributeName
     }).then(function (response) {
       var res = response.data;
 
@@ -176,7 +175,7 @@ var methods = {
 
   btnExportClick: function() {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url + '/actions/export', {
       siteId: this.siteId

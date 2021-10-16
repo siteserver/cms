@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesController : ControllerBase
     {
         private const string Route = "cms/templates/templates";
+        private const string RouteDelete = "cms/templates/templates/actions/delete";
         private const string RouteCreate = "cms/templates/templates/actions/create";
         private const string RouteCopy = "cms/templates/templates/actions/copy";
         private const string RouteDefault = "cms/templates/templates/actions/default";

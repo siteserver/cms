@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     public partial class SitesUrlController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(Route)]
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSitesUrl))

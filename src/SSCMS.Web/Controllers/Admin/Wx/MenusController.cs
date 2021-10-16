@@ -17,8 +17,9 @@ namespace SSCMS.Web.Controllers.Admin.Wx
     public partial class MenusController : ControllerBase
     {
         private const string Route = "wx/menus";
-        private const string RouteActionsPull = "wx/menus/actions/pull";
-        private const string RouteActionsPush = "wx/menus/actions/push";
+        private const string RouteDelete = "wx/menus/actions/delete";
+        private const string RoutePull = "wx/menus/actions/pull";
+        private const string RoutePush = "wx/menus/actions/push";
 
         private readonly IAuthManager _authManager;
         private readonly IWxMenuRepository _wxMenuRepository;

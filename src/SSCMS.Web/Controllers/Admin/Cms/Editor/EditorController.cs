@@ -16,6 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     public partial class EditorController : ControllerBase
     {
         private const string Route = "cms/editor/editor";
+        private const string RouteInsert = "cms/editor/editor/actions/insert";
+        private const string RouteUpdate = "cms/editor/editor/actions/update";
         private const string RoutePreview = "cms/editor/editor/actions/preview";
         private const string RouteCensor = "cms/editor/editor/actions/censor";
         private const string RouteTags = "cms/editor/editor/actions/tags";

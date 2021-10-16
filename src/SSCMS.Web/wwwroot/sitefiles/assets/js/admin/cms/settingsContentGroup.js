@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/settings/settingsContentGroup';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -10,7 +11,7 @@ var methods = {
     this.groups = res.groups;
     utils.success(message);
   },
-  
+
   apiList: function (message) {
     var $this = this;
 
@@ -37,11 +38,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        groupName: groupName
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      groupName: groupName
     }).then(function (response) {
       var res = response.data;
 
@@ -100,7 +99,7 @@ var methods = {
       isUp: isUp
     }).then(function (response) {
       var res = response.data;
-      
+
       $this.groups = res.groups;
       utils.success('内容组排序成功！');
     }).catch(function (error) {

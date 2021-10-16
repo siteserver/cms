@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
     public partial class AdministratorsRoleAddController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<BoolResult>> UpdateRole([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministratorsRole))

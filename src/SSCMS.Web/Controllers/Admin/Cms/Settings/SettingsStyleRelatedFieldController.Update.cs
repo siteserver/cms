@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsStyleRelatedFieldController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<IEnumerable<RelatedField>>> Edit([FromBody] RelatedField request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

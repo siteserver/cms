@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsChannelGroupController : ControllerBase
     {
         private const string Route = "cms/settings/settingsChannelGroup";
+        private const string RouteDelete = "cms/settings/settingsChannelGroup/actions/delete";
         private const string RouteOrder = "cms/settings/settingsChannelGroup/actions/order";
 
         private readonly IAuthManager _authManager;

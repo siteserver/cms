@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Home.Write
 {
     public partial class EditorController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(RouteUpdate)]
         public async Task<ActionResult<BoolResult>> Update([FromBody] SaveRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

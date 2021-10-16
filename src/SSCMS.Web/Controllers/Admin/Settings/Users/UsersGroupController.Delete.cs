@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersGroupController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<GetResult>> Delete([FromBody] IdRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsersGroup))

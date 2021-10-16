@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsContentTagController : ControllerBase
     {
         private const string Route = "cms/settings/settingsContentTag";
+        private const string RouteDelete = "cms/settings/settingsContentTag/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;

@@ -1,4 +1,5 @@
 var $url = '/wx/reply';
+var $urlDelete = $url + '/wx/reply/actions/delete';
 
 var data = utils.init({
   success: false,
@@ -40,9 +41,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: Object.assign({ruleId: ruleId}, this.form)
-    }).then(function (response) {
+    $api.post($urlDelete, Object.assign({ruleId: ruleId}, this.form)).then(function (response) {
       var res = response.data;
 
       $this.rules = res.rules;

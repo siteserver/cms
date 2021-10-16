@@ -94,11 +94,17 @@ namespace SSCMS.Core.Services
             var list = section.Get<Dictionary<string, Permission>>();
             foreach (var (key, value) in list)
             {
+                var type = value.Type == null || value.Type.Count == 0
+                    ? new List<string> {
+                      Types.SiteTypes.Web,
+                      Types.SiteTypes.Wx,
+                    }
+                    : value.Type;
                 permissions.Add(new Permission
                 {
                     Id = key,
                     Text = value.Text,
-                    Type = value.Type,
+                    Type = type,
                     Order = value.Order
                 });
             }
@@ -123,13 +129,19 @@ namespace SSCMS.Core.Services
                     foreach (var child in children)
                     {
                         var menu = child.Get<Menu>();
+                        var type = menu.Type == null || menu.Type.Count == 0
+                            ? new List<string> {
+                              Types.SiteTypes.Web,
+                              Types.SiteTypes.Wx,
+                            }
+                            : menu.Type;
                         var childSection = child.GetSection("menus");
 
                         menus.Add(new Menu
                         {
                             Id = child.Key,
                             Text = menu.Text,
-                            Type = menu.Type,
+                            Type = type,
                             IconClass = menu.IconClass,
                             Link = menu.Link,
                             Target = menu.Target,

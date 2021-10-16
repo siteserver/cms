@@ -16,7 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Wx
     public partial class ReplyMessageController : ControllerBase
     {
         private const string Route = "wx/replyMessage";
-        private const string RouteActionsUpload = "wx/replyMessage/actions/upload";
+        private const string RouteDelete = "wx/replyMessage/actions/delete";
+        private const string RouteUpload = "wx/replyMessage/actions/upload";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

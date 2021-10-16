@@ -1,5 +1,6 @@
 ﻿var $url = '/cms/templates/templatesSpecial';
 var $urlUpload = $apiUrl + $url + '/actions/upload';
+var $urlDelete = $url + '/actions/delete';
 var $urlDownload = $url + '/actions/download';
 
 var data = utils.init({
@@ -78,11 +79,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        specialId: specialId
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      specialId: specialId
     }).then(function (response) {
       var res = response.data;
 
@@ -180,12 +179,12 @@ var methods = {
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
-  
-    if (month.length < 2) 
+
+    if (month.length < 2)
         month = '0' + month;
-    if (day.length < 2) 
+    if (day.length < 2)
         day = '0' + day;
-  
+
     return [year, month, day].join('-');
   },
 

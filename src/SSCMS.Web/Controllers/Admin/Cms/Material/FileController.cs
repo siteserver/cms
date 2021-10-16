@@ -16,8 +16,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class FileController : ControllerBase
     {
         private const string Route = "cms/material/file";
-        private const string RouteActionsDeleteGroup = "cms/material/file/actions/deleteGroup";
-        private const string RouteActionsDownload = "cms/material/file/actions/download";
+        private const string RouteUpdate = "cms/material/file/actions/update";
+        private const string RouteDelete = "cms/material/file/actions/delete";
+        private const string RouteDeleteGroup = "cms/material/file/actions/deleteGroup";
+        private const string RouteDownload = "cms/material/file/actions/download";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;

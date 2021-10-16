@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsCreateRuleController
     {
-        [HttpPut, Route(Route)]
+        [HttpPost, Route(Route)]
         public async Task<ActionResult<GetResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

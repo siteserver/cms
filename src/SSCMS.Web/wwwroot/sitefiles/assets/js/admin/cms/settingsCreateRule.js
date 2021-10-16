@@ -20,7 +20,7 @@ var methods = {
       this.editForm.contentFilePathRule = rule;
     }
   },
-  
+
   apiList: function(message) {
     var $this = this;
 
@@ -73,7 +73,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, this.editForm).then(function (response) {
+    $api.post($url, this.editForm).then(function (response) {
       var res = response.data;
 
       $this.editPanel = false;

@@ -1,5 +1,6 @@
 ﻿var $url = '/cms/settings/settingsStyleContent';
-var $urlImport = '/cms/settings/settingsStyleContent/actions/import';
+var $urlDelete = $url + '/actions/delete';
+var $urlImport = $url + '/actions/import';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -62,12 +63,10 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        channelId: this.channelIds[this.channelIds.length - 1],
-        attributeName: attributeName
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      channelId: this.channelIds[this.channelIds.length - 1],
+      attributeName: attributeName
     }).then(function (response) {
       var res = response.data;
 
@@ -183,7 +182,7 @@ var methods = {
 
   btnExportClick: function() {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url + '/actions/export', {
       siteId: this.siteId,

@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class MessageController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

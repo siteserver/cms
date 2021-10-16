@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/sitesTemplates';
+var $urlDelete = $url + '/actions/delete';
 var $urlUpload = $apiUrl + '/settings/sitesTemplates/actions/upload';
 
 var data = utils.init({
@@ -86,10 +87,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        directoryName: row.directoryName
-      }
+    $api.post($urlDelete, {
+      directoryName: row.directoryName
     }).then(function (response) {
       var res = response.data;
 
@@ -145,10 +144,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        fileName: row
-      }
+    $api.post($urlDelete, {
+      fileName: row
     }).then(function (response) {
       var res = response.data;
 

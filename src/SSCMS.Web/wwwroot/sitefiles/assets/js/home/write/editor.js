@@ -1,4 +1,6 @@
 ﻿var $url = '/write/editor';
+var $urlUpdate = $url + '/actions/update';
+var $urlPreview = $url + '/actions/preview';
 
 var data = utils.init({
   pageType: null,
@@ -203,7 +205,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, {
+    $api.post($urlUpdate, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
@@ -286,7 +288,7 @@ var methods = {
 
     var $this = this;
     utils.loading(this, true);
-    $api.post($url + '/actions/preview', {
+    $api.post($urlPreview, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,

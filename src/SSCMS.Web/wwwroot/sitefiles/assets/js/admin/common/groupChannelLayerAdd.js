@@ -1,4 +1,5 @@
 ﻿var $url = '/common/groupChannelLayerAdd';
+var $urlUpdate = $url + '/actions/update';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -42,7 +43,7 @@ var methods = {
         description: this.form.description
       }).then(function (response) {
         var res = response.data;
-  
+
         parent.$vue.updateGroups(res, $this.getSuccessMessage());
         utils.closeLayer();
       }).catch(function (error) {
@@ -51,14 +52,14 @@ var methods = {
         utils.loading($this, false);
       });
     } else {
-      $api.put($url, {
+      $api.post($urlUpdate, {
         siteId: this.siteId,
         groupId: this.groupId,
         groupName: this.form.groupName,
         description: this.form.description
       }).then(function (response) {
         var res = response.data;
-  
+
         parent.$vue.updateGroups(res, $this.getSuccessMessage());
         utils.closeLayer();
       }).catch(function (error) {

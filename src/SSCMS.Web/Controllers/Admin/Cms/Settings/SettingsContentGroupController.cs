@@ -16,6 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsContentGroupController : ControllerBase
     {
         private const string Route = "cms/settings/settingsContentGroup";
+        private const string RouteUpdate = "cms/settings/settingsContentGroup/actions/update";
+        private const string RouteDelete = "cms/settings/settingsContentGroup/actions/delete";
         private const string RouteOrder = "cms/settings/settingsContentGroup/actions/order";
 
         private readonly IAuthManager _authManager;

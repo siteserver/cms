@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
-using SSCMS.Wx;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {

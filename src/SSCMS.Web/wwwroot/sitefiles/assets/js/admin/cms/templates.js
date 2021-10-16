@@ -1,4 +1,6 @@
 ﻿var $url = '/cms/templates/templates';
+var $urlDelete = $url + '/actions/delete';
+var $urlDefault = $url + '/actions/default';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -35,7 +37,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url + '/actions/default', {
+    $api.post($urlDefault, {
       siteId: this.siteId,
       templateId: template.id
     }).then(function (response) {
@@ -56,11 +58,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        templateId: template.id
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      templateId: template.id
     }).then(function (response) {
       var res = response.data;
 
@@ -203,7 +203,7 @@ var methods = {
       if ($this.keyword) {
         isKeyword = (o.templateName || '').indexOf($this.keyword) !== -1 || (o.relatedFileName || '').indexOf($this.keyword) !== -1 || (o.createdFileFullName || '').indexOf($this.keyword) !== -1;
       }
-      
+
       return isTemplateType && isChannels && isKeyword;
     });
   }

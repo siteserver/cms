@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     public partial class UsersGroupController : ControllerBase
     {
         private const string Route = "settings/usersGroup";
+        private const string RouteDelete = "settings/usersGroup/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly ICacheManager _cacheManager;

@@ -1,4 +1,6 @@
 ﻿var $url = '/settings/sites';
+var $urlUpdate = $url + '/actions/update';
+var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
   siteTypes: null,
@@ -21,7 +23,7 @@ var data = utils.init({
       { required: true, message: '请输入正确的站点排序', trigger: 'blur' }
     ]
   },
-  
+
   deletePanel: false,
   deleteForm: null,
   deleteLoading: false,
@@ -55,9 +57,7 @@ var methods = {
   apiDelete: function() {
     var $this = this;
 
-    $api.delete($url, {
-      data: this.deleteForm
-    }).then(function (response) {
+    $api.post($urlDelete, this.deleteForm).then(function (response) {
       var res = response.data;
 
       $this.sites = res.sites;
@@ -75,7 +75,7 @@ var methods = {
   apiEdit: function() {
     var $this = this;
 
-    $api.put($url, this.editForm).then(function (response) {
+    $api.post($urlUpdate, this.editForm).then(function (response) {
       var res = response.data;
 
       $this.sites = res.sites;

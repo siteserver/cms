@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
     public partial class LogsErrorController : ControllerBase
     {
         private const string Route = "settings/logsError";
+        private const string RouteDelete = "settings/logsError/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;

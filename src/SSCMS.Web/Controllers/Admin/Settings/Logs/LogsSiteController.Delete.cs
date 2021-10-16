@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
     public partial class LogsSiteController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete()
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsLogsSite))

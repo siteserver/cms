@@ -6,7 +6,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsStyleRelatedFieldController
     {
-        [HttpPut, Route(RouteItems)]
+        [HttpPost, Route(RouteItemsUpdate)]
         public async Task<ActionResult<ItemsResult>> ItemsEdit([FromBody] ItemsEditRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

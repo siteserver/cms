@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
     public partial class SitesTemplatesController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSitesTemplates))

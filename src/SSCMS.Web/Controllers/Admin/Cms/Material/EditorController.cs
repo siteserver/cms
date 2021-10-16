@@ -16,7 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class EditorController : ControllerBase
     {
         private const string Route = "cms/material/editor";
-        private const string RouteActionsPreview = "cms/material/editor/actions/preview";
+        private const string RouteUpdate = "cms/material/editor/actions/update";
+        private const string RoutePreview = "cms/material/editor/actions/preview";
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;

@@ -1,6 +1,8 @@
 ﻿var $url = '/cms/material/file';
-var $urlActionsDeleteGroup = '/cms/material/file/actions/deleteGroup';
-var $urlActionsDownload = '/cms/material/file/actions/download';
+var $urlUpdate = $url + '/actions/update';
+var $urlDelete = $url + '/actions/delete';
+var $urlDeleteGroup = $url + '/actions/deleteGroup';
+var $urlDownload = $url + '/actions/download';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -12,7 +14,7 @@ var data = utils.init({
   renameTitle: '',
   deleteId: 0,
   selectedGroupId: 0,
-  
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -54,11 +56,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($urlActionsDeleteGroup, {
-      data: {
-        siteId: this.siteId,
-        id: this.form.groupId
-      }
+    $api.post($urlDeleteGroup, {
+      siteId: this.siteId,
+      id: this.form.groupId
     }).then(function (response) {
       var res = response.data;
 
@@ -73,11 +73,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        id: material.id
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      id: material.id
     }).then(function (response) {
       var res = response.data;
 
@@ -119,7 +117,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.put($url, {
+    $api.post($urlUpdate, {
       id: material.id,
       siteId: this.siteId,
       groupId: this.selectedGroupId,
@@ -148,12 +146,12 @@ var methods = {
       utils.error('名称不能为空');
       return false;
     }
-    
+
     this.renameId = 0;
     if (material.title === this.renameTitle) return false;
 
     utils.loading(this, true);
-    $api.put($url, {
+    $api.post($urlUpdate, {
       id: material.id,
       siteId: this.siteId,
       groupId: material.groupId,
@@ -223,7 +221,7 @@ var methods = {
   },
 
   btnDownloadClick: function(material) {
-    window.open($apiUrl + $urlActionsDownload + '?siteId=' + this.siteId + '&id=' + material.id + '&access_token=' + $token);
+    window.open($apiUrl + $urlDownload + '?siteId=' + this.siteId + '&id=' + material.id + '&access_token=' + $token);
   },
 
   btnGroupDeleteClick: function () {

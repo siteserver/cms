@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 {
     public partial class MenusController
     {
-        [HttpPost, Route(RouteActionsPull)]
+        [HttpPost, Route(RoutePull)]
         public async Task<ActionResult<WxMenusResult>> Pull([FromBody] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.WxMenus))

@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     public partial class AdministratorsRoleAddController : ControllerBase
     {
         private const string Route = "settings/administratorsRoleAdd";
+        private const string RouteUpdate = "settings/administratorsRoleAdd/actions/update";
         private const string RouteSitePermission = "settings/administratorsRoleAdd/actions/sitePermission";
 
         private readonly ICacheManager _cacheManager;

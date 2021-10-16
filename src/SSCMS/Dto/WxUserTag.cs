@@ -1,4 +1,4 @@
-﻿namespace SSCMS.Wx
+﻿namespace SSCMS.Dto
 {
     public class WxUserTag
     {

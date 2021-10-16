@@ -21,6 +21,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     {
         private const string Route = "cms/channels/channels";
         private const string RouteGet = "cms/channels/channels/{siteId:int}/{channelId:int}";
+        private const string RouteUpdate = "cms/channels/channels/actions/update";
+        private const string RouteDelete = "cms/channels/channels/actions/delete";
         private const string RouteAppend = "cms/channels/channels/actions/append";
         private const string RouteUpload = "cms/channels/channels/actions/upload";
         private const string RouteImport = "cms/channels/channels/actions/import";
@@ -119,7 +121,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public bool DeleteFiles { get; set; }
         }
 
-        public class PutRequest : Entity
+        public class UpdateRequest : Entity
         {
             public int SiteId { get; set; }
             public string ChannelName { get; set; }

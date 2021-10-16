@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     public partial class UsersController : ControllerBase
     {
         private const string Route = "settings/users";
+        private const string RouteDelete = "settings/users/actions/delete";
         private const string RouteImport = "settings/users/actions/import";
         private const string RouteExport = "settings/users/actions/export";
         private const string RouteCheck = "settings/users/actions/check";

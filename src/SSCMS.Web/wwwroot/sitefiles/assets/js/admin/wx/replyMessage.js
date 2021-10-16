@@ -1,5 +1,6 @@
 var $url = '/wx/replyMessage';
-var $urlUpload = "/wx/replyMessage/actions/upload";
+var $urlDelete = $url + '/actions/delete';
+var $urlUpload = $url + '/actions/upload';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -73,7 +74,7 @@ var methods = {
         $this.audio = res.message.audio;
         $this.video = res.message.video;
       }
-      
+
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -93,7 +94,7 @@ var methods = {
       text: this.form.text,
     }).then(function(response) {
       var res = response.data;
-      
+
       $this.form.id = res.value;
       utils.success('自动回复消息保存成功！');
     })
@@ -109,11 +110,9 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.delete($url, {
-      data: {
-        siteId: this.siteId,
-        activeName: this.activeName
-      }
+    $api.post($urlDelete, {
+      siteId: this.siteId,
+      activeName: this.activeName
     }).then(function (response) {
       var res = response.data;
 

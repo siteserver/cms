@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
     public partial class FileController
     {
-        [HttpDelete, Route(RouteActionsDeleteGroup)]
+        [HttpPost, Route(RouteDeleteGroup)]
         public async Task<ActionResult<BoolResult>> DeleteGroup([FromBody] DeleteGroupRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,

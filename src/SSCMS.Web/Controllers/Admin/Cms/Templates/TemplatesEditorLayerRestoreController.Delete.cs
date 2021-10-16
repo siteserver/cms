@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     public partial class TemplatesEditorLayerRestoreController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<GetResult>> Delete([FromBody] TemplateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates))

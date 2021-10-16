@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/templates/templatesAssetsEditor';
+var $urlUpdate = $url + '/actions/update';
 
 var validateRelatedFileName = function(rule, value, callback) {
   if (value === '' || value === 'T_') {
@@ -63,12 +64,12 @@ var methods = {
 
     utils.loading(this, true);
     if (this.fileName) {
-      $api.put($url, data).then(function (response) {
+      $api.post($urlUpdate, data).then(function (response) {
         var res = response.data;
 
         $this.directoryPath = res.directoryPath;
         $this.fileName = res.fileName;
-  
+
         utils.success('文件保存成功!');
         if (isClose) {
           $this.closeAndReload();
@@ -84,7 +85,7 @@ var methods = {
 
         $this.directoryPath = res.directoryPath;
         $this.fileName = res.fileName;
-  
+
         utils.success('文件保存成功!');
         if (isClose) {
           $this.closeAndReload();

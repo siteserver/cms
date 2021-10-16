@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     {
         private const string Route = "settings/administrators";
         private const string RoutePermissions = "settings/administrators/permissions/{adminId:int}";
+        private const string RouteDelete = "settings/administrators/actions/delete";
         private const string RouteLock = "settings/administrators/actions/lock";
         private const string RouteUnLock = "settings/administrators/actions/unLock";
         private const string RouteImport = "settings/administrators/actions/import";

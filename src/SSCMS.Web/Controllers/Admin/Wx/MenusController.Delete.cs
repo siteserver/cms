@@ -6,7 +6,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 {
     public partial class MenusController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<WxMenusResult>> Delete([FromBody] DeleteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.WxMenus))

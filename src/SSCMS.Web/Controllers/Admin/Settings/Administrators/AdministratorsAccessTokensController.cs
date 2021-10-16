@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     public partial class AdministratorsAccessTokensController : ControllerBase
     {
         private const string Route = "settings/administratorsAccessTokens";
+        private const string RouteDelete = "settings/administratorsAccessTokens/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IAccessTokenRepository _accessTokenRepository;

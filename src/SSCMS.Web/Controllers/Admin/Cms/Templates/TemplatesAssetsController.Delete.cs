@@ -8,7 +8,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
     public partial class TemplatesAssetsController
     {
-        [HttpDelete, Route(Route)]
+        [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] FileRequest request)
         {
             if (request.FileType == "html")

@@ -13,6 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
     public partial class ContentsRecycleController : ControllerBase
     {
         private const string Route = "cms/contents/contentsRecycle";
+        private const string RouteDelete = "cms/contents/contentsRecycle/actions/delete";
         private const string RouteList = "cms/contents/contentsRecycle/actions/list";
         private const string RouteTree = "cms/contents/contentsRecycle/actions/tree";
         private const string RouteColumns = "cms/contents/contentsRecycle/actions/columns";

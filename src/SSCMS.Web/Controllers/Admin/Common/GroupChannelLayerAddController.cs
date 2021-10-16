@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
     public partial class GroupChannelLayerAddController : ControllerBase
     {
         private const string Route = "common/groupChannelLayerAdd";
+        private const string RouteUpdate = "common/groupChannelLayerAdd/actions/update";
 
         private readonly IAuthManager _authManager;
         private readonly IChannelGroupRepository _channelGroupRepository;
@@ -43,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
             public string Description { get; set; }
         }
 
-        public class EditRequest : SiteRequest
+        public class UpdateRequest : SiteRequest
         {
             public int GroupId { get; set; }
             public string GroupName { get; set; }
