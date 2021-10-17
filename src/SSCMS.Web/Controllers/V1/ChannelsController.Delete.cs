@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class ChannelsController
     {
         [OpenApiOperation("删除栏目 API", "删除栏目，使用DELETE发起请求，请求地址为/api/v1/channels/{siteId}/{channelId}")]
-        [HttpDelete, Route(RouteChannel)]
+        [HttpPost, Route(RouteChannelDelete)]
         public async Task<ActionResult<Channel>> Delete([FromRoute] int siteId, [FromRoute] int channelId)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels))

@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class ChannelsController
     {
         [OpenApiOperation("修改栏目 API", "修改栏目，使用PUT发起请求，请求地址为/api/v1/channels/{siteId}/{channelId}")]
-        [HttpPut, Route(RouteChannel)]
+        [HttpPost, Route(RouteChannelUpdate)]
         public async Task<ActionResult<Channel>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromBody] UpdateRequest request)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeChannels))

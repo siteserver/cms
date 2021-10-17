@@ -18,6 +18,8 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteActionsLogout = "administrators/actions/logout";
         private const string RouteActionsResetPassword = "administrators/actions/resetPassword";
         private const string RouteAdministrator = "administrators/{id:int}";
+        private const string RouteAdministratorUpdate = "administrators/{id:int}/actions/update";
+        private const string RouteAdministratorDelete = "administrators/{id:int}/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;

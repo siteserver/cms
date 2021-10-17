@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class ContentsController
     {
         [OpenApiOperation("修改内容 API", "修改内容，使用PUT发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
-        [HttpPut, Route(RouteContent)]
+        [HttpPost, Route(RouteContentUpdate)]
         public async Task<ActionResult<Content>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id, [FromBody]Content request)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))

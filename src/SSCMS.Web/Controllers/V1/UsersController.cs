@@ -18,6 +18,8 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteUser = "users/{id:int}";
         private const string RouteUserAvatar = "users/{id:int}/avatar";
         private const string RouteUserLogs = "users/{id:int}/logs";
+        private const string RouteUserUpdate = "users/{id:int}/actions/update";
+        private const string RouteUserDelete = "users/{id:int}/actions/delete";
         private const string RouteUserResetPassword = "users/{id:int}/actions/resetPassword";
 
         private readonly IAuthManager _authManager;

@@ -14,6 +14,8 @@ namespace SSCMS.Web.Controllers.V1
     {
         private const string RouteSite = "channels/{siteId:int}";
         private const string RouteChannel = "channels/{siteId:int}/{channelId:int}";
+        private const string RouteChannelUpdate = "channels/{siteId:int}/{channelId:int}/actions/update";
+        private const string RouteChannelDelete = "channels/{siteId:int}/{channelId:int}/actions/delete";
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;

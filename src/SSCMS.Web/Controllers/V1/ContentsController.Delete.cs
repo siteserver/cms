@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class ContentsController
     {
         [OpenApiOperation("删除内容 API", "删除内容，使用DELETE发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
-        [HttpDelete, Route(RouteContent)]
+        [HttpPost, Route(RouteContentDelete)]
         public async Task<ActionResult<Content>> Delete([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))

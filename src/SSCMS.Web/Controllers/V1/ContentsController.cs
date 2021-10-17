@@ -25,6 +25,8 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteActionsCheck = "contents/actions/check";
         private const string RouteChannel = "contents/{siteId:int}/{channelId:int}";
         private const string RouteContent = "contents/{siteId:int}/{channelId:int}/{id:int}";
+        private const string RouteContentUpdate = "contents/{siteId:int}/{channelId:int}/{id:int}/actions/update";
+        private const string RouteContentDelete = "contents/{siteId:int}/{channelId:int}/{id:int}/actions/delete";
 
         public const string OpEquals = "=";
         public const string OpIn = "In";

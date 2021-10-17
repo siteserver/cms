@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.V1
     public partial class AdministratorsController
     {
         [OpenApiOperation("删除管理员 API", "删除管理员，使用DELETE发起请求，请求地址为/api/v1/administrators/{id}")]
-        [HttpDelete, Route(RouteAdministrator)]
+        [HttpPost, Route(RouteAdministratorDelete)]
         public async Task<ActionResult<Administrator>> Delete([FromRoute]int id)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
