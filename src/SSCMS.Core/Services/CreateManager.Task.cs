@@ -176,6 +176,7 @@ namespace SSCMS.Core.Services
 
             foreach (var logInfo in TaskLogs)
             {
+                if (logInfo.SiteId != siteId) continue;
                 var summaryItem = new CreateTaskSummaryItem(logInfo);
                 list.Add(summaryItem);
             }

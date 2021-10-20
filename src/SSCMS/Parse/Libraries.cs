@@ -7,7 +7,7 @@
         public const string LayerJs = "assets/lib/layer/layer-3.1.1.js";
         public const string PdfObjectJs = "assets/lib/pdfobject-2.2.4.min.js";
 
-        public const string VueJs = "resources/vuejs/vue-2.5.16.min.js";
+        public const string VueJs = "resources/vuejs/vue-2.6.14.min.js";
         public const string ElementCss = "resources/vuejs/element-ui/theme-chalk/index.css";
         public const string ElementJs = "resources/vuejs/element-ui/index.js";
     }

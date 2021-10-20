@@ -206,6 +206,17 @@ var methods = {
     });
   },
 
+  syncEditors: function () {
+    var $this = this;
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+        var style = $this.styles[editor.styleIndex];
+        $this.form[utils.toCamelCase(style.attributeName)] = editor.getContent();
+      });
+    }
+  },
+
   apiInsert: function() {
     var $this = this;
 
@@ -378,13 +389,7 @@ var methods = {
 
   btnSaveClick: function() {
     var $this = this;
-
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-      });
-    }
-
+    this.syncEditors();
     this.$refs.form.validate(function(valid) {
       if (valid) {
         if ($this.site.isAutoCheckKeywords && $this.isCensorTextEnabled) {
@@ -399,38 +404,20 @@ var methods = {
   },
 
   btnCensorClick: function() {
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-      });
-    }
-
+    this.syncEditors();
     this.apiCensor(false);
   },
 
   btnTagsClick: function() {
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-      });
-    }
-
+    this.syncEditors();
     if (!this.form.body) return;
-
     this.apiTags();
   },
 
   btnPreviewClick: function() {
     var $this = this;
-
     if (this.isPreviewSaving) return;
-
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-      });
-    }
-
+    this.syncEditors();
     this.$refs.form.validate(function(valid) {
       if (valid) {
         $this.apiPreview();
