@@ -43,23 +43,37 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 stlPageSqlContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.SqlContent);
 
-                stlPageSqlContents.SqlString = stlPageSqlContents.ListInfo.QueryString;
-                if (string.IsNullOrWhiteSpace(stlPageSqlContents.ListInfo.Order))
+                var sqlString = stlPageSqlContents.ListInfo.QueryString;
+                if (sqlString.IndexOf(" ORDER BY", StringComparison.OrdinalIgnoreCase) == -1 && !string.IsNullOrEmpty(stlPageSqlContents.ListInfo.Order))
                 {
-                    var pos = stlPageSqlContents.SqlString.LastIndexOf(" ORDER BY ", StringComparison.OrdinalIgnoreCase);
-                    if (pos > -1)
+                    if (stlPageSqlContents.ListInfo.Order.IndexOf(" ORDER BY", StringComparison.OrdinalIgnoreCase) == -1)
                     {
-                        stlPageSqlContents.SqlString = stlPageSqlContents.SqlString.Substring(0, pos);
-                        stlPageSqlContents.ListInfo.Order = stlPageSqlContents.SqlString.Substring(pos);
+                        sqlString += $" ORDER BY {stlPageSqlContents.ListInfo.Order}";
+                    }
+                    else
+                    {
+                      sqlString += $" {stlPageSqlContents.ListInfo.Order}";
                     }
                 }
-                else
-                {
-                    if (stlPageSqlContents.ListInfo.Order.IndexOf("ORDER BY", StringComparison.OrdinalIgnoreCase) == -1)
-                    {
-                        stlPageSqlContents.ListInfo.Order = $"ORDER BY {stlPageSqlContents.ListInfo.Order}";
-                    }
-                }
+                stlPageSqlContents.SqlString = sqlString;
+
+                // stlPageSqlContents.SqlString = stlPageSqlContents.ListInfo.QueryString;
+                // if (string.IsNullOrWhiteSpace(stlPageSqlContents.ListInfo.Order))
+                // {
+                //     var pos = stlPageSqlContents.SqlString.LastIndexOf(" ORDER BY ", StringComparison.OrdinalIgnoreCase);
+                //     if (pos > -1)
+                //     {
+                //         stlPageSqlContents.SqlString = stlPageSqlContents.SqlString.Substring(0, pos);
+                //         stlPageSqlContents.ListInfo.Order = stlPageSqlContents.SqlString.Substring(pos);
+                //     }
+                // }
+                // else
+                // {
+                //     if (stlPageSqlContents.ListInfo.Order.IndexOf("ORDER BY", StringComparison.OrdinalIgnoreCase) == -1)
+                //     {
+                //         stlPageSqlContents.ListInfo.Order = $"ORDER BY {stlPageSqlContents.ListInfo.Order}";
+                //     }
+                // }
 
                 //_dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.PageNum, _listInfo.OrderByString);
             }
@@ -80,6 +94,9 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 //totalNum = DatabaseApi.Instance.GetPageTotalCount(SqlString);
                 totalNum = ParseManager.DatabaseManager.GetPageTotalCount(SqlString);
+                if (ListInfo.TotalNum > 0 && totalNum > ListInfo.TotalNum) {
+                    totalNum = ListInfo.TotalNum;
+                }
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数

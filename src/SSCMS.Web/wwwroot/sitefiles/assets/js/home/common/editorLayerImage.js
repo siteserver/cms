@@ -20,7 +20,8 @@ var methods = {
     if (parent.$vue.runEditorLayerImage) {
       var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
       if (result.previewUrl) {
-        var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
+        var previewUrl = "'" + result.previewUrl + "'";
+        var vueHtml = '<el-image src="' + result.imageUrl + '" :preview-src-list="[' + previewUrl + ']" style="border: 0; max-width: 100%"></el-image>';
         html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
       }
       parent.$vue.runEditorLayerImage(this.attributeName, html);
@@ -45,7 +46,7 @@ var methods = {
           $this.insert(result);
         }
       }
-      
+
       utils.closeLayer();
     })
     .catch(function(error) {

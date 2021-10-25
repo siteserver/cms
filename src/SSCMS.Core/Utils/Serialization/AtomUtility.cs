@@ -86,7 +86,7 @@ namespace SSCMS.Core.Utils.Serialization
             {
                 Title = new AtomContentConstruct("title", "siteserver channel"),
                 Author = new AtomPersonConstruct("author",
-                    "siteserver", new Uri("https://www.siteserver.cn")),
+                    "sscms", new Uri("https://sscms.com/")),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
                     TimeZoneInfo.Utc.GetUtcOffset(DateTime.Now))
             };
@@ -98,7 +98,7 @@ namespace SSCMS.Core.Utils.Serialization
         {
             var entry = new AtomEntry
             {
-                Id = new Uri("https://www.siteserver.cn/"),
+                Id = new Uri("https://sscms.com/"),
                 Title = new AtomContentConstruct("title", "title"),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
                     TimeZoneInfo.Utc.GetUtcOffset(DateTime.Now)),

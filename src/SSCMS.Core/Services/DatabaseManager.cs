@@ -299,7 +299,7 @@ namespace SSCMS.Core.Services
         public int GetPageTotalCount(string sqlString)
         {
             var temp = StringUtils.ToLower(sqlString);
-            var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
+            var pos = temp.LastIndexOf("order by", StringComparison.OrdinalIgnoreCase);
             if (pos > -1)
                 sqlString = sqlString.Substring(0, pos);
 
@@ -315,9 +315,12 @@ namespace SSCMS.Core.Services
             string retVal;
 
             var temp = StringUtils.ToLower(sqlString);
-            var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
+            var pos = temp.LastIndexOf("order by", StringComparison.OrdinalIgnoreCase);
             if (pos > -1)
-                sqlString = sqlString.Substring(0, pos);
+            {
+              orderString = sqlString.Substring(pos);
+              sqlString = sqlString.Substring(0, pos);
+            }
 
             var recordsInLastPage = itemsPerPage;
 
@@ -336,6 +339,9 @@ namespace SSCMS.Core.Services
                 recsToRetrieve = recordsInLastPage;
 
             orderString = StringUtils.ToUpper(orderString);
+            if (orderString.IndexOf(" ASC", StringComparison.OrdinalIgnoreCase) == -1 && orderString.IndexOf(" DESC", StringComparison.OrdinalIgnoreCase) == -1) {
+              orderString += " ASC";
+            }
             var orderStringReverse = orderString.Replace(" DESC", " DESC2");
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");

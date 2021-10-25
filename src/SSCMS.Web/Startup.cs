@@ -179,7 +179,7 @@ namespace SSCMS.Web
                       {
                           Name = "SS CMS",
                           Email = string.Empty,
-                          Url = "https://www.sscms.com"
+                          Url = "https://sscms.com"
                       };
                       document.Info.License = new NSwag.OpenApiLicense
                       {

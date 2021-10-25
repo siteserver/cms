@@ -32,7 +32,7 @@ namespace SS.CMS.Tests.StlParser.StlElement
 
             var contextInfo = new ParseContext(pageInfo);
 
-            var template = $@"<stl:a href=""https://www.siteserver.cn"">test</stl:a>";
+            var template = $@"<stl:a href=""https://sscms.com"">test</stl:a>";
             var builder = new StringBuilder(template);
 
             await StlParserManager.ParseTemplateContentAsync(builder, pageInfo, contextInfo);

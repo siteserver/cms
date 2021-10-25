@@ -21,8 +21,8 @@ namespace SSCMS.Core.StlParser.Utility
                 parsedContent = $@"
 <div id=""vue_{elementId}""></div>
 <script type=""text/javascript"">
-var templates_{elementId} = '{parsedContent}';
-var container_{elementId} = $(templates_{elementId});
+var container_{elementId} = $('<article>{parsedContent}</article>');
+var templates_{elementId} = container_{elementId}.html();
 var elements_{elementId} = container_{elementId}.find('[data-vue]');
 for(var i = 0; i < elements_{elementId}.length; i++) {{
   var element = $(elements_{elementId}[i]);

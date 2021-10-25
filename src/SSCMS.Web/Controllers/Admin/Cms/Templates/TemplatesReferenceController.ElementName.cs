@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 new ListReference
                 {
                     Name = $"{elementName} {stlAttribute.Title}",
-                    Url = $"https://www.siteserver.cn/docs/stl/{name}/"
+                    Url = $"https://sscms.com/docs/v7/stl/{name}/"
                 }
             };
 
