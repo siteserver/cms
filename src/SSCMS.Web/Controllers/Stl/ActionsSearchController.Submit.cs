@@ -103,7 +103,7 @@ namespace SSCMS.Web.Controllers.Stl
                     {
                         if (currentPageIndex != pageIndex) continue;
 
-                        var pageHtml = await stlPageSqlContents.ParseAsync(totalNum, currentPageIndex, pageCount, false);
+                        var pageHtml = await stlPageSqlContents.ParseAsync(totalNum, currentPageIndex, pageCount);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElement, pageHtml));
 
                         await _parseManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, stlLabelList, request.AjaxDivId, currentPageIndex, pageCount, totalNum);

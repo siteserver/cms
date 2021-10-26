@@ -109,22 +109,9 @@ namespace SSCMS.Core.StlParser.StlElement
             return pageCount;
         }
 
-        public async Task<string> ParseAsync(int totalNum, int currentPageIndex, int pageCount, bool isStatic)
+        public async Task<string> ParseAsync(int totalNum, int currentPageIndex, int pageCount)
         {
             var pageInfo = ParseManager.PageInfo;
-
-            if (isStatic)
-            {
-                var maxPage = ListInfo.MaxPage;
-                if (maxPage == 0)
-                {
-                    maxPage = pageInfo.Site.CreateStaticMaxPage;
-                }
-                if (maxPage > 0 && currentPageIndex + 1 > maxPage)
-                {
-                    return await ParseDynamicAsync(totalNum, currentPageIndex, pageCount);
-                }
-            }
 
             var parsedContent = string.Empty;
 

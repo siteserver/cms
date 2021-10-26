@@ -216,7 +216,7 @@ namespace SSCMS.Core.Services
                     var page = _parseManager.PageInfo;
                     _parseManager.PageInfo = _parseManager.PageInfo.Clone();
 
-                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, true);
+                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -416,7 +416,7 @@ namespace SSCMS.Core.Services
                     var page = _parseManager.PageInfo;
                     _parseManager.PageInfo = _parseManager.PageInfo.Clone();
 
-                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, true);
+                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 

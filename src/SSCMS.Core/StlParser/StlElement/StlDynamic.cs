@@ -198,7 +198,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     if (currentPageIndex != pageIndex) continue;
 
-                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount, false);
+                    var pageHtml = await pageSqlContentsElementParser.ParseAsync(totalNum, currentPageIndex, pageCount);
                     contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
 
                     await parseManager.ReplacePageElementsInDynamicPageAsync(contentBuilder, stlElementList, currentPageIndex, pageCount, totalNum, false, dynamicInfo.ElementId);
