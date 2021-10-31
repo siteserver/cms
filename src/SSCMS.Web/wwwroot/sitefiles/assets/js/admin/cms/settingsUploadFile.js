@@ -4,6 +4,8 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: null,
   form: null,
+  csrfToken: null,
+  isSafeMode: false
 });
 
 var methods = {
@@ -18,13 +20,15 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      $this.csrfToken = res.csrfToken;
+      $this.isSafeMode = res.isSafeMode;
       $this.form = {
         siteId: $this.siteId,
-        fileUploadDirectoryName: res.value.fileUploadDirectoryName,
-        fileUploadDateFormatString: res.value.fileUploadDateFormatString,
-        isFileUploadChangeFileName: res.value.isFileUploadChangeFileName,
-        fileUploadExtensions: res.value.fileUploadExtensions,
-        fileUploadTypeMaxSize: res.value.fileUploadTypeMaxSize,
+        fileUploadDirectoryName: res.fileUploadDirectoryName,
+        fileUploadDateFormatString: res.fileUploadDateFormatString,
+        isFileUploadChangeFileName: res.isFileUploadChangeFileName,
+        fileUploadExtensions: res.fileUploadExtensions,
+        fileUploadTypeMaxSize: res.fileUploadTypeMaxSize,
       };
     }).catch(function (error) {
       utils.error(error);
@@ -37,7 +41,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
+    $api.csrfPost(this.csrfToken, $url, this.form).then(function (response) {
       var res = response.data;
 
       utils.success('附件上传设置保存成功！');

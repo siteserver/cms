@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 
 namespace SSCMS.Models
@@ -205,7 +206,7 @@ namespace SSCMS.Models
 
         public bool IsImageUploadChangeFileName { get; set; } = true;
 
-        public string ImageUploadExtensions { get; set; } = ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.swf,.webp,.svg";
+        public string ImageUploadExtensions { get; set; } = Constants.DefaultImageUploadExtensions;
 
         public int ImageUploadTypeMaxSize { get; set; } = 15360;
 
@@ -215,7 +216,7 @@ namespace SSCMS.Models
 
         public bool IsAudioUploadChangeFileName { get; set; } = true;
 
-        public string AudioUploadExtensions { get; set; } = ".mp3,.wma,.wav,.amr,.m4a";
+        public string AudioUploadExtensions { get; set; } = Constants.DefaultAudioUploadExtensions;
 
         public int AudioUploadTypeMaxSize { get; set; } = 307200;
 
@@ -225,8 +226,7 @@ namespace SSCMS.Models
 
         public bool IsVideoUploadChangeFileName { get; set; } = true;
 
-        public string VideoUploadExtensions { get; set; } =
-            ".asf,.asx,.avi,.flv,.mid,.midi,.mov,.mp3,.mp4,.mpg,.mpeg,.ogg,.ra,.rm,.rmb,.rmvb,.rp,.rt,.smi,.swf,.wav,.webm,.wma,.wmv,.viv,.f4v,.m4v,.3gp,.3g2";
+        public string VideoUploadExtensions { get; set; } = Constants.DefaultVideoUploadExtensions;
 
         public int VideoUploadTypeMaxSize { get; set; } = 307200;
 
@@ -236,7 +236,7 @@ namespace SSCMS.Models
 
         public bool IsFileUploadChangeFileName { get; set; } = true;
 
-        public string FileUploadExtensions { get; set; } = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt,.md,.xml,.js,.css,.html,.htm";
+        public string FileUploadExtensions { get; set; } = Constants.DefaultFileUploadExtensions;
 
         public int FileUploadTypeMaxSize { get; set; } = 307200;
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -22,6 +23,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.IsFileUploadChangeFileName = request.IsFileUploadChangeFileName;
             site.FileUploadExtensions = request.FileUploadExtensions.Replace("|", ",");
             site.FileUploadTypeMaxSize = request.FileUploadTypeMaxSize;
+
+            if (_settingsManager.IsSafeMode)
+            {
+                site.FileUploadExtensions = Constants.DefaultFileUploadExtensions;
+            }
 
             await _siteRepository.UpdateAsync(site);
 

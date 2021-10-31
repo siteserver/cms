@@ -20,10 +20,12 @@ var methods = {
       $this.environments = res.environments;
       $this.settings = res.settings;
 
-      $this.environments.splice(0, 0, {
-        key: '进程管理器',
-        value: server
-      });
+      if ($this.settings.length > 0) {
+        $this.environments.splice(0, 0, {
+          key: '进程管理器',
+          value: server
+        });
+      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

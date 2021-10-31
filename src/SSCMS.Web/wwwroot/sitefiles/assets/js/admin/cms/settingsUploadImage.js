@@ -4,6 +4,8 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: null,
   form: null,
+  csrfToken: null,
+  isSafeMode: false
 });
 
 var methods = {
@@ -18,15 +20,18 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      $this.csrfToken = res.csrfToken;
+      $this.isSafeMode = res.isSafeMode;
+
       $this.form = {
         siteId: $this.siteId,
-        imageUploadDirectoryName: res.value.imageUploadDirectoryName,
-        imageUploadDateFormatString: res.value.imageUploadDateFormatString,
-        isImageUploadChangeFileName: res.value.isImageUploadChangeFileName,
-        imageUploadExtensions: res.value.imageUploadExtensions,
-        imageUploadTypeMaxSize: res.value.imageUploadTypeMaxSize,
-        photoSmallWidth: res.value.photoSmallWidth,
-        photoMiddleWidth: res.value.photoMiddleWidth,
+        imageUploadDirectoryName: res.imageUploadDirectoryName,
+        imageUploadDateFormatString: res.imageUploadDateFormatString,
+        isImageUploadChangeFileName: res.isImageUploadChangeFileName,
+        imageUploadExtensions: res.imageUploadExtensions,
+        imageUploadTypeMaxSize: res.imageUploadTypeMaxSize,
+        photoSmallWidth: res.photoSmallWidth,
+        photoMiddleWidth: res.photoMiddleWidth,
       };
     }).catch(function (error) {
       utils.error(error);
@@ -39,7 +44,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
+    $api.csrfPost(this.csrfToken, $url, this.form).then(function (response) {
       var res = response.data;
 
       utils.success('图片上传设置保存成功！');

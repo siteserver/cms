@@ -4,6 +4,8 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: null,
   form: null,
+  csrfToken: null,
+  isSafeMode: false
 });
 
 var methods = {
@@ -18,13 +20,16 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      $this.csrfToken = res.csrfToken;
+      $this.isSafeMode = res.isSafeMode;
+
       $this.form = {
         siteId: $this.siteId,
-        audioUploadDirectoryName: res.value.audioUploadDirectoryName,
-        audioUploadDateFormatString: res.value.audioUploadDateFormatString,
-        isAudioUploadChangeFileName: res.value.isAudioUploadChangeFileName,
-        audioUploadExtensions: res.value.audioUploadExtensions,
-        audioUploadTypeMaxSize: res.value.audioUploadTypeMaxSize,
+        audioUploadDirectoryName: res.audioUploadDirectoryName,
+        audioUploadDateFormatString: res.audioUploadDateFormatString,
+        isAudioUploadChangeFileName: res.isAudioUploadChangeFileName,
+        audioUploadExtensions: res.audioUploadExtensions,
+        audioUploadTypeMaxSize: res.audioUploadTypeMaxSize,
       };
     }).catch(function (error) {
       utils.error(error);
@@ -37,7 +42,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
+    $api.csrfPost(this.csrfToken, $url, this.form).then(function (response) {
       var res = response.data;
 
       utils.success('音频上传设置保存成功！');

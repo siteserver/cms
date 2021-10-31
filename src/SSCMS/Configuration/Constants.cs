@@ -92,5 +92,10 @@ namespace SSCMS.Configuration
         public const string ErrorAudioSizeAllowed = "此音频大小已超过限制，请压缩后上传!";
         public const string ErrorFileExtensionAllowed = "此文件格式已被禁止上传，请转换格式后上传!";
         public const string ErrorFileSizeAllowed = "此文件大小已超过限制，请压缩后上传!";
+
+        public const string DefaultImageUploadExtensions = ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.swf,.webp,.svg";
+        public const string DefaultAudioUploadExtensions = ".mp3,.wma,.wav,.amr,.m4a";
+        public const string DefaultVideoUploadExtensions = ".asf,.asx,.avi,.flv,.mid,.midi,.mov,.mp3,.mp4,.mpg,.mpeg,.ogg,.ra,.rm,.rmb,.rmvb,.rp,.rt,.smi,.swf,.wav,.webm,.wma,.wmv,.viv,.f4v,.m4v,.3gp,.3g2";
+        public const string DefaultFileUploadExtensions = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt,.md,.xml,.js,.css,.html,.htm";
     }
 }

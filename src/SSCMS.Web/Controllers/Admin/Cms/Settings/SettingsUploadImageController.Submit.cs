@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -24,6 +25,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.ImageUploadTypeMaxSize = request.ImageUploadTypeMaxSize;
             site.PhotoSmallWidth = request.PhotoSmallWidth;
             site.PhotoMiddleWidth = request.PhotoMiddleWidth;
+
+            if (_settingsManager.IsSafeMode)
+            {
+                site.ImageUploadExtensions = Constants.DefaultImageUploadExtensions;
+            }
 
             await _siteRepository.UpdateAsync(site);
 

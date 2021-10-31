@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -22,6 +23,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.IsAudioUploadChangeFileName = request.IsAudioUploadChangeFileName;
             site.AudioUploadExtensions = request.AudioUploadExtensions.Replace("|", ",");
             site.AudioUploadTypeMaxSize = request.AudioUploadTypeMaxSize;
+
+            if (_settingsManager.IsSafeMode)
+            {
+                site.AudioUploadExtensions = Constants.DefaultAudioUploadExtensions;
+            }
 
             await _siteRepository.UpdateAsync(site);
 

@@ -12,17 +12,31 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
+    [AutoValidateAntiforgeryToken]
     public partial class SettingsUploadFileController : ControllerBase
     {
         private const string Route = "cms/settings/settingsUploadFile";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SettingsUploadFileController(IAuthManager authManager, ISiteRepository siteRepository)
+        public SettingsUploadFileController(ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _siteRepository = siteRepository;
+        }
+
+        public class GetResult
+        {
+            public string CSRFToken { get; set; }
+            public bool IsSafeMode { get; set; }
+            public string FileUploadDirectoryName { get; set; }
+            public DateFormatType FileUploadDateFormatString { get; set; }
+            public bool IsFileUploadChangeFileName { get; set; }
+            public string FileUploadExtensions { get; set; }
+            public int FileUploadTypeMaxSize { get; set; }
         }
 
         public class SubmitRequest : SiteRequest

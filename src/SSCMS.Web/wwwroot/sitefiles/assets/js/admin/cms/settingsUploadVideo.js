@@ -4,6 +4,8 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: null,
   form: null,
+  csrfToken: null,
+  isSafeMode: false
 });
 
 var methods = {
@@ -18,13 +20,16 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      $this.csrfToken = res.csrfToken;
+      $this.isSafeMode = res.isSafeMode;
+
       $this.form = {
         siteId: $this.siteId,
-        videoUploadDirectoryName: res.value.videoUploadDirectoryName,
-        videoUploadDateFormatString: res.value.videoUploadDateFormatString,
-        isVideoUploadChangeFileName: res.value.isVideoUploadChangeFileName,
-        videoUploadExtensions: res.value.videoUploadExtensions,
-        videoUploadTypeMaxSize: res.value.videoUploadTypeMaxSize,
+        videoUploadDirectoryName: res.videoUploadDirectoryName,
+        videoUploadDateFormatString: res.videoUploadDateFormatString,
+        isVideoUploadChangeFileName: res.isVideoUploadChangeFileName,
+        videoUploadExtensions: res.videoUploadExtensions,
+        videoUploadTypeMaxSize: res.videoUploadTypeMaxSize,
       };
     }).catch(function (error) {
       utils.error(error);
@@ -37,7 +42,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
+    $api.csrfPost(this.csrfToken, $url, this.form).then(function (response) {
       var res = response.data;
 
       utils.success('视频上传设置保存成功！');

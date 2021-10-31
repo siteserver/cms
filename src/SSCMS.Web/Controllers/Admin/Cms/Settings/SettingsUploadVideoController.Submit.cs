@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -22,6 +23,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.IsVideoUploadChangeFileName = request.IsVideoUploadChangeFileName;
             site.VideoUploadExtensions = request.VideoUploadExtensions.Replace("|", ",");
             site.VideoUploadTypeMaxSize = request.VideoUploadTypeMaxSize;
+
+            if (_settingsManager.IsSafeMode)
+            {
+                site.VideoUploadExtensions = Constants.DefaultVideoUploadExtensions;
+            }
 
             await _siteRepository.UpdateAsync(site);
 
