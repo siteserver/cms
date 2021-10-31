@@ -13,6 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
+    [AutoValidateAntiforgeryToken]
     public partial class EditorController : ControllerBase
     {
         private const string Route = "cms/editor/editor";
@@ -22,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private const string RouteCensor = "cms/editor/editor/actions/censor";
         private const string RouteTags = "cms/editor/editor/actions/tags";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
@@ -39,8 +41,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly ITranslateRepository _translateRepository;
         private readonly IStatRepository _statRepository;
 
-        public EditorController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
+        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
             _pathManager = pathManager;
@@ -66,6 +69,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
         public class GetResult
         {
+            public string CSRFToken { get; set; }
             public Content Content { get; set; }
             public Site Site { get; set; }
             public string SiteUrl { get; set; }

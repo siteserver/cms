@@ -47,7 +47,7 @@ namespace SSCMS.Core.Services
             if (isEnvironment)
             {
                 IsProtectData = false;
-                IsApiDocuments = false;
+                IsSafeMode = false;
                 SecurityKey = envSecurityKey;
                 DatabaseType = TranslateUtils.ToEnum(envDatabaseType, DatabaseType.MySql);
                 DatabaseConnectionString = DatabaseType == DatabaseType.SQLite
@@ -72,7 +72,7 @@ namespace SSCMS.Core.Services
             else
             {
                 IsProtectData = _config.GetValue(nameof(IsProtectData), false);
-                IsApiDocuments = _config.GetValue(nameof(IsApiDocuments), false);
+                IsSafeMode = _config.GetValue(nameof(IsSafeMode), false);
                 SecurityKey = _config.GetValue<string>(nameof(SecurityKey));
                 DatabaseType = TranslateUtils.ToEnum(
                     IsProtectData

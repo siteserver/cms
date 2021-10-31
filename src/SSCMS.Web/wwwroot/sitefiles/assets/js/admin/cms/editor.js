@@ -18,6 +18,7 @@ var data = utils.init({
   collapseSettings: ['checkedLevel', 'addDate'],
   collapseMore: ['templateId', 'translates'],
 
+  csrfToken: null,
   site: null,
   siteUrl: null,
   channel: null,
@@ -120,6 +121,8 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
+      $this.csrfToken = res.csrfToken;
+
       $this.site = res.site;
       $this.siteUrl = res.siteUrl;
       $this.channel = res.channel;
@@ -221,7 +224,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlInsert, {
+    $api.csrfPost(this.csrfToken, $urlInsert, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
@@ -243,7 +246,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlCensor, {
+    $api.csrfPost(this.csrfToken, $urlCensor, {
       siteId: this.siteId,
       channelId: this.channelId,
       content: this.form
@@ -271,7 +274,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlTags, {
+    $api.csrfPost(this.csrfToken, $urlTags, {
       siteId: this.siteId,
       channelId: this.channelId,
       content: this.form.body
@@ -293,7 +296,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlPreview, {
+    $api.csrfPost(this.csrfToken, $urlPreview, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,
@@ -314,7 +317,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlUpdate, {
+    $api.csrfPost(this.csrfToken, $urlUpdate, {
       siteId: this.siteId,
       channelId: this.channelId,
       contentId: this.contentId,

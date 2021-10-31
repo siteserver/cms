@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -48,7 +50,8 @@ namespace SSCMS.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataProtection().DisableAutomaticKeyGeneration();
+            var directory = new DirectoryInfo(_env.ContentRootPath);
+            services.AddDataProtection().PersistKeysToFileSystem(directory);
 
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
@@ -150,6 +153,8 @@ namespace SSCMS.Web
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
 
+            services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
+
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]
@@ -163,7 +168,7 @@ namespace SSCMS.Web
                 options.SupportedUICultures = supportedCultures;
             });
 
-            if (settingsManager.IsApiDocuments)
+            if (!settingsManager.IsSafeMode)
             {
               //http://localhost:5000/api/swagger/v1/swagger.json
               //http://localhost:5000/api/swagger/
@@ -191,7 +196,7 @@ namespace SSCMS.Web
             }
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
         {
             if (env.IsDevelopment())
             {
@@ -301,7 +306,7 @@ namespace SSCMS.Web
                 //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
                 ;
 
-            if (settingsManager.IsApiDocuments)
+            if (!settingsManager.IsSafeMode)
             {
                 app.UseOpenApi();
                 app.UseSwaggerUi3();

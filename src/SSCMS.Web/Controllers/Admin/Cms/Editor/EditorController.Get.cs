@@ -105,6 +105,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             return new GetResult
             {
+                CSRFToken = _authManager.GetCSRFToken(),
                 Content = content,
                 Site = site,
                 SiteUrl = StringUtils.TrimEndSlash(siteUrl),

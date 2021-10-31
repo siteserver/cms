@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Configuration;
@@ -14,15 +15,17 @@ namespace SSCMS.Core.Services
     public partial class AuthManager : IAuthManager
     {
         private readonly IHttpContextAccessor _context;
+        private readonly IAntiforgery _antiforgery;
         private readonly ClaimsPrincipal _principal;
         private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly List<Permission> _permissions;
 
-        public AuthManager(IHttpContextAccessor context, ICacheManager cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager)
+        public AuthManager(IHttpContextAccessor context, IAntiforgery antiforgery, ICacheManager cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _context = context;
+            _antiforgery = antiforgery;
             _principal = context.HttpContext.User;
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -167,6 +170,12 @@ namespace SSCMS.Core.Services
 
                 return null;
             }
+        }
+
+        public string GetCSRFToken()
+        {
+            var tokens = _antiforgery.GetAndStoreTokens(_context.HttpContext);
+            return tokens.RequestToken;
         }
     }
 }

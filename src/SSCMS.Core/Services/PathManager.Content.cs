@@ -137,6 +137,11 @@ namespace SSCMS.Core.Services
 
             builder.Replace("&#xa0;", "&nbsp;");
 
+            if (_settingsManager.IsSafeMode)
+            {
+                return AttackUtils.FilterXss(builder.ToString());
+            }
+
             return builder.ToString();
         }
 

@@ -24,5 +24,7 @@ namespace SSCMS.Services
         bool IsApi { get; }
 
         string ApiToken { get; }
+
+        string GetCSRFToken();
     }
 }

@@ -3,6 +3,7 @@ using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -21,7 +22,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             var template = await _templateRepository.GetAsync(request.TemplateId);
 
-            await _pathManager.WriteContentToTemplateFileAsync(site, template, request.Content, _authManager.AdminId);
+            var content = _settingsManager.IsSafeMode ? AttackUtils.FilterXss(request.Content) : request.Content;
+            await _pathManager.WriteContentToTemplateFileAsync(site, template, content, _authManager.AdminId);
             await CreatePagesAsync(template);
 
             await _authManager.AddSiteLogAsync(site.Id,

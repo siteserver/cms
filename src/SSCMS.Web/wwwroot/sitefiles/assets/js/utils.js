@@ -883,6 +883,14 @@ var $token = sessionStorage.getItem(ACCESS_TOKEN_NAME) || localStorage.getItem(A
 var $api = axios.create({
   baseURL: $apiUrl,
   headers: {
-    Authorization: "Bearer " + $token,
+    Authorization: "Bearer " + $token
   },
 });
+
+$api.csrfPost = function (csrfToken, url, data) {
+  return $api.post(url, data, {
+    headers: {
+      "X-CSRF-TOKEN": csrfToken
+    }
+  });
+}

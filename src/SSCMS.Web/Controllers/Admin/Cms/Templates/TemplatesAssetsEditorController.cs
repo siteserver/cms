@@ -18,12 +18,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string Route = "cms/templates/templatesAssetsEditor";
         private const string RouteUpdate = "cms/templates/templatesAssetsEditor/actions/update";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public TemplatesAssetsEditorController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public TemplatesAssetsEditorController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
@@ -100,7 +102,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            await FileUtils.WriteTextAsync(filePath, request.Content);
+            var content = _settingsManager.IsSafeMode ? AttackUtils.FilterXss(request.Content) : request.Content;
+            await FileUtils.WriteTextAsync(filePath, content);
             if (!string.IsNullOrEmpty(filePathToDelete))
             {
                 FileUtils.DeleteFileIfExists(filePathToDelete);
