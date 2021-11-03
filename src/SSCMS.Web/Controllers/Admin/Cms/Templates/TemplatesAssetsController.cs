@@ -25,12 +25,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string ExtCss = "css";
         private const string ExtJs = "js";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public TemplatesAssetsController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public TemplatesAssetsController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;

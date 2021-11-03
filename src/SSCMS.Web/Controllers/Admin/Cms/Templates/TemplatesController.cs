@@ -23,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteCopy = "cms/templates/templates/actions/copy";
         private const string RouteDefault = "cms/templates/templates/actions/default";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
@@ -30,8 +31,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly IChannelRepository _channelRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
+        public TemplatesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _createManager = createManager;

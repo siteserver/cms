@@ -21,6 +21,7 @@ var data = utils.init({
   siteUrl: null,
   previewUrl: null,
   local: null,
+  isSafeMode: null,
   menu: null,
   keyword: null,
   newCms: null,
@@ -68,6 +69,7 @@ var methods = {
         $this.siteUrl = res.siteUrl;
         $this.previewUrl = res.previewUrl;
         $this.local = res.local;
+        $this.isSafeMode = res.isSafeMode;
 
         var sideMenuIds = [];
         if (location.hash) {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -17,13 +18,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
+            if (_settingsManager.IsSafeMode)
+            {
+                return this.Error(Constants.ErrorSafeMode);
+            }
+
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return NotFound();
 
             var template = await _templateRepository.GetAsync(request.TemplateId);
 
-            var content = _settingsManager.IsSafeMode ? AttackUtils.FilterXss(request.Content) : request.Content;
-            await _pathManager.WriteContentToTemplateFileAsync(site, template, content, _authManager.AdminId);
+            await _pathManager.WriteContentToTemplateFileAsync(site, template, request.Content, _authManager.AdminId);
             await CreatePagesAsync(template);
 
             await _authManager.AddSiteLogAsync(site.Id,

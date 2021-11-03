@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -13,6 +15,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates))
             {
                 return Unauthorized();
+            }
+
+            if (_settingsManager.IsSafeMode)
+            {
+                return this.Error(Constants.ErrorSafeMode);
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);

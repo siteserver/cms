@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -15,6 +16,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
+            }
+
+            if (_settingsManager.IsSafeMode)
+            {
+                return this.Error(Constants.ErrorSafeMode);
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);

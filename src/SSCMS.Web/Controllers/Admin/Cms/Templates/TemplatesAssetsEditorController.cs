@@ -102,8 +102,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
-            var content = _settingsManager.IsSafeMode ? AttackUtils.FilterXss(request.Content) : request.Content;
-            await FileUtils.WriteTextAsync(filePath, content);
+            await FileUtils.WriteTextAsync(filePath, request.Content);
             if (!string.IsNullOrEmpty(filePathToDelete))
             {
                 FileUtils.DeleteFileIfExists(filePathToDelete);

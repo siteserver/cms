@@ -21,6 +21,24 @@
     <div class="right">
 
       <el-popover
+        v-if="isSafeMode"
+        placement="bottom"
+        width="480"
+        trigger="hover">
+
+        <div>
+          <h4 style="margin: 5px; text-align: center">SSCMS 系统当前处于安全模式</h4>
+
+          <el-row style="text-align: center; padding: 10px 0;">
+            <el-link type="primary" href="https://sscms.com/docs/v7/getting-started/config/safe-mode.html" target="_blank">请参考安全模式帮助文档了解详情</el-link>
+          </el-row>
+        </div>
+
+        <el-button slot="reference" type="info" size="mini" icon="el-icon-lock">安全模式</el-button>
+
+      </el-popover>
+
+      <el-popover
         v-if="newCms || newPlugins.length > 0"
         placement="bottom"
         width="480"

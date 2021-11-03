@@ -83,6 +83,7 @@ namespace SSCMS.Configuration
         public const string ActionsLoginSuccess = "登录成功";
         public const string ActionsLoginFailure = "登录失败";
 
+        public const string ErrorSafeMode = "安全模式下，此功能已被禁用!";
         public const string ErrorUpload = "请选择有效的文件上传!";
         public const string ErrorImageExtensionAllowed = "此图片格式已被禁止上传，请转换格式后上传!";
         public const string ErrorImageSizeAllowed = "此图片大小已超过限制，请压缩后上传!";
@@ -96,6 +97,6 @@ namespace SSCMS.Configuration
         public const string DefaultImageUploadExtensions = ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.swf,.webp,.svg";
         public const string DefaultAudioUploadExtensions = ".mp3,.wma,.wav,.amr,.m4a";
         public const string DefaultVideoUploadExtensions = ".asf,.asx,.avi,.flv,.mid,.midi,.mov,.mp3,.mp4,.mpg,.mpeg,.ogg,.ra,.rm,.rmb,.rmvb,.rp,.rt,.smi,.swf,.wav,.webm,.wma,.wmv,.viv,.f4v,.m4v,.3gp,.3g2";
-        public const string DefaultFileUploadExtensions = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt,.md,.xml,.js,.css";
+        public const string DefaultFileUploadExtensions = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.md,.xml,.css";
     }
 }

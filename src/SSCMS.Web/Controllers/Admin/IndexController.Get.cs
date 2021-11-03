@@ -245,7 +245,8 @@ namespace SSCMS.Web.Controllers.Admin
                     UserName = admin.UserName,
                     AvatarUrl = admin.AvatarUrl,
                     Level = await _authManager.GetAdminLevelAsync()
-                }
+                },
+                IsSafeMode = _settingsManager.IsSafeMode
             };
         }
     }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -16,6 +17,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites))
             {
                 return Unauthorized();
+            }
+
+            if (_settingsManager.IsSafeMode)
+            {
+                return this.Error(Constants.ErrorSafeMode);
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);

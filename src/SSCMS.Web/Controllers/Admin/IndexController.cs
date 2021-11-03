@@ -83,6 +83,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string SiteUrl { get; set; }
             public string PreviewUrl { get; set; }
             public Local Local { get; set; }
+            public bool IsSafeMode { get; set; }
         }
 
         public class SetLanguageRequest
