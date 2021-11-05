@@ -129,7 +129,7 @@ var methods = {
 
       setTimeout(function () {
         $this.apiInstall(res.value);
-      }, 2000);
+      }, 30000);
     }).catch(function (error) {
       utils.loading($this, false);
       $this.errorMessage = utils.getErrorMessage(error);
@@ -178,7 +178,7 @@ var methods = {
     else
       result += 10;
     //alert("检查长度:"+strPassword.length+"-"+result);
-  
+
     //check letter
     var bHave = false;
     var bAll = false;
@@ -195,18 +195,18 @@ var methods = {
       bAll = true;
     }
     //alert("检查字母："+result);
-  
+
     //检查数字
     var bDigi = false;
     var digitalLen = 0;
     for (var i = 0; i < strPassword.length; i++) {
-  
+
       if (strPassword.charAt(i) <= '9' && strPassword.charAt(i) >= '0') {
         bDigi = true;
         digitalLen += 1;
         //alert(strPassword[i]);
       }
-  
+
     }
     if (digitalLen == 0) //没有数字
     {
@@ -222,7 +222,7 @@ var methods = {
     }
     //alert("数字个数：" + digitalLen);
     //alert("检查数字："+result);
-  
+
     //检查非单词字符
     var bOther = false;
     var otherLen = 0;
@@ -247,7 +247,7 @@ var methods = {
       bOther = true;
     }
     //alert("检查非单词："+result);
-  
+
     //检查额外奖励
     if (bAll && bDigi && bOther)
       result += 5;
@@ -256,7 +256,7 @@ var methods = {
     else if (bHave && bDigi)
       result += 2;
     //alert("检查额外奖励："+result);
-  
+
     this.passwordLevel = (result / 100) * 5;
   },
 
@@ -285,7 +285,7 @@ var methods = {
         this.pageIndex++;
         return;
       }
-  
+
       this.$refs.databaseForm.validate(function(valid) {
         if (valid) {
           $this.apiDatabaseConnect();
@@ -309,7 +309,7 @@ var methods = {
         this.pageIndex++;
         return;
       }
-  
+
       this.$refs.redisForm.validate(function(valid) {
         if (valid) {
           $this.apiRedisConnect();

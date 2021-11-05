@@ -44,6 +44,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "链接域名")]
         private const string Host = nameof(Host);
 
+        [StlAttribute(Title = "链接目标")]
+        private const string Target = nameof(Target);
+
         [StlAttribute(Title = "链接参数")]
         private const string QueryString = nameof(QueryString);
 
@@ -58,6 +61,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var href = string.Empty;
             var queryString = string.Empty;
             var host = string.Empty;
+            var target = string.Empty;
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -118,6 +122,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     host = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, Target))
+                {
+                    target = value;
+                }
                 else
                 {
                     attributes[name] = value;
@@ -125,12 +133,12 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, channelIndex, channelName, upLevel, topLevel,
-                removeTarget, href, queryString, host, attributes);
+                removeTarget, href, queryString, host, target, attributes);
         }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, string channelIndex,
             string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString,
-            string host, NameValueCollection attributes)
+            string host, string target, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -200,6 +208,11 @@ namespace SSCMS.Core.StlParser.StlElement
                         await parseManager.ParseInnerContentAsync(innerBuilder);
                         innerHtml = innerBuilder.ToString();
                     }
+
+                    if (string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(contentInfo?.LinkUrl))
+                    {
+                        attributes["target"] = "_blank";
+                    }
                 }
                 else if (contextInfo.ContextType == ParseType.Channel) //获取栏目Url
                 {
@@ -221,6 +234,11 @@ namespace SSCMS.Core.StlParser.StlElement
                         var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                         await parseManager.ParseInnerContentAsync(innerBuilder);
                         innerHtml = innerBuilder.ToString();
+                    }
+
+                    if (string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(channel.LinkUrl))
+                    {
+                        attributes["target"] = "_blank";
                     }
                 }
             }
