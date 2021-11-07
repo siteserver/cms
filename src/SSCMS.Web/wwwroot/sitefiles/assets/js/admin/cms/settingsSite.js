@@ -93,6 +93,7 @@ var methods = {
     setTimeout(function () {
       for (var i = 0; i < $this.styles.length; i++) {
         var style = $this.styles[i];
+        var attributeName = utils.toCamelCase(style.attributeName);
         if (style.inputType === 'TextEditor') {
           var editor = utils.getEditor(style.attributeName);
           editor.attributeName = style.attributeName;
@@ -101,6 +102,12 @@ var methods = {
               $this.form[this.attributeName] = this.getContent();
             });
           });
+        } else if (style.inputType === 'Date' || style.inputType === 'DateTime') {
+          if (!$this.form[attributeName]) {
+            $this.form[attributeName] = new Date();
+          } else {
+            $this.form[attributeName] = new Date($this.form[attributeName]);
+          }
         }
       }
     }, 100);
