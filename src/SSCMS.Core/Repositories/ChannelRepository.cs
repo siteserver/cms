@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
+using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -247,7 +248,7 @@ namespace SSCMS.Core.Repositories
                     whereStringBuilder.Append(" AND (");
                     foreach (var theGroupNot in groupNotArr)
                     {
-                        var trimGroupNot = AttackUtils.FilterSql(theGroupNot.Trim());
+                        var trimGroupNot = Utilities.FilterSql(theGroupNot.Trim());
                         //whereStringBuilder.Append(
                         //    $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND CHARINDEX('{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot}',siteserver_Channel.GroupNames) = 0) AND ");
 

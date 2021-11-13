@@ -154,7 +154,7 @@ namespace SSCMS.Core.Services
             return GroupMessageType.mpnews;
         }
 
-        private string SaveImages(string content)
+        private async Task<string> SaveImagesAsync(string content)
         {
             var originalImageSrcs = RegexUtils.GetOriginalImageSrcs(content);
             foreach (var originalImageSrc in originalImageSrcs)
@@ -173,7 +173,7 @@ namespace SSCMS.Core.Services
                 var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
                 var filePath = PathUtils.Combine(directoryPath, materialFileName);
 
-                WebClientUtils.Download(originalImageSrc, filePath);
+                await HttpClientUtils.DownloadAsync(originalImageSrc, filePath);
 
                 var imageUrl = PageUtils.Combine(virtualDirectoryPath, materialFileName);
 

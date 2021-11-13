@@ -734,7 +734,7 @@ namespace SSCMS.Core.Utils
 
                 if (inputType != InputType.TextEditor && inputType != InputType.Image && inputType != InputType.File && inputType != InputType.Video && !StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Content.LinkUrl)))
                 {
-                    theValue = AttackUtils.FilterXss(theValue);
+                    theValue = StringUtils.FilterXss(theValue);
                 }
 
                 dict[style.AttributeName] = theValue;

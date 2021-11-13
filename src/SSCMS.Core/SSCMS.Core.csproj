@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SSCMS\SSCMS.csproj" />
-    <!-- <PackageReference Include="SSCMS" Version="7.0.12" /> -->
+    <!-- <PackageReference Include="SSCMS" Version="7.1.0" /> -->
   </ItemGroup>
 
 </Project>

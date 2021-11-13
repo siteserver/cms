@@ -124,8 +124,8 @@ namespace SSCMS.Web
             services.AddHealthChecks();
 
             services.AddRazorPages()
-                .AddPluginApplicationParts(pluginManager)
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+                .AddPluginApplicationParts(pluginManager);
+                // .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
             services.AddTaskQueue();

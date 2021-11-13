@@ -118,7 +118,7 @@ $(document).ready(function(){{
                 {
                     var value = queryString[key];
                     value = WebUtility.UrlDecode(value);
-                    value = AttackUtils.FilterSqlAndXss(value);
+                    value = StringUtils.FilterSqlAndXss(value);
 
                     templateContent = StringUtils.ReplaceIgnoreCase(templateContent, $"{{Request.{key}}}", value);
                 }

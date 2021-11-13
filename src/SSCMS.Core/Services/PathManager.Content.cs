@@ -139,7 +139,7 @@ namespace SSCMS.Core.Services
 
             if (_settingsManager.IsSafeMode)
             {
-                return AttackUtils.FilterXss(builder.ToString());
+                return StringUtils.FilterXss(builder.ToString());
             }
 
             return builder.ToString();

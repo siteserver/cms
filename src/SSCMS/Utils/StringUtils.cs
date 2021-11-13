@@ -3,6 +3,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Datory.Utils;
+using Ganss.XSS;
 using SSCMS.Configuration;
 
 namespace SSCMS.Utils
@@ -831,6 +833,19 @@ namespace SSCMS.Utils
         public static string ToString(object value)
         {
             return value?.ToString();
+        }
+
+        private static readonly HtmlSanitizer Sanitizer = new HtmlSanitizer();
+
+        public static string FilterSqlAndXss(string objStr)
+        {
+            return FilterXss(Utilities.FilterSql(objStr));
+        }
+
+        public static string FilterXss(string html)
+        {
+            if (string.IsNullOrEmpty(html)) return string.Empty;
+            return Sanitizer.Sanitize(html);
         }
     }
 }

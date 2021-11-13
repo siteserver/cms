@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
+using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -71,7 +72,7 @@ namespace SSCMS.Core.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{Utilities.FilterSql(trimGroup)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     whereBuilder.Length -= 3;
                     whereBuilder.Append(") ");
@@ -109,7 +110,7 @@ namespace SSCMS.Core.Repositories
                     foreach (var tagName in tagNames)
                     {
                         whereBuilder.Append(
-                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName)}) OR ");
+                            $" ({nameof(Content.TagNames)} = '{Utilities.FilterSql(tagName)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName)}) OR ");
                     }
                     whereBuilder.Length -= 3;
                     whereBuilder.Append(") ");
@@ -183,7 +184,7 @@ namespace SSCMS.Core.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{Utilities.FilterSql(trimGroup)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -248,7 +249,7 @@ namespace SSCMS.Core.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" ({nameof(Content.GroupNames)} = '{AttackUtils.FilterSql(trimGroup)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
+                                $" ({nameof(Content.GroupNames)} = '{Utilities.FilterSql(trimGroup)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.GroupNames), "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -291,7 +292,7 @@ namespace SSCMS.Core.Repositories
                     foreach (var tagName in tagNames)
                     {
                         whereStringBuilder.Append(
-                            $" ({nameof(Content.TagNames)} = '{AttackUtils.FilterSql(tagName)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName)}) OR ");
+                            $" ({nameof(Content.TagNames)} = '{Utilities.FilterSql(tagName)}' OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName + ",")} OR {DatabaseUtils.GetInStr(database, nameof(Content.TagNames), "," + tagName)}) OR ");
                     }
                     whereStringBuilder.Length -= 3;
                     whereStringBuilder.Append(") ");

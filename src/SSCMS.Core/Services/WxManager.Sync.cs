@@ -74,7 +74,7 @@ namespace SSCMS.Core.Services
                                 var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
                                 var filePath = PathUtils.Combine(directoryPath, materialFileName);
 
-                                WebClientUtils.Download(item.thumb_url, filePath);
+                                await HttpClientUtils.DownloadAsync(item.thumb_url, filePath);
 
                                 imageUrl = PageUtils.Combine(virtualDirectoryPath, materialFileName);
                             }
@@ -95,7 +95,7 @@ namespace SSCMS.Core.Services
                                 Author = item.author,
                                 Title = item.title,
                                 ContentSourceUrl = item.content_source_url,
-                                Content = SaveImages(item.content),
+                                Content = await SaveImagesAsync(item.content),
                                 Digest = item.digest,
                                 ShowCoverPic = item.show_cover_pic == "1",
                                 ThumbUrl = imageUrl,

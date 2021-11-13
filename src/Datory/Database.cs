@@ -109,6 +109,7 @@ namespace Datory
         {
             bool exists;
             var databaseName = DatabaseName;
+            tableName = Utilities.FilterSql(tableName);
 
             try
             {

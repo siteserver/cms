@@ -1,4 +1,5 @@
 ﻿using Datory;
+using Datory.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
@@ -8,7 +9,7 @@ namespace SSCMS.Core.Utils
         public static string GetInStr(IDatabase database, string columnName, string inStr)
         {
             var retVal = string.Empty;
-            inStr = AttackUtils.FilterSql(inStr);
+            inStr = Utilities.FilterSql(inStr);
             columnName = database.GetQuotedIdentifier(columnName);
 
             if (database.DatabaseType == DatabaseType.MySql)

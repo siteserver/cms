@@ -129,7 +129,7 @@ var methods = {
 
       setTimeout(function () {
         $this.apiInstall(res.value);
-      }, 30000);
+      }, 3000);
     }).catch(function (error) {
       utils.loading($this, false);
       $this.errorMessage = utils.getErrorMessage(error);
@@ -141,12 +141,18 @@ var methods = {
 
     this.errorMessage = null;
     utils.loading(this, true);
-    $api.post($url + '/actions/install', _.assign({securityKey: securityKey}, this.databaseForm, this.redisForm, this.adminForm)).then(function (response) {
+    $api.post($url + '/actions/install', _.assign({securityKey: securityKey}, $this.databaseForm, $this.redisForm, $this.adminForm)).then(function (response) {
       var res = response.data;
-
       $this.pageIndex++;
     }).catch(function (error) {
-      $this.errorMessage = utils.getErrorMessage(error);
+      $api.post($url + '/actions/install', _.assign({securityKey: securityKey}, $this.databaseForm, $this.redisForm, $this.adminForm)).then(function (response) {
+        var res = response.data;
+        $this.pageIndex++;
+      }).catch(function (error) {
+        $this.errorMessage = utils.getErrorMessage(error);
+      }).then(function () {
+        utils.loading($this, false);
+      });
     }).then(function () {
       utils.loading($this, false);
     });

@@ -291,7 +291,10 @@ namespace SSCMS.Core.Repositories
         private static string GenerateSalt()
         {
             var data = new byte[0x10];
-            new RNGCryptoServiceProvider().GetBytes(data);
+            // new RNGCryptoServiceProvider().GetBytes(data);
+            var rand = RandomNumberGenerator.Create();
+            rand.GetBytes(data);
+
             return Convert.ToBase64String(data);
         }
 

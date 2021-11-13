@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <Version>7.0.12</Version>
+    <Version>7.1.0</Version>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <AssemblyName>SSCMS.Cli</AssemblyName>
     <StartupObject>SSCMS.Cli.Program</StartupObject>

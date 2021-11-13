@@ -118,7 +118,7 @@ namespace SSCMS.Utils
             var originals = TranslateUtils.ToNameValueCollection(querystring);
             foreach (string key in originals.Keys)
             {
-                attributes[key] = AttackUtils.FilterSqlAndXss(originals[key]);
+                attributes[key] = StringUtils.FilterSqlAndXss(originals[key]);
             }
             return attributes;
         }

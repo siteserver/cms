@@ -428,5 +428,65 @@ namespace Datory.Utils
             // Return the hexadecimal string.
             return sBuilder.ToString();
         }
+
+        public static string ReplaceIgnoreCase(string value, string replace, string to)
+        {
+            if (value == null) return string.Empty;
+            if (to == null) to = string.Empty;
+            var count = 0;
+            var position0 = 0;
+            int position1;
+            var upperString = value.ToUpper();
+            var upperPattern = replace.ToUpper();
+            var inc = (value.Length / replace.Length) * (to.Length - replace.Length);
+            var chars = new char[value.Length + Math.Max(0, inc)];
+            while ((position1 = upperString.IndexOf(upperPattern, position0, StringComparison.Ordinal)) != -1)
+            {
+                for (var i = position0; i < position1; ++i) chars[count++] = value[i];
+                foreach (var t in to)
+                {
+                    chars[count++] = t;
+                }
+                position0 = position1 + replace.Length;
+            }
+            if (position0 == 0) return value;
+            for (var i = position0; i < value.Length; ++i) chars[count++] = value[i];
+            return new string(chars, 0, count);
+        }
+
+        public static string FilterSql(string objStr)
+        {
+            if (string.IsNullOrEmpty(objStr)) return string.Empty;
+
+            var isSqlExists = false;
+            const string strSql = "',\\(,\\),select ,insert,update,from ";
+            var strSqls = strSql.Split(',');
+            foreach (var sql in strSqls)
+            {
+                if (objStr.IndexOf(sql, StringComparison.OrdinalIgnoreCase) != -1)
+                {
+                    isSqlExists = true;
+                    break;
+                }
+            }
+            if (isSqlExists)
+            {
+                objStr = ReplaceIgnoreCase(objStr, "'", "_sqlquote_");
+                objStr = ReplaceIgnoreCase(objStr, "\\(", "_sqlleftparenthesis_");
+                objStr = ReplaceIgnoreCase(objStr, "\\)", "_sqlrightparenthesis_");
+                objStr = ReplaceIgnoreCase(objStr, "select ", "_sqlselect_ ");
+                objStr = ReplaceIgnoreCase(objStr, "insert", "_sqlinsert_");
+                objStr = ReplaceIgnoreCase(objStr, "update", "_sqlupdate_");
+                objStr = ReplaceIgnoreCase(objStr, "from ", "_sqlfrom_ ");
+            }
+            return objStr;
+        }
+
+        public static string UnFilterSql(string objStr)
+        {
+            if (string.IsNullOrEmpty(objStr)) return string.Empty;
+
+            return objStr.Replace("_sqlquote_", "'").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
+        }
     }
 }
