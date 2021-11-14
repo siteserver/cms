@@ -7,7 +7,7 @@ namespace SSCMS.Core.Utils
 {
     public static class InstallUtils
     {
-        public static void SaveSettings(string contentRootPath, bool isProtectData, bool isDisablePlugins, string securityKey, string databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList)
+        public static void SaveSettings(string contentRootPath, bool isProtectData, bool isSafeMode, bool isDisablePlugins, string securityKey, string databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList)
         {
             var path = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
 
@@ -33,6 +33,7 @@ namespace SSCMS.Core.Utils
                 : $@"
 {{
   ""IsProtectData"": {StringUtils.ToLower(isProtectData.ToString())},
+  ""IsSafeMode"": {StringUtils.ToLower(isSafeMode.ToString())},
   ""SecurityKey"": ""{securityKey}"",
   ""Database"": {{
     ""Type"": ""{databaseType}"",
@@ -112,7 +113,7 @@ namespace SSCMS.Core.Utils
                     var securityKey = StringUtils.GetShortGuid(false) + StringUtils.GetShortGuid(false) +
                                       StringUtils.GetShortGuid(false);
 
-                    SaveSettings(contentRootPath, false, false, securityKey, DatabaseType.MySql.GetValue(),
+                    SaveSettings(contentRootPath, false, false, false, securityKey, DatabaseType.MySql.GetValue(),
                         string.Empty, string.Empty, string.Empty, null, null);
                 }
             }

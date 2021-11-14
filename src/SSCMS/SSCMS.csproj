@@ -10,7 +10,6 @@
     <PackageDescription>SS CMS .NET Core abstractions for developers.</PackageDescription>
     <Copyright>Copyright © SS CMS</Copyright>
     <RepositoryUrl>https://github.com/siteserver/cms/</RepositoryUrl>
-    <PackageIconUrl>https://sscms.com/assets/images/favicon.png</PackageIconUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageIcon>logo.png</PackageIcon>
     <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
