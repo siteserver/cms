@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -55,6 +56,35 @@ namespace SSCMS.Core.Repositories
                 {
                     await _errorLogRepository.AddErrorLogAsync(ex);
                 }
+            }
+        }
+
+        public async Task AddSiteCreateLogAsync(int siteId, int channelId, int contentId, Administrator adminInfo, string ipAddress, string filePath)
+        {
+            var config = await _configRepository.GetAsync();
+            if (!config.IsLogSite || !config.IsLogSiteCreate) return;
+
+            try
+            {
+                await DeleteIfThresholdAsync();
+
+                var siteLogInfo = new SiteLog
+                {
+                    Id = 0,
+                    SiteId = siteId,
+                    ChannelId = channelId,
+                    ContentId = contentId,
+                    AdminId = adminInfo.Id,
+                    IpAddress = ipAddress,
+                    Action = Constants.ActionsCreate,
+                    Summary = filePath
+                };
+
+                await InsertAsync(siteLogInfo);
+            }
+            catch (Exception ex)
+            {
+                await _errorLogRepository.AddErrorLogAsync(ex);
             }
         }
     }

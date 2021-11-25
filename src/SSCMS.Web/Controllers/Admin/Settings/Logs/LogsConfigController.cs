@@ -34,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             public bool IsTimeThreshold { get; set; }
             public int TimeThreshold { get; set; }
             public bool IsLogSite { get; set; }
-
+            public bool IsLogSiteCreate { get; set; }
             public bool IsLogAdmin { get; set; }
             public bool IsLogUser { get; set; }
             public bool IsLogError { get; set; }

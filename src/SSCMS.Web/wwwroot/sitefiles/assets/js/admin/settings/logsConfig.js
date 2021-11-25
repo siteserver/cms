@@ -6,6 +6,7 @@ var data = utils.init({
     isTimeThreshold: null,
     timeThreshold: null,
     isLogSite: null,
+    isLogSiteCreate: null,
     isLogAdmin: null,
     isLogUser: null,
     isLogError: null
@@ -22,6 +23,7 @@ var methods = {
       $this.form.isTimeThreshold = res.config.isTimeThreshold;
       $this.form.timeThreshold = res.config.timeThreshold;
       $this.form.isLogSite = res.config.isLogSite;
+      $this.form.isLogSiteCreate = res.config.isLogSiteCreate;
       $this.form.isLogAdmin = res.config.isLogAdmin;
       $this.form.isLogUser = res.config.isLogUser;
       $this.form.isLogError = res.config.isLogError;
@@ -40,6 +42,7 @@ var methods = {
       isTimeThreshold: this.form.isTimeThreshold,
       timeThreshold: this.form.timeThreshold,
       isLogSite: this.form.isLogSite,
+      isLogSiteCreate: this.form.isLogSiteCreate,
       isLogAdmin: this.form.isLogAdmin,
       isLogUser: this.form.isLogUser,
       isLogError: this.form.isLogError

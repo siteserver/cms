@@ -20,10 +20,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return NotFound();
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            var config = await _databaseManager.ConfigRepository.GetAsync();
 
             foreach (var summary in summaries)
             {
                 await _createManager.CreateContentAsync(request.SiteId, summary.ChannelId, summary.Id);
+                if (config.IsLogSite && config.IsLogSiteCreate)
+                {
+                    var filePath = await _pathManager.GetContentPageFilePathAsync(site, summary.ChannelId, summary.Id, 0);
+                    await _authManager.AddSiteCreateLogAsync(request.SiteId, summary.ChannelId, summary.Id, filePath);
+                }
             }
 
             return new BoolResult

@@ -18,6 +18,7 @@ namespace SSCMS.Models
         public bool Initialized => Id > 0;
 
         public bool IsLogSite { get; set; } = true;
+        public bool IsLogSiteCreate { get; set; } = false;
 
         public bool IsLogAdmin { get; set; } = true;
 

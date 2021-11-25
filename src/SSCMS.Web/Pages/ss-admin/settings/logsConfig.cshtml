@@ -20,6 +20,11 @@
     <el-radio v-model="form.isLogSite" :label="false">禁用</el-radio>
     <div class="tips">禁用后系统将不再记录站点操作日志</div>
   </el-form-item>
+  <el-form-item label="站点生成日志">
+    <el-radio v-model="form.isLogSiteCreate" :label="true">启用</el-radio>
+    <el-radio v-model="form.isLogSiteCreate" :label="false">禁用</el-radio>
+    <div class="tips">禁用后系统将不再记录站点生成操作日志</div>
+  </el-form-item>
   <el-form-item label="管理员日志">
     <el-radio v-model="form.isLogAdmin" :label="true">启用</el-radio>
     <el-radio v-model="form.isLogAdmin" :label="false">禁用</el-radio>

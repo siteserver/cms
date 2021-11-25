@@ -23,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             }
 
             config.IsLogSite = request.IsLogSite;
+            config.IsLogSiteCreate = request.IsLogSiteCreate;
             config.IsLogAdmin = request.IsLogAdmin;
             config.IsLogUser = request.IsLogUser;
             config.IsLogError = request.IsLogError;

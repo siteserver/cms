@@ -21,15 +21,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public CreatePageController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
+        public CreatePageController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _pathManager = pathManager;
+            _configRepository = configRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;

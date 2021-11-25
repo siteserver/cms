@@ -118,15 +118,30 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
                 channelIdList = selectedChannelIdList;
             }
 
+            var config = await _configRepository.GetAsync();
+
             foreach (var channelId in channelIdList)
             {
                 if (request.IsChannelPage)
                 {
                     await _createManager.CreateChannelAsync(request.SiteId, channelId);
+                    var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId);
+                    await _authManager.AddSiteCreateLogAsync(request.SiteId, channelId, 0, filePath);
                 }
                 if (request.IsContentPage)
                 {
                     await _createManager.CreateAllContentAsync(request.SiteId, channelId);
+                    
+                    if (config.IsLogSite && config.IsLogSiteCreate)
+                    {
+                        var channel = await _channelRepository.GetAsync(channelId);
+                        var contentIds = await _contentRepository.GetContentIdsCheckedAsync(site, channel);
+                        foreach (var contentIdCreate in contentIds)
+                        {
+                            var filePath = await _pathManager.GetContentPageFilePathAsync(site, channelId, contentIdCreate, 0);
+                            await _authManager.AddSiteCreateLogAsync(request.SiteId, channelId, contentIdCreate, filePath);
+                        }
+                    }
                 }
             }
 

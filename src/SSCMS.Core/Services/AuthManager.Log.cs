@@ -35,6 +35,16 @@ namespace SSCMS.Core.Services
             }
         }
 
+        public async Task AddSiteCreateLogAsync(int siteId, int channelId, int contentId, string filePath)
+        {
+            var admin = await GetAdminAsync();
+            if (admin != null)
+            {
+                var ipAddress = PageUtils.GetIpAddress(_context.HttpContext.Request);
+                await _databaseManager.SiteLogRepository.AddSiteCreateLogAsync(siteId, channelId, contentId, admin, ipAddress, filePath);
+            }
+        }
+
         public async Task AddAdminLogAsync(string action, string summary)
         {
             var admin = await GetAdminAsync();

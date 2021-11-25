@@ -82,6 +82,7 @@ namespace SSCMS.Configuration
 
         public const string ActionsLoginSuccess = "登录成功";
         public const string ActionsLoginFailure = "登录失败";
+        public const string ActionsCreate = "生成页面";
 
         public const string ErrorSafeMode = "安全模式下，此功能已被禁用!";
         public const string ErrorUpload = "请选择有效的文件上传!";

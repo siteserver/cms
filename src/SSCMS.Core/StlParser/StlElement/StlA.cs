@@ -57,7 +57,6 @@ namespace SSCMS.Core.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            const bool removeTarget = false;
             var href = string.Empty;
             var queryString = string.Empty;
             var host = string.Empty;
@@ -132,12 +131,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, channelIndex, channelName, upLevel, topLevel,
-                removeTarget, href, queryString, host, target, attributes);
+            return await ParseAsync(parseManager, channelIndex, channelName, upLevel, topLevel, href, queryString, host, target, attributes);
         }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, string channelIndex,
-            string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString,
+            string channelName, int upLevel, int topLevel, string href, string queryString,
             string host, string target, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
@@ -159,6 +157,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var innerHtml = string.Empty;
 
             var url = string.Empty;
+            var removeTarget = false;
             var onclick = string.Empty;
             if (!string.IsNullOrEmpty(href))
             {
@@ -211,7 +210,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(contentInfo?.LinkUrl))
                     {
-                        attributes["target"] = "_blank";
+                        target = "_blank";
                     }
                 }
                 else if (contextInfo.ContextType == ParseType.Channel) //获取栏目Url
@@ -238,7 +237,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     if (string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(channel.LinkUrl))
                     {
-                        attributes["target"] = "_blank";
+                        target = "_blank";
                     }
                 }
             }
@@ -270,6 +269,10 @@ namespace SSCMS.Core.StlParser.StlElement
             if (removeTarget)
             {
                 attributes["target"] = string.Empty;
+            }
+            else if (!string.IsNullOrEmpty(target))
+            {
+                attributes["target"] = target;
             }
 
             // 如果是实体标签，则只返回url
