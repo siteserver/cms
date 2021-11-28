@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
     public partial class LayerArticleController
     {
         [HttpGet, Route(RouteId)]
-        public async Task<ActionResult<MaterialArticle>> Get([FromQuery] int id)
+        public async Task<ActionResult<MaterialArticle>> Get([FromRoute] int id)
         {
             return await _materialArticleRepository.GetAsync(id);
         }

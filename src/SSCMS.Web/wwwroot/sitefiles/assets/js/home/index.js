@@ -40,7 +40,7 @@ var methods = {
         $this.homeLogoUrl = res.homeLogoUrl || utils.getAssetsUrl('images/logo.png');
         $this.homeTitle = res.homeTitle || '用户中心';
         $this.menus = res.menus;
-        
+
         var sideMenuIds = [];
         if (location.hash) {
           var ids = location.hash.substr(1).split('/');
@@ -52,7 +52,10 @@ var methods = {
             if (!ids[i]) break;
             sideMenuIds.push(ids[i]);
           }
+        } else {
+          utils.addTab('欢迎', utils.getPageUrl(null, 'dashboard'));
         }
+
         if (!$this.menu && $this.menus.length > 0) {
           $this.menu = $this.menus[0];
         }
@@ -170,7 +173,7 @@ var methods = {
       defaultOpeneds.push(menu.id);
     }
     this.defaultOpeneds = defaultOpeneds;
-    
+
     if (menu) {
       this.btnMenuClick(menu);
     }
