@@ -9,10 +9,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites))
-            {
-                return Unauthorized();
-            }
+            //if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsSites))
+            //{
+            //    return Unauthorized();
+            //}
 
             var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
 
