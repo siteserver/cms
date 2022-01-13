@@ -131,9 +131,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlDelete, {
-      data: request
-    }).then(function(response) {
+    $api.post($urlDelete, request).then(function(response) {
       var res = response.data;
 
       $this.apiList($this.siteId, 1, message);

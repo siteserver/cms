@@ -6,9 +6,9 @@ namespace SSCMS.Models
 {
     [DataTable("siteserver_Special")]
     public class Special : Entity
-	{
-	    [DataColumn]
-	    public int SiteId { get; set; }
+	  {
+        [DataColumn]
+        public int SiteId { get; set; }
 
         [DataColumn]
         public string Title { get; set; }

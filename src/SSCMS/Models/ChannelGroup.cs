@@ -6,7 +6,7 @@ namespace SSCMS.Models
     [DataTable("siteserver_ChannelGroup")]
     public class ChannelGroup : Entity
     {
-	    [DataColumn]
+	      [DataColumn]
         public string GroupName { get; set; }
 
         [DataColumn]

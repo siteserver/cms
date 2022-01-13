@@ -9,7 +9,7 @@ namespace SSCMS.Models
         [DataColumn]
         public string CacheKey { get; set; }
 
-        [DataColumn(Length = 500)]
+        [DataColumn]
         public string CacheValue { get; set; }
     }
 }

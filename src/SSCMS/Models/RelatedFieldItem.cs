@@ -10,7 +10,7 @@ namespace SSCMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
-	    public int RelatedFieldId { get; set; }
+	      public int RelatedFieldId { get; set; }
 
         [DataColumn]
         public string Label { get; set; }

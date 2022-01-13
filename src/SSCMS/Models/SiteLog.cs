@@ -7,7 +7,7 @@ namespace SSCMS.Models
 	public class SiteLog : Entity
     {
         [DataColumn]
-	    public int SiteId { get; set; }
+	      public int SiteId { get; set; }
 
         [DataColumn]
         public int ChannelId { get; set; }

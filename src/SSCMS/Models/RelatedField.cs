@@ -10,6 +10,6 @@ namespace SSCMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
-	    public string Title { get; set; }
+	      public string Title { get; set; }
 	}
 }
