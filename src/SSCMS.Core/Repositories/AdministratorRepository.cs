@@ -454,6 +454,7 @@ namespace SSCMS.Core.Repositories
                 administrator.PasswordFormat = PasswordFormat.Encrypted;
                 administrator.Password = EncodePassword(password, administrator.PasswordFormat, out var passwordSalt);
                 administrator.PasswordSalt = passwordSalt;
+                administrator.Set("ConfirmPassword", string.Empty);
 
                 await _repository.InsertAsync(administrator);
 

@@ -143,6 +143,7 @@ namespace SSCMS.Core.Repositories
             user.Password = password;
             user.PasswordFormat = passwordFormat;
             user.PasswordSalt = passwordSalt;
+            user.Set("ConfirmPassword", string.Empty);
 
             user.Id = await _repository.InsertAsync(user);
 
@@ -174,7 +175,8 @@ namespace SSCMS.Core.Repositories
             {
                 return (false, errorMessage);
             }
-
+            
+            user.Set("ConfirmPassword", string.Empty);
             await _repository.UpdateAsync(user, Q.CachingRemove(GetCacheKeysToRemove(entity)));
             return (true, string.Empty);
         }
