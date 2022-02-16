@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -52,7 +53,7 @@ namespace SSCMS.Core.Plugins
                 return $"{Host}/extensions/{userName}/{name}/{userName}.{name}.{version}.zip";
             }
 
-            public static string DownloadCms(IPathManager pathManager, string osArchitecture, string version)
+            public static async Task<string> DownloadCmsAsync(IPathManager pathManager, string osArchitecture, string version)
             {
                 var packagesPath = pathManager.GetPackagesPath();
                 var name = GetCmsDownloadName(osArchitecture, version);
@@ -69,7 +70,7 @@ namespace SSCMS.Core.Plugins
                 var filePath = PathUtils.Combine(packagesPath, $"{GetCmsDownloadName(osArchitecture, version)}.zip");
 
                 var url = GetCmsDownloadUrl(osArchitecture, version);
-                RestUtils.Download(url, filePath);
+                await RestUtils.DownloadAsync(url, filePath);
                 //FileUtils.WriteText(filePath, string.Empty);
                 //using (var writer = File.OpenWrite(filePath))
                 //{
@@ -95,7 +96,7 @@ namespace SSCMS.Core.Plugins
                 return directoryPath;
             }
 
-            public static string DownloadExtension(string packagesPath, string userName, string name, string version)
+            public static async Task<string> DownloadExtensionAsync(string packagesPath, string userName, string name, string version)
             {
                 var fileName = $"{userName}.{name}.{version}";
 
@@ -115,7 +116,7 @@ namespace SSCMS.Core.Plugins
                 }
 
                 var url = GetExtensionsDownloadUrl(userName, name, version);
-                RestUtils.Download(url, filePath);
+                await RestUtils.DownloadAsync(url, filePath);
 
                 //FileUtils.WriteText(filePath, string.Empty);
                 //using (var writer = File.OpenWrite(filePath))

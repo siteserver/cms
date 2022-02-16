@@ -26,11 +26,11 @@
 
   <ItemGroup>
     <!--<PackageReference Include="Datory" Version="1.1.9" />-->
-    <PackageReference Include="NSwag.AspNetCore" Version="13.9.4" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.15.9" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
-    <PackageReference Include="HtmlSanitizer" Version="5.0.372" />
+    <PackageReference Include="HtmlSanitizer" Version="7.1.475" />
     <ProjectReference Include="..\Datory\Datory.csproj" />
   </ItemGroup>
 

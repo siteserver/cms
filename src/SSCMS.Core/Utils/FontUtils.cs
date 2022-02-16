@@ -27,7 +27,7 @@ namespace SSCMS.Core.Utils
             foreach (var fileName in list)
             {
                 using var reader = embeddedProvider.GetFileInfo(fileName).CreateReadStream();
-                Fonts.Install(reader);
+                Fonts.Add(reader);
             }
 
             //var assembly = typeof(FontManager).Assembly;

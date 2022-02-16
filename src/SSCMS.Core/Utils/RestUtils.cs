@@ -21,10 +21,14 @@ namespace SSCMS.Core.Utils
 
             var client = new RestClient(url)
             {
-                Timeout = -1,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                
             };
-            var request = new RestRequest(Method.GET);
+            var request = new RestRequest
+            {
+                Method = Method.Get,
+                Timeout = -1,
+                //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
             {
@@ -47,12 +51,13 @@ namespace SSCMS.Core.Utils
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(url)
+            var client = new RestClient(url);
+            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            var request = new RestRequest
             {
+                Method= Method.Post,
                 Timeout = -1,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             };
-            var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
             {
@@ -74,12 +79,13 @@ namespace SSCMS.Core.Utils
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(url)
+            var client = new RestClient(url);
+            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            var request = new RestRequest
             {
+                Method = Method.Post,
                 Timeout = -1,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             };
-            var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
             {
@@ -102,13 +108,13 @@ namespace SSCMS.Core.Utils
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(url)
+            var client = new RestClient(url);
+            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            var request = new RestRequest
             {
+                Method= Method.Post,
                 Timeout = -1,
-                RemoteCertificateValidationCallback =
-                    (sender, certificate, chain, sslPolicyErrors) => true
             };
-            var request = new RestRequest(Method.POST);
             //request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
             {
@@ -126,7 +132,7 @@ namespace SSCMS.Core.Utils
             return (false, GetErrorMessage(response));
         }
 
-        public static void Download(string url, string filePath)
+        public static async Task DownloadAsync(string url, string filePath)
         {
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
@@ -136,18 +142,13 @@ namespace SSCMS.Core.Utils
             using (var writer = File.OpenWrite(filePath))
             {
                 var client = new RestClient(url);
-                var request = new RestRequest
-                {
-                    ResponseWriter = responseStream =>
-                    {
-                        using (responseStream)
-                        {
-                            responseStream.CopyTo(writer);
-                        }
-                    }
-                };
+                var request = new RestRequest();
 
-                client.DownloadData(request);
+                var stream = await client.DownloadStreamAsync(request);
+                using (stream)
+                {
+                    stream.CopyTo(writer);
+                }
             }
         }
 
@@ -156,18 +157,19 @@ namespace SSCMS.Core.Utils
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient("https://api.open.21ds.cn/apiv1/iptest?apkey=iptest")
+            var client = new RestClient("https://api.open.21ds.cn/apiv1/iptest?apkey=iptest");
+            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            var request = new RestRequest
             {
+                Method = Method.Get,
                 Timeout = -1,
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             };
-            var request = new RestRequest(Method.GET);
 
             var response = await client.ExecuteAsync(request);
             return response.Content;
         }
 
-        private static string GetErrorMessage(IRestResponse response)
+        private static string GetErrorMessage(RestResponse response)
         {
             var errorMessage = string.Empty;
             if (response.StatusCode == HttpStatusCode.InternalServerError)

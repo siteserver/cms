@@ -73,7 +73,7 @@ namespace SSCMS.Cli.Jobs
                 if (!proceed) return;
 
                 Console.WriteLine($"Downloading SS CMS {result.Cms.Version}...");
-                var directoryPath = CloudUtils.Dl.DownloadCms(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
+                var directoryPath = await CloudUtils.Dl.DownloadCmsAsync(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
 
                 await WriteUtils.PrintSuccessAsync($"{result.Cms.Version} download successfully!");
 

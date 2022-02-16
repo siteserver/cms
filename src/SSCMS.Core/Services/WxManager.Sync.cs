@@ -285,7 +285,7 @@ namespace SSCMS.Core.Services
                     var filePath = _pathManager.ParsePath(image.Url);
                     if (FileUtils.IsFileExists(filePath))
                     {
-                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath);
+                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath, UploadForeverMediaType.image);
                         mediaId = result.media_id;
                         await _materialImageRepository.UpdateMediaIdAsync(materialId, mediaId);
                     }
@@ -300,7 +300,7 @@ namespace SSCMS.Core.Services
                     var filePath = _pathManager.ParsePath(audio.Url);
                     if (FileUtils.IsFileExists(filePath))
                     {
-                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath);
+                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath, UploadForeverMediaType.voice);
                         mediaId = result.media_id;
                         await _materialAudioRepository.UpdateMediaIdAsync(materialId, mediaId);
                     }
@@ -315,7 +315,7 @@ namespace SSCMS.Core.Services
                     var filePath = _pathManager.ParsePath(video.Url);
                     if (FileUtils.IsFileExists(filePath))
                     {
-                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath);
+                        var result = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath, UploadForeverMediaType.voice);
                         mediaId = result.media_id;
                         await _materialVideoRepository.UpdateMediaIdAsync(materialId, mediaId);
                     }

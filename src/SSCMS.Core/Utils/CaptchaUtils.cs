@@ -42,11 +42,12 @@ namespace SSCMS.Core.Utils
             var r = new Random();
             using (var image = new Image<Rgba32>(width, height))
             {
-                var font = FontUtils.Fonts.CreateFont(FontUtils.DefaultFont.Name, 40);
+                var font = FontUtils.DefaultFont.CreateFont(40);
 
                 image.Mutate(ctx =>
                 {
-                    ctx.Fill(Color.FromRgb(240, 243, 248));
+                    var color = Color.FromRgb(240, 243, 248);
+                    ctx.Fill(color);
                     ctx.DrawText(code, font, Colors[r.Next(0, 5)], new PointF(10, 10));
 
                     var random = new Random();

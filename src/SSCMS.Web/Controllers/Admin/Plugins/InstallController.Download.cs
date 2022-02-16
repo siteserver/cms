@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var userName = request.PluginId.Split('.')[0];
             var name = request.PluginId.Split('.')[1];
 
-            _pluginManager.Install(userName, name, request.Version);
+            await _pluginManager.InstallAsync(userName, name, request.Version);
 
             await _authManager.AddAdminLogAsync("安装插件", $"插件:{userName}.{name}");
 
