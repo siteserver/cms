@@ -101,7 +101,7 @@ var methods = {
     utils.success(message);
   },
 
-  apiList: function(message, expandedChannelIds) {
+  apiList: function(expandedChannelIds) {
     var $this = this;
 
     utils.loading(this, true);
@@ -130,10 +130,6 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.siteUrl = res.siteUrl;
-
-      if (message) {
-        utils.success(message);
-      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -182,7 +178,8 @@ var methods = {
       var res = response.data;
 
       $this.appendPanel = false;
-      $this.apiList('栏目添加成功!', res);
+      $this.apiList(res);
+      utils.success('栏目添加成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
@@ -197,7 +194,8 @@ var methods = {
       var res = response.data;
 
       $this.editPanel = false;
-      $this.apiList('栏目编辑成功!', res);
+      $this.apiList(res);
+      utils.success('栏目编辑成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
@@ -212,7 +210,8 @@ var methods = {
       var res = response.data;
 
       $this.deletePanel = false;
-      $this.apiList('栏目删除成功!', res);
+      $this.apiList(res);
+      utils.success('栏目删除成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
@@ -232,7 +231,8 @@ var methods = {
       var res = response.data;
 
       $this.importPanel = false;
-      $this.apiList('栏目导入成功!', res);
+      $this.apiList(res);
+      utils.success('栏目导入成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
@@ -251,7 +251,6 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      // $this.apiList('栏目排序成功!', [$this.siteId, sourceId]);
       utils.success('栏目排序成功!');
     }).catch(function (error) {
       utils.error(error);
@@ -677,5 +676,13 @@ var $vue = new Vue({
   created: function () {
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.siteId;
     this.apiList();
+    var $this = this;
+    $(document).keypress(function (e) {
+      if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
+        if ($this.editPanel) {
+          $this.btnEditSubmitClick();
+        }
+      }
+    });
   }
 });
