@@ -107,15 +107,15 @@
       </el-tooltip>
       <!-- recommend -->
       <el-tooltip v-if="scope.row.recommend" effect="light" content="推荐" placement="top">
-        <i class="el-icon-star-off"></i>
+        <el-link size="mini" :underline="false" type="danger"><i class="el-icon-star-off"></i></el-link>
       </el-tooltip>
       <!-- hot -->
       <el-tooltip v-if="scope.row.hot" effect="light" content="热点" placement="top">
-        <i class="el-icon-news"></i>
+        <el-link size="mini" :underline="false" type="danger"><i class="el-icon-news"></i></el-link>
       </el-tooltip>
       <!-- color -->
       <el-tooltip v-if="scope.row.color" effect="light" content="醒目" placement="top">
-        <i class="el-icon-view"></i>
+        <el-link size="mini" :underline="false" type="danger"><i class="el-icon-view"></i></el-link>
       </el-tooltip>
       <!-- imageUrl -->
       <el-popover

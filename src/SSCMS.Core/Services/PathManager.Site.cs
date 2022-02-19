@@ -596,14 +596,14 @@ namespace SSCMS.Core.Services
             return new List<Select<string>>
             {
                 new Select<string>(LinkType.None),
-                new Select<string>(LinkType.NoLinkIfContentNotExists),
-                new Select<string>(LinkType.LinkToOnlyOneContent),
-                new Select<string>(LinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent),
+                new Select<string>(LinkType.LinkToFirstChannel),
                 new Select<string>(LinkType.LinkToFirstContent),
+                new Select<string>(LinkType.LinkToOnlyOneContent),
+                new Select<string>(LinkType.NoLinkIfContentNotExists),
+                new Select<string>(LinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent),
                 new Select<string>(LinkType.NoLinkIfContentNotExistsAndLinkToFirstContent),
                 new Select<string>(LinkType.NoLinkIfChannelNotExists),
                 new Select<string>(LinkType.LinkToLastAddChannel),
-                new Select<string>(LinkType.LinkToFirstChannel),
                 new Select<string>(LinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel),
                 new Select<string>(LinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel),
                 new Select<string>(LinkType.NoLink)
