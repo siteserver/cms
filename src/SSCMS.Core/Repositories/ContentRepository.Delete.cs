@@ -39,7 +39,7 @@ namespace SSCMS.Core.Repositories
 
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                    .SetRaw("ChannelId = -ChannelId")
+                    .SetRaw("\"ChannelId\" = -\"ChannelId\"")
                     .Set(nameof(Content.LastEditAdminId), adminId)
                     .WhereIn(nameof(Content.Id), contentIdList)
                     .CachingRemove(cacheKeys.ToArray())
