@@ -417,7 +417,7 @@ namespace SSCMS.Core.Repositories
 
         public string GetTableName(Site site, IChannelSummary channel)
         {
-            return channel != null ? GetTableName(site, channel.TableName) : string.Empty;
+            return channel != null ? GetTableName(site, channel.TableName) : site.TableName;
         }
 
         private string GetTableName(Site site, string tableName)

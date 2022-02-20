@@ -37,9 +37,10 @@ namespace SSCMS.Core.Repositories
                 }
             }
 
+            var channelIdName = repository.Database.GetQuotedIdentifier(nameof(Content.ChannelId));
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                    .SetRaw("ChannelId = -ChannelId")
+                    .SetRaw($"{channelIdName} = -{channelIdName}")
                     .Set(nameof(Content.LastEditAdminId), adminId)
                     .WhereIn(nameof(Content.Id), contentIdList)
                     .CachingRemove(cacheKeys.ToArray())
@@ -79,9 +80,10 @@ namespace SSCMS.Core.Repositories
                 }
             }
 
+            var channelIdName = repository.Database.GetQuotedIdentifier(nameof(Content.ChannelId));
             await repository.UpdateAsync(
                 GetQuery(site.Id, channel.Id)
-                    .SetRaw("ChannelId = -ChannelId")
+                    .SetRaw($"{channelIdName} = -{channelIdName}")
                     .Set(nameof(Content.LastEditAdminId), adminId)
                     .Where(nameof(Content.Id), contentId)
                     .CachingRemove(cacheKeys.ToArray())

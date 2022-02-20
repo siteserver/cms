@@ -14,6 +14,9 @@ namespace SSCMS.Core.StlParser.StlElement
     {
         public const string ElementName = "stl:pageItems";
 
+        [StlAttribute(Title = "无翻页时自动隐藏")]
+        private const string IsAutoHide = nameof(IsAutoHide);
+
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
@@ -26,13 +29,18 @@ namespace SSCMS.Core.StlParser.StlElement
             string parsedContent;
             try
             {
+                var isAutoHide = true;
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
                 if (stlElementInfo.Attributes[Context] != null)
                 {
                     contextType = TranslateUtils.ToEnum(stlElementInfo.Attributes[Context], ParseType.Undefined);
                 }
+                else if (stlElementInfo.Attributes[IsAutoHide] != null)
+                {
+                    isAutoHide = TranslateUtils.ToBool(stlElementInfo.Attributes[IsAutoHide]);
+                }
 
-                if (pageCount <= 1)
+                if (pageCount <= 1 && isAutoHide)
                 {
                     return string.Empty;
                 }
@@ -71,9 +79,14 @@ namespace SSCMS.Core.StlParser.StlElement
             string parsedContent;
             try
             {
+                var isAutoHide = true;
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
+                if (stlElementInfo.Attributes[IsAutoHide] != null)
+                {
+                    isAutoHide = TranslateUtils.ToBool(stlElementInfo.Attributes[IsAutoHide]);
+                }
 
-                if (pageCount <= 1)
+                if (pageCount <= 1 && isAutoHide)
                 {
                     return string.Empty;
                 }
@@ -107,9 +120,14 @@ namespace SSCMS.Core.StlParser.StlElement
             string parsedContent;
             try
             {
+                var isAutoHide = true;
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement, -1);
+                if (stlElementInfo.Attributes[IsAutoHide] != null)
+                {
+                    isAutoHide = TranslateUtils.ToBool(stlElementInfo.Attributes[IsAutoHide]);
+                }
 
-                if (pageCount <= 1)
+                if (pageCount <= 1 && isAutoHide)
                 {
                     return string.Empty;
                 }

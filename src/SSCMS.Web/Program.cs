@@ -31,14 +31,14 @@ namespace SSCMS.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseSerilog((hostingContext, loggerConfiguration) =>
-                        {
-                            loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
-                            loggerConfiguration.Enrich.FromLogContext();
-                        })
                         .UseKestrel(options => { options.Limits.MaxRequestBodySize = long.MaxValue; })
                         .UseIIS()
                         .UseStartup<Startup>();
+                })
+                .UseSerilog((hostingContext, loggerConfiguration) =>
+                {
+                    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+                    loggerConfiguration.Enrich.FromLogContext();
                 });
     }
 }
