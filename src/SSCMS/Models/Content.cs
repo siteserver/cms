@@ -49,18 +49,6 @@ namespace SSCMS.Models
         [DataColumn]
         public int Hits { get; set; }
 
-        [DataColumn]
-        public int HitsByDay { get; set; }
-
-        [DataColumn]
-        public int HitsByWeek { get; set; }
-
-        [DataColumn]
-        public int HitsByMonth { get; set; }
-
-        [DataColumn]
-        public DateTime? LastHitsDate { get; set; }
-
         [DataColumn] 
         public int Downloads { get; set; }
 

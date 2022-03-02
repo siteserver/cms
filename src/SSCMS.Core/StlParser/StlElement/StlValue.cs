@@ -18,7 +18,10 @@ namespace SSCMS.Core.StlParser.StlElement
 
 		[StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);
-        
+
+        [StlAttribute(Title = "显示的格式")]
+        private const string Format = nameof(Format);
+
         [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
 
@@ -76,7 +79,7 @@ namespace SSCMS.Core.StlParser.StlElement
         public static async Task<object> ParseAsync(IParseManager parseManager)
 		{
 		    var type = string.Empty;
-            var formatString = string.Empty;
+            var format = string.Empty;
             var startIndex = 0;
             var length = 0;
             var wordNum = 0;
@@ -96,9 +99,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, FormatString))
+                else if (StringUtils.EqualsIgnoreCase(name, Format) || StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
-                    formatString = value;
+                    format = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
@@ -142,10 +145,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, type, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseAsync(parseManager, type, format, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
 		}
 
-        private static async Task<object> ParseAsync(IParseManager parseManager, string type, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<object> ParseAsync(IParseManager parseManager, string type, string format, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -255,7 +258,7 @@ namespace SSCMS.Core.StlParser.StlElement
             else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(type))
             {
                 pageInfo.Parameters.TryGetValue(type, out parsedContent);
-                parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
             }
             else
             {

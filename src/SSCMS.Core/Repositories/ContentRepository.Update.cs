@@ -8,6 +8,20 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ContentRepository
     {
+        public async Task UpdateHitsAsync(int siteId, int channelId, int contentId, int hits)
+        {
+            var tableName = await _siteRepository.GetTableNameAsync(siteId);
+            var repository = await GetRepositoryAsync(tableName);
+
+            await repository.UpdateAsync(Q
+                .Set(nameof(Content.Hits), hits)
+                .Where(nameof(Content.SiteId), siteId)
+                .Where(nameof(Content.ChannelId), channelId)
+                .Where(nameof(Content.Id), contentId)
+                .CachingRemove(GetEntityKey(tableName, contentId))
+            );
+        }
+
         public async Task UpdateAsync(Content content)
         {
             if (content == null) return;

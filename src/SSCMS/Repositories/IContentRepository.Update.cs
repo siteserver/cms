@@ -5,6 +5,8 @@ namespace SSCMS.Repositories
 {
     public partial interface IContentRepository
     {
+        Task UpdateHitsAsync(int siteId, int channelId, int contentId, int hits);
+
         Task UpdateAsync(Site site, Channel channel, Content content);
 
         Task UpdateAsync(Content content);

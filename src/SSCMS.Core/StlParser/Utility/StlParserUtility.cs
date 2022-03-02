@@ -30,9 +30,6 @@ namespace SSCMS.Core.StlParser.Utility
         public const string OrderLastModifiedDate = "LastModifiedDate";				//最后更改时间（只可用于内容列表）
         public const string OrderLastModifiedDateBack = "LastModifiedDateBack";	//最后更改时间的相反方向（只可用于内容列表）
         public const string OrderHits = "Hits";	            //点击量
-        public const string OrderHitsByDay = "HitsByDay";	    //日点击量
-        public const string OrderHitsByWeek = "HitsByWeek";	//周点击量
-        public const string OrderHitsByMonth = "HitsByMonth";	//月点击量
         public const string OrderRandom = "Random";            //随机
 
         

@@ -18,9 +18,6 @@ namespace SSCMS.Enums
         [DataEnum(DisplayName = "默认排序（升序）")] OrderByTaxis,
         [DataEnum(DisplayName = "默认排序（降序）")] OrderByTaxisDesc,
         [DataEnum(DisplayName = "按点击量排序")] OrderByHits,
-        [DataEnum(DisplayName = "按日点击量排序")] OrderByHitsByDay,
-        [DataEnum(DisplayName = "按周点击量排序")] OrderByHitsByWeek,
-        [DataEnum(DisplayName = "按月点击量排序")] OrderByHitsByMonth,
         [DataEnum(DisplayName = "随机排序")] OrderByRandom
     }
 }

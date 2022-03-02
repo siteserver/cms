@@ -93,10 +93,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.CheckedLevel)));
                     }
                     var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Hits)));
-                    var hitsByDay = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByDay)));
-                    var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByWeek)));
-                    var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByMonth)));
-                    var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LastHitsDate));
                     var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Downloads)));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Title));
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
@@ -138,10 +134,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     content.Checked = isChecked;
                     content.CheckedLevel = checkedLevel;
                     content.Hits = hits;
-                    content.HitsByDay = hitsByDay;
-                    content.HitsByWeek = hitsByWeek;
-                    content.HitsByMonth = hitsByMonth;
-                    content.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
                     content.Downloads = downloads;
                     content.Title = AtomUtility.Decrypt(title);
                     content.Top = isTop;
@@ -229,10 +221,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.CheckedLevel)));
                     }
                     var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Hits)));
-                    var hitsByDay = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByDay)));
-                    var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByWeek)));
-                    var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.HitsByMonth)));
-                    var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LastHitsDate));
                     var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Downloads)));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Title));
 
@@ -274,10 +262,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         Checked = isChecked,
                         CheckedLevel = checkedLevel,
                         Hits = hits,
-                        HitsByDay = hitsByDay,
-                        HitsByWeek = hitsByWeek,
-                        HitsByMonth = hitsByMonth,
-                        LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate),
                         Downloads = downloads,
                         Title = AtomUtility.Decrypt(title),
                         SubTitle = AtomUtility.Decrypt(subTitle),
@@ -418,14 +402,6 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Checked), "IsChecked" }, content.Checked.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.CheckedLevel), content.CheckedLevel.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Hits), content.Hits.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.HitsByDay), content.HitsByDay.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.HitsByWeek), content.HitsByWeek.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.HitsByMonth), content.HitsByMonth.ToString());
-            if (content.LastHitsDate.HasValue)
-            {
-                AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.LastHitsDate), content.LastHitsDate.Value.ToString(CultureInfo.InvariantCulture));
-            }
-
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Downloads), content.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Title), AtomUtility.Encrypt(content.Title));
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.SubTitle), AtomUtility.Encrypt(content.SubTitle));

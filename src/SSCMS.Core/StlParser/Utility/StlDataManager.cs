@@ -130,18 +130,6 @@ namespace SSCMS.Core.StlParser.Utility
                 {
                     taxisType = TaxisType.OrderByHits;
                 }
-                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHitsByDay))
-                {
-                    taxisType = TaxisType.OrderByHitsByDay;
-                }
-                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHitsByWeek))
-                {
-                    taxisType = TaxisType.OrderByHitsByWeek;
-                }
-                else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderHitsByMonth))
-                {
-                    taxisType = TaxisType.OrderByHitsByMonth;
-                }
                 else if (StringUtils.EqualsIgnoreCase(orderValue, StlParserUtility.OrderRandom))
                 {
                     taxisType = TaxisType.OrderByRandom;

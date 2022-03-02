@@ -522,18 +522,6 @@ namespace SSCMS.Core.Repositories
             {
                 query.OrderByDesc(nameof(Content.Hits), nameof(Content.Id));
             }
-            else if (taxisType == TaxisType.OrderByHitsByDay)
-            {
-                query.OrderByDesc(nameof(Content.HitsByDay), nameof(Content.Id));
-            }
-            else if (taxisType == TaxisType.OrderByHitsByWeek)
-            {
-                query.OrderByDesc(nameof(Content.HitsByWeek), nameof(Content.Id));
-            }
-            else if (taxisType == TaxisType.OrderByHitsByMonth)
-            {
-                query.OrderByDesc(nameof(Content.HitsByMonth), nameof(Content.Id));
-            }
             else if (taxisType == TaxisType.OrderByRandom)
             {
                 query.OrderByRandom(Guid.NewGuid().ToString());

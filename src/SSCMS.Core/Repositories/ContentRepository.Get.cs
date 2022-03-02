@@ -17,6 +17,19 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ContentRepository
     {
+        public async Task<int> GetHitsAsync(int siteId, int channelId, int contentId)
+        {
+            var tableName = await _siteRepository.GetTableNameAsync(siteId);
+            var repository = await GetRepositoryAsync(tableName);
+
+            return await repository.GetAsync<int>(Q
+                .Select(nameof(Content.Hits))
+                .Where(nameof(Content.SiteId), siteId)
+                .Where(nameof(Content.ChannelId), channelId)
+                .Where(nameof(Content.Id), contentId)
+            );
+        }
+
         public async Task<int> GetMaxTaxisAsync(Site site, Channel channel, bool isTop)
         {
             var repository = await GetRepositoryAsync(site, channel);

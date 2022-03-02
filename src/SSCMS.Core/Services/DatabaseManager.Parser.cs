@@ -122,18 +122,6 @@ namespace SSCMS.Core.Services
             {
                 retVal = $"ORDER BY {Quote(nameof(Content.Hits))} DESC, {Quote(nameof(Content.Id))} DESC";
             }
-            else if (taxisType == TaxisType.OrderByHitsByDay)
-            {
-                retVal = $"ORDER BY {Quote(nameof(Content.HitsByDay))} DESC, {Quote(nameof(Content.Id))} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByHitsByWeek)
-            {
-                retVal = $"ORDER BY {Quote(nameof(Content.HitsByWeek))} DESC, {Quote(nameof(Content.Id))} DESC";
-            }
-            else if (taxisType == TaxisType.OrderByHitsByMonth)
-            {
-                retVal = $"ORDER BY {Quote(nameof(Content.HitsByMonth))} DESC, {Quote(nameof(Content.Id))} DESC";
-            }
             else if (taxisType == TaxisType.OrderByRandom)
             {
                 //retVal = SqlUtils.GetOrderByRandom();

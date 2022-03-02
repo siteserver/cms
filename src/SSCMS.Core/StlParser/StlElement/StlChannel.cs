@@ -47,6 +47,9 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string RightText = nameof(RightText);
 
         [StlAttribute(Title = "显示的格式")]
+        private const string Format = nameof(Format);
+
+        [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
 
         [StlAttribute(Title = "显示第几项")]
@@ -94,7 +97,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var upLevel = 0;
             var topLevel = -1;
             var type = string.Empty;
-            var formatString = string.Empty;
+            var format = string.Empty;
             var no = "0";
             string separator = null;
             var startIndex = 0;
@@ -148,9 +151,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     rightText = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, FormatString))
+                else if (StringUtils.EqualsIgnoreCase(name, Format) || StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
-                    formatString = value;
+                    format = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, No))
                 {
@@ -247,7 +250,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return channel.ToDictionary();
             }
 
-            var parsedContent = await ParseAsync(parseManager, leftText, rightText, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId, attributes);
+            var parsedContent = await ParseAsync(parseManager, leftText, rightText, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId, attributes);
 
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);
@@ -261,7 +264,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -275,16 +278,16 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var parsedContent = string.Empty;
 
-            if (!string.IsNullOrEmpty(formatString))
+            if (!string.IsNullOrEmpty(format))
             {
-                formatString = formatString.Trim();
-                if (!formatString.StartsWith("{0"))
+                format = format.Trim();
+                if (!format.StartsWith("{0"))
                 {
-                    formatString = "{0:" + formatString;
+                    format = "{0:" + format;
                 }
-                if (!formatString.EndsWith("}"))
+                if (!format.EndsWith("}"))
                 {
-                    formatString += "}";
+                    format += "}";
                 }
             }
             var inputType = InputType.Text;
@@ -346,7 +349,7 @@ namespace SSCMS.Core.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.AddDate)))
             {
                 inputType = InputType.DateTime;
-                parsedContent = DateUtils.Format(channel.AddDate, formatString);
+                parsedContent = DateUtils.Format(channel.AddDate, format);
             }
             else if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.ImageUrl)))
             {
@@ -505,7 +508,7 @@ namespace SSCMS.Core.StlParser.StlElement
             else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
             {
                 var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.Key, type, contextInfo);
-                parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
+                parsedContent = !string.IsNullOrEmpty(format) ? string.Format(format, itemIndex) : itemIndex.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfChannels))
             {
@@ -532,7 +535,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         var inputParser = new InputParserManager(parseManager.PathManager);
-                        parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
+                        parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, format, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
                         inputType = styleInfo.InputType;
                     }
                 }
@@ -540,7 +543,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
-            parsedContent = InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+            parsedContent = InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
             return leftText + parsedContent + rightText;
         }
 

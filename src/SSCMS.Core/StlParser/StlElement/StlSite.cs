@@ -27,6 +27,9 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string Type = nameof(Type);
 
         [StlAttribute(Title = "显示的格式")]
+        private const string Format = nameof(Format);
+
+        [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
 
         [StlAttribute(Title = "显示第几项")]
@@ -88,7 +91,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var siteDir = string.Empty;
 
             var type = string.Empty;
-            var formatString = string.Empty;
+            var format = string.Empty;
             var no = "0";
             string separator = null;
             var startIndex = 0;
@@ -119,9 +122,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     type = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, FormatString))
+                else if (StringUtils.EqualsIgnoreCase(name, Format) || StringUtils.EqualsIgnoreCase(name, FormatString))
                 {
-                    formatString = value;
+                    format = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, No))
                 {
@@ -193,10 +196,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 return site;
             }
 
-            return await ParseAsync(parseManager, site, type, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
+            return await ParseAsync(parseManager, site, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -312,7 +315,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         {
                             var inputParser = new InputParserManager(parseManager.PathManager);
 
-                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, formatString, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
+                            parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, format, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
 
                             inputType = styleInfo.InputType;
 
@@ -328,7 +331,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
-            return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+            return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
         }
     }
 }

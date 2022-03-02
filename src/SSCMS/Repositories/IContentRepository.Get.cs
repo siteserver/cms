@@ -12,6 +12,8 @@ namespace SSCMS.Repositories
 {
     public partial interface IContentRepository
     {
+        Task<int> GetHitsAsync(int siteId, int channelId, int contentId);
+
         Task<int> GetMaxTaxisAsync(Site site, Channel channel, bool isTop);
 
         Task<int> GetFirstContentIdAsync(Site site, IChannelSummary channel);

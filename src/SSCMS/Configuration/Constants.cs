@@ -38,6 +38,7 @@ namespace SSCMS.Configuration
 
         public const string RouteStlActionsDownload = "actions/download";
         public const string RouteStlActionsDynamic = "actions/dynamic";
+        public const string RouteStlActionsHits = "actions/hits";
         public const string RouteStlRouteActionsIf = "actions/if";
         public const string RouteStlActionsPageContents = "actions/pagecontents";
         public const string RouteStlActionsSearch = "actions/search";

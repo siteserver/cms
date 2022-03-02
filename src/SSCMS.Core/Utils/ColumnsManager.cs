@@ -79,10 +79,6 @@ namespace SSCMS.Core.Utils
             nameof(Content.Checked),
             nameof(Content.CheckedLevel),
             nameof(Content.Hits),
-            nameof(Content.HitsByDay),
-            nameof(Content.HitsByWeek),
-            nameof(Content.HitsByMonth),
-            nameof(Content.LastHitsDate),
             nameof(Content.Downloads),
             nameof(Content.Top),
             nameof(Content.Recommend),
@@ -136,7 +132,6 @@ namespace SSCMS.Core.Utils
             Sequence,
             nameof(Content.ChannelId),
             nameof(Content.AddDate),
-            nameof(Content.LastHitsDate),
             nameof(Content.GroupNames),
             nameof(Content.TagNames),
             nameof(Content.SourceId),
@@ -260,30 +255,6 @@ namespace SSCMS.Core.Utils
                 {
                     AttributeName = nameof(Content.Hits),
                     DisplayName = "点击量",
-                    Taxis = taxis++
-                },
-                new TableStyle
-                {
-                    AttributeName = nameof(Content.HitsByDay),
-                    DisplayName = "日点击",
-                    Taxis = taxis++
-                },
-                new TableStyle
-                {
-                    AttributeName = nameof(Content.HitsByWeek),
-                    DisplayName = "周点击",
-                    Taxis = taxis++
-                },
-                new TableStyle
-                {
-                    AttributeName = nameof(Content.HitsByMonth),
-                    DisplayName = "月点击",
-                    Taxis = taxis++
-                },
-                new TableStyle
-                {
-                    AttributeName = nameof(Content.LastHitsDate),
-                    DisplayName = "最后点击时间",
                     Taxis = taxis++
                 },
                 new TableStyle
@@ -577,9 +548,6 @@ namespace SSCMS.Core.Utils
                 case nameof(Sequence):
                 case nameof(Content.Id):
                 case nameof(Content.Hits):
-                case nameof(Content.HitsByDay):
-                case nameof(Content.HitsByWeek):
-                case nameof(Content.HitsByMonth):
                 case nameof(Content.Downloads):
                     return 70;
                 case nameof(Content.ImageUrl):
@@ -589,7 +557,6 @@ namespace SSCMS.Core.Utils
                     return 310;
                 case nameof(Content.AddDate):
                 case nameof(Content.CreatedDate):
-                case nameof(Content.LastHitsDate):
                 case nameof(Content.LastModifiedDate):
                     return 140;
                 default:
