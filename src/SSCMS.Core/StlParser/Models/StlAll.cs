@@ -93,6 +93,10 @@ namespace SSCMS.Core.StlParser.Models
                 typeof(StlLocation)
             },
             {
+                StlMap.ElementName,
+                typeof(StlMap)
+            },
+            {
                 StlMarquee.ElementName,
                 typeof(StlMarquee)
             },

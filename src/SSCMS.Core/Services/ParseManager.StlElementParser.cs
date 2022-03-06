@@ -63,6 +63,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlInclude.ElementName), StlInclude.ParseAsync},
             {StringUtils.ToLower(StlLayer.ElementName), StlLayer.ParseAsync},
             {StringUtils.ToLower(StlLocation.ElementName), StlLocation.ParseAsync},
+            {StringUtils.ToLower(StlMap.ElementName), StlMap.ParseAsync},
             {StringUtils.ToLower(StlMarquee.ElementName), StlMarquee.ParseAsync},
             {StringUtils.ToLower(StlMaterial.ElementName), StlMaterial.ParseAsync},
             {StringUtils.ToLower(StlNavigation.ElementName), StlNavigation.ParseAsync},
