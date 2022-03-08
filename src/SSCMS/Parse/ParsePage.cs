@@ -157,6 +157,7 @@ namespace SSCMS.Parse
             public const string VueElement = nameof(VueElement);
             public const string Layer = nameof(Layer);
             public const string PdfObject = nameof(PdfObject);
+            public const string Share = nameof(Share);
         }
 
         private async Task<string> GetJsCodeAsync(string pageJsName)
@@ -364,6 +365,14 @@ wnd_frame.src=url;}}
                 var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.PdfObjectJs);
                 retVal =
                     $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
+            }
+            else if (pageJsName == Const.Share)
+            {
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.ShareCss);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.ShareJs);
+
+                retVal =
+                    $@"<link href=""{cssUrl}"" rel=""stylesheet"" /><script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
 
             return retVal;

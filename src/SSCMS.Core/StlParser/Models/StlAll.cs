@@ -161,6 +161,10 @@ namespace SSCMS.Core.StlParser.Models
                 typeof(StlSelect)
             },
             {
+                StlShare.ElementName,
+                typeof(StlShare)
+            },
+            {
                 StlSite.ElementName,
                 typeof(StlSite)
             },
