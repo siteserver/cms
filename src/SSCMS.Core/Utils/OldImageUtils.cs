@@ -11,18 +11,18 @@ namespace SSCMS.Core.Utils
     public static class OldImageUtils
     {
         public static Image GetImage(string imageFilePath)
-		{
-			var fs = new FileStream(imageFilePath, FileMode.Open);
-			var br = new BinaryReader(fs);
-			var bytes = br.ReadBytes((int)fs.Length);
-			br.Close();
-			fs.Close();
-			var ms = new MemoryStream(bytes);
+        {
+            var fs = new FileStream(imageFilePath, FileMode.Open);
+            var br = new BinaryReader(fs);
+            var bytes = br.ReadBytes((int)fs.Length);
+            br.Close();
+            fs.Close();
+            var ms = new MemoryStream(bytes);
 
-			var image = Image.FromStream(ms, false);
+            var image = Image.FromStream(ms, false);
 
-			return image;
-		}
+            return image;
+        }
 
         public static ImageFormat GetImageFormat(string imagePath)
         {
@@ -53,11 +53,11 @@ namespace SSCMS.Core.Utils
         }
 
         private static PointF GetWaterMarkPointF(Image image, int waterMarkPosition, float waterMarkWidth, float waterMarkHeight, bool textMark)
-		{
-			float x;
-			float y;
-			switch(waterMarkPosition)
-			{
+        {
+            float x;
+            float y;
+            switch (waterMarkPosition)
+            {
                 case 1:
                     if (textMark)
                     {
@@ -69,73 +69,7 @@ namespace SSCMS.Core.Utils
                     }
                     y = 0;
                     break;
-				case 2 :
-                    if (textMark)
-                    {
-                        x = (image.Width / 2);
-                    }
-                    else
-                    {
-                        x = (image.Width / 2) - (waterMarkWidth / 2); 
-                    }
-					y = 0;
-					break;
-				case 3 :
-                    if (textMark)
-                    {
-                        x = image.Width - waterMarkWidth / 2;
-                    }
-                    else
-                    {
-                        x = image.Width - waterMarkWidth;
-                    }
-					y = 0;
-					break;
-				case 4 :
-                    if (textMark)
-                    {
-                        x = waterMarkWidth / 2;
-                    }
-                    else
-                    {
-                        x = 0;
-                    }
-					y = (image.Height / 2) - (waterMarkHeight / 2);
-					break;
-				case 5 :
-                    if (textMark)
-                    {
-                        x = (image.Width / 2);
-                    }
-                    else
-                    {
-                       x= (image.Width / 2) - (waterMarkWidth / 2);
-                    }
-					y = (image.Height / 2) - (waterMarkHeight / 2);
-					break;
-				case 6 :
-                    if (textMark)
-                    {
-                        x = image.Width - waterMarkWidth / 2;
-                    }
-                    else
-                    {
-                        x = image.Width - waterMarkWidth;
-                    }
-					y = (image.Height / 2) - (waterMarkHeight / 2);
-					break;
-				case 7 :
-                    if (textMark)
-                    {
-                        x = waterMarkWidth / 2;
-                    }
-                    else
-                    {
-                        x = 0; 
-                    }
-					y = image.Height - waterMarkHeight;
-					break;
-				case 8 :
+                case 2:
                     if (textMark)
                     {
                         x = (image.Width / 2);
@@ -144,9 +78,75 @@ namespace SSCMS.Core.Utils
                     {
                         x = (image.Width / 2) - (waterMarkWidth / 2);
                     }
-					y = image.Height - waterMarkHeight;
-					break;
-				default :
+                    y = 0;
+                    break;
+                case 3:
+                    if (textMark)
+                    {
+                        x = image.Width - waterMarkWidth / 2;
+                    }
+                    else
+                    {
+                        x = image.Width - waterMarkWidth;
+                    }
+                    y = 0;
+                    break;
+                case 4:
+                    if (textMark)
+                    {
+                        x = waterMarkWidth / 2;
+                    }
+                    else
+                    {
+                        x = 0;
+                    }
+                    y = (image.Height / 2) - (waterMarkHeight / 2);
+                    break;
+                case 5:
+                    if (textMark)
+                    {
+                        x = (image.Width / 2);
+                    }
+                    else
+                    {
+                        x = (image.Width / 2) - (waterMarkWidth / 2);
+                    }
+                    y = (image.Height / 2) - (waterMarkHeight / 2);
+                    break;
+                case 6:
+                    if (textMark)
+                    {
+                        x = image.Width - waterMarkWidth / 2;
+                    }
+                    else
+                    {
+                        x = image.Width - waterMarkWidth;
+                    }
+                    y = (image.Height / 2) - (waterMarkHeight / 2);
+                    break;
+                case 7:
+                    if (textMark)
+                    {
+                        x = waterMarkWidth / 2;
+                    }
+                    else
+                    {
+                        x = 0;
+                    }
+                    y = image.Height - waterMarkHeight;
+                    break;
+                case 8:
+                    if (textMark)
+                    {
+                        x = (image.Width / 2);
+                    }
+                    else
+                    {
+                        x = (image.Width / 2) - (waterMarkWidth / 2);
+                    }
+                    y = image.Height - waterMarkHeight;
+                    break;
+                default:
 
                     if (textMark)
                     {
@@ -156,14 +156,14 @@ namespace SSCMS.Core.Utils
                     {
                         x = image.Width - waterMarkWidth;
                     }
-					y = image.Height - waterMarkHeight;
-					break;
-			}
-			return new PointF(x, y);
-		}
+                    y = image.Height - waterMarkHeight;
+                    break;
+            }
+            return new PointF(x, y);
+        }
 
-		public static void AddTextWaterMark(string imagePath, string waterMarkText, string fontName, int fontSize, int waterMarkPosition, int waterMarkTransparency, int minWidth, int minHeight)
-		{
+        public static void AddTextWaterMark(string imagePath, string waterMarkText, string fontName, int fontSize, int waterMarkPosition, int waterMarkTransparency, int minWidth, int minHeight)
+        {
             try
             {
                 var image = GetImage(imagePath);
@@ -205,11 +205,11 @@ namespace SSCMS.Core.Utils
                 }
 
                 if (image.Width <= Convert.ToInt32(crSize.Width) || image.Height <= Convert.ToInt32(crSize.Height)) return;
-                var pointF = GetWaterMarkPointF(image, waterMarkPosition, crSize.Width, crSize.Height,true);
+                var pointF = GetWaterMarkPointF(image, waterMarkPosition, crSize.Width, crSize.Height, true);
 
                 if (pointF.X < 0 || pointF.X >= image.Width || pointF.Y < 0 || pointF.Y >= image.Height) return;
 
-                var strFormat = new StringFormat {Alignment = StringAlignment.Center};
+                var strFormat = new StringFormat { Alignment = StringAlignment.Center };
 
                 var alphaRate = (255 * waterMarkTransparency) / 10;
                 if (alphaRate <= 0 || alphaRate > 255) alphaRate = 153;
@@ -244,14 +244,14 @@ namespace SSCMS.Core.Utils
                 image.Dispose();
 
             }
-		    catch
-		    {
-		        // ignored
-		    }
-		}
+            catch
+            {
+                // ignored
+            }
+        }
 
-		public static void AddImageWaterMark(string imagePath, string waterMarkImagePath, int waterMarkPosition, int waterMarkTransparency, int minWidth, int minHeight)
-		{
+        public static void AddImageWaterMark(string imagePath, string waterMarkImagePath, int waterMarkPosition, int waterMarkTransparency, int minWidth, int minHeight)
+        {
             try
             {
                 var image = GetImage(imagePath);
@@ -316,11 +316,11 @@ namespace SSCMS.Core.Utils
                 image.Dispose();
 
             }
-		    catch
-		    {
-		        // ignored
-		    }
-		}
+            catch
+            {
+                // ignored
+            }
+        }
 
         public static bool MakeThumbnail(string originalImagePath, string thumbnailPath, int width, int height, bool isLessSizeNotThumb, out Size originalSize)
         {

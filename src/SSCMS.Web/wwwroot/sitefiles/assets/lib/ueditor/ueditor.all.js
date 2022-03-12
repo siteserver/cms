@@ -10801,15 +10801,7 @@ UE.plugin.register('autosubmit',function(){
         commands:{
             'autosubmit':{
                 execCommand:function () {
-                    var me=this,
-                        form = domUtils.findParentByTagName(me.iframe,"form", false);
-                    if (form){
-                        if(me.fireEvent("beforesubmit")===false){
-                            return;
-                        }
-                        me.sync();
-                        form.submit();
-                    }
+                  $vue && $vue.btnSaveClick();
                 }
             }
         }
@@ -16381,7 +16373,7 @@ UE.plugins['list'] = function () {
                             return a.replace(/(^[\n\r\t ]*)|([\n\r\t ]*$)/g,'');
                         }
                         return a.replace(/(^[\n\r\t]*)|([\n\r\t]*$)/g,'')
-                    }); 
+                    });
                     me.setContent = orgSetContent;
 
                     me.setContent(cont);
@@ -24749,7 +24741,7 @@ UE.plugin.register('insertfile', function (){
     function getFileIcon(url){
         var ext = url.substr(url.lastIndexOf('.') + 1).toLowerCase(),
             maps = {
-                
+
             };
         return maps[ext] ? maps[ext]:maps['txt'];
     }
