@@ -10801,7 +10801,10 @@ UE.plugin.register('autosubmit',function(){
         commands:{
             'autosubmit':{
                 execCommand:function () {
-                  $vue && $vue.btnSaveClick();
+                  if ($vue && $vue.btnSaveClick)
+                  {
+                    $vue.btnSaveClick();
+                  }
                 }
             }
         }

@@ -424,7 +424,7 @@ var methods = {
     this.apiGet(row.value);
   },
 
-  btnEditSubmitClick: function() {
+  btnSaveClick: function() {
     var $this = this;
     this.$refs.editForm.validate(function(valid) {
       if (valid) {
@@ -680,7 +680,7 @@ var $vue = new Vue({
     $(document).keypress(function (e) {
       if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
         if ($this.editPanel) {
-          $this.btnEditSubmitClick();
+          $this.btnSaveClick();
         }
       }
     });
