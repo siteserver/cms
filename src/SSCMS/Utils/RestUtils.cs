@@ -2,9 +2,8 @@
 using System.Net;
 using System.Threading.Tasks;
 using RestSharp;
-using SSCMS.Utils;
 
-namespace SSCMS.Core.Utils
+namespace SSCMS.Utils
 {
     public static class RestUtils
     {

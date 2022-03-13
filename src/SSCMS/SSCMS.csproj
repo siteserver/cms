@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
-    <Version>7.1.0</Version>
+    <Version>7.1.1</Version>
     <Authors>SS CMS</Authors>
     <Company>SS CMS</Company>
     <PackageDescription>SS CMS .NET Core abstractions for developers.</PackageDescription>
@@ -25,13 +25,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="Datory" Version="1.1.9" />-->
+	  <PackageReference Include="RestSharp" Version="107.3.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.15.9" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     <PackageReference Include="HtmlSanitizer" Version="7.1.475" />
-    <ProjectReference Include="..\Datory\Datory.csproj" />
+    <PackageReference Include="Datory" Version="7.1.1" />
+    <!-- <ProjectReference Include="..\Datory\Datory.csproj" /> -->
   </ItemGroup>
 
 </Project>
