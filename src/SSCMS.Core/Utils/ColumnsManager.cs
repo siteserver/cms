@@ -555,10 +555,6 @@ namespace SSCMS.Core.Utils
                 case nameof(Content.Guid):
                 case nameof(Content.SourceId):
                     return 310;
-                case nameof(Content.AddDate):
-                case nameof(Content.CreatedDate):
-                case nameof(Content.LastModifiedDate):
-                    return 140;
                 default:
                     return 160;
             }

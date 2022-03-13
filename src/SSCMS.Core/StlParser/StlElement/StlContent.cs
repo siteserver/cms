@@ -291,25 +291,27 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     parsedContent = await parseManager.PathManager.DecodeTextEditorAsync(pageInfo.Site, content.Body, pageInfo.IsLocal);
 
-                    if (isClearTags)
-                    {
-                        parsedContent = StringUtils.StripTags(parsedContent);
-                    }
+                    // if (isClearTags)
+                    // {
+                    //     parsedContent = StringUtils.StripTags(parsedContent);
+                    // }
+                    
+                    // if (!string.IsNullOrEmpty(replace))
+                    // {
+                    //     parsedContent = StringUtils.Replace(parsedContent, replace, to);
+                    // }
 
-                    if (!string.IsNullOrEmpty(replace))
-                    {
-                        parsedContent = StringUtils.Replace(parsedContent, replace, to);
-                    }
+                    // if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
+                    // {
+                    //     parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    // }
 
-                    if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
-                    {
-                        parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
-                    }
+                    // if (!string.IsNullOrEmpty(format))
+                    // {
+                    //     parsedContent = string.Format(format, parsedContent);
+                    // }
 
-                    if (!string.IsNullOrEmpty(format))
-                    {
-                        parsedContent = string.Format(format, parsedContent);
-                    }
+                    parsedContent = InputTypeUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
 
                     parsedContent = await EditorUtility.ParseAsync(pageInfo, parsedContent);
                 }
@@ -319,25 +321,27 @@ namespace SSCMS.Core.StlParser.StlElement
                     // {
                     parsedContent = await parseManager.PathManager.DecodeTextEditorAsync(pageInfo.Site, content.Body, pageInfo.IsLocal);
 
-                    if (isClearTags)
-                    {
-                        parsedContent = StringUtils.StripTags(parsedContent);
-                    }
+                    // if (isClearTags)
+                    // {
+                    //     parsedContent = StringUtils.StripTags(parsedContent);
+                    // }
 
-                    if (!string.IsNullOrEmpty(replace))
-                    {
-                        parsedContent = StringUtils.Replace(parsedContent, replace, to);
-                    }
+                    // if (!string.IsNullOrEmpty(replace))
+                    // {
+                    //     parsedContent = StringUtils.Replace(parsedContent, replace, to);
+                    // }
 
-                    if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
-                    {
-                        parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
-                    }
+                    // if (wordNum > 0 && !string.IsNullOrEmpty(parsedContent))
+                    // {
+                    //     parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);
+                    // }
 
-                    if (!string.IsNullOrEmpty(format))
-                    {
-                        parsedContent = string.Format(format, parsedContent);
-                    }
+                    // if (!string.IsNullOrEmpty(format))
+                    // {
+                    //     parsedContent = string.Format(format, parsedContent);
+                    // }
+
+                    parsedContent = InputTypeUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
 
                     parsedContent = await EditorUtility.ParseAsync(pageInfo, parsedContent);
                 }

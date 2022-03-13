@@ -222,9 +222,9 @@ var methods = {
             });
           } else if (style.inputType === 'Date' || style.inputType === 'DateTime') {
             if (!$this.form[attributeName]) {
-              $this.form[attributeName] = new Date();
+              $this.form[attributeName] = new Date().Format("yyyy-MM-dd hh:mm:ss");
             } else {
-              $this.form[attributeName] = new Date($this.form[attributeName]);
+              $this.form[attributeName] = new Date($this.form[attributeName]).Format("yyyy-MM-dd hh:mm:ss");
             }
           }
         }

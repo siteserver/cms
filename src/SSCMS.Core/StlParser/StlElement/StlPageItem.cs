@@ -784,7 +784,6 @@ namespace SSCMS.Core.StlParser.StlElement
                     var elementId = StringUtils.GetElementId();
                     selectAttributes["id"] = elementId;
                     selectAttributes["onchange"] = clickString;
-                    selectAttributes["style"] = "display:none";
 
                     var htmlBuilder = new StringBuilder();
                     using (var htmlSelect = new HtmlSelect(htmlBuilder, selectAttributes))
@@ -793,7 +792,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         {
                             if (currentPageIndex + 1 != index)
                             {
-                                htmlSelect.AddOption(index.ToString(), $"{index - 1}");
+                                htmlSelect.AddOption(index.ToString(), index.ToString());
                             }
                             else
                             {

@@ -147,7 +147,7 @@ namespace SSCMS.Web
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm";
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
                     options.SerializerSettings.ContractResolver
                         = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
@@ -264,6 +264,15 @@ namespace SSCMS.Web
             //    });
             //}
 
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/404.html";
+                    await next();
+                }
+            });
             app.UseStaticFiles();
 
             var supportedCultures = new[]
@@ -290,8 +299,6 @@ namespace SSCMS.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/healthz");
-
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
