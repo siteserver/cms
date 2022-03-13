@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SSCMS.Cli.Models;
-using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Services
 {
