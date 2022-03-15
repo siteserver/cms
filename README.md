@@ -136,4 +136,4 @@ SSCMS 产品将每隔两月发布新的正式版本，我们将在每次迭代�
 
 [GNU Affero General Public License v3.0](LICENSE)
 
-Copyright (C) 2003-2020 SSCMS
+Copyright (C) 2003-2022 SSCMS

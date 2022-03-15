@@ -602,6 +602,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
                     var apiUrl = parseManager.PathManager.GetApiHostUrl(pageInfo.Site, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsHits);
                     var elementId = StringUtils.GetElementId();
+                    var autoIncrease = pageInfo.Template.TemplateType == TemplateType.ContentTemplate;
                     parsedContent = @$"
 <script id=""{elementId}"" type=""text/javascript"">
 $(function(){{
@@ -612,7 +613,8 @@ $(function(){{
     data: JSON.stringify({TranslateUtils.JsonSerialize(new {
         SiteId = pageInfo.SiteId,
         ChannelId = contextInfo.ChannelId,
-        ContentId = contextInfo.ContentId
+        ContentId = contextInfo.ContentId,
+        AutoIncrease = autoIncrease
     })}),
     dataType: ""json"",
     success: function (result) {{ $(""#{elementId}"").before(result.value)  }}

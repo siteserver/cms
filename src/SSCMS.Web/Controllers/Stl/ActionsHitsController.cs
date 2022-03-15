@@ -21,6 +21,7 @@ namespace SSCMS.Web.Controllers.Stl
             public int SiteId { get; set; }
             public int ChannelId { get; set; }
             public int ContentId { get; set; }
+            public bool AutoIncrease { get; set; }
         }
     }
 }
