@@ -47,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         {
             public Cascade<int> Channels { get; set; }
             public List<Select<int>> TransSites { get; set; }
+            public Cascade<int> TransChannels { get; set; }
             public IEnumerable<Select<string>> TranslateTypes { get; set; }
         }
 

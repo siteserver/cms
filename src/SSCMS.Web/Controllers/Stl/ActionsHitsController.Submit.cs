@@ -18,8 +18,7 @@ namespace SSCMS.Web.Controllers.Stl
                 var hits = await _contentRepository.GetHitsAsync(request.SiteId, request.ChannelId, request.ContentId);
                 if (request.AutoIncrease)
                 {
-                    hits += 1;
-                    await _contentRepository.UpdateHitsAsync(request.SiteId, request.ChannelId, request.ContentId, hits);
+                    await _contentRepository.UpdateHitsAsync(request.SiteId, request.ChannelId, request.ContentId, hits + 1);
                 }
                 
                 return new IntResult

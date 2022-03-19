@@ -240,7 +240,20 @@ namespace SSCMS.Core.Repositories
                 }
                 else
                 {
-                    channel = summaries.FirstOrDefault(x => (x.ParentId == parentId || ListUtils.Contains(x.ParentsPath, parentId)) && x.ChannelName == channelName);
+                    // channel = summaries.FirstOrDefault(x => (x.ParentId == parentId || ListUtils.Contains(x.ParentsPath, parentId)) && x.ChannelName == channelName);
+
+                    return await _repository.GetAsync<int>(Q
+                        .Select(nameof(Channel.Id))
+                        .Where(nameof(Channel.SiteId), siteId)
+                        .Where(nameof(Channel.ChannelName), channelName)
+                        .Where(q => q
+                            .Where(nameof(Channel.ParentId), parentId)
+                            .OrWhere(nameof(Channel.ParentsPath), parentId.ToString())
+                            .OrWhereLike(nameof(Channel.ParentsPath), $"{parentId},%")
+                            .OrWhereLike(nameof(Channel.ParentsPath), $"%,{parentId},%")
+                            .OrWhereLike(nameof(Channel.ParentsPath), $"%,{parentId}"))
+                        .OrderBy(nameof(Channel.Taxis))
+                    );
 
                     //                    sqlString = $@"SELECT Id
                     //FROM siteserver_Channel 

@@ -32,12 +32,24 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             });
 
             var transSites = await _siteRepository.GetSelectsAsync();
+            var transChannels = await _channelRepository.GetAsync(request.SiteId);
+            var transCascade = await _channelRepository.GetCascadeAsync(site, transChannels, async summary =>
+            {
+                var count = await _contentRepository.GetCountAsync(site, summary);
+
+                return new
+                {
+                    summary.IndexName,
+                    Count = count
+                };
+            });
             var translateTypes = ListUtils.GetEnums<ChannelTranslateType>().Select(x => new Select<string>(x));
 
             return new GetResult
             {
                 Channels = cascade,
                 TransSites = transSites,
+                TransChannels = transCascade,
                 TranslateTypes = translateTypes
             };
         }

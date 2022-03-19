@@ -14,7 +14,7 @@ var data = utils.init({
   translateTypes: null,
 
   form: {
-    transSiteId: null,
+    transSiteId: utils.getQueryInt("siteId"),
     transChannelIds: null,
     translateType: 'Content',
     isDeleteAfterTranslate: false,
@@ -37,6 +37,7 @@ var methods = {
       $this.transSites = res.transSites;
       $this.translateTypes = res.translateTypes;
       $this.expandedChannelIds = _.union([$this.siteId], $this.checkedChannelIds);
+      $this.transChannels = [res.transChannels];
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
