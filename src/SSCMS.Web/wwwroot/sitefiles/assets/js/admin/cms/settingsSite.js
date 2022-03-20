@@ -199,5 +199,11 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     this.apiGet();
+    var $this = this;
+    $(document).keypress(function (e) {
+      if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
+        $this.btnSubmitClick();
+      }
+    });
   }
 });
