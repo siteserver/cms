@@ -20,12 +20,18 @@ namespace SSCMS.Core.Repositories
 
         private async Task<int> GetMaxTaxisAsync(int siteId, int parentId)
         {
-            var summaries = await GetSummariesAsync(siteId);
-            return summaries
-                .Where(x => x.ParentId == parentId)
-                .Select(x => x.Taxis)
-                .DefaultIfEmpty()
-                .Max();
+            // var summaries = await GetSummariesAsync(siteId);
+            // return summaries
+            //     .Where(x => x.ParentId == parentId)
+            //     .Select(x => x.Taxis)
+            //     .DefaultIfEmpty()
+            //     .Max();
+
+            var maxTaxis = await _repository.MaxAsync(nameof(Channel.Taxis), Q
+                .Where(nameof(Channel.SiteId), siteId)
+                .Where(nameof(Channel.ParentId), parentId)
+            );
+            return maxTaxis ?? 0;
         }
 
         //public async Task UpdateTaxisDownAsync(int siteId, int channelId, int parentId, int taxis)
