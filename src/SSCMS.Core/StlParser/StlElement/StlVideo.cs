@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Parse;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
 using System.Collections.Specialized;
+using SSCMS.Enums;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -45,7 +45,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var imageUrl = string.Empty;
             var width = string.Empty;
             var height = string.Empty;
-            var isAutoPlay = true;
+            var isAutoPlay = false;
             var isControls = true;
             var isLoop = false;
             var attributes = new NameValueCollection();
@@ -129,6 +129,22 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                var contentId = contextInfo.ContentId;
+                if (contextInfo.ContextType == ParseType.Content)
+                {
+                    if (contentId != 0)//获取内容视频
+                    {
+                        var contentInfo = await parseManager.GetContentAsync();
+                        if (contentInfo != null)
+                        {
+                            imageUrl = contentInfo.ImageUrl;
+                        }
+                    }
+                }
+            }
+
             if (string.IsNullOrEmpty(videoUrl)) return string.Empty;
 
             videoUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
@@ -136,8 +152,21 @@ namespace SSCMS.Core.StlParser.StlElement
 
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcVideoJs);
 
-            attributes["class"] = "video-js vjs-default-skin" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
-            attributes["src"] = videoUrl;
+            attributes["class"] = "video-js vjs-big-play-centered" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
+
+            var innerHtml = string.Empty;
+            if (FileUtils.IsType(FileType.Mp4, PageUtils.GetExtensionFromUrl(videoUrl)))
+            {
+                innerHtml = @$"<source src=""{videoUrl}"" type=""video/mp4"" />";
+            }
+            else if (FileUtils.IsType(FileType.Webm, PageUtils.GetExtensionFromUrl(videoUrl)))
+            {
+                innerHtml = @$"<source src=""{videoUrl}"" type=""video/webm"" />";
+            }
+            else
+            {
+                attributes["src"] = videoUrl;
+            }
 
             if (isAutoPlay)
             {
@@ -159,9 +188,11 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 attributes["width"] = width;
             }
-            attributes["height"] = string.IsNullOrEmpty(height) ? "280" : height;
+            attributes["height"] = string.IsNullOrEmpty(height) ? "448" : height;
+            attributes["data-setup"] = "{}";
 
-            return $@"<video {TranslateUtils.ToAttributesString(attributes)}></video>";
+            return $@"
+            <video {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</video>";
         }
     }
 }

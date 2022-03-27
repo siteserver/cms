@@ -681,6 +681,8 @@ var $vue = new Vue({
       if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
         if ($this.editPanel) {
           $this.btnSaveClick();
+        } else if ($this.appendPanel) {
+          $this.btnAppendSubmitClick();
         }
       }
     });

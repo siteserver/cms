@@ -51,8 +51,8 @@
 
         public static class VideoJs
         {
-            public const string Css = "resources/flashes/videojs/video-js.min.css";
-            public const string Js = "resources/flashes/videojs/video.min.js";
+            public const string Css = "resources/videojs/video-js.min.css";
+            public const string Js = "resources/videojs/video.min.js";
         }
 
         public static class Stl
