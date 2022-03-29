@@ -674,17 +674,17 @@ var $vue = new Vue({
     }
   },
   created: function () {
-    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.siteId;
-    this.apiList();
     var $this = this;
-    $(document).keypress(function (e) {
-      if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
-        if ($this.editPanel) {
-          $this.btnSaveClick();
-        } else if ($this.appendPanel) {
-          $this.btnAppendSubmitClick();
-        }
+    utils.keyPress(function () {
+      if ($this.editPanel) {
+        $this.btnSaveClick();
+      } else if ($this.appendPanel) {
+        $this.btnAppendSubmitClick();
+      } else if ($this.deletePanel) {
+        $this.btnDeleteSubmitClick();
       }
     });
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.siteId;
+    this.apiList();
   }
 });

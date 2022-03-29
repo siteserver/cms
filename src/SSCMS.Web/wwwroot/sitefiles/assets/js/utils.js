@@ -604,6 +604,16 @@ var utils = {
     return str && val && str.indexOf(val) !== -1;
   },
 
+  keyPress: function (submitFn, cancelFn) {
+    $(document).keydown(function (e) {
+      if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
+        submitFn && submitFn();
+      } else if (e.key === "Escape") {
+        cancelFn && cancelFn();
+      }
+    });
+  },
+
   validateMobile: function (rule, value, callback) {
     if (!value) {
       callback();
