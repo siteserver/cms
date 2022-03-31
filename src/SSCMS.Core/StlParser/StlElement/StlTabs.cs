@@ -98,8 +98,16 @@ namespace SSCMS.Core.StlParser.StlElement
             var elementId = StringUtils.GetElementId();
             var isHeader = StringUtils.EqualsIgnoreCase(type, TypeHead);
 
+            var innerHtml = string.Empty;
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
+            {
+                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
+                innerHtml = innerBuilder.ToString();
+            }
+
             var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(contextInfo.InnerHtml);
+            htmlDoc.LoadHtml(innerHtml);
 
             var htmlNodes = htmlDoc.DocumentNode.ChildNodes;
             if (htmlNodes != null && htmlNodes.Count > 0)
@@ -187,16 +195,16 @@ function stl_tab_{elementId}(tabName, no){{
                         }
                     }
 
-                    var innerHtml = string.Empty;
-                    if (!string.IsNullOrEmpty(htmlNode.InnerHtml))
-                    {
-                        var innerBuilder = new StringBuilder(htmlNode.InnerHtml);
-                        await parseManager.ParseInnerContentAsync(innerBuilder);
-                        innerHtml = innerBuilder.ToString();
-                    }
+                    // var innerHtml = string.Empty;
+                    // if (!string.IsNullOrEmpty(htmlNode.InnerHtml))
+                    // {
+                    //     var innerBuilder = new StringBuilder(htmlNode.InnerHtml);
+                    //     await parseManager.ParseInnerContentAsync(innerBuilder);
+                    //     innerHtml = innerBuilder.ToString();
+                    // }
 
                     builder.Append(
-                        $"<{htmlNode.Name} {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</{htmlNode.Name}>");
+                        $"<{htmlNode.Name} {TranslateUtils.ToAttributesString(attributes)}>{htmlNode.InnerHtml}</{htmlNode.Name}>");
                 }
             }
 

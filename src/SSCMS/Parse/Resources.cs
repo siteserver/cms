@@ -55,6 +55,12 @@
             public const string Js = "resources/videojs/video.min.js";
         }
 
+        public static class SwiperJs
+        {
+            public const string Css = "resources/swiperjs/swiper-bundle.min.css";
+            public const string Js = "resources/swiperjs/swiper-bundle.min.js";
+        }
+
         public static class Stl
         {
             public const string JsPageScript = "resources/scripts/stl/pagescript.js";

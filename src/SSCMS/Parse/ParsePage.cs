@@ -144,7 +144,7 @@ namespace SSCMS.Parse
             public const string JsAcMediaElement = "Js_Ac_MediaElement";          //mediaelement
             public const string JsAcAudioJs = "Js_Ac_AudioJs";                    //audio.js
             public const string JsAcVideoJs = "Js_Ac_VideoJs";                    //video.js
-
+            public const string JsAcSwiperJs = "Js_Ac_SwiperJs";                    //swiper.js
             public const string JsAeStlZoom = "Js_Ae_StlZoom";                    //文字缩放
             public const string JsAfStlPrinter = "Js_Af_StlPrinter";              //打印
             public const string JsAhTranslate = "Js_Ah_Translate";                //繁体/简体转换
@@ -291,6 +291,16 @@ audiojs.events.ready(function() {{
             {
                 var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.VideoJs.Css);
                 var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.VideoJs.Js);
+
+                retVal = $@"
+<link href=""{cssUrl}"" rel=""stylesheet"">
+<script type=""text/javascript"" src=""{jsUrl}""></script>
+";
+            }
+            else if (pageJsName == Const.JsAcSwiperJs)
+            {
+                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.SwiperJs.Css);
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.SwiperJs.Js);
 
                 retVal = $@"
 <link href=""{cssUrl}"" rel=""stylesheet"">

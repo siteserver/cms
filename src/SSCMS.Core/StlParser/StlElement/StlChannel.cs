@@ -107,7 +107,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
-            var isReturnToBr = false;
+            var isReturnToBrStr = string.Empty;
             var isLower = false;
             var isUpper = false;
             var attributes = new NameValueCollection();
@@ -193,7 +193,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr))
                 {
-                    isReturnToBr = TranslateUtils.ToBool(value, false);
+                    isReturnToBrStr = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsLower))
                 {
@@ -250,7 +250,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return channel.ToDictionary();
             }
 
-            var parsedContent = await ParseAsync(parseManager, leftText, rightText, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId, attributes);
+            var parsedContent = await ParseAsync(parseManager, leftText, rightText, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, channel, channelId, attributes);
 
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);
@@ -264,7 +264,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -274,7 +274,19 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 type = nameof(StlParserUtility.Title);
             }
-            //type = StringUtils.ToLower(type);
+            
+            var isReturnToBr = false;
+            if (string.IsNullOrEmpty(isReturnToBrStr))
+            {
+                if (StringUtils.EqualsIgnoreCase(type, nameof(Channel.Description)))
+                {
+                    isReturnToBr = true;
+                }
+            }
+            else
+            {
+                isReturnToBr = TranslateUtils.ToBool(isReturnToBrStr, true);
+            }
 
             var parsedContent = string.Empty;
 

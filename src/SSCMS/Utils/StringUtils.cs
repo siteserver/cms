@@ -847,5 +847,15 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(html)) return string.Empty;
             return Sanitizer.Sanitize(html);
         }
+
+        public static string AddUnitIfNotExists(string val)
+        {
+            if (string.IsNullOrEmpty(val)) return string.Empty;
+            if (int.TryParse(val, out _))
+            {
+              return $"{val}px";
+            }
+            return val;
+        }
     }
 }

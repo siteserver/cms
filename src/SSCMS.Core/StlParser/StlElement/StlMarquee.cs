@@ -10,19 +10,19 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "无间隔滚动", Description = "通过 stl:marquee 标签在模板中创建一个能够无间隔滚动的内容块")]
     public static class StlMarquee
-	{
+    {
         public const string ElementName = "stl:marquee";
 
-		[StlAttribute(Title = "滚动延迟时间（毫秒）")]
+        [StlAttribute(Title = "滚动延迟时间（毫秒）")]
         private const string ScrollDelay = nameof(ScrollDelay);
 
-		[StlAttribute(Title = "滚动方向")]
+        [StlAttribute(Title = "滚动方向")]
         private const string Direction = nameof(Direction);
 
-		[StlAttribute(Title = "宽度")]
+        [StlAttribute(Title = "宽度")]
         private const string Width = nameof(Width);
 
-		[StlAttribute(Title = "高度")]
+        [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
 
         public const string DirectionVertical = "vertical";         //垂直
@@ -35,7 +35,7 @@ namespace SSCMS.Core.StlParser.StlElement
         };
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
-		{
+        {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
@@ -98,7 +98,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return Parse(pageInfo, scrollHtml, scrollDelay, direction, width, height);
-		}
+        }
 
         private static string Parse(ParsePage pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
         {
@@ -190,5 +190,5 @@ if (uniqueID_isMar){{
 
             return topHtml.Replace("uniqueID", elementId) + scrollHtml + bottomHtml.Replace("uniqueID", elementId);
         }
-	}
+    }
 }

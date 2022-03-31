@@ -181,6 +181,10 @@ namespace SSCMS.Core.StlParser.Models
                 typeof(StlSqlContents)
             },
             {
+                StlSwiper.ElementName,
+                typeof(StlSwiper)
+            },
+            {
                 StlTabs.ElementName,
                 typeof(StlTabs)
             },
