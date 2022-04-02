@@ -80,6 +80,24 @@ namespace SSCMS.Core.StlParser.StlElement
             return stlPageContents;
         }
 
+        //API StlActionsMoreController调用
+        public static async Task<StlPageContents> GetByStlMoreAsync(string stlPageContentsElement, IParseManager parseManager)
+        {
+            var stlPageContents = new StlPageContents
+            {
+                ParseManager = parseManager
+            };
+
+            var stlElementInfo = StlParserUtility.ParseStlElement(stlPageContentsElement, -1);
+            parseManager.ContextInfo = parseManager.ContextInfo.Clone(ElementName, stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes, stlElementInfo.StartIndex);
+
+            stlPageContents.ListInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Content);
+
+            stlPageContents.DataSource = await GetContentsDataSourceAsync(parseManager, stlPageContents.ListInfo);
+
+            return stlPageContents;
+        }
+
         public (int PageCount, int TotalNum) GetPageCount()
         {
             var pageCount = 1;

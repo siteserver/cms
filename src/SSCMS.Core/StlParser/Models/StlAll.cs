@@ -105,6 +105,10 @@ namespace SSCMS.Core.StlParser.Models
                 typeof(StlMaterial)
             },
             {
+                StlMore.ElementName,
+                typeof(StlMore)
+            },
+            {
                 StlNavigation.ElementName,
                 typeof(StlNavigation)
             },

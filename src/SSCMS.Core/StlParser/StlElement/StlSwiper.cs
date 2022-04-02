@@ -24,13 +24,13 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
 
-        [StlAttribute(Title = "是否自动播放")]
+        [StlAttribute(Title = "是否显示翻页控件")]
         private const string IsPagination = nameof(IsPagination);
 
-        [StlAttribute(Title = "是否显示播放控件")]
+        [StlAttribute(Title = "是否显示左右切换控件")]
         private const string IsNavigation = nameof(IsNavigation);
 
-        [StlAttribute(Title = "是否循环播放")]
+        [StlAttribute(Title = "是否显示拖动控件")]
         private const string IsScrollbar = nameof(IsScrollbar);
 
         [StlAttribute(Title = "控件颜色")]

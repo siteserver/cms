@@ -42,6 +42,7 @@ namespace SSCMS.Configuration
         public const string RouteStlRouteActionsIf = "actions/if";
         public const string RouteStlActionsPageContents = "actions/pagecontents";
         public const string RouteStlActionsSearch = "actions/search";
+        public const string RouteStlActionsMore = "actions/more";
         public const string RouteStlActionsTrigger = "actions/trigger";
 
         public const string ScopeChannels = "Channels";

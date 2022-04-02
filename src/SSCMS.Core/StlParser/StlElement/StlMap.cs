@@ -75,11 +75,11 @@ namespace SSCMS.Core.StlParser.StlElement
             var style = attributes["style"] ?? string.Empty;
             if (!string.IsNullOrEmpty(width))
             {
-                style += $";width:{width}px;";
+                style += $";width:{StringUtils.AddUnitIfNotExists(width)};";
             }
             if (!string.IsNullOrEmpty(height))
             {
-                style += $";height:{height}px;";
+                style += $";height:{StringUtils.AddUnitIfNotExists(height)};";
             }
             if (!string.IsNullOrEmpty(style))
             {

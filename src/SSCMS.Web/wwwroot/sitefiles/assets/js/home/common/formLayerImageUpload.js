@@ -72,7 +72,7 @@ var methods = {
           $this.parentInsert($this.no + i, result);
         }
       }
-      
+
       utils.closeLayer();
     })
     .catch(function(error) {
@@ -137,6 +137,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId;
     this.apiGet();
   }
