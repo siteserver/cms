@@ -643,7 +643,11 @@ var methods = {
       }
       ,anim: 5
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -683,7 +687,7 @@ var $vue = new Vue({
       } else if ($this.deletePanel) {
         $this.btnDeleteSubmitClick();
       }
-    });
+    }, this.btnCloseClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.siteId;
     this.apiList();
   }

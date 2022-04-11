@@ -330,7 +330,11 @@ var methods = {
       return i++ + '. ' + item.title;
     });
     return contents.join('<br />');
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -338,6 +342,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiList(1);
   }
 });

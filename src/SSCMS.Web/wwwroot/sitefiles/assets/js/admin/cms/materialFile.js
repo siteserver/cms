@@ -272,7 +272,11 @@ var methods = {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
     utils.error(error.message);
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -280,6 +284,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiList(1);
   }
 });

@@ -87,7 +87,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var dateTo = string.Empty;
             var since = string.Empty;
             var pageNum = 0;
-            var isHighlight = false;
+            var isHighlight = true;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -151,7 +151,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsHighlight))
                 {
-                    isHighlight = TranslateUtils.ToBool(value);
+                    isHighlight = TranslateUtils.ToBool(value, true);
                 }
             }
 

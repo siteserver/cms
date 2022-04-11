@@ -57,7 +57,7 @@ var methods = {
     if (task.specialId) {
       query.specialId = task.specialId;
     }
-    
+
     window.open(utils.getRootUrl('redirect', query));
   },
 
@@ -78,7 +78,11 @@ var methods = {
       .catch(function(error) {
         utils.error(error);
       });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -86,6 +90,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.load();
   }
 });

@@ -138,6 +138,7 @@ var $vue = new Vue({
   computed: computed,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

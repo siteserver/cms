@@ -63,7 +63,11 @@ var methods = {
 
   btnElementCancelClick: function () {
     this.elementPanel = false;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -71,6 +75,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.apiList();
   }
 });

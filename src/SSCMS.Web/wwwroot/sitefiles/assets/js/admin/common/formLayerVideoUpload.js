@@ -55,7 +55,7 @@ var methods = {
           $this.insert($this.no + i, result);
         }
       }
-      
+
       utils.closeLayer();
     })
     .catch(function(error) {
@@ -107,6 +107,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

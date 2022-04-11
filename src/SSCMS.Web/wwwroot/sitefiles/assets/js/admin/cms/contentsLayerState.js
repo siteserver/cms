@@ -51,7 +51,7 @@ var methods = {
       full: true
     });
   },
-  
+
   btnSubmitClick: function () {
     window.parent.layer.closeAll()
     window.parent.utils.openLayer({
@@ -75,6 +75,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

@@ -143,13 +143,28 @@ var methods = {
     };
     this.panel = true;
   },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
-  created: function () {
+  created: function () {var $this = this;
+    utils.keyPress(function() {
+      if ($this.panel) {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.panel) {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiGet();
   }
 });

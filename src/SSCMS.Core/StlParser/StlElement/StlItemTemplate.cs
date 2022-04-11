@@ -5,17 +5,17 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "列表项", Description = "通过 stl:itemTemplate 标签在模板中控制列表中每一项的显示内容及样式")]
     public static class StlItemTemplate
-	{
+    {
         public const string ElementName = "stl:itemTemplate";
 
-	    [StlAttribute(Title = "列表项类型")]
-	    public const string Type = nameof(Type);
+        [StlAttribute(Title = "列表项类型")]
+        public const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "列表当前选定项类型")]
+        [StlAttribute(Title = "列表当前选定项类型")]
         public const string Selected = nameof(Selected);
 
-	    [StlAttribute(Title = "当前选定项的值")]
-	    public const string SelectedValue = nameof(SelectedValue);
+        [StlAttribute(Title = "当前选定项的值")]
+        public const string SelectedValue = nameof(SelectedValue);
 
         public const string TypeHeader = "header";
         public const string TypeFooter = "footer";

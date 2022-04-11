@@ -155,5 +155,8 @@ var methods = {
 var $vue = new Vue({
   el: '#main',
   data: data,
-  methods: methods
+  methods: methods,
+  created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
+  }
 });

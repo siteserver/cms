@@ -156,7 +156,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
       var baseUrl = res.baseUrl;
-      var html = res.html; 
+      var html = res.html;
 
       var preview = document.getElementById('preview');
       if (preview.children.length > 0) {
@@ -377,6 +377,24 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function() {
+      if ($this.panelSettings) {
+        $this.btnSettingsSubmitClick();
+      } else if ($this.panelDataSource) {
+        $this.btnDataSourceSubmitClick();
+      } else {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.panelSettings) {
+        $this.panelSettings = false;
+      } else if ($this.panelDataSource) {
+        $this.panelDataSource = false;
+      } else {
+        window.close();
+      }
+    });
     this.winHeight = $(window).height();
     this.apiGet();
   }

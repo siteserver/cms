@@ -99,7 +99,11 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -107,6 +111,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.apiGet();
   }
 });

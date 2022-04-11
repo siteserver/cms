@@ -13,7 +13,7 @@ var data = utils.init({
   renameTitle: '',
   deleteId: 0,
   selectedGroupId: 0,
-  
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -31,12 +31,12 @@ var data = utils.init({
 
 var methods = {
   insert: function(result) {
-    var vueHtml = '' + 
-    '<el-popover' + 
-    '  width="600"' + 
-    '  trigger="click">' + 
+    var vueHtml = '' +
+    '<el-popover' +
+    '  width="600"' +
+    '  trigger="click">' +
     '   ' + result.content +
-    '  <el-button size="small" type="primary" slot="reference">' + result.linkText + '</el-button>' + 
+    '  <el-button size="small" type="primary" slot="reference">' + result.linkText + '</el-button>' +
     '</el-popover>'
     var html = '<a href="javascript:;" data-vue="' + encodeURIComponent(vueHtml) + '">' + result.linkText + '</a>';
     parent.$vue.insertEditor(this.attributeName, html);
@@ -158,7 +158,11 @@ var methods = {
   btnPageClick: function(val) {
     utils.loading(this, true);
     this.apiList(val);
-  }
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
+  },
 };
 
 var $vue = new Vue({
@@ -166,6 +170,18 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function () {
+      if ($this.isSubmitForm) {
+        $this.btnSubmitClick();
+      }
+    }, function () {
+      if ($this.isSubmitForm) {
+        $this.isSubmitForm = false;
+      } else {
+        $this.btnCancelClick();
+      }
+    });
     this.apiList(1);
   }
 });

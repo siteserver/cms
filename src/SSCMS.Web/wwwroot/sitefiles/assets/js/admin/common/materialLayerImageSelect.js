@@ -10,7 +10,7 @@ var data = utils.init({
   count: null,
   items: null,
   selectedGroupId: 0,
-  
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -49,7 +49,7 @@ var methods = {
 
   btnSelectClick: function(material) {
     var $this = this;
-  
+
     utils.loading(this, true);
     $api.post($url + '/actions/select', {
       siteId: this.siteId,
@@ -57,7 +57,7 @@ var methods = {
     })
     .then(function(response) {
       var res = response.data;
-  
+
       $this.insert(res.value);
       utils.closeLayer();
     })
@@ -105,7 +105,11 @@ var methods = {
   btnPageClick: function(val) {
     utils.loading(this, true);
     this.apiList(val);
-  }
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
+  },
 };
 
 var $vue = new Vue({
@@ -113,6 +117,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCancelClick);
     this.apiList(1);
   }
 });

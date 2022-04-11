@@ -10,7 +10,7 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "打印", Description = "通过 stl:printer 标签在模板中实现打印功能")]
     public static class StlPrinter
-	{
+    {
         public const string ElementName = "stl:printer";
 
         [StlAttribute(Title = "页面Html 中打印标题的 Id 属性")]
@@ -26,8 +26,8 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string LocationId = nameof(LocationId);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var titleId = string.Empty;
+        {
+            var titleId = string.Empty;
             var bodyId = string.Empty;
             var logoId = string.Empty;
             var locationId = string.Empty;
@@ -60,7 +60,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, attributes, titleId, bodyId, logoId, locationId);
-		}
+        }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
@@ -156,5 +156,5 @@ function stlLoadPrintJs()
 
             return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
-	}
+    }
 }

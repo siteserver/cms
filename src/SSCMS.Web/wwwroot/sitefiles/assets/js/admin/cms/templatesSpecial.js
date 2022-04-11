@@ -218,7 +218,11 @@ var methods = {
 
   uploadRemove: function(file, fileList) {
     this.form.fileNames.splice(this.form.fileNames.indexOf(file.name), 1);
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -226,6 +230,18 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function() {
+      if ($this.panel) {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.panel) {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiGet();
   }
 });

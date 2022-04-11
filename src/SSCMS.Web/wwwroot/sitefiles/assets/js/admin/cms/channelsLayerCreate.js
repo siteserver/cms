@@ -22,7 +22,8 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList('页面生成成功!', res);
+      parent.$vue.apiList(res);
+      utils.success('页面生成成功!');
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);
@@ -50,6 +51,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     utils.loading(this, false);
   }
 });

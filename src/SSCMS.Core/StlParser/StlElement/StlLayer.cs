@@ -15,6 +15,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "触发函数名称")]
         private const string FuncName = nameof(FuncName);
 
+        [StlAttribute(Title = "触发函数名称")]
+        private const string Trigger = nameof(Trigger);
+
         [StlAttribute(Title = "标题")]
         private const string Title = nameof(Title);
 
@@ -35,7 +38,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
-            var funcName = string.Empty;
+            var trigger = string.Empty;
             var title = string.Empty;
             var url = string.Empty;
             var width = string.Empty;
@@ -47,9 +50,9 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var value = parseManager.ContextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, FuncName))
+                if (StringUtils.EqualsIgnoreCase(name, Trigger) || StringUtils.EqualsIgnoreCase(name, FuncName))
                 {
-                    funcName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                    trigger = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Title))
                 {
@@ -89,10 +92,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, funcName, title, url, width, height, shadeClose, offset);
+            return await ParseAsync(parseManager, trigger, title, url, width, height, shadeClose, offset);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string funcName, string title,
+        private static async Task<string> ParseAsync(IParseManager parseManager, string trigger, string title,
             string url, string width, string height, bool shadeClose, string offset)
         {
             var pageInfo = parseManager.PageInfo;
@@ -133,8 +136,8 @@ area: ['{width}', '{height}'],";
             var script =
                 $@"layer.open({{type: {type},{area}shadeClose: {shadeClose.ToString().ToLower()},offset:{offsetStr},title: '{title}',content: {content}}});";
 
-            return !string.IsNullOrEmpty(funcName)
-                ? $@"<script>function {funcName}(){{{script}}}</script>"
+            return !string.IsNullOrEmpty(trigger)
+                ? $@"<script>function {trigger}(){{{script}}}</script>"
                 : $@"<script>$(document).ready(function() {{{script}}});</script>";
         }
     }

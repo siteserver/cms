@@ -183,7 +183,7 @@ var $vue = new Vue({
     siteIds: function() {
       var siteIds =  [];
       if (!this.form.allSites && this.form.siteIds && this.form.siteIds.length > 0) {
-        siteIds = this.form.siteIds.map(function (x) { 
+        siteIds = this.form.siteIds.map(function (x) {
           return typeof x === 'number' ? x : x[x.length - 1];
         });
       }
@@ -191,6 +191,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     if (this.siteId > 0) {
       this.apiGetChannels(this.siteId);
     } else {

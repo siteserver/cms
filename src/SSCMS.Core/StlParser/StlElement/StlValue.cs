@@ -13,10 +13,10 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "获取值", Description = "通过 stl:value 标签在模板中获取值")]
     public static class StlValue
-	{
+    {
         public const string ElementName = "stl:value";
 
-		[StlAttribute(Title = "类型")]
+        [StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);
 
         [StlAttribute(Title = "显示的格式")]
@@ -27,31 +27,31 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "字符开始位置")]
         private const string StartIndex = nameof(StartIndex);
-        
+
         [StlAttribute(Title = "指定字符长度")]
         private const string Length = nameof(Length);
-        
+
         [StlAttribute(Title = "显示字符的数目")]
         private const string WordNum = nameof(WordNum);
-        
+
         [StlAttribute(Title = "文字超出部分显示的文字")]
         private const string Ellipsis = nameof(Ellipsis);
-        
+
         [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
         private const string Replace = nameof(Replace);
-        
+
         [StlAttribute(Title = "替换replace的文字信息")]
         private const string To = nameof(To);
-        
+
         [StlAttribute(Title = "是否清除标签信息")]
         private const string IsClearTags = nameof(IsClearTags);
-        
+
         [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
-        
+
         [StlAttribute(Title = "是否转换为小写")]
         private const string IsLower = nameof(IsLower);
-        
+
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
@@ -77,8 +77,8 @@ namespace SSCMS.Core.StlParser.StlElement
         };
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var type = string.Empty;
+        {
+            var type = string.Empty;
             var format = string.Empty;
             var startIndex = 0;
             var length = 0;
@@ -91,9 +91,9 @@ namespace SSCMS.Core.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
 
-		    foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
-		    {
-		        var value = parseManager.ContextInfo.Attributes[name];
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
+            {
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -146,7 +146,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, type, format, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
-		}
+        }
 
         private static async Task<object> ParseAsync(IParseManager parseManager, string type, string format, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
@@ -266,5 +266,5 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             return parsedContent;
         }
-	}
+    }
 }

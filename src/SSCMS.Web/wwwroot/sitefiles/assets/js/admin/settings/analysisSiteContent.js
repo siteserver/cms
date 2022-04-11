@@ -60,7 +60,11 @@ var methods = {
   btnSearchClick() {
     var siteId = this.siteIds && this.siteIds.length > 0 ? this.siteIds[this.siteIds.length - 1] : 0;
     location.href = '?dateFrom=' + this.form.dateFrom + '&dateTo=' + this.form.dateTo + '&siteId=' + siteId;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 Vue.component("line-chart", {
@@ -90,6 +94,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiGet();
   }
 });

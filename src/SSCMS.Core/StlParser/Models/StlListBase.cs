@@ -67,7 +67,7 @@ namespace SSCMS.Core.StlParser.Models
         [StlAttribute(Title = "排序")]
         public const string Order = nameof(Order);
 
-        [StlAttribute(Title = "条件")]
+        [StlAttribute(Title = "SQL条件")]
         public const string Where = nameof(Where);
 
         [StlAttribute(Title = "仅显示图片内容")]

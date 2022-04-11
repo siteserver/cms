@@ -26,7 +26,7 @@ var methods = {
       $this.inputTypes = res.inputTypes.filter(function (x) {
         return $this.excludes.indexOf(x.key) == -1;
       });
-      
+
       $this.form.styles = res.styles;
     }).catch(function (error) {
       utils.error(error);
@@ -92,6 +92,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

@@ -83,7 +83,7 @@ var methods = {
           channel.name
         );
       });
-      
+
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);
@@ -98,7 +98,7 @@ var methods = {
 
   btnSubmitClick: function () {
     var $this = this;
-    
+
     this.$refs.form.validate(function(valid) {
       if (valid) {
         $this.apiSubmit();
@@ -116,6 +116,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

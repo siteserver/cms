@@ -362,6 +362,7 @@ var $vue = new Vue({
   },
   methods: methods,
   created: function() {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.apiGet();
   }
 });

@@ -11,7 +11,7 @@ var data = utils.init({
   expendedChannelIds: [],
 
   filterText: '',
-  
+
   pageContents: null,
   total: null,
   pageSize: null,
@@ -20,7 +20,7 @@ var data = utils.init({
   columns: null,
   permissions: null,
   menus: null,
-  
+
   asideHeight: 0,
   tableMaxHeight: 0,
   multipleSelection: [],
@@ -89,7 +89,7 @@ var methods = {
     }, this.advancedForm);
     $api.post($url + '/actions/list', request).then(function(response) {
       var res = response.data;
-      
+
       $this.pageContents = res.pageContents;
       $this.titleColumn = res.titleColumn;
       $this.columns = res.columns;
@@ -307,7 +307,7 @@ var methods = {
 
   btnLayerClick: function(options) {
     var query = {
-      siteId: this.siteId, 
+      siteId: this.siteId,
       page: this.page
     };
 
@@ -421,11 +421,11 @@ var methods = {
     if (nextColumn) {
       nextColumn.width += diff;
     }
-    
+
     this.apiWidth(
-      prevColumn ? prevColumn.columnKey : '', 
-      prevColumn ? prevColumn.width : 0, 
-      nextColumn ? nextColumn.columnKey : '', 
+      prevColumn ? prevColumn.columnKey : '',
+      prevColumn ? prevColumn.width : 0,
+      nextColumn ? nextColumn.columnKey : '',
       nextColumn ? nextColumn.width : 0
     );
   },
@@ -448,7 +448,11 @@ var methods = {
       return column.attributeName;
     });
     this.apiColumns(attributeNames);
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -494,6 +498,7 @@ var $vue = new Vue({
     }
   },
   created: function() {
+    utils.keyPress(null, this.btnCloseClick);
     this.apiTree(false);
   }
 });

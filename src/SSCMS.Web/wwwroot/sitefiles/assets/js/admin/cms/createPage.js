@@ -159,6 +159,10 @@ var methods = {
       channelId: data.value
     });
   },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -189,6 +193,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    utils.keyPress(this.btnCreateClick, this.btnCloseClick);
     if (this.type === 'Index') {
       this.apiCreateIndex();
     } else if (this.type === 'All') {

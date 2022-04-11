@@ -30,7 +30,7 @@ var methods = {
             backgroundColor: "#F56C6C",
             data: res.failureCount
           }
-          
+
         ]
       };
     })
@@ -44,7 +44,11 @@ var methods = {
 
   btnSearchClick() {
     location.href = '?dateFrom=' + this.form.dateFrom + '&dateTo=' + this.form.dateTo;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 Vue.component("line-chart", {
@@ -74,6 +78,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiGet();
   }
 });

@@ -23,6 +23,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "链接CSS样式")]
         private const string LinkClass = nameof(LinkClass);
 
+        [StlAttribute(Title = "当前链接CSS样式")]
+        private const string ActiveLinkClass = nameof(ActiveLinkClass);
+
         [StlAttribute(Title = "链接字数")]
         private const string WordNum = nameof(WordNum);
 
@@ -34,6 +37,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var separator = " - ";
             var target = string.Empty;
             var linkClass = string.Empty;
+            var activeLinkClass = string.Empty;
             var wordNum = 0;
             var isContainSelf = true;
 
@@ -53,6 +57,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     linkClass = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, ActiveLinkClass))
+                {
+                    activeLinkClass = value;
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
                     wordNum = TranslateUtils.ToInt(value);
@@ -63,10 +71,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, separator, target, linkClass, wordNum, isContainSelf);
+            return await ParseAsync(parseManager, separator, target, linkClass, activeLinkClass, wordNum, isContainSelf);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string separator, string target, string linkClass, string activeLinkClass, int wordNum, bool isContainSelf)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -128,6 +136,10 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (!string.IsNullOrEmpty(linkClass))
                     {
                         attributes["class"] = linkClass;
+                    }
+                    if (!string.IsNullOrEmpty(activeLinkClass))
+                    {
+                        attributes["class"] = activeLinkClass;
                     }
                     var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                     if (url.Equals(PageUtils.UnClickableUrl))

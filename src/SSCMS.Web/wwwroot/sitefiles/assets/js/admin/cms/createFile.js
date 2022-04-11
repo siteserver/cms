@@ -72,7 +72,11 @@ var methods = {
   handleCheckedTemplatesChange: function(value) {
     var checkedCount = value.length;
     this.isAllChecked = checkedCount === this.templates.length;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -89,6 +93,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    utils.keyPress(this.btnCreateClick, this.btnCloseClick);
     this.apiGet();
   }
 });

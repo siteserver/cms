@@ -113,6 +113,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCancelClick);
     utils.loading(this, false);
   }
 });

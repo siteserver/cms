@@ -400,7 +400,11 @@ var methods = {
       return 400;
     }
     return '';
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -446,6 +450,7 @@ var $vue = new Vue({
     }
   },
   created: function() {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiTree();
   }
 });

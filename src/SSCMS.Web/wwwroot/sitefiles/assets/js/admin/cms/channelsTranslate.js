@@ -117,7 +117,11 @@ var methods = {
 
   btnReturnClick: function() {
     location.href = this.returnUrl;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -130,6 +134,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    utils.keyPress(this.btnTranslateClick, this.btnCloseClick);
     this.apiConfig();
   }
 });

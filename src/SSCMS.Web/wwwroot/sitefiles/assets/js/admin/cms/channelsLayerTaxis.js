@@ -22,7 +22,8 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList('栏目排序成功!', res);
+      parent.$vue.apiList(res);
+      utils.success('栏目排序成功!');
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);

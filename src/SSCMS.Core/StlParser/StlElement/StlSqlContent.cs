@@ -12,7 +12,7 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "数据库值", Description = "通过 stl:sqlContent 标签在模板中显示数据库值")]
     public static class StlSqlContent
-	{
+    {
         public const string ElementName = "stl:sqlContent";
 
         [StlAttribute(Title = "数据库类型名称")]
@@ -23,19 +23,19 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "数据库链接字符串名称")]
         private const string ConnectionStringName = nameof(ConnectionStringName);
-        
+
         [StlAttribute(Title = "数据库链接字符串")]
         private const string ConnectionString = nameof(ConnectionString);
-        
+
         [StlAttribute(Title = "数据库查询语句")]
         private const string QueryString = nameof(QueryString);
-        
-		[StlAttribute(Title = "显示的类型")]
+
+        [StlAttribute(Title = "显示的类型")]
         private const string Type = nameof(Type);
-        
+
         [StlAttribute(Title = "显示在信息前的文字")]
         private const string LeftText = nameof(LeftText);
-        
+
         [StlAttribute(Title = "显示在信息后的文字")]
         private const string RightText = nameof(RightText);
 
@@ -44,41 +44,41 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
-        
+
         [StlAttribute(Title = "字符开始位置")]
         private const string StartIndex = nameof(StartIndex);
-        
+
         [StlAttribute(Title = "指定字符长度")]
         private const string Length = nameof(Length);
-        
-		[StlAttribute(Title = "显示字符的数目")]
+
+        [StlAttribute(Title = "显示字符的数目")]
         private const string WordNum = nameof(WordNum);
-        
+
         [StlAttribute(Title = "文字超出部分显示的文字")]
         private const string Ellipsis = nameof(Ellipsis);
-        
+
         [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
         private const string Replace = nameof(Replace);
-        
+
         [StlAttribute(Title = "替换replace的文字信息")]
         private const string To = nameof(To);
-        
+
         [StlAttribute(Title = "是否清除标签信息")]
         private const string IsClearTags = nameof(IsClearTags);
-        
+
         [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
-        
+
         [StlAttribute(Title = "是否转换为小写")]
         private const string IsLower = nameof(IsLower);
-        
+
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var databaseType = parseManager.SettingsManager.DatabaseType;
-		    var connectionString = parseManager.SettingsManager.DatabaseConnectionString;
+            var connectionString = parseManager.SettingsManager.DatabaseConnectionString;
             var queryString = string.Empty;
 
             var leftText = string.Empty;
@@ -186,27 +186,27 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-		    if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
-		    {
-		        object dataItem = null;
-		        if (parseManager.ContextInfo.ItemContainer?.SqlItem != null)
-		        {
-		            dataItem = parseManager.ContextInfo.ItemContainer?.SqlItem.Value;
-		        }
-		        else if (!string.IsNullOrEmpty(queryString))
-		        {
-		            var rows = parseManager.DatabaseManager.GetRows(databaseType, connectionString, queryString);
+            if (parseManager.ContextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            {
+                object dataItem = null;
+                if (parseManager.ContextInfo.ItemContainer?.SqlItem != null)
+                {
+                    dataItem = parseManager.ContextInfo.ItemContainer?.SqlItem.Value;
+                }
+                else if (!string.IsNullOrEmpty(queryString))
+                {
+                    var rows = parseManager.DatabaseManager.GetRows(databaseType, connectionString, queryString);
                     if (rows != null && rows.Any())
-		            {
-		                dataItem = rows.First();
-		            }
-		        }
+                    {
+                        dataItem = rows.First();
+                    }
+                }
 
-		        return dataItem;
-		    }
+                return dataItem;
+            }
 
             return Parse(parseManager, connectionString, queryString, leftText, rightText, format, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
-		}
+        }
 
         private static string Parse(IParseManager parseManager, string connectionString, string queryString, string leftText, string rightText, string format, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
@@ -271,5 +271,5 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return parsedContent;
         }
-	}
+    }
 }

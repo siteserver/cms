@@ -12,23 +12,23 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "文件下载链接", Description = "通过 stl:file 标签在模板中显示文件下载链接")]
     public static class StlFile
-	{
+    {
         public const string ElementName = "stl:file";
 
-	    [StlAttribute(Title = "指定存储附件的字段")]
-	    private const string Type = nameof(Type);
+        [StlAttribute(Title = "指定存储附件的字段")]
+        private const string Type = nameof(Type);
 
         [StlAttribute(Title = "显示字段的顺序")]
         private const string No = nameof(No);
 
-		[StlAttribute(Title = "需要下载的文件地址")]
+        [StlAttribute(Title = "需要下载的文件地址")]
         private const string Src = nameof(Src);
 
-	    [StlAttribute(Title = "仅显示文件名称")]
-	    private const string IsFileName = nameof(IsFileName);
+        [StlAttribute(Title = "仅显示文件名称")]
+        private const string IsFileName = nameof(IsFileName);
 
-	    [StlAttribute(Title = "仅显示文件类型")]
-	    private const string IsFileType = nameof(IsFileType);
+        [StlAttribute(Title = "仅显示文件类型")]
+        private const string IsFileType = nameof(IsFileType);
 
         [StlAttribute(Title = "仅显示文件大小")]
         private const string IsFileSize = nameof(IsFileSize);
@@ -36,11 +36,11 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "仅显示下载次数")]
         private const string IsCount = nameof(IsCount);
 
-	    [StlAttribute(Title = "是否转换为小写")]
-	    private const string IsLower = nameof(IsLower);
+        [StlAttribute(Title = "是否转换为小写")]
+        private const string IsLower = nameof(IsLower);
 
-	    [StlAttribute(Title = "是否转换为大写")]
-	    private const string IsUpper = nameof(IsUpper);
+        [StlAttribute(Title = "是否转换为大写")]
+        private const string IsUpper = nameof(IsUpper);
 
         [StlAttribute(Title = "显示在信息前的文字")]
         private const string LeftText = nameof(LeftText);
@@ -224,5 +224,5 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return parsedContent;
         }
-	}
+    }
 }

@@ -11,8 +11,8 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "查询条件", Description = "通过 stl:query 标签在模板中设置列表标签查询条件")]
     public static partial class StlQuery
-	{
-		public const string ElementName = "stl:query";
+    {
+        public const string ElementName = "stl:query";
 
         [StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);
@@ -103,7 +103,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return query;
-		}
+        }
 
         private static object GetValue(DataType dataType, string value)
         {

@@ -218,7 +218,11 @@ var methods = {
   format: function(percentage) {
     if (percentage === 100) return '插件' + this.pageType + '成功！';
     return utils.getQueryBoolean('isUpdate') ? '插件升级中，升级过程可能需要持续几分钟，请勿关闭此页面' : '插件安装中...';
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -226,6 +230,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.apiGet();
   }
 });

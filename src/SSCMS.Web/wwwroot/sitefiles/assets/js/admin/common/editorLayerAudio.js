@@ -21,7 +21,7 @@ var methods = {
     }
 
     var isAutoPlay = ' isAutoPlay="' + this.form.isAutoPlay + '"';
-    
+
     parent.$vue.insertEditor($this.attributeName, '<img src="/sitefiles/assets/images/audio-clip.png"' + isAutoPlay + ' playUrl="' + this.form.audioUrl + '" style="width: 400px; height: 40px;" class="siteserver-stl-audio" /><br/>');
     utils.closeLayer();
   },
@@ -62,6 +62,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId;
     utils.loading(this, false);
   }

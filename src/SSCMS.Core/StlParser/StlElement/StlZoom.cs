@@ -10,7 +10,7 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "文字缩放", Description = "通过 stl:zoom 标签在模板中实现文字缩放功能")]
     public static class StlZoom
-	{
+    {
         public const string ElementName = "stl:zoom";
 
         [StlAttribute(Title = "页面Html 中缩放对象的 Id 属性")]
@@ -20,8 +20,8 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string FontSize = nameof(FontSize);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var zoomId = string.Empty;
+        {
+            var zoomId = string.Empty;
             var fontSize = 16;
             var attributes = new NameValueCollection();
 
@@ -44,7 +44,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, attributes, zoomId, fontSize);
-		}
+        }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, NameValueCollection attributes, string zoomId, int fontSize)
         {
@@ -93,5 +93,5 @@ function stlDoZoom(zoomId, size){
 
             return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
-	}
+    }
 }

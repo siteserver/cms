@@ -89,6 +89,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     if (this.groupId > 0) {
       this.apiGet();
     } else {

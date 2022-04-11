@@ -363,6 +363,9 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, function () {
+      utils.removeTab();
+    });
     this.apiGet();
   },
   computed: {

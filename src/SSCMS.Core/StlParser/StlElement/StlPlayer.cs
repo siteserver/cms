@@ -13,7 +13,7 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "播放视频", Description = "通过 stl:player 标签在模板中播放视频")]
     public static class StlPlayer
-	{
+    {
         public const string ElementName = "stl:player";
         public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/video-clip.png""";
         public const string EditorPlaceHolder2 = @"src=""@sitefiles/assets/images/video-clip.png""";
@@ -21,27 +21,27 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "指定存储媒体的字段")]
         public const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "视频地址")]
-	    public const string PlayUrl = nameof(PlayUrl);
-        
-	    [StlAttribute(Title = "图片地址")]
-	    public const string ImageUrl = nameof(ImageUrl);
-        
-	    [StlAttribute(Title = "指定播放器")]
-	    public const string PlayBy = nameof(PlayBy);
-        
-	    [StlAttribute(Title = "宽度")]
-	    public const string Width = nameof(Width);
-        
-	    [StlAttribute(Title = "高度")]
-        public const string Height = nameof(Height);
-        
-	    [StlAttribute(Title = "是否自动播放")]
-	    public const string IsAutoPlay = nameof(IsAutoPlay);
+        [StlAttribute(Title = "视频地址")]
+        public const string PlayUrl = nameof(PlayUrl);
 
-	    private const string PlayByHtml5 = "Html5";
+        [StlAttribute(Title = "图片地址")]
+        public const string ImageUrl = nameof(ImageUrl);
+
+        [StlAttribute(Title = "指定播放器")]
+        public const string PlayBy = nameof(PlayBy);
+
+        [StlAttribute(Title = "宽度")]
+        public const string Width = nameof(Width);
+
+        [StlAttribute(Title = "高度")]
+        public const string Height = nameof(Height);
+
+        [StlAttribute(Title = "是否自动播放")]
+        public const string IsAutoPlay = nameof(IsAutoPlay);
+
+        private const string PlayByHtml5 = "Html5";
         private const string PlayByFlowPlayer = "FlowPlayer";
-	    private const string PlayByJwPlayer = "JWPlayer";
+        private const string PlayByJwPlayer = "JWPlayer";
 
         public static List<string> PlayByList => new List<string>
         {
@@ -51,7 +51,7 @@ namespace SSCMS.Core.StlParser.StlElement
         };
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
+        {
             var type = nameof(Content.VideoUrl);
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
@@ -95,7 +95,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
-		}
+        }
 
         private static async Task<object> ParseAsync(IParseManager parseManager, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
         {

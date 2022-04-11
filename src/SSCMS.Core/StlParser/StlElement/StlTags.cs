@@ -12,7 +12,7 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
     public static class StlTags
-	{
+    {
         public const string ElementName = "stl:tags";
 
         [StlAttribute(Title = "标签级别")]
@@ -28,12 +28,12 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string Context = nameof(Context);
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var tagLevel = 1;
+        {
+            var tagLevel = 1;
             var totalNum = 0;
             var isOrderByCount = false;
 
-		    foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
                 var value = parseManager.ContextInfo.Attributes[name];
 
@@ -116,7 +116,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             {
                                 Id = 0,
                                 SiteId = parseManager.PageInfo.SiteId,
-                                ContentIds = new List<int>{ contentId },
+                                ContentIds = new List<int> { contentId },
                                 TagName = tagName,
                                 UseNum = 1
                             };

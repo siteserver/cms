@@ -17,7 +17,7 @@ var data = utils.init({
 var methods = {
   apiGet: function () {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.get($url, {
       params: {
@@ -109,6 +109,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

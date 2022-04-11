@@ -13,7 +13,7 @@ var data = utils.init({
   renameTitle: '',
   deleteId: 0,
   selectedGroupId: 0,
-  
+
   form: {
     keyword: '',
     groupId: 0,
@@ -123,7 +123,11 @@ var methods = {
   btnPageClick: function(val) {
     utils.loading(this, true);
     this.apiList(val);
-  }
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
+  },
 };
 
 var $vue = new Vue({
@@ -131,6 +135,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCancelClick);
     this.apiList(1);
   }
 });

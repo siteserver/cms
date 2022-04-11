@@ -8,7 +8,7 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   checkedLevels: [],
-  
+
   pageContents: null,
   total: null,
   pageSize: null,
@@ -17,7 +17,7 @@ var data = utils.init({
   columns: null,
   permissions: null,
   menus: null,
-  
+
   tableMaxHeight: 999999999999,
   multipleSelection: [],
 
@@ -122,7 +122,7 @@ var methods = {
       tagNames: this.searchForm.tagNames
     }).then(function(response) {
       var res = response.data;
-      
+
       $this.pageContents = res.pageContents;
       $this.total = res.total;
       $this.pageSize = res.pageSize;
@@ -290,7 +290,7 @@ var methods = {
 
   btnLayerClick: function(options) {
     var query = {
-      siteId: this.siteId, 
+      siteId: this.siteId,
       page: this.page
     };
 
@@ -371,7 +371,11 @@ var methods = {
       return column.attributeName;
     });
     this.apiColumns(attributeNames);
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -430,6 +434,7 @@ var $vue = new Vue({
     }
   },
   created: function() {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiTree();
   }
 });

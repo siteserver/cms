@@ -7,7 +7,7 @@ var data = utils.init({
   count: null,
   items: null,
   multipleSelection: [],
-  
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -65,7 +65,7 @@ var methods = {
 
   btnTitleClick: function(material) {
     var $this = this;
-    
+
   },
 
   btnGroupClick: function(groupId) {
@@ -98,6 +98,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiList(1);
   }
 });

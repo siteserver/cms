@@ -9,15 +9,15 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "包含文件", Description = "通过 stl:include 标签在模板中包含另一个文件，作为模板的一部分")]
     public static class StlInclude
-	{
-		public const string ElementName = "stl:include";
+    {
+        public const string ElementName = "stl:include";
 
         [StlAttribute(Title = "文件路径")]
         private const string File = nameof(File);
-        
+
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var file = string.Empty;
+        {
+            var file = string.Empty;
             var parameters = new Dictionary<string, string>();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
@@ -37,7 +37,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, file, parameters);
-		}
+        }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, string file, Dictionary<string, string> parameters)
         {
@@ -62,5 +62,5 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return parsedContent;
         }
-	}
+    }
 }

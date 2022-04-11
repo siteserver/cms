@@ -262,7 +262,11 @@ var methods = {
     location.href = utils.getPluginsUrl('install', {
       pluginIds: this.extension.userName + '.' + this.extension.name
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -270,6 +274,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.apiGet();
   }
 });

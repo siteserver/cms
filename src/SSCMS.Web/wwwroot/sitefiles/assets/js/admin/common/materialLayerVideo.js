@@ -38,8 +38,6 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    var $this = this;
-
     if (!this.form.videoUrl) {
       utils.error('请设置需要插入的视频文件！');
       return false;
@@ -112,6 +110,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.pageLoad = true;
   }
 });

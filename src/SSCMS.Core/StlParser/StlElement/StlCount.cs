@@ -13,10 +13,10 @@ namespace SSCMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
     public static class StlCount
-	{
-		public const string ElementName = "stl:count";
+    {
+        public const string ElementName = "stl:count";
 
-		[StlAttribute(Title = "需要获取值的类型")]
+        [StlAttribute(Title = "需要获取值的类型")]
         private const string Type = nameof(Type);
 
         [StlAttribute(Title = "栏目索引")]
@@ -51,8 +51,8 @@ namespace SSCMS.Core.StlParser.StlElement
         };
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
-		{
-		    var type = string.Empty;
+        {
+            var type = string.Empty;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
@@ -60,9 +60,9 @@ namespace SSCMS.Core.StlParser.StlElement
             var scope = ScopeType.Self;
             var since = string.Empty;
 
-		    foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
-		    {
-		        var value = parseManager.ContextInfo.Attributes[name];
+            foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
+            {
+                var value = parseManager.ContextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -95,7 +95,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             return await ParseAsync(parseManager, type, channelIndex, channelName, upLevel, topLevel, scope, since);
-		}
+        }
 
         private static async Task<string> ParseAsync(IParseManager parseManager, string type, string channelIndex, string channelName, int upLevel, int topLevel, ScopeType scope, string since)
         {
@@ -136,5 +136,5 @@ namespace SSCMS.Core.StlParser.StlElement
 
             return count.ToString();
         }
-	}
+    }
 }

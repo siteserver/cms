@@ -113,7 +113,11 @@ var methods = {
   handleCurrentChange: function(val) {
     this.page = val;
     this.apiList();
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -121,6 +125,18 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function () {
+      if ($this.panel) {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.panel) {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiList();
   }
 });

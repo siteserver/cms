@@ -31,14 +31,14 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "使用iframe显示PDF")]
         private const string ForceIframe = nameof(ForceIframe);
 
+        [StlAttribute(Title = "显示宽度")]
+        private const string Width = nameof(Width);
+
         [StlAttribute(Title = "显示高度")]
         private const string Height = nameof(Height);
 
         [StlAttribute(Title = "默认显示指定页")]
         private const string Page = nameof(Page);
-
-        [StlAttribute(Title = "显示宽度")]
-        private const string Width = nameof(Width);
 
         [StlAttribute(Title = "整屏显示")]
         private const string Full = nameof(Full);

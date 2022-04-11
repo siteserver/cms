@@ -301,7 +301,11 @@ var methods = {
   getUrl: function(virtualUrl) {
     if (!virtualUrl) return '';
     return _.replace(virtualUrl, '@/', this.siteUrl + '/');
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -341,6 +345,7 @@ var $vue = new Vue({
     }
   },
   created: function() {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiTree();
   }
 });

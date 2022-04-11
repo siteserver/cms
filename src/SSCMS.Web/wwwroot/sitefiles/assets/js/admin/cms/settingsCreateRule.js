@@ -128,7 +128,11 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -143,6 +147,18 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    var $this = this;
+    utils.keyPress(function () {
+      if ($this.editPanel) {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.editPanel) {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiList();
   }
 });

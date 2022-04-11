@@ -212,7 +212,11 @@ var methods = {
       channelTemplateId: channelTemplateId,
       contentTemplateId: contentTemplateId
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -231,6 +235,7 @@ var $vue = new Vue({
     }
   },
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.apiConfig();
   }
 });

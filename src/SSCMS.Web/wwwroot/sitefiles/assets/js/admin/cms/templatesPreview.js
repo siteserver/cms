@@ -27,7 +27,7 @@ var methods = {
 
       $this.channels = res.channels;
       $this.content = res.content;
-      
+
       setTimeout(function () {
         require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
@@ -89,7 +89,11 @@ var methods = {
     }
 
     this.apiSubmit();
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -97,6 +101,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.apiConfig();
   }
 });
