@@ -26,6 +26,10 @@ var methods = {
 
   getMainUrl: function (site) {
     return utils.getIndexUrl({siteId: site.id});
+  },
+
+  btnCancelClick: function () {
+    utils.closeLayer();
   }
 };
 
@@ -34,6 +38,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCancelClick);
     this.apiGet();
   }
 });

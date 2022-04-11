@@ -266,7 +266,11 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -274,6 +278,18 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function () {
+      if ($this.pageType === 'submit') {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.pageType === 'submit') {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiGet();
   }
 });

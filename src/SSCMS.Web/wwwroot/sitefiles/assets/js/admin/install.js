@@ -344,6 +344,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnNextClick, this.btnPreviousClick);
     this.apiGet();
   }
 });

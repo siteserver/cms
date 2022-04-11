@@ -280,7 +280,11 @@ var methods = {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
     utils.error(error.message);
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -288,6 +292,14 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(null, function() {
+      if ($this.uploadPanel) {
+        $this.uploadPanel = false;
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiGet();
   }
 });

@@ -83,7 +83,11 @@ var methods = {
     }).then(function () {
       $this.editLoading = false;
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -91,6 +95,18 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function () {
+      if ($this.editPanel) {
+        $this.btnEditSubmitClick();
+      }
+    }, function() {
+      if ($this.editPanel) {
+        $this.btnEditCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiGet();
   }
 });

@@ -79,7 +79,7 @@ var methods = {
     else if (val === 'LetterAndDigitAndSymbol') return '字母、数字以及符号组合';
     else return '不限制';
   },
-  
+
   btnSubmitClick: function () {
     var $this = this;
 
@@ -88,7 +88,11 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -96,6 +100,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.apiGet();
   }
 });

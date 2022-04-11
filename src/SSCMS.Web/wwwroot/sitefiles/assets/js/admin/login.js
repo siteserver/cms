@@ -198,7 +198,7 @@ var methods = {
   },
 
   btnSubmitClick: function (e) {
-    e.preventDefault();
+    e && e.preventDefault();
 
     this.pageSubmit = true;
     this.pageAlert = null;
@@ -224,6 +224,7 @@ var $vue = new Vue({
   },
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick);
     this.apiGet();
   }
 });

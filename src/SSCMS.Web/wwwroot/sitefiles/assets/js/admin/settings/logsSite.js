@@ -120,7 +120,11 @@ var methods = {
       utils.loading($this, false);
     });
     window.scrollTo(0, 0);
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -128,6 +132,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiGet();
   }
 });

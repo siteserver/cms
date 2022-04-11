@@ -67,14 +67,19 @@ var methods = {
     utils.addTab('内容审核', utils.getCmsUrl('contentsCheck', {
       siteId: siteId
     }));
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
   el: "#main",
   data: data,
+  methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.apiGet();
   },
-  methods: methods
 });

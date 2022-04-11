@@ -190,6 +190,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload?userId=' + this.userId;
     this.apiGet();
   }

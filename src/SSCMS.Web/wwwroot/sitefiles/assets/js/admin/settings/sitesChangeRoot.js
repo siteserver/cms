@@ -6,7 +6,7 @@ var data = utils.init({
   directories: null,
   files: null,
   siteName: null,
-  
+
   checkAllDirectories: false,
   checkAllFiles: false,
   form: {
@@ -45,7 +45,7 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
@@ -92,7 +92,11 @@ var methods = {
         $this.apiSubmit();
       }
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -100,6 +104,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.apiGet();
   }
 });

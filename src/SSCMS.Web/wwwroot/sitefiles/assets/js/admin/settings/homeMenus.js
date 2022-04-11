@@ -261,7 +261,11 @@ var methods = {
 
   btnCancelClick: function() {
     this.userMenu = null;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -269,6 +273,18 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function() {
+      if ($this.userMenu) {
+        $this.btnSubmitClick();
+      }
+    }, function() {
+      if ($this.userMenu) {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.apiGet();
   }
 });

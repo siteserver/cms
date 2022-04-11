@@ -73,6 +73,12 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    var $this = this;
+    utils.keyPress(function () {
+      if ($this.pageType === 'prepare') {
+        $this.btnStartClick();
+      }
+    });
     this.apiGet();
   }
 });

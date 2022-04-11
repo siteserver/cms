@@ -687,7 +687,13 @@ var $vue = new Vue({
       } else if ($this.deletePanel) {
         $this.btnDeleteSubmitClick();
       }
-    }, this.btnCloseClick);
+    }, function () {
+      if ($this.editPanel || $this.appendPanel || $this.deletePanel || $this.importPanel) {
+        $this.btnCancelClick();
+      } else {
+        $this.btnCloseClick();
+      }
+    });
     this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.siteId;
     this.apiList();
   }

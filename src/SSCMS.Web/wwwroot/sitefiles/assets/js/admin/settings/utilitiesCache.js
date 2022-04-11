@@ -16,7 +16,7 @@ var methods = {
       $this.parameters = [];
       _.forOwn(res.configuration, function(value, key) {
         $this.parameters.push({
-          key: key, 
+          key: key,
           value: value
         });
       });
@@ -29,7 +29,7 @@ var methods = {
 
   btnCleanClick: function () {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url).then(function (response) {
       var res = response.data;
@@ -40,7 +40,11 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -48,6 +52,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnCleanClick, this.btnCloseClick);
     this.apiGet();
   }
 });

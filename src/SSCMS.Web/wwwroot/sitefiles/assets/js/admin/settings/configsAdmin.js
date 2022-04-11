@@ -50,7 +50,7 @@ var methods = {
       utils.loading($this, false);
     });
   },
-  
+
   btnSubmitClick: function () {
     var $this = this;
 
@@ -95,7 +95,11 @@ var methods = {
 
   uploadRemove(file) {
     this.form.adminLogoUrl = null;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -103,6 +107,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload';
     this.apiGet();
   }

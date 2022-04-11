@@ -6,7 +6,7 @@ var data = utils.init({
   directories: null,
   files: null,
   channel: null,
-  
+
   checkAllDirectories: false,
   checkAllFiles: false,
 
@@ -115,7 +115,7 @@ var methods = {
 
   apiSaveData: function () {
     var $this = this;
-    
+
     utils.loading(this, true);
     $api.post($url + '/actions/data', this.form).then(function (response) {
       var res = response.data;
@@ -134,6 +134,10 @@ var methods = {
   handleTreeChanged: function() {
     this.form.checkedChannelIds = this.$refs.tree.getCheckedKeys();
   },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -141,6 +145,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnNextClick, this.btnCloseClick);
     this.apiGet();
   }
 });

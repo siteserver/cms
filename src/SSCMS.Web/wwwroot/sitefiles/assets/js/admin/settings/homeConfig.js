@@ -11,7 +11,7 @@ var data = utils.init({
 
   form: {
     uploadLogoUrl: null,
-    
+
     isHomeClosed: null,
     homeTitle: null,
     isHomeLogo: null,
@@ -101,7 +101,7 @@ var methods = {
   btnUsersStyleClick: function () {
     utils.addTab('用户字段', utils.getSettingsUrl('usersStyle'));
   },
-  
+
   btnSubmitClick: function () {
     var $this = this;
 
@@ -148,7 +148,7 @@ var methods = {
     } else if (this.uploadType === 'homeDefaultAvatarUrl') {
       this.form.homeDefaultAvatarUrl = res.value;
     }
-    
+
     utils.loading(this, false);
     if (fileList.length > 1) fileList.splice(0, 1);
   },
@@ -165,7 +165,11 @@ var methods = {
 
   uploadRemoveHomeDefaultAvatarUrl(file) {
     this.form.homeDefaultAvatarUrl = null;
-  }
+  },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -173,6 +177,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload';
     this.apiGet();
   }
