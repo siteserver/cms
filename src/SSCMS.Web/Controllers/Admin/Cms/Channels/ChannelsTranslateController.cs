@@ -154,6 +154,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 nodeInfo.ParentId = parentId;
                 nodeInfo.ChildrenCount = 0;
                 nodeInfo.AddDate = DateTime.Now;
+                if (site.Id != targetSiteId)
+                {
+                    nodeInfo.ChannelTemplateId = 0;
+                    nodeInfo.ContentTemplateId = 0;
+                }
 
                 if (isDeleteAfterTranslate)
                 {
