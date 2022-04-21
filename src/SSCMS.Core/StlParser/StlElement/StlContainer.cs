@@ -79,6 +79,9 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
+            var prevContextType = contextInfo.ContextType;
+            var prevChannelId = contextInfo.ChannelId;
+
             var dataManager = new StlDataManager(parseManager.DatabaseManager);
             var channelId = await dataManager.GetChannelIdByLevelAsync(parseManager.PageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
@@ -91,6 +94,9 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var builder = new StringBuilder(innerHtml);
             await parseManager.ParseInnerContentAsync(builder);
+
+            contextInfo.ContextType = prevContextType;
+            contextInfo.ChannelId = prevChannelId;
 
             return builder.ToString();
         }

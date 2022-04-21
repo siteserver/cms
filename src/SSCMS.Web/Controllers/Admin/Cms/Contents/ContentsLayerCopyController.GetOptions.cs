@@ -25,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
             var cascade = await _channelRepository.GetCascadeAsync(transSite, transChannels, async summary =>
             {
-                var count = await _contentRepository.GetCountAsync(site, summary);
+                var count = await _contentRepository.GetCountAsync(transSite, summary);
 
                 return new
                 {
