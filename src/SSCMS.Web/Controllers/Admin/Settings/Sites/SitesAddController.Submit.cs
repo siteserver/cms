@@ -51,26 +51,23 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             channelInfo.ContentModelPluginId = string.Empty;
 
             var tableName = string.Empty;
-            if (StringUtils.EqualsIgnoreCase(request.SiteType, Types.SiteTypes.Web) || StringUtils.EqualsIgnoreCase(request.SiteType, Types.SiteTypes.Wx))
+            if (request.TableRule == TableRule.Choose)
             {
-                if (request.TableRule == TableRule.Choose)
-                {
-                    tableName = request.TableChoose;
-                }
-                else if (request.TableRule == TableRule.HandWrite)
-                {
-                    tableName = request.TableHandWrite;
+                tableName = request.TableChoose;
+            }
+            else if (request.TableRule == TableRule.HandWrite)
+            {
+                tableName = request.TableHandWrite;
 
-                    if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
-                    {
-                        var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
-                        await _contentRepository.CreateContentTableAsync(tableName, tableColumns);
-                    }
-                    else
-                    {
-                        var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
-                        await _settingsManager.Database.AlterTableAsync(tableName, tableColumns);
-                    }
+                if (!await _settingsManager.Database.IsTableExistsAsync(tableName))
+                {
+                    var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
+                    await _contentRepository.CreateContentTableAsync(tableName, tableColumns);
+                }
+                else
+                {
+                    var tableColumns = ReflectionUtils.GetTableColumns(typeof(Content));
+                    await _settingsManager.Database.AlterTableAsync(tableName, tableColumns);
                 }
             }
 
@@ -79,7 +76,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var siteId = await _siteRepository.InsertSiteAsync(channelInfo, new Site
             {
                 SiteName = request.SiteName,
-                SiteType = request.SiteType,
+                SiteType = Types.SiteTypes.Web,
                 SiteDir = request.SiteDir,
                 TableName = tableName,
                 ParentId = request.ParentId,

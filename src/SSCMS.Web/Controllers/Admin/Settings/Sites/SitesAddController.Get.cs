@@ -31,11 +31,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 Label = "<无上级站点>"
             });
 
-            var siteTypes = _settingsManager.GetSiteTypes();
-
             return new GetResult
             {
-                SiteTypes = siteTypes,
                 SiteTemplates = siteTemplates,
                 RootExists = rootExists,
                 Sites = sites,

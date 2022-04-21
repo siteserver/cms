@@ -45,7 +45,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         public class GetResult
         {
-            public IEnumerable<SiteType> SiteTypes { get; set; }
             public List<SiteTemplateInfo> SiteTemplates { get; set; }
             public bool RootExists { get; set; }
             public List<Cascade<int>> Sites { get; set; }
@@ -56,7 +55,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public class SubmitRequest
         {
             public string Guid { get; set; }
-            public string SiteType { get; set; }
             public string CreateType { get; set; }
             public string LocalDirectoryName { get; set; }
             public string CloudThemeUserName { get; set; }

@@ -3,7 +3,6 @@
 var data = utils.init({
   pageType: utils.getQueryString('type') || 'selectType',
 
-  siteTypes: null,
   siteTemplates: null,
   rootExists: null,
   sites: null,
@@ -22,7 +21,6 @@ var data = utils.init({
   parentIds: [0],
   form: {
     guid: null,
-    siteType: null,
     createType: utils.getQueryString('createType'),
     localDirectoryName: utils.getQueryString('localDirectoryName'),
     cloudThemeUserName: utils.getQueryString('cloudThemeUserName'),
@@ -51,7 +49,6 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.siteTypes = res.siteTypes;
       $this.siteTemplates = res.siteTemplates;
       $this.rootExists = res.rootExists;
       $this.sites = res.sites;
