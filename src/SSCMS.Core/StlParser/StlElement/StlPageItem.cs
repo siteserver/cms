@@ -56,7 +56,8 @@ namespace SSCMS.Core.StlParser.StlElement
         public const string TypeTotalPageNum = "TotalPageNum";		                    //总页数
         public const string TypeTotalNum = "TotalNum";		                            //总内容数
         public const string TypePageNavigation = "PageNavigation";			            //页导航
-        public const string TypePageSelect = "PageSelect";			                    //页跳转
+        public const string TypePageSelect = "PageSelect";			                    //页下拉跳转
+        public const string TypePageGo = "PageGo";			                    //页输入跳转
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
@@ -68,7 +69,8 @@ namespace SSCMS.Core.StlParser.StlElement
             {TypeTotalPageNum, "总页数"},
             {TypeTotalNum, "总内容数"},
             {TypePageNavigation, "页导航"},
-            {TypePageSelect, "页跳转"}
+            {TypePageSelect, "页下拉跳转"},
+            {TypePageGo, "页输入跳转"}
         };
 
         //对“翻页项”（pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
@@ -156,7 +158,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 Channel node = null;
 
                 string pageUrl;
-                
+
                 if (contextType == ParseType.Channel)
                 {
                     node = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
@@ -413,7 +415,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = text + pageBuilder;
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页跳转
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageSelect))//页下拉跳转
                 {
                     var selectAttributes = new NameValueCollection();
                     if (!string.IsNullOrEmpty(textClass))
@@ -537,6 +539,12 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     parsedContent = Convert.ToString(totalNum);
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageGo))//页输入跳转
+                {
+                    var ext = PageUtils.GetExtensionFromUrl(pageUrl);
+                    var urlWithoutExt = pageUrl.Substring(0, pageUrl.Length - ext.Length);
+                    parsedContent = $@"var page = parseInt(document.getElementById('page').value);location.href = page > 1 && page <= {pageCount} ? '{urlWithoutExt}_' + page + '{ext}' : '{pageUrl}';return false;";
                 }
             }
             catch (Exception ex)
@@ -779,7 +787,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         selectAttributes["class"] = textClass;
                     }
                     TranslateUtils.AddAttributesIfNotExists(selectAttributes, attributes);
-                    
+
                     var elementId = StringUtils.GetElementId();
                     selectAttributes["id"] = elementId;
                     selectAttributes["onchange"] = clickString;

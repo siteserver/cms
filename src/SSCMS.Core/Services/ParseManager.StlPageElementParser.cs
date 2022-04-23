@@ -8,17 +8,17 @@ namespace SSCMS.Core.Services
 {
     public partial class ParseManager
     {
-		//在内容页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public async Task<string> ParseStlPageInContentPageAsync(string stlElement, int channelId, int contentId, int currentPageIndex, int pageCount)
-		{
+        //在内容页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
+        public async Task<string> ParseStlPageInContentPageAsync(string stlElement, int channelId, int contentId, int currentPageIndex, int pageCount)
+        {
             return await StlPageItems.ParseAsync(this, stlElement, channelId, contentId, currentPageIndex, pageCount, pageCount, ParseType.Content);
-		}
+        }
 
-		//在栏目页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public async Task<string> ParseStlPageInChannelPageAsync(string stlElement, int channelId, int currentPageIndex, int pageCount, int totalNum)
-		{
+        //在栏目页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
+        public async Task<string> ParseStlPageInChannelPageAsync(string stlElement, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        {
             return await StlPageItems.ParseAsync(this, stlElement, channelId, 0, currentPageIndex, pageCount, totalNum, ParseType.Channel);
-		}
+        }
 
         public async Task<string> ParseStlPageInSearchPageAsync(string stlElement, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
@@ -30,9 +30,9 @@ namespace SSCMS.Core.Services
             return await StlPageItems.ParseInDynamicPageAsync(this, stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
         }
 
-		public async Task<string> ParseStlPageItemsAsync(string htmlInStlPageElement, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, ParseType contextType)
-		{
-			var html = htmlInStlPageElement;
+        public async Task<string> ParseStlPageItemsAsync(string htmlInStlPageElement, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, ParseType contextType)
+        {
+            var html = htmlInStlPageElement;
 
             var mc = StlParserUtility.GetStlEntityRegex("pageItem").Matches(html);
             for (var i = 0; i < mc.Count; i++)
@@ -43,15 +43,15 @@ namespace SSCMS.Core.Services
             }
 
             mc = ParseUtils.RegexStlElement.Matches(html);
-			for (var i = 0; i < mc.Count; i++)
-			{
-				var stlElement = mc[i].Value;
+            for (var i = 0; i < mc.Count; i++)
+            {
+                var stlElement = mc[i].Value;
                 var pageHtml = await StlPageItem.ParseElementAsync(this, stlElement, channelId, contentId, currentPageIndex, pageCount, totalNum, contextType);
-				html = html.Replace(stlElement, pageHtml);
-			}
-            
-			return html;
-		}
+                html = html.Replace(stlElement, pageHtml);
+            }
+
+            return html;
+        }
 
         public async Task<string> ParseStlPageItemsInSearchPageAsync(string htmlInStlPageElement, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
         {
@@ -99,18 +99,18 @@ namespace SSCMS.Core.Services
             return html;
         }
 
-		
-		//在内容页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public async Task<string> ParseStlPageItemInContentPageAsync(string stlElement, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum)
-		{
-			return await StlPageItem.ParseElementAsync(this, stlElement, channelId, contentId, currentPageIndex, pageCount, totalNum, ParseType.Content);
-		}
 
-		//在栏目页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-		public async Task<string> ParseStlPageItemInChannelPageAsync(string stlElement, int channelId, int currentPageIndex, int pageCount, int totalNum)
-		{
+        //在内容页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
+        public async Task<string> ParseStlPageItemInContentPageAsync(string stlElement, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum)
+        {
+            return await StlPageItem.ParseElementAsync(this, stlElement, channelId, contentId, currentPageIndex, pageCount, totalNum, ParseType.Content);
+        }
+
+        //在栏目页中对“翻页”（stl:pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
+        public async Task<string> ParseStlPageItemInChannelPageAsync(string stlElement, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        {
             return await StlPageItem.ParseElementAsync(this, stlElement, channelId, 0, currentPageIndex, pageCount, totalNum, ParseType.Channel);
-		}
+        }
 
         public async Task<string> ParseStlPageItemInSearchPageAsync(string stlElement, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
@@ -120,5 +120,5 @@ namespace SSCMS.Core.Services
         {
             return await StlPageItem.ParseElementInDynamicPageAsync(this, stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
         }
-	}
+    }
 }
