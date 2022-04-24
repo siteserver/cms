@@ -85,8 +85,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
             var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageUploadController)), new Options
             {
-                IsEditor = true,
-                IsLibrary = true,
+                IsEditor = false,
+                IsLibrary = false,
                 IsThumb = false,
                 ThumbWidth = 1024,
                 ThumbHeight = 1024,

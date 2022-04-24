@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerFileUploadController)), new Options
             {
                 IsChangeFileName = true,
-                IsLibrary = true,
+                IsLibrary = false,
             });
 
             return options;

@@ -184,15 +184,24 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 attributes["poster"] = imageUrl;
             }
+
+            var styles = ".vjs-poster { background-size: cover !important; }";
             if (!string.IsNullOrEmpty(width))
             {
                 attributes["width"] = width;
             }
-            attributes["height"] = string.IsNullOrEmpty(height) ? "448" : height;
+            else
+            {
+                styles += ".video-js {min-width: 100%;width: auto;}";
+            }
+
+            attributes["height"] = string.IsNullOrEmpty(height) ? "500" : height;
             attributes["data-setup"] = "{}";
 
             return $@"
-            <video {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</video>";
+            <style>{styles}</style>
+            <video {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</video>
+";
         }
     }
 }
