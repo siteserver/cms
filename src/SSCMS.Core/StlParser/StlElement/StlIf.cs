@@ -288,7 +288,12 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEmpty))
             {
-                if (!string.IsNullOrEmpty(theValue))
+                if (StringUtils.IsNumber(theValue))
+                {
+                    var number = TranslateUtils.ToInt(theValue);
+                    isSuccess = number > 0;
+                }
+                else if (!string.IsNullOrEmpty(theValue))
                 {
                     isSuccess = true;
                 }
@@ -830,16 +835,16 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 theValue = channel.Content;
             }
-            else if (StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfChannels, testTypeStr))
+            else if (StringUtils.EqualsIgnoreCase(StlParserUtility.Channels, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfChannelsxxx, testTypeStr))
             {
                 theValue = channel.ChildrenCount.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfContents, testTypeStr))
+            else if (StringUtils.EqualsIgnoreCase(StlParserUtility.Contents, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfContentsxxx, testTypeStr))
             {
                 var count = await databaseManager.ContentRepository.GetCountAsync(pageInfo.Site, channel);
                 theValue = count.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfImageContents, testTypeStr))
+            else if (StringUtils.EqualsIgnoreCase(StlParserUtility.ImageContents, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfImageContentsxxx, testTypeStr))
             {
                 var count = await databaseManager.ContentRepository.GetCountCheckedImageAsync(pageInfo.Site, channel);
                 theValue = count.ToString();
