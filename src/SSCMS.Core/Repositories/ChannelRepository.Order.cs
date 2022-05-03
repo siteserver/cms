@@ -18,6 +18,14 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        private async Task<int> GetChildrenCountAsync(int siteId, int channelId)
+        {
+            return await _repository.CountAsync(Q
+                .Where(nameof(Channel.SiteId), siteId)
+                .Where(nameof(Channel.ParentId), channelId)
+            );
+        }
+
         private async Task<int> GetMaxTaxisAsync(int siteId, int parentId)
         {
             // var summaries = await GetSummariesAsync(siteId);

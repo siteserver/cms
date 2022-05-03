@@ -13,6 +13,7 @@ using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
 using Dynamic = SSCMS.Parse.Dynamic;
+using SSCMS.Enums;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -837,7 +838,8 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(StlParserUtility.Channels, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfChannelsxxx, testTypeStr))
             {
-                theValue = channel.ChildrenCount.ToString();
+                var channelIds = await databaseManager.ChannelRepository.GetChannelIdsAsync(channel.SiteId, channel.Id, ScopeType.Children);
+                theValue = channelIds.Count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(StlParserUtility.Contents, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfContentsxxx, testTypeStr))
             {

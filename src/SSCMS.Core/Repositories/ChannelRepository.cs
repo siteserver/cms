@@ -73,11 +73,7 @@ namespace SSCMS.Core.Repositories
 
             if (parentChannel != null)
             {
-                await _repository.IncrementAsync(nameof(Channel.ChildrenCount), Q
-                    .Where(nameof(Channel.Id), parentChannel.Id)
-                );
-
-                await _repository.RemoveCacheAsync(GetEntityKey(parentChannel.Id));
+                await UpdateChildrenCountAsync(channel.SiteId, parentChannel.Id);
             }
         }
 
@@ -156,6 +152,16 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task UpdateChildrenCountAsync(int siteId, int channelId)
+        {
+          var childrenCount = await GetChildrenCountAsync(siteId, channelId);
+          await _repository.UpdateAsync(Q
+              .Set(nameof(Channel.ChildrenCount), childrenCount)
+              .Where(nameof(Channel.Id), channelId)
+              .CachingRemove(GetEntityKey(channelId))
+          );
+        }
+
         public async Task DeleteAsync(Site site, int channelId, int adminId)
         {
             var channelEntity = await GetAsync(channelId);
@@ -186,9 +192,7 @@ namespace SSCMS.Core.Repositories
                     .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
                 , deletedNum);
 
-                await _repository.DecrementAsync(nameof(Channel.ChildrenCount), Q
-                        .Where(nameof(Channel.Id), channelEntity.ParentId)
-                        .CachingRemove(GetListKey(site.Id)));
+                await UpdateChildrenCountAsync(channelEntity.SiteId, channelEntity.ParentId);
             }
         }
 
