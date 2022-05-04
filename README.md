@@ -9,34 +9,40 @@ SSCMS 基于 .NET Core，能够以最低的成本、最少的人力投入在最�
 
 项目发布的正式版本存放在 `master` 分支，最新版本存放在 `staging` 分支
 
-| 编译状态                                                                                                                                                                                      | 版本号                                                         | 发布日期                                                                                     |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| [![Build status](https://sscms.visualstudio.com/cms/_apis/build/status/siteserver.cms?branchName=master)](https://sscms.visualstudio.com/cms/_build/latest?definitionId=1&branchName=master)                           | ![Nuget version](https://img.shields.io/nuget/v/SSCMS.svg)    | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg)   |
+| 编译状态                                                                                                                                                                                     | 版本号                                                     | 发布日期                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [![Build status](https://sscms.visualstudio.com/cms/_apis/build/status/siteserver.cms?branchName=master)](https://sscms.visualstudio.com/cms/_build/latest?definitionId=1&branchName=master) | ![Nuget version](https://img.shields.io/nuget/v/SSCMS.svg) | ![master last commit](https://img.shields.io/github/last-commit/siteserver/cms/master.svg) |
 
 ## 开发文档
 
-[《STL 语言参考手册》](https://sscms.com/docs/stl/)
+[《SSCMS 使用指南》](https://sscms.com/docs/v7/getting-started/)
 
-[《插件开发参考手册》](https://sscms.com/docs/plugins/)
+[《SSCMS 系统更新》](https://sscms.com/docs/v7/updates/)
 
-[《CLI 命令行参考手册》](https://sscms.com/docs/cli/)
+[《SSCMS STL 语言》](https://sscms.com/docs/v7/stl/)
 
-[《REST API 参考手册》](https://sscms.com/docs/api/)
+[《SSCMS 插件开发》](https://sscms.com/docs/v7/plugin/)
 
-[《数据结构参考手册》](https://sscms.com/docs/model/)
+[《SSCMS 官方插件》](https://sscms.com/docs/v7/official/)
 
-系统使用文档请点击 [SSCMS 文档中心](https://sscms.com/docs/)
+[《SSCMS 命令行》](https://sscms.com/docs/v7/cli/)
+
+[《SSCMS REST API》](https://sscms.com/docs/v7/api/)
+
+[《SSCMS 数据结构》](https://sscms.com/docs/v7/model/)
 
 ## SSCMS 源码结构
 
 ```code
 │ sscms.sln                  Visual Studio 项目文件
 │
-├─src/SS.CMS                   接口、基础类
-├─src/SS.CMS.Cli               命令行工具
-├─src/SS.CMS.Core              CMS核心代码
-├─src/SS.CMS.Web               CMS App
-└─tests                        测试
+├─docker                      Docker 配置文件
+├─src/Datory                  数据库基础类
+├─src/SSCMS                   接口、基础类
+├─src/SSCMS.Cli               命令行工具
+├─src/SSCMS.Core              CMS核心代码
+├─src/SSCMS.Web               CMS App
+└─tests                       测试
 ```
 
 ## 发布跨平台版本
@@ -126,7 +132,7 @@ SSCMS 产品将每隔两月发布新的正式版本，我们将在每次迭代�
 
 ## 问题与建议
 
-如果发现任何 BUG 以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues)。
+如果发现任何 BUG 以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues) 或者  [Gitee Issues](https://gitee.com/siteserver/cms/issues)。
 
 ## 关注最新动态
 

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>7.1.1</Version>
+    <Version>7.1.2</Version>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <ApplicationIcon>logo.ico</ApplicationIcon>

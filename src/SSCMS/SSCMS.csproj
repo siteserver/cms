@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
-    <Version>7.1.1</Version>
+    <Version>7.1.2</Version>
     <Authors>SS CMS</Authors>
     <Company>SS CMS</Company>
     <PackageDescription>SS CMS .NET Core abstractions for developers.</PackageDescription>
@@ -31,7 +31,7 @@
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     <PackageReference Include="HtmlSanitizer" Version="7.1.475" />
-    <PackageReference Include="Datory" Version="7.1.1" />
+    <PackageReference Include="Datory" Version="7.1.2" />
     <!-- <ProjectReference Include="..\Datory\Datory.csproj" /> -->
   </ItemGroup>
 
