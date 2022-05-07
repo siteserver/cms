@@ -126,6 +126,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         await _channelRepository.DeleteAsync(site, channelId, adminId);
                     }
                 }
+
+                await _channelRepository.RemoveListCacheAsync(targetSiteId);
             }
         }
 

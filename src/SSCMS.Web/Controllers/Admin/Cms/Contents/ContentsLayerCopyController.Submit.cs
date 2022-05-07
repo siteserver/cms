@@ -27,7 +27,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             foreach (var summary in summaries)
             {
                 await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, request.CopyType, _createManager, _authManager.AdminId);
-                Thread.Sleep(100);
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);

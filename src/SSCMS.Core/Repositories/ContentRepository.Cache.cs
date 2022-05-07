@@ -408,5 +408,13 @@ namespace SSCMS.Core.Repositories
                        .WhereNotNullOrEmpty(nameof(Content.ImageUrl))
                    ) + 1;
         }
+
+        public async Task RemoveListCacheAsync(Site site, Channel channel)
+        {
+            if (site == null || channel == null) return;
+            
+            var repository = await GetRepositoryAsync(site, channel);
+            await repository.RemoveCacheAsync(GetListKey(repository.TableName, site.Id, channel.Id));
+        }
     }
 }

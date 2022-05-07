@@ -336,7 +336,7 @@ namespace SSCMS.Core.Repositories
 
             if (scopeType == ScopeType.Self)
             {
-                channelIds = new List<int>{ channelId };
+                channelIds = new List<int> { channelId };
             }
             else if (scopeType == ScopeType.SelfAndChildren)
             {
@@ -673,6 +673,11 @@ namespace SSCMS.Core.Repositories
             }
 
             return isCreatable;
+        }
+
+        public async Task RemoveListCacheAsync(int siteId)
+        {
+            await _repository.RemoveCacheAsync(GetListKey(siteId));
         }
     }
 }

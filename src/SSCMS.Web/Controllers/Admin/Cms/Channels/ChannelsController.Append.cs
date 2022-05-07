@@ -89,13 +89,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     var parentId = (int)insertedChannelIdHashtable[count];
 
                     var insertedChannelId = await _channelRepository.InsertAsync(request.SiteId, parentId, channelName, indexName, parent.ContentModelPluginId, channelTemplateId, contentTemplateId);
-                    Thread.Sleep(100);
                     insertedChannelIdHashtable[count + 1] = insertedChannelId;
                     expandedChannelIds.Add(insertedChannelId);
 
                     await _createManager.CreateChannelAsync(request.SiteId, insertedChannelId);
                 }
             }
+
+            await _channelRepository.RemoveListCacheAsync(request.SiteId);
 
             return expandedChannelIds;
         }

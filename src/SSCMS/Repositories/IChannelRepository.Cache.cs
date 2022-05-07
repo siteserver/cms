@@ -82,5 +82,7 @@ namespace SSCMS.Repositories
         Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IAuthManager authManager, params string[] contentPermissions);
 
         bool IsCreatable(Site site, Channel channel, int count);
+
+        Task RemoveListCacheAsync(int siteId);
     }
 }

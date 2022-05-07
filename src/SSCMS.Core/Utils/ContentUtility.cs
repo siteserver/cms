@@ -213,6 +213,8 @@ namespace SSCMS.Core.Utils
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
             }
+
+            await databaseManager.ContentRepository.RemoveListCacheAsync(targetSite, targetChannelInfo);
         }
 
         public static bool IsCreatable(Channel channel, Content content)
