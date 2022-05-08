@@ -158,7 +158,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            var innerHtml = contextInfo.InnerHtml; 
+            var innerHtml = contextInfo.InnerHtml;
 
             StlParserUtility.GetLoadingYesNo(innerHtml, out var loading, out var yes, out var no);
             if (string.IsNullOrEmpty(yes) && !string.IsNullOrEmpty(attributeYes))
@@ -439,7 +439,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                 }
             }
-            
+
             return isSuccess;
         }
 
@@ -980,7 +980,7 @@ namespace SSCMS.Core.StlParser.StlElement
         private static bool IsNumber(int number, string testOperate, string testValue)
         {
             var isSuccess = false;
-            
+
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
             {
                 if (number == TranslateUtils.ToInt(testValue))
