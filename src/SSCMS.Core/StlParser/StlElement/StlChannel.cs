@@ -522,19 +522,31 @@ namespace SSCMS.Core.StlParser.StlElement
                 var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.Key, type, contextInfo);
                 parsedContent = !string.IsNullOrEmpty(format) ? string.Format(format, itemIndex) : itemIndex.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.Channels) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfChannelsxxx))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.Channels) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfChannels))
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.Contents) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfContentsxxx))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.Contents) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfContents))
             {
                 var count = await databaseManager.ContentRepository.GetCountAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();
             }
-            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.ImageContents) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfImageContentsxxx))
+            else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.ImageContents) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfImageContents))
             { 
                 var count = await databaseManager.ContentRepository.GetCountCheckedImageAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, "Images"))
+            {
+                if (!string.IsNullOrEmpty(channel.ImageUrl))
+                {
+                  var countName = ColumnsManager.GetCountName(nameof(Channel.ImageUrl));
+                  parsedContent = (channel.Get<int>(countName) + 1).ToString();
+                }
+                else
+                {
+                  parsedContent = "0";
+                }
             }
             else
             {

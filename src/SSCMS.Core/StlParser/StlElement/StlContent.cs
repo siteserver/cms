@@ -578,8 +578,42 @@ namespace SSCMS.Core.StlParser.StlElement
                             }
                         }
                     }
-
-
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, "Images"))
+                {
+                    if (!string.IsNullOrEmpty(content.ImageUrl))
+                    {
+                      var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
+                      parsedContent = (content.Get<int>(countName) + 1).ToString();
+                    }
+                    else
+                    {
+                      parsedContent = "0";
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, "Videos"))
+                {
+                    if (!string.IsNullOrEmpty(content.VideoUrl))
+                    {
+                      var countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
+                      parsedContent = (content.Get<int>(countName) + 1).ToString();
+                    }
+                    else
+                    {
+                      parsedContent = "0";
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, "Files"))
+                {
+                    if (!string.IsNullOrEmpty(content.FileUrl))
+                    {
+                      var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
+                      parsedContent = (content.Get<int>(countName) + 1).ToString();
+                    }
+                    else
+                    {
+                      parsedContent = "0";
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(ColumnsManager.NavigationUrl)))
                 {

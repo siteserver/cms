@@ -17,11 +17,11 @@ namespace SSCMS.Core.StlParser.Utility
     public static class StlParserUtility
     {
         public const string PageContent = nameof(PageContent);
-        public const string CountOfChannelsxxx = nameof(CountOfChannelsxxx);
+        public const string CountOfChannels = nameof(CountOfChannels);
         public const string Channels = nameof(Channels);
-        public const string CountOfContentsxxx = nameof(CountOfContentsxxx);
+        public const string CountOfContents = nameof(CountOfContents);
         public const string Contents = nameof(Contents);
-        public const string CountOfImageContentsxxx = nameof(CountOfImageContentsxxx);
+        public const string CountOfImageContents = nameof(CountOfImageContents);
         public const string ImageContents = nameof(ImageContents);
         public const string ItemIndex = nameof(ItemIndex);
         public const string Title = nameof(Title);

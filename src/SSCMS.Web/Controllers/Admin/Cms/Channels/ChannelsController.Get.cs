@@ -22,6 +22,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             if (site == null) return NotFound();
 
             var channel = await _channelRepository.GetAsync(channelId);
+            var templates = await _templateRepository.GetSummariesAsync(siteId);
+            if (!templates.Exists(x => x.Id == channel.ChannelTemplateId))
+            {
+                var templateId = await _templateRepository.GetDefaultTemplateIdAsync(siteId, TemplateType.ChannelTemplate);
+                channel.ChannelTemplateId = templateId;
+                await _channelRepository.UpdateAsync(channel);
+            }
+            if (!templates.Exists(x => x.Id == channel.ContentTemplateId))
+            {
+                var templateId = await _templateRepository.GetDefaultTemplateIdAsync(siteId, TemplateType.ContentTemplate);
+                channel.ContentTemplateId = templateId;
+                await _channelRepository.UpdateAsync(channel);
+            }
 
             var styles = await GetStylesAsync(channel);
             var entity = new Entity(channel.ToDictionary());
