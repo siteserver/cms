@@ -70,9 +70,13 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
         private const string IsOriginal = nameof(IsOriginal);
+
+        [StlAttribute(Title = "是否自增长")]
+        private const string IsAutoIncrease = nameof(IsAutoIncrease);
         
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
+            var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
             var leftText = string.Empty;
@@ -92,6 +96,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var isUpper = false;
             var isOriginal = true;//引用的时候，默认使用原来的数据
             var type = string.Empty;
+            var isAutoIncrease = pageInfo.Template.TemplateType == TemplateType.ContentTemplate;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -165,6 +170,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isOriginal = TranslateUtils.ToBool(value, true);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsAutoIncrease))
+                {
+                    isAutoIncrease = TranslateUtils.ToBool(value, false);
+                }
             }
 
             var contentId = contextInfo.ContentId;
@@ -175,7 +184,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return content.ToDictionary();
             }
 
-            var parsedContent = await ParseAsync(parseManager, leftText, rightText, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, content, contentId);
+            var parsedContent = await ParseAsync(parseManager, leftText, rightText, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, isAutoIncrease, type, content, contentId);
 
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);
@@ -189,7 +198,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type, Content content, int contentId)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, bool isAutoIncrease, string type, Content content, int contentId)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -636,7 +645,6 @@ namespace SSCMS.Core.StlParser.StlElement
                     await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
                     var apiUrl = parseManager.PathManager.GetApiHostUrl(pageInfo.Site, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsHits);
                     var elementId = StringUtils.GetElementId();
-                    var autoIncrease = pageInfo.Template.TemplateType == TemplateType.ContentTemplate;
                     parsedContent = @$"
 <script id=""{elementId}"" type=""text/javascript"">
 $(function(){{
@@ -648,7 +656,7 @@ $(function(){{
         SiteId = pageInfo.SiteId,
         ChannelId = contextInfo.ChannelId,
         ContentId = contextInfo.ContentId,
-        AutoIncrease = autoIncrease
+        AutoIncrease = isAutoIncrease
     })}),
     dataType: ""json"",
     success: function (result) {{ $(""#{elementId}"").before(result.value)  }}
