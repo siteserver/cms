@@ -5,8 +5,7 @@
 
 <el-form ref="form" :model="form" label-width="100px" size="small">
   <el-form-item label="内容标题" prop="titles" :rules="{ required: true, message: '请输入内容标题' }">
-    <el-input v-model="form.titles" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}"></el-input>
-    <div class="tips">一次性录入多篇内容，内容标题之间用换行分割</div>
+    <el-input v-model="form.titles" type="textarea" rows="20" :autosize="{ minRows: 10, maxRows: 30}" placeholder="内容之间用换行分割，除标题外的内容字段可以放到括号中，如：&#10;内容标题1(Source=来源1&Author=作者1)&#10;内容标题2(Source=来源2&Author=作者2)"></el-input>
   </el-form-item>
   <el-form-item label="审核状态">
     <el-select v-model="form.checkedLevel">

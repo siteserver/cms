@@ -6,6 +6,7 @@ using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using System.Collections.Specialized;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -35,11 +36,28 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var titles = ListUtils.GetStringListByReturnAndNewline(request.Titles);
             titles.Reverse();
 
-            foreach (var title in titles)
+            foreach (var value in titles)
             {
-                if (string.IsNullOrWhiteSpace(title)) continue;
+                if (string.IsNullOrWhiteSpace(value)) continue;
 
-                var contentInfo = new Content
+                var title = string.Empty;
+                var attributes = new NameValueCollection();
+                if (value.Contains('(') && value.Contains(')'))
+                {
+                    var length = value.IndexOf(')') - value.IndexOf('(') - 1;
+                    if (length > 0)
+                    {
+                        var separateString = value.Substring(value.IndexOf('(') + 1, length);
+                        attributes = TranslateUtils.ToNameValueCollection(separateString);
+                        title = value.Substring(0, value.IndexOf('('));
+                    }
+                }
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    title = value.Trim();
+                }
+
+                var content = new Content
                 {
                     ChannelId = channel.Id,
                     SiteId = request.SiteId,
@@ -52,9 +70,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     ImageUrl = string.Empty,
                     Body = string.Empty
                 };
+                foreach (string key in attributes.Keys)
+                {
+                    content.Set(key, attributes[key]);
+                }
 
-                await _contentRepository.InsertAsync(site, channel, contentInfo);
-                contentIdList.Add(contentInfo.Id);
+                await _contentRepository.InsertAsync(site, channel, content);
+                contentIdList.Add(content.Id);
             }
 
             if (isChecked)

@@ -19,7 +19,7 @@ namespace SSCMS.Repositories
 
         Task<List<KeyValuePair<int, Content>>> ParserGetContentsDataSourceAsync(Site site, int channelId, int contentId,
             string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage,
-            bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum,
+            bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, string since, bool isRelatedContents, int startNum,
             int totalNum, TaxisType taxisType, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend,
             bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel,
             string groupChannelNot, NameValueCollection others, Query query);

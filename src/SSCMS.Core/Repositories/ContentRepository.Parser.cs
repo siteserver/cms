@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using SqlKata;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
@@ -192,7 +193,7 @@ namespace SSCMS.Core.Repositories
             //return list;
         }
 
-        public async Task<List<KeyValuePair<int, Content>>> ParserGetContentsDataSourceAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others, Query query)
+        public async Task<List<KeyValuePair<int, Content>>> ParserGetContentsDataSourceAsync(Site site, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, string since, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others, Query query)
         {
             if (!await _channelRepository.IsExistsAsync(channelId)) return null;
 
@@ -207,6 +208,12 @@ namespace SSCMS.Core.Repositories
                   nameof(ContentSummary.CheckedLevel)
                 )
                 .WhereTrue(nameof(Content.Checked));
+
+            if (!string.IsNullOrEmpty(since))
+            {
+                var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
+                query.WhereBetween(nameof(Content.AddDate), sinceDate, DateTime.Now);
+            }
 
             if (isRelatedContents && contentId > 0)
             {

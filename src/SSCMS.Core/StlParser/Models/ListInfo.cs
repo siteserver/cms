@@ -355,6 +355,10 @@ namespace SSCMS.Core.StlParser.Models
                 {
                     listInfo.IsFile = TranslateUtils.ToBool(value);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.Since))
+                {
+                    listInfo.Since = value;
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlContents.IsRelatedContents))
                 {
                     listInfo.IsRelatedContents = TranslateUtils.ToBool(value);
@@ -501,6 +505,8 @@ namespace SSCMS.Core.StlParser.Models
         }
 
         public bool IsFileExists { get; private set; }
+
+        public string Since { get; set; }
 
         public bool IsRelatedContents { get; set; }
 
