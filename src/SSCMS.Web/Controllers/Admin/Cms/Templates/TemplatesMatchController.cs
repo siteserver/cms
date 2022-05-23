@@ -71,10 +71,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             {
                 var channelTemplateId = -1;
 
-                var nodeInfo = await _channelRepository.GetAsync(channelId);
-                if (nodeInfo.ParentId > 0)
+                var channel = await _channelRepository.GetAsync(channelId);
+                if (channel.ParentId > 0)
                 {
-                    channelTemplateId = nodeInfo.ChannelTemplateId;
+                    channelTemplateId = channel.ChannelTemplateId;
                 }
 
                 if (channelTemplateId != -1 && channelTemplateId != 0 && channelTemplateId != defaultChannelTemplateId)
@@ -91,9 +91,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     {
                         Id = 0,
                         SiteId = request.SiteId,
-                        TemplateName = nodeInfo.ChannelName,
+                        TemplateName = channel.ChannelName,
                         TemplateType = TemplateType.ChannelTemplate,
-                        RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
+                        RelatedFileName = "T_" + channel.ChannelName + ".html",
                         CreatedFileFullName = "index.html",
                         CreatedFileExtName = ".html",
                         DefaultTemplate = false
@@ -109,10 +109,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     }
                     var insertedTemplateId = await _templateRepository.InsertAsync(template);
                     template.Id = insertedTemplateId;
-                    if (nodeInfo.ParentId > 0)
+                    if (channel.ParentId > 0)
                     {
-                        nodeInfo.ChannelTemplateId = insertedTemplateId;
-                        await _channelRepository.UpdateChannelTemplateIdAsync(nodeInfo);
+                        channel.ChannelTemplateId = insertedTemplateId;
+                        await _channelRepository.UpdateChannelTemplateIdAsync(channel);
 
                         //TemplateManager.UpdateChannelTemplateId(SiteId, channelId, insertedTemplateId);
                         //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(channelId, insertedTemplateID);
@@ -130,15 +130,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ChannelTemplate);
             foreach (var channelId in request.ChannelIds)
             {
-                var nodeInfo = await _channelRepository.GetAsync(channelId);
+                var channel = await _channelRepository.GetAsync(channelId);
 
                 var template = new Template
                 {
                     Id = 0,
                     SiteId = request.SiteId,
-                    TemplateName = nodeInfo.ChannelName + "_下级",
+                    TemplateName = channel.ChannelName + "_下级",
                     TemplateType = TemplateType.ChannelTemplate,
-                    RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
+                    RelatedFileName = "T_" + channel.ChannelName + "_下级.html",
                     CreatedFileFullName = "index.html",
                     CreatedFileExtName = ".html",
                     DefaultTemplate = false
@@ -176,9 +176,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ContentTemplate);
             foreach (var channelId in request.ChannelIds)
             {
-                var nodeInfo = await _channelRepository.GetAsync(channelId);
+                var channel = await _channelRepository.GetAsync(channelId);
 
-                var contentTemplateId = nodeInfo.ContentTemplateId;
+                var contentTemplateId = channel.ContentTemplateId;
 
                 if (contentTemplateId != 0 && contentTemplateId != defaultContentTemplateId)
                 {
@@ -194,9 +194,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     {
                         Id = 0,
                         SiteId = request.SiteId,
-                        TemplateName = nodeInfo.ChannelName,
+                        TemplateName = channel.ChannelName,
                         TemplateType = TemplateType.ContentTemplate,
-                        RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
+                        RelatedFileName = "T_" + channel.ChannelName + ".html",
                         CreatedFileFullName = "index.html",
                         CreatedFileExtName = ".html",
                         DefaultTemplate = false
@@ -230,15 +230,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var templateNameList = await _templateRepository.GetTemplateNamesAsync(request.SiteId, TemplateType.ContentTemplate);
             foreach (var channelId in request.ChannelIds)
             {
-                var nodeInfo = await _channelRepository.GetAsync(channelId);
+                var channel = await _channelRepository.GetAsync(channelId);
 
                 var template = new Template
                 {
                     Id = 0,
                     SiteId = request.SiteId,
-                    TemplateName = nodeInfo.ChannelName + "_下级",
+                    TemplateName = channel.ChannelName + "_下级",
                     TemplateType = TemplateType.ContentTemplate,
-                    RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
+                    RelatedFileName = "T_" + channel.ChannelName + "_下级.html",
                     CreatedFileFullName = "index.html",
                     CreatedFileExtName = ".html",
                     DefaultTemplate = false
