@@ -25,6 +25,11 @@
     转移
   </el-button>
 
+  <el-button size="mini" icon="el-icon-copy-document" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"
+    v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', withContents: true})">
+    复制
+  </el-button>
+
   <el-button size="mini" icon="el-icon-sort" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
     v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true})">
     排序
@@ -50,7 +55,6 @@
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item command="Group" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i class="el-icon-files"></i>设置分组</el-dropdown-item>
       <el-dropdown-item command="Tag" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"><i class="el-icon-collection-tag"></i>设置标签</el-dropdown-item>
-      <el-dropdown-item command="Copy" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"><i class="el-icon-copy-document"></i>复制内容</el-dropdown-item>
       <el-dropdown-item command="ExportAll"><i class="el-icon-download"></i>导出全部</el-dropdown-item>
       <el-dropdown-item command="ExportSelected" :disabled="!isContentChecked"><i class="el-icon-download"></i>导出选中</el-dropdown-item>
       <el-dropdown-item command="Arrange" :disabled="!permissions.isArrange"><i class="el-icon-sort"></i>整理排序</el-dropdown-item>
