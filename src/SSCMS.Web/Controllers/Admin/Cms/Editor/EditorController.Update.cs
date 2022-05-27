@@ -5,6 +5,8 @@ using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -22,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             var source = await _contentRepository.GetAsync(site, channel,  request.ContentId);

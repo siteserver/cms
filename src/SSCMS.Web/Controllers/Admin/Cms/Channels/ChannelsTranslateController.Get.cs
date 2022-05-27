@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
@@ -18,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>

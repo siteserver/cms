@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -18,7 +19,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channelInfoList = await _channelRepository.GetChannelsAsync(siteId);
 

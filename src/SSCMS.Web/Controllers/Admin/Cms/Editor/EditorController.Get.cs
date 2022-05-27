@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
@@ -24,10 +25,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(site.Id);
             var tagNames = await _contentTagRepository.GetTagNamesAsync(site.Id);

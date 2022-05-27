@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Models;
 using SSCMS.Core.StlParser.StlElement;
-using SSCMS.Core.StlParser.Utility;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -21,6 +20,14 @@ namespace SSCMS.Web.Controllers.Stl
             var template = string.Empty;
             try
             {
+                if (string.IsNullOrEmpty(request.Word) && !request.IsDefaultDisplay)
+                {
+                    return new StringResult
+                    {
+                        Value = string.Empty
+                    };
+                }
+
                 var form = GetPostCollection(request);
 
                 template = _settingsManager.Decrypt(request.Template);
@@ -59,7 +66,7 @@ namespace SSCMS.Web.Controllers.Stl
                     var (pageCount, totalNum) = stlPageContents.GetPageCount();
                     if (totalNum == 0)
                     {
-                        return NotFound();
+                        return this.Error(Constants.ErrorNotFound);
                     }
 
                     for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -96,7 +103,7 @@ namespace SSCMS.Web.Controllers.Stl
                     var pageCount = stlPageSqlContents.GetPageCount(out var totalNum);
                     if (totalNum == 0)
                     {
-                        return NotFound();
+                        return this.Error(Constants.ErrorNotFound);
                     }
 
                     for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)

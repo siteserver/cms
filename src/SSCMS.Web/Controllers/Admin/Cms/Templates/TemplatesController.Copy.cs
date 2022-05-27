@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
 
@@ -17,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var template = await _templateRepository.GetAsync(request.TemplateId);
 

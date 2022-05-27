@@ -4,6 +4,7 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -19,10 +20,10 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(channelId);
-            if (channel == null) return NotFound();
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             var checkedLevel = request.Checked ? site.CheckContentLevel : request.CheckedLevel;
             var isChecked = checkedLevel >= site.CheckContentLevel;

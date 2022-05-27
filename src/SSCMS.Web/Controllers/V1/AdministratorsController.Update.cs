@@ -20,7 +20,7 @@ namespace SSCMS.Web.Controllers.V1
 
             if (administrator == null) return this.Error("Could not read administrator from body");
 
-            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
+            if (!await _administratorRepository.IsExistsAsync(id)) return this.Error(Constants.ErrorNotFound);
 
             administrator.Id = id;
 

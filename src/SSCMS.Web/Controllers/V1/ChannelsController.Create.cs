@@ -20,7 +20,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channelInfo = new Channel
             {

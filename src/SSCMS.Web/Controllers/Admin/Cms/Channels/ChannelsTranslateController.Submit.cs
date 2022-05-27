@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -16,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var adminId = _authManager.AdminId;
             await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, adminId);

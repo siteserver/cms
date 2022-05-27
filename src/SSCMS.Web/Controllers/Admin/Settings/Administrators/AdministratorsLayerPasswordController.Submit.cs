@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -16,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             if (string.IsNullOrEmpty(userName)) userName = adminName;
             var adminInfo = await _administratorRepository.GetByUserNameAsync(userName);
-            if (adminInfo == null) return NotFound();
+            if (adminInfo == null) return this.Error(Constants.ErrorNotFound);
             if (userName != adminName &&
                 !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {

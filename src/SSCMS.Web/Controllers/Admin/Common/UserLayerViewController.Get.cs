@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common
 {
@@ -19,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
                 user = await _userRepository.GetByUserNameAsync(request.UserName);
             }
 
-            if (user == null) return NotFound();
+            if (user == null) return this.Error(Constants.ErrorNotFound);
 
             var groupName = await _userGroupRepository.GetUserGroupNameAsync(user.GroupId);
 

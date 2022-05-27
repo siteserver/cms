@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -18,7 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
 

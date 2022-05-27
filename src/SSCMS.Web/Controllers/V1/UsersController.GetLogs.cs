@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -17,7 +18,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null) return this.Error(Constants.ErrorNotFound);
 
             var top = request.Top;
             if (top <= 0)

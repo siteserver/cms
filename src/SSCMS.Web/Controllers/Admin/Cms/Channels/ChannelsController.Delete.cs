@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
@@ -19,7 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定父栏目");

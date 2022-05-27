@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -17,7 +18,7 @@ namespace SSCMS.Web.Controllers.V1
                 return Unauthorized();
             }
 
-            if (!await _administratorRepository.IsExistsAsync(id)) return NotFound();
+            if (!await _administratorRepository.IsExistsAsync(id)) return this.Error(Constants.ErrorNotFound);
 
             var administrator = await _administratorRepository.GetByUserIdAsync(id);
 

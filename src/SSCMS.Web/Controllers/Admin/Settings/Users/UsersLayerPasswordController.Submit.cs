@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
@@ -17,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             }
 
             var user = await _userRepository.GetByUserIdAsync(request.UserId);
-            if (user == null) return NotFound();
+            if (user == null) return this.Error(Constants.ErrorNotFound);
 
             var (success, errorMessage) = await _userRepository.ChangePasswordAsync(user.Id, request.Password);
             if (!success)

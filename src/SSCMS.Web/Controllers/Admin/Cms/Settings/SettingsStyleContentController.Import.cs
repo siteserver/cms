@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Services;
 using SSCMS.Models;
 using SSCMS.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Common
 {
@@ -22,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
                 admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
             }
 
-            if (admin == null) return NotFound();
+            if (admin == null) return this.Error(Constants.ErrorNotFound);
 
             var permissions = new AuthManager(_context, _antiforgery, _cacheManager, _settingsManager, _databaseManager);
             await permissions.InitAsync(admin);

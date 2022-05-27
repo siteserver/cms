@@ -20,6 +20,7 @@ namespace SSCMS.Core.StlParser.Models
         public string Since { get; set; }
         public int PageNum { get; set; }
         public bool IsHighlight { get; set; }
+        public bool IsDefaultDisplay { get; set; }
         public string AjaxDivId { get; set; }
         public string Template { get; set; }
         public int Page { get; set; }

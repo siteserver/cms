@@ -68,6 +68,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否关键字高亮")]
         public const string IsHighlight = nameof(IsHighlight);
 
+        [StlAttribute(Title = "是否默认显示全部内容")]
+        public const string IsDefaultDisplay = nameof(IsDefaultDisplay);
+
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var pageInfo = parseManager.PageInfo;
@@ -88,6 +91,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var since = string.Empty;
             var pageNum = 0;
             var isHighlight = true;
+            var isDefaultDisplay = false;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -153,6 +157,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isHighlight = TranslateUtils.ToBool(value, true);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsDefaultDisplay))
+                {
+                    isDefaultDisplay = TranslateUtils.ToBool(value);
+                }
             }
 
             StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
@@ -178,7 +186,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var elementId = StringUtils.GetElementId();
 
             var apiUrl = GetSearchApiUrl(pageInfo.Site, parseManager.PathManager);
-            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, elementId, yes);
+            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, elementId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -272,7 +280,7 @@ function stlRedirect{elementId}(page)
             return pathManager.GetApiHostUrl(site, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
         }
 
-        public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)
+        public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, bool isDefaultDisplay, int siteId, string ajaxDivId, string template)
         {
             return TranslateUtils.JsonSerialize(new StlSearchRequest
             {
@@ -291,6 +299,7 @@ function stlRedirect{elementId}(page)
                 Since = since,
                 PageNum = pageNum,
                 IsHighlight = isHighlight,
+                IsDefaultDisplay = isDefaultDisplay,
                 SiteId = siteId,
                 AjaxDivId = ajaxDivId,
                 Template = settingsManager.Encrypt(template)
@@ -319,6 +328,7 @@ function stlRedirect{elementId}(page)
             nameof(StlSearchRequest.Since),
             nameof(StlSearchRequest.PageNum),
             nameof(StlSearchRequest.IsHighlight),
+            nameof(StlSearchRequest.IsDefaultDisplay),
             nameof(StlSearchRequest.AjaxDivId),
             nameof(StlSearchRequest.Template),
             nameof(StlSearchRequest.Page),

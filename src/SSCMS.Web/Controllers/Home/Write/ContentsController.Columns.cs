@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -17,7 +19,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             site.SearchListColumns = request.AttributeNames;
 

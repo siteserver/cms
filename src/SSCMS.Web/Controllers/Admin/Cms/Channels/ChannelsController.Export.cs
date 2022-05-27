@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Core.Utils.Serialization;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -17,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var caching = new CacheUtils(_cacheManager);
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);

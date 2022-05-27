@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -22,7 +23,7 @@ namespace SSCMS.Web.Controllers.V1
             {
                 id = _authManager.UserId;
             }
-            else if (!await _userRepository.IsExistsAsync(id)) return NotFound();
+            else if (!await _userRepository.IsExistsAsync(id)) return this.Error(Constants.ErrorNotFound);
 
             var user = await _userRepository.GetByUserIdAsync(id);
 

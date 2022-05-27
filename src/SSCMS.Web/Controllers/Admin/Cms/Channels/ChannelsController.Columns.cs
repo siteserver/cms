@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -17,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             site.ChannelListColumns = request.AttributeNames;
 

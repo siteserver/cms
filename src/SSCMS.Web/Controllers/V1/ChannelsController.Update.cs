@@ -20,10 +20,10 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(channelId);
-            if (channel == null) return NotFound();
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             foreach (var (key, value) in request)
             {

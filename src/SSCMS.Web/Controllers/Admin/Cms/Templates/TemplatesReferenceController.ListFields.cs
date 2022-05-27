@@ -7,6 +7,7 @@ using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.StlParser.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -23,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var elements = StlAll.Elements;
             if (!elements.TryGetValue(request.ElementName, out var elementType))
             {
-                return NotFound();
+                return this.Error(Constants.ErrorNotFound);
             }
 
             var list = new List<Field>();

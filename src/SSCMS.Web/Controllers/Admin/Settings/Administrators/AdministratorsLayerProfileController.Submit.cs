@@ -4,6 +4,7 @@ using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -25,7 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             if (userId > 0)
             {
                 administrator = await _administratorRepository.GetByUserIdAsync(userId);
-                if (administrator == null) return NotFound();
+                if (administrator == null) return this.Error(Constants.ErrorNotFound);
             }
             else
             {

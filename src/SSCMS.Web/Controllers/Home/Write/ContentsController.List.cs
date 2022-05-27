@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -12,7 +14,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public async Task<ActionResult<ListResult>> List([FromBody] ListRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId > 0 ? request.ChannelId : request.SiteId);
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
 
@@ -19,7 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             var tableName = _channelRepository.TableName;

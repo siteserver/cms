@@ -25,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var site = await _siteRepository.GetAsync(request.Settings.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             if (request.Settings.TemplateType != TemplateType.ChannelTemplate)
             {

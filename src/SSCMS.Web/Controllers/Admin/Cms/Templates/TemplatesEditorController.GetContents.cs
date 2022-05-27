@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -17,9 +19,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return NotFound();
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             var contentId = 0;
             var contents = new List<KeyValuePair<int, string>>();

@@ -5,6 +5,7 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -19,7 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var contentId = 0;
             if (request.TemplateType == TemplateType.ContentTemplate)

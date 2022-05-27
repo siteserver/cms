@@ -26,7 +26,7 @@ namespace SSCMS.Web.Controllers.V1
 
             if (site == null)
             {
-                return NotFound();
+                return this.Error(Constants.ErrorNotFound);
             }
 
             _parseManager.ContextInfo = stlRequest.ContextInfo;

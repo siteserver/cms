@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -18,7 +20,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             

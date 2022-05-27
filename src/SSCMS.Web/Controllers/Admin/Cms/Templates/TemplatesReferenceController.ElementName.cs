@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.StlParser.Attributes;
 using SSCMS.Core.StlParser.Models;
 using SSCMS.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
@@ -18,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var elements = StlAll.Elements;
             if (!elements.TryGetValue(elementName, out var elementType))
             {
-                return NotFound();
+                return this.Error(Constants.ErrorNotFound);
             }
 
             var name = elementName.Substring(4);

@@ -6,6 +6,8 @@ using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -21,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var isChecked = request.CheckedLevel >= site.CheckContentLevel;
             if (isChecked)

@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null) return this.Error(Constants.ErrorNotFound);
 
             log.UserId = user.Id;
             await _logRepository.AddUserLogAsync(user, PageUtils.GetIpAddress(Request), log.Action, log.Summary);

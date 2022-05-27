@@ -7,6 +7,7 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -22,7 +23,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var adminId = _authManager.AdminId;
             var contents = new List<Content>();

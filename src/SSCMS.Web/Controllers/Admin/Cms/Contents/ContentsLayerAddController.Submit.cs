@@ -7,6 +7,7 @@ using SSCMS.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
 using System.Collections.Specialized;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -23,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             if (channel == null) return this.Error("无法确定内容对应的栏目");

@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var user = await _userRepository.GetByUserIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null) return this.Error(Constants.ErrorNotFound);
 
             if (!_userRepository.CheckPassword(request.Password, false, user.Password, user.PasswordFormat, user.PasswordSalt))
             {

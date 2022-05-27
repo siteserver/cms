@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -18,13 +19,13 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channelInfo = await _channelRepository.GetAsync(channelId);
-            if (channelInfo == null) return NotFound();
+            if (channelInfo == null) return this.Error(Constants.ErrorNotFound);
 
             var content = await _contentRepository.GetAsync(site, channelInfo, id);
-            if (content == null) return NotFound();
+            if (content == null) return this.Error(Constants.ErrorNotFound);
 
             content.LoadDict(request.ToDictionary());
 

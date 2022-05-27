@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -13,7 +15,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
 

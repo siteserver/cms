@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
 
@@ -17,9 +18,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             }
 
             var image = await _materialImageRepository.GetAsync(request.Id);
-            if (image == null || string.IsNullOrEmpty(image.Url)) return NotFound();
+            if (image == null || string.IsNullOrEmpty(image.Url)) return this.Error(Constants.ErrorNotFound);
             var filePath = PathUtils.Combine(_settingsManager.WebRootPath, image.Url);
-            if (!FileUtils.IsFileExists(filePath)) return NotFound();
+            if (!FileUtils.IsFileExists(filePath)) return this.Error(Constants.ErrorNotFound);
 
             return this.Download(filePath);
         }
