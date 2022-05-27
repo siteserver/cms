@@ -75,7 +75,7 @@ namespace SSCMS.Web
             var securityKey = settingsManager.SecurityKey;
             if (string.IsNullOrEmpty(securityKey))
             {
-                securityKey = StringUtils.Guid();
+                securityKey = StringUtils.GetSecurityKey();
             }
             var key = Encoding.UTF8.GetBytes(securityKey);
             services.AddAuthentication(x =>

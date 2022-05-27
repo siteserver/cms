@@ -117,6 +117,11 @@ namespace SSCMS.Utils
             return $"{i - DateTime.Now.Ticks:x}";
         }
 
+        public static string GetSecurityKey()
+        {
+            return GetShortGuid(false) + GetShortGuid(false) + GetShortGuid(false);
+        }
+
         public static string GetShortGuid(bool isUppercase)
         {
             long i = 1;
