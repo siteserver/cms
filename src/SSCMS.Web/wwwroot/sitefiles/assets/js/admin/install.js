@@ -132,15 +132,8 @@ var methods = {
         $this.apiInstall(res.value);
       }, 3000);
     }).catch(function (error) {
-      $this.failureCount++;
-      if ($this.failureCount > 5) {
-        $this.errorMessage = utils.getErrorMessage(error);
-        utils.loading($this, false);
-      } else {
-        setTimeout(function () {
-          $this.apiPrepare();
-        }, 10000 * $this.failureCount);
-      }
+      $this.errorMessage = utils.getErrorMessage(error);
+      utils.loading($this, false);
     });
   },
 
@@ -154,7 +147,15 @@ var methods = {
       $this.pageIndex++;
       utils.loading($this, false);
     }).catch(function (error) {
-      throw error;
+      $this.failureCount++;
+      if ($this.failureCount > 5) {
+        $this.errorMessage = utils.getErrorMessage(error);
+        utils.loading($this, false);
+      } else {
+        setTimeout(function () {
+          $this.apiPrepare();
+        }, 3000 * $this.failureCount);
+      }
     });
   },
 

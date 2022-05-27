@@ -19,6 +19,10 @@ namespace SSCMS.Core.Utils
             {
                 adminRestrictionBlockList = new string[] { };
             }
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                securityKey = StringUtils.Guid();
+            }
 
             var json = SettingsManager.RunningInContainer
                 ? $@"
