@@ -324,7 +324,7 @@ var methods = {
     if (command === 'view') {
       utils.openLayer({
         title: '查看资料',
-        url: utils.getSettingsUrl('administratorsLayerView', {pageType: 'user', userId: this.local.userId}),
+        url: utils.getCommonUrl('adminLayerView', {adminId: this.local.userId}),
         full: true
       });
     } else if (command === 'profile') {
