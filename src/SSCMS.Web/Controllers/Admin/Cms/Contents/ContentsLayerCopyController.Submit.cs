@@ -25,9 +25,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
             summaries.Reverse();
 
-            foreach (var summary in summaries)
+            foreach (var transChannelId in request.TransChannelIds)
             {
-                await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, summary.ChannelId, summary.Id, request.TransSiteId, request.TransChannelId, request.CopyType, _createManager, _authManager.AdminId);
+                foreach (var summary in summaries)
+                {
+                    await ContentUtility.TranslateAsync(_pathManager, _databaseManager, _pluginManager, site, summary.ChannelId, summary.Id, request.TransSiteId, transChannelId, request.CopyType, _createManager, _authManager.AdminId);
+                }
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, "复制内容", string.Empty);

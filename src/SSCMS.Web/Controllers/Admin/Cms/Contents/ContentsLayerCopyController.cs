@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         {
             public string ChannelContentIds { get; set; }
             public int TransSiteId { get; set; }
-            public int TransChannelId { get; set; }
+            public List<int> TransChannelIds { get; set; }
             public TranslateType CopyType { get; set; }
         }
     }

@@ -43,13 +43,21 @@ var methods = {
   apiSubmit: function () {
     var $this = this;
 
+    var transChannelIds = [];
+    this.form.transChannelIds.forEach(function(arr) {
+      var transChannelId = arr[arr.length - 1];
+      transChannelIds.push(transChannelId);
+    });
+
+    var transSiteId = this.form.transSiteIds[this.form.transSiteIds.length - 1];
+
     utils.loading(this, true);
     $api.post($url, {
       siteId: this.siteId,
       channelId: this.channelId,
       channelContentIds: this.channelContentIds,
-      transSiteId: this.form.transSiteIds[this.form.transSiteIds.length - 1],
-      transChannelId: this.form.transChannelIds[this.form.transChannelIds.length - 1],
+      transSiteId: transSiteId,
+      transChannelIds: transChannelIds,
       copyType: this.form.copyType
     }).then(function (response) {
       var res = response.data;
