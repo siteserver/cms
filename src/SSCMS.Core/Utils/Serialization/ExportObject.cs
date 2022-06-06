@@ -249,7 +249,7 @@ namespace SSCMS.Core.Utils.Serialization
 
         public void ExportMetadata(string siteTemplateName, string webSiteUrl, string description, string samplePicPath, string metadataPath)
         {
-            var siteTemplateInfo = new SiteTemplateInfo
+            var siteTemplate = new SiteTemplate
             {
                 SiteTemplateName = siteTemplateName,
                 PicFileName = samplePicPath,
@@ -258,7 +258,7 @@ namespace SSCMS.Core.Utils.Serialization
             };
 
             var xmlPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
-            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
+            XmlUtils.SaveAsXml(siteTemplate, xmlPath);
         }
 
         public async Task<string> ExportChannelsAsync(List<int> channelIdList)

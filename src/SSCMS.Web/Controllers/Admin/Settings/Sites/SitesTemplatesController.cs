@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         public class ListResult
         {
-            public List<SiteTemplateInfo> SiteTemplateInfoList { get; set; }
+            public List<SiteTemplate> SiteTemplates { get; set; }
             public List<string> FileNameList { get; set; }
             public string SiteTemplateUrl { get; set; }
             public bool SiteAddPermission { get; set; }
@@ -63,8 +63,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         {
             var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
-            var siteTemplates = manager.GetSiteTemplateInfoList();
-            var siteTemplateInfoList = new List<SiteTemplateInfo>();
+            var siteTemplates = manager.GetSiteTemplates();
+            var siteTemplateInfoList = new List<SiteTemplate>();
             foreach (var siteTemplate in siteTemplates)
             {
                 var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplate.DirectoryName);
@@ -93,7 +93,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             return new ListResult
             {
-                SiteTemplateInfoList = siteTemplateInfoList,
+                SiteTemplates = siteTemplateInfoList,
                 FileNameList = fileNameList,
                 SiteTemplateUrl = siteTemplateUrl,
                 SiteAddPermission = siteAddPermission

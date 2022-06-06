@@ -45,33 +45,33 @@ namespace SSCMS.Core.Utils
             return DirectoryUtils.IsDirectoryExists(siteTemplatePath);
         }
 
-        public List<SiteTemplateInfo> GetSiteTemplateInfoList()
+        public List<SiteTemplate> GetSiteTemplates()
         {
-            var siteTemplateInfoList = new List<SiteTemplateInfo>();
+            var siteTemplates = new List<SiteTemplate>();
             var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
             foreach (var siteTemplatePath in directoryPaths)
             {
                 var directoryName = PathUtils.GetDirectoryName(siteTemplatePath, false);
-                SiteTemplateInfo siteTemplateInfo = null;
+                SiteTemplate siteTemplate = null;
                 var metadataXmlFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
                 if (FileUtils.IsFileExists(metadataXmlFilePath))
                 {
-                    siteTemplateInfo = XmlUtils.ConvertFileToObject<SiteTemplateInfo>(metadataXmlFilePath);
+                    siteTemplate = XmlUtils.ConvertFileToObject<SiteTemplate>(metadataXmlFilePath);
                 }
 
-                if (siteTemplateInfo == null)
+                if (siteTemplate == null)
                 {
-                    siteTemplateInfo = new SiteTemplateInfo
+                    siteTemplate = new SiteTemplate
                     {
                         SiteTemplateName = directoryName
                     };
                 }
 
-                siteTemplateInfo.DirectoryName = directoryName;
-                siteTemplateInfoList.Add(siteTemplateInfo);
+                siteTemplate.DirectoryName = directoryName;
+                siteTemplates.Add(siteTemplate);
             }
 
-            return siteTemplateInfoList.OrderBy(x => x.DirectoryName).ToList();
+            return siteTemplates.OrderBy(x => x.DirectoryName).ToList();
         }
 
         public List<string> GetZipSiteTemplateList()

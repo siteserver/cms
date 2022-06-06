@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             await SiteTemplateManager.ExportSiteToSiteTemplateAsync(_pathManager, _databaseManager, caching, site, request.TemplateDir);
 
-            var siteTemplateInfo = new SiteTemplateInfo
+            var siteTemplate = new SiteTemplate
             {
                 SiteTemplateName = request.TemplateName,
                 PicFileName = string.Empty,
@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             };
             var xmlPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath,
                 DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
-            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
+            XmlUtils.SaveAsXml(siteTemplate, xmlPath);
 
             return new BoolResult
             {

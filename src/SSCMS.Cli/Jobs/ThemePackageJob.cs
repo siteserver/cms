@@ -181,7 +181,7 @@ namespace SSCMS.Cli.Jobs
 
             await SiteTemplateManager.ExportSiteToSiteTemplateAsync(pathManager, databaseManager, caching, site, packageName);
 
-            var siteTemplateInfo = new SiteTemplateInfo
+            var siteTemplate = new SiteTemplate
             {
                 SiteTemplateName = theme.Name,
                 PicFileName = string.Empty,
@@ -190,7 +190,7 @@ namespace SSCMS.Cli.Jobs
             };
             var xmlPath = pathManager.GetSiteTemplateMetadataPath(packagePath,
                 DirectoryUtils.SiteFiles.SiteTemplates.FileMetadata);
-            XmlUtils.SaveAsXml(siteTemplateInfo, xmlPath);
+            XmlUtils.SaveAsXml(siteTemplate, xmlPath);
 
             pathManager.CreateZip(filePath, packagePath);
 

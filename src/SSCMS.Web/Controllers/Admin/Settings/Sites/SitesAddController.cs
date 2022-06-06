@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     {
         public const string Route = "settings/sitesAdd";
         private const string RouteProcess = "settings/sitesAdd/actions/process";
+        private const string RouteUpload = "settings/sitesAdd/actions/upload";
 
         private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
@@ -45,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
         public class GetResult
         {
-            public List<SiteTemplateInfo> SiteTemplates { get; set; }
+            public List<SiteTemplate> SiteTemplates { get; set; }
             public bool RootExists { get; set; }
             public List<Cascade<int>> Sites { get; set; }
             public List<string> TableNameList { get; set; }
@@ -68,6 +69,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public string TableHandWrite { get; set; }
             public bool IsImportContents { get; set; }
             public bool IsImportTableStyles { get; set; }
+        }
+
+        public class UploadResult
+        {
+            public string DirectoryName { get; set; }
         }
 
         public class ProcessRequest

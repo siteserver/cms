@@ -4,7 +4,7 @@ var $urlUpload = $apiUrl + '/settings/sitesTemplates/actions/upload';
 
 var data = utils.init({
   pageType: null,
-  siteTemplateInfoList: null,
+  siteTemplates: null,
   fileNameList: null,
   siteTemplateUrl: null,
   siteAddPermission: false,
@@ -23,7 +23,7 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.siteTemplateInfoList = res.siteTemplateInfoList;
+      $this.siteTemplates = res.siteTemplates;
       $this.fileNameList = res.fileNameList;
       $this.siteTemplateUrl = res.siteTemplateUrl;
       $this.siteAddPermission = res.siteAddPermission;
@@ -115,7 +115,7 @@ var methods = {
         message: '站点模板解压成功！'
       });
 
-      $this.siteTemplateInfoList = res.siteTemplateInfoList;
+      $this.siteTemplates = res.siteTemplates;
       $this.fileNameList = res.fileNameList;
     }).catch(function (error) {
       utils.error(error);
@@ -177,7 +177,7 @@ var methods = {
 
   uploadSuccess: function(res, file) {
     utils.loading(this, false);
-    this.siteTemplateInfoList = res.siteTemplateInfoList;
+    this.siteTemplates = res.siteTemplates;
     this.fileNameList = res.fileNameList;
     this.siteTemplateUrl = res.siteTemplateUrl;
     this.uploadPanel = false;

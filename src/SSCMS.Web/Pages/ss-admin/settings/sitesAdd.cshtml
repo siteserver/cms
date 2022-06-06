@@ -11,14 +11,50 @@
   <p class="tips">
     点击按钮创建空站点，站点的栏目、内容及模板需要手动添加
   </p>
-  <el-button v-on:click="btnLocalClick()" v-if="siteTemplates && siteTemplates.length > 0" plain size="small" type="primary">使用本地站点模板创建站点</el-button>
+  <el-button v-on:click="btnLocalClick" v-if="siteTemplates && siteTemplates.length > 0" plain size="small" type="primary">使用本地站点模板创建站点</el-button>
   <p class="tips" v-if="siteTemplates && siteTemplates.length > 0">
     点击按钮从本地站点模板中选择并创建站点
   </p>
-  <el-button v-on:click="btnCloudClick()" plain size="small" type="primary">使用在线站点模板创建站点</el-button>
+  <el-button v-on:click="btnCloudClick" plain size="small" type="primary">使用在线站点模板创建站点</el-button>
   <p class="tips">
     点击按钮从官网模板中心中选择并创建站点
   </p>
+  <el-button v-on:click="btnUploadClick" plain size="small" type="primary">导入站点模板创建站点</el-button>
+  <p class="tips">
+    点击按钮上传并导入站点模板并创建站点
+  </p>
+
+  <el-drawer
+    title="导入站点模板"
+    ref="uploadPanel"
+    :visible.sync="uploadPanel"
+    destroy-on-close
+    direction="rtl"
+    size="50%">
+    <div class="drawer__content">
+      <br />
+
+      <el-form ref="uploadForm" label-width="200px">
+        <el-upload
+          :drag="true"
+          :limit="1"
+          :action="$urlUpload"
+          :auto-upload="true"
+          :headers="{Authorization: 'Bearer ' + $token}"
+          :file-list="uploadList"
+          :before-upload="uploadBefore"
+          :on-progress="uploadProgress"
+          :on-success="uploadSuccess"
+          :on-error="uploadError"
+          :multiple="false">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__tip" slot="tip">只能上传zip文件</div>
+        </el-upload>
+      </el-form>
+      
+    </div>
+  </el-drawer>
 </template>
 
 <template v-else-if="pageType == 'selectLocal'">

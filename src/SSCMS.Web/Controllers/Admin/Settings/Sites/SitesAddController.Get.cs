@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
-            var siteTemplates = manager.GetSiteTemplateInfoList();
+            var siteTemplates = manager.GetSiteTemplates();
 
             var tableNameList = await _siteRepository.GetSiteTableNamesAsync();
 
