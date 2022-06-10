@@ -44,7 +44,9 @@ var data = utils.init({
 
   uploadPanel: false,
   uploadLoading: false,
-  uploadList: []
+  uploadList: [],
+
+  errorMessage: '',
 });
 
 var methods = {
@@ -60,7 +62,9 @@ var methods = {
       $this.tableNameList = res.tableNameList;
       $this.form.guid = res.guid;
     }).catch(function (error) {
-      utils.error(error);
+      $this.errorMessage = utils.getErrorMessage(error);
+      $this.pageType = 'error';
+      //utils.error(error);
     }).then(function () {
       utils.loading($this, false);
       if ($this.pageType == 'selectCloud') {

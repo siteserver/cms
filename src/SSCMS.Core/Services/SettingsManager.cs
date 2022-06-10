@@ -80,6 +80,8 @@ namespace SSCMS.Core.Services
 
         public string RedisConnectionString { get; private set; }
 
+        public int MaxSites { get; private set; }
+
         public IDatabase Database => new Database(DatabaseType, DatabaseConnectionString);
 
         public IRedis Redis => new Redis(RedisConnectionString);

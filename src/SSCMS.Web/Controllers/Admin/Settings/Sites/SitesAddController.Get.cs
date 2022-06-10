@@ -16,6 +16,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
+            if (_settingsManager.MaxSites > 0)
+            {
+                var siteIds = await _siteRepository.GetSiteIdsAsync();
+                if (siteIds.Count >= _settingsManager.MaxSites)
+                {
+                    return this.Error("站点数量已超过限制，无法创建新站点!");
+                }
+            }
+
             var caching = new CacheUtils(_cacheManager);
             var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
             var siteTemplates = manager.GetSiteTemplates();

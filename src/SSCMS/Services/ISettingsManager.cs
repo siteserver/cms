@@ -23,6 +23,7 @@ namespace SSCMS.Services
         string DatabaseConnectionString { get; }
         IDatabase Database { get; }
         string RedisConnectionString { get; }
+        int MaxSites { get; }
         IRedis Redis { get; }
         public string AdminRestrictionHost { get; }
         public string[] AdminRestrictionAllowList { get; }

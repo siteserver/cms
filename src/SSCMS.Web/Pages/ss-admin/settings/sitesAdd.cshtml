@@ -272,6 +272,15 @@
   </div>
 </template>
 
+<template v-else-if="pageType == 'error'">
+  <el-alert
+    title="错误提示"
+    type="error"
+    :description="errorMessage"
+    show-icon>
+  </el-alert>
+</template>
+
 @section Scripts{
   <script src="/sitefiles/assets/js/admin/settings/sitesAdd.js" type="text/javascript"></script>
 }
