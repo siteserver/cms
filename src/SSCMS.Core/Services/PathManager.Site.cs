@@ -356,17 +356,17 @@ namespace SSCMS.Core.Services
                 return await GetIndexPageUrlAsync(site, isLocal);
             }
             var linkUrl = string.Empty;
-            var nodeInfo = await _channelRepository.GetAsync(channelId);
-            if (nodeInfo != null)
+            var channel = await _channelRepository.GetAsync(channelId);
+            if (channel != null)
             {
-                linkUrl = nodeInfo.LinkUrl;
+                linkUrl = channel.LinkUrl;
             }
 
             if (string.IsNullOrEmpty(linkUrl))
             {
-                if (nodeInfo != null)
+                if (channel != null)
                 {
-                    var filePath = nodeInfo.FilePath;
+                    var filePath = channel.FilePath;
 
                     if (string.IsNullOrEmpty(filePath))
                     {
