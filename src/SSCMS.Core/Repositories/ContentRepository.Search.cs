@@ -153,7 +153,7 @@ namespace SSCMS.Core.Repositories
                 });
             }
 
-            query.OrderByDesc(nameof(Content.LastEditAdminId), nameof(Content.AddDate), nameof(Content.Id));
+            query.OrderByDesc(nameof(Content.AddDate), nameof(Content.Id));
 
             var total = await repository.CountAsync(query);
             var pageSummaries = await repository.GetAllAsync<ContentSummary>(query.ForPage(page, site.PageSize));
