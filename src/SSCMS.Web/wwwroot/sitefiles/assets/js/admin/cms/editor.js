@@ -513,7 +513,18 @@ var methods = {
       }
       ,anim: 5
     });
-  }
+  },
+
+  btnExtendPreviewVideoClick: function(videoUrl) {
+    if (videoUrl) {
+      utils.openLayer({
+        title: '预览视频',
+        url: utils.getCommonUrl('editorLayerPreviewVideo', {videoUrl: videoUrl}),
+        width: 600,
+        height: 500
+      });
+    }
+  },
 };
 
 var $vue = new Vue({

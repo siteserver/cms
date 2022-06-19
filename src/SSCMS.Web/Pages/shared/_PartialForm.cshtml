@@ -99,6 +99,9 @@
         <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'materialLayerVideoSelect', attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
+        <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewVideoClick(form[utils.toCamelCase(style.attributeName)])">
+          预览
+        </el-button>
         <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
           新增
         </el-button>
@@ -115,6 +118,9 @@
           </el-button>
           <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'materialLayerVideoSelect', attributeName: style.attributeName, no: n, full: true})">
             选择
+          </el-button>
+          <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnExtendPreviewVideoClick(form[utils.getExtendName(style.attributeName, n)])">
+            预览
           </el-button>
           <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
             新增
