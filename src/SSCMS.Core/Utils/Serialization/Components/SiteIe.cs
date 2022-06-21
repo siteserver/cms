@@ -144,7 +144,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 foreach (var contentId in contentIds)
                 {
                     var content = await _databaseManager.ContentRepository.GetAsync(site, channelInfo, contentId);
-                    var entry = _contentIe.ExportContent(content);
+                    var entry = await _contentIe.ExportContentAsync(content);
                     feed.Entries.Add(entry);
                 }
             }

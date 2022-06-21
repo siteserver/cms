@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Threading.Tasks;
+using Datory;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core.Collections;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -27,6 +29,9 @@ namespace SSCMS.Core.Utils.Serialization.Components
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _site = site;
         }
+
+        private const string TemplateName = "TemplateName";
+        private const string LinkToChannelName = "LinkToChannelName";
 
         public async Task<List<int>> ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
@@ -103,6 +108,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         new List<string> {nameof(Content.Hot), "IsHot"}));
                     var isColor = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
                         new List<string> {nameof(Content.Color), "IsColor"}));
+                    var linkType = TranslateUtils.ToEnum<LinkType>(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkType)), LinkType.None);
                     var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkUrl)));
                     var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.AddDate));
                     var body = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements,
@@ -113,6 +119,13 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     {
                         topTaxis = taxis - 1;
                         taxis = await _databaseManager.ContentRepository.GetMaxTaxisAsync(_site, channel, true) + 1;
+                    }
+
+                    var templateId = 0;
+                    var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, TemplateName);
+                    if (!string.IsNullOrEmpty(templateName))
+                    {
+                        templateId = await _databaseManager.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, templateName);
                     }
 
                     var dict = new Dictionary<string, object>();
@@ -129,6 +142,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     content.AddDate = TranslateUtils.ToDateTime(addDate);
                     content.AdminId = adminId;
                     content.LastEditAdminId = adminId;
+                    content.TemplateId = templateId;
                     content.GroupNames = ListUtils.GetStringList(groupNames);
                     content.TagNames = ListUtils.GetStringList(tagNames);
                     content.Checked = isChecked;
@@ -140,6 +154,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     content.Recommend = isRecommend;
                     content.Hot = isHot;
                     content.Color = isColor;
+                    content.LinkType = linkType;
                     content.LinkUrl = linkUrl;
                     content.Body = body;
 
@@ -237,8 +252,15 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Recommend), "IsRecommend" }));
                     var isHot = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Hot), "IsHot" }));
                     var isColor = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Color), "IsColor" }));
-                    var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkUrl)));
                     var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.AddDate));
+
+                    var linkType = TranslateUtils.ToEnum<LinkType>(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkType)), LinkType.None);
+                    var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkUrl)));
+                    // var linkToChannelName = string.Empty;
+                    // if (linkType == LinkType.LinkToChannel)
+                    // {
+                    //     linkToChannelName = AtomUtility.GetDcElementContent(entry.AdditionalElements, LinkToChannelName); 
+                    // }
 
                     var topTaxis = 0;
                     if (isTop)
@@ -248,6 +270,13 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }));
 
+                    var templateId = 0;
+                    var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, TemplateName);
+                    if (!string.IsNullOrEmpty(templateName))
+                    {
+                        templateId = await _databaseManager.TemplateRepository.GetTemplateIdByTemplateNameAsync(_site.Id, TemplateType.ContentTemplate, templateName);
+                    }
+
                     var contentInfo = new Content
                     {
                         SiteId = _site.Id,
@@ -256,6 +285,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         LastEditAdminId = adminId,
                         UserId = userId,
                         SourceId = sourceId,
+                        TemplateId = templateId,
                         AddDate = TranslateUtils.ToDateTime(addDate),
                         GroupNames = ListUtils.GetStringList(groupNameCollection),
                         TagNames = ListUtils.GetStringList(tags),
@@ -276,6 +306,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         Recommend = isRecommend,
                         Hot = isHot,
                         Color = isColor,
+                        LinkType = linkType,
                         LinkUrl = linkUrl
                     };
 
@@ -369,7 +400,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 {
                     // ignored
                 }
-                var entry = ExportContent(content);
+                var entry = await ExportContentAsync(content);
                 feed.Entries.Add(entry);
             }
 
@@ -386,7 +417,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             return true;
         }
 
-        public AtomEntry ExportContent(Content content)
+        public async Task<AtomEntry> ExportContentAsync(Content content)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
@@ -417,7 +448,26 @@ namespace SSCMS.Core.Utils.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Recommend), "IsRecommend" }, content.Recommend.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Hot), "IsHot" }, content.Hot.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.Color), "IsColor" }, content.Color.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.LinkType), content.LinkType.GetValue());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.LinkUrl), AtomUtility.Encrypt(content.LinkUrl));
+
+            if (content.TemplateId != 0)
+            {
+                var templateName = await _databaseManager.TemplateRepository.GetTemplateNameAsync(content.TemplateId);
+                AtomUtility.AddDcElement(entry.AdditionalElements, TemplateName, templateName);
+            }
+
+            if (content.LinkType == LinkType.LinkToChannel)
+            {
+                var channelIds = ListUtils.GetIntList(content.LinkUrl);
+                if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                {
+                    var targetChannelId = channelIds[channelIds.Count - 1];
+                    var channel = await _databaseManager.ChannelRepository.GetAsync(targetChannelId);
+                    AtomUtility.AddDcElement(entry.AdditionalElements, LinkToChannelName, channel.ChannelName);
+                }
+            }
+            
             if (content.AddDate.HasValue)
             {
                 AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.AddDate), content.AddDate.Value.ToString(CultureInfo.InvariantCulture));

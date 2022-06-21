@@ -207,7 +207,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         innerHtml = innerBuilder.ToString();
                     }
 
-                    if (string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(contentInfo?.LinkUrl))
+                    if (string.IsNullOrEmpty(target) && (contentInfo?.LinkType == LinkType.None && !string.IsNullOrEmpty(contentInfo?.LinkUrl)))
                     {
                         target = "_blank";
                     }

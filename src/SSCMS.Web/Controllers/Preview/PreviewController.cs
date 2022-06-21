@@ -101,7 +101,7 @@ namespace SSCMS.Web.Controllers.Preview
             var content = await _parseManager.GetContentAsync();
             if (content == null) return null;
 
-            if (!string.IsNullOrEmpty(content.LinkUrl))
+            if (content.LinkType == LinkType.None && !string.IsNullOrEmpty(content.LinkUrl))
             {
                 HttpContext.Response.Redirect(content.LinkUrl);
                 return null;

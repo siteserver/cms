@@ -85,6 +85,7 @@ namespace SSCMS.Core.Utils
             nameof(Content.Hot),
             nameof(Content.Color),
             nameof(Content.AddDate),
+            nameof(Content.LinkType),
             nameof(Content.LinkUrl),
             "ExtendValues"
         });
@@ -185,6 +186,12 @@ namespace SSCMS.Core.Utils
 
             list.AddRange(new List<TableStyle>
             {
+                new TableStyle
+                {
+                    AttributeName = nameof(Content.LinkType),
+                    DisplayName = "链接类型",
+                    Taxis = taxis++
+                },
                 new TableStyle
                 {
                     AttributeName = nameof(Content.LinkUrl),
