@@ -46,8 +46,8 @@ var data = utils.init({
   tagNames: null,
   checkedLevels: null,
   isCensorTextEnabled: null,
-  siteOptions: null,
-  channelOptions: null,
+  linkTypes: null,
+  root: null,
   styles: null,
   templates: null,
   form: null,
@@ -150,9 +150,8 @@ var methods = {
       $this.tagNames = res.tagNames;
       $this.checkedLevels = res.checkedLevels;
       $this.isCensorTextEnabled = res.isCensorTextEnabled;
-
-      $this.siteOptions = res.siteOptions;
-      $this.channelOptions = res.channelOptions;
+      $this.linkTypes = res.linkTypes;
+      $this.root = [res.root];
 
       $this.styles = res.styles;
       $this.templates = res.templates;
@@ -183,8 +182,8 @@ var methods = {
       } else {
         $this.form.tagNames = [];
       }
-      if ($this.form.linkUrl) {
-        $this.collapseSettings.push('linkUrl');
+      if (($this.form.linkType && $this.form.linkType != 'None') || $this.form.linkUrl) {
+        $this.collapseSettings.push('link');
       }
 
       for (var i = 0; i < $this.styles.length; i++) {

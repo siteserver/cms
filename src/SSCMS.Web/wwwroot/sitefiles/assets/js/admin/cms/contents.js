@@ -169,6 +169,9 @@ var methods = {
   },
 
   getContentUrl: function (content) {
+    if (content.linkType == 'NoLink') {
+      return 'javascript:;';
+    }
     if (content.referenceId > 0 && content.sourceId > 0) {
       return utils.getRootUrl('redirect', {
         siteId: content.siteId,
@@ -181,6 +184,13 @@ var methods = {
       channelId: content.channelId,
       contentId: content.id
     });
+  },
+
+  getContentTarget: function (content) {
+    if (content.linkType == 'NoLink') {
+      return '';
+    }
+    return '_blank';
   },
 
   btnTitleClick: function(content) {

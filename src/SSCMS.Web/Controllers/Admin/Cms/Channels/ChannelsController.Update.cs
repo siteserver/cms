@@ -121,8 +121,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             //channel.Content = request.Content;
             channel.ChannelTemplateId = request.ChannelTemplateId;
             channel.ContentTemplateId = request.ContentTemplateId;
-            channel.LinkUrl = request.LinkUrl;
             channel.LinkType = request.LinkType;
+            channel.LinkUrl = request.LinkUrl;
             channel.DefaultTaxisType = request.DefaultTaxisType;
             channel.FilePath = request.FilePath;
             channel.ChannelFilePathRule = request.ChannelFilePathRule;

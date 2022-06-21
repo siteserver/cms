@@ -152,7 +152,6 @@ var methods = {
       $this.form.filePath = res.filePath;
       $this.form.channelFilePathRule = res.channelFilePathRule;
       $this.form.contentFilePathRule = res.contentFilePathRule;
-
       $this.editPanel = true;
       utils.loadEditors($this.styles, $this.form);
     }).catch(function (error) {

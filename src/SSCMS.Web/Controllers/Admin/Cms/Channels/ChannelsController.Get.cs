@@ -73,6 +73,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     entity.Set(style.AttributeName, channel.Get(style.AttributeName));
                 }
             }
+            if (channel.LinkType == LinkType.LinkToChannel)
+            {
+                var channelIds = ListUtils.GetIntList(channel.LinkUrl);
+                if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                {
+                    var targetChannelId = channelIds[channelIds.Count - 1];
+                    var name = await _channelRepository.GetChannelNameNavigationAsync(siteId, targetChannelId);
+                    entity.Set("LinkToChannel", name);
+                }
+            }
 
             var filePath = channel.FilePath;
             var channelFilePathRule = channel.ChannelFilePathRule;

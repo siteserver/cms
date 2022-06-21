@@ -8,6 +8,7 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -104,6 +105,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
             var isCensorTextEnabled = await _censorManager.IsTextEnabledAsync();
 
+            var linkTypes = _pathManager.GetLinkTypeSelects(false);
+            var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId));
+            if (content.LinkType == LinkType.LinkToChannel)
+            {
+                var channelIds = ListUtils.GetIntList(content.LinkUrl);
+                if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                {
+                    var targetChannelId = channelIds[channelIds.Count - 1];
+                    var name = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, targetChannelId);
+                    content.Set("LinkToChannel", name);
+                }
+            }
+
             return new GetResult
             {
                 CSRFToken = _authManager.GetCSRFToken(),
@@ -117,7 +131,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 Templates = templates,
                 CheckedLevels = checkedLevels,
                 CheckedLevel = userCheckedLevel,
-                IsCensorTextEnabled = isCensorTextEnabled
+                IsCensorTextEnabled = isCensorTextEnabled,
+                LinkTypes = linkTypes,
+                Root = root,
             };
         }
     }

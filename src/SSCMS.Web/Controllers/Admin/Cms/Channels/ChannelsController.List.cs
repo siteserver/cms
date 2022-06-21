@@ -75,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var isTemplateEditable =
                 await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates);
 
-            var linkTypes = _pathManager.GetLinkTypeSelects();
+            var linkTypes = _pathManager.GetLinkTypeSelects(true);
             var taxisTypes = new List<Select<string>>
             {
                 new Select<string>(TaxisType.OrderByTaxisDesc),

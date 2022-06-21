@@ -47,7 +47,7 @@ namespace SSCMS.Services
 
         Task<string> GetContentUrlByIdAsync(Site site, Content contentCurrent, bool isLocal);
 
-        Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, string linkUrl, bool isLocal);
+        Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, LinkType linkType, string linkUrl, bool isLocal);
 
         Task<string> GetChannelUrlNotComputedAsync(Site site, int channelId, bool isLocal);
 
@@ -68,7 +68,7 @@ namespace SSCMS.Services
 
         bool IsRelativeUrl(string url);
 
-        List<Select<string>> GetLinkTypeSelects();
+        List<Select<string>> GetLinkTypeSelects(bool isChannel);
 
         Task<string> GetSitePathAsync(Site site);
 

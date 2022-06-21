@@ -159,11 +159,9 @@
                 </el-link>
               </el-popover>
 
-              <!-- linkUrl -->
-              <el-tooltip v-if="data.channel.linkUrl" effect="light" content="外部链接" placement="top">
-                <el-link :underline="false" :href="data.channel.linkUrl" target="_blank" v-on:click.stop.native title="外部链接">
-                  <i class="fa fa-external-link"></i>
-                </el-link>
+              <!-- linkType && linkUrl -->
+              <el-tooltip v-if="data.channel.linkType != 'None' || data.channel.linkUrl" effect="light" content="指定链接" placement="top">
+                <i class="fa fa-external-link"></i>
               </el-tooltip>
 
             </div>
@@ -418,11 +416,11 @@
   destroy-on-close
   :wrapperClosable="false"
   direction="rtl"
-  size="100%">
+  size="90%">
   <div class="drawer__content">
     <el-form size="mini" ref="editForm" :model="form" label-width="200px">
-      <el-form-item label="栏目名称" prop="channelName">
-        <el-input v-model="form.channelName" placeholder="请输入栏目名称" :rules="{ required: true, message: '请输入栏目名称' }"></el-input>
+      <el-form-item label="栏目名称" prop="channelName" :rules="{ required: true, message: '请输入栏目名称' }">
+        <el-input v-model="form.channelName" placeholder="请输入栏目名称"></el-input>
       </el-form-item>
       <el-form-item label="栏目索引">
         <el-input v-model="form.indexName" placeholder="请输入栏目索引"></el-input>
@@ -463,15 +461,34 @@
           编辑
         </el-link>
       </el-form-item>
-      <el-form-item label="外部链接">
-        <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
-      </el-form-item>
       <el-form-item label="链接类型">
         <el-tooltip effect="light" content="设置此栏目的链接与子栏目及内容的关系" placement="right">
-          <el-select v-model="form.linkType" placeholder="请选择链接类型">
+          <el-select v-model="form.linkType" placeholder="请选择链接类型" v-on:change="form.linkUrl = form.linkToChannel = '';">
             <el-option v-for="linkType in editLinkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
           </el-select>
         </el-tooltip>
+      </el-form-item>
+      <el-form-item v-if="form.linkType == 'None'" label="外部链接">
+        <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
+      </el-form-item>
+      <el-form-item v-if="form.linkType == 'LinkToChannel'" label="指定栏目" prop="linkUrl" :rules="{ required: true, message: '请选择链接到指定栏目' }">
+        <el-tag
+          v-if="form.linkToChannel"
+          closable
+          size="small"
+          v-on:close="form.linkToChannel = ''"
+          type="primary">
+          {{ form.linkToChannel }}
+        </el-tag>
+        <el-cascader
+          v-else
+          v-model="form.linkUrl"
+          filterable
+          :options="root"
+          :props="{ checkStrictly: true }"
+          style="width: 100%;"
+          placeholder="请选择栏目">
+        </el-cascader>
       </el-form-item>
       <el-form-item label="新增内容排序规则">
         <el-tooltip effect="light" content="新增或导入的内容将按照此排序规则进行排序" placement="right">

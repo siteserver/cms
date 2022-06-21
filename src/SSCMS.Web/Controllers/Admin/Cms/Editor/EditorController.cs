@@ -81,6 +81,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public List<Select<int>> CheckedLevels { get; set; }
             public int CheckedLevel { get; set; }
             public bool IsCensorTextEnabled { get; set; }
+            public IEnumerable<Select<string>> LinkTypes { get; set; }
+            public Cascade<int> Root { get; set; }
         }
 
         public class PreviewRequest

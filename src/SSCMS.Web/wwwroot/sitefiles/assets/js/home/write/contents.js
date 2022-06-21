@@ -92,8 +92,6 @@ var methods = {
   },
 
   apiColumns: function(attributeNames) {
-    var $this = this;
-
     $api.post($url + '/actions/columns', {
       siteId: this.siteId,
       attributeNames: attributeNames
@@ -106,11 +104,21 @@ var methods = {
   },
 
   getContentUrl: function (content) {
+    if (content.linkType == 'NoLink') {
+      return 'javascript:;';
+    }
     return utils.getRootUrl('redirect', {
       siteId: content.siteId,
       channelId: content.channelId,
       contentId: content.id
     });
+  },
+
+  getContentTarget: function (content) {
+    if (content.linkType == 'NoLink') {
+      return '';
+    }
+    return '_blank';
   },
 
   handleSiteIdChange: function() {

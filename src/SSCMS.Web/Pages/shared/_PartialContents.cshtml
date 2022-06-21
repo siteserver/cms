@@ -99,7 +99,7 @@
     show-overflow-tooltip
     resizable>
     <template slot-scope="scope">
-      <el-link v-if="scope.row.checked && scope.row.channelId > 0" type="primary" :underline="false" :href="getContentUrl(scope.row)" target="_blank" v-html="scope.row.title" v-on:click.stop.native></el-link>
+      <el-link v-if="scope.row.checked && scope.row.channelId > 0" type="primary" :underline="false" :href="getContentUrl(scope.row)" :target="getContentTarget(scope.row)" v-html="scope.row.title" v-on:click.stop.native></el-link>
       <el-link v-else type="primary" :underline="false" v-on:click="btnTitleClick(scope.row)" v-html="scope.row.title" v-on:click.stop.native></el-link>
       <!-- top -->
       <el-tooltip v-if="scope.row.top" effect="light" content="置顶" placement="top">
@@ -129,19 +129,19 @@
       </el-popover>
       <!-- video -->
       <el-tooltip v-if="scope.row.videoUrl" effect="light" content="视频" placement="top">
-        <el-link :underline="false" :href="scope.row.videoUrl" target="_blank" v-on:click.stop>
+        <el-link :underline="false" :href="scope.row.videoUrl" target="_blank" v-on:click.stop.native>
           <i class="el-icon-video-play"></i>
         </el-link>
       </el-tooltip>
       <!-- fileUrl -->
       <el-tooltip v-if="scope.row.fileUrl" effect="light" content="附件" placement="top">
-        <el-link :underline="false" :href="scope.row.fileUrl" target="_blank" v-on:click.stop>
+        <el-link :underline="false" :href="scope.row.fileUrl" target="_blank" v-on:click.stop.native>
           <i class="el-icon-document"></i>
         </el-link>
       </el-tooltip>
       <!-- linkUrl -->
-      <el-tooltip v-if="scope.row.linkUrl" effect="light" content="外部链接" placement="top">
-        <el-link :underline="false" :href="scope.row.linkUrl" target="_blank" v-on:click.stop.native title="外部链接">
+      <el-tooltip v-if="(scope.row.linkType && scope.row.linkType != 'None') || scope.row.linkUrl" effect="light" content="指定链接" placement="top">
+        <el-link :underline="false" :href="getContentUrl(scope.row)" :target="getContentTarget(scope.row)" v-on:click.stop.native>
           <i class="fa fa-external-link"></i>
         </el-link>
       </el-tooltip>

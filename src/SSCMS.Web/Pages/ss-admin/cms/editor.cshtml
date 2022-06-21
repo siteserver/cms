@@ -80,9 +80,36 @@
               <el-button size="small" v-on:click="btnTagsClick">从内容提取标签</el-button>
 
             </el-collapse-item>
-            <el-collapse-item title="外部链接" name="linkUrl">
-              <el-input v-model="form.linkUrl" name="linkUrl" placeholder="设置后链接将指向此地址" size="small" autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" data-vv-as="外部链接" v-validate="'url'"></el-input>
-              <small class="tips">设置外部链接后系统将不会生成内容页面</small>
+            <el-collapse-item title="内容链接" name="link">
+              <el-form size="small">
+                <el-form-item label="链接类型">
+                  <el-select v-model="form.linkType" placeholder="请选择链接类型" v-on:change="form.linkUrl = form.linkToChannel = '';">
+                    <el-option v-for="linkType in linkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item v-if="form.linkType == 'None'" label="外部链接">
+                  <el-input v-model="form.linkUrl" name="linkUrl" placeholder="设置后栏目链接将转向此地址" autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" data-vv-as="外部链接" v-validate="'url'"></el-input>
+                </el-form-item>
+                <el-form-item v-if="form.linkType == 'LinkToChannel'" label="指定栏目">
+                  <el-tag
+                    v-if="form.linkToChannel"
+                    closable
+                    size="small"
+                    v-on:close="form.linkToChannel = ''"
+                    type="primary">
+                    {{ form.linkToChannel }}
+                  </el-tag>
+                  <el-cascader
+                    v-else
+                    v-model="form.linkUrl"
+                    filterable
+                    :options="root"
+                    :props="{ checkStrictly: true }"
+                    style="width: 100%;"
+                    placeholder="请选择栏目">
+                  </el-cascader>
+                </el-form-item>
+              </el-form>
             </el-collapse-item>
             <el-collapse-item title="添加时间" name="addDate">
               <el-date-picker

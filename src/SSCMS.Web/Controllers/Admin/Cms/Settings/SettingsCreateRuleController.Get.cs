@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             var channel = await _channelRepository.GetAsync(channelId);
 
-            var linkTypes = _pathManager.GetLinkTypeSelects();
+            var linkTypes = _pathManager.GetLinkTypeSelects(true);
             var filePath = string.IsNullOrEmpty(channel.FilePath) ? await _pathManager.GetInputChannelUrlAsync(site, channel, false) : channel.FilePath;
             var channelFilePathRule = string.IsNullOrEmpty(channel.ChannelFilePathRule) ? await _pathManager.GetChannelFilePathRuleAsync(site, channelId) : channel.ChannelFilePathRule;
             var contentFilePathRule = string.IsNullOrEmpty(channel.ContentFilePathRule) ? await _pathManager.GetContentFilePathRuleAsync(site, channelId) : channel.ContentFilePathRule;
