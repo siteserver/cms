@@ -153,6 +153,18 @@ namespace SSCMS.Core.Repositories
             return await repository.GetAllAsync<int>(query);
         }
 
+        public async Task<List<int>> GetContentIdsByLinkTypeAsync(Site site, Channel channel, LinkType linkType)
+        {
+            var repository = await GetRepositoryAsync(site, channel);
+            var query = Q
+                .Select(nameof(Content.Id))
+                .Where(nameof(Content.ChannelId), channel.Id)
+                .Where(nameof(Content.LinkType), linkType.GetValue())
+                .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+
+            return await repository.GetAllAsync<int>(query);
+        }
+
         public async Task<List<int>> GetChannelIdsCheckedByLastModifiedDateHourAsync(Site site, int hour)
         {
             var repository = await GetRepositoryAsync(site.TableName);

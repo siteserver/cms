@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Core.Utils.Serialization.Components;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -110,6 +112,26 @@ namespace SSCMS.Core.Utils
             {
                 _caching.SetProcess(guid, $"导入栏目文件: {filePath}");
                 await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents, guid);
+            }
+
+            var channels = await _databaseManager.ChannelRepository.GetChannelsAsync(site.Id);
+            foreach (var channel in channels)
+            {
+                var contentIds = await _databaseManager.ContentRepository.GetContentIdsByLinkTypeAsync(site, channel, LinkType.LinkToChannel);
+                foreach (var contentId in contentIds)
+                {
+                    var content = await _databaseManager.ContentRepository.GetAsync(site, channel, contentId);
+                    var linkToChannelName = content.Get<string>(ContentIe.LinkToChannelName);
+                    if (!string.IsNullOrEmpty(linkToChannelName))
+                    {
+                        var linkToChannel = channels.FirstOrDefault(x => x.ChannelName == linkToChannelName);
+                        if (linkToChannel != null)
+                        {
+                            content.LinkUrl = ListUtils.ToString(linkToChannel.ParentsPath) + "," + linkToChannel.Id;
+                            await _databaseManager.ContentRepository.UpdateAsync(site, channel, content);
+                        }
+                    }
+                }
             }
 
             if (isImportTableStyles)

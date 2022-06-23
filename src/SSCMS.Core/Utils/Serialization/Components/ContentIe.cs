@@ -31,7 +31,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
         }
 
         private const string TemplateName = "TemplateName";
-        private const string LinkToChannelName = "LinkToChannelName";
+        public const string LinkToChannelName = "LinkToChannelName";
 
         public async Task<List<int>> ImportContentsAsync(string filePath, bool isOverride, Channel channel, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {

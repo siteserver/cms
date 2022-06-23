@@ -76,6 +76,7 @@ namespace SSCMS.Core.Utils.Serialization
             var siteIe = new SiteIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
             await siteIe.ImportChannelsAndContentsAsync(filePath, isImportContents, false, 0, _adminId, guid);
         }
+        
         public async Task ImportTemplatesAsync(string filePath, bool overwrite, int adminId, string guid)
         {
             var templateIe = new TemplateIe(_pathManager, _databaseManager, _caching, _site, filePath);
