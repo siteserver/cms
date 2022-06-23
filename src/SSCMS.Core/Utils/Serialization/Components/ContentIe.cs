@@ -464,7 +464,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 {
                     var targetChannelId = channelIds[channelIds.Count - 1];
                     var channel = await _databaseManager.ChannelRepository.GetAsync(targetChannelId);
-                    AtomUtility.AddDcElement(entry.AdditionalElements, LinkToChannelName, channel.ChannelName);
+                    AtomUtility.AddDcElement(entry.AdditionalElements, LinkToChannelName, AtomUtility.Encrypt(channel.ChannelName));
                 }
             }
             
