@@ -122,6 +122,11 @@
       <p class="el-alert__description" style="font-size: 14px;">
         站点模版保存在"wwwroot/sitefiles/sitetemplates/{{ form.templateDir }}"文件夹中! 
       </p>
+      <p>
+        <el-button v-if="downloadUrl" type="primary" v-on:click="btnDownloadClick" size="small">重新下载</el-button>
+        <el-button v-else="downloadUrl" type="primary" v-on:click="btnSaveAndDownloadClick" size="small">压缩并下载</el-button>
+        <el-button v-on:click="btnReturnClick" size="small">返 回</el-button>
+      </p>
     </div>
   </div>
 </template>

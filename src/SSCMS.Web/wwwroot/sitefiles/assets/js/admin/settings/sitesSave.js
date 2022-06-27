@@ -6,9 +6,9 @@ var data = utils.init({
   directories: null,
   files: null,
   channel: null,
-
   checkAllDirectories: false,
   checkAllFiles: false,
+  downloadUrl: null,
 
   form: {
     siteId: utils.getQueryInt('siteId'),
@@ -120,10 +120,6 @@ var methods = {
     $api.post($url + '/actions/data', this.form).then(function (response) {
       var res = response.data;
       $this.active = 3;
-
-      setTimeout(function () {
-        location.href = utils.getSettingsUrl('sitesTemplates');
-      }, 3000);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -138,6 +134,31 @@ var methods = {
   btnCloseClick: function() {
     utils.removeTab();
   },
+
+  btnSaveAndDownloadClick: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/zip', {
+      directoryName: this.form.templateDir
+    }).then(function (response) {
+      var res = response.data;
+      $this.downloadUrl = res.value;
+      $this.btnDownloadClick();
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnDownloadClick: function () {
+    window.open(this.downloadUrl);
+  },
+
+  btnReturnClick: function () {
+    location.href = utils.getSettingsUrl('sites');
+  }
 };
 
 var $vue = new Vue({
