@@ -71,13 +71,7 @@ namespace SSCMS.Web
             });
 
             services.AddHttpContextAccessor();
-
-            var securityKey = settingsManager.SecurityKey;
-            if (string.IsNullOrEmpty(securityKey))
-            {
-                securityKey = StringUtils.GetSecurityKey();
-            }
-            var key = Encoding.UTF8.GetBytes(securityKey);
+            
             services.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -90,7 +84,7 @@ namespace SSCMS.Web
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(settingsManager.SecurityKey)),
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };

@@ -122,6 +122,15 @@ namespace SSCMS.Utils
             return GetShortGuid(false) + GetShortGuid(false) + GetShortGuid(false);
         }
 
+        public static byte[] GetSecurityKeyBytes(string securityKey)
+        {
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                securityKey = GetSecurityKey();
+            }
+            return Encoding.UTF8.GetBytes(securityKey);
+        }
+
         public static string GetShortGuid(bool isUppercase)
         {
             long i = 1;
