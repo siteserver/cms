@@ -2,9 +2,8 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SSCMS.Utils;
 
-namespace SSCMS.Core.Utils
+namespace SSCMS.Utils
 {
     public static class HttpClientUtils
     {

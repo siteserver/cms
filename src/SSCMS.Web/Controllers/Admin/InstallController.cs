@@ -18,18 +18,21 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteRedisConnect = "install/actions/redisConnect";
         private const string RouteInstall = "install/actions/install";
         private const string RoutePrepare = "install/actions/prepare";
+        private const string RouteOneClick = "install/actions/oneClick";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
+        public InstallController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
+            _pluginManager = pluginManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
         }
@@ -96,6 +99,17 @@ namespace SSCMS.Web.Controllers.Admin
         public class InstallRequest : PrepareRequest
         {
             public string SecurityKey { get; set; }
+        }
+
+        public class OneClickRequest
+        {
+            public string SecurityKey { get; set; }
+            public string UserName { get; set; }
+            public string Password { get; set; }
+            public string Email { get; set; }
+            public string Mobile { get; set; }
+            public string Themes { get; set; }
+            public string Plugins { get; set; }
         }
     }
 }
