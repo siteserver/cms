@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin
         public const string Route = "agent";
         private const string RouteInstall = "agent/actions/install";
         private const string RouteSites = "agent/sites";
-        private const string RouteSetDomains = "agent/actions/setDomains";
+        private const string RouteSetDomain = "agent/actions/setDomain";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
@@ -54,19 +54,13 @@ namespace SSCMS.Web.Controllers.Admin
         public class SitesResult
         {
             public List<Site> Sites { get; set; }
-            public int RootSiteId { get; set; }
         }
 
-        public class SiteDomain
-        {
-            public int SiteId { get; set; }
-            public string Domain { get; set; }
-        }
-
-        public class SetDomainsRequest : AgentRequest
+        public class SetDomainRequest : AgentRequest
         {
             public string HostDomain { get; set; }
-            public List<SiteDomain> SiteDomains { get; set; }
+            public int SiteId { get; set; }
+            public string SiteDomain { get; set; }
         }
     }
 }

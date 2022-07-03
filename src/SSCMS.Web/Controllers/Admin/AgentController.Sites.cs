@@ -18,17 +18,15 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error("SecurityKey不正确");
             }
 
-            var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
-
             var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
             {
+                LocalUrl = await _pathManager.GetSiteUrlAsync(x, true),
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
             return new SitesResult
             {
                 Sites = sites,
-                RootSiteId = rootSiteId,
             };
         }
     }
