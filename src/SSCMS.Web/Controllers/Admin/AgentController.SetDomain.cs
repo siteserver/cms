@@ -19,19 +19,27 @@ namespace SSCMS.Web.Controllers.Admin
                 return this.Error("SecurityKey不正确");
             }
 
-            var domain = request.SiteDomain;
-            if (!string.IsNullOrEmpty(domain) && !domain.EndsWith("/"))
-            {
-                domain = domain + "/";
-            }
-
             var site = await _siteRepository.GetAsync(request.SiteId);
+            var domain = request.SiteDomain;
 
-            site.IsSeparatedWeb = true;
-            site.SeparatedWebUrl = domain;
-
-            site.IsSeparatedApi = true;
-            site.SeparatedApiUrl = request.HostDomain;
+            if (!string.IsNullOrEmpty(domain))
+            {
+                if (!domain.EndsWith("/"))
+                {
+                    domain = domain + "/";
+                }
+                site.IsSeparatedWeb = true;
+                site.SeparatedWebUrl = domain;
+                site.IsSeparatedApi = true;
+                site.SeparatedApiUrl = request.HostDomain;
+            }
+            else
+            {
+                site.IsSeparatedWeb = false;
+                site.SeparatedWebUrl = string.Empty;
+                site.IsSeparatedApi = false;
+                site.SeparatedApiUrl = string.Empty;
+            }
 
             await _siteRepository.UpdateAsync(site);
 
