@@ -31,7 +31,22 @@ namespace SSCMS.Web.Controllers.Admin
                 site.IsSeparatedWeb = true;
                 site.SeparatedWebUrl = domain;
                 site.IsSeparatedApi = true;
-                site.SeparatedApiUrl = request.HostDomain;
+                if (site.Root)
+                {
+                    site.SeparatedApiUrl = domain;
+                }
+                else
+                {
+                    var rootSite = await _siteRepository.GetSiteByIsRootAsync();
+                    if (rootSite != null && rootSite.IsSeparatedApi)
+                    {
+                        site.SeparatedApiUrl = rootSite.SeparatedApiUrl;
+                    }
+                    else
+                    {
+                        site.SeparatedApiUrl = request.HostDomain;
+                    }
+                }
             }
             else
             {

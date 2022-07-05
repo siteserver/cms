@@ -24,8 +24,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public AgentController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AgentController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IDbCacheRepository dbCacheRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
@@ -34,6 +35,7 @@ namespace SSCMS.Web.Controllers.Admin
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
             _siteRepository = siteRepository;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         public class AgentRequest

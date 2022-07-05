@@ -2,6 +2,7 @@
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -89,15 +90,23 @@ namespace SSCMS.Web.Controllers.Admin
                     {
                         return this.Error(errorMessage);
                     }
+                    var cacheKey = Constants.GetSessionIdCacheKey(admin.Id);
+                    await _dbCacheRepository.RemoveAsync(cacheKey);
                 }
                 else
                 {
-                    admin = new Administrator { UserName = request.UserName };
+                    admin = new Administrator
+                    {
+                        UserName = request.UserName,
+                        Email = request.Email,
+                        Mobile = request.Mobile,
+                    };
                     (success, errorMessage) = await _administratorRepository.InsertAsync(admin, request.Password);
                     if (!success)
                     {
                         return this.Error(errorMessage);
                     }
+                    await _administratorRepository.AddUserToRoleAsync(admin.UserName, PredefinedRole.ConsoleAdministrator.GetValue());
                 }
             }
 
