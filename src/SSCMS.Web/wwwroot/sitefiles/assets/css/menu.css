@@ -32,8 +32,7 @@ body, #main {
 }
 #header .logo img {
   max-width: 160px;
-  height: 22px;
-  margin-top: 11px;
+  margin-top: 10px;
 }
 #header .nav {
   padding: 0 25px;

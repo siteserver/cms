@@ -29,6 +29,10 @@
       <i class="el-icon-plus"></i>
     </el-upload>
   </el-form-item>
+  <el-form-item label="管理后台Logo链接地址">
+    <el-input v-model="form.adminLogoLinkUrl" type="textarea"></el-input>
+    <small class="tips">请填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
+  </el-form-item>
   <el-form-item label="管理后台欢迎语">
     <el-input v-model="form.adminWelcomeHtml" type="textarea"></el-input>
     <small class="tips">请填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>

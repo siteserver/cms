@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Configs
 
             config.AdminTitle = request.AdminTitle;
             config.AdminLogoUrl = request.AdminLogoUrl;
+            config.AdminLogoLinkUrl = request.AdminLogoLinkUrl;
             config.AdminWelcomeHtml = request.AdminWelcomeHtml;
 
             await _configRepository.UpdateAsync(config);

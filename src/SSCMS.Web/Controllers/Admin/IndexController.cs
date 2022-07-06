@@ -74,6 +74,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string CmsVersion { get; set; }
             public string OSArchitecture { get; set; }
             public string AdminLogoUrl { get; set; }
+            public string AdminLogoLinkUrl { get; set; }
             public string AdminTitle { get; set; }
             public bool IsSuperAdmin { get; set; }
             public string Culture { get; set; }

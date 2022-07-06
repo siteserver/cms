@@ -231,6 +231,7 @@ namespace SSCMS.Web.Controllers.Admin
                 CmsVersion = _settingsManager.Version,
                 OSArchitecture = _settingsManager.OSArchitecture,
                 AdminLogoUrl = config.AdminLogoUrl,
+                AdminLogoLinkUrl = config.AdminLogoLinkUrl,
                 AdminTitle = config.AdminTitle,
                 IsSuperAdmin = isSuperAdmin,
                 Culture = culture,

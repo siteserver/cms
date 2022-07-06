@@ -12,6 +12,7 @@ var data = utils.init({
   sessionId: localStorage.getItem('sessionId'),
   cmsVersion: null,
   adminLogoUrl: null,
+  adminLogoLinkUrl: null,
   adminTitle: null,
   isSuperAdmin: null,
   culture: null,
@@ -60,6 +61,7 @@ var methods = {
 
         $this.cmsVersion = res.cmsVersion;
         $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
+        $this.adminLogoLinkUrl = res.adminLogoLinkUrl;
         $this.adminTitle = res.adminTitle || 'SS CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.culture = res.culture;
@@ -245,7 +247,7 @@ var methods = {
   },
 
   getHostUrl: function() {
-    return cloud.host;
+    return this.adminLogoLinkUrl || cloud.host;
   },
 
   btnSearchClick: function() {
