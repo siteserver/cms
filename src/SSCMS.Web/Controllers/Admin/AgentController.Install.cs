@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin
                     }
                 }
 
-                (success, errorMessage) = await _databaseManager.InstallAsync(request.UserName, request.Password, request.Email, request.Mobile);
+                (success, errorMessage) = await _databaseManager.InstallAsync(request.UserName, request.Password, string.Empty, string.Empty);
                 if (!success)
                 {
                     return this.Error(errorMessage);
@@ -50,35 +50,35 @@ namespace SSCMS.Web.Controllers.Admin
 
                 await FileUtils.WriteTextAsync(_pathManager.GetRootPath("index.html"), Constants.Html5Empty);
 
-                if (!string.IsNullOrEmpty(request.Themes))
-                {
-                    var themes = ListUtils.GetStringList(request.Themes);
-                    foreach (var themeUrl in themes)
-                    {
-                        var fileName = PageUtils.GetFileNameFromUrl(themeUrl);
-                        var filePath = _pathManager.GetSiteTemplatesPath(fileName);
-                        FileUtils.DeleteFileIfExists(filePath);
-                        await HttpClientUtils.DownloadAsync(themeUrl, filePath);
+                // if (!string.IsNullOrEmpty(request.Themes))
+                // {
+                //     var themes = ListUtils.GetStringList(request.Themes);
+                //     foreach (var themeUrl in themes)
+                //     {
+                //         var fileName = PageUtils.GetFileNameFromUrl(themeUrl);
+                //         var filePath = _pathManager.GetSiteTemplatesPath(fileName);
+                //         FileUtils.DeleteFileIfExists(filePath);
+                //         await HttpClientUtils.DownloadAsync(themeUrl, filePath);
 
-                        var siteTemplateDir = PathUtils.RemoveExtension(fileName);
-                        var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
-                        DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-                        _pathManager.ExtractZip(filePath, directoryPath);
-                    }
-                }
+                //         var siteTemplateDir = PathUtils.RemoveExtension(fileName);
+                //         var directoryPath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
+                //         DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+                //         _pathManager.ExtractZip(filePath, directoryPath);
+                //     }
+                // }
 
-                if (!string.IsNullOrEmpty(request.Plugins))
-                {
-                    var plugins = ListUtils.GetStringList(request.Plugins);
-                    foreach (var plugin in plugins)
-                    {
-                        var arr = plugin.Split(',');
-                        if (arr.Length == 3)
-                        {
-                            await _pluginManager.InstallAsync(arr[0], arr[1], arr[2]);
-                        }
-                    }
-                }
+                // if (!string.IsNullOrEmpty(request.Plugins))
+                // {
+                //     var plugins = ListUtils.GetStringList(request.Plugins);
+                //     foreach (var plugin in plugins)
+                //     {
+                //         var arr = plugin.Split(',');
+                //         if (arr.Length == 3)
+                //         {
+                //             await _pluginManager.InstallAsync(arr[0], arr[1], arr[2]);
+                //         }
+                //     }
+                // }
             }
             else
             {
@@ -98,8 +98,6 @@ namespace SSCMS.Web.Controllers.Admin
                     admin = new Administrator
                     {
                         UserName = request.UserName,
-                        Email = request.Email,
-                        Mobile = request.Mobile,
                     };
                     (success, errorMessage) = await _administratorRepository.InsertAsync(admin, request.Password);
                     if (!success)

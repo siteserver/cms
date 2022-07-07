@@ -6,6 +6,7 @@ var data = utils.init({
   form: {
     adminTitle: null,
     adminLogoUrl: null,
+    adminLogoLinkUrl: null,
     adminWelcomeHtml: null,
   }
 });
@@ -20,6 +21,7 @@ var methods = {
 
       $this.form.adminTitle = res.adminTitle;
       $this.form.adminLogoUrl = res.adminLogoUrl;
+      $this.form.adminLogoLinkUrl = res.adminLogoLinkUrl;
       $this.form.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SS CMS 管理后台';
 
       if ($this.form.adminLogoUrl) {
@@ -39,6 +41,7 @@ var methods = {
     $api.post($url, {
       adminTitle: $this.form.adminTitle,
       adminLogoUrl: $this.form.adminLogoUrl,
+      adminLogoLinkUrl: $this.form.adminLogoLinkUrl,
       adminWelcomeHtml: $this.form.adminWelcomeHtml
     }).then(function (response) {
       var res = response.data;

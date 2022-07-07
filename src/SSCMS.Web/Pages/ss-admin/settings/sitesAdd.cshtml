@@ -222,7 +222,7 @@
       <el-input v-model="form.siteDir" placeholder="请输入文件夹名称"></el-input>
       <div class="tips">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</div>
     </el-form-item>
-    <el-form-item v-if="form.siteType === 'default'" label="内容表" prop="tableRule" :rules="{ required: true, message: '请选择内容表' }">
+    <el-form-item label="内容表" prop="tableRule" :rules="{ required: true, message: '请选择内容表' }">
       <el-radio-group v-model="form.tableRule">
         <el-radio label="Choose">选择内容表</el-radio>
         <el-radio label="Create">创建新的内容表</el-radio>
@@ -230,7 +230,7 @@
       </el-radio-group>
       <div v-if="form.tableRule == 'Create'" class="tips">系统将创建内容表，表名称为 <strong>siteserver_&lt;随机字符串&gt;</strong></div>
     </el-form-item>
-    <el-form-item v-if="form.siteType === 'default' && form.tableRule == 'Choose'" label="选择内容表" prop="tableChoose" :rules="{ required: true, message: '请选择内容表' }">
+    <el-form-item v-if="form.tableRule == 'Choose'" label="选择内容表" prop="tableChoose" :rules="{ required: true, message: '请选择内容表' }">
       <el-select v-model="form.tableChoose" placeholder="请选择内容表">
         <el-option
           v-for="tableName in tableNameList"
@@ -240,7 +240,7 @@
       </el-select>
       <div class="tips">请选择已存在的内容表</div>
     </el-form-item>
-    <el-form-item v-else-if="form.siteType === 'default' && form.tableRule == 'HandWrite'" label="指定内容表" prop="tableHandWrite" :rules="{ required: true, message: '请输入指定内容表' }">
+    <el-form-item v-else-if="form.tableRule == 'HandWrite'" label="指定内容表" prop="tableHandWrite" :rules="{ required: true, message: '请输入指定内容表' }">
       <el-input v-model="form.tableHandWrite" placeholder="请输入指定内容表"></el-input>
       <div class="tips">请输入内容表名称，系统将检测数据库是否已存在指定的内容表，如果不存在系统将创建此内容表</div>
     </el-form-item>

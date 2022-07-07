@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -16,26 +17,34 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteInstall = "agent/actions/install";
         private const string RouteSites = "agent/sites";
         private const string RouteSetDomain = "agent/actions/setDomain";
+        private const string RouteAddSite = "agent/actions/addSite";
+        private const string RouteAddSiteProcess = "agent/actions/addSiteProcess";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
+        private readonly ICacheManager _cacheManager;
+        private readonly ICreateManager _createManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
+        private readonly IContentRepository _contentRepository;
 
-        public AgentController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IDbCacheRepository dbCacheRepository)
+        public AgentController(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICacheManager cacheManager, ICreateManager createManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IDbCacheRepository dbCacheRepository, IContentRepository contentRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
+            _cacheManager = cacheManager;
+            _createManager = createManager;
             _configRepository = configRepository;
             _administratorRepository = administratorRepository;
             _siteRepository = siteRepository;
             _dbCacheRepository = dbCacheRepository;
+            _contentRepository = contentRepository;
         }
 
         public class AgentRequest
@@ -47,15 +56,13 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public string UserName { get; set; }
             public string Password { get; set; }
-            public string Email { get; set; }
-            public string Mobile { get; set; }
-            public string Themes { get; set; }
-            public string Plugins { get; set; }
         }
 
         public class SitesResult
         {
             public List<Site> Sites { get; set; }
+            public int RootSiteId { get; set; }
+            public List<Cascade<int>> CascadeSites { get; set; }
         }
 
         public class SetDomainRequest : AgentRequest
@@ -63,6 +70,21 @@ namespace SSCMS.Web.Controllers.Admin
             public string HostDomain { get; set; }
             public int SiteId { get; set; }
             public string SiteDomain { get; set; }
+        }
+
+        public class AddSiteRequest : AgentRequest
+        {
+            public string SiteName { get; set; }
+            public bool Root { get; set; }
+            public int ParentId { get; set; }
+            public string SiteDir { get; set; }
+            public string ThemeDownloadUrl { get; set; }
+            public string Guid { get; set; }
+        }
+
+        public class AddSiteProcessRequest : AgentRequest
+        {
+            public string Guid { get; set; }
         }
     }
 }

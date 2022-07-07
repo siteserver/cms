@@ -24,9 +24,14 @@ namespace SSCMS.Web.Controllers.Admin
                 SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
             });
 
+            var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
+            var cascadeSites = await _siteRepository.GetCascadeChildrenAsync(0);
+
             return new SitesResult
             {
                 Sites = sites,
+                RootSiteId = rootSiteId,
+                CascadeSites = cascadeSites,
             };
         }
     }
