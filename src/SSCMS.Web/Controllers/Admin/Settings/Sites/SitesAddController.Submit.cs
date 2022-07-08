@@ -73,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var adminId = _authManager.AdminId;
 
-            var siteId = await _siteRepository.InsertSiteAsync(channelInfo, new Site
+            var (siteId, errorMessage) = await _siteRepository.InsertSiteAsync(channelInfo, new Site
             {
                 SiteName = request.SiteName,
                 SiteType = Types.SiteTypes.Web,
@@ -82,6 +82,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 ParentId = request.ParentId,
                 Root = request.Root
             }, adminId);
+
+            if (siteId == 0)
+            {
+                return this.Error(errorMessage);
+            }
 
             if (string.IsNullOrEmpty(tableName))
             {

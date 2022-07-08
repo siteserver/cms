@@ -30,9 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             var siteTemplates = manager.GetSiteTemplates();
 
             var tableNameList = await _siteRepository.GetSiteTableNamesAsync();
-
             var rootExists = await _siteRepository.GetSiteByIsRootAsync() != null;
-
             var sites = await _siteRepository.GetCascadeChildrenAsync(0);
             sites.Insert(0, new Cascade<int>
             {

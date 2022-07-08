@@ -32,6 +32,7 @@
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     <PackageReference Include="HtmlSanitizer" Version="7.1.475" />
     <PackageReference Include="Datory" Version="7.1.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
     <!-- <ProjectReference Include="..\Datory\Datory.csproj" /> -->
   </ItemGroup>
 

@@ -25,13 +25,11 @@ namespace SSCMS.Web.Controllers.Admin
             });
 
             var rootSiteId = await _siteRepository.GetIdByIsRootAsync();
-            var cascadeSites = await _siteRepository.GetCascadeChildrenAsync(0);
 
             return new SitesResult
             {
                 Sites = sites,
                 RootSiteId = rootSiteId,
-                CascadeSites = cascadeSites,
             };
         }
     }

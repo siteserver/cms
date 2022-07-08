@@ -62,7 +62,6 @@ namespace SSCMS.Web.Controllers.Admin
         {
             public List<Site> Sites { get; set; }
             public int RootSiteId { get; set; }
-            public List<Cascade<int>> CascadeSites { get; set; }
         }
 
         public class SetDomainRequest : AgentRequest
@@ -80,6 +79,11 @@ namespace SSCMS.Web.Controllers.Admin
             public string SiteDir { get; set; }
             public string ThemeDownloadUrl { get; set; }
             public string Guid { get; set; }
+        }
+
+        public class AddSiteResult
+        {
+            public Site Site { get; set; }
         }
 
         public class AddSiteProcessRequest : AgentRequest

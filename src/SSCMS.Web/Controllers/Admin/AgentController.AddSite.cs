@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class AgentController
     {
         [HttpPost, Route(RouteAddSite)]
-        public async Task<ActionResult<IntResult>> AddSite([FromBody] AddSiteRequest request)
+        public async Task<ActionResult<AddSiteResult>> AddSite([FromBody] AddSiteRequest request)
         {
             if (string.IsNullOrEmpty(request.SecurityKey))
             {
@@ -52,7 +52,7 @@ namespace SSCMS.Web.Controllers.Admin
             channelInfo.ContentModelPluginId = string.Empty;
 
             var tableName = await _contentRepository.CreateNewContentTableAsync();
-            var siteId = await _siteRepository.InsertSiteAsync(channelInfo, new Site
+            var (siteId, errorMessage) = await _siteRepository.InsertSiteAsync(channelInfo, new Site
             {
                 SiteName = request.SiteName,
                 SiteType = Types.SiteTypes.Web,
@@ -61,6 +61,11 @@ namespace SSCMS.Web.Controllers.Admin
                 ParentId = request.ParentId,
                 Root = request.Root
             }, 0);
+
+            if (siteId == 0)
+            {
+                return this.Error(errorMessage);
+            }
 
             var caching = new CacheUtils(_cacheManager);
             var site = await _siteRepository.GetAsync(siteId);
@@ -93,9 +98,13 @@ namespace SSCMS.Web.Controllers.Admin
             caching.SetProcess(request.Guid, "清除系统缓存...");
             _cacheManager.Clear();
 
-            return new IntResult
+            var retVal = site.Clone<Site>();
+            retVal.Set("LocalUrl", await _pathManager.GetSiteUrlAsync(site, true));
+            retVal.Set("SiteUrl", await _pathManager.GetSiteUrlAsync(site, false));
+
+            return new AddSiteResult
             {
-                Value = siteId
+                Site = site
             };
         }
     }

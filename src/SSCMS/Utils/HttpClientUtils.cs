@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SSCMS.Utils
@@ -9,26 +10,45 @@ namespace SSCMS.Utils
     {
         public static async Task<string> GetStringAsync(string url)
         {
+            return await GetStringAsync(url, Encoding.UTF8);
+        }
+
+        public static async Task<string> GetStringAsync(string url, Encoding encoding)
+        {
             try
             {
                 string html;
 
-                using (var client = new HttpClient())
+                if (encoding == Encoding.UTF8)
                 {
-                    html = await client.GetStringAsync(url);
+                    using (var client = new HttpClient())
+                    {
+                        html = await client.GetStringAsync(url);
+                    }
                 }
-
-                // using (var client = new WebClient())
-                // {
-                //     html = client.DownloadString(url);
-                // }
+                else
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var bytes = await client.GetByteArrayAsync(url);
+                        html = ConvertBytesToString(bytes, encoding);
+                    }
+                }
 
                 return html;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception($"页面地址“{url}”无法访问！");
+                throw new Exception($"页面地址“{url}”无法访问，{ex.Message}！");
             }
+        }
+
+        private static string ConvertBytesToString(byte[] bytes, Encoding encoding)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var toEncoding = Encoding.UTF8;
+            var toBytes = Encoding.Convert(encoding, toEncoding, bytes);
+            return toEncoding.GetString(toBytes);
         }
 
         public static async Task<bool> DownloadAsync(string remoteUrl, string filePath)
@@ -36,7 +56,7 @@ namespace SSCMS.Utils
             try
             {
                 FileUtils.DeleteFileIfExists(filePath);
-                
+
                 using (var client = new HttpClient())
                 {
                     using (var stream = await client.GetStreamAsync(remoteUrl))
@@ -51,9 +71,9 @@ namespace SSCMS.Utils
                 // using var client = new WebClient();
                 // client.DownloadFile(remoteUrl, filePath);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception($"页面地址“{remoteUrl}”无法访问！");
+                throw new Exception($"页面地址“{remoteUrl}”无法访问，{ex.Message}！");
             }
             return true;
         }
