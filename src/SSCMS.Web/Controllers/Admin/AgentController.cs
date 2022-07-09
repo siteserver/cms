@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin
         private const string RouteSites = "agent/sites";
         private const string RouteSetDomain = "agent/actions/setDomain";
         private const string RouteAddSite = "agent/actions/addSite";
-        private const string RouteAddSiteProcess = "agent/actions/addSiteProcess";
+        private const string RouteProcess = "agent/actions/process";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
@@ -54,6 +54,8 @@ namespace SSCMS.Web.Controllers.Admin
 
         public class InstallRequest : AgentRequest
         {
+            public string ThemeDownloadUrl { get; set; }
+            public string Guid { get; set; }
             public string UserName { get; set; }
             public string Password { get; set; }
         }
@@ -86,7 +88,7 @@ namespace SSCMS.Web.Controllers.Admin
             public Site Site { get; set; }
         }
 
-        public class AddSiteProcessRequest : AgentRequest
+        public class ProcessRequest : AgentRequest
         {
             public string Guid { get; set; }
         }

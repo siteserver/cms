@@ -6,8 +6,8 @@ namespace SSCMS.Web.Controllers.Admin
 {
     public partial class AgentController
     {
-        [HttpPost, Route(RouteAddSiteProcess)]
-        public ActionResult<CacheUtils.Process> AddSiteProcess([FromBody] AddSiteProcessRequest request)
+        [HttpPost, Route(RouteProcess)]
+        public ActionResult<CacheUtils.Process> Process([FromBody] ProcessRequest request)
         {
             if (string.IsNullOrEmpty(request.SecurityKey))
             {
