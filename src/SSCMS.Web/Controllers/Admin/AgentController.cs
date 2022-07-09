@@ -54,8 +54,6 @@ namespace SSCMS.Web.Controllers.Admin
 
         public class InstallRequest : AgentRequest
         {
-            public string ThemeDownloadUrl { get; set; }
-            public string Guid { get; set; }
             public string UserName { get; set; }
             public string Password { get; set; }
         }
