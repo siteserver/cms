@@ -75,9 +75,7 @@ namespace SSCMS.Web.Controllers.Admin
             caching.SetProcess(request.Guid, "开始下载模板压缩包，可能需要几分钟，请耐心等待...");
 
             var fileName = PageUtils.GetFileNameFromUrl(request.ThemeDownloadUrl);
-
             var filePath = _pathManager.GetSiteTemplatesPath(fileName);
-            FileUtils.DeleteFileIfExists(filePath);
             await HttpClientUtils.DownloadAsync(request.ThemeDownloadUrl, filePath);
 
             caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");

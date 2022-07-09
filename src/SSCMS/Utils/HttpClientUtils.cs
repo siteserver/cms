@@ -55,6 +55,7 @@ namespace SSCMS.Utils
         {
             try
             {
+                DirectoryUtils.CreateDirectoryIfNotExists(filePath);
                 FileUtils.DeleteFileIfExists(filePath);
 
                 using (var client = new HttpClient())
