@@ -307,14 +307,14 @@ namespace SSCMS.Core.Repositories
             return whereStringBuilder.ToString();
         }
 
-        public async Task<int> GetContentIdAsync(string tableName, int channelId, int taxis, bool isNextContent)
+        public async Task<int> GetContentIdAsync(string tableName, int siteId, int channelId, int taxis, bool isNextContent)
         {
             var repository = await GetRepositoryAsync(tableName);
-            var query = Q
-                .Select(nameof(Content.Id))
-                .Where(nameof(Content.ChannelId), channelId)
-                .WhereTrue(nameof(Content.Checked))
-                ;
+
+            var query = GetQuery(siteId, channelId);
+            query.Select(nameof(Content.Id));
+            query.WhereTrue(nameof(Content.Checked));
+
             if (isNextContent)
             {
                 query
@@ -412,7 +412,7 @@ namespace SSCMS.Core.Repositories
         public async Task RemoveListCacheAsync(Site site, Channel channel)
         {
             if (site == null || channel == null) return;
-            
+
             var repository = await GetRepositoryAsync(site, channel);
             await repository.RemoveCacheAsync(GetListKey(repository.TableName, site.Id, channel.Id));
         }

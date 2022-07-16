@@ -143,7 +143,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var taxis = content.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, pageInfo.Site.Id, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             var siblingContentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
@@ -220,7 +220,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var taxis = content.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, pageInfo.Site.Id, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;
@@ -280,7 +280,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         var tableName = await databaseManager.ChannelRepository.GetTableNameAsync(pageInfo.Site, contextInfo.ChannelId);
-                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = await databaseManager.ContentRepository.GetContentIdAsync(tableName, pageInfo.Site.Id, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             var siblingContentInfo = await databaseManager.ContentRepository.GetAsync(pageInfo.Site, contextInfo.ChannelId, siblingContentId);
