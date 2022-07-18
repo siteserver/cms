@@ -7,9 +7,9 @@ using Datory;
 using SSCMS.Enums;
 
 namespace SSCMS.Utils
-{	
-	public static class FileUtils
-	{
+{
+    public static class FileUtils
+    {
         public static string ReadText(string filePath)
         {
             return ReadText(filePath, Encoding.UTF8);
@@ -39,8 +39,8 @@ namespace SSCMS.Utils
                 text = await sr.ReadToEndAsync();
                 sr.Close();
             }
-	        return text;
-	    }
+            return text;
+        }
 
         public static async Task WriteStreamAsync(string filePath, MemoryStream stream)
         {
@@ -76,20 +76,20 @@ namespace SSCMS.Utils
             file.Close();
         }
 
-	    public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
-	    {
-	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+        public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
-	        using (var writer = new StreamWriter(file, encoding))
-	        {
-	            await writer.WriteAsync(content);
-	            writer.Flush();
-	            writer.Close();
+            var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
+            using (var writer = new StreamWriter(file, encoding))
+            {
+                await writer.WriteAsync(content);
+                writer.Flush();
+                writer.Close();
 
-	            file.Close();
-	        }
-	    }
+                file.Close();
+            }
+        }
 
         public static void RemoveReadOnlyAndHiddenIfExists(string filePath)
         {
@@ -118,13 +118,13 @@ namespace SSCMS.Utils
             return new FileStream(filePath, FileMode.Open);
         }
 
-		public static bool IsFileExists(string filePath)
-		{
+        public static bool IsFileExists(string filePath)
+        {
             return File.Exists(filePath);
-		}
+        }
 
         public static bool DeleteFileIfExists(string filePath)
-		{
+        {
             var retVal = true;
             try
             {
@@ -147,23 +147,23 @@ namespace SSCMS.Utils
                 retVal = false;
             }
             return retVal;
-		}
+        }
 
         public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride = true)
-		{
+        {
             var retVal = true;
-		    try
-		    {
-		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
+            try
+            {
+                DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
 
-		        File.Copy(sourceFilePath, destFilePath, isOverride);
-		    }
-		    catch
-		    {
-		        retVal = false;
-		    }
-		    return retVal;
-		}
+                File.Copy(sourceFilePath, destFilePath, isOverride);
+            }
+            catch
+            {
+                retVal = false;
+            }
+            return retVal;
+        }
 
         public static void MoveFile(string sourceFilePath, string destFilePath, bool isOverride)
         {
