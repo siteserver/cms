@@ -197,6 +197,8 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<ContentSummary>> GetSummariesAsync(Site site, IChannelSummary channel)
         {
+            if (site == null || channel == null) return new List<ContentSummary>();
+
             var repository = await GetRepositoryAsync(site, channel);
             var query = Q.Select(
               nameof(Content.Id), 

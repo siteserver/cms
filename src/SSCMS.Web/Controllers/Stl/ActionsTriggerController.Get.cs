@@ -82,6 +82,11 @@ namespace SSCMS.Web.Controllers.Stl
                 }
             }
 
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = await _pathManager.GetIndexPageUrlAsync(site, false);
+            }
+
             return Redirect(redirectUrl);
         }
     }
