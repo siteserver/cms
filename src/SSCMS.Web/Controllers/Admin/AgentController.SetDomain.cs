@@ -52,11 +52,15 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 site.IsSeparatedWeb = false;
                 site.SeparatedWebUrl = string.Empty;
+                site.IsSeparatedAssets = false;
+                site.SeparatedAssetsUrl = string.Empty;
                 site.IsSeparatedApi = false;
                 site.SeparatedApiUrl = string.Empty;
             }
 
             await _siteRepository.UpdateAsync(site);
+
+            await _createManager.CreateByAllAsync(site.Id);
 
             return new BoolResult
             {
