@@ -102,7 +102,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             return new AddSiteResult
             {
-                Site = site
+                Site = retVal
             };
         }
     }
