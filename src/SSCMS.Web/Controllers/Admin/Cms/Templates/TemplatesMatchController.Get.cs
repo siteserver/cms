@@ -30,7 +30,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 {
                     Count = count,
                     entity.ChannelTemplateId,
-                    entity.ContentTemplateId
+                    entity.ContentTemplateId,
+                    linkType = entity.LinkType,
+                    linkUrl = entity.LinkUrl
                 };
             });
 

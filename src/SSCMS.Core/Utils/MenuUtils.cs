@@ -49,6 +49,7 @@
             public const string MaterialAudio = "site_materialAudio";
             public const string MaterialFile = "site_materialFile";
             public const string ChannelsTranslate = "site_channelsTranslate";
+            public const string ContentsReplace = "site_contentsReplace";
             public const string ContentsRecycle = "site_contentsRecycle";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";

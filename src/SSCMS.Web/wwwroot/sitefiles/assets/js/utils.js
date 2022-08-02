@@ -617,7 +617,7 @@ var utils = {
   validateMobile: function (rule, value, callback) {
     if (!value) {
       callback();
-    } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
+    } else if (!/^1[3-9]\d{9}$/.test(value)) {
       callback(new Error(rule.message || '字段必须是有效的手机号码'));
     } else {
       callback()
