@@ -38,7 +38,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             foreach (var style in styles)
             {
-                if (StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.Id))
+                if (string.IsNullOrEmpty(style.DisplayName)
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.Id))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.LastModifiedDate))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.AdminId))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.UserId))

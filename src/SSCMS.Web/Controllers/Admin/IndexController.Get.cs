@@ -74,7 +74,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
             {
-                if (siteIdListWithPermissions.Contains(admin.SiteId))
+                if (siteIdListWithPermissions.Contains(admin.SiteId) && await _siteRepository.GetAsync(admin.SiteId) != null)
                 {
                     return new GetResult
                     {
@@ -83,7 +83,7 @@ namespace SSCMS.Web.Controllers.Admin
                     };
                 }
 
-                if (siteIdListWithPermissions.Count > 0)
+                if (siteIdListWithPermissions.Count > 0 && await _siteRepository.GetAsync(siteIdListWithPermissions[0]) != null)
                 {
                     return new GetResult
                     {
