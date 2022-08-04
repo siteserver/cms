@@ -48,14 +48,14 @@
           <el-checkbox v-for="attribute in attributes" :key="attribute.value" v-model="attribute.selected" :label="attribute.value">{{ attribute.label }}</el-checkbox>
         </el-form-item>
         <el-form-item label="查找文字" prop="replace" :rules="{ required: true, message: '请输入查找文字' }">
-          <el-input v-model="form.replace"></el-input>
+          <el-input autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" v-model="form.replace"></el-input>
         </el-form-item>
         <el-form-item label="查找设置">
           <el-checkbox label="区分大小写" :disabled="form.isRegex" v-model="form.isCaseSensitive"></el-checkbox>
           <el-checkbox label="使用正则表达式" :disabled="form.isCaseSensitive" v-model="form.isRegex"></el-checkbox>
         </el-form-item>
-        <el-form-item label="替换文字" prop="to" :rules="{ required: true, message: '请输入替换文字' }">
-          <el-input v-model="form.to"></el-input>
+        <el-form-item label="替换文字" prop="to">
+          <el-input autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" v-model="form.to"></el-input>
         </el-form-item>
       </el-form>
 

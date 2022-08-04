@@ -29,6 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var styles = await _tableStyleRepository.GetTableStylesAsync(tableName, relatedIdentities);
             foreach (var style in styles)
             {
+                if (string.IsNullOrEmpty(style.DisplayName)) continue;
                 style.IsSystem = style.RelatedIdentity != request.ChannelId;
             }
 

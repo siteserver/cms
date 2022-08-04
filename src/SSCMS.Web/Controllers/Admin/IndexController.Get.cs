@@ -39,7 +39,7 @@ namespace SSCMS.Web.Controllers.Admin
                     return this.Error("系统启动失败，请检查 SS CMS 容器运行环境变量设置");
                 }
             }
-            
+
             var allowed = PageUtils.IsVisitAllowed(_settingsManager, Request);
             if (!allowed)
             {
@@ -74,22 +74,32 @@ namespace SSCMS.Web.Controllers.Admin
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
             {
-                if (siteIdListWithPermissions.Contains(admin.SiteId) && await _siteRepository.GetAsync(admin.SiteId) != null)
+                if (siteIdListWithPermissions.Contains(admin.SiteId))
                 {
-                    return new GetResult
+                    var theSite = await _siteRepository.GetAsync(admin.SiteId);
+                    if (theSite != null)
                     {
-                        Value = false,
-                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={admin.SiteId}"
-                    };
+                        return new GetResult
+                        {
+                            Value = false,
+                            RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}"
+                        };
+                    }
                 }
-
-                if (siteIdListWithPermissions.Count > 0 && await _siteRepository.GetAsync(siteIdListWithPermissions[0]) != null)
+                if (siteIdListWithPermissions.Count > 0)
                 {
-                    return new GetResult
+                    foreach (var theSiteId in siteIdListWithPermissions)
                     {
-                        Value = false,
-                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={siteIdListWithPermissions[0]}"
-                    };
+                        var theSite = await _siteRepository.GetAsync(theSiteId);
+                        if (theSite != null)
+                        {
+                            return new GetResult
+                            {
+                                Value = false,
+                                RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}"
+                            };
+                        }
+                    }
                 }
 
                 if (isSuperAdmin)

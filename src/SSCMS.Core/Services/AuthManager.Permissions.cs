@@ -306,6 +306,8 @@ namespace SSCMS.Core.Services
                 foreach (var siteId in siteIdList)
                 {
                     var site = await _databaseManager.SiteRepository.GetAsync(siteId);
+                    if (site == null) continue;
+                    
                     var siteType = _settingsManager.GetSiteType(site.SiteType).Id;
                     var sitePermissions = _permissions
                         .Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType))
