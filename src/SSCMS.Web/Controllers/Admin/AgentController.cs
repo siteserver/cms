@@ -14,8 +14,9 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class AgentController : ControllerBase
     {
         public const string Route = "agent";
-        private const string RouteInstall = "agent/actions/install";
         private const string RouteSites = "agent/sites";
+        private const string RoutePlugins = "agent/plugins";
+        private const string RouteInstall = "agent/actions/install";
         private const string RouteSetDomain = "agent/actions/setDomain";
         private const string RouteAddSite = "agent/actions/addSite";
         private const string RouteProcess = "agent/actions/process";
@@ -89,6 +90,18 @@ namespace SSCMS.Web.Controllers.Admin
         public class ProcessRequest : AgentRequest
         {
             public string Guid { get; set; }
+        }
+
+        public class AgentPlugin
+        {
+            public string Publisher { get; set; }
+            public string Name { get; set; }
+            public string Version { get; set; }
+        }
+
+        public class PluginsResult
+        {
+            public List<AgentPlugin> Plugins { get; set; }
         }
     }
 }
