@@ -78,9 +78,12 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 style += $";height:{StringUtils.AddUnitIfNotExists(height)};";
             }
+            style = StringUtils.Replace(style, ";;", ";");
+            style = StringUtils.Trim(style, ';');
+
             if (!string.IsNullOrEmpty(style))
             {
-              attributes["style"] = style;
+                attributes["style"] = style;
             }
 
             var script = @$"

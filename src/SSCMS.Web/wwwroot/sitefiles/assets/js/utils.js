@@ -593,6 +593,10 @@ var utils = {
       success: config.success
     });
 
+    setTimeout(function() {
+      document.getElementById('layui-layer-iframe' + index).focus();
+    }, 100);
+
     if (config.max) {
       layer.full(index);
     }

@@ -68,6 +68,9 @@ namespace SSCMS.Cli.Jobs
                 await Console.Out.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
                 await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
 
+                await Console.Out.WriteLineAsync($"Database type encrypted: {TranslateUtils.EncryptStringBySecretKey(_settingsManager.Database.DatabaseType.GetDisplayName(), _settingsManager.SecurityKey)}");
+                await Console.Out.WriteLineAsync($"Database connection string encrypted: {TranslateUtils.EncryptStringBySecretKey(_settingsManager.DatabaseConnectionString, _settingsManager.SecurityKey)}");
+
                 if (!string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString))
                 {
                     var (isConnectionWorks, errorMessage) =

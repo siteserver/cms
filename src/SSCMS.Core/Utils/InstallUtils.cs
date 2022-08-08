@@ -88,6 +88,8 @@ namespace SSCMS.Core.Utils
 
                     foreach (var fileName in DirectoryUtils.GetFileNames(directoryPath))
                     {
+                        if (fileName == "index.html") continue;
+                        
                         FileUtils.CopyFile(
                             PathUtils.Combine(directoryPath, fileName),
                             PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, fileName),
