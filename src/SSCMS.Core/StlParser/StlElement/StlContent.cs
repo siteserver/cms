@@ -212,6 +212,10 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 type = nameof(Content.Title);
             }
+            if (StringUtils.EqualsIgnoreCase(type, "Tags"))
+            {
+                type = nameof(Content.TagNames);
+            }
 
             var isReturnToBr = false;
             if (string.IsNullOrEmpty(isReturnToBrStr))

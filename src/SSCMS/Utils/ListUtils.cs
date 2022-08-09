@@ -27,6 +27,11 @@ namespace SSCMS.Utils
             return Contains(GetIntList(strCollection), inInt);
         }
 
+        public static bool ContainsIgnoreCase(string collection, string target)
+        {
+            return !string.IsNullOrEmpty(collection) && ContainsIgnoreCase(GetStringList(collection), target);
+        }
+
         public static bool ContainsIgnoreCase(IEnumerable<string> list, string target)
         {
             return list != null && list.Any(element => StringUtils.EqualsIgnoreCase(element, target));
