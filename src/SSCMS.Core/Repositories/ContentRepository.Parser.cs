@@ -202,7 +202,7 @@ namespace SSCMS.Core.Repositories
 
             query = GetQuery(query, site.Id)
                 .Select(
-                  nameof(ContentSummary.Id), 
+                  nameof(ContentSummary.Id),
                   nameof(ContentSummary.ChannelId),
                   nameof(ContentSummary.Checked),
                   nameof(ContentSummary.CheckedLevel)
@@ -264,14 +264,26 @@ namespace SSCMS.Core.Repositories
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagNames = ListUtils.GetStringList(tags);
-                foreach (var tagName in tagNames)
+                query.Where(q =>
                 {
-                    query.Where(q => q
-                        .Where(nameof(Content.TagNames), tagName)
-                        .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.TagNames), $",{tagName}")
-                        .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.TagNames), $",{tagName},")
-                        .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.TagNames), $"{tagName},"));
-                }
+                    foreach (var tagName in tagNames)
+                    {
+                        q
+                        .OrWhere(nameof(Content.TagNames), tagName)
+                        .OrWhereLike(nameof(Content.TagNames), $"%,{tagName}", true)
+                        .OrWhereLike(nameof(Content.TagNames), $"%,{tagName},%", true)
+                        .OrWhereLike(nameof(Content.TagNames), $"{tagName},%", true);
+                    }
+                    return q;
+                });
+                // foreach (var tagName in tagNames)
+                // {
+                //     query.Where(q => q
+                //         .Where(nameof(Content.TagNames), tagName)
+                //         .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.TagNames), $",{tagName}")
+                //         .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.TagNames), $",{tagName},")
+                //         .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.TagNames), $"{tagName},"));
+                // }
             }
 
             if (isImageExists)
@@ -442,7 +454,7 @@ namespace SSCMS.Core.Repositories
                 }
             }
 
-            ParserOrderQuery(query, taxisType);
+            ParserOrderQuery(repository.Database.DatabaseType, query, taxisType);
 
             //if (!string.IsNullOrEmpty(where))
             //{
@@ -475,7 +487,7 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
-        private void ParserOrderQuery(Query query, TaxisType taxisType)
+        private void ParserOrderQuery(DatabaseType databaseType, Query query, TaxisType taxisType)
         {
             if (taxisType == TaxisType.OrderById)
             {
@@ -531,7 +543,22 @@ namespace SSCMS.Core.Repositories
             }
             else if (taxisType == TaxisType.OrderByRandom)
             {
-                query.OrderByRandom(Guid.NewGuid().ToString());
+                if (databaseType == DatabaseType.SQLite)
+                {
+                    query.OrderByRaw("RANDOM()");
+                }
+                else if (databaseType == DatabaseType.MySql)
+                {
+                    query.OrderByRaw("RAND()");
+                }
+                else if (databaseType == DatabaseType.PostgreSql)
+                {
+                    query.OrderByRaw("random()");
+                }
+                else if (databaseType == DatabaseType.SqlServer)
+                {
+                    query.OrderByRaw("NEWID()");
+                }
             }
         }
     }

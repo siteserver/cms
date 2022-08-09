@@ -64,6 +64,7 @@
   ref="form3"
   label-width="120px">
   <template v-for="(item, index) in form.items">
+    <el-divider></el-divider>
     <el-form-item :label="'标题（选项' + (index + 1) + '）'" :prop="'items.' + index + '.label'" :rules="{
       required: true, message: '请输入选项标题'
     }">

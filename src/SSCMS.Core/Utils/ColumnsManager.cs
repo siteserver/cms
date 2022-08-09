@@ -87,7 +87,11 @@ namespace SSCMS.Core.Utils
             nameof(Content.AddDate),
             nameof(Content.LinkType),
             nameof(Content.LinkUrl),
-            "ExtendValues"
+            "ExtendValues",
+            "HitsByDay",
+            "HitsByWeek",
+            "HitsByMonth",
+            "LastHitsDate"
         });
 
 
@@ -113,7 +117,11 @@ namespace SSCMS.Core.Utils
             "AddUserName",
             "LastEditUserName",
             "Content",
-            "LastEditDate"
+            "LastEditDate",
+            "HitsByDay",
+            "HitsByWeek",
+            "HitsByMonth",
+            "LastHitsDate"
         });
 
         private static readonly List<string> CalculatedAttributes = new List<string>

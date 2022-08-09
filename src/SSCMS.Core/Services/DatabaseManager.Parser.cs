@@ -124,7 +124,22 @@ namespace SSCMS.Core.Services
             }
             else if (taxisType == TaxisType.OrderByRandom)
             {
-                //retVal = SqlUtils.GetOrderByRandom();
+                if (_settingsManager.DatabaseType == DatabaseType.SQLite)
+                {
+                    retVal = "ORDER BY RANDOM()";
+                }
+                else if (_settingsManager.DatabaseType == DatabaseType.MySql)
+                {
+                    retVal = "ORDER BY RAND()";
+                }
+                else if (_settingsManager.DatabaseType == DatabaseType.PostgreSql)
+                {
+                    retVal = "ORDER BY random()";
+                }
+                else if (_settingsManager.DatabaseType == DatabaseType.SqlServer)
+                {
+                    retVal = "ORDER BY NEWID()";
+                }
             }
 
             return retVal;
