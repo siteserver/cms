@@ -13,7 +13,7 @@ var data = utils.init({
     isHeight: false,
     imageUrl: '',
     width: '100%',
-    height: '300px',
+    height: '500px',
     isLinkToOriginal: true,
   },
   player: null
@@ -47,9 +47,8 @@ var methods = {
     var isAutoPlay = ' isAutoPlay="' + this.form.isAutoPlay + '"';
     var width = this.form.isWidth ? ' width="' + this.form.width + '"' : '';
     var height = this.form.isHeight ? ' height="' + this.form.height + '"' : '';
-    var clipUrl = utils.getAssetsUrl('images/video-clip.png');
 
-    parent.$vue.insertHtml('<img ' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" style="width: 333px; height: 333px" src="' + clipUrl + '" /><br/>');
+    parent.$vue.insertHtml('<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px"' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" /><br/>');
     utils.closeLayer();
   },
 

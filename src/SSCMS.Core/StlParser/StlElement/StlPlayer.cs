@@ -15,8 +15,8 @@ namespace SSCMS.Core.StlParser.StlElement
     public static class StlPlayer
     {
         public const string ElementName = "stl:player";
-        public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/video-clip.png""";
-        public const string EditorPlaceHolder2 = @"src=""@sitefiles/assets/images/video-clip.png""";
+        public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/video-clip.png"" style=""width: 333px; height: 333px""";
+        public const string EditorPlaceHolder2 = @"src=""@sitefiles/assets/images/video-clip.png"" style=""width: 333px; height: 333px""";
 
         [StlAttribute(Title = "指定存储媒体的字段")]
         public const string Type = nameof(Type);
@@ -56,8 +56,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var playBy = string.Empty;
-            var width = 450;
-            var height = 350;
+            var width = string.Empty;
+            var height = string.Empty;
             var isAutoPlay = true;
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
@@ -82,11 +82,11 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
-                    width = TranslateUtils.ToInt(value, width);
+                    width = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
-                    height = TranslateUtils.ToInt(value, height);
+                    height = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsAutoPlay) || StringUtils.EqualsIgnoreCase(name, "play"))
                 {
@@ -97,10 +97,21 @@ namespace SSCMS.Core.StlParser.StlElement
             return await ParseAsync(parseManager, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
         }
 
-        private static async Task<object> ParseAsync(IParseManager parseManager, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
+        private static async Task<object> ParseAsync(IParseManager parseManager, string playUrl, string imageUrl, string playBy, string width, string height, string type, bool isAutoPlay)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
+
+            if (string.IsNullOrEmpty(width))
+            {
+                width = "450";
+            }
+            if (string.IsNullOrEmpty(height))
+            {
+                height = "350";
+            }
+            width = StringUtils.AddUnitIfNotExists(width);
+            height = StringUtils.AddUnitIfNotExists(height);
 
             if (string.IsNullOrEmpty(playUrl))
             {
@@ -188,12 +199,12 @@ namespace SSCMS.Core.StlParser.StlElement
                 var imageHtml = string.Empty;
                 if (!string.IsNullOrEmpty(imageUrl))
                 {
-                    imageHtml = $@"<img src=""{imageUrl}"" style=""{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" />";
+                    imageHtml = $@"<img src=""{imageUrl}"" style=""width:{width};height:{height};"" />";
                 }
 
                 var swfUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.FlowPlayer.Swf);
                 return $@"
-<a href=""{playUrl}"" style=""display:block;{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" id=""{elementId}"">{imageHtml}</a>
+<a href=""{playUrl}"" style=""display:block;width:{width};height:{height}"" id=""{elementId}"">{imageHtml}</a>
 <script language=""javascript"">
     flowplayer(""{elementId}"", ""{swfUrl}"", {{
         clip:  {{
@@ -207,7 +218,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return await StlVideo.ParseAsync(parseManager);
         }
 
-        private static string ParseAvi(string elementId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseAvi(string elementId, string width, string height, bool isAutoPlay, string playUrl)
         {
             return $@"
 <object id=""{elementId}"" width=""{width}"" height=""{height}"" border=""0"" classid=""clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA"">
@@ -229,7 +240,7 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseMpg(string elementId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseMpg(string elementId, string width, string height, bool isAutoPlay, string playUrl)
         {
             return $@"
 <object classid=""clsid:05589FA1-C356-11CE-BF01-00AA0055595A"" id=""{elementId}"" width=""{width}"" height=""{height}"">
@@ -265,7 +276,7 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseRm(ParseContext contextInfo, string elementId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseRm(ParseContext contextInfo, string elementId, string width, string height, bool isAutoPlay, string playUrl)
         {
             if (string.IsNullOrEmpty(contextInfo.Attributes["ShowDisplay"]))
             {
@@ -296,8 +307,8 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 contextInfo.Attributes["ImageWindow"] = "0";
             }
-            contextInfo.Attributes["moviewindowheight"] = height.ToString();
-            contextInfo.Attributes["moviewindowwidth"] = width.ToString();
+            contextInfo.Attributes["moviewindowheight"] = height;
+            contextInfo.Attributes["moviewindowwidth"] = width;
             contextInfo.Attributes["filename"] = playUrl;
             contextInfo.Attributes["src"] = playUrl;
 
@@ -318,10 +329,10 @@ namespace SSCMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseWmv(string elementId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseWmv(string elementId, string width, string height, bool isAutoPlay, string playUrl)
         {
             return $@"
-<object id=""{elementId}"" WIDTH=""{width}"" HEIGHT=""{height}"" classid=""CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95"" codebase=""http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,5,715"" standby=""Loading Microsoft Windows Media Player components..."" type=""application/x-oleobject"" align=""right"" hspace=""5"">
+<object id=""{elementId}"" width=""{width}"" height=""{height}"" classid=""CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95"" codebase=""http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,5,715"" standby=""Loading Microsoft Windows Media Player components..."" type=""application/x-oleobject"" align=""right"" hspace=""5"">
 <param name=""AutoRewind"" value=""1"">
 <param name=""ShowControls"" value=""1"">
 <param name=""ShowPositionControls"" value=""0"">

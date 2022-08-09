@@ -12,7 +12,7 @@ var data = utils.init({
     isHeight: false,
     imageUrl: '',
     width: '100%',
-    height: '300px',
+    height: '500px',
     isLinkToOriginal: true,
   },
   uploadVideoUrl: null,
@@ -33,7 +33,7 @@ var methods = {
     var width = this.form.isWidth ? ' width="' + this.form.width + '"' : '';
     var height = this.form.isHeight ? ' height="' + this.form.height + '"' : '';
 
-    parent.$vue.insertEditor($this.attributeName, '<img src="/sitefiles/assets/images/video-clip.png"' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" style="width: 333px; height: 333px" /><br/>');
+    parent.$vue.insertEditor($this.attributeName, '<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px"' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" /><br/>');
     utils.closeLayer();
   },
 

@@ -189,6 +189,7 @@ namespace SSCMS.Core.StlParser.StlElement
             if (!string.IsNullOrEmpty(width))
             {
                 attributes["width"] = width;
+                styles += $".video-js {{width: {width};}}";
             }
             else
             {

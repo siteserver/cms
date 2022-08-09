@@ -38,19 +38,13 @@ namespace SSCMS.Core.StlParser.StlElement
                 return ParseEntity(dataSource);
             }
 
-            var innerHtml = await ParseAsync(parseManager, listInfo, dataSource);
-            string parsedContent;
+            var parsedContent = await ParseAsync(parseManager, listInfo, dataSource);
             if (pageInfo.EditMode == EditMode.Visual)
             {
                 var attributes = new NameValueCollection(contextInfo.Attributes);
-                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
-                parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, parsedContent);
+                parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</div>";
             }
-            else
-            {
-                parsedContent = innerHtml;
-            }
-
             return parsedContent;
         }
 

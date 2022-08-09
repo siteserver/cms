@@ -11,6 +11,7 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
+using System.Collections.Specialized;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -25,6 +26,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
+            var pageInfo = parseManager.PageInfo;
+            var contextInfo = parseManager.ContextInfo;
             var listInfo = await ListInfo.GetListInfoAsync(parseManager, ParseType.Channel);
 
             var dataSource = await GetChannelsDataSourceAsync(parseManager, listInfo);
@@ -34,7 +37,14 @@ namespace SSCMS.Core.StlParser.StlElement
                 return ParseEntity(dataSource);
             }
 
-            return await ParseAsync(parseManager, listInfo, dataSource);
+            var parsedContent = await ParseAsync(parseManager, listInfo, dataSource);
+            if (pageInfo.EditMode == EditMode.Visual)
+            {
+                var attributes = new NameValueCollection(contextInfo.Attributes);
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, parsedContent);
+                parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</div>";
+            }
+            return parsedContent;
         }
 
         protected static async Task<string> ParseAsync(IParseManager parseManager, ListInfo listInfo, List<KeyValuePair<int, Channel>> channels)
