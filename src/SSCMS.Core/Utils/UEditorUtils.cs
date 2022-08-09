@@ -11,6 +11,8 @@ namespace SSCMS.Core.Utils
             {
                 retVal = retVal.Replace($"<img {StlPlayer.EditorPlaceHolder1} ", $"<{StlPlayer.ElementName} ");
                 retVal = retVal.Replace($"<img {StlPlayer.EditorPlaceHolder2} ", $"<{StlPlayer.ElementName} ");
+                retVal = retVal.Replace($"<img {StlPlayer.EditorPlaceHolder3} ", $"<{StlPlayer.ElementName} ");
+                retVal = retVal.Replace($"<img {StlPlayer.EditorPlaceHolder4} ", $"<{StlPlayer.ElementName} ");
                 retVal = retVal.Replace($"<img {StlAudio.EditorPlaceHolder1} ", $"<{StlAudio.ElementName} ");
                 retVal = retVal.Replace($"<img {StlAudio.EditorPlaceHolder2} ", $"<{StlAudio.ElementName} ");
                 retVal = retVal.Replace($"<img {StlMaterial.EditorPlaceHolder1} ", $"<{StlMaterial.ElementName} ");

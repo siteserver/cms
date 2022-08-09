@@ -9,7 +9,7 @@ RUN wget https://dl.sscms.com/cms/7.1.2/sscms-7.1.2-linux-x64.tar.gz
 RUN tar -xzf sscms-7.1.2-linux-x64.tar.gz
 RUN rm sscms-7.1.2-linux-x64.tar.gz -f
 RUN mv /sscms/wwwroot /sscms/_wwwroot
-RUN echo "7.1.2" > /sscms/_wwwroot/sitefiles/version.txt
+RUN echo `date +%Y-%m-%d-%H-%M-%S` > /sscms/_wwwroot/sitefiles/version.txt
 
 FROM base AS final
 WORKDIR /app

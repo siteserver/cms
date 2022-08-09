@@ -318,45 +318,50 @@ namespace SSCMS.Utils
             try
             {
                 result = request.Headers["HTTP_X_FORWARDED_FOR"];
-                if (!string.IsNullOrEmpty(result))
+                if (string.IsNullOrEmpty(result))
                 {
-                    if (result.IndexOf(".", StringComparison.Ordinal) == -1)
-                        result = null;
-                    else
-                    {
-                        if (result.IndexOf(",", StringComparison.Ordinal) != -1)
-                        {
-                            result = result.Replace("  ", "").Replace("'", "");
-                            var temporary = result.Split(",;".ToCharArray());
-                            foreach (var t in temporary)
-                            {
-                                if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
-                                {
-                                    result = t;
-                                }
-                            }
-                            var str = result.Split(',');
-                            if (str.Length > 0)
-                                result = str[0].Trim();
-                        }
-                        else if (IsIpAddress(result))
-                            return result;
-                    }
+                  result = request.Headers["X-Real-IP"];
                 }
-
+                if (string.IsNullOrEmpty(result))
+                {
+                  result = request.Headers["X-Forwarded-For"];
+                }
                 if (string.IsNullOrEmpty(result))
                 {
                     result = request.Headers["REMOTE_ADDR"];
                 }
-
                 if (string.IsNullOrEmpty(result))
                 {
                     result = request.HttpContext.Connection.RemoteIpAddress.ToString();
                 }
 
-                if (string.IsNullOrEmpty(result) || result == "::1")
+                if (string.IsNullOrEmpty(result) || result == "::1" || result.IndexOf(".", StringComparison.Ordinal) == -1)
                 {
                     result = "127.0.0.1";
+                }
+                else
+                {
+                    if (result.IndexOf(",", StringComparison.Ordinal) != -1)
+                    {
+                        result = result.Replace("  ", "").Replace("'", "");
+                        var temporary = result.Split(",;".ToCharArray());
+                        foreach (var t in temporary)
+                        {
+                            if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                            {
+                                result = t;
+                            }
+                        }
+                        var str = result.Split(',');
+                        if (str.Length > 0)
+                        {
+                            result = str[0].Trim();
+                        }
+                    }
+                    else if (IsIpAddress(result))
+                    {
+                        return result;
+                    }
                 }
             }
             catch

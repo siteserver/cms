@@ -17,6 +17,8 @@ namespace SSCMS.Core.StlParser.StlElement
         public const string ElementName = "stl:player";
         public const string EditorPlaceHolder1 = @"src=""/sitefiles/assets/images/video-clip.png"" style=""width: 333px; height: 333px""";
         public const string EditorPlaceHolder2 = @"src=""@sitefiles/assets/images/video-clip.png"" style=""width: 333px; height: 333px""";
+        public const string EditorPlaceHolder3 = @"src=""/sitefiles/assets/images/video-clip.png""";
+        public const string EditorPlaceHolder4 = @"src=""@sitefiles/assets/images/video-clip.png""";
 
         [StlAttribute(Title = "指定存储媒体的字段")]
         public const string Type = nameof(Type);
