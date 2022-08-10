@@ -62,6 +62,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 };
             }
 
+            var relatedFields = new Dictionary<int, List<Cascade<int>>>();
+
             foreach (var style in styles)
             {
                 if (style.InputType == InputType.CheckBox || style.InputType == InputType.SelectMultiple)
@@ -100,6 +102,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                         content.Set(style.AttributeName, string.Empty);
                     }
                 }
+                else if (style.InputType == InputType.SelectCascading)
+                {
+                    if (style.RelatedFieldId > 0)
+                    {
+                        var items = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, style.RelatedFieldId, 0);
+                        relatedFields[style.RelatedFieldId] = items;
+                    }
+                }
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
@@ -128,6 +138,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 Styles = styles,
+                RelatedFields = relatedFields,
                 Templates = templates,
                 CheckedLevels = checkedLevels,
                 CheckedLevel = userCheckedLevel,

@@ -39,11 +39,19 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(id);
         }
 
-        public async Task<RelatedField> GetRelatedFieldAsync(int siteId, string title)
+        public async Task<RelatedField> GetAsync(int siteId, string title)
         {
             return await _repository.GetAsync(Q
                 .Where(nameof(RelatedField.SiteId), siteId)
                 .Where(nameof(RelatedField.Title), title)
+            );
+        }
+
+        public async Task<RelatedField> GetAsync(int siteId, int relatedFieldId)
+        {
+            return await _repository.GetAsync(Q
+                .Where(nameof(RelatedField.SiteId), siteId)
+                .Where(nameof(RelatedField.Id), relatedFieldId)
             );
         }
 
@@ -70,7 +78,7 @@ namespace SSCMS.Core.Repositories
                 importName = relatedFieldName + "_1";
             }
 
-            var relatedField = await GetRelatedFieldAsync(siteId, relatedFieldName);
+            var relatedField = await GetAsync(siteId, relatedFieldName);
             if (relatedField != null)
             {
                 importName = await GetImportTitleAsync(siteId, importName);

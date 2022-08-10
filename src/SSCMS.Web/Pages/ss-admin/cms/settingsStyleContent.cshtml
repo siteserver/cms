@@ -22,9 +22,9 @@
       {{ scope.row.taxis ? scope.row.taxis : '' }}
     </template>
   </el-table-column>
-  <el-table-column label="字段名" prop="attributeName"></el-table-column>
-  <el-table-column label="显示名称" prop="displayName"></el-table-column>
-  <el-table-column label="提交类型" width="120">
+  <el-table-column label="字段名" prop="attributeName" width="200"></el-table-column>
+  <el-table-column label="显示名称" prop="displayName" width="200"></el-table-column>
+  <el-table-column label="提交类型" width="200">
     <template slot-scope="scope">
       {{ getInputType(scope.row.inputType) }}
     </template>

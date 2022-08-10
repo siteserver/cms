@@ -36,12 +36,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
         private readonly ITemplateRepository _templateRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
         private readonly ITranslateRepository _translateRepository;
         private readonly IStatRepository _statRepository;
 
-        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
+        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -56,6 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _contentGroupRepository = contentGroupRepository;
             _contentTagRepository = contentTagRepository;
             _tableStyleRepository = tableStyleRepository;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
             _templateRepository = templateRepository;
             _contentCheckRepository = contentCheckRepository;
             _translateRepository = translateRepository;
@@ -77,6 +79,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<TableStyle> Styles { get; set; }
+            public Dictionary<int, List<Cascade<int>>> RelatedFields { get; set; }
             public IEnumerable<Template> Templates { get; set; }
             public List<Select<int>> CheckedLevels { get; set; }
             public int CheckedLevel { get; set; }

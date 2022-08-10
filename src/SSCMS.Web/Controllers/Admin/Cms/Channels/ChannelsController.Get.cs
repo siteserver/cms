@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
@@ -39,6 +41,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var styles = await GetStylesAsync(channel);
             var entity = new Entity(channel.ToDictionary());
+            var relatedFields = new Dictionary<int, List<Cascade<int>>>();
+            
             foreach (var style in styles)
             {
                 if (style.InputType == InputType.Image ||
@@ -53,13 +57,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         entity.Set(extendName, channel.Get(extendName));
                     }
                 }
-                else if (style.InputType == InputType.CheckBox ||
-                         style.InputType == InputType.SelectMultiple)
+                else if (style.InputType == InputType.CheckBox || style.InputType == InputType.SelectMultiple)
                 {
-                    var list = ListUtils.GetStringList(channel.Get(style.AttributeName,
-                        string.Empty));
-                    entity.Set(style.AttributeName, list);
+                    var value = entity.Get(style.AttributeName);
+                    entity.Set(style.AttributeName, ListUtils.ToList(value));
                 }
+                // else if (style.InputType == InputType.CheckBox ||
+                //          style.InputType == InputType.SelectMultiple)
+                // {
+                //     var list = ListUtils.GetStringList(channel.Get(style.AttributeName,
+                //         string.Empty));
+                //     entity.Set(style.AttributeName, list);
+                // }
                 else if (style.InputType == InputType.TextEditor)
                 {
                     var value = channel.Get(style.AttributeName, string.Empty);
@@ -67,6 +76,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     value = UEditorUtils.TranslateToHtml(value);
 
                     entity.Set(style.AttributeName, value);
+                }
+                else if (style.InputType == InputType.SelectCascading)
+                {
+                    if (style.RelatedFieldId > 0)
+                    {
+                        var items = await _relatedFieldItemRepository.GetCascadesAsync(siteId, style.RelatedFieldId, 0);
+                        relatedFields[style.RelatedFieldId] = items;
+                    }
+                    entity.Set(style.AttributeName, channel.Get(style.AttributeName));
                 }
                 else
                 {
@@ -92,6 +110,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             {
                 Entity = entity,
                 Styles = styles,
+                RelatedFields = relatedFields,
                 FilePath = filePath,
                 ChannelFilePathRule = channelFilePathRule,
                 ContentFilePathRule = contentFilePathRule

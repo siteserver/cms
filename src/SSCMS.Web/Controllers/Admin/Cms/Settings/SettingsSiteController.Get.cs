@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
@@ -21,6 +22,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var site = await _siteRepository.GetAsync(request.SiteId);
             var entity = new Entity();
             var styles = await GetInputStylesAsync(request.SiteId);
+            var relatedFields = new Dictionary<int, List<Cascade<int>>>();
+            
             foreach (var style in styles)
             {
                 if (style.InputType == InputType.Image ||
@@ -42,6 +45,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                         string.Empty));
                     entity.Set(style.AttributeName, list);
                 }
+                else if (style.InputType == InputType.SelectCascading)
+                {
+                    if (style.RelatedFieldId > 0)
+                    {
+                        var items = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, style.RelatedFieldId, 0);
+                        relatedFields[style.RelatedFieldId] = items;
+                    }
+                    entity.Set(style.AttributeName, site.Get(style.AttributeName));
+                }
                 else
                 {
                     entity.Set(style.AttributeName, site.Get(style.AttributeName));
@@ -54,7 +66,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             {
                 SiteUrl = StringUtils.TrimEndSlash(siteUrl),
                 Entity = entity,
-                Styles = styles
+                Styles = styles,
+                RelatedFields = relatedFields
             };
         }
     }

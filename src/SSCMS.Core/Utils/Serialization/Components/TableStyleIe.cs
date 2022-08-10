@@ -10,7 +10,7 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Components
 {
-	internal class TableStyleIe
+    internal class TableStyleIe
     {
         private const string DirectoryNameContentTable = "contentTable";
 
@@ -26,7 +26,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
         }
 
         public async Task ExportTableStylesAsync(int siteId, bool isContentTable, string tableName)
-		{
+        {
             var relatedIdentities = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
             relatedIdentities.Insert(0, 0);
 
@@ -36,45 +36,45 @@ namespace SSCMS.Core.Utils.Serialization.Components
             }
 
             var tableStyleWithItemsDict = await _databaseManager.TableStyleRepository.GetTableStyleWithItemsDictionaryAsync(tableName, relatedIdentities);
-		    if (tableStyleWithItemsDict == null || tableStyleWithItemsDict.Count <= 0) return;
+            if (tableStyleWithItemsDict == null || tableStyleWithItemsDict.Count <= 0) return;
 
-		    var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);
+            var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);
             if (isContentTable)
             {
                 styleDirectoryPath = PathUtils.Combine(_directoryPath, DirectoryNameContentTable);
             }
-		    DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-		    foreach (var attributeName in tableStyleWithItemsDict.Keys)
-		    {
-		        var tableStyleWithItemList = tableStyleWithItemsDict[attributeName];
-		        if (tableStyleWithItemList == null || tableStyleWithItemList.Count <= 0) continue;
+            foreach (var attributeName in tableStyleWithItemsDict.Keys)
+            {
+                var tableStyleWithItemList = tableStyleWithItemsDict[attributeName];
+                if (tableStyleWithItemList == null || tableStyleWithItemList.Count <= 0) continue;
 
-		        var attributeNameDirectoryPath = PathUtils.Combine(styleDirectoryPath, attributeName);
-		        DirectoryUtils.CreateDirectoryIfNotExists(attributeNameDirectoryPath);
+                var attributeNameDirectoryPath = PathUtils.Combine(styleDirectoryPath, attributeName);
+                DirectoryUtils.CreateDirectoryIfNotExists(attributeNameDirectoryPath);
 
-		        foreach (var tableStyle in tableStyleWithItemList)
-		        {
-		            //仅导出当前系统内的表样式
-		            if (tableStyle.RelatedIdentity != 0)
-		            {
-		                if (!await _databaseManager.ChannelRepository.IsAncestorOrSelfAsync(siteId, siteId, tableStyle.RelatedIdentity))
-		                {
-		                    continue;
-		                }
-		            }
-		            var filePath = attributeNameDirectoryPath + PathUtils.SeparatorChar + tableStyle.Id + ".xml";
-		            var feed = await ExportTableStyleAsync(_databaseManager, siteId, tableStyle);
+                foreach (var tableStyle in tableStyleWithItemList)
+                {
+                    //仅导出当前系统内的表样式
+                    if (tableStyle.RelatedIdentity != 0)
+                    {
+                        if (!await _databaseManager.ChannelRepository.IsAncestorOrSelfAsync(siteId, siteId, tableStyle.RelatedIdentity))
+                        {
+                            continue;
+                        }
+                    }
+                    var filePath = attributeNameDirectoryPath + PathUtils.SeparatorChar + tableStyle.Id + ".xml";
+                    var feed = await ExportTableStyleAsync(_databaseManager, siteId, tableStyle);
                     feed.Save(filePath);
-		        }
-		    }
-		}
+                }
+            }
+        }
 
         private static async Task<AtomFeed> ExportTableStyleAsync(IDatabaseManager databaseManager, int siteId, TableStyle tableStyle)
-		{
-			var feed = AtomUtility.GetEmptyFeed();
+        {
+            var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string>{ nameof(TableStyle.Id), "TableStyleID" }, tableStyle.Id.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(TableStyle.Id), "TableStyleID" }, tableStyle.Id.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyle.RelatedIdentity), tableStyle.RelatedIdentity.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyle.TableName), tableStyle.TableName);
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyle.AttributeName), tableStyle.AttributeName);
@@ -97,8 +97,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             AtomUtility.AddDcElement(feed.AdditionalElements, "OrderString", orderString);
 
-			return feed;
-		}
+            return feed;
+        }
 
         public static async Task SingleExportTableStylesAsync(IDatabaseManager databaseManager, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
@@ -169,6 +169,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var inputType = TranslateUtils.ToEnum(inputTypeString, InputType.Text);
                 var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.DefaultValue));
                 var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.Horizontal)));
+                var itemValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.ItemValues));
+                var ruleValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyle.RuleValues));
 
                 var style = new TableStyle
                 {
@@ -184,6 +186,9 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     DefaultValue = defaultValue,
                     Horizontal = isHorizontal
                 };
+
+                style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(itemValues);
+                style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(ruleValues);
 
                 var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
                     "ExtendValues");
@@ -205,8 +210,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
         }
 
         public async Task ImportTableStylesAsync(Site site, string guid)
-		{
-			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
+        {
+            if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
 
             var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);
 
@@ -267,12 +272,10 @@ namespace SSCMS.Core.Utils.Serialization.Components
                             InputType = inputType,
                             DefaultValue = defaultValue,
                             Horizontal = isHorizontal,
-                            ItemValues = itemValues,
-                            RuleValues = ruleValues
                         };
 
-                        style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(style.ItemValues);
-                        style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(style.RuleValues);
+                        style.Items = TranslateUtils.JsonDeserialize<List<InputStyleItem>>(itemValues);
+                        style.Rules = TranslateUtils.JsonDeserialize<List<InputStyleRule>>(ruleValues);
 
                         var json = AtomUtility.GetDcElementContent(feed.AdditionalElements,
                             "ExtendValues");
@@ -297,5 +300,5 @@ namespace SSCMS.Core.Utils.Serialization.Components
             }
         }
 
-	}
+    }
 }

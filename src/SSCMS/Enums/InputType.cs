@@ -26,7 +26,7 @@ namespace SSCMS.Enums
         SelectOne,
         [DataEnum(DisplayName = "多选下拉框")]
         SelectMultiple,
-        [DataEnum(DisplayName = "级联选择下拉框")]
+        [DataEnum(DisplayName = "联动字段")]
         SelectCascading,
         [DataEnum(DisplayName = "日期选择框")]
         Date,

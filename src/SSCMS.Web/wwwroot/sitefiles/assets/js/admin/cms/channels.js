@@ -29,6 +29,7 @@ var data = utils.init({
   editLinkTypes: [],
   editTaxisTypes: [],
   styles: [],
+  relatedFields: null,
   siteUrl: null,
   isTemplateEditable: false,
 
@@ -41,66 +42,6 @@ var data = utils.init({
 });
 
 var methods = {
-  runFormLayerImageUploadText: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerImageUploadEditor: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  runMaterialLayerImageSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerFileUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerFileSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerVideoUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerVideoSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runEditorLayerImage: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)] || 0;
-    if (count <= no) {
-      this.form[utils.getCountName(attributeName)] = no;
-    }
-    this.form[utils.getExtendName(attributeName, no)] = text;
-    this.form = _.assign({}, this.form);
-  },
-
-  insertEditor: function(attributeName, html) {
-    if (!attributeName) attributeName = 'Body';
-    if (!html) return;
-    utils.getEditor(attributeName).execCommand('insertHTML', html);
-  },
-
-  setRuleText: function(rule, isChannel) {
-    if (isChannel) {
-      this.form.channelFilePathRule = rule;
-    } else {
-      this.form.contentFilePathRule = rule;
-    }
-  },
-
-  updateGroups: function(res, message) {
-    this.groupNames = res.groupNames;
-    utils.success(message);
-  },
-
   apiList: function(expandedChannelIds) {
     var $this = this;
 
@@ -149,6 +90,7 @@ var methods = {
         $this.form.groupNames = [];
       }
       $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
       $this.form.filePath = res.filePath;
       $this.form.channelFilePathRule = res.channelFilePathRule;
       $this.form.contentFilePathRule = res.contentFilePathRule;
@@ -270,6 +212,66 @@ var methods = {
     }).catch(function(error) {
       utils.error(error);
     });
+  },
+
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
+  insertEditor: function(attributeName, html) {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
+  },
+
+  setRuleText: function(rule, isChannel) {
+    if (isChannel) {
+      this.form.channelFilePathRule = rule;
+    } else {
+      this.form.contentFilePathRule = rule;
+    }
+  },
+
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    utils.success(message);
   },
 
   handleColumnsChange: function() {

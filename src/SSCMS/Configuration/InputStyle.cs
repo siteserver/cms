@@ -25,6 +25,7 @@ namespace SSCMS.Configuration
             Items = style.Items;
             Taxis = style.Taxis;
             DefaultValue = style.DefaultValue;
+            RelatedFieldId = style.RelatedFieldId;
         }
 
         /// <summary>
@@ -63,5 +64,6 @@ namespace SSCMS.Configuration
         /// 样式的显示高度。
         /// </summary>
         public string Height { get; set; }
+        public int RelatedFieldId { get; set; }
     }
 }

@@ -257,6 +257,18 @@
       </el-date-picker>
     </el-form-item>
   </template>
+  <!-- SelectCascading -->
+  <template v-else-if="style.inputType === 'SelectCascading' && style.relatedFieldId > 0">
+    <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">
+      <el-cascader
+        v-model="form[utils.toCamelCase(style.attributeName)]"
+        filterable
+        :options="relatedFields[style.relatedFieldId]"
+        :props="{ checkStrictly: true }"
+        :placeholder="style.helpText || '请选择'">
+      </el-cascader>
+    </el-form-item>
+  </template>
   <!-- Customize -->
   <template v-else-if="style.inputType === 'Customize'">
     <el-form-item :label="style.displayName" :prop="utils.toCamelCase(style.attributeName)" :rules="utils.getRules(style.rules)">

@@ -50,8 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 }
                 else
                 {
-                    var value = request.Get(style.AttributeName, string.Empty);
-                    site.Set(style.AttributeName, value);
+                    site.Set(style.AttributeName, request.Get(style.AttributeName));
                 }
             }
 

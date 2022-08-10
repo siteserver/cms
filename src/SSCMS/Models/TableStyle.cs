@@ -56,6 +56,8 @@ namespace SSCMS.Models
 
         public bool IsFormatString { get; set; }
 
+        public int RelatedFieldId { get; set; }
+
         public string CustomizeCode { get; set; }
     }
 }

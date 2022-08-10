@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Authorization;
@@ -42,8 +41,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly IChannelGroupRepository _channelGroupRepository;
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
-        public ChannelsController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -57,6 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             _channelGroupRepository = channelGroupRepository;
             _templateRepository = templateRepository;
             _tableStyleRepository = tableStyleRepository;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
         }
 
         public class ChannelColumn
@@ -91,6 +92,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         {
             public Entity Entity { get; set; }
             public IEnumerable<TableStyle> Styles { get; set; }
+            public Dictionary<int, List<Dto.Cascade<int>>> RelatedFields { get; set; }
             public string FilePath { get; set; }
             public string ChannelFilePathRule { get; set; }
             public string ContentFilePathRule { get; set; }
@@ -119,25 +121,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public int ChannelId { get; set; }
             public string ChannelName { get; set; }
             public bool DeleteFiles { get; set; }
-        }
-
-        public class UpdateRequest : Entity
-        {
-            public int SiteId { get; set; }
-            public string ChannelName { get; set; }
-            public string IndexName { get; set; }
-            public List<string> GroupNames { get; set; }
-            public string Content { get; set; }
-            public int ChannelTemplateId { get; set; }
-            public int ContentTemplateId { get; set; }
-            public string LinkUrl { get; set; }
-            public LinkType LinkType { get; set; }
-            public TaxisType DefaultTaxisType { get; set; }
-            public string FilePath { get; set; }
-            public string ChannelFilePathRule { get; set; }
-            public string ContentFilePathRule { get; set; }
-            public string Keywords { get; set; }
-            public string Description { get; set; }
         }
 
         public class AppendRequest : SiteRequest

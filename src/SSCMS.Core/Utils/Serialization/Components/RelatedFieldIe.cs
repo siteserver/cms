@@ -7,21 +7,21 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Components
 {
-	internal class RelatedFieldIe
+    internal class RelatedFieldIe
     {
         private readonly IDatabaseManager _databaseManager;
-		private readonly Site _site;
-		private readonly string _directoryPath;
+        private readonly Site _site;
+        private readonly string _directoryPath;
 
         public RelatedFieldIe(IDatabaseManager databaseManager, Site site, string directoryPath)
         {
             _databaseManager = databaseManager;
             _site = site;
-			_directoryPath = directoryPath;
-		}
+            _directoryPath = directoryPath;
+        }
 
         public async Task ExportRelatedFieldAsync(RelatedField relatedField)
-		{
+        {
             var filePath = _directoryPath + PathUtils.SeparatorChar + relatedField.Id + ".xml";
 
             var feed = ExportRelatedFieldInfo(relatedField);
@@ -29,26 +29,26 @@ namespace SSCMS.Core.Utils.Serialization.Components
             var relatedFieldItemInfoList = await _databaseManager.RelatedFieldItemRepository.GetRelatedFieldItemsAsync(_site.Id, relatedField.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
-			{
+            {
                 await AddAtomEntryAsync(_databaseManager, feed, _site.Id, relatedFieldItemInfo, 1);
-			}
-			feed.Save(filePath);
-		}
+            }
+            feed.Save(filePath);
+        }
 
         private static AtomFeed ExportRelatedFieldInfo(RelatedField relatedField)
-		{
-			var feed = AtomUtility.GetEmptyFeed();
+        {
+            var feed = AtomUtility.GetEmptyFeed();
 
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedField.Id), "RelatedFieldID" }, relatedField.Id.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedField.Title), "RelatedFieldName" }, relatedField.Title);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedField.SiteId), "PublishmentSystemID" }, relatedField.SiteId.ToString());
 
             return feed;
-		}
+        }
 
         private static async Task AddAtomEntryAsync(IDatabaseManager databaseManager, AtomFeed feed, int siteId, RelatedFieldItem relatedFieldItem, int level)
-		{
-			var entry = AtomUtility.GetEmptyEntry();
+        {
+            var entry = AtomUtility.GetEmptyEntry();
 
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItem.Id), "ID" }, relatedFieldItem.Id.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItem.RelatedFieldId), "RelatedFieldID" }, relatedFieldItem.RelatedFieldId.ToString());
@@ -66,15 +66,15 @@ namespace SSCMS.Core.Utils.Serialization.Components
             {
                 await AddAtomEntryAsync(databaseManager, feed, siteId, itemInfo, level + 1);
             }
-		}
+        }
 
-		public async Task ImportRelatedFieldAsync(bool overwrite)
-		{
-			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
-			var filePaths = DirectoryUtils.GetFilePaths(_directoryPath);
+        public async Task ImportRelatedFieldAsync(bool overwrite)
+        {
+            if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
+            var filePaths = DirectoryUtils.GetFilePaths(_directoryPath);
 
-			foreach (var filePath in filePaths)
-			{
+            foreach (var filePath in filePaths)
+            {
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
                 var title = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(RelatedField.Title), "RelatedFieldName" });
@@ -86,7 +86,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     SiteId = _site.Id
                 };
 
-                var srcRelatedFieldInfo = await _databaseManager.RelatedFieldRepository.GetRelatedFieldAsync(_site.Id, title);
+                var srcRelatedFieldInfo = await _databaseManager.RelatedFieldRepository.GetAsync(_site.Id, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
@@ -104,8 +104,8 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
                 var lastInsertedId = 0;
-				foreach (AtomEntry entry in feed.Entries)
-				{
+                foreach (AtomEntry entry in feed.Entries)
+                {
                     var itemName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItem.Label));
                     var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItem.Value));
                     var level = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Level"));
@@ -127,9 +127,9 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     lastInsertedId = await _databaseManager.RelatedFieldItemRepository.InsertAsync(relatedFieldItemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
-				}
-			}
-		}
+                }
+            }
+        }
 
-	}
+    }
 }

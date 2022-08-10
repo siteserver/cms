@@ -49,6 +49,7 @@ var data = utils.init({
   linkTypes: null,
   root: null,
   styles: null,
+  relatedFields: null,
   templates: null,
   form: null,
 
@@ -61,69 +62,6 @@ var data = utils.init({
 });
 
 var methods = {
-  runFormLayerImageUploadText: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerImageUploadEditor: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  runMaterialLayerImageSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerFileUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerFileSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerVideoUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerVideoSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runEditorLayerImage: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)] || 0;
-    if (count <= no) {
-      this.form[utils.getCountName(attributeName)] = no;
-    }
-    this.form[utils.getExtendName(attributeName, no)] = text;
-    this.form = _.assign({}, this.form);
-  },
-
-  insertEditor: function(attributeName, html) {
-    if (!attributeName) attributeName = 'Body';
-    if (!html) return;
-    utils.getEditor(attributeName).execCommand('insertHTML', html);
-  },
-
-  addTranslation: function(targetSiteId, targetChannelId, translateType, summary) {
-    this.translates.push({
-      siteId: this.siteId,
-      channelId: this.channelId,
-      targetSiteId: targetSiteId,
-      targetChannelId: targetChannelId,
-      translateType: translateType,
-      summary: summary
-    });
-  },
-
-  updateGroups: function(res, message) {
-    this.groupNames = res.groupNames;
-    utils.success(message);
-  },
-
   apiGet: function() {
     var $this = this;
 
@@ -154,6 +92,7 @@ var methods = {
       $this.root = [res.root];
 
       $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
       $this.templates = res.templates;
       $this.form = _.assign({}, res.content);
 
@@ -226,17 +165,6 @@ var methods = {
     }).then(function() {
       utils.loading($this, false);
     });
-  },
-
-  syncEditors: function () {
-    var $this = this;
-    if (UE) {
-      $.each(UE.instants, function (index, editor) {
-        editor.sync();
-        var style = $this.styles[editor.styleIndex];
-        $this.form[utils.toCamelCase(style.attributeName)] = editor.getContent();
-      });
-    }
   },
 
   apiInsert: function() {
@@ -351,6 +279,80 @@ var methods = {
     }).then(function() {
       utils.loading($this, false);
     });
+  },
+
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
+  insertEditor: function(attributeName, html) {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
+  },
+
+  addTranslation: function(targetSiteId, targetChannelId, translateType, summary) {
+    this.translates.push({
+      siteId: this.siteId,
+      channelId: this.channelId,
+      targetSiteId: targetSiteId,
+      targetChannelId: targetChannelId,
+      translateType: translateType,
+      summary: summary
+    });
+  },
+
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    utils.success(message);
+  },
+
+  syncEditors: function () {
+    var $this = this;
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        editor.sync();
+        var style = $this.styles[editor.styleIndex];
+        $this.form[utils.toCamelCase(style.attributeName)] = editor.getContent();
+      });
+    }
   },
 
   btnCensorSaveClick: function() {

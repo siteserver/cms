@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -19,16 +20,19 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
         private readonly IAuthManager _authManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IRelatedFieldRepository _relatedFieldRepository;
 
-        public LayerEditorController(IAuthManager authManager, IDatabaseManager databaseManager, ITableStyleRepository tableStyleRepository)
+        public LayerEditorController(IAuthManager authManager, IDatabaseManager databaseManager, ITableStyleRepository tableStyleRepository, IRelatedFieldRepository relatedFieldRepository)
         {
             _authManager = authManager;
             _databaseManager = databaseManager;
             _tableStyleRepository = tableStyleRepository;
+            _relatedFieldRepository = relatedFieldRepository;
         }
 
         public class GetRequest
         {
+            public int SiteId { get; set; }
             public string TableName { get; set; }
             public string AttributeName { get; set; }
             public string RelatedIdentities { get; set; }
@@ -37,6 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
         public class GetResult
         {
             public IEnumerable<KeyValuePair<InputType, string>> InputTypes { get; set; }
+            public List<RelatedField> RelatedFields { get; set; }
             public SubmitRequest Form { get; set; }
         }
 
@@ -55,6 +60,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             public bool Horizontal { get; set; }
             public List<InputStyleItem> Items { get; set; }
             public int Height { get; set; }
+            public int? RelatedFieldId { get; set; }
             public string CustomizeCode { get; set; }
         }
     }
