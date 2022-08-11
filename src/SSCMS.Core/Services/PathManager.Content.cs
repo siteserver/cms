@@ -157,14 +157,41 @@ namespace SSCMS.Core.Services
             if (!string.IsNullOrEmpty(imageUrl) && IsVirtualUrl(imageUrl))
             {
                 collection[imageUrl] = await ParseSitePathAsync(site, imageUrl);
+
+                var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    collection[extend] = await ParseSitePathAsync(site, extend);
+                }
             }
             if (!string.IsNullOrEmpty(videoUrl) && IsVirtualUrl(videoUrl))
             {
                 collection[videoUrl] = await ParseSitePathAsync(site, videoUrl);
+
+                var countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    collection[extend] = await ParseSitePathAsync(site, extend);
+                }
             }
             if (!string.IsNullOrEmpty(fileUrl) && IsVirtualUrl(fileUrl))
             {
                 collection[fileUrl] = await ParseSitePathAsync(site, fileUrl);
+
+                var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    collection[extend] = await ParseSitePathAsync(site, extend);
+                }
             }
 
             var srcList = RegexUtils.GetOriginalImageSrcs(body);
