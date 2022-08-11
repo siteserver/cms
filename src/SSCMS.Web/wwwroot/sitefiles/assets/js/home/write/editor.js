@@ -199,6 +199,27 @@ var methods = {
     });
   },
 
+  apiPreview: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlPreview, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.isPreviewSaving = false;
+      window.open(res.url);
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
+  },
+
   runFormLayerImageUploadText: function(attributeName, no, text) {
     this.insertText(attributeName, no, text);
   },
@@ -252,13 +273,18 @@ var methods = {
   },
 
   closeAndRedirect: function(isEdit) {
-    var tabVue = utils.getTabVue(this.tabName);
-    if (tabVue) {
-      utils.success('内容保存成功！');
-      tabVue.apiList(this.page);
+    utils.success('内容保存成功！');
+    if (this.tabName) {
+      var tabVue = utils.getTabVue(this.tabName);
+      if (tabVue) {
+        tabVue.apiList(this.page);
+      }
+      utils.removeTab();
+      utils.openTab(this.tabName);
+    } else {
+      utils.removeTab();
+      utils.addTab('稿件管理', "/home/write/contents/");
     }
-    utils.removeTab();
-    utils.openTab(this.tabName);
   },
 
   winResize: function () {
@@ -304,34 +330,27 @@ var methods = {
     }
   },
 
-  btnPreviewClick: function() {
-    if (!this.styles[0].value) return;
-    if (this.isPreviewSaving) return;
-
+  syncEditors: function () {
+    var $this = this;
     if (UE) {
       $.each(UE.instants, function (index, editor) {
         editor.sync();
+        var style = $this.styles[editor.styleIndex];
+        $this.form[utils.toCamelCase(style.attributeName)] = editor.getContent();
       });
     }
+  },
 
+  btnPreviewClick: function() {
     var $this = this;
-    utils.loading(this, true);
-    $api.post($urlPreview, {
-      siteId: this.siteId,
-      channelId: this.channelId,
-      contentId: this.contentId,
-      content: this.form
-    }).then(function(response) {
-      var res = response.data;
-
-      $this.isPreviewSaving = false;
-      window.open(res.url);
-    })
-    .catch(function(error) {
-      utils.error(error);
-    })
-    .then(function() {
-      utils.loading($this, false);
+    if (this.isPreviewSaving) return;
+    this.syncEditors();
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiPreview();
+      } else {
+        utils.error('预览失败，请检查表单值是否正确');
+      }
     });
   },
 
