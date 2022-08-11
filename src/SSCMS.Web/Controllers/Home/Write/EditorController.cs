@@ -30,9 +30,10 @@ namespace SSCMS.Web.Controllers.Home.Write
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public EditorController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IContentCheckRepository contentCheckRepository)
+        public EditorController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
@@ -45,6 +46,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             _contentGroupRepository = contentGroupRepository;
             _contentTagRepository = contentTagRepository;
             _tableStyleRepository = tableStyleRepository;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
             _contentCheckRepository = contentCheckRepository;
         }
 
@@ -62,6 +64,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
+            public Dictionary<int, List<Cascade<int>>> RelatedFields { get; set; }
             public List<Select<int>> CheckedLevels { get; set; }
             public string SiteUrl { get; set; }
         }

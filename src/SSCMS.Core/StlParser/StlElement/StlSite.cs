@@ -238,7 +238,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeImageUrl))
             {
-                var inputParser = new InputParserManager(parseManager.PathManager);
+                var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                 if (no == "all")
                 {
@@ -313,7 +313,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            var inputParser = new InputParserManager(parseManager.PathManager);
+                            var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                             parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, format, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
 

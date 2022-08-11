@@ -2,6 +2,26 @@
 var $urlUpdate = $url + '/actions/update';
 var $urlPreview = $url + '/actions/preview';
 
+Date.prototype.Format = function (fmt) {
+  var o = {
+    "M+": this.getMonth() + 1,                   // 月份
+    "d+": this.getDate(),                        // 日
+    "h+": this.getHours(),                       // 时
+    "m+": this.getMinutes(),                     // 分
+    "s+": this.getSeconds(),                     // 秒
+    "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+    "S": this.getMilliseconds()                  // 毫秒
+  };
+
+  if (/(y+)/.test(fmt))
+    fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+
+  for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+
+  return fmt;
+};
+
 var data = utils.init({
   pageType: null,
   siteId: utils.getQueryInt('siteId'),
@@ -23,63 +43,12 @@ var data = utils.init({
   siteOptions: null,
   channelOptions: null,
   styles: null,
+  relatedFields: null,
   form: null,
   isPreviewSaving: false
 });
 
 var methods = {
-  runFormLayerImageUploadText: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerImageUploadEditor: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  runMaterialLayerImageSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerFileUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerFileSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerVideoUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerVideoSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runEditorLayerImage: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)] || 0;
-    if (count <= no) {
-      this.form[utils.getCountName(attributeName)] = no;
-    }
-    this.form[utils.getExtendName(attributeName, no)] = text;
-    this.form = _.assign({}, this.form);
-  },
-
-  insertEditor: function(attributeName, html) {
-    if (!attributeName) attributeName = 'Body';
-    if (!html) return;
-    utils.getEditor(attributeName).execCommand('insertHTML', html);
-  },
-
-  updateGroups: function(res, message) {
-    this.groupNames = res.groupNames;
-    utils.success(message);
-  },
-
   apiGet: function() {
     var $this = this;
 
@@ -113,7 +82,14 @@ var methods = {
       $this.channelOptions = res.channelOptions;
 
       $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
       $this.form = _.assign({}, res.content);
+
+      if (!$this.form.addDate) {
+        $this.form.addDate = new Date().Format("yyyy-MM-dd hh:mm:ss");
+      } else {
+        $this.form.addDate = new Date($this.form.addDate).Format("yyyy-MM-dd hh:mm:ss");
+      }
 
       if ($this.form.id === 0) {
         $this.form.checkedLevel = -99;
@@ -221,6 +197,58 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
+  },
+
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
+  insertEditor: function(attributeName, html) {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
+  },
+
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    utils.success(message);
   },
 
   closeAndRedirect: function(isEdit) {

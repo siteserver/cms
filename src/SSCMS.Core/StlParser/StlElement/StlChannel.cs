@@ -369,7 +369,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 //var inputParser = new InputParserManager(parseManager.PathManager);
                 //parsedContent = await inputParser.GetImageOrFlashHtmlAsync(pageInfo.Site, channel.ImageUrl, attributes, contextInfo.IsStlEntity);
 
-                var inputParser = new InputParserManager(parseManager.PathManager);
+                var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                 if (no == "all")
                 {
@@ -558,7 +558,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = GetValue(attributeName, channel, false, styleInfo.DefaultValue);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var inputParser = new InputParserManager(parseManager.PathManager);
+                        var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
                         parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, format, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
                         inputType = styleInfo.InputType;
                     }

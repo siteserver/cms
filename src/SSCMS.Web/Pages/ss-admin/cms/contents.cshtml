@@ -90,6 +90,7 @@
           <el-input v-model="searchForm.searchText" v-on:change="btnSearchClick" suffix-icon="el-icon-search" size="mini" placeholder="搜索关键词" class="input-with-select">
             <el-select v-model="searchForm.searchType" v-on:change="btnSearchClick" slot="prepend" placeholder="请选择">
               <el-option :label="titleColumn.displayName" value="Title"></el-option>
+              <el-option label="正文" value="Body"></el-option>
               <el-option v-for="column in columns" v-if="column.isSearchable" :label="column.displayName" :value="column.attributeName"></el-option>
             </el-select>
           </el-input>
