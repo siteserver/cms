@@ -43,7 +43,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var attributes = new NameValueCollection(contextInfo.Attributes);
                 VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, parsedContent);
-                parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</div>";
+                parsedContent = @$"<template {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</template>";
             }
             return parsedContent;
         }

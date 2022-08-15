@@ -280,7 +280,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return url;
             }
 
-            if (pageInfo.EditMode == EditMode.Visual)
+            if (pageInfo.EditMode == EditMode.Visual && !contextInfo.IsInnerElement)
             {
                 VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
             }

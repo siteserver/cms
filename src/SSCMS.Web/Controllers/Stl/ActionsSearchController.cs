@@ -32,12 +32,15 @@ namespace SSCMS.Web.Controllers.Stl
         private NameValueCollection GetPostCollection(StlSearchRequest request)
         {
             var formCollection = new NameValueCollection();
-            foreach (var key in request.GetKeys())
+            if (request != null)
             {
-                var value = request.Get(key);
-                if (value != null)
+                foreach (var key in request.GetKeys())
                 {
-                    formCollection[key] = request.Get(key).ToString();
+                    var value = request.Get(key);
+                    if (value != null)
+                    {
+                        formCollection[key] = request.Get(key).ToString();
+                    }
                 }
             }
 

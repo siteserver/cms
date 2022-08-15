@@ -21,6 +21,12 @@ namespace SSCMS.Utils
             return GetContents("url", regex, html);
         }
 
+        public static List<string> GetOriginalScriptSrcs(string html)
+        {
+            const string regex = "script[^><]*\\s+src\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))";
+            return GetContents("url", regex, html);
+        }
+
         public static List<string> GetOriginalLinkHrefs(string html)
         {
             const string regex = "a[^><]*\\s+href\\s*=\\s*(?:\"(?<url>[^\"]*)\"|'(?<url>[^']*)'|(?<url>[^>\\s]*))";
