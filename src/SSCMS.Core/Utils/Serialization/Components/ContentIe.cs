@@ -89,25 +89,25 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 {
                     taxis++;
 
-                    var groupNames = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string>{ nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" });
+                    var groupNames = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" });
                     var tagNames = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }));
                     if (isCheckedBySettings)
                     {
                         isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                            new List<string> { nameof(Content.Checked), "IsChecked"}));
+                            new List<string> { nameof(Content.Checked), "IsChecked" }));
                         checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.CheckedLevel)));
                     }
                     var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Hits)));
                     var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Downloads)));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Title));
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                        new List<string> {nameof(Content.Top), "IsTop"}));
+                        new List<string> { nameof(Content.Top), "IsTop" }));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                        new List<string> {nameof(Content.Recommend), "IsRecommend"}));
+                        new List<string> { nameof(Content.Recommend), "IsRecommend" }));
                     var isHot = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                        new List<string> {nameof(Content.Hot), "IsHot"}));
+                        new List<string> { nameof(Content.Hot), "IsHot" }));
                     var isColor = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                        new List<string> {nameof(Content.Color), "IsColor"}));
+                        new List<string> { nameof(Content.Color), "IsColor" }));
                     var linkType = TranslateUtils.ToEnum<LinkType>(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkType)), LinkType.None);
                     var linkUrl = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.LinkUrl)));
                     var addDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.AddDate));
@@ -199,7 +199,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                         taxis = topTaxis;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex, "导入内容");
                 }
@@ -208,13 +208,20 @@ namespace SSCMS.Core.Utils.Serialization.Components
             foreach (var content in contents)
             {
                 _caching.SetProcess(guid, $"导入内容: {content.Title}");
-                if (content.Id > 0)
+                try
                 {
-                    await _databaseManager.ContentRepository.UpdateAsync(_site, channel, content);
+                    if (content.Id > 0)
+                    {
+                        await _databaseManager.ContentRepository.UpdateAsync(_site, channel, content);
+                    }
+                    else
+                    {
+                        await _databaseManager.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    await _databaseManager.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis);
+                    await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex, $"导入内容: {content.Title}");
                 }
             }
         }
@@ -232,7 +239,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
-                        isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string>{nameof(Content.Checked), "IsChecked" }));
+                        isChecked = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(Content.Checked), "IsChecked" }));
                         checkedLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.CheckedLevel)));
                     }
                     var hits = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Content.Hits)));
@@ -371,13 +378,32 @@ namespace SSCMS.Core.Utils.Serialization.Components
             {
                 if (content.Id > 0)
                 {
-                    await _databaseManager.ContentRepository.UpdateAsync(_site, channel, content);
+                    try
+                    {
+                        await _databaseManager.ContentRepository.UpdateAsync(_site, channel, content);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex, $"导入内容: {content.Title}");
+                    }
                 }
                 else
                 {
-                    contentIdList.Add(await _databaseManager.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis));
+                    var contentId = 0;
+                    try
+                    {
+                        contentId = await _databaseManager.ContentRepository.InsertWithTaxisAsync(_site, channel, content, content.Taxis);
+                    }
+                    catch (Exception ex)
+                    {
+                        await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex, $"导入内容: {content.Title}");
+                    }
+                    if (contentId > 0)
+                    {
+                        contentIdList.Add(contentId);
+                    }
                 }
-                
+
             }
 
             return contentIdList;
@@ -422,10 +448,10 @@ namespace SSCMS.Core.Utils.Serialization.Components
             var entry = AtomUtility.GetEmptyEntry();
 
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Id), content.Id.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.ChannelId), "NodeId" }, content.ChannelId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.ChannelId), "NodeId" }, content.ChannelId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.SiteId), "PublishmentSystemId" }, content.SiteId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.Taxis), content.Taxis.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" }, ListUtils.ToString(content.GroupNames));
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.GroupNames), "GroupNameCollection", "ContentGroupNameCollection" }, ListUtils.ToString(content.GroupNames));
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Content.TagNames), "Tags" }, AtomUtility.Encrypt(ListUtils.ToString(content.TagNames)));
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.SourceId), content.SourceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.ReferenceId), content.ReferenceId.ToString());
@@ -467,7 +493,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     AtomUtility.AddDcElement(entry.AdditionalElements, LinkToChannelName, AtomUtility.Encrypt(channel.ChannelName));
                 }
             }
-            
+
             if (content.AddDate.HasValue)
             {
                 AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.AddDate), content.AddDate.Value.ToString(CultureInfo.InvariantCulture));
