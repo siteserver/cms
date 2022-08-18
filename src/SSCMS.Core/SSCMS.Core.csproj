@@ -36,8 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SSCMS" Version="7.1.3" />
-    <!-- <ProjectReference Include="..\SSCMS\SSCMS.csproj" /> -->
+    <!-- <PackageReference Include="SSCMS" Version="7.1.3" /> -->
+    <ProjectReference Include="..\SSCMS\SSCMS.csproj" />
   </ItemGroup>
 
 </Project>
