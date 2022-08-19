@@ -232,6 +232,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     taxisType = TaxisType.OrderByRandom;
                 }
+                else
+                {
+                    taxisType = TranslateUtils.ToEnum<TaxisType>($"OrderBy{order}", TaxisType.OrderByTaxis);
+                }
             }
 
             return taxisType;

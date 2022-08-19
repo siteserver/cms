@@ -287,7 +287,7 @@ var methods = {
       siteId: this.siteId,
       isChannel: isChannel,
       channelId: channelId,
-      rule: rule
+      rule: rule || ''
     });
 
     utils.openLayer({

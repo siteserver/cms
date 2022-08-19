@@ -167,11 +167,13 @@ namespace SSCMS.Core.Repositories
             var source = await GetAsync(sourceId);
 
             source.ParentId = parent.Id;
-            source.ParentsPath = ListUtils.AddIfNotExists(parent.ParentsPath, parent.Id);
-            if (!source.ParentsPath.Contains(source.SiteId))
+            var parentIds = new List<int>
             {
-                source.ParentsPath.Insert(0, source.SiteId);
-            }
+                parent.Id
+            };
+            GetParentIdsRecursive(summaries, parentIds, parent.Id);
+            parentIds.Reverse();
+            source.ParentsPath = parentIds;
             source.ParentsCount = source.ParentsPath.Count;
 
             await UpdateAsync(source);
