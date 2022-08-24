@@ -77,11 +77,12 @@ var utils = {
     }, 100);
   },
 
-  getEditor: function (attributeName) {
+  getEditor: function (attributeName, height) {
     return UE.getEditor(attributeName, {
       allowDivTransToP: false,
       maximumWords: 99999999,
-      initialFrameWidth:null ,
+      initialFrameWidth: null,
+      initialFrameHeight: height && height > 0 ? height : 320,
       autoHeightEnabled: false,
       autoFloatEnabled: false,
       zIndex: 2001,

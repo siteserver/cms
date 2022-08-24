@@ -150,7 +150,7 @@ var methods = {
         for (var i = 0; i < $this.styles.length; i++) {
           var style = $this.styles[i];
           if (style.inputType === 'TextEditor') {
-            var editor = utils.getEditor(style.attributeName);
+            var editor = utils.getEditor(style.attributeName, style.height);
             editor.styleIndex = i;
             editor.ready(function () {
               this.addListener("contentChange", function () {
