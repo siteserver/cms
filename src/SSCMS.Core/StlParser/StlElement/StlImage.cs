@@ -80,6 +80,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (!string.IsNullOrEmpty(channelIndex))
                     {
                         isGetPicUrlFromAttribute = true;
+                        parseManager.ContextInfo.ContextType = ParseType.Channel;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
@@ -88,6 +89,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (!string.IsNullOrEmpty(channelName))
                     {
                         isGetPicUrlFromAttribute = true;
+                        parseManager.ContextInfo.ContextType = ParseType.Channel;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Parent))
@@ -96,6 +98,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     {
                         upLevel = 1;
                         isGetPicUrlFromAttribute = true;
+                        parseManager.ContextInfo.ContextType = ParseType.Channel;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
@@ -104,6 +107,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (upLevel > 0)
                     {
                         isGetPicUrlFromAttribute = true;
+                        parseManager.ContextInfo.ContextType = ParseType.Channel;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
@@ -112,6 +116,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (topLevel >= 0)
                     {
                         isGetPicUrlFromAttribute = true;
+                        parseManager.ContextInfo.ContextType = ParseType.Channel;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Context))
@@ -166,7 +171,6 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var contextType = contextInfo.ContextType;
-
             var picUrl = string.Empty;
             if (!string.IsNullOrEmpty(src))
             {
