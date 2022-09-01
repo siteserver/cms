@@ -771,6 +771,10 @@ namespace SSCMS.Core.StlParser.StlElement
                     isAddSpan = true;
                     parsedContent = text + Convert.ToString(totalNum);
                 }
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageGo))//页输入跳转
+                {
+                    parsedContent = clickString;
+                }
                 else if (StringUtils.EqualsIgnoreCase(type, TypePageNavigation))//页导航
                 {
                     var html = string.Empty;
@@ -1024,6 +1028,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     parsedContent = Convert.ToString(totalNum);
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageGo))//页输入跳转
+                {
+                    parsedContent = clickString;
                 }
             }
             catch (Exception ex)
@@ -1361,6 +1369,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(type, TypeTotalNum))//总内容数
                 {
                     parsedContent = Convert.ToString(totalNum);
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, TypePageGo))//页输入跳转
+                {
+                    parsedContent = jsMethod;
                 }
             }
             catch (Exception ex)

@@ -92,6 +92,10 @@ namespace SSCMS.Core.Services
             {
                 clickString = $"stlRedirect{ajaxDivId}(this.options[this.selectedIndex].value)";
             }
+            else if (StringUtils.EqualsIgnoreCase(type, StlPageItem.TypePageGo))
+            {
+                clickString = $"stlRedirect{ajaxDivId}(document.getElementById('page').value)";
+            }
 
             return clickString;
         }
@@ -147,6 +151,10 @@ namespace SSCMS.Core.Services
                 {
                     jsMethod = $"stlRedirect{ajaxDivId}(this.options[this.selectedIndex].value)";
                 }
+                else if (StringUtils.EqualsIgnoreCase(type, StlPageItem.TypePageGo))
+                {
+                    jsMethod = $"stlRedirect{ajaxDivId}(document.getElementById('page').value)";
+                }
             }
             else
             {
@@ -175,6 +183,10 @@ namespace SSCMS.Core.Services
                     else if (StringUtils.EqualsIgnoreCase(type, StlPageItem.TypePageSelect))
                     {
                         jsMethod = $"stlDynamic{ajaxDivId}(this.options[this.selectedIndex].value)";
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(type, StlPageItem.TypePageGo))
+                    {
+                        jsMethod = $"stlDynamic{ajaxDivId}(document.getElementById('page').value)";
                     }
                 }
                 else
