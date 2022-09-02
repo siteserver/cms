@@ -268,7 +268,10 @@ namespace SSCMS.Utils
 
         public static string StripTags(string inputString)
         {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+            
             var retVal = RegexUtils.Replace("<script[^>]*>.*?<\\/script>", inputString, string.Empty);
+            retVal = RegexUtils.Replace("<style[^>]*>.*?<\\/style>", retVal, string.Empty);
             retVal = RegexUtils.Replace("<[\\/]?[^>]*>|<[\\S]+", retVal, string.Empty);
             return retVal;
         }
