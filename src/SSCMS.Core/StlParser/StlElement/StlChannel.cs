@@ -79,6 +79,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否清除HTML标签")]
         private const string IsClearTags = nameof(IsClearTags);
 
+        [StlAttribute(Title = "是否清除空格")]
+        private const string IsClearBlank = nameof(IsClearBlank);
+
         [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
 
@@ -107,6 +110,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
+            var isClearBlank = false;
             var isReturnToBrStr = string.Empty;
             var isLower = false;
             var isUpper = false;
@@ -191,6 +195,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isClearTags = TranslateUtils.ToBool(value, false);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsClearBlank))
+                {
+                    isClearBlank = TranslateUtils.ToBool(value, false);
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr))
                 {
                     isReturnToBrStr = value;
@@ -250,7 +258,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return channel.ToDictionary();
             }
 
-            var parsedContent = await ParseAsync(parseManager, leftText, rightText, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, channel, channelId, attributes);
+            var parsedContent = await ParseAsync(parseManager, leftText, rightText, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isClearBlank, isReturnToBrStr, isLower, isUpper, channel, channelId, attributes);
 
             var innerBuilder = new StringBuilder(parsedContent);
             await parseManager.ParseInnerContentAsync(innerBuilder);
@@ -264,7 +272,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string leftText, string rightText, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isClearBlank, string isReturnToBrStr, bool isLower, bool isUpper, Channel channel, int channelId, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -426,6 +434,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = StringUtils.StripTags(parsedContent);
                 }
 
+                if (isClearBlank)
+                {
+                    parsedContent = StringUtils.StripBlank(parsedContent);
+                }
+
                 if (!string.IsNullOrEmpty(replace))
                 {
                     parsedContent = StringUtils.Replace(parsedContent, replace, to);
@@ -481,6 +494,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = StringUtils.StripTags(parsedContent);
                 }
 
+                if (isClearBlank)
+                {
+                    parsedContent = StringUtils.StripBlank(parsedContent);
+                }
+
                 if (!string.IsNullOrEmpty(replace))
                 {
                     parsedContent = StringUtils.Replace(parsedContent, replace, to);
@@ -500,6 +518,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     if (isClearTags)
                     {
                         parsedContent = StringUtils.StripTags(parsedContent);
+                    }
+
+                    if (isClearBlank)
+                    {
+                        parsedContent = StringUtils.StripBlank(parsedContent);
                     }
 
                     if (!string.IsNullOrEmpty(replace))
@@ -567,7 +590,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
-            parsedContent = InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
+            parsedContent = InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
             return leftText + parsedContent + rightText;
         }
 

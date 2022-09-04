@@ -44,8 +44,11 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "替换replace的文字信息")]
         private const string To = nameof(To);
 
-        [StlAttribute(Title = "是否清除标签信息")]
+        [StlAttribute(Title = "是否清除HTML标签")]
         private const string IsClearTags = nameof(IsClearTags);
+
+        [StlAttribute(Title = "是否清除空格")]
+        private const string IsClearBlank = nameof(IsClearBlank);
 
         [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
@@ -68,6 +71,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
+            var isClearBlank = false;
             var isReturnToBr = false;
             var isLower = false;
             var isUpper = false;
@@ -116,6 +120,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isClearTags = TranslateUtils.ToBool(value, false);
                 }
+                else if (StringUtils.EqualsIgnoreCase(attrName, IsClearBlank))
+                {
+                    isClearBlank = TranslateUtils.ToBool(value, false);
+                }
                 else if (StringUtils.EqualsIgnoreCase(attrName, IsReturnToBr))
                 {
                     isReturnToBr = TranslateUtils.ToBool(value, false);
@@ -130,10 +138,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseAsync(parseManager, type, name, id, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string name, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string name, int id, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
@@ -195,7 +203,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, string.Empty);
+            parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, string.Empty);
 
             return parsedContent;
         }

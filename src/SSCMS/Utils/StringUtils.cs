@@ -266,6 +266,16 @@ namespace SSCMS.Utils
             return contentBuilder.ToString();
         }
 
+        public static string StripBlank(string inputString)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+            
+            var retVal = inputString.Replace(" ", string.Empty);
+            retVal = retVal.Replace("　", string.Empty);
+            retVal = retVal.Replace("&nbsp;", string.Empty);
+            return retVal;
+        }
+
         public static string StripTags(string inputString)
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
@@ -786,8 +796,10 @@ namespace SSCMS.Utils
             return reg.IsMatch(name);
         }
 
-        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
+        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
+            if (string.IsNullOrEmpty(content)) return string.Empty;
+
             var parsedContent = content;
 
             if (!string.IsNullOrEmpty(replace))
@@ -798,6 +810,11 @@ namespace SSCMS.Utils
             if (isClearTags)
             {
                 parsedContent = StripTags(parsedContent);
+            }
+
+            if (isClearBlank)
+            {
+                parsedContent = StripBlank(parsedContent);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

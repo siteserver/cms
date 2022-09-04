@@ -93,15 +93,21 @@ namespace SSCMS.Core.Services
 
             var builder = new StringBuilder(content);
 
-            var url = await GetWebUrlAsync(site);
-            if (!string.IsNullOrEmpty(url) && url != "/")
+            var webUrl = await GetWebUrlAsync(site);
+            if (!string.IsNullOrEmpty(webUrl) && webUrl != "/")
             {
-                StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+                StringUtils.ReplaceHrefOrSrc(builder, webUrl, "@");
             }
             //if (!string.IsNullOrEmpty(url))
             //{
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
+
+            var localUrl = await GetSiteUrlAsync(site, true);
+            if (!string.IsNullOrEmpty(localUrl) && localUrl != "/")
+            {
+                StringUtils.ReplaceHrefOrSrc(builder, localUrl, "@");
+            }
 
             var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");

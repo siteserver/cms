@@ -35,9 +35,9 @@ namespace SSCMS.Core.Utils
                 new KeyValuePair<InputType, string>(inputType, inputType.GetDisplayName()));
         }
 
-        public static string ParseString(InputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
+        public static string ParseString(InputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
-            return IsPureString(inputType) ? StringUtils.ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString) : content;
+            return IsPureString(inputType) ? StringUtils.ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, formatString) : content;
         }
     }
 }

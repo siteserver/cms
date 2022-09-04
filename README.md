@@ -7,7 +7,7 @@ SSCMS 基于 .NET Core，能够以最低的成本、最少的人力投入在最�
 
 ## 版本
 
-项目发布的正式版本存放在 `master` 分支，最新版本存放在 `staging` 分支
+项目发布的正式版本存放在 `master` 分支
 
 | 编译状态                                                                                                                                                                                     | 版本号                                                     | 发布日期                                                                                   |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -47,7 +47,7 @@ SSCMS 基于 .NET Core，能够以最低的成本、最少的人力投入在最�
 
 ## 发布跨平台版本
 
-### Window(64 位)：
+### Window(x64)：
 
 ```
 npm install
@@ -60,7 +60,7 @@ npm run copy-win-x64
 
 > Note: 进入文件夹 `./publish/sscms-win-x64` 获取最终发布版本
 
-### Window(32 位)：
+### Window(x32)：
 
 ```
 npm install
@@ -73,7 +73,7 @@ npm run copy-win-x32
 
 > Note: 进入文件夹 `./publish/sscms-win-x32` 获取最终发布版本
 
-### Linux：
+### Linux(x64)：
 
 ```
 npm install
@@ -86,22 +86,22 @@ npm run copy-linux-x64
 
 > Note: 进入文件夹 `./publish/sscms-linux-x64` 获取最终发布版本
 
-### MacOS：
+### Linux(arm64)：
 
 ```
 npm install
-npm run build-osx-x64
-dotnet build ./build-osx-x64/build.sln -c Release
-dotnet publish ./build-osx-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -r osx-x64 -c Release -o ./publish/sscms-osx-x64
-dotnet publish ./build-osx-x64/src/SSCMS.Web/SSCMS.Web.csproj -r osx-x64 -c Release -o ./publish/sscms-osx-x64
-npm run copy-osx-x64
+npm run build-linux-arm64
+dotnet build ./build-linux-arm64/build.sln -c Release
+dotnet publish ./build-linux-arm64/src/SSCMS.Cli/SSCMS.Cli.csproj -r linux-arm64 -c Release -o ./publish/sscms-linux-arm64
+dotnet publish ./build-linux-arm64/src/SSCMS.Web/SSCMS.Web.csproj -r linux-arm64 -c Release -o ./publish/sscms-linux-arm64
+npm run copy-linux-arm64
 ```
 
-> Note: 进入文件夹 `./publish/sscms-osx-x64` 获取最终发布版本
+> Note: 进入文件夹 `./publish/sscms-linux-arm64` 获取最终发布版本
 
 ## 在 Docker 中运行
 
-拉取最新版本的 SS CMS 镜像
+拉取最新版本的 SSCMS 镜像
 
 ```sh
 docker pull sscms/core:latest
