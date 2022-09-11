@@ -26,7 +26,6 @@ namespace SSCMS.Core.Services
                         var extendName = ColumnsManager.GetExtendName(style.AttributeName, i);
                         var value = content.Get<string>(extendName);
                         value = GetVirtualUrl(site, value);
-
                         content.Set(extendName, value);
                     }
                 }
@@ -35,7 +34,7 @@ namespace SSCMS.Core.Services
                     var value = content.Get<string>(style.AttributeName);
                     value = await EncodeTextEditorAsync(site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
-
+                    value = StringUtils.TrimEnd(value, @"<p><br/></p>");
                     content.Set(style.AttributeName, value);
                 }
             }

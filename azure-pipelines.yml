@@ -143,18 +143,6 @@ jobs:
       OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
       OSS_BUCKET_DL: $(ossBucketDl)
       OSS_BUCKET_WWW: $(ossBucketWww)
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: './publish/sscms-$(productVersion)-linux-arm64' 
-      archiveType: 'zip'
-      includeRootFolder: false
-      archiveFile: './publish/dist/sscms-$(productVersion)-linux-arm64.zip'
-  - script: npm run publish-linux-arm64-zip
-    env:
-      OSS_ACCESS_KEY_ID: $(ossAccessKeyId)
-      OSS_SECRET_ACCESS_KEY: $(ossSecretAccessKey)
-      OSS_BUCKET_DL: $(ossBucketDl)
-      OSS_BUCKET_WWW: $(ossBucketWww)
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: './publish/dist'
