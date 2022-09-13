@@ -177,7 +177,7 @@ namespace SSCMS.Core.StlParser.Utility
 
         public static int ParseItemIndex(int dbItemIndex, string attributeName, ParseContext contextInfo)
         {
-            var itemIndex = contextInfo.PageItemIndex + dbItemIndex + 1;
+            var itemIndex = dbItemIndex + 1;
             if (attributeName.IndexOf('+') == -1 && attributeName.IndexOf('-') == -1) return itemIndex;
 
             var array = attributeName.Split('+');
