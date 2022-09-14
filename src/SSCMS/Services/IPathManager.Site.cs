@@ -157,6 +157,8 @@ namespace SSCMS.Services
 
         Task MoveFileAsync(Site sourceSite, Site destSite, string relatedUrl);
 
+        Task MoveFileByChannelAsync(Site sourceSite, Site destSite, Channel channel);
+
         Task MoveFileByContentAsync(Site sourceSite, Site destSite, Content content);
     }
 }

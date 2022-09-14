@@ -1425,5 +1425,58 @@ namespace SSCMS.Core.Services
                 // ignored
             }
         }
+    
+        public async Task MoveFileByChannelAsync(Site sourceSite, Site destSite, Channel channel)
+        {
+            if (channel == null || sourceSite.Id == destSite.Id) return;
+
+            try
+            {
+                var fileUrls = new List<string>
+                {
+                    channel.ImageUrl,
+                };
+
+                var countName = ColumnsManager.GetCountName(nameof(Channel.ImageUrl));
+                var count = channel.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Channel.ImageUrl), i);
+                    var extend = channel.Get<string>(extendName);
+                    if (!fileUrls.Contains(extend))
+                    {
+                        fileUrls.Add(extend);
+                    }
+                }
+
+                foreach (var url in RegexUtils.GetOriginalImageSrcs(channel.Content))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in RegexUtils.GetOriginalLinkHrefs(channel.Content))
+                {
+                    if (!fileUrls.Contains(url) && IsVirtualUrl(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+
+                foreach (var fileUrl in fileUrls)
+                {
+                    if (!string.IsNullOrEmpty(fileUrl) && IsVirtualUrl(fileUrl))
+                    {
+                        await MoveFileAsync(sourceSite, destSite, fileUrl);
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+    
     }
 }
