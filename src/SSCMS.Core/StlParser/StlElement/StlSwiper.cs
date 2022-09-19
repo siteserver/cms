@@ -35,6 +35,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "控件颜色")]
         private const string Color = nameof(Color);
 
+        [StlAttribute(Title = "控件参数")]
+        private const string Parameters = nameof(Parameters);
+
         public const string DirectionVertical = "vertical";         //垂直
         public const string DirectionHorizontal = "horizontal";		//水平
 
@@ -52,7 +55,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var isPagination = true;
             var isNavigation = true;
             var isScrollbar = false;
-            var color = string.Empty;
+            var color = "#fff";
+            var parameters = string.Empty;
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -89,12 +93,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     color = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, Parameters))
+                {
+                    parameters = value;
+                }
             }
 
-            return await ParseAsync(parseManager, direction, width, height, isPagination, isNavigation, isScrollbar, color);
+            return await ParseAsync(parseManager, direction, width, height, isPagination, isNavigation, isScrollbar, color, parameters);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string direction, string width, string height, bool isPagination, bool isNavigation, bool isScrollbar, string color)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string direction, string width, string height, bool isPagination, bool isNavigation, bool isScrollbar, string color, string parameters)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -141,9 +149,16 @@ namespace SSCMS.Core.StlParser.StlElement
   },
             " : string.Empty;
 
+            if (!string.IsNullOrEmpty(parameters))
+            {
+                parameters = StringUtils.Trim(parameters);
+                parameters = StringUtils.TrimEnd(parameters, ",");
+            }
+
             var scripts = @$"
 <script>
 var swiper = new Swiper('.swiper', {{
+  {parameters},
   direction: '{direction}',
   loop: true,
   spaceBetween: 100,

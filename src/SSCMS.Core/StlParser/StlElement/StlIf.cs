@@ -70,35 +70,35 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "动态请求失败后执行的JS代码")]
         private const string OnError = nameof(OnError);
 
-        public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
+        public const string TypeIsUserLoggin = "IsUserLoggin";                                //用户是否已登录
         private const string TypeChannelName = "ChannelName";			                            //栏目名称
-        private const string TypeChannelIndex = "ChannelIndex";			                            //栏目索引
-        private const string TypeTemplateName = "TemplateName";			                            //模板名称
-        private const string TypTemplateType = "TemplateType";			                            //模板类型
-        private const string TypeTopLevel = "TopLevel";			                                    //栏目级别
+        private const string TypeChannelIndex = "ChannelIndex";			                          //栏目索引
+        private const string TypeTemplateName = "TemplateName";			                          //模板名称
+        private const string TypTemplateType = "TemplateType";			                          //模板类型
+        private const string TypeTopLevel = "TopLevel";			                                  //栏目级别
         private const string TypeUpChannel = "UpChannel";			                                //上级栏目
-        private const string TypeSelf = "Self";			                                            //当前栏目
+        private const string TypeSelf = "Self";			                                          //当前栏目
         private const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                    //当前栏目或上级栏目
         private const string TypeCurrent = "Current";			                                    //当前栏目或上级栏目
         private const string TypeIndex = "Index";			                                        //当前页面为首页
         private const string TypeHasChildren = "HasChildren";			                            //是否下级栏目
-        private const string TypeGroupChannel = "GroupChannel";			                            //栏目组名称
-        private const string TypeGroupContent = "GroupContent";			                            //内容组名称
+        private const string TypeGroupChannel = "GroupChannel";			                          //栏目组名称
+        private const string TypeGroupContent = "GroupContent";			                          //内容组名称
         private const string TypeAddDate = "AddDate";			                                    //添加时间
-        private const string TypeLastModifiedDate = "LastModifiedDate";			                            //最后编辑时间（仅用于判断内容）
+        private const string TypeLastModifiedDate = "LastModifiedDate";			                  //最后编辑时间（仅用于判断内容）
         private const string TypeItemIndex = "ItemIndex";			                                //当前项序号
         private const string TypeOddItem = "OddItem";			                                    //奇数项
 
         private const string OperateEmpty = "Empty";
-        private const string OperateNotEmpty = "NotEmpty";			                                //值不为空
-        private const string OperateEquals = "Equals";			                                    //值等于
+        private const string OperateNotEmpty = "NotEmpty";			                              //值不为空
+        private const string OperateEquals = "Equals";			                                  //值等于
         private const string OperateNotEquals = "NotEquals";			                            //值不等于
         private const string OperateGreatThan = "GreatThan";			                            //值大于
-        private const string OperateLessThan = "LessThan";			                                //值小于
-        private const string OperateIn = "In";			                                            //值属于
-        private const string OperateNotIn = "NotIn";                                                //值不属于
-        private const string OperateContains = "Contains";			                                //值包含
-        private const string OperateNotContains = "NotContains";                                    //值不包含
+        private const string OperateLessThan = "LessThan";			                              //值小于
+        private const string OperateIn = "In";			                                          //值属于
+        private const string OperateNotIn = "NotIn";                                          //值不属于
+        private const string OperateContains = "Contains";			                              //值包含
+        private const string OperateNotContains = "NotContains";                              //值不包含
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
         {

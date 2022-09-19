@@ -10,6 +10,7 @@ using SSCMS.Core.StlParser.Utility;
 using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
+using Datory;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -46,52 +47,58 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var valueList = new List<string>();
+            Entity entity = null;
             var content = await parseManager.GetContentAsync();
-
             if (content != null)
             {
-                if (!string.IsNullOrEmpty(content.Get<string>(type)))
-                {
-                    valueList.Add(content.Get<string>(type));
-                }
+                entity = content;
+            }
+            else
+            {
+                entity = await parseManager.GetChannelAsync();
+            }
 
-                var countName = ColumnsManager.GetCountName(type);
-                var total = content.Get<int>(countName);
-                for (var i = 1; i <= total; i++)
-                {
-                    var extendName = ColumnsManager.GetExtendName(type, i);
-                    var extend = content.Get<string>(extendName);
-                    valueList.Add(extend);
-                }
+            if (!string.IsNullOrEmpty(entity.Get<string>(type)))
+            {
+                valueList.Add(entity.Get<string>(type));
+            }
 
-                //var extendAttributeName = ColumnsManager.GetExtendAttributeName(type);
-                //var extendValues = content.Get<string>(extendAttributeName);
-                //if (!string.IsNullOrEmpty(extendValues))
-                //{
-                //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
-                //    {
-                //        valueList.Add(extendValue);
-                //    }
-                //}
+            var countName = ColumnsManager.GetCountName(type);
+            var total = entity.Get<int>(countName);
+            for (var i = 1; i <= total; i++)
+            {
+                var extendName = ColumnsManager.GetExtendName(type, i);
+                var extend = entity.Get<string>(extendName);
+                valueList.Add(extend);
+            }
 
-                if (listInfo.StartNum > 1 || listInfo.TotalNum > 0)
+            //var extendAttributeName = ColumnsManager.GetExtendAttributeName(type);
+            //var extendValues = entity.Get<string>(extendAttributeName);
+            //if (!string.IsNullOrEmpty(extendValues))
+            //{
+            //    foreach (var extendValue in ListUtils.GetStringList(extendValues))
+            //    {
+            //        valueList.Add(extendValue);
+            //    }
+            //}
+
+            if (listInfo.StartNum > 1 || listInfo.TotalNum > 0)
+            {
+                if (listInfo.StartNum > 1)
                 {
-                    if (listInfo.StartNum > 1)
+                    var count = listInfo.StartNum - 1;
+                    if (count > valueList.Count)
                     {
-                        var count = listInfo.StartNum - 1;
-                        if (count > valueList.Count)
-                        {
-                            count = valueList.Count;
-                        }
-                        valueList.RemoveRange(0, count);
+                        count = valueList.Count;
                     }
+                    valueList.RemoveRange(0, count);
+                }
 
-                    if (listInfo.TotalNum > 0)
+                if (listInfo.TotalNum > 0)
+                {
+                    if (listInfo.TotalNum < valueList.Count)
                     {
-                        if (listInfo.TotalNum < valueList.Count)
-                        {
-                            valueList.RemoveRange(listInfo.TotalNum, valueList.Count - listInfo.TotalNum);
-                        }
+                        valueList.RemoveRange(listInfo.TotalNum, valueList.Count - listInfo.TotalNum);
                     }
                 }
             }
