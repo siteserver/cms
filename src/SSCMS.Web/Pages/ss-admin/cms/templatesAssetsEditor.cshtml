@@ -9,7 +9,7 @@
 }
 
 <div style="height: 10px"></div>
-<el-form ref="form" :model="form" :inline="true" size="small" :rules="{
+<el-form v-on:submit.native.prevent ref="form" :model="form" :inline="true" size="small" :rules="{
   path: [
     { required: true, message: '请输入文件路径', trigger: 'blur' }
   ]

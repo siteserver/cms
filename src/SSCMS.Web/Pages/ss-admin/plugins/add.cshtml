@@ -9,7 +9,7 @@
   </style>
 }
 
-<el-form :inline="true" size="mini">
+<el-form v-on:submit.native.prevent :inline="true" size="mini">
   <el-form-item label="关键字">
     <el-input v-model="keyword" placeholder="请输入关键字..."></el-input>
   </el-form-item>
@@ -49,7 +49,7 @@
           </el-badge>
         </el-link>
       </div>
-      <el-form size="mini" label-width="70px">
+      <el-form v-on:submit.native.prevent size="mini" label-width="70px">
         <el-form-item label="标识">
           <el-link :underline="false" type="primary" v-on:click="btnViewClick(item)">
             {{ item.extension.userName }}.{{ item.extension.name }}

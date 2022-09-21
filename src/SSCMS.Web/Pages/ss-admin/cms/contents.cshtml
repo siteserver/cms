@@ -102,7 +102,7 @@
             width="580"
             v-model="isAdvancedForm"
             trigger="click">
-            <el-form size="mini" :model="advancedForm" style="margin-top: 10px;" label-width="80px">
+            <el-form v-on:submit.native.prevent size="mini" :model="advancedForm" style="margin-top: 10px;" label-width="80px">
               <el-form-item label="审核状态">
                 <el-checkbox-group v-model="advancedForm.checkedLevels" v-on:change="btnSearchClick">
                   <el-checkbox v-for="level in checkedLevels" v-key="level.label" :label="level.label">{{level.text}}</el-checkbox>

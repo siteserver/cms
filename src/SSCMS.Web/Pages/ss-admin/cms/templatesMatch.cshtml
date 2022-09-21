@@ -9,7 +9,7 @@
   </style>
 }
 
-<el-form :inline="true">
+<el-form v-on:submit.native.prevent :inline="true">
   <el-form-item label="栏目名称">
     <el-input v-model="filterText" size="mini" placeholder="输入栏目进行过滤"></el-input>
   </el-form-item>

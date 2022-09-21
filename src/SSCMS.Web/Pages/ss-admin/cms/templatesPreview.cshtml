@@ -4,7 +4,7 @@
 <el-tabs tab-position="right" v-model="activeName">
   <el-tab-pane label="STL 标签" name="first">
 
-    <el-form :inline="true" :model="form" size="mini">
+    <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
       <el-form-item label="模板类型">
         <el-select v-model="form.templateType" placeholder="请选择">
           <el-option label="首页模板" value="IndexPageTemplate"></el-option>

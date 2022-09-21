@@ -9,7 +9,7 @@
 }
 
 <div style="height: 10px"></div>
-<el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="220px">
   <el-form-item label="管理后台名称" prop="adminTitle" :rules="{ required: true, message: '请输入管理后台名称' }">
     <el-input v-model="form.adminTitle"></el-input>
     <small class="tips">设置管理后台显示名称</small>

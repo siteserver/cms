@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form :inline="true" :model="formInline" size="mini">
+<el-form v-on:submit.native.prevent :inline="true" :model="formInline" size="mini">
   <el-form-item label="角色">
     <el-select v-model="formInline.role" placeholder="管理员角色">
       <el-option label="<全部角色>" value=""></el-option>
@@ -155,7 +155,7 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form ref="form" :model="permissionInfo" label-width="140px">
+    <el-form v-on:submit.native.prevent ref="form" :model="permissionInfo" label-width="140px">
       <el-form-item label="管理员级别">
         <el-select v-model="permissionInfo.adminLevel" placeholder="请选择管理员级别">
           <el-option v-if="isSuperAdmin" label="超级管理员" value="SuperAdmin"></el-option>
@@ -188,7 +188,7 @@
   size="50%">
   <div class="drawer__content">
     <br />
-    <el-form ref="uploadForm" label-width="200px">
+    <el-form v-on:submit.native.prevent ref="uploadForm" label-width="200px">
       <el-upload
         :drag="true"
         :limit="1"

@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <div style="height: 10px"></div>
-<el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="220px">
   <el-form-item label="自动删除日志">
     <el-radio v-model="form.isTimeThreshold" :label="true">启用</el-radio>
     <el-radio v-model="form.isTimeThreshold" :label="false">禁用</el-radio>

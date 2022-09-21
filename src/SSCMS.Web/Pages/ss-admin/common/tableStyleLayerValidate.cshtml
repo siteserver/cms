@@ -61,7 +61,7 @@ style="width: 100%">
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form ref="addForm" size="mini" label-position="top" :model="addForm" label-width="160px">
+    <el-form v-on:submit.native.prevent ref="addForm" size="mini" label-position="top" :model="addForm" label-width="160px">
       <el-form-item label="验证规则" prop="type" :rules="{ required: true, message: '请选择验证规则' }">
         <el-select v-model="addForm.type" v-on:change="handleRuleChange">
           <el-option v-for="rule in getAvailableRules()" :key="rule.value" :value="rule.value">{{ rule.value + '：' + rule.label }}</el-option>

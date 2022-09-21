@@ -197,7 +197,7 @@
   <el-main style="padding: 0; margin: 0">
     <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
 
-      <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="100px">
+      <el-form v-on:submit.native.prevent style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="100px">
         <el-form-item label="标题" prop="title" :rules="{ required: true, message: '请输入标题' }">
           <el-input
             v-model="form.title"
@@ -301,7 +301,7 @@
   width="60%"
   center>
 
-  <el-form ref="previewForm" :model="previewForm" label-position="top" size="small">
+  <el-form v-on:submit.native.prevent ref="previewForm" :model="previewForm" label-position="top" size="small">
     <el-form-item label="微信号(关注公众号后，才能接收图文消息预览)" prop="wxNames" :rules="{ required: true, message: '请输入微信号' }">
       <el-input
         type="textarea"

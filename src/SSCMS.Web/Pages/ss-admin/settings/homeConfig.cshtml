@@ -9,7 +9,7 @@
 }
 
 <div style="height: 10px"></div>
-<el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="220px">
   <el-form-item label="用户中心状态">
     <el-radio v-model="form.isHomeClosed" :label="false">启用用户中心</el-radio>
     <el-radio v-model="form.isHomeClosed" :label="true">禁用用户中心</el-radio>

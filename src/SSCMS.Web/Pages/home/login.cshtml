@@ -42,7 +42,7 @@
 
     <el-alert v-if="pageAlert" style="margin-bottom: 10px;" :closable="false" :type="pageAlert.type" v-html="pageAlert.title"></el-alert>
 
-    <el-form v-show="form.type == 'account'" ref="formAccount" :model="form" size="medium" label-width="0" status-icon>
+    <el-form v-on:submit.native.prevent v-show="form.type == 'account'" ref="formAccount" :model="form" size="medium" label-width="0" status-icon>
       <el-form-item prop="account" :rules="[{ required: true, message: '请输入用户名/手机号/邮箱' }]">
         <el-input ref="account" v-model="form.account" placeholder="请输入用户名/手机号/邮箱" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
           <template slot="prepend">
@@ -71,7 +71,7 @@
         </el-input>
       </el-form-item>
     </el-form>
-    <el-form v-show="form.type == 'mobile'" ref="formMobile" :model="form" size="medium" label-width="0" status-icon>
+    <el-form v-on:submit.native.prevent v-show="form.type == 'mobile'" ref="formMobile" :model="form" size="medium" label-width="0" status-icon>
       <el-form-item prop="mobile" :rules="[
         { required: true, message: '请输入手机号码' },
         { validator: utils.validateMobile, message: '请输入有效的手机号码' }

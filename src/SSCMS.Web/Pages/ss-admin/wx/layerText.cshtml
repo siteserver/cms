@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form ref="form" :model="form">
+<el-form v-on:submit.native.prevent ref="form" :model="form">
   <el-form-item label="" prop="text" :rules="{ required: true, message: '请输入内容' }">
     <el-input type="textarea" :rows="10" v-model="form.text"></el-input>
   </el-form-item>

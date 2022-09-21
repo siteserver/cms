@@ -12,7 +12,7 @@
 
 <el-row>
   <el-col :span="20">
-    <el-form size="mini" :inline="true">
+    <el-form v-on:submit.native.prevent size="mini" :inline="true">
       <el-form-item label="关键字">
         <el-input v-model="filterText" placeholder="请输入栏目名称/栏目Id"></el-input>
       </el-form-item>
@@ -270,7 +270,7 @@
   direction="rtl"
   size="90%">
   <div class="drawer__content">
-    <el-form ref="appendForm" :model="appendForm" size="small" label-width="120px">
+    <el-form v-on:submit.native.prevent ref="appendForm" :model="appendForm" size="small" label-width="120px">
       <el-form-item label="父栏目" prop="parentIds" :rules="{ required: true, message: '请选择父栏目' }">
         <el-cascader
           v-model="appendForm.parentIds"
@@ -329,7 +329,7 @@
     </el-alert>
 
     <br />
-    <el-form size="mini" ref="deleteForm" :model="deleteForm" label-width="160px">
+    <el-form v-on:submit.native.prevent size="mini" ref="deleteForm" :model="deleteForm" label-width="160px">
       <el-form-item>
         <el-radio v-model="deleteForm.deleteFiles" :label="false">保留生成的文件</el-radio>
         <el-radio v-model="deleteForm.deleteFiles" :label="true">删除生成的文件</el-radio>
@@ -362,7 +362,7 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form ref="importForm" size="small" :model="importForm" label-width="160px">
+    <el-form v-on:submit.native.prevent ref="importForm" size="small" :model="importForm" label-width="160px">
 
       <el-form-item label="栏目压缩包" prop="fileName" :rules="{ required: true, message: '请上传栏目压缩包' }">
         <el-upload
@@ -417,7 +417,7 @@
   direction="rtl"
   size="90%">
   <div class="drawer__content">
-    <el-form size="mini" ref="editForm" :model="form" label-width="200px">
+    <el-form v-on:submit.native.prevent size="mini" ref="editForm" :model="form" label-width="200px">
       <el-form-item label="栏目名称" prop="channelName" :rules="{ required: true, message: '请输入栏目名称' }">
         <el-input v-model="form.channelName" placeholder="请输入栏目名称"></el-input>
       </el-form-item>

@@ -12,7 +12,7 @@
 }
 
 <div style="height: 10px"></div>
-<el-form size="small" ref="form" :model="form" label-width="160px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="160px">
 
   @await Html.PartialAsync("_PartialForm")
   

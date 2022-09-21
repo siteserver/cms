@@ -35,7 +35,7 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-form size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="审核状态" prop="checkedLevel" :rules="{ required: true, message: '请选择审核状态' }">
     <el-select v-model="form.checkedLevel">
       <el-option v-for="level in checkedLevels" :value="level.value" :label="level.label"></el-option>

@@ -14,7 +14,7 @@
   v-on:row-click="toggleSelection">
   <el-table-column type="expand" width="25" align="right">
     <template slot-scope="scope">
-      <el-form size="mini" label-position="left" inline class="table-expand-form">
+      <el-form v-on:submit.native.prevent size="mini" label-position="left" inline class="table-expand-form">
         <el-form-item
           v-for="column in columns"
           :key="column.attributeName"

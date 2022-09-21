@@ -4,7 +4,7 @@
 <div style="height: 10px"></div>
 <el-row>
   <el-col :span="20">
-    <el-form :inline="true" size="mini">
+    <el-form v-on:submit.native.prevent :inline="true" size="mini">
       <el-form-item label="价格">
         <el-select v-on:change="priceChanged" v-model="price">
           <el-option value="" label="全部"></el-option>

@@ -66,7 +66,7 @@
   direction="rtl"
   size="50%">
   <div class="drawer__content">
-    <el-form size="small" ref="form" :model="form" label-width="150px">
+    <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="150px">
       <el-form-item v-if="!form.isUploadOnly" label="专题名称" prop="title" :rules="{
         required: true, message: '请输入专题名称'
       }">

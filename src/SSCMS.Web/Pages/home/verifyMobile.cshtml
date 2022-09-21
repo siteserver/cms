@@ -34,7 +34,7 @@
 
     <el-alert type="warning" title="为了保障账号安全，请验证您的手机号码" style="margin-bottom: 10px;"></el-alert>
 
-    <el-form ref="form" :model="form" size="medium" label-width="0" status-icon>
+    <el-form v-on:submit.native.prevent ref="form" :model="form" size="medium" label-width="0" status-icon>
       <el-form-item prop="mobile" :rules="[
         { required: true, message: '请输入手机号码' },
         { validator: utils.validateMobile, message: '请输入有效的手机号码' }

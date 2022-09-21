@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="排序字段" prop="attributeName" :rules="{ required: true, message: '请选择排序字段' }">
     <el-radio-group v-model="form.attributeName">
       <el-radio-button label="Id">内容Id</el-radio-button>

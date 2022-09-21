@@ -68,7 +68,7 @@
   size="50%">
   <div class="drawer__content">
     <br />
-    <el-form ref="uploadForm" label-width="200px">
+    <el-form v-on:submit.native.prevent ref="uploadForm" label-width="200px">
       <el-upload
         :drag="true"
         :limit="1"

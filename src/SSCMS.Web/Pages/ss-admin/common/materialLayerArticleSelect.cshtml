@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <el-row>
-  <el-form :inline="true" :model="form" size="mini">
+  <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
     <el-form-item label="搜索">
       <el-input v-model="form.keyword" placeholder="关键字"></el-input>
     </el-form-item>
@@ -12,7 +12,7 @@
   </el-form>
 </el-row>
 
-<el-form :inline="true" :model="form">
+<el-form v-on:submit.native.prevent :inline="true" :model="form">
   <el-form-item label="分组">
 
     <el-tag

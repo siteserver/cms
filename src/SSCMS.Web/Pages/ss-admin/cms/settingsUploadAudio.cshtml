@@ -3,7 +3,7 @@
 
 <div style="height: 10px;"></div>
 
-<el-form size="small" ref="form" :model="form" label-width="280px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="280px">
 
   <el-form-item label="音频上传文件夹" prop="audioUploadDirectoryName" :rules="{ required: true, message: '请输入音频上传文件夹' }">
     <el-input v-model="form.audioUploadDirectoryName" :disabled="isSafeMode" placeholder="请输入音频上传文件夹"></el-input>

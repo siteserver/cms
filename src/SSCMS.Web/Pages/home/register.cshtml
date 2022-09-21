@@ -22,7 +22,7 @@
       <span>用户注册</span>
     </div>
 
-    <el-form ref="form" :model="form" size="medium" label-width="100px" status-icon>
+    <el-form v-on:submit.native.prevent ref="form" :model="form" size="medium" label-width="100px" status-icon>
       <el-form-item label="用户名" prop="userName" :rules="[{ required: true, message: '请输入用户名' }]">
         <el-input v-model="form.userName"></el-input>
         <small class="tips">用户名是用户的唯一标识，注册后无法更改</small>

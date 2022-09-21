@@ -3,7 +3,7 @@
 
 <template v-if="pageType === 'columns'">
 
-  <el-form label-width="150px" size="mini">
+  <el-form v-on:submit.native.prevent label-width="150px" size="mini">
     <el-form-item label="表名称">
       {{ tableName }}
     </el-form-item>

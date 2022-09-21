@@ -62,7 +62,7 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form ref="editForm" size="small" :model="editForm" :rules="editRules" label-width="120px">
+    <el-form v-on:submit.native.prevent ref="editForm" size="small" :model="editForm" :rules="editRules" label-width="120px">
       <el-form-item label="站点名称" prop="siteName">
         <el-input v-model="editForm.siteName"></el-input>
       </el-form-item>
@@ -128,7 +128,7 @@
 
     <el-alert :title="'此操作将会删除站点 ' + deleteForm.siteName + '，且数据无法恢复，请谨慎操作！'" :closable="false" type="error"></el-alert>
     <br />
-    <el-form ref="deleteForm" size="small" :model="deleteForm" label-width="120px">
+    <el-form v-on:submit.native.prevent ref="deleteForm" size="small" :model="deleteForm" label-width="120px">
       <el-form-item label="站点名称">{{ deleteForm.siteName }}</el-form-item>
       <el-form-item label="文件夹">{{ deleteForm.dir }}</el-form-item>
       <el-form-item label="文件夹" prop="siteDir" :rules="{ required: true, message: '请输入站点文件夹' }">

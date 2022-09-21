@@ -7,7 +7,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="引用自">
     {{ sourceName }}
     <el-button size="small" type="primary" v-on:click="btnEditOriginalClick">编辑原始内容</el-button>

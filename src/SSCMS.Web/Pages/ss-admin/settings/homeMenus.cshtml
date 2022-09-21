@@ -84,7 +84,7 @@
         <el-button v-if="this.userMenu.id > 0" style="float: right; padding: 3px 0; margin-left: 10px" type="text" v-on:click="btnAddChildClick">新增下级菜单</el-button>
       </div>
       <div class="text item">
-        <el-form ref="userMenu" :model="userMenu" size="small" label-width="160px">
+        <el-form v-on:submit.native.prevent ref="userMenu" :model="userMenu" size="small" label-width="160px">
           <el-form-item label="菜单标题" prop="text" :rules="{ required: true, message: '请输入菜单标题' }">
             <el-input v-model="userMenu.text"></el-input>
           </el-form-item>

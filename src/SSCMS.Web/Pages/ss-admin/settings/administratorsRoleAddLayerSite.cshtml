@@ -13,7 +13,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form v-if="site" ref="form" size="small" status-icon label-width="160px">
+<el-form v-on:submit.native.prevent v-if="site" ref="form" size="small" status-icon label-width="160px">
   <el-form-item label="站点">
     {{site.siteName}}
   </el-form-item>

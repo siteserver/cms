@@ -20,9 +20,7 @@
   <el-main style="padding: 0; margin: 0">
     <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
       
-      <!-- <el-form style="margin: 10px 20px 20px 10px" size="small" label-position="left" label-width="80px"> -->
-      
-      <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="85px">
+      <el-form v-on:submit.native.prevent style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="85px">
         @await Html.PartialAsync("_PartialForm")
       </el-form>
 
@@ -81,7 +79,7 @@
 
             </el-collapse-item>
             <el-collapse-item title="内容链接" name="link">
-              <el-form size="small">
+              <el-form v-on:submit.native.prevent size="small">
                 <el-form-item label="链接类型">
                   <el-select v-model="form.linkType" placeholder="请选择链接类型" v-on:change="form.linkUrl = form.linkToChannel = '';">
                     <el-option v-for="linkType in linkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>

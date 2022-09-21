@@ -6,13 +6,13 @@
 
 <div style="height: 5px;"></div>
 
-<el-form :inline="true" size="small">
+<el-form v-on:submit.native.prevent :inline="true" size="small">
   <el-form-item v-for="o in dict" :key="o.key" :label="o.value">
     <el-link :underline="false" v-on:click="btnCopyClick(o.key)" type="primary">{{o.key}}</el-link>
   </el-form-item>
 </el-form>
 
-<el-form size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="页面命名规则" prop="rule" :rules="{ required: true, message: '请输入页面命名规则', trigger: 'blur' }">
     <el-input v-model="form.rule" placeholder="请输入页面命名规则"></el-input>
   </el-form-item>

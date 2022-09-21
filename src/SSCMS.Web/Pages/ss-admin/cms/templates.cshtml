@@ -21,7 +21,7 @@
 
   <el-container>
     <el-main>
-      <el-form :inline="true" size="small">
+      <el-form v-on:submit.native.prevent :inline="true" size="small">
         <el-form-item label="模板类型">
           <el-select v-model="templateType" v-on:change="reload" placeholder="请选择">
             <el-option label="<全部>" value="All"></el-option>

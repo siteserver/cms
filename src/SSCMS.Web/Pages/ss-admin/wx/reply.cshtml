@@ -68,7 +68,7 @@
 
   <el-row>
     <el-col :span="12">
-      <el-form :inline="true" :model="form" size="mini">
+      <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
         <el-form-item label="搜索规则名称">
           <el-input v-model="form.keyword" placeholder="请输入规则名称"></el-input>
         </el-form-item>
@@ -95,7 +95,7 @@
     style="width: 100%">
     <el-table-column type="expand" width="25" align="right">
       <template slot-scope="scope">
-        <el-form label-position="top">
+        <el-form v-on:submit.native.prevent label-position="top">
           <el-form-item
             label="关键词">
             <strong v-for="keyword in scope.row.keywords" style="margin-right: 15px;">

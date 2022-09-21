@@ -37,7 +37,7 @@
   <el-main>
     <el-row style="height: 80px; overflow: hidden;">
       <el-col :span="20">
-        <el-form :inline="true" size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent :inline="true" size="small" label-width="100px">
           <el-form-item label="站点" prop="siteId">
             <el-select
               ref="siteId"
@@ -75,7 +75,7 @@
         </el-form>
       </el-col>
       <el-col :span="4" align="right">
-        <el-form :inline="true" size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent :inline="true" size="small" label-width="100px">
           <el-form-item>
             <el-popover
               id="sortColumns"

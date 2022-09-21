@@ -72,7 +72,7 @@
         <el-button v-if="wxMenu.id > 0 && firstMenuIds.indexOf(wxMenu.parentId) === -1" style="float: right; padding: 3px 0; margin-left: 10px" type="text" v-on:click="btnAddChildClick">新增下级菜单</el-button>
       </div>
       <div class="text item">
-        <el-form ref="wxMenu" :model="wxMenu" size="small" label-width="160px">
+        <el-form v-on:submit.native.prevent ref="wxMenu" :model="wxMenu" size="small" label-width="160px">
           <el-form-item label="菜单标题" prop="text" :rules="{ required: true, message: '请输入菜单标题' }">
             <el-input v-model="wxMenu.text"></el-input>
             <div class="tips">字数最多：主菜单5个、子菜单19个</div>

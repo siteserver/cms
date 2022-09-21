@@ -28,7 +28,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form ref="form" :model="form" size="mini">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="mini">
   <el-form-item>
     <el-checkbox v-if="editorAttributeName" label="将图片显示在内容编辑器中" v-model="form.isEditor"></el-checkbox>
     <el-checkbox label="生成缩略图" v-model="form.isThumb"></el-checkbox>

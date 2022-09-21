@@ -14,7 +14,7 @@
   
   <div style="height: 10px"></div>
 
-  <el-form size="small" label-width="100px">
+  <el-form v-on:submit.native.prevent size="small" label-width="100px">
     <el-form-item label="站点" prop="siteId">
       <el-select
         ref="siteId"

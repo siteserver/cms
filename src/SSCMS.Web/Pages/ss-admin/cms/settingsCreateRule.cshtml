@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form :inline="true">
+<el-form v-on:submit.native.prevent :inline="true">
   <el-form-item label="关键字">
     <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
   </el-form-item>
@@ -107,7 +107,7 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form size="small" ref="editForm" :model="editForm" label-width="200px">
+    <el-form v-on:submit.native.prevent size="small" ref="editForm" :model="editForm" label-width="200px">
       <el-form-item label="栏目名称" prop="channelName">
         {{editForm.channelName}}
       </el-form-item>

@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form :inline="true" :model="form" size="mini">
+<el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
   <el-form-item label="从">
     <el-date-picker
       v-model="form.dateFrom"

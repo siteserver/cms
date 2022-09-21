@@ -28,7 +28,7 @@
 
 <template v-if="active === 0">
 
-  <el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+  <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="220px">
     <el-form-item label="站点">
       {{ site.siteName }}
     </el-form-item>
@@ -51,7 +51,7 @@
 
 <template v-else-if="active === 1">
 
-  <el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+  <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="220px">
     <el-form-item label="站点">
       {{ site.siteName }}
     </el-form-item>
@@ -79,7 +79,7 @@
 
 <template v-else-if="active === 2">
 
-  <el-form ref="form" :model="form" size="small" status-icon label-width="220px">
+  <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="220px">
     <el-form-item label="站点">
       {{ site.siteName }}
     </el-form-item>

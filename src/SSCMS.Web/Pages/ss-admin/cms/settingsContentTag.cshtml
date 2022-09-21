@@ -51,7 +51,7 @@
   direction="rtl"
   size="50%">
   <div class="drawer__content">
-    <el-form size="small" ref="form" :model="form" label-width="150px" label-position="top">
+    <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="150px" label-position="top">
       <el-form-item label="内容标签" prop="tagNames" :rules="{ required: true, message: '请输入内容标签' }">
         <el-input
           type="textarea"

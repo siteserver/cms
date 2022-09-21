@@ -4,7 +4,7 @@
 <el-alert>提示! 选择当栏目未设置跨站转发类型时采用的默认设置，同时设置跨站转发到本站点的内容是否需要审核</el-alert>
   <div style="height: 10px"></div>
 
-  <el-form size="small" ref="form" :model="form" label-width="280px">
+  <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="280px">
 
     <el-form-item label="跨站转发到本站点的内容是否需要审核">
       <el-radio-group v-model="form.isCrossSiteTransChecked">

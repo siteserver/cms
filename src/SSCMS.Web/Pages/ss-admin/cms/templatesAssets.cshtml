@@ -12,7 +12,7 @@
 
   <el-container>
     <el-main>
-      <el-form :inline="true" size="small">
+      <el-form v-on:submit.native.prevent :inline="true" size="small">
         <el-form-item label="文件夹路径" prop="directoryPaths">
           <el-cascader
             v-model="directoryPaths"
@@ -97,7 +97,7 @@
   direction="rtl"
   size="50%">
   <div class="drawer__content">
-    <el-form v-if="fileType == 'html'" ref="configForm" :model="configForm" label-width="150px" :rules="{
+    <el-form v-on:submit.native.prevent v-if="fileType == 'html'" ref="configForm" :model="configForm" label-width="150px" :rules="{
         includeDir: [
           { required: true, message: '请输入包含文件文件夹路径', trigger: 'blur' }
         ]
@@ -112,7 +112,7 @@
         <el-button size="small" v-on:click="btnConfigCancelClick">取 消</el-button>
       </div>
     </el-form>
-    <el-form v-else ref="configForm" :model="configForm" label-width="150px" :rules="{
+    <el-form v-on:submit.native.prevent v-else ref="configForm" :model="configForm" label-width="150px" :rules="{
       cssDir: [
         { required: true, message: '请输入样式文件文件夹路径', trigger: 'blur' }
       ],

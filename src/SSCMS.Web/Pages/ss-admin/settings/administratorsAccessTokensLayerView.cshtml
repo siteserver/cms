@@ -3,7 +3,7 @@
 
 <el-alert type="warning">API密钥属于敏感信息，请妥善保管不要泄露；如果怀疑信息泄露，请重设密钥。</el-alert>
 
-<el-form style="margin-top: 10px;" label-width="120px" size="mini">
+<el-form v-on:submit.native.prevent style="margin-top: 10px;" label-width="120px" size="mini">
   <el-form-item label="名称">
     {{ token.title }}
   </el-form-item>

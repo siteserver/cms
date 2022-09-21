@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <div v-if="logId">
-  <el-form :inline="true" size="small">
+  <el-form v-on:submit.native.prevent :inline="true" size="small">
     <el-form-item label="历史版本">
       <el-select style="width: 450px" v-model="logId" v-on:change="handleLogIdChange" placeholder="请选择历史版本">
         <el-option v-for="log in logs" :key="log.key" :label="log.value" :value="log.key"></el-option>

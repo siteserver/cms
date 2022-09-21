@@ -9,7 +9,7 @@
 }
 
 <div style="height: 10px;"></div>
-<el-form ref="form" :model="form" size="small" status-icon label-width="140px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="140px">
   <el-form-item label="用户名">
     <el-input v-model="form.userName" disabled></el-input>
   </el-form-item>

@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form ref="form" :model="form" label-width="100px" size="small">
+<el-form v-on:submit.native.prevent ref="form" :model="form" label-width="100px" size="small">
   <el-form-item label="导出类型">
     <el-radio v-model="form.exportType" label="zip">导出压缩包</el-radio>
     <el-radio v-model="form.exportType" label="excel">导出Excel文件</el-radio>

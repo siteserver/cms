@@ -10,7 +10,7 @@
 
 <el-tabs v-model="activeName">
   <el-tab-pane label="属性" name="attributes">
-    <el-form label-width="120px" size="mini">
+    <el-form v-on:submit.native.prevent label-width="120px" size="mini">
       <el-form-item label="内容标题">
         <el-link v-if="content.checked && content.channelId > 0" type="primary" :underline="false" :href="getContentUrl(content)" target="_blank" v-html="content.title" v-on:click.stop.native></el-link>
         <span v-else v-html="content.title"></span>

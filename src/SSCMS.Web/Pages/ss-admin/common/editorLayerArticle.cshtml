@@ -21,7 +21,7 @@
 <el-row>
   <el-col :span="18">
     <el-row>
-      <el-form :inline="true" :model="form" size="mini">
+      <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
         <el-form-item label="搜索">
           <el-input v-model="form.keyword" placeholder="关键字"></el-input>
         </el-form-item>
@@ -44,7 +44,7 @@
   </el-col>
 </el-row>
 <el-row>
-  <el-form :inline="true" :model="form" size="mini">
+  <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
     <el-tag
       v-for="group in groups"
       :key="group.id"
@@ -123,7 +123,7 @@
 </div>
 
 <el-dialog title="图文展示方式" :visible.sync="isSubmitForm">
-  <el-form ref="submitForm" :model="submitForm" :rules="{
+  <el-form v-on:submit.native.prevent ref="submitForm" :model="submitForm" :rules="{
     linkText: [
       { required: true, message: '请输入链接文字', trigger: 'blur' }
     ],

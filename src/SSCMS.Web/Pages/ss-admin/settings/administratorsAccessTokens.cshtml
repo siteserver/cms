@@ -55,7 +55,7 @@ style="width: 100%">
   direction="rtl"
   size="70%">
   <div class="drawer__content">
-    <el-form ref="form" :model="form" size="small" label-width="120px">
+    <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" label-width="120px">
       <el-form-item label="名称" prop="title" :rules="{ required: true, message: '请输入名称' }">
         <el-input v-model="form.title"></el-input>
       </el-form-item>

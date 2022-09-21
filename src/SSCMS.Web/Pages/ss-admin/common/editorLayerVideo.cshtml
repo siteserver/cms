@@ -10,7 +10,7 @@
   </style>
 }
 
-<el-form ref="form" :model="form" size="small">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small">
 
   <el-form-item>
     <el-radio-group v-model="form.type">

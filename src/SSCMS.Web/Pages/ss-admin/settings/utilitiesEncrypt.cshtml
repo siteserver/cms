@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <div style="height: 10px"></div>
-<el-form ref="form" :model="form" size="small" status-icon label-width="160px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="160px">
   <el-form-item label="操作">
     <el-radio v-model="form.isEncrypt" :label="true">加密</el-radio>
     <el-radio v-model="form.isEncrypt" :label="false">解密</el-radio>

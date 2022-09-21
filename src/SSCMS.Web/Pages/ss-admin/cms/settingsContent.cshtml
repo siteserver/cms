@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <div style="height: 10px"></div>
-<el-form size="small" ref="form" :model="form" label-width="200px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="200px">
   <el-form-item label="编辑器外部图片">
     <el-radio-group v-model="form.isSaveImageInTextEditor">
       <el-radio :label="true">自动保存外部图片</el-radio>

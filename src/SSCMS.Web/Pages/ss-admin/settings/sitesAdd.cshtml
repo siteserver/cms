@@ -34,7 +34,7 @@
     <div class="drawer__content">
       <br />
 
-      <el-form ref="uploadForm" label-width="200px">
+      <el-form v-on:submit.native.prevent ref="uploadForm" label-width="200px">
         <el-upload
           :drag="true"
           :limit="1"
@@ -88,7 +88,7 @@
 
   <el-row>
     <el-col :span="20">
-      <el-form :inline="true" size="mini">
+      <el-form v-on:submit.native.prevent :inline="true" size="mini">
         <el-form-item label="价格">
           <el-select v-on:change="priceChanged" v-model="price">
             <el-option value="" label="全部"></el-option>
@@ -197,7 +197,7 @@
 
   <div style="height: 10px"></div>
 
-  <el-form size="small" ref="form" :model="form" label-width="150px">
+  <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="150px">
     <el-form-item label="站点名称" prop="siteName" :rules="{ required: true, message: '请输入站点名称' }">
       <el-input v-model="form.siteName" placeholder="请输入站点名称"></el-input>
     </el-form-item>

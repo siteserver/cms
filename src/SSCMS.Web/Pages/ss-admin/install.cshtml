@@ -97,7 +97,7 @@
 
   <template v-if="pageIndex === 2">
 
-    <el-form v-if="containerized" size="medium" label-width="150px">
+    <el-form v-on:submit.native.prevent v-if="containerized" size="medium" label-width="150px">
       <el-form-item label="数据库类型">
         {{ databaseType }}
       </el-form-item>
@@ -106,7 +106,7 @@
       </el-form-item>
     </el-form>
 
-    <el-form v-else ref="databaseForm" size="medium" :model="databaseForm" label-width="150px">
+    <el-form v-on:submit.native.prevent v-else ref="databaseForm" size="medium" :model="databaseForm" label-width="150px">
       <el-form-item label="数据库类型" prop="databaseType" :rules="{ required: true, message: '请选择数据库类型' }">
         <el-radio-group v-model="databaseForm.databaseType">
           <el-radio-button v-for="databaseType in databaseTypes" :label="databaseType.value">{{ databaseType.label }}</el-radio-button>
@@ -160,7 +160,7 @@
 
   <template v-if="pageIndex === 3">
 
-    <el-form v-if="containerized" size="medium" label-width="150px">
+    <el-form v-on:submit.native.prevent v-if="containerized" size="medium" label-width="150px">
       <el-form-item label="缓存类型">
         {{ redisConnectionString ? 'Redis缓存' : '默认缓存' }}
       </el-form-item>
@@ -169,7 +169,7 @@
       </el-form-item>
     </el-form>
 
-    <el-form v-else ref="redisForm" size="medium" :model="redisForm" label-width="150px">
+    <el-form v-on:submit.native.prevent v-else ref="redisForm" size="medium" :model="redisForm" label-width="150px">
       <el-form-item label="缓存类型" prop="isRedis" :rules="{ required: true, message: '请选择缓存类型' }">
         <el-radio-group v-model="redisForm.isRedis">
           <el-radio-button :label="false">默认缓存</el-radio-button>
@@ -216,7 +216,7 @@
 
   <template v-if="pageIndex === 4">
 
-    <el-form ref="adminForm" size="medium" :model="adminForm" label-width="150px">
+    <el-form v-on:submit.native.prevent ref="adminForm" size="medium" :model="adminForm" label-width="150px">
       <el-form-item label="超级管理员账号" prop="userName" :rules="[{ required: true, message: '请输入超级管理员账号' }]">
         <el-input v-model="adminForm.userName" placeholder="请填写超级管理员账号"></el-input>
         <small class="tips">账号用于登录后台系统</small>
