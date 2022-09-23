@@ -51,6 +51,16 @@ namespace SSCMS.Utils
             return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
         }
 
+        public static (bool, T) ToEnum<T>(string value) where T : struct
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return (false, default(T));
+            }
+
+            return Enum.TryParse<T>(value, true, out var result) ? (true, result) : (false, default(T));
+        }
+
         public static int ToInt(string intStr, int defaultValue = 0)
         {
             if (!int.TryParse(intStr?.Trim().TrimStart('0'), out var i))
