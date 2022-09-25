@@ -17,12 +17,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
         private const string RouteUpload = "common/form/layerImageUpload/actions/upload";
 
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
 
-        public LayerImageUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
+        public LayerImageUploadController(IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
         {
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
             _materialImageRepository = materialImageRepository;
         }

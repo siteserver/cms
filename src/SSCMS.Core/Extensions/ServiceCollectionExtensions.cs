@@ -113,6 +113,7 @@ namespace SSCMS.Core.Extensions
             services.AddScoped<ICensorManager, CensorManager>();
             services.AddScoped<IMailManager, MailManager>();
             services.AddScoped<ISmsManager, SmsManager>();
+            services.AddScoped<IStorageManager, StorageManager>();
         }
 
         public static void AddWxManager(this IServiceCollection services, IConfiguration configuration)

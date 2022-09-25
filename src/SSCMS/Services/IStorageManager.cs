@@ -12,7 +12,7 @@ namespace SSCMS.Services
 
         Task SyncAllAsync(int siteId);
 
-        Task SyncAsync(int siteId, string filePath);
+        Task<(bool, string)> SyncAsync(int siteId, string filePath);
 
         void ClearAllTask(int siteId);
 

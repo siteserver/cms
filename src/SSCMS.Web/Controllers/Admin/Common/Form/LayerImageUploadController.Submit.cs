@@ -31,6 +31,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                     var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                     var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                    if (await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Images))
+                    {
+                        var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                        if (success)
+                        {
+                            virtualUrl = imageUrl = url;
+                        }
+                    }
 
                     if (request.IsMaterial)
                     {

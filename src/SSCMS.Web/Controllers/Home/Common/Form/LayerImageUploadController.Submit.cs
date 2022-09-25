@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Enums;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Common.Form
@@ -29,6 +30,14 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
 
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                 var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                if (await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Images))
+                {
+                    var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        virtualUrl = imageUrl = url;
+                    }
+                }
 
                 if (request.IsThumb)
                 {
