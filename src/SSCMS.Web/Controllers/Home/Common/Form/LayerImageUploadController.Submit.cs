@@ -18,6 +18,8 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
+            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Images);
+
             var result = new List<SubmitResult>();
             foreach (var filePath in request.FilePaths)
             {
@@ -30,7 +32,7 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
 
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                 var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
-                if (await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Images))
+                if (isAutoSync)
                 {
                     var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
                     if (success)
@@ -46,8 +48,16 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
 
                     var thumbnailVirtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, localSmallFilePath);
                     var thumbnailUrl = await _pathManager.ParseSiteUrlAsync(site, thumbnailVirtualUrl, true);
-
                     _pathManager.ResizeImageByMax(filePath, localSmallFilePath, request.ThumbWidth, request.ThumbHeight);
+
+                    if (isAutoSync)
+                    {
+                        var (success, url) = await _storageManager.SyncAsync(request.SiteId, localSmallFilePath);
+                        if (success)
+                        {
+                            thumbnailVirtualUrl = thumbnailUrl = url;
+                        }
+                    }
 
                     if (request.IsLinkToOriginal)
                     {
