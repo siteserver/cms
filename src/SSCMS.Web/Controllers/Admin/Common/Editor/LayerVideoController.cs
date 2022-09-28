@@ -16,11 +16,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private const string RouteUploadImage = "common/editor/layerVideo/actions/uploadImage";
 
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoController(IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerVideoController(IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository)
         {
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
         }
 

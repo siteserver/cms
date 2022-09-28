@@ -17,6 +17,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
+            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Images);
+
             var result = new List<SubmitResult>();
             foreach (var filePath in request.FilePaths)
             {
@@ -28,6 +30,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
 
                 var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+                if (isAutoSync)
+                {
+                    var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        imageUrl = url;
+                    }
+                }
 
                 if (request.IsMaterial)
                 {
@@ -56,6 +66,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                     var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
                     var thumbnailUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localSmallFilePath, true);
+                    if (isAutoSync)
+                    {
+                        var (success, url) = await _storageManager.SyncAsync(request.SiteId, localSmallFilePath);
+                        if (success)
+                        {
+                            thumbnailUrl = url;
+                        }
+                    }
 
                     var width = request.ThumbWidth;
                     var height = request.ThumbHeight;

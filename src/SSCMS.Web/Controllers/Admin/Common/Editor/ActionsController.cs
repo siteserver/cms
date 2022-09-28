@@ -21,11 +21,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private const string RouteActionsUploadScrawl = "common/editor/actions/uploadScrawl";
 
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
 
-        public ActionsController(IPathManager pathManager, ISiteRepository siteRepository)
+        public ActionsController(IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository)
         {
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
         }
     }

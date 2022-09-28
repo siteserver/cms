@@ -49,6 +49,15 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             await _pathManager.UploadAsync(file, filePath);
 
             var fileUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Videos);
+            if (isAutoSync)
+            {
+                var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                if (success)
+                {
+                    fileUrl = url;
+                }
+            }
 
             return new UploadVideoResult
             {

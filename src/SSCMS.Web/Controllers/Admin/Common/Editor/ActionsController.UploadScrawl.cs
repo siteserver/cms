@@ -40,6 +40,15 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             await _pathManager.UploadAsync(bytes, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var isAutoSync = await _storageManager.IsAutoSyncAsync(siteId, SyncType.Images);
+            if (isAutoSync)
+            {
+                var (success, url) = await _storageManager.SyncAsync(siteId, filePath);
+                if (success)
+                {
+                    imageUrl = url;
+                }
+            }
 
             return new UploadScrawlResult
             {

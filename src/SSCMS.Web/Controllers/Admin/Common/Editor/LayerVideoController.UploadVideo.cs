@@ -38,13 +38,22 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             await _pathManager.UploadAsync(file, filePath);
 
-            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var videoUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Videos);
+            if (isAutoSync)
+            {
+                var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                if (success)
+                {
+                    videoUrl = url;
+                }
+            }
 
             return new UploadResult
             {
                 Name = fileName,
                 Path = filePath,
-                Url = imageUrl
+                Url = videoUrl
             };
         }
     }
