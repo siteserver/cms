@@ -132,6 +132,7 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("bairong_ErrorLog");
             _excludes.Add("siteserver_ErrorLog");
             _excludes.Add("siteserver_Log");
+            _excludes.Add("siteserver_SiteLog");
             _excludes.Add("siteserver_Tracking");
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);

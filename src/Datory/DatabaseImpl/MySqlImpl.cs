@@ -174,6 +174,9 @@ namespace Datory.DatabaseImpl
                 case "varchar":
                     dataType = DataType.VarChar;
                     break;
+                case "tinyint":
+                    dataType = DataType.Boolean;
+                    break;
             }
 
             return dataType;
