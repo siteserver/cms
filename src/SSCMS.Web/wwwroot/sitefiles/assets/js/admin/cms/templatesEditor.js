@@ -395,6 +395,9 @@ var $vue = new Vue({
         window.close();
       }
     });
+    utils.ctrlSave(function() {
+      $this.btnSubmitClick();
+    });
     this.winHeight = $(window).height();
     this.apiGet();
   }

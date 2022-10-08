@@ -174,17 +174,17 @@ namespace SSCMS.Cli
             {
                 await WriteUtils.PrintErrorAsync(ex.Message);
 
-                //var errorLogFilePath = CliUtils.CreateErrorLogFile("siteserver", _settingsManager);
-
-                //await CliUtils.AppendErrorLogsAsync(errorLogFilePath, new List<TextLogInfo>
-                //{
-                //    new TextLogInfo
-                //    {
-                //        DateTime = DateTime.Now,
-                //        Detail = "Console Error",
-                //        Exception = ex
-                //    }
-                //});
+                try
+                {
+                    var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
+                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                    {
+                        DateTime = DateTime.Now,
+                        Detail = ex.Message,
+                        Exception = ex
+                    });
+                }
+                catch { }
             }
         }
 

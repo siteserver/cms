@@ -619,6 +619,16 @@ var utils = {
     });
   },
 
+  ctrlSave: function (submitFn) {
+    $(document).keydown(function (e) {
+      var c = e.which || e.keyCode;
+      if (e.ctrlKey && c == 83) {
+        e.preventDefault();
+        submitFn && submitFn();
+      }
+    });
+  },
+
   validateMobile: function (rule, value, callback) {
     if (!value) {
       callback();
