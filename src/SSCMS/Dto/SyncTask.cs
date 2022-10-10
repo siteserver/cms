@@ -1,4 +1,4 @@
-namespace SSCMS.Storage.Models
+namespace SSCMS.Dto
 {
     public class SyncTask<T> where T : class, new()
     {
