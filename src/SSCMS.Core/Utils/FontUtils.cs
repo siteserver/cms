@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using SixLabors.Fonts;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
@@ -20,7 +21,8 @@ namespace SSCMS.Core.Utils
                 "Fonts/arialbd.ttf",
                 "Fonts/arialbi.ttf",
                 "Fonts/ariali.ttf",
-                "Fonts/ariblk.ttf"
+                "Fonts/ariblk.ttf",
+                "Fonts/simhei.ttf",
             };
 
             var embeddedProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
@@ -38,6 +40,12 @@ namespace SSCMS.Core.Utils
         public static List<string> GetFontFamilies()
         {
             return Fonts.Families.Select(x => x.Name).ToList();
+        }
+
+        public static FontFamily GetFont(string fontName)
+        {
+            var fonts = Fonts.Families.Where(x => StringUtils.EqualsIgnoreCase(x.Name, fontName)).ToList();
+            return fonts.Count == 0 ? DefaultFont : fonts.First();
         }
 
         public static FontFamily DefaultFont => Fonts.Families.First();

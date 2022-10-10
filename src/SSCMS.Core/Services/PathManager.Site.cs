@@ -1315,7 +1315,7 @@ namespace SSCMS.Core.Services
                         {
                             if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                OldImageUtils.AddImageWaterMark(imagePath, await ParseSitePathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, await ParseSitePathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
@@ -1323,7 +1323,7 @@ namespace SSCMS.Core.Services
                             if (!string.IsNullOrEmpty(site.WaterMarkFormatString))
                             {
                                 var now = DateTime.Now;
-                                OldImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                ImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                     }

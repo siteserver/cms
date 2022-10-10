@@ -78,9 +78,9 @@ namespace SSCMS.Models
 
         public string WaterMarkFormatString { get; set; }
 
-        public string WaterMarkFontName { get; set; }
+        public string WaterMarkFontName { get; set; } = "SimHei";
 
-        public int WaterMarkFontSize { get; set; } = 12;
+        public int WaterMarkFontSize { get; set; } = 18;
 
         public string WaterMarkImagePath { get; set; }
 

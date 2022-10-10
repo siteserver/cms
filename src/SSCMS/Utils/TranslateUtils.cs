@@ -96,6 +96,19 @@ namespace SSCMS.Utils
             return i;
         }
 
+        public static float ToFloat(string intStr, float defaultValue = 0)
+        {
+            if (!float.TryParse(intStr?.Trim(), out var i))
+            {
+                i = defaultValue;
+            }
+            if (i < 0)
+            {
+                i = defaultValue;
+            }
+            return i;
+        }
+
         public static bool ToBool(string boolStr)
         {
             if (!bool.TryParse(boolStr?.Trim(), out var boolean))
