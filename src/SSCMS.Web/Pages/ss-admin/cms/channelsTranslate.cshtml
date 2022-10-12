@@ -54,7 +54,7 @@
             v-model="form.transChannelIds"
             filterable
             :options="transChannels"
-            :props="{ checkStrictly: true }"
+            :props="{ checkStrictly: true, multiple: true }"
             style="width: 100%;"
             placeholder="请选择栏目">
           </el-cascader>
