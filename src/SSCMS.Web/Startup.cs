@@ -307,16 +307,16 @@ namespace SSCMS.Web
                 //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
                 ;
 
-            if (!settingsManager.IsSafeMode)
-            {
-                app.UseOpenApi();
-                app.UseSwaggerUi3();
-                app.UseReDoc(settings =>
-                {
-                    settings.Path = "/api/docs";
-                    settings.DocumentPath = "/swagger/v1/swagger.json";
-                }); 
-            }
+            // if (!settingsManager.IsSafeMode)
+            // {
+            //     app.UseOpenApi();
+            //     app.UseSwaggerUi3();
+            //     app.UseReDoc(settings =>
+            //     {
+            //         settings.Path = "/api/docs";
+            //         settings.DocumentPath = "/swagger/v1/swagger.json";
+            //     }); 
+            // }
         }
     }
 }

@@ -26,34 +26,17 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             }
 
             var original = Path.GetFileName(file.FileName);
-            var fileName = _pathManager.GetUploadFileName(site, original);
-
-            if (!_pathManager.IsImageExtensionAllowed(site, PathUtils.GetExtension(fileName)))
+            var (success, filePath, errorMessage) = await _pathManager.UploadImageAsync(site, file);
+            if (!success)
             {
-                return new UploadImageResult
-                {
-                    Error = Constants.ErrorImageExtensionAllowed
-                };
+                return this.Error(errorMessage);
             }
-            if (!_pathManager.IsImageSizeAllowed(site, file.Length))
-            {
-                return new UploadImageResult
-                {
-                    Error = Constants.ErrorImageSizeAllowed
-                };
-            }
-
-            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
-            var filePath = PathUtils.Combine(localDirectoryPath, fileName);
-
-            await _pathManager.UploadAsync(file, filePath);
-            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Images);
             if (isAutoSync)
             {
-                var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                (success, var url) = await _storageManager.SyncAsync(request.SiteId, filePath);
                 if (success)
                 {
                     imageUrl = url;

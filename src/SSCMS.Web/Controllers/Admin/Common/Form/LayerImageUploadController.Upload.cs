@@ -25,24 +25,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             if (siteId > 0)
             {
                 var site = await _siteRepository.GetAsync(siteId);
-                // if (!_pathManager.IsImageExtensionAllowed(site, extName))
-                // {
-                //     return this.Error(Constants.ErrorImageExtensionAllowed);
-                // }
-                // if (!_pathManager.IsImageSizeAllowed(site, file.Length))
-                // {
-                //     return this.Error(Constants.ErrorImageSizeAllowed);
-                // }
 
-                // var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
-                // filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
-
-                // await _pathManager.UploadAsync(file, filePath);
-                // await _pathManager.AddWaterMarkAsync(site, filePath);
-
-                var success = false;
-                var errorMessage = string.Empty;
-                (success, filePath, errorMessage) = await _pathManager.UploadImageAsync(site, file);
+                (var success, filePath, var errorMessage) = await _pathManager.UploadImageAsync(site, file);
                 if (!success)
                 {
                     return this.Error(errorMessage);

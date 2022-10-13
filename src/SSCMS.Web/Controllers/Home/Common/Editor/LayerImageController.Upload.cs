@@ -25,22 +25,6 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
             }
 
             var fileName = PathUtils.GetFileName(file.FileName);
-
-            // var extName = PathUtils.GetExtension(fileName);
-            // if (!_pathManager.IsImageExtensionAllowed(site, extName))
-            // {
-            //     return this.Error(Constants.ErrorImageExtensionAllowed);
-            // }
-            // if (!_pathManager.IsImageSizeAllowed(site, file.Length))
-            // {
-            //     return this.Error(Constants.ErrorImageSizeAllowed);
-            // }
-
-            // var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
-            // var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
-
-            // await _pathManager.UploadAsync(file, filePath);
-            // await _pathManager.AddWaterMarkAsync(site, filePath);
             var (success, filePath, errorMessage) = await _pathManager.UploadImageAsync(site, file);
             if (!success)
             {

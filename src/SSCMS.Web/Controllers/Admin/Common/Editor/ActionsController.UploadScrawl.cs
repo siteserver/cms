@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
@@ -38,6 +39,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var filePath = PathUtils.Combine(localDirectoryPath, fileName);
 
             await _pathManager.UploadAsync(bytes, filePath);
+            if (site.IsImageAutoResize)
+            {
+                ImageUtils.ResizeImageIfExceeding(filePath, site.ImageAutoResizeWidth);
+            }
+            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var isAutoSync = await _storageManager.IsAutoSyncAsync(siteId, SyncType.Images);
