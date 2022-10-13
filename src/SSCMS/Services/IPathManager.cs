@@ -29,5 +29,7 @@ namespace SSCMS.Services
         Task UploadAsync(IFormFile file, string filePath);
 
         Task UploadAsync(byte[] bytes, string filePath);
+
+        Task<(bool success, string filePath, string errorMessage)> UploadImageAsync(Site site, IFormFile file);
     }
 }

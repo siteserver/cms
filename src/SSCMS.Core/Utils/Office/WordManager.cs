@@ -90,6 +90,7 @@ namespace SSCMS.Core.Utils.Office
             using (var memoryStream = new MemoryStream())
             {
                 memoryStream.Write(byteArray, 0, byteArray.Length);
+
                 using (var wDoc = WordprocessingDocument.Open(memoryStream, true))
                 {
                     var part = wDoc.CoreFilePropertiesPart;

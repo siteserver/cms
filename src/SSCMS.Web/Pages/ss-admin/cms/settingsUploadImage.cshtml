@@ -33,17 +33,19 @@
   ]">
     <el-input v-model.number="form.imageUploadTypeMaxSize" placeholder="请输入上传图片最大大小"></el-input>
   </el-form-item>
-  <el-form-item label="缩略图（小）最大宽度（像素）" prop="photoSmallWidth" :rules="[
-    { required: true, message: '请输入缩略图（小）最大宽度' },
-    { validator: utils.validateInt }
-  ]">
-    <el-input v-model.number="form.photoSmallWidth" placeholder="请输入缩略图（小）最大宽度"></el-input>
+  <el-form-item label="超出尺寸自动缩小">
+    <el-radio-group v-model="form.isImageAutoResize">
+      <el-radio :label="true">超出尺寸自动缩小</el-radio>
+      <el-radio :label="false">保持文件不变</el-radio>
+    </el-radio-group>
+    <div class="tips">本设置只影响新上传的图片, 设置更改之前的图片文件仍保持不变</div>
   </el-form-item>
-  <el-form-item label="缩略图（中）最大宽度（像素）" prop="photoMiddleWidth" :rules="[
-    { required: true, message: '请输入缩略图（中）最大宽度' },
+  <el-form-item v-if="form.isImageAutoResize" label="自动缩小宽度（像素）" prop="imageAutoResizeWidth" :rules="[
+    { required: true, message: '自动缩小宽度' },
     { validator: utils.validateInt }
   ]">
-    <el-input v-model.number="form.photoMiddleWidth" placeholder="请输入缩略图（中）最大宽度"></el-input>
+    <el-input v-model.number="form.imageAutoResizeWidth" placeholder="自动缩小宽度"></el-input>
+    <div class="tips">当图片宽度超出自动缩小宽度时，系统将把图片缩小为自动缩小宽度</div>
   </el-form-item>
 
   <el-form-item>

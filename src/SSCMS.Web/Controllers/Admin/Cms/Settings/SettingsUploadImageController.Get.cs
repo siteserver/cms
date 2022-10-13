@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
-using SSCMS.Models;
 using SSCMS.Core.Utils;
 using SSCMS.Configuration;
 
@@ -34,8 +33,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 IsImageUploadChangeFileName = site.IsImageUploadChangeFileName,
                 ImageUploadExtensions = imageUploadExtensions,
                 ImageUploadTypeMaxSize = site.ImageUploadTypeMaxSize,
-                PhotoSmallWidth = site.PhotoSmallWidth,
-                PhotoMiddleWidth = site.PhotoMiddleWidth,
+                IsImageAutoResize = site.IsImageAutoResize,
+                ImageAutoResizeWidth = site.ImageAutoResizeWidth,
             };
         }
     }

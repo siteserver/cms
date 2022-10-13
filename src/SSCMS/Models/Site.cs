@@ -60,10 +60,6 @@ namespace SSCMS.Models
 
         public bool IsAutoCheckKeywords { get; set; }
 
-        public int PhotoSmallWidth { get; set; } = 70;
-
-        public int PhotoMiddleWidth { get; set; } = 400;
-
         public bool IsWaterMark { get; set; }
 
         public bool IsImageWaterMark { get; set; }
@@ -209,6 +205,10 @@ namespace SSCMS.Models
         public string ImageUploadExtensions { get; set; } = Constants.DefaultImageUploadExtensions;
 
         public int ImageUploadTypeMaxSize { get; set; } = 15360;
+
+        public bool IsImageAutoResize { get; set; }
+
+        public int ImageAutoResizeWidth { get; set; } = 1024;
 
         public string AudioUploadDirectoryName { get; set; } = "upload/audio";
 

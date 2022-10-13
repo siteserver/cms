@@ -77,6 +77,32 @@ namespace SSCMS.Core.Utils
             }
         }
 
+        public static void ResizeImageIfExceeding(string imagePath, int resizeWidth)
+        {
+            if (string.IsNullOrEmpty(imagePath) || resizeWidth <= 0) return;
+
+            try
+            {
+                using (var img = Image.Load(imagePath))
+                {
+                    if (img.Width <= resizeWidth)
+                    {
+                        return;
+                    }
+
+                    var height = img.Height * resizeWidth / img.Width;
+
+                    img.Mutate(x => x.Resize(resizeWidth, height));
+                    img.Save(imagePath);
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+
         private static IImageProcessingContext ApplyTextWaterMark(this IImageProcessingContext processingContext,
             Font font,
             string text,
@@ -261,8 +287,8 @@ namespace SSCMS.Core.Utils
 
         private static void MakeThumbnail(Image originalImage, string originalImagePath, string thumbnailPath, int width, int height, string mode)
         {
-            var towidth = width;
-            var toheight = height;
+            var toWidth = width;
+            var toHeight = height;
             var x = 0;
             var y = 0;
             var ow = originalImage.Width;
@@ -272,23 +298,23 @@ namespace SSCMS.Core.Utils
                 case "HW":
                     break;
                 case "W":
-                    toheight = originalImage.Height * width / originalImage.Width;
+                    toHeight = originalImage.Height * width / originalImage.Width;
                     break;
                 case "H":
-                    towidth = originalImage.Width * height / originalImage.Height;
+                    toWidth = originalImage.Width * height / originalImage.Height;
                     break;
                 case "Cut":
-                    if ((double)originalImage.Width / originalImage.Height > towidth / (double)toheight)
+                    if ((double)originalImage.Width / originalImage.Height > toWidth / (double)toHeight)
                     {
                         oh = originalImage.Height;
-                        ow = originalImage.Height * towidth / toheight;
+                        ow = originalImage.Height * toWidth / toHeight;
                         y = 0;
                         x = (originalImage.Width - ow) / 2;
                     }
                     else
                     {
                         ow = originalImage.Width;
-                        oh = originalImage.Width * height / towidth;
+                        oh = originalImage.Width * height / toWidth;
                         x = 0;
                         y = (originalImage.Height - oh) / 2;
                     }
@@ -297,7 +323,7 @@ namespace SSCMS.Core.Utils
 
             try
             {
-                originalImage.Mutate(x => x.Resize(towidth, toheight));
+                originalImage.Mutate(x => x.Resize(toWidth, toHeight));
                 originalImage.Save(thumbnailPath);
             }
             catch

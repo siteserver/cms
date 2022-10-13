@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -97,6 +99,35 @@ namespace SSCMS.Core.Services
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             await using var stream = new FileStream(filePath, FileMode.Create);
             await stream.WriteAsync(bytes);
+        }
+
+        public async Task<(bool success, string filePath, string errorMessage)> UploadImageAsync(Site site, IFormFile file)
+        {
+            var fileName = PathUtils.GetFileName(file.FileName);
+
+            var extName = PathUtils.GetExtension(fileName);
+            if (!IsImageExtensionAllowed(site, extName))
+            {
+                return (false, string.Empty, Constants.ErrorImageExtensionAllowed);
+            }
+            if (!IsImageSizeAllowed(site, file.Length))
+            {
+                return (false, string.Empty, Constants.ErrorImageSizeAllowed);
+            }
+
+            var localDirectoryPath = await GetUploadDirectoryPathAsync(site, UploadType.Image);
+            var filePath = PathUtils.Combine(localDirectoryPath, GetUploadFileName(site, fileName));
+
+            await UploadAsync(file, filePath);
+
+            if (site.IsImageAutoResize)
+            {
+                ImageUtils.ResizeImageIfExceeding(filePath, site.ImageAutoResizeWidth);
+            }
+
+            await AddWaterMarkAsync(site, filePath);
+
+            return (true, filePath, string.Empty);
         }
     }
 }
