@@ -24,9 +24,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
                 if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
                 var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                var (_, _, wordContent) = await WordManager.GetWordAsync(_pathManager, site, false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
-                wordContent = await _pathManager.DecodeTextEditorAsync(site, wordContent, true);
-                builder.Append(wordContent);
+                var wordManager = new WordManager(false, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                await wordManager.ParseAsync(_pathManager, site);
+                builder.Append(wordManager.Body);
                 FileUtils.DeleteFileIfExists(filePath);
             }
 

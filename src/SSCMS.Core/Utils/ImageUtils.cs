@@ -77,6 +77,14 @@ namespace SSCMS.Core.Utils
             }
         }
 
+        public static void Save(byte[] imgByte, string imagePath)
+        {
+            using (var img = Image.Load(imgByte))
+            {
+                img.Save(imagePath);
+            }
+        }
+
         public static void ResizeImageIfExceeding(string imagePath, int resizeWidth)
         {
             if (string.IsNullOrEmpty(imagePath) || resizeWidth <= 0) return;

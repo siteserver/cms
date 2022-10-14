@@ -40,9 +40,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 try
                 {
                     var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                    var (title, imageUrl, body) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                    var wordManager = new WordManager(request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                    await wordManager.ParseAsync(_pathManager, site);
 
-                    if (string.IsNullOrEmpty(title)) continue;
+                    if (string.IsNullOrEmpty(wordManager.Title)) continue;
 
                     var contentInfo = new Content
                     {
@@ -53,9 +54,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         AddDate = DateTime.Now,
                         Checked = isChecked,
                         CheckedLevel = request.CheckedLevel,
-                        Title = title,
-                        ImageUrl = imageUrl,
-                        Body = body
+                        Title = wordManager.Title,
+                        ImageUrl = wordManager.ImageUrl,
+                        Body = wordManager.Body
                     };
 
                     await _contentRepository.InsertAsync(site, channel, contentInfo);
