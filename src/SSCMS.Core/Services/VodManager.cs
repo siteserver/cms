@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SSCMS.Dto;
 using SSCMS.Services;
 
 namespace SSCMS.Core.Services
@@ -10,7 +11,7 @@ namespace SSCMS.Core.Services
             return Task.FromResult(false);
         }
 
-        public Task<(string coverUrl, string playUrl)> UploadAsync(string filePath)
+        public Task<VodPlay> UploadAsync(string filePath)
         {
             throw new System.NotImplementedException();
         }

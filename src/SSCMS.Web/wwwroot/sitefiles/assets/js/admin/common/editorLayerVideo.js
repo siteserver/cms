@@ -73,6 +73,10 @@ var methods = {
 
   uploadVideoSuccess: function(res) {
     this.form.videoUrl = res.url;
+    if (res.coverUrl) {
+      this.form.isPoster = true;
+      this.form.imageUrl = res.coverUrl;
+    }
     this.form.type = 'url';
     utils.loading(this, false);
   },

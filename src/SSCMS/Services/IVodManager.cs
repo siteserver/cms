@@ -7,6 +7,6 @@ namespace SSCMS.Services
     {
         Task<bool> IsEnabledAsync(int siteId);
 
-        Task<(string coverUrl, string playUrl)> UploadAsync(string filePath);
+        Task<VodPlay> UploadAsync(string filePath);
     }
 }

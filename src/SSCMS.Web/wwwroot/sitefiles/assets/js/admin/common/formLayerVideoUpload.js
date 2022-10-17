@@ -15,7 +15,7 @@ var data = utils.init({
 var methods = {
   insert: function(no, result) {
     if (parent.$vue.runFormLayerVideoUpload) {
-      parent.$vue.runFormLayerVideoUpload(this.attributeName, no, result.fileVirtualUrl);
+      parent.$vue.runFormLayerVideoUpload(this.attributeName, no, result.virtualUrl, result.coverUrl);
     }
   },
 

@@ -39,13 +39,28 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             await _pathManager.UploadAsync(file, filePath);
 
             var videoUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Videos);
-            if (isAutoSync)
+            var coverUrl = string.Empty;
+
+            var isVod = await _vodManager.IsEnabledAsync(request.SiteId);
+            if (isVod)
             {
-                var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
-                if (success)
+                var vodPlay = await _vodManager.UploadAsync(filePath);
+                if (vodPlay.Success)
                 {
-                    videoUrl = url;
+                    videoUrl = vodPlay.PlayUrl;
+                    coverUrl = vodPlay.CoverUrl;
+                }
+            }
+            else
+            {
+                var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Videos);
+                if (isAutoSync)
+                {
+                    var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        videoUrl = url;
+                    }
                 }
             }
 
@@ -53,7 +68,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             {
                 Name = fileName,
                 Path = filePath,
-                Url = videoUrl
+                Url = videoUrl,
+                CoverUrl = coverUrl
             };
         }
     }
