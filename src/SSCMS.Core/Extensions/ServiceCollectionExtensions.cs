@@ -114,6 +114,7 @@ namespace SSCMS.Core.Extensions
             services.AddScoped<IMailManager, MailManager>();
             services.AddScoped<ISmsManager, SmsManager>();
             services.AddScoped<IStorageManager, StorageManager>();
+            services.AddScoped<IVodManager, VodManager>();
         }
 
         public static void AddWxManager(this IServiceCollection services, IConfiguration configuration)

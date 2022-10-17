@@ -71,6 +71,10 @@ namespace SSCMS.Core.Utils.Office
             try
             {
                 ConvertToHtml();
+                if (string.IsNullOrEmpty(Body))
+                {
+                    await ConvertToHtmlAsync();
+                }
             }
             catch
             {
