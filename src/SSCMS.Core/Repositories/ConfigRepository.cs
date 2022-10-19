@@ -37,24 +37,24 @@ namespace SSCMS.Core.Repositories
             return configId;
         }
 
-		public async Task UpdateAsync(Config config)
-		{
+        public async Task UpdateAsync(Config config)
+        {
             await _repository.UpdateAsync(config, Q
                 .CachingRemove(_cacheKey)
             );
         }
 
-		public async Task<bool> IsInitializedAsync()
-		{
+        public async Task<bool> IsInitializedAsync()
+        {
             try
             {
                 if (string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString)) return false;
-                return await _repository.ExistsAsync();
+                return await _repository.Database.IsTableExistsAsync(TableName) && await _repository.ExistsAsync();
             }
-		    catch
-		    {
-		        // ignored
-		    }
+            catch
+            {
+                // ignored
+            }
 
             return false;
         }
