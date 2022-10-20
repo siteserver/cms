@@ -54,13 +54,31 @@ namespace Datory.Utils
             xQuery.AsInsert(dictionary, !identityInsert);
             var compileInfo = await CompileAsync(database, tableName, redis, xQuery);
 
-            if (identityInsert && database.DatabaseType == DatabaseType.SqlServer)
+            if (identityInsert)
             {
+                if (database.DatabaseType == DatabaseType.SqlServer)
+                {
                 compileInfo.Sql = $@"
 SET IDENTITY_INSERT {database.GetQuotedIdentifier(tableName)} ON
 {compileInfo.Sql}
 SET IDENTITY_INSERT {database.GetQuotedIdentifier(tableName)} OFF
 ";
+                }
+                else if (database.DatabaseType == DatabaseType.Dm)
+                {
+                                  compileInfo.Sql = $@"
+SET IDENTITY_INSERT {database.GetQuotedIdentifier(tableName)} ON;
+{compileInfo.Sql};
+SET IDENTITY_INSERT {database.GetQuotedIdentifier(tableName)} OFF;
+";
+                }
+            }
+            else
+            {
+                if (database.DatabaseType == DatabaseType.Dm)
+                {
+                    compileInfo.Sql += ";SELECT @@IDENTITY;";
+                }
             }
 
             using (var connection = database.GetConnection())

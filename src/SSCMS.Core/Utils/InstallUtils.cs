@@ -171,6 +171,24 @@ namespace SSCMS.Core.Utils
             {
                 connectionString = $"Data Source={Constants.LocalDbHostVirtualPath};Version=3;";
             }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                connectionString = $"Server={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                else
+                {
+                    connectionString += "Port=5236;";
+                }
+                connectionString += $"UserId={userName};Pwd={password};";
+                if (!string.IsNullOrEmpty(databaseName))
+                {
+                    connectionString += $"Database={databaseName};";
+                }
+                connectionString += "encoding=utf-8;";
+            }
 
             return connectionString;
         }

@@ -42,6 +42,13 @@ namespace Datory
                     connectionString = connectionString.TrimEnd(';') + ";Version=3;";
                 }
             }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                if (!Utilities.ContainsIgnoreCase(connectionString, "encoding="))
+                {
+                    connectionString = connectionString.TrimEnd(';') + ";encoding=utf-8;";
+                }
+            }
 
             DatabaseType = databaseType;
             ConnectionString = connectionString;
@@ -73,6 +80,10 @@ namespace Datory
             else if (DatabaseType == DatabaseType.SQLite)
             {
                 conn = SQLiteImpl.Instance.GetConnection(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.Dm)
+            {
+                conn = DmImpl.Instance.GetConnection(ConnectionString);
             }
 
             return conn;
@@ -123,6 +134,13 @@ namespace Datory
                 else if (DatabaseType == DatabaseType.PostgreSql || DatabaseType == DatabaseType.SqlServer)
                 {
                     var sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_name = '{tableName}'";
+
+                    using var connection = GetConnection();
+                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+                }
+                else if (DatabaseType == DatabaseType.Dm)
+                {
+                    var sql = $"SELECT COUNT(*) FROM dba_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
 
                     using var connection = GetConnection();
                     exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
@@ -441,6 +459,10 @@ namespace Datory
             {
                 list = await SQLiteImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
+            else if (DatabaseType == DatabaseType.Dm)
+            {
+                list = await DmImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
+            }
 
             return list;
         }
@@ -471,6 +493,10 @@ namespace Datory
             {
                 tableNames = await SQLiteImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
+            else if (DatabaseType == DatabaseType.Dm)
+            {
+                tableNames = await DmImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
+            }
 
             return tableNames;
         }
@@ -494,6 +520,10 @@ namespace Datory
             else if (DatabaseType == DatabaseType.SQLite)
             {
                 tableNames = await SQLiteImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.Dm)
+            {
+                tableNames = await DmImpl.Instance.GetTableNamesAsync(ConnectionString);
             }
 
             return tableNames;

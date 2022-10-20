@@ -115,6 +115,12 @@ namespace Datory.Utils
                 }
             }
 
+            if (database.DatabaseType == DatabaseType.Dm)
+            {
+                compileInfo.Sql = compileInfo.Sql.Replace('@', ':');
+                compileInfo.Sql = compileInfo.Sql.Replace("ORDER BY (SELECT 0 FROM DUAL) ", string.Empty);
+            }
+
             return compileInfo;
         }
     }
