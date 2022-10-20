@@ -170,7 +170,12 @@ namespace SSCMS.Core.Services
             var realTableColumns = new List<TableColumn>();
             foreach (var tableColumn in tableColumns)
             {
-                if (string.IsNullOrEmpty(tableColumn.AttributeName) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreatedDate)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
+                if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
+                StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)) ||
+                StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)) ||
+                StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, "ExtendValues") || 
+                StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreatedDate)) ||
+                StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
                 {
                     continue;
                 }
@@ -196,6 +201,11 @@ namespace SSCMS.Core.Services
                     AttributeName = nameof(Entity.Guid),
                     DataType = DataType.VarChar,
                     DataLength = 50
+                },
+                new TableColumn
+                {
+                    AttributeName = "ExtendValues",
+                    DataType = DataType.Text,
                 },
                 new TableColumn
                 {
