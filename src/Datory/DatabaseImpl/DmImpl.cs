@@ -33,7 +33,7 @@ namespace Datory.DatabaseImpl
 
         public Compiler GetCompiler(string connectionString)
         {
-            return new OracleCompiler();
+            return new DmCompiler();
         }
 
         public bool IsUseLegacyPagination(string connectionString)
@@ -132,7 +132,21 @@ namespace Datory.DatabaseImpl
 
         public string GetQuotedIdentifier(string identifier)
         {
-            return string.Format($@"""{identifier}""");;
+            return Wrap(identifier);
+        }
+
+        public static string Wrap(string value)
+        {
+            if (string.IsNullOrEmpty(value) || value == "*")
+            {
+                return value;
+            }
+            
+            if (Utilities.EqualsIgnoreCase(value, "Id"))
+            {
+                value = "ID";
+            }
+            return string.Format($@"""{value}""");
         }
 
         private DataType ToDataType(string dataTypeStr)
