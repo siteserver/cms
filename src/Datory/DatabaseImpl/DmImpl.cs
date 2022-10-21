@@ -76,12 +76,12 @@ namespace Datory.DatabaseImpl
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
         {
-            return $"IFNULL({columnName}, 0) + {plusNum}";
+            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) + {plusNum}";
         }
 
         public string ColumnDecrement(string columnName, int minusNum = 1)
         {
-            return $"IFNULL({columnName}, 0) - {minusNum}";
+            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) - {minusNum}";
         }
 
         public string GetAutoIncrementDataType(bool alterTable = false)

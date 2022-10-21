@@ -31,16 +31,16 @@ namespace SSCMS.Web.Controllers.Admin
 
             var databaseNames = await db.GetDatabaseNamesAsync();
 
-            // if (databaseType == DatabaseType.Dm)
-            // {
-            //     if (ListUtils.ContainsIgnoreCase(databaseNames, request.DatabaseUserName))
-            //     {
-            //         databaseNames = new List<string>
-            //         {
-            //           request.DatabaseUserName
-            //         };
-            //     }
-            // }
+            if (databaseType == DatabaseType.Dm)
+            {
+                if (ListUtils.ContainsIgnoreCase(databaseNames, request.DatabaseUserName))
+                {
+                    databaseNames = new List<string>
+                    {
+                        request.DatabaseUserName
+                    };
+                }
+            }
 
             return new DatabaseConnectResult
             {

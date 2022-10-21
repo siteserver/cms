@@ -44,17 +44,17 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 if (!request.IsForceLogoutAndLogin)
                 {
-                  var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
+                    var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
 
-                  if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
-                  {
-                      return this.Error("验证码已超时，请点击刷新验证码！");
-                  }
+                    if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
+                    {
+                        return this.Error("验证码已超时，请点击刷新验证码！");
+                    }
 
-                  if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
-                  {
-                      return this.Error("验证码不正确，请重新输入！");
-                  }
+                    if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
+                    {
+                        return this.Error("验证码不正确，请重新输入！");
+                    }
                 }
 
                 string userName;
@@ -80,7 +80,11 @@ namespace SSCMS.Web.Controllers.Admin
 
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
 
-            await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
+            try
+            {
+                await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
+            }
+            catch { }
             await _logRepository.AddAdminLogAsync(administrator, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
 
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);

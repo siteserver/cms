@@ -14,13 +14,6 @@ namespace SSCMS.Web.Controllers.Admin
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
         {
-            // var config = await _configRepository.GetAsync();
-            // await _configRepository.UpdateAsync(config);
-            // await _configRepository.InsertAsync(new Config
-            // {
-            //     UpdateDate = DateTime.Now,
-            // });
-
             if (!await _configRepository.IsNeedInstallAsync())
             {
                 return new GetResult
