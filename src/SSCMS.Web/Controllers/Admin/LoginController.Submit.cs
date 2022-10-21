@@ -80,11 +80,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var token = _authManager.AuthenticateAdministrator(administrator, request.IsPersistent);
 
-            try
-            {
-                await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
-            }
-            catch { }
+            await _statRepository.AddCountAsync(StatType.AdminLoginSuccess);
             await _logRepository.AddAdminLogAsync(administrator, PageUtils.GetIpAddress(Request), Constants.ActionsLoginSuccess);
 
             var cacheKey = Constants.GetSessionIdCacheKey(administrator.Id);

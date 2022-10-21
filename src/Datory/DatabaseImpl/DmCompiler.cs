@@ -8,5 +8,15 @@ namespace Datory.DatabaseImpl
         {
             return DmImpl.Wrap(value);
         }
+
+        public override string CompileTrue()
+        {
+            return "1";
+        }
+
+        public override string CompileFalse()
+        {
+            return "0";
+        }
     }
 }
