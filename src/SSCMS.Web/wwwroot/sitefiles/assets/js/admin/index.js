@@ -4,6 +4,7 @@ if (window.top != self) {
 
 var $url = '/index';
 var $idSite = 'site';
+var $idSiteSwitch = 'site_switch';
 var $sidebarWidth = 200;
 var $collapseWidth = 60;
 

@@ -150,6 +150,11 @@
           访问站点
         </el-link>
       </div>
+      <div v-else-if="menu.id === $idSiteSwitch">
+        <el-link :underline="false" style="margin-left: -15px;" v-on:click="btnMenuClick(menu.children[0])">
+          {{ menu.text }}
+        </el-link>
+      </div>
       <div v-else>
         <el-link :underline="false" style="margin-left: -15px;">
           {{ menu.text }}
