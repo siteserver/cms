@@ -141,15 +141,17 @@ namespace SSCMS.Core.Services
                 var dictPermissions = dict[dictKey];
                 if (kvp.Key == siteId && dictPermissions.Any(permissions.Contains))
                 {
-                    var channelInfo = await _databaseManager.ChannelRepository.GetAsync(kvp.Value);
-
-                    var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(channelInfo.SiteId, channelInfo.Id, ScopeType.All);
-
-                    foreach (var channelId in channelIdList)
+                    var channel = await _databaseManager.ChannelRepository.GetAsync(kvp.Value);
+                    if (channel != null)
                     {
-                        if (!siteChannelIdList.Contains(channelId))
+                        var channelIdList = await _databaseManager.ChannelRepository.GetChannelIdsAsync(channel.SiteId, channel.Id, ScopeType.All);
+
+                        foreach (var channelId in channelIdList)
                         {
-                            siteChannelIdList.Add(channelId);
+                            if (!siteChannelIdList.Contains(channelId))
+                            {
+                                siteChannelIdList.Add(channelId);
+                            }
                         }
                     }
                 }
@@ -307,7 +309,7 @@ namespace SSCMS.Core.Services
                 {
                     var site = await _databaseManager.SiteRepository.GetAsync(siteId);
                     if (site == null) continue;
-                    
+
                     var siteType = _settingsManager.GetSiteType(site.SiteType).Id;
                     var sitePermissions = _permissions
                         .Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType))
