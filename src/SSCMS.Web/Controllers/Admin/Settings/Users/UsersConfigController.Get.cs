@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             }
 
             var config = await _configRepository.GetAsync();
-            var isSmsEnabled = await _smsManager.IsEnabledAsync();
+            var isSmsEnabled = await _smsManager.IsSmsAsync();
 
             return new GetResult
             {

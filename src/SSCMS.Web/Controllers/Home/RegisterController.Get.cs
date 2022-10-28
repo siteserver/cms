@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Home
                 .Select(x => new InputStyle(x));
 
             var isUserVerifyMobile = false;
-            var isSmsEnabled = await _smsManager.IsEnabledAsync();
+            var isSmsEnabled = await _smsManager.IsSmsAsync();
             if (isSmsEnabled && config.IsUserForceVerifyMobile)
             {
                 isUserVerifyMobile = true;

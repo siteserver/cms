@@ -46,10 +46,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             await _pathManager.AddWaterMarkAsync(site, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-            var isAutoSync = await _storageManager.IsAutoSyncAsync(siteId, SyncType.Images);
-            if (isAutoSync)
+            var isAutoStorage = await _storageManager.IsAutoStorageAsync(siteId, SyncType.Images);
+            if (isAutoStorage)
             {
-                var (success, url) = await _storageManager.SyncAsync(siteId, filePath);
+                var (success, url) = await _storageManager.StorageAsync(siteId, filePath);
                 if (success)
                 {
                     imageUrl = url;

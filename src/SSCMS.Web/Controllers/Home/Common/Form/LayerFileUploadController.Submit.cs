@@ -17,7 +17,7 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Files);
+            var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Files);
 
             var result = new List<SubmitResult>();
             foreach (var filePath in request.FilePaths)
@@ -26,9 +26,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
 
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                 var fileUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
-                if (isAutoSync)
+                if (isAutoStorage)
                 {
-                    var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
                     if (success)
                     {
                         virtualUrl = fileUrl = url;

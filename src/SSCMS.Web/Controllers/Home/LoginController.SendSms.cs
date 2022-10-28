@@ -26,7 +26,7 @@ namespace SSCMS.Web.Controllers.Home
 
             var code = StringUtils.GetRandomInt(100000, 999999);
             (success, errorMessage) =
-                await _smsManager.SendAsync(request.Mobile, SmsCodeType.LoginConfirmation, code);
+                await _smsManager.SendSmsAsync(request.Mobile, SmsCodeType.LoginConfirmation, code);
             if (!success)
             {
                 return this.Error(errorMessage);

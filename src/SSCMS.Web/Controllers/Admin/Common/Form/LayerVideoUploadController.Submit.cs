@@ -15,8 +15,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var isVod = await _vodManager.IsEnabledAsync(request.SiteId);
-            var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Videos);
+            var isVod = await _vodManager.IsVodAsync(request.SiteId);
+            var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
 
             var result = new List<SubmitResult>();
             foreach (var filePath in request.FilePaths)
@@ -31,16 +31,16 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                 if (isVod)
                 {
-                    var vodPlay = await _vodManager.UploadAsync(filePath);
+                    var vodPlay = await _vodManager.UploadVodAsync(filePath);
                     if (vodPlay.Success)
                     {
                         virtualUrl = playUrl = vodPlay.PlayUrl;
                         coverUrl = vodPlay.CoverUrl;
                     }
                 }
-                else if (isAutoSync)
+                else if (isAutoStorage)
                 {
-                    var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
                     if (success)
                     {
                         virtualUrl = playUrl = url;

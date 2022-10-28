@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             var fullContent = $"{content.Title}{content.SubTitle}{content.Summary}{content.Author}{content.Source}{content.Body}";
 
-            var result = await _censorManager.ScanText(fullContent);
+            var result = await _censorManager.CensorTextAsync(fullContent);
 
             return new CensorSubmitResult
             {

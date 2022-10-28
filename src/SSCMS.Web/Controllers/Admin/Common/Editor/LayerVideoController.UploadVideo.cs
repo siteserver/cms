@@ -41,10 +41,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var videoUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var coverUrl = string.Empty;
 
-            var isVod = await _vodManager.IsEnabledAsync(request.SiteId);
+            var isVod = await _vodManager.IsVodAsync(request.SiteId);
             if (isVod)
             {
-                var vodPlay = await _vodManager.UploadAsync(filePath);
+                var vodPlay = await _vodManager.UploadVodAsync(filePath);
                 if (vodPlay.Success)
                 {
                     videoUrl = vodPlay.PlayUrl;
@@ -53,10 +53,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             }
             else
             {
-                var isAutoSync = await _storageManager.IsAutoSyncAsync(request.SiteId, SyncType.Videos);
-                if (isAutoSync)
+                var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
+                if (isAutoStorage)
                 {
-                    var (success, url) = await _storageManager.SyncAsync(request.SiteId, filePath);
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
                     if (success)
                     {
                         videoUrl = url;

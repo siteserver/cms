@@ -113,7 +113,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
-            var isCensorTextEnabled = await _censorManager.IsTextEnabledAsync();
+            var isCensorTextEnabled = await _censorManager.IsCensorTextAsync();
 
             var linkTypes = _pathManager.GetLinkTypeSelects(false);
             var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId));
