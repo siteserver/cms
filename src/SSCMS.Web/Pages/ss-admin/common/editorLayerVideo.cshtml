@@ -58,7 +58,7 @@
         controls
         preload="auto"
         data-setup="{}">
-        <source :src="form.videoUrl"></source>
+        <source :src="getPreviewVideoUrl(form.videoUrl)"></source>
       </video>
     </el-card>
   </el-form-item>

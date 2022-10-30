@@ -24,6 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             {
                 audioUploadExtensions = Constants.DefaultAudioUploadExtensions;
             }
+            var audioUploadTypeMaxSize = site.AudioUploadTypeMaxSize / 1024;
 
             return new GetResult
             {
@@ -33,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 AudioUploadDateFormatString = site.AudioUploadDateFormatString,
                 IsAudioUploadChangeFileName = site.IsAudioUploadChangeFileName,
                 AudioUploadExtensions = audioUploadExtensions,
-                AudioUploadTypeMaxSize = site.AudioUploadTypeMaxSize,
+                AudioUploadTypeMaxSize = audioUploadTypeMaxSize,
             };
         }
     }

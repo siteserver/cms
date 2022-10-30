@@ -27,11 +27,12 @@
     <el-input v-model="form.imageUploadExtensions" :disabled="isSafeMode" placeholder="请输入上传图片类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
-  <el-form-item label="上传图片最大大小（KB）" prop="imageUploadTypeMaxSize" :rules="[
+  <el-form-item label="上传图片最大大小" prop="imageUploadTypeMaxSize" :rules="[
     { required: true, message: '请输入上传图片最大大小' },
     { validator: utils.validateInt }
   ]">
-    <el-input v-model.number="form.imageUploadTypeMaxSize" placeholder="请输入上传图片最大大小"></el-input>
+    <el-input v-model.number="form.imageUploadTypeMaxSize" style="width: 120px" placeholder="请输入上传图片最大大小"></el-input>
+    <span class="tips">(MB)</span>
   </el-form-item>
   <el-form-item label="超出尺寸自动缩小">
     <el-radio-group v-model="form.isImageAutoResize">

@@ -2,6 +2,8 @@
 
 var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
+  rootUrl: null,
+  siteUrl: null,
   form: {
     siteId: utils.getQueryInt('siteId'),
     type: 'upload',
@@ -20,6 +22,32 @@ var data = utils.init({
 });
 
 var methods = {
+  apiGet: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.form.siteId
+      }
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.rootUrl = res.rootUrl;
+      $this.siteUrl = res.siteUrl;
+    })
+    .catch(function(error) {
+      utils.error(error);
+    })
+    .then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  getPreviewVideoUrl: function(videoUrl) {
+    return utils.getUrl(this.siteUrl, videoUrl);
+  },
+
   btnSubmitClick: function () {
     var $this = this;
 
@@ -101,6 +129,6 @@ var $vue = new Vue({
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.uploadVideoUrl = $apiUrl + $url + '/actions/uploadVideo?siteId=' + this.form.siteId;
     this.uploadImageUrl = $apiUrl + $url + '/actions/uploadImage?siteId=' + this.form.siteId;
-    utils.loading(this, false);
+    this.apiGet();
   }
 });

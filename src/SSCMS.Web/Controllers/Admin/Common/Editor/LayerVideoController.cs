@@ -12,6 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
     [Route(Constants.ApiAdminPrefix)]
     public partial class LayerVideoController : ControllerBase
     {
+        private const string Route = "common/editor/layerVideo";
         private const string RouteUploadVideo = "common/editor/layerVideo/actions/uploadVideo";
         private const string RouteUploadImage = "common/editor/layerVideo/actions/uploadImage";
 
@@ -26,6 +27,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             _vodManager = vodManager;
             _storageManager = storageManager;
             _siteRepository = siteRepository;
+        }
+
+        public class GetResult
+        {
+            public string RootUrl { get; set; }
+            public string SiteUrl { get; set; }
         }
 
         public class UploadResult

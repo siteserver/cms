@@ -27,11 +27,12 @@
     <el-input v-model="form.fileUploadExtensions" :disabled="isSafeMode" placeholder="请输入上传附件类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
-  <el-form-item label="上传附件最大大小（KB）" prop="fileUploadTypeMaxSize" :rules="[
+  <el-form-item label="上传附件最大大小" prop="fileUploadTypeMaxSize" :rules="[
     { required: true, message: '请输入上传附件最大大小' },
     { validator: utils.validateInt }
   ]">
-    <el-input v-model.number="form.fileUploadTypeMaxSize" placeholder="请输入上传附件最大大小"></el-input>
+    <el-input v-model.number="form.fileUploadTypeMaxSize" style="width: 120px" placeholder="请输入上传附件最大大小"></el-input>
+    <span class="tips">(MB)</span>
   </el-form-item>
 
   <el-form-item>

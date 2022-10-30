@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.ImageUploadDateFormatString = request.ImageUploadDateFormatString;
             site.IsImageUploadChangeFileName = request.IsImageUploadChangeFileName;
             site.ImageUploadExtensions = request.ImageUploadExtensions.Replace("|", ",");
-            site.ImageUploadTypeMaxSize = request.ImageUploadTypeMaxSize;
+            site.ImageUploadTypeMaxSize = request.ImageUploadTypeMaxSize * 1024;
             site.IsImageAutoResize = request.IsImageAutoResize;
             site.ImageAutoResizeWidth = request.ImageAutoResizeWidth;
 

@@ -27,11 +27,12 @@
     <el-input v-model="form.videoUploadExtensions" :disabled="isSafeMode" placeholder="请输入上传视频类型"></el-input>
     <div class="tips">类型之间用“,”分割</div>
   </el-form-item>
-  <el-form-item label="上传视频最大大小（KB）" prop="videoUploadTypeMaxSize" :rules="[
+  <el-form-item label="上传视频最大大小" prop="videoUploadTypeMaxSize" :rules="[
     { required: true, message: '请输入上传视频最大大小' },
     { validator: utils.validateInt }
   ]">
-    <el-input v-model.number="form.videoUploadTypeMaxSize" placeholder="请输入上传视频最大大小"></el-input>
+    <el-input v-model.number="form.videoUploadTypeMaxSize" style="width: 120px" placeholder="请输入上传视频最大大小"></el-input>
+    <span class="tips">(MB)</span>
   </el-form-item>
 
   <el-form-item>

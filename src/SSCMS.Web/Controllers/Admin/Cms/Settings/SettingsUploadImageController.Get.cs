@@ -23,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             {
                 imageUploadExtensions = Constants.DefaultImageUploadExtensions;
             }
+            var imageUploadTypeMaxSize = site.ImageUploadTypeMaxSize / 1024;
 
             return new GetResult
             {
@@ -32,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 ImageUploadDateFormatString = site.ImageUploadDateFormatString,
                 IsImageUploadChangeFileName = site.IsImageUploadChangeFileName,
                 ImageUploadExtensions = imageUploadExtensions,
-                ImageUploadTypeMaxSize = site.ImageUploadTypeMaxSize,
+                ImageUploadTypeMaxSize = imageUploadTypeMaxSize,
                 IsImageAutoResize = site.IsImageAutoResize,
                 ImageAutoResizeWidth = site.ImageAutoResizeWidth,
             };
