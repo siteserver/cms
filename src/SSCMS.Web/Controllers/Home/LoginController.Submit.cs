@@ -66,7 +66,8 @@ namespace SSCMS.Web.Controllers.Home
             if (!user.MobileVerified)
             {
                 var config = await _configRepository.GetAsync();
-                var isSmsEnabled = await _smsManager.IsSmsAsync();
+                var smsSettings = await _smsManager.GetSmsSettingsAsync();
+                var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;
                 if (isSmsEnabled && config.IsUserForceVerifyMobile)
                 {
                     redirectToVerifyMobile = true;

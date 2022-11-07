@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using SSCMS.Core.Utils;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -10,6 +9,7 @@ namespace SSCMS.Core.Utils
     {
 #if DEBUG
         public const string CloudApiHost = "http://localhost:6060";
+        // public const string CloudApiHost = "https://api.sscms.com";
 #else
         public const string CloudApiHost = "https://api.sscms.com";
 #endif

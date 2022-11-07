@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Dto;
 using SSCMS.Enums;
 
 namespace SSCMS.Core.Services
@@ -25,14 +26,20 @@ namespace SSCMS.Core.Services
             return Task.FromResult((false, "未启用短信功能"));
         }
 
-        public Task<bool> IsSmsAsync()
+        public async Task<SmsSettings> GetSmsSettingsAsync()
         {
-            return Task.FromResult(false);
+            var config = await _configRepository.GetAsync();
+            return new SmsSettings
+            {
+                IsSms = config.IsCloudSms,
+                IsSmsAdministrator = config.IsCloudSmsAdministrator,
+                IsSmsUser = config.IsCloudSmsUser,
+            };
         }
 
         public Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, string templateCode, Dictionary<string, string> parameters)
         {
-            return Task.FromResult((false, "未启用短信功能"));
+            throw new System.NotImplementedException();
         }
 
         public Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType, int code)

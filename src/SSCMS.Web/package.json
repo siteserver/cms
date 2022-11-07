@@ -116,6 +116,10 @@
         "text": "云助手错别字检查",
         "type": ["app"]
       },
+      "app_settings_cloudSettingsSms": {
+        "text": "云助手短信设置",
+        "type": ["app"]
+      },
       "app_settings_analysisAdminLogin": {
         "text": "管理员登录统计",
         "type": ["app"],
@@ -548,6 +552,7 @@
           "app_settings_cloudDashboard",
           "app_settings_cloudSettingsCensor",
           "app_settings_cloudSettingsSpell",
+          "app_settings_cloudSettingsSms",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
@@ -723,7 +728,8 @@
             "permissions": [
               "app_settings_cloudDashboard",
               "app_settings_cloudSettingsCensor",
-              "app_settings_cloudSettingsSpell"
+              "app_settings_cloudSettingsSpell",
+              "app_settings_cloudSettingsSms"
             ],
             "iconClass": "ion-cloud",
             "order": 106,
@@ -740,7 +746,8 @@
                 "iconClass": "ion-toggle-filled",
                 "permissions": [
                   "app_settings_cloudSettingsCensor",
-                  "app_settings_cloudSettingsSpell"
+                  "app_settings_cloudSettingsSpell",
+                  "app_settings_cloudSettingsSms"
                 ],
                 "order": 102,
                 "menus": {
@@ -759,6 +766,14 @@
                       "app_settings_cloudSettingsSpell"
                     ],
                     "order": 2
+                  },
+                  "app_settings_cloudSettingsSms": {
+                    "text": "短信设置",
+                    "link": "./settings/cloudSettingsSms",
+                    "permissions": [
+                      "app_settings_cloudSettingsSms"
+                    ],
+                    "order": 3
                   }
                 }
               }

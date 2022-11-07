@@ -15,12 +15,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             }
 
             var config = await _configRepository.GetAsync();
-            var isSmsEnabled = await _smsManager.IsSmsAsync();
+            var smsSettings = await _smsManager.GetSmsSettingsAsync();
 
             return new GetResult
             {
                 Config = config,
-                IsSmsEnabled = isSmsEnabled
+                IsSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser
             };
         }
     }

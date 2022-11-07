@@ -1,10 +1,9 @@
-var $url = "/settings/cloudSettingsCensor"
+var $url = "/settings/cloudSettingsSms"
 
 var data = utils.init({
-  isCloudCensorText: false,
-  isCloudCensorTextAuto: false,
-  isCloudCensorTextIgnore: false,
-  isCloudCensorTextWhiteList: false
+  isCloudSms: false,
+  isCloudSmsAdministrator: false,
+  isCloudSmsUser: false,
 });
 
 var methods = {
@@ -15,10 +14,9 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.isCloudCensorText = res.isCloudCensorText;
-      $this.isCloudCensorTextAuto = res.isCloudCensorTextAuto;
-      $this.isCloudCensorTextIgnore = res.isCloudCensorTextIgnore;
-      $this.isCloudCensorTextWhiteList = res.isCloudCensorTextWhiteList;
+      $this.isCloudSms = res.isCloudSms;
+      $this.isCloudSmsAdministrator = res.isCloudSmsAdministrator;
+      $this.isCloudSmsUser = res.isCloudSmsUser;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -31,14 +29,13 @@ var methods = {
 
     utils.loading(this, true);
     $api.post($url, {
-      isCloudCensorText: this.isCloudCensorText,
-      isCloudCensorTextAuto: this.isCloudCensorTextAuto,
-      isCloudCensorTextIgnore: this.isCloudCensorTextIgnore,
-      isCloudCensorTextWhiteList: this.isCloudCensorTextWhiteList,
+      isCloudSms: this.isCloudSms,
+      isCloudSmsAdministrator: this.isCloudSmsAdministrator,
+      isCloudSmsUser: this.isCloudSmsUser,
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('内容违规检测设置保存成功！');
+      utils.success('短信发送设置保存成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

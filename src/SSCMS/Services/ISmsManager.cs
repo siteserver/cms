@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Dto;
 using SSCMS.Enums;
 
 namespace SSCMS.Services
@@ -18,7 +19,7 @@ namespace SSCMS.Services
         Task<(bool success, string errorMessage)> SendAsync(string phoneNumbers, SmsCodeType codeType,
             int code);
 
-        Task<bool> IsSmsAsync();
+        Task<SmsSettings> GetSmsSettingsAsync();
 
         Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, string templateCode,
             Dictionary<string, string> parameters = null);

@@ -14,8 +14,8 @@ namespace SSCMS.Web.Controllers.Home
         {
             var config = await _configRepository.GetAsync();
             var isUserVerifyMobile = false;
-            var isSmsEnabled = await _smsManager.IsSmsAsync();
-            if (isSmsEnabled && config.IsUserForceVerifyMobile)
+            var smsSettings = await _smsManager.GetSmsSettingsAsync();
+            if (smsSettings.IsSms && smsSettings.IsSmsUser && config.IsUserForceVerifyMobile)
             {
                 isUserVerifyMobile = true;
             }

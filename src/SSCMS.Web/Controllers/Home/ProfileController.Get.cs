@@ -19,7 +19,8 @@ namespace SSCMS.Web.Controllers.Home
             var styles = userStyles.Select(x => new InputStyle(x));
 
             var isUserVerifyMobile = false;
-            var isSmsEnabled = await _smsManager.IsSmsAsync();
+            var smsSettings = await _smsManager.GetSmsSettingsAsync();
+            var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;
             if (isSmsEnabled && config.IsUserForceVerifyMobile)
             {
                 isUserVerifyMobile = true;

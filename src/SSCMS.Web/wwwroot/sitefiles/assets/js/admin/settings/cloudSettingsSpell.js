@@ -33,8 +33,8 @@ var methods = {
     $api.post($url, {
       isCloudSpellingCheck: this.isCloudSpellingCheck,
       isCloudSpellingCheckAuto: this.isCloudSpellingCheckAuto,
-      IsCloudSpellingCheckIgnore: this.isCloudSpellingCheckIgnore,
-      IsCloudSpellingCheckWhiteList: this.isCloudSpellingCheckWhiteList,
+      isCloudSpellingCheckIgnore: this.isCloudSpellingCheckIgnore,
+      isCloudSpellingCheckWhiteList: this.isCloudSpellingCheckWhiteList,
     }).then(function (response) {
       var res = response.data;
 
