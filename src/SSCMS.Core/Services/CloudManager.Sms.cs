@@ -43,7 +43,7 @@ namespace SSCMS.Core.Services
             throw new System.NotImplementedException();
         }
 
-        public class SubmitRequest
+        public class SendSmsRequest
         {
             public SmsCodeType Type { get; set; }
             public string Mobile { get; set; }
@@ -64,7 +64,7 @@ namespace SSCMS.Core.Services
             }
 
             var url = GetCloudUrl(RouteSms);
-            var (success, result, errorMessage) = await RestUtils.PostAsync<SubmitRequest, BoolResult>(url, new SubmitRequest
+            var (success, result, errorMessage) = await RestUtils.PostAsync<SendSmsRequest, BoolResult>(url, new SendSmsRequest
             {
                 Type = codeType,
                 Mobile = phoneNumbers,

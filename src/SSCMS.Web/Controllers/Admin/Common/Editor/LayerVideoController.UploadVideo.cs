@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var videoUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var coverUrl = string.Empty;
 
-            var isVod = await _vodManager.IsVodAsync(request.SiteId);
+            var isVod = await _vodManager.IsVodAsync();
             if (isVod)
             {
                 var vodPlay = await _vodManager.UploadVodAsync(filePath);

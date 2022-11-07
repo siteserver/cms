@@ -65,19 +65,5 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 Error = null
             };
         }
-
-        public class UploadScrawlRequest
-        {
-            public string File { get; set; }
-        }
-
-        public class UploadScrawlResult
-        {
-            public string State { get; set; }
-            public string Url { get; set; }
-            public string Title { get; set; }
-            public string Original { get; set; }
-            public string Error { get; set; }
-        }
     }
 }

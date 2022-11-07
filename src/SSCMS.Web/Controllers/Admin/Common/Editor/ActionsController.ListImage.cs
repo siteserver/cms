@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
@@ -38,26 +37,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 Total = files.Count(),
                 List = list
             };
-        }
-
-        public class ListImageRequest : SiteRequest
-        {
-            public int Start { get; set; }
-            public int Size { get; set; }
-        }
-
-        public class ImageResult
-        {
-            public string Url { get; set; }
-        }
-
-        public class ListImageResult
-        {
-            public string State { get; set; }
-            public int Start { get; set; }
-            public int Size { get; set; }
-            public int Total { get; set; }
-            public IEnumerable<ImageResult> List { get; set; }
         }
     }
 }

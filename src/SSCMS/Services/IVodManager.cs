@@ -5,7 +5,7 @@ namespace SSCMS.Services
 {
     public interface IVodManager
     {
-        Task<bool> IsVodAsync(int siteId);
+        Task<bool> IsVodAsync();
 
         Task<VodPlay> UploadVodAsync(string filePath);
     }

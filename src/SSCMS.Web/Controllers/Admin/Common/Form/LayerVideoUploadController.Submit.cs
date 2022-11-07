@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var isVod = await _vodManager.IsVodAsync(request.SiteId);
+            var isVod = await _vodManager.IsVodAsync();
             var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
 
             var result = new List<SubmitResult>();

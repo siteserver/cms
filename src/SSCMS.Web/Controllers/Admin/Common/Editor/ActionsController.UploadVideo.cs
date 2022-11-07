@@ -48,34 +48,51 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             await _pathManager.UploadAsync(file, filePath);
 
-            var fileUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
-            var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
-            if (isAutoStorage)
+            var videoUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var coverUrl = string.Empty;
+
+            var isVod = await _vodManager.IsVodAsync();
+            if (isVod)
             {
-                var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
-                if (success)
+                var vodPlay = await _vodManager.UploadVodAsync(filePath);
+                if (vodPlay.Success)
                 {
-                    fileUrl = url;
+                    videoUrl = vodPlay.PlayUrl;
+                    coverUrl = vodPlay.CoverUrl;
                 }
             }
+            else
+            {
+                var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
+                if (isAutoStorage)
+                {
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        videoUrl = url;
+                    }
+                }
+            }
+
+            // var fileUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            // var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
+            // if (isAutoStorage)
+            // {
+            //     var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+            //     if (success)
+            //     {
+            //         fileUrl = url;
+            //     }
+            // }
 
             return new UploadVideoResult
             {
                 State = "SUCCESS",
-                Url = fileUrl,
+                Url = videoUrl,
                 Title = original,
                 Original = original,
                 Error = null
             };
-        }
-
-        public class UploadVideoResult
-        {
-            public string State { get; set; }
-            public string Url { get; set; }
-            public string Title { get; set; }
-            public string Original { get; set; }
-            public string Error { get; set; }
         }
     }
 }

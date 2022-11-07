@@ -116,8 +116,16 @@
         "text": "云助手错别字检查",
         "type": ["app"]
       },
+      "app_settings_cloudSettingsVod": {
+        "text": "云助手视频设置",
+        "type": ["app"]
+      },
       "app_settings_cloudSettingsSms": {
         "text": "云助手短信设置",
+        "type": ["app"]
+      },
+      "app_settings_cloudSettingsMail": {
+        "text": "云助手邮件设置",
         "type": ["app"]
       },
       "app_settings_analysisAdminLogin": {
@@ -552,7 +560,9 @@
           "app_settings_cloudDashboard",
           "app_settings_cloudSettingsCensor",
           "app_settings_cloudSettingsSpell",
+          "app_settings_cloudSettingsVod",
           "app_settings_cloudSettingsSms",
+          "app_settings_cloudSettingsMail",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
@@ -729,7 +739,9 @@
               "app_settings_cloudDashboard",
               "app_settings_cloudSettingsCensor",
               "app_settings_cloudSettingsSpell",
-              "app_settings_cloudSettingsSms"
+              "app_settings_cloudSettingsVod",
+              "app_settings_cloudSettingsSms",
+              "app_settings_cloudSettingsMail"
             ],
             "iconClass": "ion-cloud",
             "order": 106,
@@ -747,7 +759,9 @@
                 "permissions": [
                   "app_settings_cloudSettingsCensor",
                   "app_settings_cloudSettingsSpell",
-                  "app_settings_cloudSettingsSms"
+                  "app_settings_cloudSettingsVod",
+                  "app_settings_cloudSettingsSms",
+                  "app_settings_cloudSettingsMail"
                 ],
                 "order": 102,
                 "menus": {
@@ -767,13 +781,29 @@
                     ],
                     "order": 2
                   },
+                  "app_settings_cloudSettingsVod": {
+                    "text": "云视频设置",
+                    "link": "./settings/cloudSettingsVod",
+                    "permissions": [
+                      "app_settings_cloudSettingsVod"
+                    ],
+                    "order": 3
+                  },
                   "app_settings_cloudSettingsSms": {
                     "text": "短信设置",
                     "link": "./settings/cloudSettingsSms",
                     "permissions": [
                       "app_settings_cloudSettingsSms"
                     ],
-                    "order": 3
+                    "order": 4
+                  },
+                  "app_settings_cloudSettingsMail": {
+                    "text": "邮件设置",
+                    "link": "./settings/cloudSettingsMail",
+                    "permissions": [
+                      "app_settings_cloudSettingsMail"
+                    ],
+                    "order": 5
                   }
                 }
               }

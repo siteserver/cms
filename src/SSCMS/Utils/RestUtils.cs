@@ -97,6 +97,37 @@ namespace SSCMS.Utils
             return (false, GetErrorMessage(response));
         }
 
+        public static async Task<(bool success, TResult result, string failureMessage)> UploadAsync<TResult>(string url,
+            string filePath, string accessToken) where TResult : class
+
+        {
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, errors) => true;
+
+            var client = new RestClient(url);
+            var request = new RestRequest
+            {
+                Method = Method.Post,
+                Timeout = -1,
+            };
+            //request.AddHeader("Content-Type", "application/json");
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+            }
+
+            request.AddFile("file", filePath);
+
+            var response = await client.ExecuteAsync<TResult>(request);
+
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, response.Data, null);
+            }
+
+            return (false, null, GetErrorMessage(response));
+        }
+
         public static async Task<(bool success, string failureMessage)> UploadAsync(string url,
             string filePath, string accessToken)
 

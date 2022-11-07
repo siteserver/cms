@@ -12,7 +12,9 @@ namespace SSCMS.Core.Services
         private const string RouteCensorAddWhiteList = "censor/actions/addWhiteList";
         private const string RouteSpell = "spell";
         private const string RouteSpellAddWhiteList = "spell/actions/addWhiteList";
+        private const string RouteVod = "vod";
         private const string RouteSms = "sms";
+        private const string RouteMail = "mail";
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IErrorLogRepository _errorLogRepository;

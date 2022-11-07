@@ -1,18 +1,39 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using SSCMS.Dto;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
     public partial class CloudManager
     {
-        public Task<bool> IsVodAsync(int siteId)
+        public async Task<bool> IsVodAsync()
         {
-            return Task.FromResult(false);
+            var config = await _configRepository.GetAsync();
+            return config.IsCloudVod;
         }
 
-        public Task<VodPlay> UploadVodAsync(string filePath)
+        public async Task<VodPlay> UploadVodAsync(string filePath)
         {
-            throw new System.NotImplementedException();
+            var config = await _configRepository.GetAsync();
+            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            {
+                throw new Exception("云助手未登录");
+            }
+
+            var url = GetCloudUrl(RouteVod);
+            var (success, result, errorMessage) = await RestUtils.UploadAsync<VodPlay>(url, filePath, config.CloudToken);
+
+            if (!success && result == null)
+            {
+                result = new VodPlay
+                {
+                    Success = false,
+                    ErrorMessage = errorMessage
+                };
+            }
+
+            return result;
         }
     }
 }
