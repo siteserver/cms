@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
@@ -42,9 +43,35 @@ namespace SSCMS.Core.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType, int code)
+        public class SubmitRequest
         {
-            return Task.FromResult((false, "未启用短信功能"));
+            public SmsCodeType Type { get; set; }
+            public string Mobile { get; set; }
+            public int Code { get; set; }
+        }
+
+        public async Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType, int code)
+        {
+            var config = await _configRepository.GetAsync();
+            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            {
+                throw new Exception("云助手未登录");
+            }
+
+            if (string.IsNullOrEmpty(phoneNumbers))
+            {
+                throw new Exception("手机号码不能为空");
+            }
+
+            var url = GetCloudUrl(RouteSms);
+            var (success, result, errorMessage) = await RestUtils.PostAsync<SubmitRequest, BoolResult>(url, new SubmitRequest
+            {
+                Type = codeType,
+                Mobile = phoneNumbers,
+                Code = code
+            }, config.CloudToken);
+
+            return (success, errorMessage);
         }
     }
 }

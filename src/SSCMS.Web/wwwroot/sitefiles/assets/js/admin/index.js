@@ -334,7 +334,8 @@ var methods = {
       utils.openLayer({
         title: '修改资料',
         url: utils.getSettingsUrl('administratorsLayerProfile', {userName: this.local.userName}),
-        full: true
+        width: 650,
+        height: 600
       });
     } else if (command === 'password') {
       utils.openLayer({

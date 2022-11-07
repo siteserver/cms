@@ -40,11 +40,10 @@ namespace SSCMS.Utils
             return (false, null, GetErrorMessage(response));
         }
 
-
         public static async Task<(bool success, TResult result, string failureMessage)> PostAsync<TRequest, TResult>(string url, TRequest body, string accessToken = null) where TResult : class
 
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
@@ -128,7 +127,7 @@ namespace SSCMS.Utils
 
             return (false, GetErrorMessage(response));
         }
-
+        
         public static async Task DownloadAsync(string url, string filePath)
         {
             ServicePointManager.ServerCertificateValidationCallback +=

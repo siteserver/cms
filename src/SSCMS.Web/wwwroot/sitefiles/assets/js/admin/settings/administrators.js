@@ -109,7 +109,8 @@ var methods = {
     utils.openLayer({
       title: '编辑资料',
       url: utils.getSettingsUrl('administratorsLayerProfile', {userName: row.userName}),
-      full: true
+      width: 650,
+      height: 600
     });
   },
 
@@ -263,7 +264,8 @@ var methods = {
     utils.openLayer({
       title: '新增管理员',
       url: utils.getSettingsUrl('administratorsLayerProfile'),
-      full: true
+      width: 650,
+      height: 600
     });
   },
 
