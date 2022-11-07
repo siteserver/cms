@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
-using SSCMS.Enums;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using System;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
     public partial class EditorController
     {
         [HttpPost, Route(RouteCensor)]
-        public async Task<ActionResult<CensorSubmitResult>> Censor([FromBody] CensorRequest request)
+        public async Task<ActionResult<CensorResult>> Censor([FromBody] CensorRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
@@ -24,18 +25,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            
+
             var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
 
             var fullContent = $"{content.Title}{content.SubTitle}{content.Summary}{content.Author}{content.Source}{content.Body}";
 
-            var result = await _censorManager.CensorTextAsync(fullContent);
-
-            return new CensorSubmitResult
+            try
             {
-                Success = result.Suggestion == CensorSuggestion.Pass,
-                TextResult = result
-            };
+                var results = await _censorManager.CensorTextAsync(fullContent);
+                if (results.Success)
+                {
+                    return results;
+                }
+                else
+                {
+                    return this.Error(results.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.Error(ex.Message);
+            }
         }
     }
 }

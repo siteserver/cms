@@ -1,0 +1,77 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="main-wrapper">
+  <div class="content">
+    <section role="main">
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>账户连接</span>
+              </div>
+            </template>
+            <div class="text">
+              <div style="margin: 10px auto; text-align: center">
+                <div style="margin: 10px">
+                  已使用
+                  <strong>{{ getUserName() }}</strong>
+                  的身份连接
+                </div>
+                <div class="tips" style="margin: 10px">
+                  如需更换账号可以断开连接并使用其他
+                  <el-link :underline="false" href="https://sscms.com" target="_blank">
+                    sscms.com
+                  </el-link>
+                  账号登录
+                </div>
+                <el-button type="danger" v-on:click="btnDisconnectClick">断开连接</el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <div style="height: 30px"></div>
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>我们随时为您提供支持</span>
+              </div>
+            </template>
+            <div class="text">
+              <div style="margin: 10px auto; text-align: center">
+                <div style="margin: 10px 10px 20px">SSCMS 通过工单为所有付费用户提供技术支持</div>
+                <el-button type="primary" v-on:click="btnTicketClick">发起工单</el-button>
+                <el-button type="default" v-on:click="btnDocsClick">SSCMS 文档中心</el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </section>
+  </div>
+  <footer>
+    <table class="footer">
+      <tbody>
+        <tr>
+          <td>
+            <a href="http://sscms.com" target="_blank">云助手</a>
+            <a href="http://sscms.com" target="_blank">关于</a>
+            <a href="http://sscms.com" target="_blank">条款</a>
+            <a href="http://sscms.com" target="_blank">隐私</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </footer>
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/settings/cloudDashboard.js" type="text/javascript"></script>
+}

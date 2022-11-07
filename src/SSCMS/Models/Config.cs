@@ -61,5 +61,15 @@ namespace SSCMS.Models
         public bool IsHomeAgreement { get; set; }
         public string HomeAgreementHtml { get; set; } = @"阅读并接受<a href=""#"">《用户协议》</a>";
         public string HomeWelcomeHtml { get; set; } = @"欢迎使用用户中心";
+        public string CloudUserName { get; set; }
+        public string CloudToken { get; set; }
+        public bool IsCloudCensorText { get; set; }
+        public bool IsCloudCensorTextAuto { get; set; }
+        public bool IsCloudCensorTextIgnore { get; set; }
+        public bool IsCloudCensorTextWhiteList { get; set; }
+        public bool IsCloudSpellingCheck { get; set; }
+        public bool IsCloudSpellingCheckAuto { get; set; }
+        public bool IsCloudSpellingCheckIgnore { get; set; }
+        public bool IsCloudSpellingCheckWhiteList { get; set; }
     }
 }

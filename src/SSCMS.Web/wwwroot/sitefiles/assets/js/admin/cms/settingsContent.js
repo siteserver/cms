@@ -10,7 +10,6 @@ var data = utils.init({
     autoPageWordNum: null,
     isContentTitleBreakLine: null,
     isContentSubTitleBreakLine: null,
-    isAutoCheckKeywords: null,
     checkContentLevel: null,
     checkContentDefaultLevel: null,
   }
@@ -35,7 +34,6 @@ var methods = {
       $this.form.autoPageWordNum = res.site.autoPageWordNum;
       $this.form.isContentTitleBreakLine = res.site.isContentTitleBreakLine;
       $this.form.isContentSubTitleBreakLine = res.site.isContentSubTitleBreakLine;
-      $this.form.isAutoCheckKeywords = res.site.isAutoCheckKeywords;
       $this.form.checkContentLevel = res.site.checkContentLevel;
       $this.form.checkContentDefaultLevel = res.site.checkContentDefaultLevel;
     }).catch(function (error) {
@@ -57,7 +55,6 @@ var methods = {
       autoPageWordNum: this.form.autoPageWordNum,
       isContentTitleBreakLine: this.form.isContentTitleBreakLine,
       isContentSubTitleBreakLine: this.form.isContentSubTitleBreakLine,
-      isAutoCheckKeywords: this.form.isAutoCheckKeywords,
       checkContentLevel: this.form.checkContentLevel,
       checkContentDefaultLevel: this.form.checkContentDefaultLevel
     }).then(function (response) {

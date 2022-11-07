@@ -5,6 +5,7 @@ using Semver;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -20,14 +21,14 @@ namespace SSCMS.Cli.Jobs
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public PluginPublishJob(ISettingsManager settingsManager, IPathManager pathManager, IApiService apiService)
+        public PluginPublishJob(ISettingsManager settingsManager, IPathManager pathManager, ICliApiService cliApiService)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 { "v|version=", "发布版本",
@@ -58,7 +59,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = await _apiService.GetStatusAsync();
+            var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -129,7 +130,7 @@ namespace SSCMS.Cli.Jobs
             await Console.Out.WriteLineAsync($"Publishing {packageId} ({fileSize})...");
 
             bool success;
-            (success, failureMessage) = await _apiService.PluginPublishAsync(plugin.Publisher, zipPath);
+            (success, failureMessage) = await _cliApiService.PluginPublishAsync(plugin.Publisher, zipPath);
             if (success)
             {
                 

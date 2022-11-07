@@ -37,7 +37,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.AutoPageWordNum = request.AutoPageWordNum;
             site.IsContentTitleBreakLine = request.IsContentTitleBreakLine;
             site.IsContentSubTitleBreakLine = request.IsContentSubTitleBreakLine;
-            site.IsAutoCheckKeywords = request.IsAutoCheckKeywords;
 
             site.CheckContentLevel = request.CheckContentLevel;
             site.CheckContentDefaultLevel = request.CheckContentDefaultLevel;

@@ -20,14 +20,14 @@ namespace SSCMS.Cli.Jobs
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public PluginNewJob(ISettingsManager settingsManager, IPathManager pathManager, IApiService apiService)
+        public PluginNewJob(ISettingsManager settingsManager, IPathManager pathManager, ICliApiService cliApiService)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 {
@@ -60,7 +60,7 @@ namespace SSCMS.Cli.Jobs
                 ? _pathManager.PluginsPath
                 : _settingsManager.ContentRootPath;
 
-            var (status, _) = await _apiService.GetStatusAsync();
+            var (status, _) = await _cliApiService.GetStatusAsync();
             var publisher = status == null
                 ? ReadUtils.GetString("What's the publisher of your plugin?")
                 : status.UserName;

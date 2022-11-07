@@ -1,8 +1,9 @@
-﻿var $url = "/cms/editor/editor";
+﻿var $url = "/cms/editor";
 var $urlInsert = $url + "/actions/insert";
 var $urlUpdate = $url + "/actions/update";
 var $urlPreview = $url + "/actions/preview";
 var $urlCensor = $url + "/actions/censor";
+var $urlSpell = $url + "/actions/spell";
 var $urlTags = $url + "/actions/tags";
 
 Date.prototype.Format = function (fmt) {
@@ -49,7 +50,10 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   checkedLevels: null,
-  isCensorTextEnabled: null,
+  censorSettings: null,
+  spellSettings: null,
+  isCensorPassed: false,
+  isSpellPassed: false,
   linkTypes: null,
   root: null,
   styles: null,
@@ -59,10 +63,6 @@ var data = utils.init({
 
   translates: [],
   isPreviewSaving: false,
-
-  dialogCensor: false,
-  isCensorSave: false,
-  textResult: null,
 });
 
 var methods = {
@@ -93,9 +93,10 @@ var methods = {
         $this.groupNames = res.groupNames;
         $this.tagNames = res.tagNames;
         $this.checkedLevels = res.checkedLevels;
-        $this.isCensorTextEnabled = res.isCensorTextEnabled;
         $this.linkTypes = res.linkTypes;
         $this.root = [res.root];
+        $this.censorSettings = res.censorSettings;
+        $this.spellSettings = res.spellSettings;
 
         $this.styles = res.styles;
         $this.relatedFields = res.relatedFields;
@@ -213,8 +214,7 @@ var methods = {
       });
   },
 
-  apiCensor: function (isSave) {
-    this.isCensorSave = isSave;
+  apiCensor: function (callback) {
     var $this = this;
 
     utils.loading(this, true);
@@ -226,17 +226,29 @@ var methods = {
       })
       .then(function (response) {
         var res = response.data;
+        callback(res);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+  },
 
-        if (res.success) {
-          if (isSave) {
-            $this.btnCensorSaveClick();
-          } else {
-            utils.success("内容审查通过！");
-          }
-        } else {
-          $this.textResult = res.textResult;
-          $this.dialogCensor = true;
-        }
+  apiSpell: function (callback) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api
+      .csrfPost(this.csrfToken, $urlSpell, {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        content: this.form,
+      })
+      .then(function (response) {
+        var res = response.data;
+        callback(res);
       })
       .catch(function (error) {
         utils.error(error);
@@ -322,6 +334,20 @@ var methods = {
       });
   },
 
+  apiSave: function () {
+    if (!this.isCensorPassed && this.censorSettings.isCensorText && this.censorSettings.isCensorTextAuto) {
+      this.btnCensorTextClick(true);
+    } else if (!this.isSpellPassed && this.spellSettings.isSpellingCheck && this.spellSettings.isSpellingCheckAuto) {
+      this.btnSpellingCheckClick(true);
+    } else {
+      if (this.contentId === 0) {
+        this.apiInsert();
+      } else {
+        this.apiUpdate();
+      }
+    }
+  },
+
   runFormLayerImageUploadText: function (attributeName, no, text) {
     this.insertText(attributeName, no, text);
   },
@@ -399,14 +425,6 @@ var methods = {
     }
   },
 
-  btnCensorSaveClick: function () {
-    if (this.contentId === 0) {
-      this.apiInsert();
-    } else {
-      this.apiUpdate();
-    }
-  },
-
   closeAndRedirect: function (isEdit) {
     var tabVue = utils.getTabVue(this.tabName);
     if (tabVue) {
@@ -464,20 +482,44 @@ var methods = {
     this.syncEditors();
     this.$refs.form.validate(function (valid) {
       if (valid) {
-        if ($this.site.isAutoCheckKeywords && $this.isCensorTextEnabled) {
-          $this.apiCensor(true);
-        } else {
-          $this.btnCensorSaveClick();
-        }
+        $this.isCensorPassed = this.isSpellPassed = false;
+        $this.apiSave();
       } else {
         utils.error("保存失败，请检查表单值是否正确");
       }
     });
   },
 
-  btnCensorClick: function () {
+  btnCensorTextClick: function (isSave) {
     this.syncEditors();
-    this.apiCensor(false);
+    utils.openLayer({
+      title: "内容违规检测",
+      width: 550,
+      height: 600,
+      url: utils.getCmsUrl('editorLayerCensor', {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        isCensorTextIgnore: this.censorSettings.isCensorTextIgnore,
+        isCensorTextWhiteList: this.censorSettings.isCensorTextWhiteList,
+        isSave: isSave
+      })
+    });
+  },
+
+  btnSpellingCheckClick: function (isSave) {
+    this.syncEditors();
+    utils.openLayer({
+      title: "错别字检查",
+      width: 550,
+      height: 600,
+      url: utils.getCmsUrl('editorLayerSpell', {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        isSpellingCheckIgnore: this.spellSettings.isSpellingCheckIgnore,
+        isSpellingCheckWhiteList: this.spellSettings.isSpellingCheckWhiteList,
+        isSave: isSave
+      })
+    });
   },
 
   btnTagsClick: function () {

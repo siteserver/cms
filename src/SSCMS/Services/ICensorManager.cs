@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SSCMS.Models;
+using SSCMS.Dto;
 
 namespace SSCMS.Services
 {
@@ -18,12 +18,10 @@ namespace SSCMS.Services
         [Obsolete]
         Task<CensorResult> ScanImage(string imageUrl);
 
-        Task<bool> IsCensorTextAsync();
-
-        Task<bool> IsCensorImageAsync();
+        Task<CensorSettings> GetCensorSettingsAsync();
 
         Task<CensorResult> CensorTextAsync(string text);
 
-        Task<CensorResult> CensorImageAsync(string imageUrl);
+        Task<(bool success, string errorMessage)> AddCensorWhiteListAsync(string word);
     }
 }

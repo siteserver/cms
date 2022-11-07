@@ -14,12 +14,12 @@ namespace SSCMS.Cli.Jobs
 
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public PluginShowJob(IApiService apiService)
+        public PluginShowJob(ICliApiService cliApiService)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 {
@@ -48,7 +48,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, result, failureMessage) = await _apiService.PluginShowAsync(string.Join(' ', context.Extras));
+            var (success, result, failureMessage) = await _cliApiService.PluginShowAsync(string.Join(' ', context.Extras));
 
             if (success)
             {

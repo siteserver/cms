@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     public partial class EditorController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
@@ -113,7 +113,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
-            var isCensorTextEnabled = await _censorManager.IsCensorTextAsync();
 
             var linkTypes = _pathManager.GetLinkTypeSelects(false);
             var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId));
@@ -127,6 +126,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                     content.Set("LinkToChannel", name);
                 }
             }
+
+            var censorSettings = await _censorManager.GetCensorSettingsAsync();
+            var spellSettings = await _spellManager.GetSpellSettingsAsync();
 
             return new GetResult
             {
@@ -142,9 +144,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 Templates = templates,
                 CheckedLevels = checkedLevels,
                 CheckedLevel = userCheckedLevel,
-                IsCensorTextEnabled = isCensorTextEnabled,
                 LinkTypes = linkTypes,
                 Root = root,
+                CensorSettings = censorSettings,
+                SpellSettings = spellSettings,
             };
         }
     }

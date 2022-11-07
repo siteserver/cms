@@ -5,7 +5,7 @@ using Semver;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Configuration;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -19,16 +19,16 @@ namespace SSCMS.Cli.Jobs
 
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IPathManager _pathManager;
         private readonly OptionSet _options;
 
-        public UpdateJob(IApiService apiService, ISettingsManager settingsManager, IConfigRepository configRepository,
+        public UpdateJob(ICliApiService cliApiService, ISettingsManager settingsManager, IConfigRepository configRepository,
             IPathManager pathManager)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _pathManager = pathManager;
@@ -68,7 +68,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, result, failureMessage) = await _apiService.GetReleasesAsync(_settingsManager.Version, null);
+            var (success, result, failureMessage) = await _cliApiService.GetReleasesAsync(_settingsManager.Version, null);
             if (!success)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);

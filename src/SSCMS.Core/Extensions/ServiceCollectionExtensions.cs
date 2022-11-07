@@ -101,6 +101,7 @@ namespace SSCMS.Core.Extensions
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<ICacheManager, Services.CacheManager>();
+            services.AddScoped<ICloudManager, CloudManager>();
             services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IPathManager, PathManager>();
             services.AddScoped<ICreateManager, CreateManager>();
@@ -110,11 +111,12 @@ namespace SSCMS.Core.Extensions
 
         public static void AddPseudoServices(this IServiceCollection services)
         {
-            services.AddScoped<ICensorManager, CensorManager>();
-            services.AddScoped<IMailManager, MailManager>();
-            services.AddScoped<ISmsManager, SmsManager>();
-            services.AddScoped<IStorageManager, StorageManager>();
-            services.AddScoped<IVodManager, VodManager>();
+            services.AddScoped<ICensorManager, CloudManager>();
+            services.AddScoped<ISpellManager, CloudManager>();
+            services.AddScoped<IMailManager, CloudManager>();
+            services.AddScoped<ISmsManager, CloudManager>();
+            services.AddScoped<IStorageManager, CloudManager>();
+            services.AddScoped<IVodManager, CloudManager>();
         }
 
         public static void AddWxManager(this IServiceCollection services, IConfiguration configuration)

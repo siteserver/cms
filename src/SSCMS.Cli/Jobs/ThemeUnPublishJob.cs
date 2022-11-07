@@ -15,9 +15,9 @@ namespace SSCMS.Cli.Jobs
         private bool _isHelp;
         private readonly OptionSet _options;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
 
-        public ThemeUnPublishJob(IApiService apiService)
+        public ThemeUnPublishJob(ICliApiService cliApiService)
         {
             _options = new OptionSet
             {
@@ -29,7 +29,7 @@ namespace SSCMS.Cli.Jobs
                 }
             };
 
-            _apiService = apiService;
+            _cliApiService = cliApiService;
         }
 
         public void PrintUsage()
@@ -64,7 +64,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = await _apiService.GetStatusAsync();
+            var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -72,7 +72,7 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = await _apiService.ThemeUnPublishAsync(_name);
+            (success, failureMessage) = await _cliApiService.ThemeUnPublishAsync(_name);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync($"Theme {_name} unpublished .");

@@ -5,7 +5,7 @@ using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -20,14 +20,14 @@ namespace SSCMS.Cli.Jobs
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPluginManager _pluginManager;
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public StatusJob(ISettingsManager settingsManager, IPluginManager pluginManager, IApiService apiService)
+        public StatusJob(ISettingsManager settingsManager, IPluginManager pluginManager, ICliApiService cliApiService)
         {
             _settingsManager = settingsManager;
             _pluginManager = pluginManager;
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 {
@@ -96,7 +96,7 @@ namespace SSCMS.Cli.Jobs
                 await Console.Out.WriteLineAsync($"The sscms.json file does not exist: {configPath}");
             }
 
-            var (status, _) = await _apiService.GetStatusAsync();
+            var (status, _) = await _cliApiService.GetStatusAsync();
             if (status != null)
             {
                 await Console.Out.WriteLineAsync($"Login user: {status.UserName}");

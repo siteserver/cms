@@ -16,7 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var isCensorTextEnabled = await _censorManager.IsCensorTextAsync();
+            // var isCensorTextEnabled = await _censorManager.IsCensorTextAsync();
+            var isCensorTextEnabled = true;
 
             return new GetResult
             {

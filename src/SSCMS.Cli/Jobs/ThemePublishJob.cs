@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -21,9 +21,9 @@ namespace SSCMS.Cli.Jobs
         private readonly IPathManager _pathManager;
         private readonly ICacheManager _cacheManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
 
-        public ThemePublishJob(IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, IApiService apiService)
+        public ThemePublishJob(IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, ICliApiService cliApiService)
         {
             _options = new OptionSet
             {
@@ -38,7 +38,7 @@ namespace SSCMS.Cli.Jobs
             _pathManager = pathManager;
             _cacheManager = cacheManager;
             _databaseManager = databaseManager;
-            _apiService = apiService;
+            _cliApiService = cliApiService;
         }
 
         public void PrintUsage()
@@ -60,7 +60,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = await _apiService.GetStatusAsync();
+            var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -77,7 +77,7 @@ namespace SSCMS.Cli.Jobs
             await Console.Out.WriteLineAsync($"Theme Packaged: {filePath}");
             await Console.Out.WriteLineAsync($"Publishing theme {name} ({fileSize})...");
 
-            (success, failureMessage) = await _apiService.ThemePublishAsync(filePath);
+            (success, failureMessage) = await _cliApiService.ThemePublishAsync(filePath);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync($"Theme published, your theme will live at {CloudUtils.Www.GetThemeUrl(status.UserName, name)}.");

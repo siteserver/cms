@@ -104,6 +104,18 @@
         "type": ["app"],
         "order": 118
       },
+      "app_settings_cloudDashboard": {
+        "text": "云助手面板",
+        "type": ["app"]
+      },
+      "app_settings_cloudSettingsCensor": {
+        "text": "云助手内容违规检测",
+        "type": ["app"]
+      },
+      "app_settings_cloudSettingsSpell": {
+        "text": "云助手错别字检查",
+        "type": ["app"]
+      },
       "app_settings_analysisAdminLogin": {
         "text": "管理员登录统计",
         "type": ["app"],
@@ -533,6 +545,9 @@
           "app_settings_userConfig",
           "app_settings_homeConfig",
           "app_settings_homeMenus",
+          "app_settings_cloudDashboard",
+          "app_settings_cloudSettingsCensor",
+          "app_settings_cloudSettingsSpell",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
@@ -703,6 +718,52 @@
               }
             }
           },
+          "app_settings_cloud_all": {
+            "text": "云助手",
+            "permissions": [
+              "app_settings_cloudDashboard",
+              "app_settings_cloudSettingsCensor",
+              "app_settings_cloudSettingsSpell"
+            ],
+            "iconClass": "ion-cloud",
+            "order": 106,
+            "menus": {
+              "app_settings_cloudDashboard": {
+                "text": "云助手面板",
+                "iconClass": "ion-flash",
+                "link": "./settings/cloudDashboard/",
+                "permissions": ["app_settings_cloudDashboard"],
+                "order": 101
+              },
+              "app_settings_cloudSettingsAll": {
+                "text": "云助手设置",
+                "iconClass": "ion-toggle-filled",
+                "permissions": [
+                  "app_settings_cloudSettingsCensor",
+                  "app_settings_cloudSettingsSpell"
+                ],
+                "order": 102,
+                "menus": {
+                  "app_settings_cloudSettingsCensor": {
+                    "text": "内容违规检测",
+                    "link": "./settings/cloudSettingsCensor",
+                    "permissions": [
+                      "app_settings_cloudSettingsCensor"
+                    ],
+                    "order": 1
+                  },
+                  "app_settings_cloudSettingsSpell": {
+                    "text": "错别字检查",
+                    "link": "./settings/cloudSettingsSpell",
+                    "permissions": [
+                      "app_settings_cloudSettingsSpell"
+                    ],
+                    "order": 2
+                  }
+                }
+              }
+            }
+          },
           "app_settings_analysis_all": {
             "text": "统计图表",
             "permissions": [
@@ -711,7 +772,7 @@
               "app_settings_analysisUser"
             ],
             "iconClass": "ion-podium",
-            "order": 106,
+            "order": 107,
             "menus": {
               "app_settings_analysisAdminLogin": {
                 "text": "管理员登录统计",
@@ -743,7 +804,7 @@
               "app_settings_logsConfig"
             ],
             "iconClass": "ion-information-circled",
-            "order": 107,
+            "order": 108,
             "menus": {
               "app_settings_logsSite": {
                 "text": "站点日志",
@@ -785,7 +846,7 @@
               "app_settings_utilitiesEncrypt"
             ],
             "iconClass": "ion-briefcase",
-            "order": 108,
+            "order": 109,
             "menus": {
               "app_settings_utilitiesCache": {
                 "text": "系统缓存",

@@ -9,7 +9,7 @@ namespace SSCMS.Cli.Extensions
     {
         public static void AddCliServices(this IServiceCollection services)
         {
-            services.AddScoped<IApiService, ApiService>();
+            services.AddScoped<ICliApiService, CliApiService>();
             services.AddScoped<IConfigService, ConfigService>();
             services.AddScoped<IDataUpdateService, DataUpdateService>();
             services.AddScoped<IDataRestoreService, DataRestoreService>();

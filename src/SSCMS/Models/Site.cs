@@ -58,8 +58,6 @@ namespace SSCMS.Models
 
         public bool IsContentSubTitleBreakLine { get; set; } = true;
 
-        public bool IsAutoCheckKeywords { get; set; }
-
         public bool IsWaterMark { get; set; }
 
         public bool IsImageWaterMark { get; set; }

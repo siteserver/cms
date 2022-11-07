@@ -1,0 +1,166 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<style>
+  .loading-hint-wrap-box {
+    margin: 40px auto 0;
+    position: relative;
+    box-sizing: border-box;
+  }
+  .loading-hint-wrap-box, .loading-hint-wrap-box .loading-hint-wrap .loading-bg {
+    width: 129px;
+    height: 138px;
+  }
+  .loading-hint-wrap-box .loading-hint-wrap {
+    position: relative;
+  }
+  .loading-hint-wrap-box .loading-hint-wrap .search-icon {
+    width: 33px;
+    height: 33px;
+    position: absolute;
+    top: 60px;
+    left: 50px;
+    -webkit-animation: detection-translate 2.5s linear infinite;
+    animation: detection-translate 2.5s linear infinite;
+  }
+  .step1 {
+    margin-top: 120px;
+  }
+  .step1 p {
+    color: #24BE58;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 33px;
+  }
+  .step2 .tag {
+    border-radius: 4px;
+    font-size: 12px;
+    height: 22px;
+    line-height: 22px;
+    padding: 0 8px;
+    margin-right: 11px;
+    display: inline-block;
+  }
+  .step2 .tag.success {
+    color: #52C41A;
+    background: #F6FFED;
+    border: 1px solid #B7EB8F;
+  }
+  .step2 .tag.fail {
+    color: #F5222D;
+    background: #FFF1F0;
+    border: 1px solid #FFA39E;
+  }
+  .step2 .tag+span {
+    color: #999;
+    font-size: 13px;
+  }
+  .step2 .result-wrap-box {
+    margin-top: 15px;
+  }
+  .step2 .result-wrap-box .result-wrap p {
+    color: #333;
+  }
+  .step2 .result-wrap-box .result-wrap p:before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: #24BE58;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .step2 img.res-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .el-collapse-item__header {font-size: 14px;}
+  .el-link {font-size:12px; margin-right: 5px;}
+</style>
+}
+
+<el-row style="margin: 10px;">
+  <div class="step step1" v-if="checking">
+    <div class="loading-hint-wrap-box">
+      <div class="loading-hint-wrap">
+        <img src="/sitefiles/assets/images/loading-bg.png" class="loading-bg" />
+        <img src="/sitefiles/assets/images/search-icon.png" class="search-icon " />
+      </div>
+    </div>
+    <p>错别字检查中...</p>
+  </div>
+  
+  <div class="step step2" v-else>
+    
+    <el-alert
+      v-if="isErrorWords"
+      title="存在疑似错别字"
+      type="error"
+      description="检查完成，发现内容存在疑似错别字，发文前请及时处理"
+      :closable="false"
+      show-icon>
+    </el-alert>
+    <el-alert
+      v-else
+      title="错别字检查通过"
+      type="success"
+      description="检查完成，未发现疑似错别字"
+      :closable="false"
+      show-icon>
+    </el-alert>
+
+    <div class="result-wrap-box">
+      <div class="result-wrap">
+        <p>百度AI检查结果</p>
+
+        <div>
+          <span v-if="count === 0" class="tag success">错别字检查通过</span>
+          <span v-else class="tag fail">{{ count }} 项疑似错别字</span>
+        </div>
+        <div>
+          <el-table
+            :data="errorWords"
+            style="width: 100%"
+            size="mini">
+            <el-table-column
+              label="疑似错别字">
+              <template slot-scope="scope">
+                {{ scope.row.original }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="系统建议">
+              <template slot-scope="scope">
+                {{ scope.row.correct }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="操作"
+              width="180"
+              align="right">
+              <template slot-scope="scope">
+                <el-link v-if="isSpellingCheckIgnore" type="primary" v-on:click.prevent="btnIgnoreClick(scope.row)" size="mini">此次忽略</el-link>
+                <el-link v-if="isSpellingCheckWhiteList" type="warning" v-on:click.prevent="btnAddWhiteListClick(scope.row)" size="mini">加入白名单</el-link>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </div>
+  
+    <div style="height:15px"></div>
+    <el-divider></el-divider>
+    <el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+      <el-col :span="24" align="right">
+        <el-button v-if="!isSave" size="small" type="primary" v-on:click="btnCancelClick">完 成</el-button>
+        <el-button v-if="isSave" :disabled="isErrorWords" size="small" type="primary" v-on:click="btnSaveClick">关闭并保存</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+      </el-col>
+    </el-row>
+  </div>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/editorLayerSpell.js" type="text/javascript"></script> }

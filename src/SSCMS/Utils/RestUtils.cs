@@ -18,15 +18,11 @@ namespace SSCMS.Utils
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient(url)
-            {
-                
-            };
+            var client = new RestClient(url);
             var request = new RestRequest
             {
                 Method = Method.Get,
                 Timeout = -1,
-                //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -36,8 +32,9 @@ namespace SSCMS.Utils
 
             var response = await client.ExecuteAsync<TResult>(request);
 
-            if (response.IsSuccessful) {
-              return (true, response.Data, null);
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, response.Data, null);
             }
 
             return (false, null, GetErrorMessage(response));
@@ -51,10 +48,9 @@ namespace SSCMS.Utils
                 (sender, certificate, chain, errors) => true;
 
             var client = new RestClient(url);
-            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             var request = new RestRequest
             {
-                Method= Method.Post,
+                Method = Method.Post,
                 Timeout = -1,
             };
             request.AddHeader("Content-Type", "application/json");
@@ -62,11 +58,12 @@ namespace SSCMS.Utils
             {
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
+            request.AddBody(body, "application/json");
             var response = await client.ExecuteAsync<TResult>(request);
 
-            if (response.IsSuccessful) {
-              return (true, response.Data, null);
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, response.Data, null);
             }
 
             return (false, null, GetErrorMessage(response));
@@ -79,7 +76,6 @@ namespace SSCMS.Utils
                 (sender, certificate, chain, errors) => true;
 
             var client = new RestClient(url);
-            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             var request = new RestRequest
             {
                 Method = Method.Post,
@@ -90,11 +86,12 @@ namespace SSCMS.Utils
             {
                 request.AddHeader("Authorization", $"Bearer {accessToken}");
             }
-            request.AddParameter("application/json", TranslateUtils.JsonSerialize(body), ParameterType.RequestBody);
+            request.AddBody(body, "application/json");
             var response = await client.ExecuteAsync(request);
 
-            if (response.IsSuccessful) {
-              return (true, null);
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, null);
             }
 
             return (false, GetErrorMessage(response));
@@ -108,10 +105,9 @@ namespace SSCMS.Utils
                 (sender, certificate, chain, errors) => true;
 
             var client = new RestClient(url);
-            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             var request = new RestRequest
             {
-                Method= Method.Post,
+                Method = Method.Post,
                 Timeout = -1,
             };
             //request.AddHeader("Content-Type", "application/json");
@@ -124,8 +120,9 @@ namespace SSCMS.Utils
 
             var response = await client.ExecuteAsync(request);
 
-            if (response.IsSuccessful) {
-              return (true, null);
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, null);
             }
 
             return (false, GetErrorMessage(response));
@@ -157,7 +154,6 @@ namespace SSCMS.Utils
                 (sender, certificate, chain, errors) => true;
 
             var client = new RestClient("https://api.open.21ds.cn/apiv1/iptest?apkey=iptest");
-            //RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
             var request = new RestRequest
             {
                 Method = Method.Get,

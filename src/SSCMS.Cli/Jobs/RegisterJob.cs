@@ -19,9 +19,9 @@ namespace SSCMS.Cli.Jobs
         private bool _isHelp;
         private readonly OptionSet _options;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
 
-        public RegisterJob(IApiService apiService)
+        public RegisterJob(ICliApiService cliApiService)
         {
             _options = new OptionSet
             {
@@ -39,7 +39,7 @@ namespace SSCMS.Cli.Jobs
                 }
             };
 
-            _apiService = apiService;
+            _cliApiService = cliApiService;
         }
 
         public void PrintUsage()
@@ -80,7 +80,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (success, failureMessage) = await _apiService.RegisterAsync(_userName, _mobile, _email, _password);
+            var (success, failureMessage) = await _cliApiService.RegisterAsync(_userName, _mobile, _email, _password);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync("you have registered successfully, run sscms login to log in.");

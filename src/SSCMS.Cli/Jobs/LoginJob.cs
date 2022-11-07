@@ -15,12 +15,12 @@ namespace SSCMS.Cli.Jobs
         private string _password;
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public LoginJob(IApiService apiService)
+        public LoginJob(ICliApiService cliApiService)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 { "u|username=", "登录用户名",
@@ -67,7 +67,7 @@ namespace SSCMS.Cli.Jobs
                 _password = ReadUtils.GetPassword("Password:");
             }
 
-            var (success, failureMessage) = await _apiService.LoginAsync(_account, _password);
+            var (success, failureMessage) = await _cliApiService.LoginAsync(_account, _password);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync("you have successful logged in");

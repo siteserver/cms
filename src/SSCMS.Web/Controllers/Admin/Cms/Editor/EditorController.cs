@@ -16,12 +16,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     [AutoValidateAntiforgeryToken]
     public partial class EditorController : ControllerBase
     {
-        private const string Route = "cms/editor/editor";
-        private const string RouteInsert = "cms/editor/editor/actions/insert";
-        private const string RouteUpdate = "cms/editor/editor/actions/update";
-        private const string RoutePreview = "cms/editor/editor/actions/preview";
-        private const string RouteCensor = "cms/editor/editor/actions/censor";
-        private const string RouteTags = "cms/editor/editor/actions/tags";
+        private const string Route = "cms/editor";
+        private const string RouteInsert = "cms/editor/actions/insert";
+        private const string RouteUpdate = "cms/editor/actions/update";
+        private const string RoutePreview = "cms/editor/actions/preview";
+        private const string RouteCensor = "cms/editor/actions/censor";
+        private const string RouteSpell = "cms/editor/actions/spell";
+        private const string RouteTags = "cms/editor/actions/tags";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
@@ -30,6 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
         private readonly ICensorManager _censorManager;
+        private readonly ISpellManager _spellManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -42,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly ITranslateRepository _translateRepository;
         private readonly IStatRepository _statRepository;
 
-        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
+        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -51,6 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
             _censorManager = censorManager;
+            _spellManager = spellManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -83,9 +86,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public IEnumerable<Template> Templates { get; set; }
             public List<Select<int>> CheckedLevels { get; set; }
             public int CheckedLevel { get; set; }
-            public bool IsCensorTextEnabled { get; set; }
             public IEnumerable<Select<string>> LinkTypes { get; set; }
             public Cascade<int> Root { get; set; }
+            public CensorSettings CensorSettings { get; set; }
+            public SpellSettings SpellSettings { get; set; }
+            public bool IsSpellingCheck { get; set; }
         }
 
         public class PreviewRequest
@@ -117,10 +122,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public Content Content { get; set; }
         }
 
-        public class CensorSubmitResult
+        public class SpellRequest
         {
-            public bool Success { get; set; }
-            public CensorResult TextResult { get; set; }
+            public int SiteId { get; set; }
+            public int ChannelId { get; set; }
+            public Content Content { get; set; }
         }
 
         public class TagsRequest

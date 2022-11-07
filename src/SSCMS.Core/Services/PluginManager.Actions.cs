@@ -1,5 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
-using SSCMS.Core.Plugins;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using System.Threading.Tasks;
 

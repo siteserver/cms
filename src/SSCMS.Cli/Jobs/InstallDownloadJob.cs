@@ -20,15 +20,15 @@ namespace SSCMS.Cli.Jobs
 
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
 
-        public InstallDownloadJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
+        public InstallDownloadJob(ICliApiService cliApiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _configRepository = configRepository;
@@ -62,7 +62,7 @@ namespace SSCMS.Cli.Jobs
 
             if (!CliUtils.IsSsCmsExists(contentRootPath))
             {
-                var (success, result, failureMessage) = await _apiService.GetReleasesAsync(_settingsManager.Version, null);
+                var (success, result, failureMessage) = await _cliApiService.GetReleasesAsync(_settingsManager.Version, null);
                 if (!success)
                 {
                     await WriteUtils.PrintErrorAsync(failureMessage);

@@ -13,12 +13,12 @@ namespace SSCMS.Cli.Jobs
 
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public PluginUnPublishJob(IApiService apiService)
+        public PluginUnPublishJob(ICliApiService cliApiService)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 {
@@ -53,7 +53,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var (status, failureMessage) = await _apiService.GetStatusAsync();
+            var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
                 await WriteUtils.PrintErrorAsync(failureMessage);
@@ -61,7 +61,7 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = await _apiService.PluginUnPublishAsync(context.Extras[0]);
+            (success, failureMessage) = await _cliApiService.PluginUnPublishAsync(context.Extras[0]);
             if (success)
             {
                 await WriteUtils.PrintSuccessAsync($"Plugin {context.Extras[0]} unpublished.");
