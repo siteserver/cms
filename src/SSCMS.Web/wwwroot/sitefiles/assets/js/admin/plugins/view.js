@@ -7,6 +7,7 @@ var data = utils.init({
   userName: utils.getQueryString('userName'),
   name: utils.getQueryString('name'),
   pluginId: utils.getQueryString('pluginId'),
+  buy: utils.getQueryString('buy'),
   activeName: 'overview',
   cmsVersion: null,
   plugin: null,
@@ -14,7 +15,8 @@ var data = utils.init({
   changeLog: null,
   isShouldUpdate: false,
   extension: null,
-  release: null
+  release: null,
+  isPurchased: false,
 });
 
 var methods = {
@@ -47,9 +49,14 @@ var methods = {
 
         $this.extension = res.extension;
         $this.release = res.release;
+        $this.isPurchased = res.isPurchased;
 
         if ($this.plugin) {
           $this.isShouldUpdate = cloud.compareVersion($this.plugin.version, $this.release.version) == -1;
+        }
+
+        if ($this.buy) {
+          $this.btnInstallClick();
         }
       }).catch(function (error) {
         console.log(error);
@@ -255,7 +262,32 @@ var methods = {
   },
 
   btnBuyClick: function() {
-    window.open(this.getPluginUrl());
+    var $this = this;
+    var url = utils.addQuery(location.href, {
+      buy: true
+    });
+    cloud.checkAuth(function() {
+      utils.openLayer({
+        title: '购买',
+        width: 600,
+        height: 500,
+        url: cloud.host + '/layer/pay.html?resourceType=Extension&userName=' + $this.extension.userName + '&name=' + $this.extension.name
+      });
+
+      window.addEventListener(
+        'message',
+        function(e) {
+          if (e.origin !== cloud.host) return;
+          var userName = e.data.userName;
+          var name = e.data.name;
+          if (userName && name) {
+            $this.btnInstallClick();
+          }
+        },
+        false,
+      );
+    }, url);
+    // window.open(this.getPluginUrl());
   },
 
   btnInstallClick: function() {

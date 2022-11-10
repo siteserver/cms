@@ -25,12 +25,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly ICloudManager _cloudManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public SitesAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository, ITemplateRepository templateRepository)
+        public SitesAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ICloudManager cloudManager, ISiteRepository siteRepository, IContentRepository contentRepository, IAdministratorRepository administratorRepository, ITemplateRepository templateRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -38,6 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
+            _cloudManager = cloudManager;
             _siteRepository = siteRepository;
             _contentRepository = contentRepository;
             _administratorRepository = administratorRepository;
@@ -60,6 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public string LocalDirectoryName { get; set; }
             public string CloudThemeUserName { get; set; }
             public string CloudThemeName { get; set; }
+            public bool IsCloudThemeFree { get; set; }
             public string SiteName { get; set; }
             public bool Root { get; set; }
             public int ParentId { get; set; }

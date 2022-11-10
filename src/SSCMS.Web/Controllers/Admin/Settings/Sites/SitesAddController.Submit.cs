@@ -125,6 +125,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 var filePath = _pathManager.GetSiteTemplatesPath($"T_{request.CloudThemeName}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
                 var downloadUrl = CloudUtils.Dl.GetThemesDownloadUrl(request.CloudThemeUserName, request.CloudThemeName);
+                if (!request.IsCloudThemeFree && await _cloudManager.IsAuthenticationAsync())
+                {
+                    downloadUrl = await _cloudManager.GetThemeDownloadUrlAsync(request.CloudThemeUserName, request.CloudThemeName);
+                }
                 await HttpClientUtils.DownloadAsync(downloadUrl, filePath);
 
                 caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");

@@ -45,7 +45,7 @@ namespace SSCMS.Core.Services
                 throw new Exception("邮箱地址不能为空");
             }
 
-            var url = GetCloudUrl(RouteMail);
+            var url = GetCloudUrl(RouteGetDownloadUrl);
             var (success, result, errorMessage) = await RestUtils.PostAsync<SendMailRequest, BoolResult>(url, new SendMailRequest
             {
                 Mail = mail,

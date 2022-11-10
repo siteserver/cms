@@ -61,6 +61,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             public string UserName { get; set; }
             public string DisplayName { get; set; }
             public string Mobile { get; set; }
+            public bool MobileVerified { get; set; }
             public DateTime? LastActivityDate { get; set; }
             public int CountOfLogin { get; set; }
             public bool Locked { get; set; }

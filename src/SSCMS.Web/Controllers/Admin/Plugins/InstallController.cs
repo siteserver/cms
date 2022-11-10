@@ -23,14 +23,16 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
+        private readonly ICloudManager _cloudManager;
 
         public InstallController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager,
-            IAuthManager authManager, IPluginManager pluginManager)
+            IAuthManager authManager, IPluginManager pluginManager, ICloudManager cloudManager)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pluginManager = pluginManager;
+            _cloudManager = cloudManager;
         }
 
         public class GetRequest

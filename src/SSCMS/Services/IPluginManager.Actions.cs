@@ -4,7 +4,7 @@ namespace SSCMS.Services
 {
     public partial interface IPluginManager
     {
-        Task InstallAsync(string userName, string name, string version);
+        Task InstallAsync(string userName, string name, string version, string downloadUrl);
 
         void UnInstall(string pluginId);
     }
