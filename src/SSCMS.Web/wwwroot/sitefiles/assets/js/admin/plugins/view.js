@@ -185,7 +185,7 @@ var methods = {
 
   getIconUrl: function () {
     if (this.plugin) {
-      return this.plugin.iconUrl || utils.getAssetsUrl('images/favicon.png');
+      return this.plugin.icon || utils.getAssetsUrl('images/favicon.png');
     } else if (this.extension) {
       return cloud.hostStorage + '/' + _.trim(this.extension.iconUrl, '/');
     }

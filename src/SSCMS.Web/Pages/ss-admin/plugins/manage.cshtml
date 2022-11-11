@@ -212,18 +212,10 @@
     <el-table-column label="操作" width="140" align="center">
       <template slot-scope="scope">
         <el-link
-          v-if="scope.row.price === 0"
           :underline="false"
           type="warning"
           :href="utils.getPluginsUrl('install', {isUpdate: true, pluginIds: scope.row.pluginId})">
           升级
-        </el-link>
-        <el-link
-          v-else
-          :underline="false"
-          type="warning"
-          v-on:click="btnUploadClick">
-          离线升级插件
         </el-link>
       </template>
     </el-table-column>

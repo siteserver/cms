@@ -284,9 +284,7 @@ var $vue = new Vue({
       var pluginIds = [];
       for (var i = 0; i < this.updatePlugins.length; i++) {
         var plugin = this.updatePlugins[i];
-        if (plugin.price === 0) {
-          pluginIds.push(plugin.pluginId);
-        }
+        pluginIds.push(plugin.pluginId);
       }
       return pluginIds;
     }
