@@ -4,11 +4,141 @@ var $urlDisconnect = $url + '/actions/disconnect';
 var data = utils.init({
   isConnect: false,
   iFrameUrl: '',
+  cloudType: null,
+  expirationDate: null,
+  upgradeAmount: null,
+  cloudPriceStandard1Month: null,
+  cloudPriceProfessional1Month: null,
+  cloudPriceStandard1Year: null,
+  cloudPriceProfessional1Year: null,
+  cloudPriceStandard2Year: null,
+  cloudPriceProfessional2Year: null,
+  features: null,
+  active: 0,
+  buyForm: {
+    cloudType: '',
+    periods: 'Y1',
+    originalPrice: 0,
+    save: 0,
+    amount: 0,
+    renewalTitle: '',
+  }
 });
 
 var methods = {
   getUserName: function() {
     return $cloudUserName;
+  },
+
+  getExpirationDate: function() {
+    return utils.formatDate(this.expirationDate);
+  },
+
+  btnBuyClick: function(cloudType) {
+    this.active = 1;
+    this.buyForm.cloudType = cloudType;
+    this.buyForm.periods = 'Y1';
+    this.btnChangeClick();
+  },
+
+  btnRenewalClick: function () {
+    this.active = 2;
+    this.buyForm.cloudType = this.cloudType;
+    this.buyForm.periods = 'Y1';
+    if (this.cloudType == 'Standard') {
+      this.buyForm.renewalTitle = '标准版（¥' + this.cloudPriceStandard1Month + '/月）';
+    } else if (this.cloudType == 'Professional') {
+      this.buyForm.renewalTitle = '专业版（¥' + this.cloudPriceProfessional1Month + '/月）';
+    }
+    this.btnChangeClick();
+  },
+
+  btnUpgradeClick: function () {
+    this.active = 3;
+    this.buyForm.cloudType = 'Professional';
+    this.buyForm.amount = this.upgradeAmount;
+  },
+
+  btnPayClick: function() {
+    var resourceType = 'CloudBuy';
+    if (this.active == 2) {
+      resourceType = 'CloudRenewal';
+    } else if (this.active == 3) {
+      resourceType = 'CloudUpgrade';
+    }
+    utils.openLayer({
+      title: '购买',
+      width: 600,
+      height: 500,
+      url: cloud.host + '/layer/pay.html?resourceType=' + resourceType + '&type=' + this.buyForm.cloudType + '&periods=' + this.buyForm.periods
+    });
+
+    window.addEventListener(
+      'message',
+      function(e) {
+        if (e.origin !== cloud.host) return;
+        location.href = utils.getSettingsUrl('cloudDashboard', {r: Math.random()});
+      },
+      false,
+    );
+  },
+
+  btnPreviousClick: function() {
+    this.active = 0;
+  },
+
+  btnChangeClick: function() {
+    this.buyForm.originalPrice = 0;
+    var price = 0;
+    if (this.buyForm.cloudType === 'Standard') {
+      price = this.cloudPriceStandard1Month;
+    } else if (this.buyForm.cloudType === 'Professional') {
+      price = this.cloudPriceProfessional1Month;
+    }
+
+    if (this.buyForm.periods === 'Y1') {
+      this.buyForm.originalPrice = price * 12;
+      if (this.buyForm.cloudType === 'Standard') {
+        price = this.cloudPriceStandard1Year;
+      } else if (this.buyForm.cloudType === 'Professional') {
+        price = this.cloudPriceProfessional1Year;
+      }
+      this.buyForm.save = Math.round((this.buyForm.originalPrice - price) / this.buyForm.originalPrice * 100);
+    } else if (this.buyForm.periods === 'Y2') {
+      this.buyForm.originalPrice = price * 24;
+      if (this.buyForm.cloudType === 'Standard') {
+        price = this.cloudPriceStandard2Year;
+      } else if (this.buyForm.cloudType === 'Professional') {
+        price = this.cloudPriceProfessional2Year;
+      }
+      this.buyForm.save = Math.round((this.buyForm.originalPrice - price) / this.buyForm.originalPrice * 100);
+    }
+
+    this.buyForm.amount = price;
+  },
+
+  apiCloudGet: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.get('clouds').then(function (response) {
+      var res = response.data;
+
+      $this.cloudType = res.cloudType;
+      $this.expirationDate = res.expirationDate;
+      $this.upgradeAmount = res.upgradeAmount;
+      $this.cloudPriceStandard1Month = res.cloudPriceStandard1Month;
+      $this.cloudPriceProfessional1Month = res.cloudPriceProfessional1Month;
+      $this.cloudPriceStandard1Year = res.cloudPriceStandard1Year;
+      $this.cloudPriceProfessional1Year = res.cloudPriceProfessional1Year;
+      $this.cloudPriceStandard2Year = res.cloudPriceStandard2Year;
+      $this.cloudPriceProfessional2Year = res.cloudPriceProfessional2Year;
+      $this.features = res.features;
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiDisconnect: function () {
@@ -64,7 +194,7 @@ var $vue = new Vue({
   created: function () {
     var $this = this;
     cloud.checkAuth(function() {
-      utils.loading($this, false);
+      $this.apiCloudGet();
     });
   }
 });

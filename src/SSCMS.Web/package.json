@@ -734,7 +734,7 @@
             }
           },
           "app_settings_cloud_all": {
-            "text": "云助手",
+            "text": "云助手管理",
             "permissions": [
               "app_settings_cloudDashboard",
               "app_settings_cloudSettingsCensor",
