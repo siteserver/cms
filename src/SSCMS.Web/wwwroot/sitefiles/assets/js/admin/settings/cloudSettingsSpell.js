@@ -1,6 +1,20 @@
 var $url = "/settings/cloudSettingsSpell"
+var $urlCloud = "cms/spell";
 
 var data = utils.init({
+  activeName: "settings",
+  count: 0,
+  cloudWords: [],
+  isAdd: false,
+  formInline: {
+    keyword: "",
+    currentPage: 1,
+    offset: 0,
+    limit: 30,
+  },
+  form: {
+    words: '',
+  },
   isCloudSpellingCheck: false,
   isCloudSpellingCheckAuto: false,
   isCloudSpellingCheckIgnore: false,
@@ -48,6 +62,114 @@ var methods = {
 
   btnSubmitClick: function () {
     this.apiSubmit();
+  },
+
+  btnTabsClick: function () {
+    if (this.activeName == "whitelist") {
+      this.apiCloudGet();
+    }
+  },
+
+  apiCloudGet: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud
+      .get($urlCloud, {
+        params: this.formInline,
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        $this.count = res.count;
+        $this.cloudWords = res.cloudWords;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+  },
+
+  apiCloudDelete: function (id) {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.post($urlCloud + "/actions/delete", {
+        id: id,
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        utils.success("错别字白名单删除成功！");
+        $this.apiCloudGet();
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+  },
+
+  apiCloudSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.post($urlCloud, {
+        words: this.form.words,
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        utils.success("错别字白名单添加成功！");
+        $this.isAdd = false;
+        $this.apiCloudGet();
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+  },
+
+  btnAddClick: function () {
+    this.isAdd = true;
+    this.form.words = '';
+  },
+
+  btnSearchClick: function () {
+    this.apiCloudGet();
+  },
+
+  handleCurrentChange: function (val) {
+    this.formInline.currentPage = val;
+    this.formInline.offset = this.formInline.limit * (val - 1);
+
+    this.btnSearchClick();
+  },
+
+  btnDeleteClick: function(cloudWord) {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '删除错别字白名单',
+      text: '此操作将删除错别字白名单 “' + cloudWord.word + '”，确定吗？',
+      callback: function () {
+        $this.apiCloudDelete(cloudWord.id);
+      }
+    });
+  },
+
+  btnAddSubmitClick: function () {
+    var $this = this;
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiCloudSubmit();
+      }
+    });
   },
 };
 
