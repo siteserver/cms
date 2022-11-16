@@ -179,7 +179,10 @@ var methods = {
   },
 
   btnTicketClick: function () {
-    window.open('https://sscms.com/home/#/my/tickets');
+    utils.addTab('工单技术支持', utils.getSettingsUrl('cloudTickets', {
+      isAdd: true,
+      tabName: utils.getTabName()
+    }));
   },
 
   btnDocsClick: function () {

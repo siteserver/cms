@@ -1,5 +1,6 @@
 var $urlCloud = "home/my/ticketMessages";
 var $urlCloudUpload = 'home/my/ticketMessages/actions/upload';
+var $urlCloudClose = 'home/my/ticketMessages/actions/close';
 
 var data = utils.init({
   ticketNo: utils.getQueryString('ticketNo'),
@@ -48,29 +49,48 @@ var methods = {
   },
 
   apiClose: function() {
-    api.close(
-      {
-        ticketNo: this.ticket.ticketNo,
-      },
-      (res) => {
-        if (!res.value) return;
-        utils.success('工单关闭成功！');
-        this.ticket.status = 'Closed';
-      },
-    );
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.post($urlCloudClose, {
+      ticketNo: this.ticket.ticketNo,
+    })
+    .then(function (response) {
+      var res = response.data;
+
+      utils.success('工单关闭成功！');
+      $this.ticket.status = 'Closed';
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiSubmit: function(messageType, storageKey, content) {
-    var req = {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.post($urlCloud, {
       ticketNo: this.ticket.ticketNo,
-      messageType,
-      storageKey,
-      content,
-    };
-    api.submit(req, (res) => {
-      this.form.content = '';
-      this.ticket.status = 'Dealing';
-      this.messages.push(res.message);
+      messageType: messageType,
+      storageKey: storageKey,
+      content: content,
+    })
+    .then(function (response) {
+      var res = response.data;
+
+      $this.form.content = '';
+      $this.ticket.status = 'Dealing';
+      $this.messages.push(res.message);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
     });
   },
 
@@ -109,16 +129,15 @@ var methods = {
   },
 
   btnCloseClick: function() {
-    utils.alertDelete(
-      {
-        title: '关闭工单',
-        text: '此操作将关闭工单，确定吗？',
-        button: '确认关闭',
-      },
-      () => {
-        this.apiClose();
-      },
-    );
+    var $this = this;
+    utils.alertDelete({
+      title: '关闭工单',
+      text: '此操作将关闭工单，确定吗？',
+      button: '确认关闭',
+      callback: function() {
+        $this.apiClose();
+      }
+    });
   },
 
   btnSubmitClick: function() {
@@ -128,7 +147,7 @@ var methods = {
   },
 
   uploadBefore: function(file) {
-    const isLt10M = file.size / 1024 / 1024 < 10;
+    var isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
       utils.error('文件大小不能超过 10MB!');
     }
@@ -145,14 +164,11 @@ var methods = {
 
   uploadError: function(err) {
     utils.loading(false);
-    const error = JSON.parse(err.message);
+    var error = JSON.parse(err.message);
     utils.error(error.message);
   },
 
   getClassName: function(message) {
-    if (this.isReply) {
-      return message.isReply ? 'message-item--right' : 'message-item--left';
-    }
     return message.isReply ? 'message-item--left' : 'message-item--right';
   },
 
@@ -165,7 +181,7 @@ var methods = {
   },
 
   getStorageUrl: function(message) {
-    return cloud.hostStorage + message.storageKey;
+    return cloud.hostStorage + '/' + message.storageKey;
   },
 
   getAvatarUrl: function() {
@@ -189,5 +205,6 @@ var $vue = new Vue({
     cloud.checkAuth(function () {
       $this.apiGet();
     });
+    utils.keyPress(this.btnSubmitClick);
   },
 });

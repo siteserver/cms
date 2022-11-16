@@ -20,6 +20,9 @@
               :value="status"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="工单编号">
+          <el-input v-model="formInline.ticketNo" placeholder="工单编号"></el-input>
+        </el-form-item>
         <el-form-item label="关键字">
           <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
         </el-form-item>
@@ -112,7 +115,7 @@
         </el-form>
         <el-divider></el-divider>
         <div class="drawer__footer">
-          <el-button type="primary" v-on:click="btnSubmitClick" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}
+          <el-button type="primary" v-on:click="btnSubmitClick" :loading="submitting">{{ submitting ? '提交中 ...' : '确 定' }}
           </el-button>
           <el-button v-on:click="btnCancelClick">取 消</el-button>
         </div>
