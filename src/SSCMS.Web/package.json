@@ -146,6 +146,12 @@
           "app"
         ]
       },
+      "app_settings_cloudTickets": {
+        "text": "工单技术支持",
+        "type": [
+          "app"
+        ]
+      },
       "app_settings_cloudSettingsCensor": {
         "text": "云助手内容违规检测",
         "type": [
@@ -816,6 +822,7 @@
           "app_settings_homeConfig",
           "app_settings_homeMenus",
           "app_settings_cloudDashboard",
+          "app_settings_cloudTickets",
           "app_settings_cloudSettingsCensor",
           "app_settings_cloudSettingsSpell",
           "app_settings_cloudSettingsVod",
@@ -1027,6 +1034,7 @@
             "text": "云助手管理",
             "permissions": [
               "app_settings_cloudDashboard",
+              "app_settings_cloudTickets",
               "app_settings_cloudSettingsCensor",
               "app_settings_cloudSettingsSpell",
               "app_settings_cloudSettingsVod",
@@ -1045,6 +1053,15 @@
                 ],
                 "order": 101
               },
+              "app_settings_cloudTickets": {
+                "text": "工单技术支持",
+                "iconClass": "el-icon-service",
+                "link": "./settings/cloudTickets/",
+                "permissions": [
+                  "app_settings_cloudTickets"
+                ],
+                "order": 102
+              },
               "app_settings_cloudSettingsCensor": {
                 "text": "内容违规检测",
                 "iconClass": "el-icon-circle-check",
@@ -1052,7 +1069,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsCensor"
                 ],
-                "order": 102
+                "order": 103
               },
               "app_settings_cloudSettingsSpell": {
                 "text": "错别字检查",
@@ -1061,7 +1078,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsSpell"
                 ],
-                "order": 103
+                "order": 104
               },
               "app_settings_cloudSettingsVod": {
                 "text": "云视频设置",
@@ -1070,7 +1087,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsVod"
                 ],
-                "order": 104
+                "order": 105
               },
               "app_settings_cloudSettingsSms": {
                 "text": "短信设置",
@@ -1079,7 +1096,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsSms"
                 ],
-                "order": 105
+                "order": 106
               },
               "app_settings_cloudSettingsMail": {
                 "text": "邮件设置",
@@ -1088,7 +1105,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsMail"
                 ],
-                "order": 106
+                "order": 107
               }
             }
           },

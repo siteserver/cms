@@ -42,15 +42,10 @@ namespace SSCMS.Core.StlParser.StlElement
             var elementId = dynamicInfo.ElementId;
 
             return $@"
-<span id=""{elementId}_loading"">{dynamicInfo.LoadingTemplate}</span>
-<span id=""{elementId}_success"" style=""display: none""></span>
-<span id=""{elementId}_failure"" style=""display: none""></span>
-<script type=""text/javascript"" language=""javascript"">
+<script id=""{elementId}"" type=""text/javascript"" language=""javascript"">
 function stlDynamic{elementId}(page)
 {{
-    document.getElementById('{elementId}_loading').style.display = '{display}';
-    document.getElementById('{elementId}_success').style.display = 'none';
-    document.getElementById('{elementId}_failure').style.display = 'none';
+    $(""#{elementId}"").before('{dynamicInfo.LoadingTemplate}');
     {dynamicInfo.OnBeforeSend}
     stlClient.post('{dynamicApiUrl}?' + StlClient.getQueryString(), {{
         value: '{values}',
@@ -59,12 +54,8 @@ function stlDynamic{elementId}(page)
         if (!err) {{
             if (data.value) {{
                 {dynamicInfo.OnSuccess}
-                document.getElementById('{elementId}_success').innerHTML = data.html;
-                document.getElementById('{elementId}_success').style.display = '{display}';
-            }} else {{
-                document.getElementById('{elementId}_failure').innerHTML = data.html;
-                document.getElementById('{elementId}_failure').style.display = '{display}';
             }}
+            $(""#{elementId}"").before(data.html);
         }} else {{
             {dynamicInfo.OnError}
         }}

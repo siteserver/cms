@@ -29,7 +29,7 @@ namespace SSCMS.Core.Services
         }
 
         public static string GetCloudUrl(string relatedUrl) => PageUtils.Combine(CloudUtils.CloudApiHost,
-            "v7/cloud",
+            "v7/clouds",
             relatedUrl);
 
         public async Task<bool> IsAuthenticationAsync()
