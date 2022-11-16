@@ -17,17 +17,15 @@ var data = utils.init({
     offset: 0,
     limit: 30,
   },
-
   form: {
     priority: 'Normal',
-    category: '',
-    resourceId: '',
+    category: 'Cms',
     content: '',
     fileUrls: [],
   },
   loading: false,
-  uploadToken: $cloudToken,
-  uploadUrl: cloud.baseURL + '/' + $urlCloudUpload,
+  uploadToken: '',
+  uploadUrl: '',
   fileList: [],
 });
 
@@ -43,8 +41,11 @@ var methods = {
       .then(function (response) {
         var res = response.data;
 
+        $this.isTicket = res.isTicket;
         $this.count = res.count;
         $this.tickets = res.tickets;
+        $this.uploadToken = $cloudToken;
+        $this.uploadUrl = cloud.defaults.baseURL + '/' + $urlCloudUpload;
       })
       .catch(function (error) {
         utils.error(error);
@@ -63,6 +64,7 @@ var methods = {
 
       if (!res.value) return;
       utils.success('工单提交成功！');
+      $this.apiGet();
       $this.isAdd = false;
     })
     .catch(function (error) {
@@ -93,16 +95,9 @@ var methods = {
       return 'success';
     }
     if (ticket.status === 'Dealing') {
-      return 'danger';
+      return 'info';
     }
-    return 'primary';
-  },
-
-  getTicketPriorityType: function(ticket) {
-    if (ticket.priority === 'High') {
-      return 'danger';
-    }
-    return 'primary';
+    return 'danger';
   },
 
   getTicketPriority: function(priority) {
@@ -111,6 +106,7 @@ var methods = {
   },
 
   getTicketCategory: function(category) {
+    if (category === 'Cms') return 'CMS问题';
     if (category === 'Cloud') return '网站云问题';
     if (category === 'Theme') return '模板问题';
     if (category === 'Extension') return '插件问题';
@@ -129,7 +125,7 @@ var methods = {
   },
 
   btnViewClick: function(ticket) {
-    utils.addTab('工单：' + ticket.ticketNo, utils.getSettingsUrl('cloudTicketsMessage', {
+    utils.addTab('工单：' + ticket.ticketNo, utils.getSettingsUrl('cloudTicketMessages', {
       ticketNo: ticket.ticketNo,
       tabName: utils.getTabName()
     }));
@@ -175,16 +171,16 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true);
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res) {
     this.fileList.push(res);
-    utils.loading(false);
+    utils.loading(this, false);
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     utils.error(error.message);
   },

@@ -36,17 +36,9 @@
   <el-table :data="tickets" style="width: 100%">
     <el-table-column label="工单编号" width="100">
       <template #default="scope">
+        <el-link type="primary" :underline="false" v-on:click.prevent="btnViewClick(scope.row)">
         {{ scope.row.ticketNo }}
-      </template>
-    </el-table-column>
-    <el-table-column label="用户名称" width="150">
-      <template #default="scope">
-        {{ scope.row.userName }}
-      </template>
-    </el-table-column>
-    <el-table-column label="工单类型" width="150">
-      <template #default="scope">
-        {{ getTicketCategory(scope.row) }}
+        </el-link>
       </template>
     </el-table-column>
     <el-table-column label="问题内容">
@@ -56,7 +48,12 @@
         </el-link>
       </template>
     </el-table-column>
-    <el-table-column label="提交时间" width="140">
+    <el-table-column label="工单类型" align="center" width="150">
+      <template #default="scope">
+        {{ getTicketCategory(scope.row) }}
+      </template>
+    </el-table-column>
+    <el-table-column label="提交时间" align="center" width="140">
       <template #default="scope">
         {{ scope.row.createdDate }}
       </template>
@@ -70,9 +67,7 @@
     </el-table-column>
     <el-table-column label="工单类型" align="center" width="140">
       <template #default="scope">
-        <el-tag :type="getTicketPriorityType(scope.row)">
-          {{ getTicketPriority(scope.row.priority) }}
-        </el-tag>
+        {{ getTicketPriority(scope.row.priority) }}
       </template>
     </el-table-column>
   </el-table>
@@ -82,7 +77,7 @@
       :page-size="formInline.limit" layout="total, prev, pager, next, jumper" :total="count"></el-pagination>
   </div>
 
-  <el-drawer title="提交工单" direction="rtl" size="60%" v-model="isAdd">
+  <el-drawer title="提交工单" direction="rtl" size="60%" :visible.sync="isAdd">
     <div style="margin: 15px 30px 0">
       <div class="drawer__content">
         <el-form style="margin: 10px" ref="form" :model="form" label-position="top">
@@ -95,6 +90,7 @@
           </el-form-item>
           <el-form-item label="工单类型" prop="category" :rules="{ required: true, message: '请选择工单类型' }">
             <el-radio-group v-model="form.category">
+              <el-radio label="Cms">CMS问题</el-radio>
               <el-radio label="Cloud">网站云问题</el-radio>
               <el-radio label="Theme">模板问题</el-radio>
               <el-radio label="Extension">插件问题</el-radio>
