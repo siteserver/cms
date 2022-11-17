@@ -199,10 +199,11 @@
                       </el-radio-group>
                     </el-form-item>
                     <el-form-item label="费用合计">
-                      <span style="font-size: 16px; color: #fa5300; text-decoration: line-through;" v-if="buyForm.periods == 'Y1'">￥{{ (cloudPriceStandard1Month * 12).toFixed(2) }}</span>
-                      <span style="font-size: 16px; color: #fa5300; text-decoration: line-through;" v-else-if="buyForm.periods == 'Y2'">￥{{ (cloudPriceStandard1Month * 24).toFixed(2) }}</span>
-                      <span style="font-size: 16px; color: #fa5300">￥{{ buyForm.amount.toFixed(2) }}</span>
-                      <span v-if="buyForm.periods !== 'M1'">（节省：{{ buyForm.save }}%）</span>
+                      <div style="font-size: 16px;">
+                        原价：<span style="text-decoration: line-through; margin-right: 10px;" v-if="buyForm.periods !== 'M1'">￥{{ getOriginalAmount() }}</span>
+                        现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        <span v-if="buyForm.periods !== 'M1'">（节省：{{ buyForm.save }}%）</span>
+                      </div>
                     </el-form-item>
                     <el-divider></el-divider>
             
@@ -227,10 +228,11 @@
                       </el-radio-group>
                     </el-form-item>
                     <el-form-item label="费用合计">
-                      <span style="font-size: 16px; color: #fa5300; text-decoration: line-through;" v-if="buyForm.periods == 'Y1'">￥{{ (cloudPriceStandard1Month * 12).toFixed(2) }}</span>
-                      <span style="font-size: 16px; color: #fa5300; text-decoration: line-through;" v-else-if="buyForm.periods == 'Y2'">￥{{ (cloudPriceStandard1Month * 24).toFixed(2) }}</span>
-                      <span style="font-size: 16px; color: #fa5300">￥{{ buyForm.amount.toFixed(2) }}</span>
-                      <span v-if="buyForm.periods !== 'M1'">（节省：{{ buyForm.save }}%）</span>
+                      <div style="font-size: 16px;">
+                        原价：<span style="text-decoration: line-through; margin-right: 10px;" v-if="buyForm.periods !== 'M1'">￥{{ getOriginalAmount() }}</span>
+                        现价：<span style="color: #fa5300; margin-left: 10px;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        <span v-if="buyForm.periods !== 'M1'">（节省：{{ buyForm.save }}%）</span>
+                      </div>
                     </el-form-item>
                     <el-divider></el-divider>
             

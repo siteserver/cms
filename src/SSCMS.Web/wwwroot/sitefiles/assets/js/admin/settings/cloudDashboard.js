@@ -207,6 +207,16 @@ var methods = {
     if (product === 'Mail') return '邮件';
     return '';
   },
+
+  getOriginalAmount: function() {
+    var amount = this.buyForm.cloudType == 'Standard' ? this.cloudPriceStandard1Month : this.cloudPriceProfessional1Month;
+    if (this.buyForm.periods == 'Y1') {
+      amount *= 12;
+    } else if (this.buyForm.periods == 'Y2') {
+      amount *= 24;
+    }
+    return amount.toFixed(2);
+  },
 };
 
 var $vue = new Vue({

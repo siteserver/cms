@@ -1413,7 +1413,7 @@
             "type": [
               "wx"
             ],
-            "link": "./wx/account",
+            "link": "./wx/account/",
             "permissions": [
               "site_wxAccount"
             ],
@@ -1424,7 +1424,7 @@
             "type": [
               "wx"
             ],
-            "link": "./wx/reply",
+            "link": "./wx/reply/",
             "permissions": [
               "site_wxReply",
               "site_wxReplyAuto",
@@ -1463,7 +1463,7 @@
             "type": [
               "wx"
             ],
-            "link": "./wx/menus",
+            "link": "./wx/menus/",
             "permissions": [
               "site_wxMenus"
             ],
@@ -1474,7 +1474,7 @@
             "type": [
               "wx"
             ],
-            "link": "./wx/chat",
+            "link": "./wx/chat/",
             "permissions": [
               "site_wxChat"
             ],
@@ -1485,7 +1485,7 @@
             "type": [
               "wx"
             ],
-            "link": "./wx/users",
+            "link": "./wx/users/",
             "permissions": [
               "site_wxUsers"
             ],
@@ -1496,7 +1496,7 @@
             "type": [
               "wx"
             ],
-            "link": "./wx/send",
+            "link": "./wx/send/",
             "permissions": [
               "site_wxSend"
             ],
