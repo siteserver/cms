@@ -1065,7 +1065,7 @@
               "app_settings_cloudSettingsCensor": {
                 "text": "内容违规检测",
                 "iconClass": "el-icon-circle-check",
-                "link": "./settings/cloudSettingsCensor",
+                "link": "./settings/cloudSettingsCensor/",
                 "permissions": [
                   "app_settings_cloudSettingsCensor"
                 ],
@@ -1074,7 +1074,7 @@
               "app_settings_cloudSettingsSpell": {
                 "text": "错别字检查",
                 "iconClass": "el-icon-finished",
-                "link": "./settings/cloudSettingsSpell",
+                "link": "./settings/cloudSettingsSpell/",
                 "permissions": [
                   "app_settings_cloudSettingsSpell"
                 ],
@@ -1083,7 +1083,7 @@
               "app_settings_cloudSettingsVod": {
                 "text": "云视频设置",
                 "iconClass": "el-icon-video-play",
-                "link": "./settings/cloudSettingsVod",
+                "link": "./settings/cloudSettingsVod/",
                 "permissions": [
                   "app_settings_cloudSettingsVod"
                 ],
@@ -1092,7 +1092,7 @@
               "app_settings_cloudSettingsSms": {
                 "text": "短信设置",
                 "iconClass": "el-icon-chat-dot-round",
-                "link": "./settings/cloudSettingsSms",
+                "link": "./settings/cloudSettingsSms/",
                 "permissions": [
                   "app_settings_cloudSettingsSms"
                 ],
@@ -1101,7 +1101,7 @@
               "app_settings_cloudSettingsMail": {
                 "text": "邮件设置",
                 "iconClass": "el-icon-message",
-                "link": "./settings/cloudSettingsMail",
+                "link": "./settings/cloudSettingsMail/",
                 "permissions": [
                   "app_settings_cloudSettingsMail"
                 ],
