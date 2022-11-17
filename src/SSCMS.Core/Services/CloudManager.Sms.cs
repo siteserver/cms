@@ -64,14 +64,19 @@ namespace SSCMS.Core.Services
             }
 
             var url = GetCloudUrl(RouteSms);
-            var (success, result, errorMessage) = await RestUtils.PostAsync<SendSmsRequest, BoolResult>(url, new SendSmsRequest
+            var (success, result, errorMessage) = await RestUtils.PostAsync<SendSmsRequest, CloudResult>(url, new SendSmsRequest
             {
                 Type = codeType,
                 Mobile = phoneNumbers,
                 Code = code
             }, config.CloudToken);
 
-            return (success, errorMessage);
+            if (!success)
+            {
+                throw new Exception(errorMessage);
+            }
+
+            return (result.Success, result.ErrorMessage);
         }
     }
 }

@@ -56,6 +56,32 @@
       <div style="height: 30px"></div>
       <el-row :gutter="20">
         <el-col :span="20" :offset="2">
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>用量统计</span>
+              </div>
+            </template>
+            <div class="text">
+              <div style="margin: 10px auto; text-align: center">
+                <el-row :gutter="20">
+                  <template v-for="count in counts" :key="count.product">
+                    <el-col :sm="12" :lg="6" v-if="count.maxCount > 0" style="text-align: center; font-size: 14px; padding: 20px">
+                      <div style="font-size: 16px; margin: 20px 0">
+                        {{ getCloudProduct(count.product) }}，用量：{{ count.count }}/{{ count.maxCount }}
+                      </div>
+                      <el-progress type="circle" :percentage="(count.count / count.maxCount) * 100" :color="colors"></el-progress>
+                    </el-col>
+                  </template>
+                </el-row>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <div style="height: 30px"></div>
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
           <div class="el-card box-card is-always-shadow">
             <div class="el-card__header">
               <div class="clearfix"><span>云助手版本</span></div>

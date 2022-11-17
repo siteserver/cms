@@ -7,6 +7,6 @@ namespace SSCMS.Services
     {
         Task<bool> IsVodAsync();
 
-        Task<VodPlay> UploadVodAsync(string filePath);
+        Task<VodResult> UploadVodAsync(string filePath);
     }
 }

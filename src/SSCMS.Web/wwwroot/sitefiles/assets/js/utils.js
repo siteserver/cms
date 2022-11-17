@@ -290,6 +290,9 @@ var utils = {
       tab = $this.tabs[index];
       var iframe = top.document.getElementById('frm-' + tab.name).contentWindow;
       iframe.location.href = url;
+      if (window.location.protocol !== iframe.location.protocol) {
+        iframe.location.href = window.location.protocol + iframe.location.href.substring(iframe.location.protocol.length);
+      }
     }
     $this.tabName = tab.name;
   },

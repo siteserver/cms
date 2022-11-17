@@ -46,14 +46,19 @@ namespace SSCMS.Core.Services
             }
 
             var url = GetCloudUrl(RouteGetDownloadUrl);
-            var (success, result, errorMessage) = await RestUtils.PostAsync<SendMailRequest, BoolResult>(url, new SendMailRequest
+            var (success, result, errorMessage) = await RestUtils.PostAsync<SendMailRequest, CloudResult>(url, new SendMailRequest
             {
                 Mail = mail,
                 Subject = subject,
                 HtmlBody = htmlBody
             }, config.CloudToken);
 
-            return (success, errorMessage);
+            if (!success)
+            {
+                throw new Exception(errorMessage);
+            }
+
+            return (result.Success, result.ErrorMessage);
         }
     }
 }

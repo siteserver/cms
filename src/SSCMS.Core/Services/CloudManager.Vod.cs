@@ -13,7 +13,7 @@ namespace SSCMS.Core.Services
             return config.IsCloudVod;
         }
 
-        public async Task<VodPlay> UploadVodAsync(string filePath)
+        public async Task<VodResult> UploadVodAsync(string filePath)
         {
             var config = await _configRepository.GetAsync();
             if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
@@ -22,11 +22,11 @@ namespace SSCMS.Core.Services
             }
 
             var url = GetCloudUrl(RouteVod);
-            var (success, result, errorMessage) = await RestUtils.UploadAsync<VodPlay>(url, filePath, config.CloudToken);
+            var (success, result, errorMessage) = await RestUtils.UploadAsync<VodResult>(url, filePath, config.CloudToken);
 
             if (!success && result == null)
             {
-                result = new VodPlay
+                result = new VodResult
                 {
                     Success = false,
                     ErrorMessage = errorMessage

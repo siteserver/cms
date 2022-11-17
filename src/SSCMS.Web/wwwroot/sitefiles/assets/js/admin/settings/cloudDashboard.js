@@ -1,5 +1,6 @@
 var $url = "/settings/cloudDashboard"
 var $urlDisconnect = $url + '/actions/disconnect';
+var $urlCloud = "cms/dashboard";
 
 var data = utils.init({
   isConnect: false,
@@ -14,6 +15,14 @@ var data = utils.init({
   cloudPriceStandard2Year: null,
   cloudPriceProfessional2Year: null,
   features: null,
+  counts: null,
+  colors: [
+    { color: '#6f7ad3', percentage: 20 },
+    { color: '#1989fa', percentage: 40 },
+    { color: '#5cb87a', percentage: 60 },
+    { color: '#e6a23c', percentage: 80 },
+    { color: '#f56c6c', percentage: 100 },
+  ],
   active: 0,
   buyForm: {
     cloudType: '',
@@ -121,7 +130,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud.get('clouds').then(function (response) {
+    cloud.get($urlCloud).then(function (response) {
       var res = response.data;
 
       $this.cloudType = res.cloudType;
@@ -134,6 +143,7 @@ var methods = {
       $this.cloudPriceStandard2Year = res.cloudPriceStandard2Year;
       $this.cloudPriceProfessional2Year = res.cloudPriceProfessional2Year;
       $this.features = res.features;
+      $this.counts = res.counts;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -187,6 +197,15 @@ var methods = {
 
   btnDocsClick: function () {
     window.open('https://sscms.com/docs/v7/');
+  },
+
+  getCloudProduct: function(product) {
+    if (product === 'Censor') return '文字违规检测';
+    if (product === 'Spell') return '错别字检查';
+    if (product === 'Vod') return '云视频';
+    if (product === 'Sms') return '短信';
+    if (product === 'Mail') return '邮件';
+    return '';
   },
 };
 

@@ -230,6 +230,7 @@ var methods = {
       })
       .catch(function (error) {
         utils.error(error);
+        layer.closeAll();
       })
       .then(function () {
         utils.loading($this, false);
@@ -252,6 +253,7 @@ var methods = {
       })
       .catch(function (error) {
         utils.error(error);
+        layer.closeAll();
       })
       .then(function () {
         utils.loading($this, false);
