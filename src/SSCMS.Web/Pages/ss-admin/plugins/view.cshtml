@@ -112,7 +112,7 @@
           <el-button type="primary" v-if="isShouldUpdate" v-on:click="btnUpdateClick" size="small">
             升级插件
           </el-button>
-          <el-button type="primary" v-else-if="!plugin && extension.price" v-on:click="btnBuyClick" size="small">
+          <el-button type="primary" v-else-if="!plugin && extension.price && !isPurchased" v-on:click="btnBuyClick" size="small">
             购买并安装插件
           </el-button>
           <el-button type="primary" v-else-if="!plugin" v-on:click="btnInstallClick" size="small">

@@ -39,6 +39,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             var contentId = await _contentRepository.InsertAsync(site, channel, content);
+            await _authManager.AddSiteLogAsync(content.SiteId, content.ChannelId, contentId, "添加内容",
+                $"栏目：{await _channelRepository.GetChannelNameNavigationAsync(content.SiteId, content.ChannelId)}，内容标题：{content.Title}");
 
             await _contentTagRepository.UpdateTagsAsync(null, content.TagNames, request.SiteId, contentId);
 

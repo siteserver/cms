@@ -28,11 +28,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Cloud
         public class GetResult
         {
             public bool IsCloudMail { get; set; }
+            public bool IsCloudMailContentAdd { get; set; }
+            public bool IsCloudMailContentEdit { get; set; }
+            public string CloudMailAddress { get; set; }
         }
 
         public class SubmitRequest
         {
             public bool IsCloudMail { get; set; }
+            public bool IsCloudMailContentAdd { get; set; }
+            public bool IsCloudMailContentEdit { get; set; }
+            public string CloudMailAddress { get; set; }
         }
     }
 }

@@ -70,7 +70,7 @@
                       <div style="font-size: 16px; margin: 20px 0">
                         {{ getCloudProduct(count.product) }}，用量：{{ count.count }}/{{ count.maxCount }}
                       </div>
-                      <el-progress type="circle" :percentage="(count.count / count.maxCount) * 100" :color="colors"></el-progress>
+                      <el-progress type="circle" :percentage="((count.count / count.maxCount) * 100).toFixed(2)" :color="colors"></el-progress>
                     </el-col>
                   </template>
                 </el-row>
@@ -200,9 +200,14 @@
                     </el-form-item>
                     <el-form-item label="费用合计">
                       <div style="font-size: 16px;">
-                        原价：<span style="text-decoration: line-through; margin-right: 10px;" v-if="buyForm.periods !== 'M1'">￥{{ getOriginalAmount() }}</span>
-                        现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
-                        <span v-if="buyForm.periods !== 'M1'">（节省：{{ buyForm.save }}%）</span>
+                        <template v-if="buyForm.periods !== 'M1'">
+                          原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
+                          现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                          （节省：{{ buyForm.save }}%）
+                        </template>
+                        <template v-else>
+                          合计：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        </template>
                       </div>
                     </el-form-item>
                     <el-divider></el-divider>
@@ -229,9 +234,14 @@
                     </el-form-item>
                     <el-form-item label="费用合计">
                       <div style="font-size: 16px;">
-                        原价：<span style="text-decoration: line-through; margin-right: 10px;" v-if="buyForm.periods !== 'M1'">￥{{ getOriginalAmount() }}</span>
-                        现价：<span style="color: #fa5300; margin-left: 10px;">￥{{ buyForm.amount.toFixed(2) }}</span>
-                        <span v-if="buyForm.periods !== 'M1'">（节省：{{ buyForm.save }}%）</span>
+                        <template v-if="buyForm.periods !== 'M1'">
+                          原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
+                          现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                          （节省：{{ buyForm.save }}%）
+                        </template>
+                        <template v-else>
+                          合计：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        </template>
                       </div>
                     </el-form-item>
                     <el-divider></el-divider>

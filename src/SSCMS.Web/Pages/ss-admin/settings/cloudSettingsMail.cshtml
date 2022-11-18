@@ -14,21 +14,44 @@
         </div>
       </template>
       <div class="text">
-        <el-switch
-          v-model="isCloudMail"
-          active-text="启用邮件发送"
-        ></el-switch>
-        <div class="tips" style="margin-top: 10px;">
-          邮件发送能够实现表单提交等情景下的邮件发送功能。
-          <el-link
-            :underline="false"
-            href="https://sscms.com/docs/v7/official/sms/"
-            target="_blank"
-            icon="el-icon-info"
-          >
-            了解更多
-          </el-link>
-        </div>
+        
+        <el-form ref="form" :model="form" size="small" status-icon label-position="top">
+          <el-switch
+            v-model="form.isCloudMail"
+            active-text="启用邮件发送"
+          ></el-switch>
+          <div class="tips" style="margin-top: 10px;">
+            邮件发送能够实现表单提交等情景下的邮件发送功能。
+            <el-link
+              :underline="false"
+              href="https://sscms.com/docs/v7/official/sms/"
+              target="_blank"
+              icon="el-icon-info"
+            >
+              了解更多
+            </el-link>
+          </div>
+
+          <template v-if="form.isCloudMail">
+            <div style="margin-top: 15px;">
+              <el-switch v-model="form.isCloudMailContentAdd" active-text="新增内容时发送邮件通知"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，当有内容新增后系统将发送邮件通知
+              </div>
+            </div>
+            <div style="margin-top: 15px;">
+              <el-switch v-model="form.isCloudMailContentEdit" active-text="修改内容时发送邮件通知"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，当有内容修改后系统将发送邮件通知
+              </div>
+            </div>
+            <div style="margin-top: 15px;">
+              <el-form-item label="接受邮件通知邮箱" prop="cloudMailAddress" :rules="{ validator: validateEmail, trigger: 'blur' }">
+                <el-input v-model="form.cloudMailAddress" style="max-width: 400px;"></el-input>
+              </el-form-item>
+            </div>
+          </template>
+        </el-form>
 
       </div>
     </el-card>

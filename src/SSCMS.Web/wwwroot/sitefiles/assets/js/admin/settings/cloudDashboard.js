@@ -17,9 +17,9 @@ var data = utils.init({
   features: null,
   counts: null,
   colors: [
-    { color: '#6f7ad3', percentage: 20 },
-    { color: '#1989fa', percentage: 40 },
-    { color: '#5cb87a', percentage: 60 },
+    { color: '#5cb87a', percentage: 30 },
+    { color: '#1989fa', percentage: 50 },
+    { color: '#6f7ad3', percentage: 65 },
     { color: '#e6a23c', percentage: 80 },
     { color: '#f56c6c', percentage: 100 },
   ],
@@ -70,13 +70,16 @@ var methods = {
 
   btnPayClick: function() {
     var resourceType = 'CloudBuy';
+    var title = '云助手购买';
     if (this.active == 2) {
       resourceType = 'CloudRenewal';
+      title = '云助手续费';
     } else if (this.active == 3) {
       resourceType = 'CloudUpgrade';
+      title = '云助手升级';
     }
     utils.openLayer({
-      title: '购买',
+      title: title,
       width: 600,
       height: 500,
       url: cloud.host + '/layer/pay.html?resourceType=' + resourceType + '&type=' + this.buyForm.cloudType + '&periods=' + this.buyForm.periods

@@ -61,8 +61,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             }
 
             await _contentRepository.UpdateAsync(site, channel, content);
-            await _statRepository.AddCountAsync(StatType.ContentEdit, content.SiteId);
-            await _statRepository.AddCountAsync(StatType.ContentEdit, content.SiteId, adminId);
+            await _authManager.AddSiteLogAsync(content.SiteId, content.ChannelId, content.Id, "修改内容",
+                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(content.SiteId, content.ChannelId)},内容标题:{content.Title}");
 
             await _contentTagRepository.UpdateTagsAsync(source.TagNames, content.TagNames, request.SiteId, content.Id);
 

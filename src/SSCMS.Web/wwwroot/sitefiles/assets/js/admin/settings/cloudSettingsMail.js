@@ -1,7 +1,12 @@
 var $url = "/settings/cloudSettingsMail"
 
 var data = utils.init({
-  isCloudMail: false,
+  form: {
+    isCloudMail: false,
+    isCloudMailContentAdd: false,
+    isCloudMailContentEdit: false,
+    cloudMailAddress: '',
+  }
 });
 
 var methods = {
@@ -12,7 +17,10 @@ var methods = {
     $api.get($url).then(function (response) {
       var res = response.data;
 
-      $this.isCloudMail = res.isCloudMail;
+      $this.form.isCloudMail = res.isCloudMail;
+      $this.form.isCloudMailContentAdd = res.isCloudMailContentAdd;
+      $this.form.isCloudMailContentEdit = res.isCloudMailContentEdit;
+      $this.form.cloudMailAddress = res.cloudMailAddress;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -24,9 +32,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, {
-      isCloudMail: this.isCloudMail,
-    }).then(function (response) {
+    $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
       utils.success('邮件发送设置保存成功！');
@@ -38,7 +44,26 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    this.apiSubmit();
+    var $this = this;
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
+      }
+    });
+  },
+
+  validateEmail: function (rule, value, callback) {
+    if (!value) {
+      callback(new Error('请输入通知邮箱'));
+    } else {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(value))
+      {
+        callback(new Error('通知邮箱格式不正确'));
+      } else {
+        callback();
+      }
+    }
   },
 };
 

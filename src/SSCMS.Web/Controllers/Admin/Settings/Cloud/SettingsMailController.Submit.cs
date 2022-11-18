@@ -16,6 +16,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Cloud
             
             var config = await _configRepository.GetAsync();
             config.IsCloudMail = request.IsCloudMail;
+            config.IsCloudMailContentAdd = request.IsCloudMailContentAdd;
+            config.IsCloudMailContentEdit = request.IsCloudMailContentEdit;
+            config.CloudMailAddress = request.CloudMailAddress;
 
             await _configRepository.UpdateAsync(config);
 

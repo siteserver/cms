@@ -49,13 +49,15 @@
   :data="items"
   style="width: 100%">
   <el-table-column
-    label="站点名称">
+    label="站点名称"
+    width="240">
     <template slot-scope="scope">
       <el-link :underline="false" type="primary" :href="scope.row.webUrl" target="_blank">{{scope.row.siteName}}</el-link>
     </template>
   </el-table-column>
   <el-table-column
-    label="管理员">
+    label="管理员"
+    width="120">
     <template slot-scope="scope">
       <el-link
         :underline="false"
@@ -67,6 +69,7 @@
   </el-table-column>
   <el-table-column
     prop="ipAddress"
+    width="120"
     label="IP地址">
   </el-table-column>
   <el-table-column
@@ -76,11 +79,14 @@
   </el-table-column>
   <el-table-column
     prop="action"
+    width="180"
     label="动作">
   </el-table-column>
   <el-table-column
-    prop="summary"
     label="描述">
+    <template slot-scope="scope">
+      <span v-html="scope.row.summary"></span>
+    </template>
   </el-table-column>
 </el-table>
 

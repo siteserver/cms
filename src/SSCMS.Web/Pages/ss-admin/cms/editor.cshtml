@@ -160,8 +160,8 @@
 <el-row align="center" style="text-align: center; padding-top:4px">
   <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
   <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
-  <el-button size="medium" v-if="censorSettings.isCensorText" type="success" v-on:click="btnCensorTextClick(false)">违规检测</el-button>
-  <el-button size="medium" v-if="spellSettings.isSpellingCheck" type="success" v-on:click="btnSpellingCheckClick(false)">错别字检查</el-button>
+  <el-button size="medium" v-if="censorSettings.isCensorText && !censorSettings.isCensorTextAuto" type="success" v-on:click="btnCensorTextClick(false)">违规检测</el-button>
+  <el-button size="medium" v-if="spellSettings.isSpellingCheck && !spellSettings.isSpellingCheckAuto" type="success" v-on:click="btnSpellingCheckClick(false)">错别字检查</el-button>
   <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
   <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
 </el-row>
