@@ -91,7 +91,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _createManager.CreateChannelAsync(request.SiteId, request.ChannelId);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置页面生成规则", $"栏目:{channel.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置页面生成规则", $"栏目：{channel.ChannelName}");
 
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async (summary) =>
             {

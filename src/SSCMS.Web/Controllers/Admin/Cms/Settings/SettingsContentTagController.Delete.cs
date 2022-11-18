@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _contentTagRepository.DeleteAsync(request.SiteId, request.TagName);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "删除内容标签", $"内容标签:{request.TagName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除内容标签", $"内容标签：{request.TagName}");
 
             return new BoolResult
             {

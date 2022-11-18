@@ -119,7 +119,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     AddDate = DateTime.Now
                 });
 
-                await _authManager.AddSiteLogAsync(request.SiteId, "新建专题", $"专题名称:{request.Title}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "新建专题", $"专题名称：{request.Title}");
             }
 
             await _createManager.CreateSpecialAsync(request.SiteId, specialId);

@@ -73,7 +73,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var channel = await _databaseManager.ChannelRepository.ImportGetAsync(_site.Id);
                 await _channelIe.ImportChannelAsync(channel, feed.AdditionalElements, parentId, indexNameList);
 
-                _caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
+                _caching.SetProcess(guid, $"导入栏目：{channel.ChannelName}");
                 await _databaseManager.ChannelRepository.UpdateAsync(channel);
 
                 if (isImportContents)

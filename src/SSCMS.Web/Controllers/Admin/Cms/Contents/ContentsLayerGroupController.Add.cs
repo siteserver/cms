@@ -35,12 +35,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (await _contentGroupRepository.IsExistsAsync(request.SiteId, group.GroupName))
             {
                 await _contentGroupRepository.UpdateAsync(group);
-                await _authManager.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "修改内容组", $"内容组：{group.GroupName}");
             }
             else
             {
                 await _contentGroupRepository.InsertAsync(group);
-                await _authManager.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组：{group.GroupName}");
             }
 
             foreach (var channelContentId in channelContentIds)
@@ -56,7 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 await _contentRepository.UpdateAsync(site, channel, content);
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组:{group.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置内容组", $"内容组：{group.GroupName}");
 
             return new BoolResult
             {

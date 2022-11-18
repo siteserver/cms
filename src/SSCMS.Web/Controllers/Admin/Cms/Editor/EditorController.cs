@@ -28,10 +28,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
         private readonly ICensorManager _censorManager;
         private readonly ISpellManager _spellManager;
+        private readonly IMailManager _mailManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -42,18 +44,20 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly ITemplateRepository _templateRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
         private readonly ITranslateRepository _translateRepository;
-        private readonly IStatRepository _statRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IStatRepository statRepository)
+        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, IMailManager mailManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _createManager = createManager;
             _pathManager = pathManager;
+            _cacheManager = cacheManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
             _censorManager = censorManager;
             _spellManager = spellManager;
+            _mailManager = mailManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -64,7 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _templateRepository = templateRepository;
             _contentCheckRepository = contentCheckRepository;
             _translateRepository = translateRepository;
-            _statRepository = statRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         public class GetRequest : ChannelRequest

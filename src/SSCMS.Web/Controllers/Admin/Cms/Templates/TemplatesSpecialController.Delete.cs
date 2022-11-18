@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             await _authManager.AddSiteLogAsync(request.SiteId,
                 "删除专题",
-                $"专题名称:{specialInfo.Title}");
+                $"专题名称：{specialInfo.Title}");
 
             var specials = await _specialRepository.GetSpecialsAsync(request.SiteId);
             foreach (var special in specials)

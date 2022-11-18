@@ -115,7 +115,7 @@ namespace SSCMS.Web.Controllers.V1
 
             await _createManager.CreateChannelAsync(siteId, channelInfo.Id);
 
-            await _authManager.AddSiteLogAsync(siteId, "添加栏目", $"栏目:{request.ChannelName}");
+            await _authManager.AddSiteLogAsync(siteId, "添加栏目", $"栏目：{request.ChannelName}");
 
             return channelInfo;
         }

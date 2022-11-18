@@ -27,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _channelRepository.UpdateAsync(channel);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置栏目变动生成页面", $"栏目:{channel.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置栏目变动生成页面", $"栏目：{channel.ChannelName}");
 
             return new BoolResult
             {

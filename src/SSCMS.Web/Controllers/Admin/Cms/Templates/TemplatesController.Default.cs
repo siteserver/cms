@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 await _templateRepository.SetDefaultAsync(request.TemplateId);
                 await _authManager.AddSiteLogAsync(site.Id,
                     $"设置默认{templateInfo.TemplateType.GetDisplayName()}",
-                    $"模板名称:{templateInfo.TemplateName}");
+                    $"模板名称：{templateInfo.TemplateName}");
             }
 
             return await GetResultAsync(site);
