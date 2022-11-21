@@ -53,7 +53,7 @@
           </el-card>
         </el-col>
       </el-row>
-      <div style="height: 30px"></div>
+
       <el-row :gutter="20">
         <el-col :span="20" :offset="2">
           <el-card class="box-card">
@@ -68,7 +68,9 @@
                   <template v-for="count in counts" :key="count.product">
                     <el-col :sm="12" :lg="6" v-if="count.maxCount > 0" style="text-align: center; font-size: 14px; padding: 20px">
                       <div style="font-size: 16px; margin: 20px 0">
-                        {{ getCloudProduct(count.product) }}，用量：{{ count.count }}/{{ count.maxCount }}
+                        {{ getCloudProduct(count.product) }}
+                        <br />
+                        用量：{{ count.count }}/{{ count.maxCount }}（{{ count.unit }}）
                       </div>
                       <el-progress type="circle" :percentage="((count.count / count.maxCount) * 100).toFixed(2)" :color="colors"></el-progress>
                     </el-col>
@@ -79,7 +81,7 @@
           </el-card>
         </el-col>
       </el-row>
-      <div style="height: 30px"></div>
+
       <el-row :gutter="20">
         <el-col :span="20" :offset="2">
           <div class="el-card box-card is-always-shadow">
@@ -281,7 +283,7 @@
 
         </el-col>
       </el-row>
-      <div style="height: 30px"></div>
+
       <el-row :gutter="20">
         <el-col :span="20" :offset="2">
           <el-card class="box-card">

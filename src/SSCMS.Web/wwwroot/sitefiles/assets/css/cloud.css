@@ -13,6 +13,9 @@ body {
   box-sizing: border-box;
   margin-bottom: 20px;
 }
+.box-card {
+  margin-bottom: 20px;
+}
 footer {
   position: absolute;
   left: 0;

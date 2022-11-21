@@ -43,6 +43,10 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(null, this.btnCancelClick);
-    this.apiGet();
+    if (this.siteId) {
+      this.apiGet();
+    } else {
+      utils.loading(this, false);
+    }
   }
 });

@@ -155,7 +155,7 @@ var methods = {
   },
 
   uploadProgress: function() {
-    utils.loading(true);
+    utils.loading(this, true);
   },
 
   uploadSuccess: function(res) {
@@ -163,7 +163,7 @@ var methods = {
   },
 
   uploadError: function(err) {
-    utils.loading(false);
+    utils.loading(this, false);
     var error = JSON.parse(err.message);
     utils.error(error.message);
   },
