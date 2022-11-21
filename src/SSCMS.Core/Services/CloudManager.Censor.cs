@@ -35,9 +35,10 @@ namespace SSCMS.Core.Services
         public async Task<CensorSettings> GetCensorSettingsAsync()
         {
             var config = await _configRepository.GetAsync();
+            var isAuthentication = IsAuthentication(config);
             return new CensorSettings
             {
-                IsCensorText = config.IsCloudCensorText,
+                IsCensorText = isAuthentication && config.IsCloudCensorText,
                 IsCensorTextAuto = config.IsCloudCensorTextAuto,
                 IsCensorTextIgnore = config.IsCloudCensorTextIgnore,
                 IsCensorTextWhiteList = config.IsCloudCensorTextWhiteList,
@@ -47,7 +48,8 @@ namespace SSCMS.Core.Services
         public async Task<CensorResult> CensorTextAsync(string text)
         {
             var config = await _configRepository.GetAsync();
-            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            var isAuthentication = IsAuthentication(config);
+            if (!isAuthentication)
             {
                 throw new Exception("云助手未登录");
             }
@@ -84,7 +86,8 @@ namespace SSCMS.Core.Services
         public async Task<(bool success, string errorMessage)> AddCensorWhiteListAsync(string word)
         {
             var config = await _configRepository.GetAsync();
-            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            var isAuthentication = IsAuthentication(config);
+            if (!isAuthentication)
             {
                 throw new Exception("云助手未登录");
             }

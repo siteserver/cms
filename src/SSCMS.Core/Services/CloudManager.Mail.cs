@@ -27,9 +27,10 @@ namespace SSCMS.Core.Services
         public async Task<MailSettings> GetMailSettingsAsync()
         {
             var config = await _configRepository.GetAsync();
+            var isAuthentication = IsAuthentication(config);
             return new MailSettings
             {
-                IsMail = config.IsCloudMail,
+                IsMail = isAuthentication && config.IsCloudMail,
                 IsMailContentAdd = config.IsCloudMailContentAdd,
                 IsMailContentEdit = config.IsCloudMailContentEdit,
                 MailAddress = config.CloudMailAddress,
@@ -46,7 +47,8 @@ namespace SSCMS.Core.Services
         public async Task<(bool success, string errorMessage)> SendMailAsync(string mail, string subject, string htmlBody)
         {
             var config = await _configRepository.GetAsync();
-            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            var isAuthentication = IsAuthentication(config);
+            if (!isAuthentication)
             {
                 throw new Exception("云助手未登录");
             }

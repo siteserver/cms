@@ -38,6 +38,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             public bool IsLibrary { get; set; }
         }
 
+        public class GetResult : Options
+        {
+            public bool IsCloudVod { get; set; }
+        }
+
         public class UploadRequest : SiteRequest
         {
             public bool IsChangeFileName { get; set; }

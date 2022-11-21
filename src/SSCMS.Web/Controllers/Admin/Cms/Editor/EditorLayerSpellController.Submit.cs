@@ -29,39 +29,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             var isErrorWords = false;
-            var ignoreWords = new List<string>();
-            if (!string.IsNullOrEmpty(request.WhiteListWord))
-            {
-                try
-                {
-                    var (success, errorMessage) = await _spellManager.AddSpellWhiteListAsync(request.WhiteListWord);
-                    if (!success)
-                    {
-                        return this.Error(errorMessage);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return this.Error(ex.Message);
-                }
-                ignoreWords.Add(request.WhiteListWord);
-            }
-            foreach (var word in request.IgnoreWords)
-            {
-                ignoreWords.Add(word);
-            }
-
             var errorWords = new List<ErrorWord>();
 
             if (request.Results.IsErrorWords && request.Results.ErrorWords != null)
             {
                 foreach (var errorWord in request.Results.ErrorWords)
                 {
-                    if (!ListUtils.Contains(ignoreWords, errorWord.Original))
-                    {
-                        isErrorWords = true;
-                        errorWords.Add(errorWord);
-                    }
+                    isErrorWords = true;
+                    errorWords.Add(errorWord);
                 }
             }
 

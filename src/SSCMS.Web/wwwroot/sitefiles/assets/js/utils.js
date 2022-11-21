@@ -169,6 +169,10 @@ var utils = {
     return "/sitefiles/assets/" + url;
   },
 
+  getCloudsUrl: function (name, query) {
+    return utils.getPageUrl("clouds", name, query);
+  },
+
   getCmsUrl: function (name, query) {
     return utils.getPageUrl("cms", name, query);
   },

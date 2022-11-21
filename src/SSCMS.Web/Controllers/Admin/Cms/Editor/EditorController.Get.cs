@@ -9,6 +9,7 @@ using SSCMS.Models;
 using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Dto;
+using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -127,7 +128,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 }
             }
 
+            var isCloudCensor = _censorManager is ICloudManager;
             var censorSettings = await _censorManager.GetCensorSettingsAsync();
+            var isCloudSpell = _spellManager is ICloudManager;
             var spellSettings = await _spellManager.GetSpellSettingsAsync();
 
             return new GetResult
@@ -146,7 +149,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 CheckedLevel = userCheckedLevel,
                 LinkTypes = linkTypes,
                 Root = root,
+                IsCloudCensor = isCloudCensor,
                 CensorSettings = censorSettings,
+                IsCloudSpell = isCloudSpell,
                 SpellSettings = spellSettings,
             };
         }

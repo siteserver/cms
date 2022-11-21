@@ -7,7 +7,6 @@ using SSCMS.Enums;
 using System.Collections.Generic;
 using Datory;
 using System.Linq;
-using System;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -33,27 +32,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var isBadWords = false;
             var activeNames = new List<string>();
             var items = new List<SubmitResultItem>();
-            var ignoreWords = new List<string>();
-            if (!string.IsNullOrEmpty(request.WhiteListWord))
-            {
-                try
-                {
-                    var (success, errorMessage) = await _censorManager.AddCensorWhiteListAsync(request.WhiteListWord);
-                    if (!success)
-                    {
-                        return this.Error(errorMessage);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return this.Error(ex.Message);
-                }
-                ignoreWords.Add(request.WhiteListWord);
-            }
-            foreach (var word in request.IgnoreWords)
-            {
-                ignoreWords.Add(word);
-            }
 
             var badWordsTypes = ListUtils.GetEnums<BadWordsType>();
             foreach (var badWordType in badWordsTypes)
@@ -76,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                         {
                             foreach (var word in badWord.Words)
                             {
-                                if (!item.Words.Contains(word) && !ListUtils.Contains(ignoreWords, word))
+                                if (!item.Words.Contains(word))
                                 {
                                     if (!activeNames.Contains(item.Value))
                                     {

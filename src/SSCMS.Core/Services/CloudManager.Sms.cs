@@ -30,9 +30,10 @@ namespace SSCMS.Core.Services
         public async Task<SmsSettings> GetSmsSettingsAsync()
         {
             var config = await _configRepository.GetAsync();
+            var isAuthentication = IsAuthentication(config);
             return new SmsSettings
             {
-                IsSms = config.IsCloudSms,
+                IsSms = isAuthentication && config.IsCloudSms,
                 IsSmsAdministrator = config.IsCloudSmsAdministrator,
                 IsSmsUser = config.IsCloudSmsUser,
             };
@@ -53,7 +54,8 @@ namespace SSCMS.Core.Services
         public async Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType, int code)
         {
             var config = await _configRepository.GetAsync();
-            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            var isAuthentication = IsAuthentication(config);
+            if (!isAuthentication)
             {
                 throw new Exception("云助手未登录");
             }

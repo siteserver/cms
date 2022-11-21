@@ -1,8 +1,11 @@
 ﻿var $url = "/cms/editor/editorLayerSpell";
+var $urlAddWords = $url + "/actions/addWords";
+var $urlCloudAddWords = "cms/spell/actions/addWords";
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channelId: utils.getQueryInt("channelId"),
+  isCloudSpell: utils.getQueryBoolean("isCloudSpell"),
   isSpellingCheckIgnore: utils.getQueryBoolean("isSpellingCheckIgnore"),
   isSpellingCheckWhiteList: utils.getQueryBoolean("isSpellingCheckWhiteList"),
   isSave: utils.getQueryBoolean("isSave"),
@@ -10,15 +13,74 @@ var data = utils.init({
   res: null,
   count: null,
   errorWords: null,
+  errorMessage: null,
   checking: true,
   isErrorWords: null,
   results: null,
   ignoreWords: [],
+  whiteListWords: [],
 });
 
 var methods = {
-  apiSubmit: function (res, whiteListWord) {
+  apiAddWords: function (word) {
     var $this = this;
+
+    this.checking = true;
+    if (this.isCloudSpell) {
+      cloud
+      .post($urlCloudAddWords, {
+        words: word
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        $this.whiteListWords.push(word);
+        $this.calcItems();
+        $this.checking = false;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      });
+    } else {
+      $api
+        .post($urlAddWords, {
+          siteId: this.siteId,
+          channelId: this.channelId,
+          word: word
+        })
+        .then(function (response) {
+          var res = response.data;
+
+          $this.whiteListWords.push(word);
+          $this.calcItems();
+          $this.checking = false;
+        })
+        .catch(function (error) {
+          utils.error(error);
+        });
+    }
+  },
+
+  calcItems: function () {
+    this.isErrorWords = false;
+    var errorWords = [];
+    for (var word of this.errorWords) {
+      if (this.ignoreWords.indexOf(word.original) === -1 && this.whiteListWords.indexOf(word.original) === -1) {
+        this.isErrorWords = true;
+        errorWords.push(word);
+      }
+    }
+    this.errorWords = errorWords;
+    this.count = errorWords.length;
+  },
+
+  apiSubmit: function (res) {
+    var $this = this;
+
+    if (!res.success) {
+      this.errorMessage = res.errorMessage;
+      return;
+    }
 
     this.res = res;
     this.checking = true;
@@ -26,8 +88,6 @@ var methods = {
       .post($url, {
         siteId: this.siteId,
         channelId: this.channelId,
-        ignoreWords: this.ignoreWords,
-        whiteListWord: whiteListWord,
         results: res,
       })
       .then(function (response) {
@@ -56,7 +116,7 @@ var methods = {
       button: "忽 略",
       callback: function () {
         $this.ignoreWords.push(errorWord.original);
-        $this.apiSubmit($this.res, "");
+        $this.calcItems();
       },
     });
   },
@@ -68,7 +128,7 @@ var methods = {
       text: "添加白名单后系统将自动忽略白名单内的错别字，是否添加？",
       button: "加入白名单",
       callback: function () {
-        $this.apiSubmit($this.res, errorWord.original);
+        $this.apiAddWords(errorWord.original);
       },
     });
   },
@@ -77,10 +137,6 @@ var methods = {
     utils.closeLayer();
     window.parent.$vue.isSpellPassed = true;
     window.parent.$vue.apiSave();
-  },
-
-  btnSpellClick: function () {
-    window.parent.$vue.apiSpell(this.apiSubmit);
   },
 
   btnCancelClick: function () {
@@ -95,7 +151,7 @@ var $vue = new Vue({
   created: function () {
     utils.keyPress(null, this.btnCancelClick);
     utils.loading(this, false);
-    this.btnSpellClick();
+    window.parent.$vue.apiSpell(this.apiSubmit);
 
     // var res = {
     //   isErrorWords: true,

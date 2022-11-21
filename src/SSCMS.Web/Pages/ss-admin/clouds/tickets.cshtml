@@ -1,0 +1,129 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <div style="height: 10px"></div>
+  <el-row :gutter="20">
+    <el-col :span="20">
+      <el-form :inline="true" size="small" :model="formInline">
+        <el-form-item label="类型">
+          <el-select v-model="formInline.status" placeholder="工单状态">
+            <el-option v-for="status in getAllTicketStatus()" :key="status" :label="getTicketStatus(status)"
+              :value="status"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="工单编号">
+          <el-input v-model="formInline.ticketNo" placeholder="工单编号"></el-input>
+        </el-form-item>
+        <el-form-item label="关键字">
+          <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
+    <el-col :span="4" style="text-align: right">
+      <el-button type="warning" size="small" v-on:click="btnAddClick">提交工单</el-button>
+    </el-col>
+  </el-row>
+
+  <el-table :data="tickets" style="width: 100%">
+    <el-table-column label="工单编号" width="100">
+      <template #default="scope">
+        <el-link type="primary" :underline="false" v-on:click.prevent="btnViewClick(scope.row)">
+        {{ scope.row.ticketNo }}
+        </el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="问题内容">
+      <template #default="scope">
+        <el-link type="primary" :underline="false" v-on:click.prevent="btnViewClick(scope.row)">
+          {{ scope.row.content }}
+        </el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="工单类型" align="center" width="150">
+      <template #default="scope">
+        {{ getTicketCategory(scope.row) }}
+      </template>
+    </el-table-column>
+    <el-table-column label="提交时间" align="center" width="140">
+      <template #default="scope">
+        {{ scope.row.createdDate }}
+      </template>
+    </el-table-column>
+    <el-table-column label="状态" align="center" width="140">
+      <template #default="scope">
+        <el-tag :type="getTicketStatusType(scope.row)">
+          {{ getTicketStatus(scope.row.status) }}
+        </el-tag>
+      </template>
+    </el-table-column>
+    <el-table-column label="工单类型" align="center" width="140">
+      <template #default="scope">
+        {{ getTicketPriority(scope.row.priority) }}
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <div style="text-align: center; margin-top: 10px">
+    <el-pagination v-on:current-change="handleCurrentChange" :current-page="formInline.currentPage"
+      :page-size="formInline.limit" layout="total, prev, pager, next, jumper" :total="count"></el-pagination>
+  </div>
+
+  <el-drawer title="提交工单" direction="rtl" size="60%" :visible.sync="isAdd">
+    <div style="margin: 15px 30px 0">
+      <div class="drawer__content">
+        <el-form style="margin: 10px" ref="form" :model="form" label-position="top">
+          <el-form-item label="优先级" prop="priority" :rules="{ required: true, message: '请选择优先级' }">
+            <el-radio-group v-model="form.priority">
+              <el-radio v-for="priority in getAllTicketPriority()" :key="priority" :label="priority">
+                {{ getTicketPriority(priority) }}
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="工单类型" prop="category" :rules="{ required: true, message: '请选择工单类型' }">
+            <el-radio-group v-model="form.category">
+              <el-radio label="Cms">CMS问题</el-radio>
+              <el-radio label="Cloud">网站云问题</el-radio>
+              <el-radio label="Theme">模板问题</el-radio>
+              <el-radio label="Extension">插件问题</el-radio>
+              <el-radio label="Other">其他</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="问题描述" prop="content" :rules="{ required: true, message: '请输入问题描述' }">
+            <el-input type="textarea" :rows="10" v-model="form.content" placeholder="请用一两句话描述您遇到的问题现象"></el-input>
+          </el-form-item>
+          <el-form-item label="问题截图">
+            <el-upload :action="uploadUrl" :headers="{ Authorization: 'Bearer ' + uploadToken }"
+              :on-preview="handlePreview" :on-remove="handleRemove" :before-upload="uploadBefore"
+              :on-progress="uploadProgress" :on-success="uploadSuccess" :on-error="uploadError" :file-list="fileList"
+              multiple list-type="picture">
+              <el-button type="primary">点击上传</el-button>
+              <div class="el-upload__tip">只能上传jpg/png文件</div>
+            </el-upload>
+          </el-form-item>
+        </el-form>
+        <el-divider></el-divider>
+        <div class="drawer__footer">
+          <el-button type="primary" v-on:click="btnSubmitClick" :loading="submitting">{{ submitting ? '提交中 ...' : '确 定' }}
+          </el-button>
+          <el-button v-on:click="btnCancelClick">取 消</el-button>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/tickets.js" type="text/javascript"></script>
+}

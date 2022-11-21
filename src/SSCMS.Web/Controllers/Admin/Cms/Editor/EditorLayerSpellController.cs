@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
     public partial class EditorLayerSpellController : ControllerBase
     {
         private const string Route = "cms/editor/editorLayerSpell";
+        private const string RouteAddWords = "cms/editor/editorLayerSpell/actions/addWords";
 
         private readonly IAuthManager _authManager;
         private readonly ISpellManager _spellManager;
@@ -29,10 +30,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _channelRepository = channelRepository;
         }
 
+        public class AddWordsRequest : ChannelRequest
+        {
+            public string Word { get; set; }
+        }
+
         public class SubmitRequest : ChannelRequest
         {
-            public List<string> IgnoreWords { get; set; }
-            public string WhiteListWord { get; set; }
             public SpellResult Results { get; set; }
         }
 

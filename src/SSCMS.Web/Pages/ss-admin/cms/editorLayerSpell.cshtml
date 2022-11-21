@@ -82,7 +82,15 @@
 }
 
 <el-row style="margin: 10px;">
-  <div class="step step1" v-if="checking">
+  <el-alert
+    v-if="errorMessage"
+    title="错误"
+    type="error"
+    :description="errorMessage"
+    :closable="false"
+    show-icon>
+  </el-alert>
+  <div class="step step1" v-else-if="checking">
     <div class="loading-hint-wrap-box">
       <div class="loading-hint-wrap">
         <img src="/sitefiles/assets/images/loading-bg.png" class="loading-bg" />

@@ -1,0 +1,44 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+}
+
+<el-row :gutter="20">
+  <el-col :span="18" :offset="3">
+    <div class="grid-content bg-purple">
+      <h3>您的网站受 SSCMS 云助手保护，如果有任何需要注意的地方会通知您。</h3>
+      <el-card class="box-card">
+        <template #header>
+          <div class="clearfix">
+            <span>备份和安全扫描</span>
+            <el-button style="float: right;" type="text">操作按钮</el-button>
+          </div>
+        </template>
+        <div class="text">自动扫描和一键修复可让您的网站免受安全威胁的影响。</div>
+      </el-card>
+      <div style="height: 25px"></div>
+      <el-card class="box-card">
+        <template #header>
+          <div class="clearfix">
+            <span>停机时间监控</span>
+            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          </div>
+        </template>
+        <div class="text">
+          <el-switch active-text="如果您的网站离线，则获取警报"></el-switch>
+          <div class="tips" style="margin-top: 10px">
+            SSCMS 云助手将持续监视您的站点并在检测到停机时间时提醒您。
+            <el-link href="#" target="_blank" icon="link">了解更多</el-link>
+          </div>
+        </div>
+        <el-divider style="margin-bottom: 10px"></el-divider>
+        <el-button type="text">配置您的通知设置</el-button>
+      </el-card>
+    </div>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/clouds/settingsSecurity.js" type="text/javascript"></script>
+}

@@ -7,16 +7,21 @@ namespace SSCMS.Core.Services
 {
     public partial class CloudManager
     {
-        public async Task<bool> IsVodAsync()
+        public async Task<VodSettings> GetVodSettingsAsync()
         {
             var config = await _configRepository.GetAsync();
-            return config.IsCloudVod;
+            var isAuthentication = IsAuthentication(config);
+            return new VodSettings
+            {
+                IsVod = isAuthentication && config.IsCloudVod,
+            };
         }
 
         public async Task<VodResult> UploadVodAsync(string filePath)
         {
             var config = await _configRepository.GetAsync();
-            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            var isAuthentication = IsAuthentication(config);
+            if (!isAuthentication)
             {
                 throw new Exception("云助手未登录");
             }

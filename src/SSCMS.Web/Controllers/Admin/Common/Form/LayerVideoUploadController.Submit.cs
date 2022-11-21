@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var isVod = await _vodManager.IsVodAsync();
+            var vodSettings = await _vodManager.GetVodSettingsAsync();
             var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
 
             var result = new List<SubmitResult>();
@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 var playUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
                 var coverUrl = string.Empty;
 
-                if (isVod)
+                if (vodSettings.IsVod)
                 {
                     var vodPlay = await _vodManager.UploadVodAsync(filePath);
                     if (vodPlay.Success)
@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 if (request.IsLibrary)
                 {
                     var url = string.Empty;
-                    if (isVod)
+                    if (vodSettings.IsVod)
                     {
                         url = playUrl;
                     }

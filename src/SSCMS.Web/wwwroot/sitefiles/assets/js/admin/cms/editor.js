@@ -5,6 +5,8 @@ var $urlPreview = $url + "/actions/preview";
 var $urlCensor = $url + "/actions/censor";
 var $urlSpell = $url + "/actions/spell";
 var $urlTags = $url + "/actions/tags";
+var $urlCloudCensor = "cms/censor";
+var $urlCloudSpell = "cms/spell";
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -50,7 +52,9 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   checkedLevels: null,
+  isCloudCensor: null,
   censorSettings: null,
+  isCloudSpell: null,
   spellSettings: null,
   isCensorPassed: false,
   isSpellPassed: false,
@@ -95,7 +99,9 @@ var methods = {
         $this.checkedLevels = res.checkedLevels;
         $this.linkTypes = res.linkTypes;
         $this.root = [res.root];
+        $this.isCloudCensor = res.isCloudCensor;
         $this.censorSettings = res.censorSettings;
+        $this.isCloudSpell = res.isCloudSpell;
         $this.spellSettings = res.spellSettings;
 
         $this.styles = res.styles;
@@ -214,50 +220,101 @@ var methods = {
       });
   },
 
+  getText: function () {
+    var text = "";
+    for (var i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      if (
+        style.inputType === "Text" ||
+        style.inputType === "TextArea" ||
+        style.inputType === "TextEditor"
+      ) {
+        text += this.form[utils.toCamelCase(style.attributeName)];
+      }
+    }
+    return text;
+  },
+
   apiCensor: function (callback) {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlCensor, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        content: this.form,
-      })
-      .then(function (response) {
-        var res = response.data;
-        callback(res);
-      })
-      .catch(function (error) {
-        utils.error(error);
-        layer.closeAll();
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+    if (this.isCloudCensor) {
+      cloud
+        .post($urlCloudCensor, {
+          text: this.getText(),
+        })
+        .then(function (response) {
+          var res = response.data;
+          callback(res);
+        })
+        .catch(function (error) {
+          utils.error(error);
+          layer.closeAll();
+        })
+        .then(function () {
+          utils.loading($this, false);
+        });
+    } else {
+      $api
+        .csrfPost(this.csrfToken, $urlCensor, {
+          siteId: this.siteId,
+          channelId: this.channelId,
+          text: this.getText(),
+        })
+        .then(function (response) {
+          var res = response.data;
+          callback(res);
+        })
+        .catch(function (error) {
+          utils.error(error);
+          layer.closeAll();
+        })
+        .then(function () {
+          utils.loading($this, false);
+        });
+    }
   },
 
   apiSpell: function (callback) {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlSpell, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        content: this.form,
-      })
-      .then(function (response) {
-        var res = response.data;
-        callback(res);
-      })
-      .catch(function (error) {
-        utils.error(error);
-        layer.closeAll();
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+    if (this.isCloudSpell) {
+      cloud
+        .post($urlCloudSpell, {
+          text: this.getText(),
+        })
+        .then(function (response) {
+          var res = response.data;
+          callback(res);
+        })
+        .catch(function (error) {
+          utils.error(error);
+          layer.closeAll();
+        })
+        .then(function () {
+          utils.loading($this, false);
+        });
+    } else {
+      $api
+        .csrfPost(this.csrfToken, $urlSpell, {
+          siteId: this.siteId,
+          channelId: this.channelId,
+          text: this.getText(),
+        })
+        .then(function (response) {
+          var res = response.data;
+          callback(res);
+        })
+        .catch(function (error) {
+          utils.error(error);
+          layer.closeAll();
+        })
+        .then(function () {
+          utils.loading($this, false);
+        });
+    }
   },
 
   apiTags: function () {
@@ -337,9 +394,17 @@ var methods = {
   },
 
   apiSave: function () {
-    if (!this.isCensorPassed && this.censorSettings.isCensorText && this.censorSettings.isCensorTextAuto) {
+    if (
+      !this.isCensorPassed &&
+      this.censorSettings.isCensorText &&
+      this.censorSettings.isCensorTextAuto
+    ) {
       this.btnCensorTextClick(true);
-    } else if (!this.isSpellPassed && this.spellSettings.isSpellingCheck && this.spellSettings.isSpellingCheckAuto) {
+    } else if (
+      !this.isSpellPassed &&
+      this.spellSettings.isSpellingCheck &&
+      this.spellSettings.isSpellingCheckAuto
+    ) {
       this.btnSpellingCheckClick(true);
     } else {
       if (this.contentId === 0) {
@@ -498,13 +563,14 @@ var methods = {
       title: "内容违规检测",
       width: 550,
       height: 600,
-      url: utils.getCmsUrl('editorLayerCensor', {
+      url: utils.getCmsUrl("editorLayerCensor", {
         siteId: this.siteId,
         channelId: this.channelId,
+        isCloudCensor: this.isCloudCensor,
         isCensorTextIgnore: this.censorSettings.isCensorTextIgnore,
         isCensorTextWhiteList: this.censorSettings.isCensorTextWhiteList,
-        isSave: isSave
-      })
+        isSave: isSave,
+      }),
     });
   },
 
@@ -514,13 +580,14 @@ var methods = {
       title: "错别字检查",
       width: 550,
       height: 600,
-      url: utils.getCmsUrl('editorLayerSpell', {
+      url: utils.getCmsUrl("editorLayerSpell", {
         siteId: this.siteId,
         channelId: this.channelId,
+        isCloudSpell: this.isCloudSpell,
         isSpellingCheckIgnore: this.spellSettings.isSpellingCheckIgnore,
         isSpellingCheckWhiteList: this.spellSettings.isSpellingCheckWhiteList,
-        isSave: isSave
-      })
+        isSave: isSave,
+      }),
     });
   },
 
@@ -607,7 +674,7 @@ var methods = {
         title: "预览视频",
         url: utils.getCommonUrl("editorLayerPreviewVideo", {
           siteId: this.siteId,
-          videoUrl: videoUrl
+          videoUrl: videoUrl,
         }),
         width: 600,
         height: 500,

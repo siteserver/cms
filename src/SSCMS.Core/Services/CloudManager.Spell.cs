@@ -49,9 +49,10 @@ namespace SSCMS.Core.Services
         public async Task<SpellSettings> GetSpellSettingsAsync()
         {
             var config = await _configRepository.GetAsync();
+            var isAuthentication = IsAuthentication(config);
             return new SpellSettings
             {
-                IsSpellingCheck = config.IsCloudSpellingCheck,
+                IsSpellingCheck = isAuthentication && config.IsCloudSpellingCheck,
                 IsSpellingCheckAuto = config.IsCloudSpellingCheckAuto,
                 IsSpellingCheckIgnore = config.IsCloudSpellingCheckIgnore,
                 IsSpellingCheckWhiteList = config.IsCloudSpellingCheckWhiteList,
@@ -61,7 +62,8 @@ namespace SSCMS.Core.Services
         public async Task<SpellResult> SpellingCheckAsync(string text)
         {
             var config = await _configRepository.GetAsync();
-            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            var isAuthentication = IsAuthentication(config);
+            if (!isAuthentication)
             {
                 throw new Exception("云助手未登录");
             }

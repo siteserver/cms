@@ -4,6 +4,7 @@ using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
+using SSCMS.Models;
 
 namespace SSCMS.Core.Services
 {
@@ -35,6 +36,11 @@ namespace SSCMS.Core.Services
         public async Task<bool> IsAuthenticationAsync()
         {
             var config = await _configRepository.GetAsync();
+            return IsAuthentication(config);
+        }
+
+        private bool IsAuthentication(Config config)
+        {
             return !string.IsNullOrEmpty(config.CloudUserName) && !string.IsNullOrEmpty(config.CloudToken);
         }
 

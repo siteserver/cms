@@ -1047,7 +1047,7 @@
               "app_settings_cloudDashboard": {
                 "text": "云助手面板",
                 "iconClass": "el-icon-star-off",
-                "link": "./settings/cloudDashboard/",
+                "link": "./clouds/dashboard/",
                 "permissions": [
                   "app_settings_cloudDashboard"
                 ],
@@ -1056,7 +1056,7 @@
               "app_settings_cloudTickets": {
                 "text": "工单技术支持",
                 "iconClass": "el-icon-service",
-                "link": "./settings/cloudTickets/",
+                "link": "./clouds/tickets/",
                 "permissions": [
                   "app_settings_cloudTickets"
                 ],
@@ -1065,7 +1065,7 @@
               "app_settings_cloudSettingsCensor": {
                 "text": "内容违规检测",
                 "iconClass": "el-icon-circle-check",
-                "link": "./settings/cloudSettingsCensor/",
+                "link": "./clouds/settingsCensor/",
                 "permissions": [
                   "app_settings_cloudSettingsCensor"
                 ],
@@ -1074,7 +1074,7 @@
               "app_settings_cloudSettingsSpell": {
                 "text": "错别字检查",
                 "iconClass": "el-icon-finished",
-                "link": "./settings/cloudSettingsSpell/",
+                "link": "./clouds/settingsSpell/",
                 "permissions": [
                   "app_settings_cloudSettingsSpell"
                 ],
@@ -1083,7 +1083,7 @@
               "app_settings_cloudSettingsVod": {
                 "text": "云视频设置",
                 "iconClass": "el-icon-video-play",
-                "link": "./settings/cloudSettingsVod/",
+                "link": "./clouds/settingsVod/",
                 "permissions": [
                   "app_settings_cloudSettingsVod"
                 ],
@@ -1092,7 +1092,7 @@
               "app_settings_cloudSettingsSms": {
                 "text": "短信设置",
                 "iconClass": "el-icon-chat-dot-round",
-                "link": "./settings/cloudSettingsSms/",
+                "link": "./clouds/settingsSms/",
                 "permissions": [
                   "app_settings_cloudSettingsSms"
                 ],
@@ -1101,7 +1101,7 @@
               "app_settings_cloudSettingsMail": {
                 "text": "邮件设置",
                 "iconClass": "el-icon-message",
-                "link": "./settings/cloudSettingsMail/",
+                "link": "./clouds/settingsMail/",
                 "permissions": [
                   "app_settings_cloudSettingsMail"
                 ],

@@ -144,7 +144,7 @@ var cloud = _.extend(axios.create({
   checkAuth: function(callback, url) {
     if (!$cloudToken || !$cloudUserName) {
       var redirect = url || location.href;
-      location.href = utils.getSettingsUrl('cloudConnect', {redirect: redirect});
+      location.href = utils.getCloudsUrl('connect', {redirect: redirect});
     } else if (callback) {
       callback();
     }

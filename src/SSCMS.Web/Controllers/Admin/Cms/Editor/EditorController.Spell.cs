@@ -21,18 +21,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 return Unauthorized();
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return this.Error(Constants.ErrorNotFound);
-
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
-
-            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
-
-            var fullContent = $"{content.Title}{content.SubTitle}{content.Summary}{content.Author}{content.Source}{content.Body}";
-
             try
             {
-                var results = await _spellManager.SpellingCheckAsync(fullContent);
+                var results = await _spellManager.SpellingCheckAsync(request.Text);
                 if (results.Success)
                 {
                     return results;
