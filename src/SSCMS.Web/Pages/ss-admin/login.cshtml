@@ -130,11 +130,11 @@
           </div>
         </div>
 
-        <div v-if="isSmsEnabled" class="form-group row">
+        <div v-if="isSmsAdmin" class="form-group row">
             <div class="col-sm-6">
                 <a href="javascript:;" v-on:click="redirectLostPassword" class="text-muted"><i class="fa fa-lock m-r-5"></i> 忘记密码？</a>
             </div>
-            <div class="col-sm-6 text-right">
+            <div v-if="!isSmsAdminAndDisableAccount" class="col-sm-6 text-right">
                 <a v-if="isSmsLogin" href="javascript:;" class="text-muted" v-on:click="isSmsLogin = false">
                   <i class="fa fa-user-circle-o m-r-5"></i> 使用账号登录
                 </a>

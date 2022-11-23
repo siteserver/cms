@@ -2,7 +2,8 @@ var $url = "/clouds/settingsSms"
 
 var data = utils.init({
   isCloudSms: false,
-  isCloudSmsAdministrator: false,
+  isCloudSmsAdmin: false,
+  isCloudSmsAdminAndDisableAccount: false,
   isCloudSmsUser: false,
 });
 
@@ -15,7 +16,8 @@ var methods = {
       var res = response.data;
 
       $this.isCloudSms = res.isCloudSms;
-      $this.isCloudSmsAdministrator = res.isCloudSmsAdministrator;
+      $this.isCloudSmsAdmin = res.isCloudSmsAdmin;
+      $this.isCloudSmsAdminAndDisableAccount = res.isCloudSmsAdminAndDisableAccount;
       $this.isCloudSmsUser = res.isCloudSmsUser;
     }).catch(function (error) {
       utils.error(error);
@@ -30,7 +32,8 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, {
       isCloudSms: this.isCloudSms,
-      isCloudSmsAdministrator: this.isCloudSmsAdministrator,
+      isCloudSmsAdmin: this.isCloudSmsAdmin,
+      isCloudSmsAdminAndDisableAccount: this.isCloudSmsAdminAndDisableAccount,
       isCloudSmsUser: this.isCloudSmsUser,
     }).then(function (response) {
       var res = response.data;

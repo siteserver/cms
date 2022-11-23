@@ -28,14 +28,16 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         public class GetResult
         {
             public bool IsCloudSms { get; set; }
-            public bool IsCloudSmsAdministrator { get; set; }
+            public bool IsCloudSmsAdmin { get; set; }
+            public bool IsCloudSmsAdminAndDisableAccount { get; set; }
             public bool IsCloudSmsUser { get; set; }
         }
 
         public class SubmitRequest
         {
             public bool IsCloudSms { get; set; }
-            public bool IsCloudSmsAdministrator { get; set; }
+            public bool IsCloudSmsAdmin { get; set; }
+            public bool IsCloudSmsAdminAndDisableAccount { get; set; }
             public bool IsCloudSmsUser { get; set; }
         }
     }

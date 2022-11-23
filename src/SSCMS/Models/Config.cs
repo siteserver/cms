@@ -74,7 +74,8 @@ namespace SSCMS.Models
         public bool IsCloudVod { get; set; }
         public bool IsCloudPhoto { get; set; }
         public bool IsCloudSms { get; set; }
-        public bool IsCloudSmsAdministrator { get; set; }
+        public bool IsCloudSmsAdmin { get; set; }
+        public bool IsCloudSmsAdminAndDisableAccount { get; set; }
         public bool IsCloudSmsUser { get; set; }
         public bool IsCloudMail { get; set; }
         public bool IsCloudMailContentAdd { get; set; }

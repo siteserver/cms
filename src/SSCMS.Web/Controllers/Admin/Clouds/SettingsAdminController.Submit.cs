@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Clouds
 {
-    public partial class ConfigsAdminController
+    public partial class SettingsAdminController
     {
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)

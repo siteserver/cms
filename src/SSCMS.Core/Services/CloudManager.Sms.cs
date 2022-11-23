@@ -34,7 +34,8 @@ namespace SSCMS.Core.Services
             return new SmsSettings
             {
                 IsSms = isAuthentication && config.IsCloudSms,
-                IsSmsAdministrator = config.IsCloudSmsAdministrator,
+                IsSmsAdmin = config.IsCloudSmsAdmin,
+                IsSmsAdminAndDisableAccount = config.IsCloudSmsAdminAndDisableAccount,
                 IsSmsUser = config.IsCloudSmsUser,
             };
         }

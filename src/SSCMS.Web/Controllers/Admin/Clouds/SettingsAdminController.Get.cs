@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Clouds
 {
-    public partial class ConfigsAdminController
+    public partial class SettingsAdminController
     {
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()

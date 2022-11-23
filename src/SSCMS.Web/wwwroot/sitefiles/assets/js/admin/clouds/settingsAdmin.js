@@ -1,6 +1,9 @@
-﻿var $url = '/settings/configsAdmin';
+﻿var $url = '/clouds/settingsAdmin';
+var $urlCloud = "cms/clouds";
 
 var data = utils.init({
+  cloudType: null,
+  expirationDate: null,
   uploadUrl: null,
   uploadFileList: [],
   form: {
@@ -54,9 +57,44 @@ var methods = {
     });
   },
 
-  btnSubmitClick: function () {
+  apiCloudGet: function() {
     var $this = this;
 
+    utils.loading(this, true);
+    cloud.get($urlCloud).then(function (response) {
+      var res = response.data;
+
+      $this.cloudType = res.cloudType;
+      $this.expirationDate = res.expirationDate;
+
+      $this.apiGet();
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  checkCloudType: function() {
+    if (this.cloudType == 'Free') {
+      alert({
+        title: '后台自定义',
+        text: '系统检测到您的云助手版本为免费版，使用后台自定义功能请升级云助手版本！',
+        type: 'warning',
+        confirmButtonText: '关 闭',
+        showConfirmButton: true,
+        showCancelButton: false,
+        buttonsStyling: false,
+      });
+      return true;
+    }
+    return false;
+  },
+
+  btnSubmitClick: function () {
+    if (this.checkCloudType()) return;
+
+    var $this = this;
     this.$refs.form.validate(function(valid) {
       if (valid) {
         $this.apiSubmit();
@@ -65,6 +103,10 @@ var methods = {
   },
 
   uploadBefore(file) {
+    if (this.checkCloudType()) {
+      return false;
+    }
+
     var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
     if(!re.exec(file.name))
     {
@@ -112,6 +154,9 @@ var $vue = new Vue({
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.uploadUrl = $apiUrl + $url + '/actions/upload';
-    this.apiGet();
+    var $this = this;
+    cloud.checkAuth(function() {
+      $this.apiCloudGet();
+    });
   }
 });

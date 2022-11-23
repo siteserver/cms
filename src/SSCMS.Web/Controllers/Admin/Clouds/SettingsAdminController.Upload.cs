@@ -5,9 +5,9 @@ using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Settings.Configs
+namespace SSCMS.Web.Controllers.Admin.Clouds
 {
-    public partial class ConfigsAdminController
+    public partial class SettingsAdminController
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]

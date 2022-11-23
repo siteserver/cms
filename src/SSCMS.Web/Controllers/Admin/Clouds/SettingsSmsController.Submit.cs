@@ -16,7 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             
             var config = await _configRepository.GetAsync();
             config.IsCloudSms = request.IsCloudSms;
-            config.IsCloudSmsAdministrator = request.IsCloudSmsAdministrator;
+            config.IsCloudSmsAdmin = request.IsCloudSmsAdmin;
+            config.IsCloudSmsAdminAndDisableAccount = request.IsCloudSmsAdminAndDisableAccount;
             config.IsCloudSmsUser = request.IsCloudSmsUser;
 
             await _configRepository.UpdateAsync(config);

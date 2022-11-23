@@ -18,7 +18,8 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             return new GetResult
             {
                 IsCloudSms = config.IsCloudSms,
-                IsCloudSmsAdministrator = config.IsCloudSmsAdministrator,
+                IsCloudSmsAdmin = config.IsCloudSmsAdmin,
+                IsCloudSmsAdminAndDisableAccount = config.IsCloudSmsAdminAndDisableAccount,
                 IsCloudSmsUser = config.IsCloudSmsUser,
             };
         }

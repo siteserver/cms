@@ -188,6 +188,12 @@
           "app"
         ]
       },
+      "app_settings_cloudSettingsAdmin": {
+        "text": "后台自定义设置",
+        "type": [
+          "app"
+        ]
+      },
       "app_settings_analysisAdminLogin": {
         "text": "管理员登录统计",
         "type": [
@@ -835,6 +841,7 @@
           "app_settings_cloudSettingsPhoto",
           "app_settings_cloudSettingsSms",
           "app_settings_cloudSettingsMail",
+          "app_settings_cloudSettingsAdmin",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
           "app_settings_analysisUser",
@@ -1047,7 +1054,8 @@
               "app_settings_cloudSettingsVod",
               "app_settings_cloudSettingsPhoto",
               "app_settings_cloudSettingsSms",
-              "app_settings_cloudSettingsMail"
+              "app_settings_cloudSettingsMail",
+              "app_settings_cloudSettingsAdmin"
             ],
             "iconClass": "ion-cloud",
             "order": 106,
@@ -1123,6 +1131,15 @@
                   "app_settings_cloudSettingsMail"
                 ],
                 "order": 108
+              },
+              "app_settings_cloudSettingsAdmin": {
+                "text": "后台自定义设置",
+                "iconClass": "el-icon-setting",
+                "link": "./clouds/settingsAdmin/",
+                "permissions": [
+                  "app_settings_cloudSettingsAdmin"
+                ],
+                "order": 109
               }
             }
           },

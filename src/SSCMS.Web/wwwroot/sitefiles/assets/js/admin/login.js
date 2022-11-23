@@ -18,7 +18,9 @@ var data = utils.init({
   captchaUrl: null,
   version: null,
   adminTitle: null,
-  isSmsEnabled: false,
+  isSmsAdmin: false,
+  isSmsAdminAndDisableAccount: false,
+
   isSmsLogin: false,
   mobile: null,
   code: null,
@@ -43,7 +45,11 @@ var methods = {
       if (res.success) {
         $this.version = res.version;
         $this.adminTitle = res.adminTitle;
-        $this.isSmsEnabled = res.isSmsEnabled;
+        $this.isSmsAdmin = res.isSmsAdmin;
+        $this.isSmsAdminAndDisableAccount = res.isSmsAdminAndDisableAccount;
+        if (res.isSmsAdmin && res.isSmsAdminAndDisableAccount) {
+          $this.isSmsLogin = true;
+        }
         $this.apiCaptcha();
       } else {
         location.href = res.redirectUrl;

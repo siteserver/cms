@@ -48,7 +48,8 @@ namespace SSCMS.Web.Controllers.Admin
             public string RedirectUrl { get; set; }
             public string Version { get; set; }
             public string AdminTitle { get; set; }
-            public bool IsSmsEnabled { get; set; }
+            public bool IsSmsAdmin { get; set; }
+            public bool IsSmsAdminAndDisableAccount { get; set; }
         }
 
         public class SubmitRequest
