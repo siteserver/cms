@@ -72,6 +72,7 @@ namespace SSCMS.Models
         public bool IsCloudSpellingCheckIgnore { get; set; }
         public bool IsCloudSpellingCheckWhiteList { get; set; }
         public bool IsCloudVod { get; set; }
+        public bool IsCloudPhoto { get; set; }
         public bool IsCloudSms { get; set; }
         public bool IsCloudSmsAdministrator { get; set; }
         public bool IsCloudSmsUser { get; set; }

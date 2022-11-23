@@ -10,6 +10,7 @@ var cloud = _.extend(axios.create({
   },
 }), {
   host: 'https://sscms.com',
+  hostImages: 'https://images.sscms.com',
   hostDl: 'https://dl.sscms.com',
   hostDemo: 'https://demo.sscms.com',
   hostStorage: 'https://storage.sscms.com',

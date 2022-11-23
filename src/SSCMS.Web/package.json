@@ -170,6 +170,12 @@
           "app"
         ]
       },
+      "app_settings_cloudSettingsPhoto": {
+        "text": "云助手免版权图库设置",
+        "type": [
+          "app"
+        ]
+      },
       "app_settings_cloudSettingsSms": {
         "text": "云助手短信设置",
         "type": [
@@ -826,6 +832,7 @@
           "app_settings_cloudSettingsCensor",
           "app_settings_cloudSettingsSpell",
           "app_settings_cloudSettingsVod",
+          "app_settings_cloudSettingsPhoto",
           "app_settings_cloudSettingsSms",
           "app_settings_cloudSettingsMail",
           "app_settings_analysisAdminLogin",
@@ -1038,6 +1045,7 @@
               "app_settings_cloudSettingsCensor",
               "app_settings_cloudSettingsSpell",
               "app_settings_cloudSettingsVod",
+              "app_settings_cloudSettingsPhoto",
               "app_settings_cloudSettingsSms",
               "app_settings_cloudSettingsMail"
             ],
@@ -1089,6 +1097,15 @@
                 ],
                 "order": 105
               },
+              "app_settings_cloudSettingsPhoto": {
+                "text": "免版权图库设置",
+                "iconClass": "el-icon-picture-outline-round",
+                "link": "./clouds/settingsPhoto/",
+                "permissions": [
+                  "app_settings_cloudSettingsPhoto"
+                ],
+                "order": 106
+              },
               "app_settings_cloudSettingsSms": {
                 "text": "短信设置",
                 "iconClass": "el-icon-chat-dot-round",
@@ -1096,7 +1113,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsSms"
                 ],
-                "order": 106
+                "order": 107
               },
               "app_settings_cloudSettingsMail": {
                 "text": "邮件设置",
@@ -1105,7 +1122,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsMail"
                 ],
-                "order": 107
+                "order": 108
               }
             }
           },

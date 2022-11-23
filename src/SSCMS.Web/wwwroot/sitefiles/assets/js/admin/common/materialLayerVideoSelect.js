@@ -8,6 +8,7 @@ var data = utils.init({
   groups: null,
   count: null,
   items: null,
+  isCloudVod: null,
   urlList: null,
   renameId: 0,
   renameTitle: '',
@@ -38,6 +39,13 @@ var methods = {
       params: this.form
     }).then(function (response) {
       var res = response.data;
+
+      if (res.isCloudVod) {
+        location.href = utils.getCloudsUrl('layerVodSelect', {
+          attributeName: $this.attributeName,
+          no: $this.no,
+        });
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;

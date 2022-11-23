@@ -30,16 +30,16 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.form.isChangeFileName = res.isChangeFileName;
-      $this.form.isLibrary = res.isLibrary;
-      $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&isChangeFileName=' + $this.form.isChangeFileName;
-
       if (res.isCloudVod) {
         location.href = utils.getCloudsUrl('layerVodUpload', {
           attributeName: $this.attributeName,
           no: $this.no,
         });
       }
+
+      $this.form.isChangeFileName = res.isChangeFileName;
+      $this.form.isLibrary = res.isLibrary;
+      $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&isChangeFileName=' + $this.form.isChangeFileName;
     })
     .catch(function(error) {
       utils.error(error);

@@ -20,20 +20,22 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
+        private readonly IVodManager _vodManager;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoSelectController(ISettingsManager settingsManager, IPathManager pathManager, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, ISiteRepository siteRepository)
+        public LayerVideoSelectController(ISettingsManager settingsManager, IPathManager pathManager, IVodManager vodManager, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, ISiteRepository siteRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
+            _vodManager = vodManager;
             _materialGroupRepository = materialGroupRepository;
             _materialVideoRepository = materialVideoRepository;
             _siteRepository = siteRepository;
         }
 
-        public class QueryRequest
+        public class ListRequest
         {
             public string Keyword { get; set; }
             public int GroupId { get; set; }
@@ -41,11 +43,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             public int PerPage { get; set; }
         }
 
-        public class QueryResult
+        public class ListResult
         {
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialVideo> Items { get; set; }
+            public bool IsCloudVod { get; set; }
         }
 
         public class SelectRequest : SiteRequest
