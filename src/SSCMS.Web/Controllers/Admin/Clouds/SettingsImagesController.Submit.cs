@@ -4,7 +4,7 @@ using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Clouds
 {
-    public partial class SettingsPhotoController
+    public partial class SettingsImagesController
     {
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             }
             
             var config = await _configRepository.GetAsync();
-            config.IsCloudPhoto = request.IsCloudPhoto;
+            config.IsCloudImages = request.IsCloudImages;
 
             await _configRepository.UpdateAsync(config);
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -10,15 +11,15 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class SettingsPhotoController : ControllerBase
+    public partial class SettingsImagesController : ControllerBase
     {
-        private const string Route = "clouds/settingsPhoto";
+        private const string Route = "clouds/settingsImages";
 
         private readonly IAuthManager _authManager;
         private readonly ICloudManager _cloudManager;
         private readonly IConfigRepository _configRepository;
 
-        public SettingsPhotoController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository)
+        public SettingsImagesController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository)
         {
             _authManager = authManager;
             _cloudManager = cloudManager;
@@ -27,12 +28,13 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
 
         public class GetResult
         {
-            public bool IsCloudPhoto { get; set; }
+            public CloudType CloudType { get; set; }
+            public bool IsCloudImages { get; set; }
         }
 
         public class SubmitRequest
         {
-            public bool IsCloudPhoto { get; set; }
+            public bool IsCloudImages { get; set; }
         }
     }
 }

@@ -78,6 +78,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public int ContentId { get; set; }
         }
 
+        public class Settings
+        {
+            public bool IsCloudCensor { get; set; }
+            public CensorSettings CensorSettings { get; set; }
+            public bool IsCloudSpell { get; set; }
+            public SpellSettings SpellSettings { get; set; }
+            public bool IsCloudImages { get; set; }
+        }
+
         public class GetResult
         {
             public string CSRFToken { get; set; }
@@ -94,10 +103,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public int CheckedLevel { get; set; }
             public IEnumerable<Select<string>> LinkTypes { get; set; }
             public Cascade<int> Root { get; set; }
-            public bool IsCloudCensor { get; set; }
-            public CensorSettings CensorSettings { get; set; }
-            public bool IsCloudSpell { get; set; }
-            public SpellSettings SpellSettings { get; set; }
+            public Settings Settings { get; set; }
         }
 
         public class PreviewRequest

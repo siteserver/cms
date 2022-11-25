@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
                 return Unauthorized();
             }
             
-            await _cloudManager.SetAuthentication(request.UserName, request.Token);
+            await _cloudManager.SetAuthenticationAsync(request.UserName, request.Token);
 
             return new BoolResult
             {

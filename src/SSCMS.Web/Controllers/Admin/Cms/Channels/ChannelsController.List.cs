@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<ChannelsResult>> List([FromQuery] SiteRequest request)
+        public async Task<ActionResult<ListResult>> List([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Channels))
@@ -85,7 +85,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             };
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
 
-            return new ChannelsResult
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
+            return new ListResult
             {
                 Channel = cascade,
                 IndexNames = indexNames,
@@ -97,7 +102,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 IsTemplateEditable = isTemplateEditable,
                 LinkTypes = linkTypes,
                 TaxisTypes = taxisTypes,
-                SiteUrl = siteUrl
+                SiteUrl = siteUrl,
+                Settings = settings
             };
         }
     }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SSCMS.Web.Controllers.Admin.Clouds
 {
-    public partial class SettingsPhotoController
+    public partial class SettingsImagesController
     {
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get()
@@ -14,10 +14,12 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             }
 
             var config = await _configRepository.GetAsync();
+            var cloudType = await _cloudManager.GetCloudTypeAsync();
 
             return new GetResult
             {
-                IsCloudPhoto = config.IsCloudPhoto,
+                CloudType = cloudType,
+                IsCloudImages = config.IsCloudImages,
             };
         }
     }

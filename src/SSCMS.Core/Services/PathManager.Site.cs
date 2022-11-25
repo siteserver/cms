@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
@@ -721,6 +722,53 @@ namespace SSCMS.Core.Services
                 extension = ".xml";
             }
             return PathUtils.Combine(PhysicalSiteFilesPath, DirectoryUtils.SiteFiles.BackupFiles, site.SiteDir, DateTime.Now.ToString("yyyy-MM"), backupType.GetValue() + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extension);
+        }
+
+        public async Task<List<FileInfo>> GetAllFilesOrderByCreationTimeDescAsync(Site site, UploadType uploadType)
+        {
+            var uploadDirectoryName = string.Empty;
+            if (uploadType == UploadType.Image)
+            {
+                uploadDirectoryName = site.ImageUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Audio)
+            {
+                uploadDirectoryName = site.AudioUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Video)
+            {
+                uploadDirectoryName = site.VideoUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.File)
+            {
+                uploadDirectoryName = site.FileUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Special)
+            {
+                uploadDirectoryName = "/special";
+            }
+
+            var directoryPath = PathUtils.Combine(await GetSitePathAsync(site), uploadDirectoryName);
+            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+            var directory = new DirectoryInfo(directoryPath);
+            var files = directory.GetFiles("*.*", SearchOption.AllDirectories);
+            Array.Sort(files, delegate (FileInfo fi1, FileInfo fi2) { return fi2.CreationTime.CompareTo(fi1.CreationTime); });
+
+            var list = new List<FileInfo>(files);
+            if (uploadType == UploadType.Image)
+            {
+                list = list.Where(file => IsImageExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
+            }
+            else if (uploadType == UploadType.Audio)
+            {
+                list = list.Where(file => IsAudioExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
+            }
+            else if (uploadType == UploadType.Video)
+            {
+                list = list.Where(file => IsVideoExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
+            }
+            
+            return list;
         }
 
         public async Task<string> GetUploadDirectoryPathAsync(Site site, string fileExtension)

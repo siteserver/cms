@@ -6,15 +6,15 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
 {
     public partial class DashboardController
     {
-        [HttpPost, Route(RouteDisconnect)]
-        public async Task<ActionResult<BoolResult>> Disconnect()
+        [HttpPost, Route(Route)]
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.IsSuperAdminAsync())
             {
                 return Unauthorized();
             }
-
-            await _cloudManager.RemoveAuthenticationAsync();
+            
+            await _cloudManager.SetCloudTypeAsync(request.CloudType, request.ExpirationDate);
 
             return new BoolResult
             {

@@ -6,9 +6,17 @@
         <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', attributeName: style.attributeName, no: 0})">
           上传
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择图片素材', name: 'materialLayerImageSelect', attributeName: style.attributeName, no: 0, full: true})">
-          选择
-        </el-button>
+        <el-dropdown v-on:command="btnImageSelectClick">
+          <el-button size="mini" type="info" icon="el-icon-folder-opened" plain>
+            选择<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-if="typeof siteId !== 'undefined'" :command="{attributeName: style.attributeName, no: 0, type: 'uploadedImages'}">已上传图片</el-dropdown-item>
+            <el-dropdown-item :command="{attributeName: style.attributeName, no: 0, type: 'materialImages'}">素材库图片</el-dropdown-item>
+            <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{attributeName: style.attributeName, no: 0, type: 'cloudImages'}">免版权图库</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+
         <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
           预览
         </el-button>

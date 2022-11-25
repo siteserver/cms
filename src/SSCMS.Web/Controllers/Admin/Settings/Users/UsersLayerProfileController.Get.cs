@@ -21,11 +21,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var groups = await _userGroupRepository.GetUserGroupsAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
 
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
             return new GetResult
             {
                 User = user,
                 Groups = groups,
-                Styles = styles
+                Styles = styles,
+                Settings = settings
             };
         }
     }

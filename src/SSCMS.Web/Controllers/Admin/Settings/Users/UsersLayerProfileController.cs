@@ -20,17 +20,24 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly ICloudManager _cloudManager;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public UsersLayerProfileController(IAuthManager authManager, IPathManager pathManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ITableStyleRepository tableStyleRepository)
+        public UsersLayerProfileController(IAuthManager authManager, IPathManager pathManager, ICloudManager cloudManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository, ITableStyleRepository tableStyleRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _cloudManager = cloudManager;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
             _tableStyleRepository = tableStyleRepository;
+        }
+
+        public class Settings
+        {
+            public bool IsCloudImages { get; set; }
         }
 
         public class GetResult
@@ -38,6 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             public User User { get; set; }
             public IEnumerable<UserGroup> Groups { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
+            public Settings Settings { get; set; }
         }
 
         public class UploadRequest

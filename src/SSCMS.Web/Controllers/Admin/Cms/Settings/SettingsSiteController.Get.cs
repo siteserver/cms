@@ -62,12 +62,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
 
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
             return new GetResult
             {
                 SiteUrl = StringUtils.TrimEndSlash(siteUrl),
                 Entity = entity,
                 Styles = styles,
-                RelatedFields = relatedFields
+                RelatedFields = relatedFields,
+                Settings = settings
             };
         }
     }

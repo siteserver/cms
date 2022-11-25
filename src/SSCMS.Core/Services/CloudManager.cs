@@ -5,6 +5,7 @@ using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 using SSCMS.Models;
+using SSCMS.Enums;
 
 namespace SSCMS.Core.Services
 {
@@ -44,7 +45,18 @@ namespace SSCMS.Core.Services
             return !string.IsNullOrEmpty(config.CloudUserName) && !string.IsNullOrEmpty(config.CloudToken);
         }
 
-        public async Task SetAuthentication(string userName, string token)
+        private bool IsFree(Config config)
+        {
+            return config.CloudType == CloudType.Free || config.CloudExpirationDate < DateTime.Now.AddDays(-1);
+        }
+
+        public async Task<CloudType> GetCloudTypeAsync()
+        {
+            var config = await _configRepository.GetAsync();
+            return IsFree(config) ? CloudType.Free : config.CloudType;
+        }
+
+        public async Task SetAuthenticationAsync(string userName, string token)
         {
             var config = await _configRepository.GetAsync();
             config.CloudUserName = userName;
@@ -52,11 +64,20 @@ namespace SSCMS.Core.Services
             await _configRepository.UpdateAsync(config);
         }
 
-        public async Task RemoveAuthentication()
+        public async Task SetCloudTypeAsync(CloudType cloudType, DateTime expirationDate)
+        {
+            var config = await _configRepository.GetAsync();
+            config.CloudType = cloudType;
+            config.CloudExpirationDate = expirationDate;
+            await _configRepository.UpdateAsync(config);
+        }
+
+        public async Task RemoveAuthenticationAsync()
         {
             var config = await _configRepository.GetAsync();
             config.CloudUserName = string.Empty;
             config.CloudToken = string.Empty;
+            config.CloudType = CloudType.Free;
             await _configRepository.UpdateAsync(config);
         }
 

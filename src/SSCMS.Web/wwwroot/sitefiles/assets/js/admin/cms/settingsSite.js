@@ -7,6 +7,7 @@ var data = utils.init({
   form: null,
   styles: null,
   relatedFields: null,
+  settings: null,
   files: []
 });
 
@@ -26,6 +27,7 @@ var methods = {
       $this.styles = res.styles;
       $this.relatedFields = res.relatedFields;
       $this.form = res.entity;
+      $this.settings = res.settings;
 
       $this.loadEditor(res);
     }).catch(function (error) {
@@ -97,6 +99,38 @@ var methods = {
     if (!attributeName) attributeName = 'Body';
     if (!html) return;
     utils.getEditor(attributeName).execCommand('insertHTML', html);
+  },
+
+  btnImageSelectClick: function(args) {
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'uploadedImages') {
+      this.btnLayerClick({
+        title: '选择已上传图片',
+        name: 'formLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
+    }
   },
 
   btnSiteStylesClick: function() {

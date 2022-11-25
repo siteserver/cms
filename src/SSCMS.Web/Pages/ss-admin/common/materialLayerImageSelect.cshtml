@@ -29,23 +29,6 @@
         </el-form-item>
       </el-form>
     </el-row>
-    <el-row>
-      <el-form v-on:submit.native.prevent :inline="true" :model="form">
-        <el-form-item label="分组">
-
-          <el-tag
-            v-for="group in groups"
-            :key="group.id"
-            type="success"
-            style="cursor: pointer; margin: 0 3px 6px 0;"
-            v-on:click="btnGroupClick(group.id)"
-            :effect="form.groupId === group.id ? 'dark' : 'plain'">
-            {{ group.groupName }}
-          </el-tag>
-         
-        </el-form-item>
-      </el-form>
-    </el-row>
   </el-col>
   <el-col align="right" :span="4">
     <el-dropdown trigger="click" v-on:command="btnDropdownClick">
@@ -58,6 +41,17 @@
       </el-dropdown-menu>
     </el-dropdown>
   </el-col>
+</el-row>
+<el-row>
+  <el-tag
+    v-for="group in groups"
+    :key="group.id"
+    type="success"
+    style="cursor: pointer; margin: 0 3px 6px 0;"
+    v-on:click="btnGroupClick(group.id)"
+    :effect="form.groupId === group.id ? 'dark' : 'plain'">
+    {{ group.groupName }}
+  </el-tag>
 </el-row>
 
 <template v-if="pageType === 'card'">

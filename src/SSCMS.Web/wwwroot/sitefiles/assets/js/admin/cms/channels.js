@@ -5,7 +5,6 @@ var $urlDelete = $url + '/actions/delete';
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   root: null,
-  expandedChannelIds: [],
   indexNames: [],
   groupNames: [],
   channelTemplates: [],
@@ -14,28 +13,25 @@ var data = utils.init({
   defaultContentTemplate: null,
   columns: null,
   commandsWidth: 160,
+  isTemplateEditable: false,
+  expandedChannelIds: [],
+  editLinkTypes: [],
+  editTaxisTypes: [],
+  siteUrl: null,
+  settings: null,
 
+  styles: [],
+  relatedFields: null,
   channelIds: [],
-
   filterText: '',
   filterIndexName: '',
   filterGroupName: '',
-
   appendPanel: false,
   appendForm: null,
-
   editPanel: false,
   form: null,
-  editLinkTypes: [],
-  editTaxisTypes: [],
-  styles: [],
-  relatedFields: null,
-  siteUrl: null,
-  isTemplateEditable: false,
-
   deletePanel: false,
   deleteForm: null,
-
   importPanel: false,
   importForm: null,
   importUploadList: []
@@ -71,6 +67,7 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.siteUrl = res.siteUrl;
+      $this.settings = res.settings;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -338,6 +335,38 @@ var methods = {
       width: 500,
       height: 300
     });
+  },
+
+  btnImageSelectClick: function(args) {
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'uploadedImages') {
+      this.btnLayerClick({
+        title: '选择已上传图片',
+        name: 'formLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
+    }
   },
 
   handleDrop: function(draggingNode, dropNode, dropType, ev) {

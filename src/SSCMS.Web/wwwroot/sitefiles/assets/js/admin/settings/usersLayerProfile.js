@@ -6,11 +6,16 @@ var data = utils.init({
   uploadFileList: [],
   form: null,
   groups: null,
-  styles: null
+  styles: null,
+  settings: null,
 });
 
 var methods = {
   runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
     this.insertText(attributeName, no, text);
   },
 
@@ -36,6 +41,7 @@ var methods = {
       $this.form = _.assign({}, res.user);
       $this.groups = res.groups;
       $this.styles = res.styles;
+      $this.settings = res.settings;
       if (this.userId === 0) {
         for (var i = 0; i < res.styles.length; i++) {
           var style = res.styles[i];
@@ -74,6 +80,30 @@ var methods = {
       callback(new Error('两次输入密码不一致!'));
     } else {
       callback();
+    }
+  },
+
+  btnImageSelectClick: function(args) {
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
     }
   },
 

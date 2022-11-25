@@ -170,7 +170,7 @@
           "app"
         ]
       },
-      "app_settings_cloudSettingsPhoto": {
+      "app_settings_cloudSettingsImages": {
         "text": "云助手免版权图库设置",
         "type": [
           "app"
@@ -838,7 +838,7 @@
           "app_settings_cloudSettingsCensor",
           "app_settings_cloudSettingsSpell",
           "app_settings_cloudSettingsVod",
-          "app_settings_cloudSettingsPhoto",
+          "app_settings_cloudSettingsImages",
           "app_settings_cloudSettingsSms",
           "app_settings_cloudSettingsMail",
           "app_settings_cloudSettingsAdmin",
@@ -1052,7 +1052,7 @@
               "app_settings_cloudSettingsCensor",
               "app_settings_cloudSettingsSpell",
               "app_settings_cloudSettingsVod",
-              "app_settings_cloudSettingsPhoto",
+              "app_settings_cloudSettingsImages",
               "app_settings_cloudSettingsSms",
               "app_settings_cloudSettingsMail",
               "app_settings_cloudSettingsAdmin"
@@ -1105,12 +1105,12 @@
                 ],
                 "order": 105
               },
-              "app_settings_cloudSettingsPhoto": {
+              "app_settings_cloudSettingsImages": {
                 "text": "免版权图库设置",
                 "iconClass": "el-icon-picture-outline-round",
-                "link": "./clouds/settingsPhoto/",
+                "link": "./clouds/settingsImages/",
                 "permissions": [
-                  "app_settings_cloudSettingsPhoto"
+                  "app_settings_cloudSettingsImages"
                 ],
                 "order": 106
               },

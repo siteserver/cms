@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsController
     {
         [HttpGet, Route(RouteGet)]
-        public async Task<ActionResult<ChannelResult>> Get(int siteId, int channelId)
+        public async Task<ActionResult<GetResult>> Get(int siteId, int channelId)
         {
             if (!await _authManager.HasSitePermissionsAsync(siteId,
                     MenuUtils.SitePermissions.Channels))
@@ -106,7 +106,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var channelFilePathRule = channel.ChannelFilePathRule;
             var contentFilePathRule = channel.ContentFilePathRule;
 
-            return new ChannelResult
+            return new GetResult
             {
                 Entity = entity,
                 Styles = styles,

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using SSCMS.Enums;
 
 namespace SSCMS.Services
 {
@@ -6,12 +8,18 @@ namespace SSCMS.Services
     {
         Task<bool> IsAuthenticationAsync();
         
-        Task SetAuthentication(string userName, string token);
+        Task SetAuthenticationAsync(string userName, string token);
 
-        Task RemoveAuthentication();
+        Task SetCloudTypeAsync(CloudType cloudType, DateTime expirationDate);
+
+        Task<CloudType> GetCloudTypeAsync();
+
+        Task RemoveAuthenticationAsync();
 
         Task<string> GetThemeDownloadUrlAsync(string userName, string name);
 
         Task<string> GetExtensionDownloadUrlAsync(string userName, string name, string version);
+
+        Task<bool> IsImagesAsync();
     }
 }

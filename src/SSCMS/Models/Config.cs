@@ -63,6 +63,8 @@ namespace SSCMS.Models
         public string HomeWelcomeHtml { get; set; } = @"欢迎使用用户中心";
         public string CloudUserName { get; set; }
         public string CloudToken { get; set; }
+        public CloudType CloudType { get; set; } = CloudType.Free;
+        public DateTime CloudExpirationDate { get; set; }
         public bool IsCloudCensorText { get; set; }
         public bool IsCloudCensorTextAuto { get; set; }
         public bool IsCloudCensorTextIgnore { get; set; }
@@ -72,7 +74,7 @@ namespace SSCMS.Models
         public bool IsCloudSpellingCheckIgnore { get; set; }
         public bool IsCloudSpellingCheckWhiteList { get; set; }
         public bool IsCloudVod { get; set; }
-        public bool IsCloudPhoto { get; set; }
+        public bool IsCloudImages { get; set; }
         public bool IsCloudSms { get; set; }
         public bool IsCloudSmsAdmin { get; set; }
         public bool IsCloudSmsAdminAndDisableAccount { get; set; }

@@ -35,12 +35,86 @@ var data = utils.init({
 });
 
 var methods = {
+  apiSubmit: function () {
+    $api
+      .post($url, {
+        cloudType: this.cloudType,
+        expirationDate: this.expirationDate,
+      })
+      .then(function (response) {
+        var res = response.data;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      });
+  },
+
+  apiCloudGet: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    cloud.get($urlCloud).then(function (response) {
+      var res = response.data;
+
+      $this.cloudType = res.cloudType;
+      $this.expirationDate = res.expirationDate;
+      $this.upgradeAmount = res.upgradeAmount;
+      $this.cloudPriceBasic1Month = res.cloudPriceBasic1Month;
+      $this.cloudPriceBasic1Year = res.cloudPriceBasic1Year;
+      $this.cloudPriceBasic2Year = res.cloudPriceBasic2Year;
+      $this.cloudPriceStandard1Month = res.cloudPriceStandard1Month;
+      $this.cloudPriceStandard1Year = res.cloudPriceStandard1Year;
+      $this.cloudPriceStandard2Year = res.cloudPriceStandard2Year;
+      $this.features = res.features;
+      $this.counts = res.counts;
+
+      $this.apiSubmit();
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiDisconnect: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlDisconnect).then(function (response) {
+      var res = response.data;
+
+      if (!res.value) return;
+      cloud.logout();
+
+      utils.alertSuccess({
+        title: "云助手连接已断开!",
+        button: "确 定",
+        callback: function() {
+          location.href = utils.getCloudsUrl('connect', {redirect: location.href});
+        }
+      });
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   getUserName: function() {
     return $cloudUserName;
   },
 
   getExpirationDate: function() {
     return utils.formatDate(this.expirationDate);
+  },
+
+  getCloudType: function() {
+    if (this.cloudType == 'Basic') {
+      return '基础版';
+    } else if (this.cloudType == 'Standard') {
+      return '标准版';
+    }
+    return '免费版';
   },
 
   btnBuyClick: function(cloudType) {
@@ -55,9 +129,9 @@ var methods = {
     this.buyForm.cloudType = this.cloudType;
     this.buyForm.periods = 'Y1';
     if (this.cloudType == 'Basic') {
-      this.buyForm.renewalTitle = '标准版（¥' + this.cloudPriceBasic1Month + '/月）';
+      this.buyForm.renewalTitle = '基础版（¥' + this.cloudPriceBasic1Month + '/月）';
     } else if (this.cloudType == 'Standard') {
-      this.buyForm.renewalTitle = '专业版（¥' + this.cloudPriceStandard1Month + '/月）';
+      this.buyForm.renewalTitle = '标准版（¥' + this.cloudPriceStandard1Month + '/月）';
     }
     this.btnChangeClick();
   },
@@ -127,55 +201,6 @@ var methods = {
     }
 
     this.buyForm.amount = price;
-  },
-
-  apiCloudGet: function() {
-    var $this = this;
-
-    utils.loading(this, true);
-    cloud.get($urlCloud).then(function (response) {
-      var res = response.data;
-
-      $this.cloudType = res.cloudType;
-      $this.expirationDate = res.expirationDate;
-      $this.upgradeAmount = res.upgradeAmount;
-      $this.cloudPriceBasic1Month = res.cloudPriceBasic1Month;
-      $this.cloudPriceBasic1Year = res.cloudPriceBasic1Year;
-      $this.cloudPriceBasic2Year = res.cloudPriceBasic2Year;
-      $this.cloudPriceStandard1Month = res.cloudPriceStandard1Month;
-      $this.cloudPriceStandard1Year = res.cloudPriceStandard1Year;
-      $this.cloudPriceStandard2Year = res.cloudPriceStandard2Year;
-      $this.features = res.features;
-      $this.counts = res.counts;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiDisconnect: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlDisconnect).then(function (response) {
-      var res = response.data;
-
-      if (!res.value) return;
-      cloud.logout();
-
-      utils.alertSuccess({
-        title: "云助手连接已断开!",
-        button: "确 定",
-        callback: function() {
-          location.href = utils.getCloudsUrl('connect', {redirect: location.href});
-        }
-      });
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
   },
 
   btnDisconnectClick: function() {

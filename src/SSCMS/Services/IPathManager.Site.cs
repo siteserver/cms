@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using SSCMS.Dto;
 using SSCMS.Enums;
@@ -83,6 +84,8 @@ namespace SSCMS.Services
         Task<string> GetUploadDirectoryPathAsync(Site site, string fileExtension);
 
         Task<string> GetUploadDirectoryPathAsync(Site site, DateTime datetime, string fileExtension);
+
+        Task<List<FileInfo>> GetAllFilesOrderByCreationTimeDescAsync(Site site, UploadType uploadType);
 
         Task<string> GetUploadDirectoryPathAsync(Site site, UploadType uploadType);
 

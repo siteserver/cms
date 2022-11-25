@@ -52,14 +52,15 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   checkedLevels: null,
-  isCloudCensor: null,
-  censorSettings: null,
-  isCloudSpell: null,
-  spellSettings: null,
-  isCensorPassed: false,
-  isSpellPassed: false,
   linkTypes: null,
   root: null,
+  settings: {
+    censorSettings: {},
+    spellSettings: {},
+  },
+  isCensorPassed: false,
+  isSpellPassed: false,
+
   styles: null,
   relatedFields: null,
   templates: null,
@@ -99,10 +100,7 @@ var methods = {
         $this.checkedLevels = res.checkedLevels;
         $this.linkTypes = res.linkTypes;
         $this.root = [res.root];
-        $this.isCloudCensor = res.isCloudCensor;
-        $this.censorSettings = res.censorSettings;
-        $this.isCloudSpell = res.isCloudSpell;
-        $this.spellSettings = res.spellSettings;
+        $this.settings = res.settings;
 
         $this.styles = res.styles;
         $this.relatedFields = res.relatedFields;
@@ -235,11 +233,19 @@ var methods = {
     return text;
   },
 
+  isCensorButton: function () {
+    return this.settings.censorSettings.isCensorText && !this.settings.censorSettings.isCensorTextAuto;
+  },
+
+  isSpellButton: function () {
+    return this.settings.spellSettings.isSpellingCheck && !this.settings.spellSettings.isSpellingCheckAuto;
+  },
+
   apiCensor: function (callback) {
     var $this = this;
 
     utils.loading(this, true);
-    if (this.isCloudCensor) {
+    if (this.settings.isCloudCensor) {
       cloud
         .post($urlCloudCensor, {
           text: this.getText(),
@@ -280,7 +286,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    if (this.isCloudSpell) {
+    if (this.settings.isCloudSpell) {
       cloud
         .post($urlCloudSpell, {
           text: this.getText(),
@@ -396,14 +402,14 @@ var methods = {
   apiSave: function () {
     if (
       !this.isCensorPassed &&
-      this.censorSettings.isCensorText &&
-      this.censorSettings.isCensorTextAuto
+      this.settings.censorSettings.isCensorText &&
+      this.settings.censorSettings.isCensorTextAuto
     ) {
       this.btnCensorTextClick(true);
     } else if (
       !this.isSpellPassed &&
-      this.spellSettings.isSpellingCheck &&
-      this.spellSettings.isSpellingCheckAuto
+      this.settings.spellSettings.isSpellingCheck &&
+      this.settings.spellSettings.isSpellingCheckAuto
     ) {
       this.btnSpellingCheckClick(true);
     } else {
@@ -509,6 +515,38 @@ var methods = {
     utils.openTab(this.tabName);
   },
 
+  btnImageSelectClick: function(args) {
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'uploadedImages') {
+      this.btnLayerClick({
+        title: '选择已上传图片',
+        name: 'formLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
+    }
+  },
+
   btnLayerClick: function (options) {
     var query = {
       siteId: this.siteId,
@@ -566,9 +604,9 @@ var methods = {
       url: utils.getCmsUrl("editorLayerCensor", {
         siteId: this.siteId,
         channelId: this.channelId,
-        isCloudCensor: this.isCloudCensor,
-        isCensorTextIgnore: this.censorSettings.isCensorTextIgnore,
-        isCensorTextWhiteList: this.censorSettings.isCensorTextWhiteList,
+        isCloudCensor: this.settings.isCloudCensor,
+        isCensorTextIgnore: this.settings.censorSettings.isCensorTextIgnore,
+        isCensorTextWhiteList: this.settings.censorSettings.isCensorTextWhiteList,
         isSave: isSave,
       }),
     });
@@ -583,9 +621,9 @@ var methods = {
       url: utils.getCmsUrl("editorLayerSpell", {
         siteId: this.siteId,
         channelId: this.channelId,
-        isCloudSpell: this.isCloudSpell,
-        isSpellingCheckIgnore: this.spellSettings.isSpellingCheckIgnore,
-        isSpellingCheckWhiteList: this.spellSettings.isSpellingCheckWhiteList,
+        isCloudSpell: this.settings.isCloudSpell,
+        isSpellingCheckIgnore: this.settings.spellSettings.isSpellingCheckIgnore,
+        isSpellingCheckWhiteList: this.settings.spellSettings.isSpellingCheckWhiteList,
         isSave: isSave,
       }),
     });

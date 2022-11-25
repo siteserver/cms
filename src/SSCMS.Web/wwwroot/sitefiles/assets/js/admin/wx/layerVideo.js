@@ -6,11 +6,11 @@ var data = utils.init({
   groups: null,
   count: null,
   videos: null,
-  
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
-    groupId: -utils.getQueryInt("siteId"),
+    groupId: 0,
     page: 1,
     perPage: 24
   }
