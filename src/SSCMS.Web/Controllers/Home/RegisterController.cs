@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Home
         private const string RouteVerifyMobile = "register/actions/verifyMobile";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly ICloudManager _cloudManager;
         private readonly ISmsManager _smsManager;
         private readonly ICacheManager _cacheManager;
         private readonly IConfigRepository _configRepository;
@@ -28,9 +29,10 @@ namespace SSCMS.Web.Controllers.Home
         private readonly IUserGroupRepository _userGroupRepository;
         private readonly IStatRepository _statRepository;
 
-        public RegisterController(ISettingsManager settingsManager, ISmsManager smsManager, ICacheManager cacheManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, IStatRepository statRepository)
+        public RegisterController(ISettingsManager settingsManager, ICloudManager cloudManager, ISmsManager smsManager, ICacheManager cacheManager, IConfigRepository configRepository, ITableStyleRepository tableStyleRepository, IUserRepository userRepository, IUserGroupRepository userGroupRepository, IStatRepository statRepository)
         {
             _settingsManager = settingsManager;
+            _cloudManager = cloudManager;
             _smsManager = smsManager;
             _cacheManager = cacheManager;
             _configRepository = configRepository;
@@ -38,6 +40,11 @@ namespace SSCMS.Web.Controllers.Home
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
             _statRepository = statRepository;
+        }
+
+        public class Settings
+        {
+            public bool IsCloudImages { get; set; }
         }
 
         public class GetResult
@@ -51,6 +58,7 @@ namespace SSCMS.Web.Controllers.Home
             public string HomeAgreementHtml { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
             public IEnumerable<UserGroup> Groups { get; set; }
+            public Settings Settings { get; set; }
         }
 
         public class CheckRequest

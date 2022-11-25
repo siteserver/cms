@@ -1,9 +1,11 @@
 ﻿var $url = '/common/editor/layerVideo';
+var $urlCloud = 'cms/vod';
 
 var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   rootUrl: null,
   siteUrl: null,
+  isCloudVod: false,
   form: {
     siteId: utils.getQueryInt('siteId'),
     type: 'upload',
@@ -18,7 +20,13 @@ var data = utils.init({
     isLinkToOriginal: true,
   },
   uploadVideoUrl: null,
-  uploadImageUrl: null
+  uploadImageUrl: null,
+
+  cloudUploadToken: null,
+  cloudUploadUrl: null,
+  cloudUploadErrorMessage: null,
+  cloudUploadProgressPercent: null,
+  cloudUploadProgressInterval: null,
 });
 
 var methods = {
@@ -35,6 +43,7 @@ var methods = {
 
       $this.rootUrl = res.rootUrl;
       $this.siteUrl = res.siteUrl;
+      $this.isCloudVod = res.isCloudVod;
     })
     .catch(function(error) {
       utils.error(error);
@@ -118,7 +127,56 @@ var methods = {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
     utils.error(error.message);
-  }
+  },
+
+  cloudUploadBefore: function(file) {
+    this.cloudUploadErrorMessage = '';
+    var re = /(\.3gp|\.asf|\.avi|\.dat|\.dv|\.flv|\.f4v|\.gif|\.m2t|\.m4v|\.mj2|\.mjpeg|\.mkv|\.mov|\.mp4|\.mpe|\.mpg|\.mpeg|\.mts|\.ogg|\.qt|\.rm|\.rmvb|\.swf|\.ts|\.vob|\.wmv|\.webm)$/i;
+    if(!re.exec(file.name))
+    {
+      this.cloudUploadErrorMessage = '请选择有效的文件上传!';
+      return false;
+    }
+    return true;
+  },
+
+  cloudUploadRequest: function(data) {
+    var $this = this;
+    var formData = new FormData()
+    formData.append('file', data.file)
+    var config = {
+      onUploadProgress: function(progressEvent) {
+        $this.cloudUploadProgressPercent = Number((progressEvent.loaded / progressEvent.total * 30).toFixed(2));
+        if (progressEvent.loaded === progressEvent.total) {
+          $this.cloudUploadProgressInterval = setInterval(function() {
+            $this.cloudUploadProgressPercent += 1;
+            if ($this.cloudUploadProgressPercent === 99) {
+              clearInterval($this.cloudUploadProgressInterval);
+            }
+          }, 1000);
+        }
+      }
+    };
+    cloud
+      .post(this.cloudUploadUrl, formData, config)
+      .then(function (response) {
+        var res = response.data;
+
+        $this.form.videoUrl = res.playUrl;
+        if (res.coverUrl) {
+          $this.form.isPoster = true;
+          $this.form.imageUrl = res.coverUrl;
+        }
+        $this.form.type = 'url';
+      })
+      .catch(function (error) {
+        $this.cloudUploadProgressPercent = null;
+        $this.cloudUploadErrorMessage = utils.getErrorMessage(error);
+      })
+      .then(function () {
+        clearInterval($this.cloudUploadProgressInterval);
+      });
+  },
 };
 
 var $vue = new Vue({
@@ -129,6 +187,8 @@ var $vue = new Vue({
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.uploadVideoUrl = $apiUrl + $url + '/actions/uploadVideo?siteId=' + this.form.siteId;
     this.uploadImageUrl = $apiUrl + $url + '/actions/uploadImage?siteId=' + this.form.siteId;
+    this.cloudUploadToken = $cloudToken;
+    this.cloudUploadUrl = cloud.defaults.baseURL + '/' + $urlCloud;
     this.apiGet();
   }
 });

@@ -114,6 +114,11 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, false);
 
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
             return new GetResult
             {
                 Unauthorized = false,
@@ -125,7 +130,8 @@ namespace SSCMS.Web.Controllers.Home.Write
                 Styles = styles,
                 RelatedFields = relatedFields,
                 CheckedLevels = checkedLevels,
-                SiteUrl = siteUrl
+                SiteUrl = siteUrl,
+                Settings = settings
             };
         }
     }

@@ -13,21 +13,38 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] int siteId, [FromForm] IFormFile file)
         {
-            var siteIds = await _authManager.GetSiteIdsAsync();
-            if (!ListUtils.Contains(siteIds, siteId)) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(siteId);
-
             if (file == null)
             {
                 return this.Error(Constants.ErrorUpload);
             }
 
-            var fileName = PathUtils.GetFileName(file.FileName);
-            var (success, filePath, errorMessage) = await _pathManager.UploadImageAsync(site, file);
-            if (!success)
+            var fileName = string.Empty;
+            var filePath = string.Empty;
+
+            if (siteId > 0)
             {
-                return this.Error(errorMessage);
+                var siteIds = await _authManager.GetSiteIdsAsync();
+                if (!ListUtils.Contains(siteIds, siteId)) return Unauthorized();
+
+                var site = await _siteRepository.GetAsync(siteId);
+
+                fileName = PathUtils.GetFileName(file.FileName);
+                (var success, filePath, var errorMessage) = await _pathManager.UploadImageAsync(site, file);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
+            }
+            else
+            {
+                fileName = _pathManager.GetUploadFileName(file.FileName);
+                filePath = _pathManager.GetUserUploadPath(_authManager.UserId, fileName);
+                if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+                {
+                    return this.Error(Constants.ErrorImageExtensionAllowed);
+                }
+
+                await _pathManager.UploadAsync(file, filePath);
             }
 
             return new UploadResult

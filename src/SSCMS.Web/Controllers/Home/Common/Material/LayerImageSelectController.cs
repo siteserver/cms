@@ -8,11 +8,11 @@ using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Material
+namespace SSCMS.Web.Controllers.Home.Common.Material
 {
     [OpenApiIgnore]
-    [Authorize(Roles = Types.Roles.Administrator)]
-    [Route(Constants.ApiAdminPrefix)]
+    [Authorize(Roles = Types.Roles.User)]
+    [Route(Constants.ApiHomePrefix)]
     public partial class LayerImageSelectController : ControllerBase
     {
         private const string Route = "common/material/layerImageSelect";

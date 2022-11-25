@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
-namespace SSCMS.Web.Controllers.Admin.Common.Material
+namespace SSCMS.Web.Controllers.Home.Common.Material
 {
     public partial class LayerImageSelectController
     {

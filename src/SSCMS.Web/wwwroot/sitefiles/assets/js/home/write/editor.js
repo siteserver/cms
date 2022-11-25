@@ -44,6 +44,7 @@ var data = utils.init({
   channelOptions: null,
   styles: null,
   relatedFields: null,
+  settings: null,
   form: null,
   isPreviewSaving: false
 });
@@ -83,6 +84,7 @@ var methods = {
 
       $this.styles = res.styles;
       $this.relatedFields = res.relatedFields;
+      $this.settings = res.settings;
       $this.form = _.assign({}, res.content);
 
       if (!$this.form.addDate) {
@@ -291,6 +293,38 @@ var methods = {
     this.mainHeight = ($(window).height() - 70) + 'px';
   },
 
+  btnImageSelectClick: function(args) {
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'uploadedImages') {
+      this.btnLayerClick({
+        title: '选择已上传图片',
+        name: 'formLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
+    }
+  },
+
   btnLayerClick: function(options) {
     var query = {
       siteId: this.siteId,
@@ -307,13 +341,16 @@ var methods = {
       query.no = options.no;
     }
 
-    utils.openLayer({
+    var args = {
       title: options.title,
       url: utils.getCommonUrl(options.name, query),
-      full: options.full,
-      width: options.width ? options.width : 700,
-      height: options.height ? options.height : 500
-    });
+    };
+    if (!options.full) {
+      args.width = options.width ? options.width : 700;
+      args.height = options.height ? options.height : 500;
+    }
+
+    utils.openLayer(args);
   },
 
   btnSaveClick: function() {

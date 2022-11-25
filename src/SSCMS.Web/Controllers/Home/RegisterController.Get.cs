@@ -28,6 +28,11 @@ namespace SSCMS.Web.Controllers.Home
                 isUserVerifyMobile = true;
             }
 
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
             return new GetResult
             {
                 IsSmsEnabled = isSmsEnabled,
@@ -38,7 +43,8 @@ namespace SSCMS.Web.Controllers.Home
                 IsHomeAgreement = config.IsHomeAgreement,
                 HomeAgreementHtml = config.HomeAgreementHtml,
                 Styles = styles,
-                Groups = await _userGroupRepository.GetUserGroupsAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync(),
+                Settings = settings
             };
         }
     }

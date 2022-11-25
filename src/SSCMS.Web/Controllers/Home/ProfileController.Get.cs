@@ -1,7 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home
@@ -15,8 +18,37 @@ namespace SSCMS.Web.Controllers.Home
             if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
 
             var user = await _authManager.GetUserAsync();
+            var entity = new Entity();
             var userStyles = await _tableStyleRepository.GetUserStylesAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
+
+            foreach (var style in styles)
+            {
+                if (style.InputType == InputType.Image ||
+                    style.InputType == InputType.Video ||
+                    style.InputType == InputType.File)
+                {
+                    var count = user.Get(ColumnsManager.GetCountName(style.AttributeName),
+                        0);
+                    entity.Set(ColumnsManager.GetCountName(style.AttributeName), count);
+                    for (var n = 0; n <= count; n++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(style.AttributeName, n);
+                        entity.Set(extendName, user.Get(extendName));
+                    }
+                }
+                else if (style.InputType == InputType.CheckBox ||
+                         style.InputType == InputType.SelectMultiple)
+                {
+                    var list = ListUtils.GetStringList(user.Get(style.AttributeName,
+                        string.Empty));
+                    entity.Set(style.AttributeName, list);
+                }
+                else
+                {
+                    entity.Set(style.AttributeName, user.Get(style.AttributeName));
+                }
+            }
 
             var isUserVerifyMobile = false;
             var smsSettings = await _smsManager.GetSmsSettingsAsync();
@@ -26,12 +58,18 @@ namespace SSCMS.Web.Controllers.Home
                 isUserVerifyMobile = true;
             }
 
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
             return new GetResult
             {
                 IsSmsEnabled = isSmsEnabled,
                 IsUserVerifyMobile = isUserVerifyMobile,
-                User = user,
-                Styles = styles
+                Entity = entity,
+                Styles = styles,
+                Settings = settings
             };
         }
     }

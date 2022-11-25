@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
+using SSCMS.Services;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.Editor
@@ -16,10 +17,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var rootUrl = _pathManager.GetRootUrl();
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
 
+            var vodSettings = await _vodManager.GetVodSettingsAsync();
+            var isCloudVod = _vodManager is ICloudManager && vodSettings.IsVod;
+
             return new GetResult
             {
                 RootUrl = rootUrl,
-                SiteUrl = siteUrl
+                SiteUrl = siteUrl,
+                IsCloudVod = isCloudVod
             };
         }
     }

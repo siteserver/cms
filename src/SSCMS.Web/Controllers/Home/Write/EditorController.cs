@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         private const string RoutePreview = "write/editor/actions/preview";
 
         private readonly IAuthManager _authManager;
+        private readonly ICloudManager _cloudManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
@@ -33,9 +34,10 @@ namespace SSCMS.Web.Controllers.Home.Write
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public EditorController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IContentCheckRepository contentCheckRepository)
+        public EditorController(IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
+            _cloudManager = cloudManager;
             _createManager = createManager;
             _pathManager = pathManager;
             _databaseManager = databaseManager;
@@ -55,6 +57,11 @@ namespace SSCMS.Web.Controllers.Home.Write
             public int ContentId { get; set; }
         }
 
+        public class Settings
+        {
+            public bool IsCloudImages { get; set; }
+        }
+
         public class GetResult
         {
             public bool Unauthorized { get; set; }
@@ -67,6 +74,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             public Dictionary<int, List<Cascade<int>>> RelatedFields { get; set; }
             public List<Select<int>> CheckedLevels { get; set; }
             public string SiteUrl { get; set; }
+            public Settings Settings { get; set; }
         }
 
         public class PreviewRequest

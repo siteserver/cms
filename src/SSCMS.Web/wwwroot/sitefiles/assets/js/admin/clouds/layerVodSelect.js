@@ -1,6 +1,7 @@
 ﻿var $urlCloud = 'cms/vod';
 
 var data = utils.init({
+  inputType: utils.getQueryString('inputType'),
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
 
@@ -16,8 +17,12 @@ var data = utils.init({
 
 var methods = {
   insert: function(vod) {
-    if (parent.$vue.runFormLayerVideoUpload) {
-      parent.$vue.runFormLayerVideoUpload(this.attributeName, this.no, vod.playUrl, vod.coverUrl);
+    if (this.inputType === 'Image') {
+      if (parent.$vue.runFormLayerVideoUpload) {
+        parent.$vue.runFormLayerVideoUpload(this.attributeName, this.no, vod.playUrl, vod.coverUrl);
+      }
+    } else if (this.inputType === 'TextEditor') {
+      parent.$vue.insertEditor(this.attributeName, '<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px" imageUrl="' + vod.coverUrl + '"' + ' playUrl="' + vod.playUrl + '" class="siteserver-stl-player" /><br/>');
     }
   },
 

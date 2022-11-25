@@ -7,6 +7,11 @@
       width: 100% !important;
       min-height: 300px;
     }
+    .el-upload-dragger {
+      height: 240px;
+      padding: 20px;
+      line-height: 22px;
+    }
   </style>
 }
 
@@ -20,30 +25,57 @@
     </el-radio-group>
   </el-form-item>
   <el-form-item v-if="form.type === 'upload'">
-    <el-upload
-      drag
-      :action="uploadVideoUrl"
-      :auto-upload="true"
-      :headers="{Authorization: 'Bearer ' + $token}"
-      :show-file-list="false"
-      :before-upload="uploadVideoBefore"
-      :on-progress="uploadProgress"
-      :on-success="uploadVideoSuccess"
-      :on-error="uploadError"
-      :multiple="false">
-      <i class="el-icon-upload"></i>
-      <div class="el-upload__text">
-        将视频文件拖到此处或点击上传，支持主流
-        <el-popover
-          placement="bottom"
-          title="视频格式"
-          width="200"
-          trigger="hover"
-          content="mp4、flv、f4v、webm、m4v、mov、3gp、3g2">
-          <em slot="reference">视频格式</em>
-        </el-popover>
-      </div>
-    </el-upload>
+
+    <template v-if="isCloudVod">
+      <el-alert type="error" v-if="cloudUploadErrorMessage" :title="cloudUploadErrorMessage"></el-alert>
+      <el-form style="margin: 20px 10px;" label-position="top">
+        <el-form-item>
+          <el-upload :disabled="cloudUploadProgressPercent" :drag="true" :action="cloudUploadUrl" :auto-upload="true"
+            :headers="{ Authorization: 'Bearer ' + cloudUploadToken }" :show-file-list="false" :before-upload="cloudUploadBefore" :http-request="cloudUploadRequest" :multiple="false">
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">
+              <strong>
+                将文件拖到此处，或
+                <em>点击上传</em>
+              </strong>
+            </div>
+            <div class="el-upload__tip">
+              支持3GP、ASF、AVI、DAT、DV、FLV、F4V、GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、SWF、TS、VOB、WMV、WEBM
+              等视频格式上传
+            </div>
+          </el-upload>
+          <el-progress v-if="cloudUploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="cloudUploadProgressPercent"></el-progress>
+        </el-form-item>
+      </el-form>
+    </template>
+
+    <template v-else>
+      <el-upload
+        drag
+        :action="uploadVideoUrl"
+        :auto-upload="true"
+        :headers="{Authorization: 'Bearer ' + $token}"
+        :show-file-list="false"
+        :before-upload="uploadVideoBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadVideoSuccess"
+        :on-error="uploadError"
+        :multiple="false">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">
+          将视频文件拖到此处或点击上传，支持主流
+          <el-popover
+            placement="bottom"
+            title="视频格式"
+            width="200"
+            trigger="hover"
+            content="mp4、flv、f4v、webm、m4v、mov、3gp、3g2">
+            <em slot="reference">视频格式</em>
+          </el-popover>
+        </div>
+      </el-upload>
+    </template>
+
   </el-form-item>
   <el-form-item v-if="form.type === 'url'" label="视频地址" prop="videoUrl" :rules="{ required: true, message: '请输入视频地址' }">
     <el-input v-model="form.videoUrl"></el-input>

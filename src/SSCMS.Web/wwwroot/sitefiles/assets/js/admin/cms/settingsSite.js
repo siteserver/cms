@@ -12,48 +12,6 @@ var data = utils.init({
 });
 
 var methods = {
-  apiGet: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.siteId
-      }
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.siteUrl = res.siteUrl;
-      $this.styles = res.styles;
-      $this.relatedFields = res.relatedFields;
-      $this.form = res.entity;
-      $this.settings = res.settings;
-
-      $this.loadEditor(res);
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiSubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, _.assign({
-      siteId: this.siteId
-    }, this.form)).then(function (response) {
-      var res = response.data;
-
-      utils.success('站点设置保存成功！');
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
   runFormLayerImageUploadText: function(attributeName, no, text) {
     this.insertText(attributeName, no, text);
   },
@@ -99,6 +57,48 @@ var methods = {
     if (!attributeName) attributeName = 'Body';
     if (!html) return;
     utils.getEditor(attributeName).execCommand('insertHTML', html);
+  },
+
+  apiGet: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.siteId
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.siteUrl = res.siteUrl;
+      $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
+      $this.form = res.entity;
+      $this.settings = res.settings;
+
+      $this.loadEditor(res);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, _.assign({
+      siteId: this.siteId
+    }, this.form)).then(function (response) {
+      var res = response.data;
+
+      utils.success('站点设置保存成功！');
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnImageSelectClick: function(args) {

@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private const string RouteUploadImage = "common/editor/layerVideo/actions/uploadImage";
 
         private readonly IPathManager _pathManager;
+
         private readonly IVodManager _vodManager;
         private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
@@ -33,6 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         {
             public string RootUrl { get; set; }
             public string SiteUrl { get; set; }
+            public bool IsCloudVod { get; set; }
         }
 
         public class UploadResult
