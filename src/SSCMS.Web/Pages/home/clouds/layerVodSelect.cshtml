@@ -1,0 +1,172 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    .el-dropdown-link {
+      cursor: pointer;
+      color: #409EFF;
+    }
+    .el-icon-arrow-down {
+      font-size: 12px;
+    }
+    .el-icon-picture-outline {
+      font-size: 22px;
+      margin: 80px 0;
+      color: #c0c4cc;
+    }
+    .mod-component-video-item .video-image {
+      background: #d5d5d5;
+      background-size: 60px;
+      cursor: pointer;
+      display: inline-block;
+      float: left;
+      height: 68px;
+      position: relative;
+      width: 120px;
+    }
+  
+    .mod-component-video-item .video-image .video-image-background {
+      background-position: 50%;
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 100%;
+      width: 100%;
+    }
+  
+    .mod-component-video-item .video-image .video-image-play {
+      color: #fff;
+      left: 47px;
+      opacity: .4;
+      position: absolute;
+      top: 22px;
+      z-index: 3;
+    }
+  
+    .next-icon {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      display: inline-block;
+      font-size: 25px;
+      font-style: normal;
+      font-weight: 400;
+      text-transform: none;
+    }
+  
+    .mod-component-video-item .video-image .video-image-time {
+      background-image: linear-gradient(-180deg, transparent, rgba(0, 0, 0, .8));
+      bottom: 0;
+      color: #fff;
+      height: 24px;
+      line-height: 24px;
+      padding: 0 3px;
+      position: absolute;
+      right: 0;
+      text-align: right;
+      width: 100%;
+      z-index: 2;
+      font-size: 12px;
+    }
+  
+    .mod-component-video-item .video-info {
+      display: block;
+      padding-left: 120px;
+    }
+  
+    .mod-component-video-item .video-info dl {
+      margin: 0;
+    }
+  
+    .mod-component-video-item .video-info dl dd {
+      color: #606266;
+      font-family: PingFangSC-Regular;
+      line-height: 17px;
+      margin-left: 8px;
+    }
+  
+    .mod-component-video-item .video-info .video-info-title {
+      color: #4a4a4a;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+}
+
+<div style="height: 10px"></div>
+<el-row :gutter="20">
+  <el-col :span="20">
+    <el-form :inline="true" size="small" :model="formInline">
+      <el-form-item label="关键字">
+        <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+      </el-form-item>
+    </el-form>
+  </el-col>
+</el-row>
+
+<el-table :data="videos" style="width: 100%">
+  <el-table-column label="云视频">
+    <template #default="scope">
+      <div class="mod-component-video-item">
+        <a href="javascript:;" v-on:click="btnViewClick(scope.row)" class="video-image">
+          <div class="video-image-background" :style="{backgroundImage: 'url(' + scope.row.coverUrl + ')' }">
+          </div>
+          <div class="video-image-cover"></div>
+          <div class="video-image-play"><i class="next-icon el-icon-video-play"></i></div>
+          <div class="video-image-time">
+            {{ getDuration(scope.row) }}
+          </div>
+        </a>
+        <div class="video-info">
+          <dl>
+            <dd class="video-info-title">
+              视频标题：
+              {{ scope.row.title }}
+            </dd>
+            <dd>
+              视频地址：
+              {{ scope.row.playUrl }}
+            </dd>
+            <dd>
+              封面图片：
+              {{ scope.row.coverUrl }}
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </template>
+  </el-table-column>
+  <el-table-column label="创建时间" width="150">
+    <template #default="scope">
+      {{ scope.row.createdDate }}
+    </template>
+  </el-table-column>
+  <el-table-column label="大小" width="120">
+    <template #default="scope">
+      {{ getSize(scope.row) }} MB
+    </template>
+  </el-table-column>
+  <el-table-column label="时长" width="120">
+    <template #default="scope">
+      {{ getDuration(scope.row) }}
+    </template>
+  </el-table-column>
+  <el-table-column label="操作" align="center" width="180">
+    <template #default="scope">
+      <el-link type="primary" :underline="false" style="margin-right: 5px"
+        v-on:click.prevent="btnSelectClick(scope.row)">选择视频</el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<div style="text-align: center; margin-top: 10px">
+  <el-pagination v-on:current-change="handleCurrentChange" :current-page="formInline.currentPage"
+    :page-size="formInline.limit" layout="total, prev, pager, next, jumper" :total="count"></el-pagination>
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/clouds/layerVodSelect.js" type="text/javascript"></script>
+}

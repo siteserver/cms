@@ -242,8 +242,11 @@ var methods = {
     this.insertText(attributeName, no, text);
   },
 
-  runFormLayerVideoUpload: function(attributeName, no, text) {
+  runFormLayerVideoUpload: function(attributeName, no, text, coverUrl) {
     this.insertText(attributeName, no, text);
+    if (coverUrl) {
+      this.runFormLayerImageUploadText("ImageUrl", no, coverUrl);
+    }
   },
 
   runMaterialLayerVideoSelect: function(attributeName, no, text) {
@@ -294,6 +297,7 @@ var methods = {
   },
 
   btnImageSelectClick: function(args) {
+    var inputType = args.inputType;
     var attributeName = args.attributeName;
     var no = args.no;
     var type = args.type;
@@ -302,6 +306,7 @@ var methods = {
       this.btnLayerClick({
         title: '选择已上传图片',
         name: 'formLayerImageSelect',
+        inputType: inputType,
         attributeName: attributeName,
         no: no,
         full: true
@@ -310,6 +315,7 @@ var methods = {
       this.btnLayerClick({
         title: '选择素材库图片',
         name: 'materialLayerImageSelect',
+        inputType: inputType,
         attributeName: attributeName,
         no: no,
         full: true
@@ -318,6 +324,7 @@ var methods = {
       utils.openLayer({
         title: '选择免版权图库',
         url: utils.getCloudsUrl('layerImagesSelect', {
+          inputType: inputType,
           attributeName: args.attributeName,
           no: args.no,
         }),
@@ -328,11 +335,15 @@ var methods = {
   btnLayerClick: function(options) {
     var query = {
       siteId: this.siteId,
-      channelId: this.channelId
+      channelId: this.channelId,
+      editorAttributeName: "Body",
     };
 
     if (options.attributeName) {
       query.attributeName = options.attributeName;
+    }
+    if (options.inputType) {
+      query.inputType = options.inputType;
     }
     if (options.contentId) {
       query.contentId = options.contentId;
