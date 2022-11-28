@@ -245,7 +245,7 @@ var methods = {
       });
   },
 
-  getText: function (isCensor) {
+  getText: function (isCensor, isSpell) {
     var text = "";
     for (var i = 0; i < this.styles.length; i++) {
       var style = this.styles[i];
@@ -268,7 +268,8 @@ var methods = {
       for (var word of this.censorSettings.whiteListWords) {
         replaceWords.push(word);
       }
-    } else {
+    }
+    if (isSpell) {
       for (var word of this.spellSettings.ignoreWords) {
         replaceWords.push(word);
       }
@@ -426,7 +427,7 @@ var methods = {
     if (this.censorSettings.isCloudCensor) {
       cloud
         .post($urlCloudCensor, {
-          text: this.getText(true),
+          text: this.getText(true, false),
         })
         .then(function (response) {
           var res = response.data;
@@ -441,7 +442,7 @@ var methods = {
           $this.parseText(res);
 
           if (isSave && !$this.censorResults.isBadWords) {
-            $this.censorResults.isCensorPassed = true;
+            $this.censorSettings.isCensorPassed = true;
             $this.apiSave();
           }
         })
@@ -457,7 +458,7 @@ var methods = {
         .csrfPost(this.csrfToken, $urlCensor, {
           siteId: this.siteId,
           channelId: this.channelId,
-          text: this.getText(true),
+          text: this.getText(true, false),
         })
         .then(function (response) {
           var res = response.data;
@@ -472,7 +473,7 @@ var methods = {
           $this.parseText(res);
 
           if (isSave && !$this.censorResults.isBadWords) {
-            $this.censorResults.isCensorPassed = true;
+            $this.censorSettings.isCensorPassed = true;
             $this.apiSave();
           }
         })
@@ -533,7 +534,7 @@ var methods = {
     if (this.spellSettings.isCloudSpell) {
       cloud
         .post($urlCloudSpell, {
-          text: this.getText(true),
+          text: this.getText(false, true),
         })
         .then(function (response) {
           var res = response.data;
@@ -542,7 +543,7 @@ var methods = {
           $this.parseText(res);
 
           if (isSave && !$this.spellResults.isErrorWords) {
-            $this.spellResults.isSpellPassed = true;
+            $this.spellSettings.isSpellPassed = true;
             $this.apiSave();
           }
         })
@@ -558,7 +559,7 @@ var methods = {
         .csrfPost(this.csrfToken, $urlSpell, {
           siteId: this.siteId,
           channelId: this.channelId,
-          text: this.getText(true),
+          text: this.getText(false, true),
         })
         .then(function (response) {
           var res = response.data;
@@ -567,7 +568,7 @@ var methods = {
           $this.parseText(res);
 
           if (isSave && !$this.spellResults.isErrorWords) {
-            $this.spellResults.isSpellPassed = true;
+            $this.spellSettings.isSpellPassed = true;
             $this.apiSave();
           }
         })
@@ -588,7 +589,7 @@ var methods = {
     if (this.settings.isCloudSpell) {
       cloud
         .post($urlCloudSpell, {
-          text: this.getText(false),
+          text: this.getText(false, true),
         })
         .then(function (response) {
           var res = response.data;
@@ -606,7 +607,7 @@ var methods = {
         .csrfPost(this.csrfToken, $urlSpell, {
           siteId: this.siteId,
           channelId: this.channelId,
-          text: this.getText(false),
+          text: this.getText(false, true),
         })
         .then(function (response) {
           var res = response.data;
@@ -893,7 +894,7 @@ var methods = {
     this.syncEditors();
     this.$refs.form.validate(function (valid) {
       if (valid) {
-        $this.censorSettings.isCensorPassed = this.spellSettings.isSpellPassed = false;
+        $this.censorSettings.isCensorPassed = $this.spellSettings.isSpellPassed = false;
         $this.apiSave();
       } else {
         utils.error("保存失败，请检查表单值是否正确");
