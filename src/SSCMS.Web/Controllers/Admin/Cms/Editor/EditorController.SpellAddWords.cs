@@ -6,10 +6,10 @@ using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
-    public partial class EditorLayerCensorController
+    public partial class EditorController
     {
-        [HttpPost, Route(RouteAddWords)]
-        public async Task<ActionResult<BoolResult>> AddWords([FromBody] AddWordsRequest request)
+        [HttpPost, Route(RouteSpellAddWords)]
+        public async Task<ActionResult<BoolResult>> SpellAddWords([FromBody] SpellAddWordsRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             if (!string.IsNullOrEmpty(request.Word))
             {
-                var (success, errorMessage) = await _censorManager.AddCensorWhiteListAsync(request.Word);
+                var (success, errorMessage) = await _spellManager.AddSpellWhiteListAsync(request.Word);
                 if (!success)
                 {
                     return this.Error(errorMessage);

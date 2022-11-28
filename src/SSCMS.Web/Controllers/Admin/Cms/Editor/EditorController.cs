@@ -21,7 +21,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private const string RouteUpdate = "cms/editor/actions/update";
         private const string RoutePreview = "cms/editor/actions/preview";
         private const string RouteCensor = "cms/editor/actions/censor";
+        private const string RouteCensorAddWords = "cms/editor/actions/censorAddWords";
         private const string RouteSpell = "cms/editor/actions/spell";
+        private const string RouteSpellAddWords = "cms/editor/actions/spellAddWords";
         private const string RouteTags = "cms/editor/actions/tags";
 
         private readonly ISettingsManager _settingsManager;
@@ -152,6 +154,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         public class TagsResult
         {
             public List<string> Tags { get; set; }
+        }
+
+        public class CensorAddWordsRequest : ChannelRequest
+        {
+            public string Word { get; set; }
+        }
+
+        public class SpellAddWordsRequest : ChannelRequest
+        {
+            public string Word { get; set; }
         }
     }
 }

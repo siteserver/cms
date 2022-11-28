@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
-using SSCMS.Configuration;
 using SSCMS.Utils;
 using System;
 using SSCMS.Dto;

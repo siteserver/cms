@@ -106,7 +106,6 @@ div.edui-box {
 .edui-default span.edui-clickable {
     color: blue;
     cursor: pointer;
-    text-decoration: underline;
 }
 
 .edui-default span.edui-unclickable {

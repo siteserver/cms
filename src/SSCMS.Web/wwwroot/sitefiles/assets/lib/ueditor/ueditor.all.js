@@ -11896,6 +11896,138 @@ UE.plugins['link'] = function(){
         }
     }
 
+    // sscms codes
+    UE.commands['censor_delete'] = {
+      execCommand : function() {
+          var range = this.selection.getRange();
+          if(range.collapsed && !domUtils.findParentByTagName( range.startContainer, 'a', true )){
+              return;
+          }
+          optimize( range );
+
+          var start = range.startContainer;
+          start = start.childNodes[range.startOffset];
+          var original = start.getAttribute('_censor_original');
+          $vue.parse('censor_delete', original);
+      },
+      queryCommandState : function(){
+          return !this.highlight && this.queryCommandValue('link') ?  0 : -1;
+      }
+    };
+
+    // sscms codes
+    UE.commands['censor_whitelist'] = {
+      execCommand : function() {
+          var range = this.selection.getRange();
+          if(range.collapsed && !domUtils.findParentByTagName( range.startContainer, 'a', true )){
+              return;
+          }
+          optimize( range );
+
+          var start = range.startContainer;
+          start = start.childNodes[range.startOffset];
+          var original = start.getAttribute('_censor_original');
+
+          window.utils.alertDelete({
+            title: '将违规词“' + original + '”加入白名单',
+            text: '添加白名单后系统将自动忽略白名单内的违规词，是否添加？',
+            button: '加入白名单',
+            callback: function() {
+              $vue.apiCloudCensorAddWords(original);
+            }
+          });
+      },
+      queryCommandState : function(){
+          return !this.highlight && this.queryCommandValue('link') ?  0 : -1;
+      }
+    };
+
+    // sscms codes
+    UE.commands['censor_ignore'] = {
+      execCommand : function() {
+          var range = this.selection.getRange();
+          if(range.collapsed && !domUtils.findParentByTagName( range.startContainer, 'a', true )){
+              return;
+          }
+          optimize( range );
+
+          var start = range.startContainer;
+          start = start.childNodes[range.startOffset];
+          var original = start.getAttribute('_censor_original');
+          $vue.parse('censor_ignore', original);
+          // start[browser.ie ? 'innerText' : 'textContent'] = utils.html(original);
+          // range.removeInlineStyle( 'a' ).select();
+      },
+      queryCommandState : function(){
+          return !this.highlight && this.queryCommandValue('link') ?  0 : -1;
+      }
+    };
+
+    // sscms codes
+    UE.commands['spell_replace'] = {
+      execCommand : function() {
+          var range = this.selection.getRange();
+          if(range.collapsed && !domUtils.findParentByTagName( range.startContainer, 'a', true )){
+              return;
+          }
+          optimize( range );
+
+          var start = range.startContainer;
+          start = start.childNodes[range.startOffset];
+          var original = start.getAttribute('_spell_original');
+          var correct = start.getAttribute('_spell_correct');
+          $vue.parse('spell_replace', original, correct);
+      },
+      queryCommandState : function(){
+          return !this.highlight && this.queryCommandValue('link') ?  0 : -1;
+      }
+    };
+
+    // sscms codes
+    UE.commands['spell_whitelist'] = {
+      execCommand : function() {
+          var range = this.selection.getRange();
+          if(range.collapsed && !domUtils.findParentByTagName( range.startContainer, 'a', true )){
+              return;
+          }
+          optimize( range );
+
+          var start = range.startContainer;
+          start = start.childNodes[range.startOffset];
+          var original = start.getAttribute('_spell_original');
+
+          window.utils.alertDelete({
+            title: "将错别字“" + original + "”加入白名单",
+            text: "添加白名单后系统将自动忽略白名单内的错别字，是否添加？",
+            button: "加入白名单",
+            callback: function () {
+              $vue.apiCloudSpellAddWords(original);
+            },
+          });
+      },
+      queryCommandState : function(){
+          return !this.highlight && this.queryCommandValue('link') ?  0 : -1;
+      }
+    };
+
+    // sscms codes
+    UE.commands['spell_ignore'] = {
+      execCommand : function() {
+          var range = this.selection.getRange();
+          if(range.collapsed && !domUtils.findParentByTagName( range.startContainer, 'a', true )){
+              return;
+          }
+          optimize( range );
+
+          var start = range.startContainer;
+          start = start.childNodes[range.startOffset];
+          var original = start.getAttribute('_spell_original');
+          $vue.parse('spell_ignore', original);
+      },
+      queryCommandState : function(){
+          return !this.highlight && this.queryCommandValue('link') ?  0 : -1;
+      }
+    };
 
     UE.commands['unlink'] = {
         execCommand : function() {
@@ -28774,7 +28906,6 @@ UE.ui = baidu.editor.ui = {};
                 _onImgSetFloat:function (value) {
                     this.hide();
                     editor.execCommand("imagefloat", value);
-
                 },
                 _setIframeAlign:function (value) {
                     var frame = popup.anchorEl;
@@ -28889,7 +29020,30 @@ UE.ui = baidu.editor.ui = {};
                     if (editor.ui._dialogs.linkDialog) {
                         var link = editor.queryCommandValue('link');
                         var url;
-                        if (link && (url = (link.getAttribute('_href') || link.getAttribute('href', 2)))) {
+                        // sscms codes
+                        if (link && link.getAttribute('_censor')) {
+                          if (html) {
+                              html += '<div style="height:5px;"></div>'
+                          }
+                          html += popup.formatHtml(
+                            '<nobr>疑似违规：' +
+                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_delete\');">删除</span>' +
+                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_whitelist\');">加入白名单</span>' +
+                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_ignore\');">忽略</span>' +
+                              ' </nobr>');
+                          popup.showAnchor(link);
+                        } else if (link && link.getAttribute('_spell')) {
+                          if (html) {
+                              html += '<div style="height:5px;"></div>'
+                          }
+                          html += popup.formatHtml(
+                            '<nobr>疑似错别字：' +
+                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_replace\');">自动纠正</span>' +
+                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_whitelist\');">加入白名单</span>' +
+                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_ignore\');">忽略</span>' +
+                              ' </nobr>');
+                          popup.showAnchor(link);
+                        } else if (link && (url = (link.getAttribute('_href') || link.getAttribute('href', 2)))) {
                             var txt = url;
                             if (url.length > 30) {
                                 txt = url.substring(0, 20) + "...";

@@ -2,11 +2,18 @@
 var $urlInsert = $url + "/actions/insert";
 var $urlUpdate = $url + "/actions/update";
 var $urlPreview = $url + "/actions/preview";
-var $urlCensor = $url + "/actions/censor";
-var $urlSpell = $url + "/actions/spell";
 var $urlTags = $url + "/actions/tags";
+var $urlCensor = $url + "/actions/censor";
+var $urlCensorAddWords = $url + "/actions/censorAddWords";
 var $urlCloudCensor = "cms/censor";
+var $urlCloudCensorAddWords = "cms/censor/actions/addWords";
+var $urlSpell = $url + "/actions/spell";
+var $urlSpellAddWords = $url + "/actions/spellAddWords";
 var $urlCloudSpell = "cms/spell";
+var $urlCloudSpellAddWords = "cms/spell/actions/addWords";
+
+var $regSpell = /<a[^>]*_spell_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
+var $regCensor = /<a[^>]*_censor_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -41,7 +48,7 @@ var data = utils.init({
   reloadChannelId: utils.getQueryInt("reloadChannelId"),
   mainHeight: "",
   isSettings: true,
-  sideType: "first",
+  sideType: "settings",
   collapseSettings: ["checkedLevel", "addDate"],
   collapseMore: ["templateId", "translates"],
 
@@ -54,20 +61,34 @@ var data = utils.init({
   checkedLevels: null,
   linkTypes: null,
   root: null,
-  settings: {
-    censorSettings: {},
-    spellSettings: {},
-  },
-  isCensorPassed: false,
-  isSpellPassed: false,
-
   styles: null,
   relatedFields: null,
   templates: null,
   form: null,
-
   translates: [],
   isPreviewSaving: false,
+  settings: null,
+  censorSettings: {
+    isCloudCensor: false,
+    isCensorText: false,
+    isCensorTextAuto: false,
+    isCensorPassed: false,
+    ignoreWords: [],
+    whiteListWords: [],
+    isCensorChecking: false,
+    activeNames: [],
+  },
+  censorResults: null,
+  spellSettings: {
+    isCloudSpell: false,
+    isSpellingCheck: false,
+    isSpellingCheckAuto: false,
+    isSpellPassed: false,
+    ignoreWords: [],
+    whiteListWords: [],
+    isSpellChecking: false,
+  },
+  spellResults: null,
 });
 
 var methods = {
@@ -101,6 +122,12 @@ var methods = {
         $this.linkTypes = res.linkTypes;
         $this.root = [res.root];
         $this.settings = res.settings;
+        $this.censorSettings = _.assign({}, $this.censorSettings, res.settings.censorSettings, {
+          isCloudCensor: res.settings.isCloudCensor,
+        });
+        $this.spellSettings = _.assign({}, $this.spellSettings, res.settings.spellSettings, {
+          isCloudSpell: res.settings.isCloudSpell,
+        });
 
         $this.styles = res.styles;
         $this.relatedFields = res.relatedFields;
@@ -218,66 +245,338 @@ var methods = {
       });
   },
 
-  getText: function () {
+  getText: function (isCensor) {
     var text = "";
     for (var i = 0; i < this.styles.length; i++) {
       var style = this.styles[i];
-      if (
-        style.inputType === "Text" ||
-        style.inputType === "TextArea" ||
-        style.inputType === "TextEditor"
-      ) {
+      if (style.inputType === "TextEditor") {
         text += this.form[utils.toCamelCase(style.attributeName)];
+
+        while (match = $regCensor.exec(text)) {
+          text = text.replace(new RegExp(match[0], 'g'), match[1]);
+        }
+        while (match = $regSpell.exec(text)) {
+          text = text.replace(new RegExp(match[0], 'g'), match[1]);
+        }
       }
+    }
+    var replaceWords = [];
+    if (isCensor) {
+      for (var word of this.censorSettings.ignoreWords) {
+        replaceWords.push(word);
+      }
+      for (var word of this.censorSettings.whiteListWords) {
+        replaceWords.push(word);
+      }
+    } else {
+      for (var word of this.spellSettings.ignoreWords) {
+        replaceWords.push(word);
+      }
+      for (var word of this.spellSettings.whiteListWords) {
+        replaceWords.push(word);
+      }
+    }
+    for (var word of replaceWords) {
+      text = text.replace(new RegExp(word, 'g'), '');
     }
     return text;
   },
 
+  parseText: function () {
+    for (var i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      if (style.inputType === "TextEditor") {
+        var editor = utils.getEditor(style.attributeName);
+        var html = editor.getContent();
+        while (match = $regCensor.exec(html)) {
+          html = html.replace(new RegExp(match[0], 'g'), match[1]);
+        }
+        if (this.censorResults && this.censorResults.badWords && this.censorResults.badWords.length > 0) {
+          for (var badWord of this.censorResults.badWords) {
+            for (var word of badWord.words) {
+              html = html.replace(new RegExp(word, 'g'), '<a href="javascript:;" _censor="true" _censor_original="' + word + '" style="color: red;  margin-left: 30px; margin-right: 30px; text-decoration: underline;">疑似违规：' + word + '</a>');
+            }
+          }
+        }
+        if (this.spellResults && this.spellResults.errorWords && this.spellResults.errorWords.length > 0) {
+          for (var errorWord of this.spellResults.errorWords) {
+            html = html.replace(new RegExp(errorWord.original, 'g'), '<a href="javascript:;" _spell="true" _spell_original="' + errorWord.original + '" _spell_correct="' + errorWord.correct + '" style="color: red; margin-left: 30px; margin-right: 30px; text-decoration: underline;">疑似错别字：' + errorWord.original + '，正确词：' + errorWord.correct + '</a>');
+          }
+        }
+        editor.setContent(html);
+      }
+    }
+  },
+
+  parse: function(command, original, correct) {
+    if (command === 'censor_delete' || command === 'censor_ignore' || command === 'censor_whitelist') {
+      this.censorResults.isBadWords = false;
+      for (var badWord of this.censorResults.badWords) {
+        var index = badWord.words.indexOf(original);
+        if (index !== -1) {
+          badWord.words.splice(index, 1);
+        }
+        if (badWord.words.length > 0) {
+          this.censorResults.isBadWords = true;
+        }
+      }
+    } else if (command === 'spell_replace' || command === 'spell_ignore' || command === 'spell_whitelist') {
+      this.spellResults.isErrorWords = false;
+      for (var errorWord of this.spellResults.errorWords) {
+        if (errorWord.original == original) {
+          var index = this.spellResults.errorWords.indexOf(errorWord);
+          this.spellResults.errorWords.splice(index, 1);
+        }
+        if (this.spellResults.errorWords.length > 0) {
+          this.spellResults.isErrorWords = true;
+        }
+      }
+    }
+
+    if (command === 'censor_ignore') {
+      this.censorSettings.ignoreWords.push(original);
+    } else if (command === 'censor_whitelist') {
+      this.censorSettings.whiteListWords.push(original);
+    } else if (command === 'spell_ignore') {
+      this.spellSettings.ignoreWords.push(original);
+    } else if (command === 'spell_whitelist') {
+      this.spellSettings.whiteListWords.push(original);
+    }
+
+    for (var i = 0; i < this.styles.length; i++) {
+      var style = this.styles[i];
+      if (style.inputType === "TextEditor") {
+        var editor = utils.getEditor(style.attributeName);
+        var html = editor.getContent();
+        while (match = $regCensor.exec(html)) {
+          html = html.replace(new RegExp(match[0], 'g'), match[1]);
+        }
+        while (match = $regSpell.exec(html)) {
+          html = html.replace(new RegExp(match[0], 'g'), match[1]);
+        }
+        if (command === 'censor_delete') {
+          html = html.replace(new RegExp(original, 'g'), '');
+        } else if (command === 'spell_replace') {
+          html = html.replace(new RegExp(original, 'g'), correct);
+        }
+        editor.setContent(html);
+      }
+    }
+    this.parseText();
+  },
+
   isCensorButton: function () {
-    return this.settings.censorSettings.isCensorText && !this.settings.censorSettings.isCensorTextAuto;
+    return (
+      this.censorSettings.isCensorText && !this.censorSettings.isCensorTextAuto
+    );
   },
 
   isSpellButton: function () {
-    return this.settings.spellSettings.isSpellingCheck && !this.settings.spellSettings.isSpellingCheckAuto;
+    return (
+      this.spellSettings.isSpellingCheck &&
+      !this.spellSettings.isSpellingCheckAuto
+    );
   },
 
-  apiCensor: function (callback) {
+  apiCloudCensorAddWords: function (word) {
     var $this = this;
 
     utils.loading(this, true);
-    if (this.settings.isCloudCensor) {
+    if (this.censorSettings.isCloudCensor) {
       cloud
-        .post($urlCloudCensor, {
-          text: this.getText(),
+      .post($urlCloudCensorAddWords, {
+        isWhiteList: true,
+        words: word
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        $this.parse('censor_whitelist', word);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+    } else {
+      $api
+        .post($urlCensorAddWords, {
+          siteId: this.siteId,
+          channelId: this.channelId,
+          word: word
         })
         .then(function (response) {
           var res = response.data;
-          callback(res);
+
+          this.parse('censor_whitelist', word);
+        })
+        .catch(function (error) {
+          utils.error(error);
+        })
+        .then(function () {
+          utils.loading($this, false);
+        });
+    }
+  },
+
+  apiCloudCensor: function (isSave) {
+    var $this = this;
+    this.censorSettings.isCensorChecking = true;
+    if (this.censorSettings.isCloudCensor) {
+      cloud
+        .post($urlCloudCensor, {
+          text: this.getText(true),
+        })
+        .then(function (response) {
+          var res = response.data;
+          $this.censorResults = _.assign({}, res);
+          $this.censorSettings.activeNames = [];
+          for (var badWord of $this.censorResults.badWords) {
+            if (badWord.words.length > 0) {
+              $this.censorSettings.activeNames.push(badWord.type);
+            }
+          }
+          $this.sideType = "censor";
+          $this.parseText(res);
+
+          if (isSave && !$this.censorResults.isBadWords) {
+            $this.censorResults.isCensorPassed = true;
+            $this.apiSave();
+          }
         })
         .catch(function (error) {
           utils.error(error);
           layer.closeAll();
         })
         .then(function () {
-          utils.loading($this, false);
+          $this.censorSettings.isCensorChecking = false;
         });
     } else {
       $api
         .csrfPost(this.csrfToken, $urlCensor, {
           siteId: this.siteId,
           channelId: this.channelId,
-          text: this.getText(),
+          text: this.getText(true),
         })
         .then(function (response) {
           var res = response.data;
-          callback(res);
+          $this.censorResults = _.assign({}, res);
+          $this.censorSettings.activeNames = [];
+          for (var badWord of $this.censorResults.badWords) {
+            if (badWord.words.length > 0) {
+              $this.censorSettings.activeNames.push(badWord.type);
+            }
+          }
+          $this.sideType = "censor";
+          $this.parseText(res);
+
+          if (isSave && !$this.censorResults.isBadWords) {
+            $this.censorResults.isCensorPassed = true;
+            $this.apiSave();
+          }
         })
         .catch(function (error) {
           utils.error(error);
           layer.closeAll();
         })
         .then(function () {
+          $this.censorSettings.isCensorChecking = false;
+        });
+    }
+  },
+
+  apiCloudSpellAddWords: function (word) {
+    var $this = this;
+
+    utils.loading(this, true);
+    if (this.spellSettings.isCloudSpell) {
+      cloud
+      .post($urlCloudSpellAddWords, {
+        words: word
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        $this.parse('spell_whitelist', word);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+    } else {
+      $api
+        .post($urlSpellAddWords, {
+          siteId: this.siteId,
+          channelId: this.channelId,
+          word: word
+        })
+        .then(function (response) {
+          var res = response.data;
+
+          this.parse('spell_whitelist', word);
+        })
+        .catch(function (error) {
+          utils.error(error);
+        })
+        .then(function () {
           utils.loading($this, false);
+        });
+    }
+  },
+
+  apiCloudSpell: function (isSave) {
+    var $this = this;
+    this.spellSettings.isSpellChecking = true;
+    if (this.spellSettings.isCloudSpell) {
+      cloud
+        .post($urlCloudSpell, {
+          text: this.getText(true),
+        })
+        .then(function (response) {
+          var res = response.data;
+          $this.spellResults = _.assign({}, res);
+          $this.sideType = "spell";
+          $this.parseText(res);
+
+          if (isSave && !$this.spellResults.isErrorWords) {
+            $this.spellResults.isSpellPassed = true;
+            $this.apiSave();
+          }
+        })
+        .catch(function (error) {
+          utils.error(error);
+          layer.closeAll();
+        })
+        .then(function () {
+          $this.spellSettings.isSpellChecking = false;
+        });
+    } else {
+      $api
+        .csrfPost(this.csrfToken, $urlSpell, {
+          siteId: this.siteId,
+          channelId: this.channelId,
+          text: this.getText(true),
+        })
+        .then(function (response) {
+          var res = response.data;
+          $this.spellResults = _.assign({}, res);
+          $this.sideType = "spell";
+          $this.parseText(res);
+
+          if (isSave && !$this.spellResults.isErrorWords) {
+            $this.spellResults.isSpellPassed = true;
+            $this.apiSave();
+          }
+        })
+        .catch(function (error) {
+          utils.error(error);
+          layer.closeAll();
+        })
+        .then(function () {
+          $this.spellSettings.isSpellChecking = false;
         });
     }
   },
@@ -289,7 +588,7 @@ var methods = {
     if (this.settings.isCloudSpell) {
       cloud
         .post($urlCloudSpell, {
-          text: this.getText(),
+          text: this.getText(false),
         })
         .then(function (response) {
           var res = response.data;
@@ -307,7 +606,7 @@ var methods = {
         .csrfPost(this.csrfToken, $urlSpell, {
           siteId: this.siteId,
           channelId: this.channelId,
-          text: this.getText(),
+          text: this.getText(false),
         })
         .then(function (response) {
           var res = response.data;
@@ -401,15 +700,15 @@ var methods = {
 
   apiSave: function () {
     if (
-      !this.isCensorPassed &&
-      this.settings.censorSettings.isCensorText &&
-      this.settings.censorSettings.isCensorTextAuto
+      !this.censorSettings.isCensorPassed &&
+      this.censorSettings.isCensorText &&
+      this.censorSettings.isCensorTextAuto
     ) {
       this.btnCensorTextClick(true);
     } else if (
-      !this.isSpellPassed &&
-      this.settings.spellSettings.isSpellingCheck &&
-      this.settings.spellSettings.isSpellingCheckAuto
+      !this.spellSettings.isSpellPassed &&
+      this.spellSettings.isSpellingCheck &&
+      this.spellSettings.isSpellingCheckAuto
     ) {
       this.btnSpellingCheckClick(true);
     } else {
@@ -515,34 +814,34 @@ var methods = {
     utils.openTab(this.tabName);
   },
 
-  btnImageSelectClick: function(args) {
+  btnImageSelectClick: function (args) {
     var inputType = args.inputType;
     var attributeName = args.attributeName;
     var no = args.no;
     var type = args.type;
 
-    if (type === 'uploadedImages') {
+    if (type === "uploadedImages") {
       this.btnLayerClick({
-        title: '选择已上传图片',
-        name: 'formLayerImageSelect',
+        title: "选择已上传图片",
+        name: "formLayerImageSelect",
         inputType: inputType,
         attributeName: attributeName,
         no: no,
-        full: true
+        full: true,
       });
-    } else if (type === 'materialImages') {
+    } else if (type === "materialImages") {
       this.btnLayerClick({
-        title: '选择素材库图片',
-        name: 'materialLayerImageSelect',
+        title: "选择素材库图片",
+        name: "materialLayerImageSelect",
         inputType: inputType,
         attributeName: attributeName,
         no: no,
-        full: true
+        full: true,
       });
-    } else if (type === 'cloudImages') {
+    } else if (type === "cloudImages") {
       utils.openLayer({
-        title: '选择免版权图库',
-        url: utils.getCloudsUrl('layerImagesSelect', {
+        title: "选择免版权图库",
+        url: utils.getCloudsUrl("layerImagesSelect", {
           inputType: inputType,
           attributeName: args.attributeName,
           no: args.no,
@@ -594,7 +893,7 @@ var methods = {
     this.syncEditors();
     this.$refs.form.validate(function (valid) {
       if (valid) {
-        $this.isCensorPassed = this.isSpellPassed = false;
+        $this.censorSettings.isCensorPassed = this.spellSettings.isSpellPassed = false;
         $this.apiSave();
       } else {
         utils.error("保存失败，请检查表单值是否正确");
@@ -604,36 +903,12 @@ var methods = {
 
   btnCensorTextClick: function (isSave) {
     this.syncEditors();
-    utils.openLayer({
-      title: "内容违规检测",
-      width: 550,
-      height: 600,
-      url: utils.getCmsUrl("editorLayerCensor", {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        isCloudCensor: this.settings.isCloudCensor,
-        isCensorTextIgnore: this.settings.censorSettings.isCensorTextIgnore,
-        isCensorTextWhiteList: this.settings.censorSettings.isCensorTextWhiteList,
-        isSave: isSave,
-      }),
-    });
+    this.apiCloudCensor(isSave);
   },
 
   btnSpellingCheckClick: function (isSave) {
     this.syncEditors();
-    utils.openLayer({
-      title: "错别字检查",
-      width: 550,
-      height: 600,
-      url: utils.getCmsUrl("editorLayerSpell", {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        isCloudSpell: this.settings.isCloudSpell,
-        isSpellingCheckIgnore: this.settings.spellSettings.isSpellingCheckIgnore,
-        isSpellingCheckWhiteList: this.settings.spellSettings.isSpellingCheckWhiteList,
-        isSave: isSave,
-      }),
-    });
+    this.apiCloudSpell(isSave);
   },
 
   btnTagsClick: function () {

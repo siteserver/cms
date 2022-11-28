@@ -17,8 +17,6 @@ var data = utils.init({
   checking: true,
   isErrorWords: null,
   results: null,
-  ignoreWords: [],
-  whiteListWords: [],
 });
 
 var methods = {
@@ -34,7 +32,7 @@ var methods = {
       .then(function (response) {
         var res = response.data;
 
-        $this.whiteListWords.push(word);
+        parent.$vue.spellWhiteListWords.push(word);
         $this.calcItems();
         $this.checking = false;
       })
@@ -51,7 +49,7 @@ var methods = {
         .then(function (response) {
           var res = response.data;
 
-          $this.whiteListWords.push(word);
+          parent.$vue.spellWhiteListWords.push(word);
           $this.calcItems();
           $this.checking = false;
         })
@@ -65,7 +63,7 @@ var methods = {
     this.isErrorWords = false;
     var errorWords = [];
     for (var word of this.errorWords) {
-      if (this.ignoreWords.indexOf(word.original) === -1 && this.whiteListWords.indexOf(word.original) === -1) {
+      if (parent.$vue.spellIgnoreWords.indexOf(word.original) === -1 && parent.$vue.spellWhiteListWords.indexOf(word.original) === -1) {
         this.isErrorWords = true;
         errorWords.push(word);
       }
@@ -115,7 +113,7 @@ var methods = {
       text: "此操作将忽略此错别字，是否确认？",
       button: "忽 略",
       callback: function () {
-        $this.ignoreWords.push(errorWord.original);
+        parent.$vue.spellIgnoreWords.push(errorWord.original);
         $this.calcItems();
       },
     });
