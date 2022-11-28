@@ -200,7 +200,7 @@
             </el-collapse-item>
           </el-collapse>
         </el-tab-pane>
-        <el-tab-pane label="违规" name="censor">
+        <el-tab-pane label="违规" v-if="censorSettings.isCensorText" name="censor">
 
           <template v-if="censorResults">
             <el-alert
@@ -262,7 +262,7 @@
           </template>
 
         </el-tab-pane>
-        <el-tab-pane label="拼写" name="spell">
+        <el-tab-pane label="拼写" v-if="spellSettings.isSpellingCheck" name="spell">
 
           <template v-if="spellResults">
             <el-alert

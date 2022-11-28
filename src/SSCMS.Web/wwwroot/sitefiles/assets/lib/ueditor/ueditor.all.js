@@ -29025,22 +29025,38 @@ UE.ui = baidu.editor.ui = {};
                           if (html) {
                               html += '<div style="height:5px;"></div>'
                           }
+                          var linkWhiteList = '';
+                          if ($vue.censorSettings && $vue.censorSettings.isCensorTextWhiteList) {
+                            linkWhiteList = ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_whitelist\');">加入白名单</span>';
+                          }
+                          var linkIgnore = '';
+                          if ($vue.censorSettings && $vue.censorSettings.isCensorTextIgnore) {
+                            linkIgnore = ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_ignore\');">忽略</span>';
+                          }
                           html += popup.formatHtml(
                             '<nobr>疑似违规：' +
                               ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_delete\');">删除</span>' +
-                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_whitelist\');">加入白名单</span>' +
-                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'censor_ignore\');">忽略</span>' +
+                              linkWhiteList +
+                              linkIgnore +
                               ' </nobr>');
                           popup.showAnchor(link);
                         } else if (link && link.getAttribute('_spell')) {
                           if (html) {
                               html += '<div style="height:5px;"></div>'
                           }
+                          var linkWhiteList = '';
+                          if ($vue.spellSettings && $vue.spellSettings.isSpellingCheckWhiteList) {
+                            linkWhiteList = ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_whitelist\');">加入白名单</span>';
+                          }
+                          var linkIgnore = '';
+                          if ($vue.spellSettings && $vue.spellSettings.isSpellingCheckIgnore) {
+                            linkIgnore = ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_ignore\');">忽略</span>';
+                          }
                           html += popup.formatHtml(
                             '<nobr>疑似错别字：' +
                               ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_replace\');">自动纠正</span>' +
-                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_whitelist\');">加入白名单</span>' +
-                              ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_ignore\');">忽略</span>' +
+                              linkWhiteList +
+                              linkIgnore +
                               ' </nobr>');
                           popup.showAnchor(link);
                         } else if (link && (url = (link.getAttribute('_href') || link.getAttribute('href', 2)))) {

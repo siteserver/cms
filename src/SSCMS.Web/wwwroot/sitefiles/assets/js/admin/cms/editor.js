@@ -12,8 +12,8 @@ var $urlSpellAddWords = $url + "/actions/spellAddWords";
 var $urlCloudSpell = "cms/spell";
 var $urlCloudSpellAddWords = "cms/spell/actions/addWords";
 
-var $regSpell = /<a[^>]*_spell_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
 var $regCensor = /<a[^>]*_censor_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
+var $regSpell = /<a[^>]*_spell_original=["']([^"']*)["'][^>]*>[^>]*<\/a>/g;
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -72,6 +72,8 @@ var data = utils.init({
     isCloudCensor: false,
     isCensorText: false,
     isCensorTextAuto: false,
+    isCensorTextIgnore: false,
+    isCensorTextWhiteList: false,
     isCensorPassed: false,
     ignoreWords: [],
     whiteListWords: [],
@@ -83,6 +85,8 @@ var data = utils.init({
     isCloudSpell: false,
     isSpellingCheck: false,
     isSpellingCheckAuto: false,
+    isSpellingCheckIgnore: false,
+    isSpellingCheckWhiteList: false,
     isSpellPassed: false,
     ignoreWords: [],
     whiteListWords: [],
@@ -250,14 +254,10 @@ var methods = {
     for (var i = 0; i < this.styles.length; i++) {
       var style = this.styles[i];
       if (style.inputType === "TextEditor") {
-        text += this.form[utils.toCamelCase(style.attributeName)];
-
-        while (match = $regCensor.exec(text)) {
-          text = text.replace(new RegExp(match[0], 'g'), match[1]);
-        }
-        while (match = $regSpell.exec(text)) {
-          text = text.replace(new RegExp(match[0], 'g'), match[1]);
-        }
+        var editor = utils.getEditor(style.attributeName);
+        var editorText = this.regexReplace($regCensor, editor.getContent());
+        editorText = this.regexReplace($regSpell, editorText);
+        text += editorText;
       }
     }
     var replaceWords = [];
@@ -288,10 +288,10 @@ var methods = {
       var style = this.styles[i];
       if (style.inputType === "TextEditor") {
         var editor = utils.getEditor(style.attributeName);
-        var html = editor.getContent();
-        while (match = $regCensor.exec(html)) {
-          html = html.replace(new RegExp(match[0], 'g'), match[1]);
-        }
+
+        var html = this.regexReplace($regCensor, editor.getContent());
+        html = this.regexReplace($regSpell, html);
+
         if (this.censorResults && this.censorResults.badWords && this.censorResults.badWords.length > 0) {
           for (var badWord of this.censorResults.badWords) {
             for (var word of badWord.words) {
@@ -348,13 +348,10 @@ var methods = {
       var style = this.styles[i];
       if (style.inputType === "TextEditor") {
         var editor = utils.getEditor(style.attributeName);
-        var html = editor.getContent();
-        while (match = $regCensor.exec(html)) {
-          html = html.replace(new RegExp(match[0], 'g'), match[1]);
-        }
-        while (match = $regSpell.exec(html)) {
-          html = html.replace(new RegExp(match[0], 'g'), match[1]);
-        }
+
+        var html = this.regexReplace($regCensor, editor.getContent());
+        html = this.regexReplace($regSpell, html);
+
         if (command === 'censor_delete') {
           html = html.replace(new RegExp(original, 'g'), '');
         } else if (command === 'spell_replace') {
@@ -793,9 +790,19 @@ var methods = {
       $.each(UE.instants, function (index, editor) {
         editor.sync();
         var style = $this.styles[editor.styleIndex];
-        $this.form[utils.toCamelCase(style.attributeName)] = editor.getContent();
+        var text = $this.regexReplace($regCensor, editor.getContent());
+        text = $this.regexReplace($regSpell, text);
+        $this.form[utils.toCamelCase(style.attributeName)] = text;
       });
     }
+  },
+
+  regexReplace: function(regex, text) {
+    var retVal = text;
+    while ((match = regex.exec(text)) !== null) {
+      retVal = retVal.replace(match[0], match[1]);
+    }
+    return retVal;
   },
 
   closeAndRedirect: function (isEdit) {
