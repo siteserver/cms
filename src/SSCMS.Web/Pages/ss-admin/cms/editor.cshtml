@@ -230,7 +230,7 @@
 
             <div class="result-wrap-box">
               <div class="result-wrap">
-                <p>百度AI检测结果</p>
+                <p>AI检测结果</p>
                 <el-collapse v-model="censorSettings.activeNames">
                   <el-collapse-item v-for="item in censorResults.badWords" :key="item.type" :name="item.type">
                     <template slot="title">
@@ -262,7 +262,7 @@
           </template>
 
         </el-tab-pane>
-        <el-tab-pane label="拼写" v-if="spellSettings.isSpellingCheck" name="spell">
+        <el-tab-pane label="纠错" v-if="spellSettings.isSpellingCheck" name="spell">
 
           <template v-if="spellResults">
             <el-alert
@@ -275,28 +275,28 @@
             </el-alert>
             <el-alert
               v-if="spellResults.isErrorWords"
-              title="存在疑似错别字"
+              title="存在疑似文本错误"
               type="error"
-              description="检查完成，发现内容存在疑似错别字，发文前请及时处理"
+              description="检查完成，发现内容存在疑似文本错误，发文前请及时处理"
               :closable="false"
               show-icon>
             </el-alert>
             <el-alert
               v-else
-              title="错别字检查通过"
+              title="文本纠错检查通过"
               type="success"
-              description="检查完成，未发现疑似错别字"
+              description="检查完成，未发现文本错误"
               :closable="false"
               show-icon>
             </el-alert>
 
             <div class="result-wrap-box">
               <div class="result-wrap">
-                <p>百度AI检测结果</p>
+                <p>AI检测结果</p>
 
                 <div>
-                  <span v-if="spellResults.errorWords.length === 0" class="tag success">错别字检查通过</span>
-                  <span v-else class="tag fail">{{ spellResults.errorWords.length }} 项疑似错别字</span>
+                  <span v-if="spellResults.errorWords.length === 0" class="tag success">文本纠错检查通过</span>
+                  <span v-else class="tag fail">{{ spellResults.errorWords.length }} 项疑似文本错误</span>
                 </div>
 
                 <el-table
@@ -304,7 +304,7 @@
                   style="width: 100%"
                   size="mini">
                   <el-table-column
-                    label="疑似错别字">
+                    label="疑似错误">
                     <template slot-scope="scope">
                       {{ scope.row.original }}
                     </template>
@@ -312,7 +312,8 @@
                   <el-table-column
                     label="系统建议">
                     <template slot-scope="scope">
-                      {{ scope.row.correct }}
+                      <span v-if="scope.row.correct">{{ scope.row.correct }}</span>
+                      <span v-else style="text-decoration: line-through;">删除</span>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -363,7 +364,7 @@
   <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
   <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
   <el-button size="medium" v-if="isCensorButton()" type="success" v-on:click="btnCensorTextClick(false)">违规检测</el-button>
-  <el-button size="medium" v-if="isSpellButton()" type="success" v-on:click="btnSpellingCheckClick(false)">错别字检查</el-button>
+  <el-button size="medium" v-if="isSpellButton()" type="success" v-on:click="btnSpellingCheckClick(false)">文本纠错</el-button>
   <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
   <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
 </el-row>
@@ -377,7 +378,7 @@
       </div>
     </div>
     <p v-if="censorSettings.isCensorChecking">违规内容检测中...</p>
-    <p v-else-if="spellSettings.isSpellChecking">错别字检查中...</p>
+    <p v-else-if="spellSettings.isSpellChecking">文本纠错检查中...</p>
   </div>
 </div>
 

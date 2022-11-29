@@ -52,7 +52,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('错别字检查设置保存成功！');
+      utils.success('文本纠错设置保存成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

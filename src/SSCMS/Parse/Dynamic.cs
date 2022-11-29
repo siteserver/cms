@@ -12,7 +12,6 @@ namespace SSCMS.Parse
         public int ContentId { get; set; }
         public int TemplateId { get; set; }
         public string ElementId { get; set; }
-        public string LoadingTemplate { get; set; }
         public string YesTemplate { get; set; }
         public string NoTemplate { get; set; }
         public bool IsInline { get; set; }

@@ -11997,8 +11997,8 @@ UE.plugins['link'] = function(){
           var original = start.getAttribute('_spell_original');
 
           window.utils.alertDelete({
-            title: "将错别字“" + original + "”加入白名单",
-            text: "添加白名单后系统将自动忽略白名单内的错别字，是否添加？",
+            title: "将文本“" + original + "”加入白名单",
+            text: "添加白名单后文本纠错将自动忽略白名单内的文本，是否添加？",
             button: "加入白名单",
             callback: function () {
               $vue.apiCloudSpellAddWords(original);
@@ -29053,7 +29053,7 @@ UE.ui = baidu.editor.ui = {};
                             linkIgnore = ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_ignore\');">忽略</span>';
                           }
                           html += popup.formatHtml(
-                            '<nobr>疑似错别字：' +
+                            '<nobr>疑似错误：' +
                               ' <span class="edui-clickable" onclick="$$._onRemoveButtonClick(\'spell_replace\');">自动纠正</span>' +
                               linkWhiteList +
                               linkIgnore +

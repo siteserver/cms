@@ -240,7 +240,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var innerHtml = contextInfo.InnerHtml;
 
-            StlParserUtility.GetLoadingYesNo(innerHtml, out var loading, out var yes, out var no);
+            StlParserUtility.GetYesNo(innerHtml, out var yes, out var no);
             if (string.IsNullOrEmpty(yes) && !string.IsNullOrEmpty(attributeYes))
             {
                 yes = attributeYes;
@@ -252,7 +252,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin))
             {
-                return await ParseDynamicAsync(parseManager, testType, testValue, testOperate, loading,
+                return await ParseDynamicAsync(parseManager, testType, testValue, testOperate,
                     yes, no, onBeforeSend, onSuccess, onComplete, onError);
             }
 
@@ -523,7 +523,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return isSuccess;
         }
 
-        private static async Task<string> ParseDynamicAsync(IParseManager parseManager, string testType, string testValue, string testOperate, string loading, string yes, string no, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseDynamicAsync(IParseManager parseManager, string testType, string testValue, string testOperate, string yes, string no, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -543,7 +543,6 @@ namespace SSCMS.Core.StlParser.StlElement
                 ContentId = contextInfo.ContentId,
                 TemplateId = pageInfo.Template.Id,
                 ElementId = elementId,
-                LoadingTemplate = loading,
                 YesTemplate = yes,
                 NoTemplate = no,
                 IsInline = true,

@@ -27,15 +27,14 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static async Task<string> GetScriptAsync(IParseManager parseManager, string dynamicApiUrl, Dynamic dynamicInfo)
         {
-            if (string.IsNullOrEmpty(dynamicInfo.LoadingTemplate) &&
-                string.IsNullOrEmpty(dynamicInfo.YesTemplate) &&
+            if (string.IsNullOrEmpty(dynamicInfo.YesTemplate) &&
                 string.IsNullOrEmpty(dynamicInfo.NoTemplate))
             {
                 return string.Empty;
             }
 
             //运行解析以便为页面生成所需JS引用
-            await parseManager.ParseInnerContentAsync(new StringBuilder(dynamicInfo.LoadingTemplate + dynamicInfo.YesTemplate + dynamicInfo.NoTemplate));
+            await parseManager.ParseInnerContentAsync(new StringBuilder(dynamicInfo.YesTemplate + dynamicInfo.NoTemplate));
 
             var values = parseManager.SettingsManager.Encrypt(TranslateUtils.JsonSerialize(dynamicInfo));
             var display = dynamicInfo.IsInline ? "inline-block" : "block";
@@ -45,7 +44,6 @@ namespace SSCMS.Core.StlParser.StlElement
 <script id=""{elementId}"" type=""text/javascript"" language=""javascript"">
 function stlDynamic{elementId}(page)
 {{
-    $(""#{elementId}"").before('{dynamicInfo.LoadingTemplate}');
     {dynamicInfo.OnBeforeSend}
     stlClient.post('{dynamicApiUrl}?' + StlClient.getQueryString(), {{
         value: '{values}',

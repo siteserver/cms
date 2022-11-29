@@ -61,7 +61,7 @@ var methods = {
       .then(function (response) {
         var res = response.data;
 
-        utils.success("内容违规检测设置保存成功！");
+        utils.success("违规检测设置保存成功！");
       })
       .catch(function (error) {
         utils.error(error);

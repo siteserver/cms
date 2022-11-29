@@ -301,7 +301,7 @@ var methods = {
         }
         if (this.spellResults && this.spellResults.errorWords && this.spellResults.errorWords.length > 0) {
           for (var errorWord of this.spellResults.errorWords) {
-            html = html.replace(new RegExp(errorWord.original, 'g'), '<a href="javascript:;" _spell="true" _spell_original="' + errorWord.original + '" _spell_correct="' + errorWord.correct + '" style="color: red; margin-left: 30px; margin-right: 30px; text-decoration: underline;">疑似错别字：' + errorWord.original + '，正确词：' + errorWord.correct + '</a>');
+            html = html.replace(new RegExp(errorWord.original, 'g'), '<a href="javascript:;" _spell="true" _spell_original="' + errorWord.original + '" _spell_correct="' + errorWord.correct + '" style="color: red; margin-left: 30px; margin-right: 30px; text-decoration: underline;">疑似错误：' + errorWord.original + '，系统建议：' + (errorWord.correct ? errorWord.correct : '<span style="text-decoration: line-through;">删除<span>') + '</a>');
           }
         }
         editor.setContent(html);
@@ -361,6 +361,7 @@ var methods = {
       }
     }
     this.parseText();
+    utils.success('操作成功！');
   },
 
   isCensorButton: function () {
@@ -575,47 +576,6 @@ var methods = {
         })
         .then(function () {
           $this.spellSettings.isSpellChecking = false;
-        });
-    }
-  },
-
-  apiSpell: function (callback) {
-    var $this = this;
-
-    utils.loading(this, true);
-    if (this.settings.isCloudSpell) {
-      cloud
-        .post($urlCloudSpell, {
-          text: this.getText(false, true),
-        })
-        .then(function (response) {
-          var res = response.data;
-          callback(res);
-        })
-        .catch(function (error) {
-          utils.error(error);
-          layer.closeAll();
-        })
-        .then(function () {
-          utils.loading($this, false);
-        });
-    } else {
-      $api
-        .csrfPost(this.csrfToken, $urlSpell, {
-          siteId: this.siteId,
-          channelId: this.channelId,
-          text: this.getText(false, true),
-        })
-        .then(function (response) {
-          var res = response.data;
-          callback(res);
-        })
-        .catch(function (error) {
-          utils.error(error);
-          layer.closeAll();
-        })
-        .then(function () {
-          utils.loading($this, false);
         });
     }
   },

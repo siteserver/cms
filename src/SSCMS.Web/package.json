@@ -153,13 +153,13 @@
         ]
       },
       "app_settings_cloudSettingsCensor": {
-        "text": "云助手内容违规检测",
+        "text": "云助手违规检测",
         "type": [
           "app"
         ]
       },
       "app_settings_cloudSettingsSpell": {
-        "text": "云助手错别字检查",
+        "text": "云助手文本纠错",
         "type": [
           "app"
         ]
@@ -1079,7 +1079,7 @@
                 "order": 102
               },
               "app_settings_cloudSettingsCensor": {
-                "text": "内容违规检测",
+                "text": "违规检测",
                 "iconClass": "el-icon-circle-check",
                 "link": "./clouds/settingsCensor/",
                 "permissions": [
@@ -1088,7 +1088,7 @@
                 "order": 103
               },
               "app_settings_cloudSettingsSpell": {
-                "text": "错别字检查",
+                "text": "文本纠错",
                 "iconClass": "el-icon-finished",
                 "link": "./clouds/settingsSpell/",
                 "permissions": [

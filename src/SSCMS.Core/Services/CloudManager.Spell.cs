@@ -107,7 +107,7 @@ namespace SSCMS.Core.Services
 
             if (string.IsNullOrEmpty(word))
             {
-                throw new Exception("错别字不能为空");
+                throw new Exception("文本不能为空");
             }
 
             var url = GetCloudUrl(RouteSpellAddWhiteList);

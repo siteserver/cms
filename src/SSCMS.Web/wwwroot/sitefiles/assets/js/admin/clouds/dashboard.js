@@ -228,8 +228,8 @@ var methods = {
   },
 
   getCloudProduct: function(product) {
-    if (product === 'Censor') return '文字违规检测';
-    if (product === 'Spell') return '错别字检查';
+    if (product === 'Censor') return '违规检测';
+    if (product === 'Spell') return '文本纠错';
     if (product === 'Vod') return '云视频';
     if (product === 'Sms') return '短信';
     if (product === 'Mail') return '邮件';
