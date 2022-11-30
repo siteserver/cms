@@ -41,7 +41,10 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.items = res.items;
+      $this.items = [];
+      for (var item of res.items) {
+        $this.items.push(_.assign({isSelectGroups: false}, item));
+      }
       $this.urlList = _.map($this.items, function (item) {
         return item.url;
       });

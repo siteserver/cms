@@ -32,7 +32,7 @@ var methods = {
     this.groups = groups;
   },
 
-  apiList: function (page) {
+  apiGet: function (page) {
     var $this = this;
     this.form.page = page;
 
@@ -44,7 +44,10 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.items = res.items;
+      $this.items = [];
+      for (var item of res.items) {
+        $this.items.push(_.assign({isSelectGroups: false}, item));
+      }
       $this.siteType = res.siteType;
       $this.urlList = _.map($this.items, function (item) {
         return item.url;
@@ -67,7 +70,7 @@ var methods = {
       var res = response.data;
 
       $this.form.groupId = 0;
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     });
@@ -84,7 +87,7 @@ var methods = {
       var res = response.data;
 
       utils.success('图片素材删除成功！');
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -103,7 +106,7 @@ var methods = {
       var res = response.data;
 
       utils.success('公众号图片素材拉取成功！');
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -294,12 +297,12 @@ var methods = {
 
   btnSearchClick() {
     utils.loading(this, true);
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnPageClick: function(val) {
     utils.loading(this, true);
-    this.apiList(val);
+    this.apiGet(val);
   },
 
   uploadBefore(file) {
@@ -345,6 +348,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSearchClick, this.btnCloseClick);
-    this.apiList(1);
+    this.apiGet(1);
   }
 });
