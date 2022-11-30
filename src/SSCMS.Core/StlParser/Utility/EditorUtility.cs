@@ -18,6 +18,7 @@ namespace SSCMS.Core.StlParser.Utility
                 parsedContent = parsedContent.Replace("<p>", "<div>");
                 parsedContent = parsedContent.Replace("<p ", "<div ");
                 parsedContent = parsedContent.Replace("</p>", "</div>");
+                parsedContent = StringUtils.ToJsString(parsedContent);
                 parsedContent = $@"
 <div id=""vue_{elementId}""></div>
 <script type=""text/javascript"">

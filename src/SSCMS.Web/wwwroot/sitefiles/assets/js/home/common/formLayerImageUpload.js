@@ -29,7 +29,8 @@ var methods = {
       if (vue.runFormLayerImageUploadEditor && this.editorAttributeName && this.form.isEditor) {
         var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
         if (result.previewUrl) {
-          var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
+          var previewUrl = "'" + result.previewUrl + "'";
+          var vueHtml = '<el-image src="' + result.imageUrl + '" :preview-src-list="[' + result.previewUrl + ']" style="border: 0; max-width: 100%"></el-image>';
           html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
         }
         vue.runFormLayerImageUploadEditor(this.editorAttributeName, html);
