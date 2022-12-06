@@ -114,6 +114,10 @@
         </a>
       </div>
 
+      <el-link v-if="cloudType && cloudType != 'Free'" class="nav" :underline="false" icon="el-icon-service" style="float: none; padding: 0 10px;" v-on:click="btnMenuClick({text: '工单技术支持', link: './clouds/tickets/'})">
+        工单中心
+      </el-link>
+
       <el-dropdown v-on:command="btnUserMenuClick">
         <span class="el-dropdown-link" style="top: 7px;position: inherit;">
           <el-avatar size="small" :src="local.avatarUrl || '/sitefiles/assets/images/default_avatar.png'"></el-avatar>

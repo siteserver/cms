@@ -6,12 +6,14 @@ using SSCMS.Services;
 using SSCMS.Utils;
 using SSCMS.Models;
 using SSCMS.Enums;
+using SSCMS.Dto;
 
 namespace SSCMS.Core.Services
 {
     public partial class CloudManager : ICloudManager
     {
-        private const string RouteGetDownloadUrl = "actions/getDownloadUrl";
+        private const string RouteGetDownloadUrl = "clouds/actions/getDownloadUrl";
+        private const string RouteGetOssCredentials = "clouds/actions/getOssCredentials";
         private const string RouteCensor = "censor";
         private const string RouteCensorAddWhiteList = "censor/actions/addWhiteList";
         private const string RouteSpell = "spell";
@@ -20,18 +22,22 @@ namespace SSCMS.Core.Services
         private const string RouteSms = "sms";
         private const string RouteMail = "mail";
         private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IConfigRepository _configRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public CloudManager(ISettingsManager settingsManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository)
+        public CloudManager(ISettingsManager settingsManager, IPathManager pathManager, ICacheManager cacheManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
+            _pathManager = pathManager;
+            _cacheManager = cacheManager;
             _configRepository = configRepository;
             _errorLogRepository = errorLogRepository;
         }
 
         public static string GetCloudUrl(string relatedUrl) => PageUtils.Combine(CloudUtils.CloudApiHost,
-            "v7/clouds",
+            "v7/cms",
             relatedUrl);
 
         public async Task<bool> IsAuthenticationAsync()
@@ -56,10 +62,12 @@ namespace SSCMS.Core.Services
             return IsFree(config) ? CloudType.Free : config.CloudType;
         }
 
-        public async Task SetAuthenticationAsync(string userName, string token)
+        public async Task SetAuthenticationAsync(int userId, string userName, string mobile, string token)
         {
             var config = await _configRepository.GetAsync();
+            config.CloudUserId = userId;
             config.CloudUserName = userName;
+            config.CloudMobile = mobile;
             config.CloudToken = token;
             await _configRepository.UpdateAsync(config);
         }
@@ -75,7 +83,9 @@ namespace SSCMS.Core.Services
         public async Task RemoveAuthenticationAsync()
         {
             var config = await _configRepository.GetAsync();
+            config.CloudUserId = 0;
             config.CloudUserName = string.Empty;
+            config.CloudMobile = string.Empty;
             config.CloudToken = string.Empty;
             config.CloudType = CloudType.Free;
             await _configRepository.UpdateAsync(config);
@@ -151,6 +161,25 @@ namespace SSCMS.Core.Services
             }
 
             return result.DownloadUrl;
+        }
+
+        public async Task<OssCredentials> GetOssCredentialsAsync()
+        {
+            var config = await _configRepository.GetAsync();
+            if (string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken))
+            {
+                throw new Exception("云助手未登录");
+            }
+
+            var url = GetCloudUrl(RouteGetOssCredentials);
+            var (success, result, errorMessage) = await RestUtils.PostAsync<OssCredentials>(url, config.CloudToken);
+
+            if (!success)
+            {
+                throw new Exception(errorMessage);
+            }
+
+            return result;
         }
     }
 }

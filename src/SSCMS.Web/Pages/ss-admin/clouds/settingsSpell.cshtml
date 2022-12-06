@@ -45,21 +45,21 @@
               </el-link>
             </div>
     
-            <div v-if="isCloudSpellingCheck" style="margin-top: 15px;">
+            <div v-if="isCloudSpellingCheck" style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="isCloudSpellingCheckAuto" active-text="保存内容时强制检查"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，当保存内容时系统会自动对内容正文进行文本纠错，如果存在疑似错误，系统将禁止保存内容
               </div>
             </div>
     
-            <div v-if="isCloudSpellingCheck" style="margin-top: 15px;">
+            <div v-if="isCloudSpellingCheck" style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="isCloudSpellingCheckIgnore" active-text="可以忽略错误"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，可以手动忽略本次检查到的疑似错误，手动忽略的词语下次检查时依然会作为错误进行提醒
               </div>
             </div>
     
-            <div v-if="isCloudSpellingCheck" style="margin-top: 15px;">
+            <div v-if="isCloudSpellingCheck" style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="isCloudSpellingCheckWhiteList" active-text="可以将错误加入白名单"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，可以手动将检查到的疑似错误加入白名单，下次检查时白名单内的词语将不再作为错误进行提醒

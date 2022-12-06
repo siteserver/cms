@@ -32,11 +32,13 @@ namespace SSCMS.Services
         IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
         IRelatedFieldRepository RelatedFieldRepository { get; }
         IRoleRepository RoleRepository { get; }
+        IScheduledTaskRepository ScheduledTaskRepository { get; }
         ISiteLogRepository SiteLogRepository { get; }
         ISitePermissionsRepository SitePermissionsRepository { get; }
         ISiteRepository SiteRepository { get; }
         ISpecialRepository SpecialRepository { get; }
         IStatRepository StatRepository { get; }
+        IStorageFileRepository StorageFileRepository { get; }
         ITableStyleRepository TableStyleRepository { get; }
         ITemplateLogRepository TemplateLogRepository { get; }
         ITemplateRepository TemplateRepository { get; }

@@ -10,33 +10,32 @@ namespace SSCMS.Core.Utils
     {
         public static class LevelInt
         {
-            public const int CaoGao = -99;//草稿
-            public const int DaiShen = 0;//待审核
+            public const int ScheduledPublish = -98;        //定时发布
+            public const int CaoGao = -99;                  //草稿
+            public const int DaiShen = 0;                   //待审核
 
-            public const int Pass1 = 1;//初审通过
-            public const int Pass2 = 2;//二审通过
-            public const int Pass3 = 3;//三审通过
-            public const int Pass4 = 4;//四审通过
-            public const int Pass5 = 5;//已审核
+            public const int Pass1 = 1;                     //初审通过
+            public const int Pass2 = 2;                     //二审通过
+            public const int Pass3 = 3;                     //三审通过
+            public const int Pass4 = 4;                     //四审通过
+            public const int Pass5 = 5;                     //已审核
 
-            public const int Fail1 = -1;//初审退稿
-            public const int Fail2 = -2;//二审退稿
-            public const int Fail3 = -3;//三审退稿
-            public const int Fail4 = -4;//四审退稿
-            public const int Fail5 = -5;//终审退稿
-
-            //public const int NotChange = -100;//保持不变
-            public const int All = -200;//全部
+            public const int Fail1 = -1;                    //初审退稿
+            public const int Fail2 = -2;                    //二审退稿
+            public const int Fail3 = -3;                    //三审退稿
+            public const int Fail4 = -4;                    //四审退稿
+            public const int Fail5 = -5;                    //终审退稿
+            public const int All = -200;                    //全部
         }
 
         public static class Level
         {
-            public const string All = "全部";//全部
-            public const string CaoGao = "草稿";//草稿
-            public const string DaiShen = "待审核";//待审核
-            public const string YiShenHe = "已审核";//已审核
-
-            public const string NotChange = "保持不变";//保持不变
+            public const string All = "全部";
+            public const string ScheduledPublish = "定时发布";
+            public const string CaoGao = "草稿";
+            public const string DaiShen = "待审核";
+            public const string YiShenHe = "已审核";
+            public const string NotChange = "保持不变";
         }
 
         private static class Level5
@@ -490,7 +489,11 @@ namespace SSCMS.Core.Utils
 
             var retVal = string.Empty;
 
-            if (checkedLevel == LevelInt.CaoGao)
+            if (checkedLevel == LevelInt.ScheduledPublish)
+            {
+                retVal = Level.ScheduledPublish;
+            }
+            else if (checkedLevel == LevelInt.CaoGao)
             {
                 retVal = Level.CaoGao;
             }

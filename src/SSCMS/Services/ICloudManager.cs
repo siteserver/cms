@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using SSCMS.Dto;
 using SSCMS.Enums;
 
 namespace SSCMS.Services
@@ -8,7 +9,7 @@ namespace SSCMS.Services
     {
         Task<bool> IsAuthenticationAsync();
         
-        Task SetAuthenticationAsync(string userName, string token);
+        Task SetAuthenticationAsync(int userId, string userName, string mobile, string token);
 
         Task SetCloudTypeAsync(CloudType cloudType, DateTime expirationDate);
 
@@ -19,6 +20,8 @@ namespace SSCMS.Services
         Task<string> GetThemeDownloadUrlAsync(string userName, string name);
 
         Task<string> GetExtensionDownloadUrlAsync(string userName, string name, string version);
+
+        Task<OssCredentials> GetOssCredentialsAsync();
 
         Task<bool> IsImagesAsync();
     }

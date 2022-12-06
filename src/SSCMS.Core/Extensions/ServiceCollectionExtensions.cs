@@ -85,15 +85,14 @@ namespace SSCMS.Core.Extensions
                 var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                 if (interfaceType != null)
                 {
-                    //if (interfaceType == typeof(IContentRepository)) continue;
-
                     services.AddScoped(interfaceType, implementType);
                 }
             }
         }
 
-        public static void AddTaskQueue(this IServiceCollection services)
+        public static void AddTaskServices(this IServiceCollection services)
         {
+            services.AddHostedService<ScheduledHostedService>();
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<ITaskManager, TaskManager>();
         }

@@ -93,6 +93,7 @@
   }
   .el-collapse-item__header {font-size: 14px;}
   .el-link {font-size:12px; margin-right: 5px;}
+  /* .el-loading-mask.is-fullscreen, .el-loading-mask {z-index: 2001 !important;} */
   </style>
 }
 
@@ -361,13 +362,48 @@
 <el-divider></el-divider>
 
 <el-row align="center" style="text-align: center; padding-top:4px">
-  <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+  
+
+  <el-dropdown style="margin-right: 10px;" v-if="form.checkedLevel === site.checkContentLevel" split-button type="primary" size="medium" v-on:click="btnSaveClick" v-on:command="btnSaveCommandClick">
+    发 布
+    <el-dropdown-menu slot="dropdown">
+      <el-dropdown-item command="scheduled" :disabled="settings.cloudType == 'Free'">定时发布</el-dropdown-item>
+    </el-dropdown-menu>
+  </el-dropdown>
+  <el-button v-else size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+
   <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
   <el-button size="medium" v-if="isCensorButton()" type="success" v-on:click="btnCensorTextClick(false)">违规检测</el-button>
   <el-button size="medium" v-if="isSpellButton()" type="success" v-on:click="btnSpellingCheckClick(false)">文本纠错</el-button>
   <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
   <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
 </el-row>
+
+<el-dialog title="定时发布" :visible.sync="isScheduledDialog">
+  <el-form v-on:submit.native.prevent size="small" ref="scheduledForm" :model="scheduledForm" label-position="top">
+    <el-form-item label="" >
+      <el-switch
+        v-model="scheduledForm.isScheduled"
+        active-text="启用定时发布"
+      ></el-switch>
+      <div class="tips" style="margin-top: 10px;">
+        您可以选择5分钟后的任意时刻定时发布
+      </div>
+    </el-form-item>
+    <el-form-item label="定时发布时间" prop="scheduledDate" :rules="{ required: true, message: '请选择定时发布时间' }">
+      <el-date-picker
+        v-model="scheduledForm.scheduledDate"
+        type="datetime"
+        value-format="yyyy-MM-dd HH:mm:ss"
+        placeholder="请选择定时发布时间">
+      </el-date-picker>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button v-on:click="isScheduledDialog = false">取 消</el-button>
+    <el-button type="primary" v-on:click="btnScheduledSaveClick" :disabled="!scheduledForm.isScheduled">确 定</el-button>
+  </div>
+</el-dialog>
 
 <div class="el-loading-mask" v-if="censorSettings.isCensorChecking || spellSettings.isSpellChecking">
   <div class="step step1">

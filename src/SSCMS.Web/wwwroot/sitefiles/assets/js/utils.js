@@ -85,7 +85,7 @@ var utils = {
       initialFrameHeight: height && height > 0 ? height : 320,
       autoHeightEnabled: false,
       autoFloatEnabled: false,
-      zIndex: 2001,
+      zIndex: 2000,
     });
   },
 

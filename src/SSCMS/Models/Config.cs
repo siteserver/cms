@@ -61,22 +61,28 @@ namespace SSCMS.Models
         public bool IsHomeAgreement { get; set; }
         public string HomeAgreementHtml { get; set; } = @"阅读并接受<a href=""#"">《用户协议》</a>";
         public string HomeWelcomeHtml { get; set; } = @"欢迎使用用户中心";
+        public int CloudUserId { get; set; }
         public string CloudUserName { get; set; }
+        public string CloudMobile { get; set; }
         public string CloudToken { get; set; }
         public CloudType CloudType { get; set; } = CloudType.Free;
         public DateTime CloudExpirationDate { get; set; }
         public bool IsCloudCensorText { get; set; }
-        public bool IsCloudCensorTextAuto { get; set; }
-        public bool IsCloudCensorTextIgnore { get; set; }
-        public bool IsCloudCensorTextWhiteList { get; set; }
+        public bool IsCloudCensorTextAuto { get; set; } = true;
+        public bool IsCloudCensorTextIgnore { get; set; } = true;
+        public bool IsCloudCensorTextWhiteList { get; set; } = true;
         public bool IsCloudSpellingCheck { get; set; }
-        public bool IsCloudSpellingCheckAuto { get; set; }
-        public bool IsCloudSpellingCheckIgnore { get; set; }
-        public bool IsCloudSpellingCheckWhiteList { get; set; }
+        public bool IsCloudSpellingCheckAuto { get; set; } = true;
+        public bool IsCloudSpellingCheckIgnore { get; set; } = true;
+        public bool IsCloudSpellingCheckWhiteList { get; set; } = true;
+        public bool IsCloudBackup { get; set; }
+        public bool IsCloudCdn { get; set; }
+        public bool IsCloudCdnImages { get; set; }
+        public bool IsCloudCdnFiles { get; set; }
         public bool IsCloudVod { get; set; }
         public bool IsCloudImages { get; set; }
         public bool IsCloudSms { get; set; }
-        public bool IsCloudSmsAdmin { get; set; }
+        public bool IsCloudSmsAdmin { get; set; } = true;
         public bool IsCloudSmsAdminAndDisableAccount { get; set; }
         public bool IsCloudSmsUser { get; set; }
         public bool IsCloudMail { get; set; }

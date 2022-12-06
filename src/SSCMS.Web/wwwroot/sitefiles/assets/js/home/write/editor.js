@@ -357,8 +357,8 @@ var methods = {
       url: utils.getCommonUrl(options.name, query),
     };
     if (!options.full) {
-      args.width = options.width ? options.width : 700;
-      args.height = options.height ? options.height : 500;
+      args.width = options.width ? options.width : 750;
+      args.height = options.height ? options.height : 550;
     }
 
     utils.openLayer(args);

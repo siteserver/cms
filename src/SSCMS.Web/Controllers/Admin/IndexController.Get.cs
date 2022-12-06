@@ -235,6 +235,8 @@ namespace SSCMS.Web.Controllers.Admin
             var culture = requestCulture.RequestCulture.UICulture.Name;
             var plugins = enabledPlugins.Select(plugin => new GetPlugin { PluginId = plugin.PluginId, DisplayName = plugin.DisplayName, Version = plugin.Version }).ToList();
 
+            var cloudType = await _cloudManager.GetCloudTypeAsync();
+
             return new GetResult
             {
                 Value = true,
@@ -257,7 +259,8 @@ namespace SSCMS.Web.Controllers.Admin
                     AvatarUrl = admin.AvatarUrl,
                     Level = await _authManager.GetAdminLevelAsync()
                 },
-                IsSafeMode = _settingsManager.IsSafeMode
+                IsSafeMode = _settingsManager.IsSafeMode,
+                CloudType = cloudType,
             };
         }
     }

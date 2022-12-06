@@ -153,37 +153,55 @@
         ]
       },
       "app_settings_cloudSettingsCensor": {
-        "text": "云助手违规检测",
+        "text": "违规检测设置",
         "type": [
           "app"
         ]
       },
       "app_settings_cloudSettingsSpell": {
-        "text": "云助手文本纠错",
+        "text": "文本纠错设置",
+        "type": [
+          "app"
+        ]
+      },
+      "app_settings_cloudSettingsBackup": {
+        "text": "云备份设置",
+        "type": [
+          "app"
+        ]
+      },
+      "app_settings_cloudSettingsCdn": {
+        "text": "CDN加速设置",
         "type": [
           "app"
         ]
       },
       "app_settings_cloudSettingsVod": {
-        "text": "云助手视频设置",
+        "text": "云视频设置",
         "type": [
           "app"
         ]
       },
       "app_settings_cloudSettingsImages": {
-        "text": "云助手免版权图库设置",
+        "text": "免版权图库设置",
         "type": [
           "app"
         ]
       },
       "app_settings_cloudSettingsSms": {
-        "text": "云助手短信设置",
+        "text": "短信集成设置",
         "type": [
           "app"
         ]
       },
       "app_settings_cloudSettingsMail": {
-        "text": "云助手邮件设置",
+        "text": "邮件集成设置",
+        "type": [
+          "app"
+        ]
+      },
+      "app_settings_cloudSettingsTasks": {
+        "text": "定时任务设置",
         "type": [
           "app"
         ]
@@ -837,10 +855,13 @@
           "app_settings_cloudTickets",
           "app_settings_cloudSettingsCensor",
           "app_settings_cloudSettingsSpell",
+          "app_settings_cloudSettingsBackup",
+          "app_settings_cloudSettingsCdn",
           "app_settings_cloudSettingsVod",
           "app_settings_cloudSettingsImages",
           "app_settings_cloudSettingsSms",
           "app_settings_cloudSettingsMail",
+          "app_settings_cloudSettingsTasks",
           "app_settings_cloudSettingsAdmin",
           "app_settings_analysisAdminLogin",
           "app_settings_analysisSiteContent",
@@ -1051,10 +1072,13 @@
               "app_settings_cloudTickets",
               "app_settings_cloudSettingsCensor",
               "app_settings_cloudSettingsSpell",
+              "app_settings_cloudSettingsBackup",
+              "app_settings_cloudSettingsCdn",
               "app_settings_cloudSettingsVod",
               "app_settings_cloudSettingsImages",
               "app_settings_cloudSettingsSms",
               "app_settings_cloudSettingsMail",
+              "app_settings_cloudSettingsTasks",
               "app_settings_cloudSettingsAdmin"
             ],
             "iconClass": "ion-cloud",
@@ -1079,7 +1103,7 @@
                 "order": 102
               },
               "app_settings_cloudSettingsCensor": {
-                "text": "违规检测",
+                "text": "违规检测设置",
                 "iconClass": "el-icon-circle-check",
                 "link": "./clouds/settingsCensor/",
                 "permissions": [
@@ -1088,13 +1112,31 @@
                 "order": 103
               },
               "app_settings_cloudSettingsSpell": {
-                "text": "文本纠错",
+                "text": "文本纠错设置",
                 "iconClass": "el-icon-finished",
                 "link": "./clouds/settingsSpell/",
                 "permissions": [
                   "app_settings_cloudSettingsSpell"
                 ],
                 "order": 104
+              },
+              "app_settings_cloudSettingsBackup": {
+                "text": "云备份设置",
+                "iconClass": "el-icon-refresh",
+                "link": "./clouds/settingsBackup/",
+                "permissions": [
+                  "app_settings_cloudSettingsBackup"
+                ],
+                "order": 105
+              },
+              "app_settings_cloudSettingsCdn": {
+                "text": "CDN加速设置",
+                "iconClass": "el-icon-odometer",
+                "link": "./clouds/settingsCdn/",
+                "permissions": [
+                  "app_settings_cloudSettingsCdn"
+                ],
+                "order": 105
               },
               "app_settings_cloudSettingsVod": {
                 "text": "云视频设置",
@@ -1103,7 +1145,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsVod"
                 ],
-                "order": 105
+                "order": 106
               },
               "app_settings_cloudSettingsImages": {
                 "text": "免版权图库设置",
@@ -1112,25 +1154,34 @@
                 "permissions": [
                   "app_settings_cloudSettingsImages"
                 ],
-                "order": 106
+                "order": 107
               },
               "app_settings_cloudSettingsSms": {
-                "text": "短信设置",
+                "text": "短信集成设置",
                 "iconClass": "el-icon-chat-dot-round",
                 "link": "./clouds/settingsSms/",
                 "permissions": [
                   "app_settings_cloudSettingsSms"
                 ],
-                "order": 107
+                "order": 108
               },
               "app_settings_cloudSettingsMail": {
-                "text": "邮件设置",
+                "text": "邮件集成设置",
                 "iconClass": "el-icon-message",
                 "link": "./clouds/settingsMail/",
                 "permissions": [
                   "app_settings_cloudSettingsMail"
                 ],
-                "order": 108
+                "order": 109
+              },
+              "app_settings_cloudSettingsTasks": {
+                "text": "定时任务设置",
+                "iconClass": "el-icon-time",
+                "link": "./clouds/settingsTasks/",
+                "permissions": [
+                  "app_settings_cloudSettingsTasks"
+                ],
+                "order": 110
               },
               "app_settings_cloudSettingsAdmin": {
                 "text": "后台自定义设置",
@@ -1139,7 +1190,7 @@
                 "permissions": [
                   "app_settings_cloudSettingsAdmin"
                 ],
-                "order": 109
+                "order": 111
               }
             }
           },

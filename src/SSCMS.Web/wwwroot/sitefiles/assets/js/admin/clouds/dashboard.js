@@ -3,6 +3,7 @@ var $urlDisconnect = $url + '/actions/disconnect';
 var $urlCloud = "cms/dashboard";
 
 var data = utils.init({
+  isUpgrade: utils.getQueryBoolean('isUpgrade'),
   isConnect: false,
   iFrameUrl: '',
   cloudType: null,
@@ -67,6 +68,13 @@ var methods = {
       $this.cloudPriceStandard2Year = res.cloudPriceStandard2Year;
       $this.features = res.features;
       $this.counts = res.counts;
+      if ($this.isUpgrade) {
+        setTimeout(function () {
+          var url = location.href;
+          location.href = '#upgrade';
+          history.replaceState(null,null,url);
+        }, 100);
+      }
 
       $this.apiSubmit();
     }).catch(function (error) {
@@ -225,15 +233,6 @@ var methods = {
 
   btnDocsClick: function () {
     window.open('https://sscms.com/docs/v7/');
-  },
-
-  getCloudProduct: function(product) {
-    if (product === 'Censor') return '违规检测';
-    if (product === 'Spell') return '文本纠错';
-    if (product === 'Vod') return '云视频';
-    if (product === 'Sms') return '短信';
-    if (product === 'Mail') return '邮件';
-    return '';
   },
 
   getOriginalAmount: function() {

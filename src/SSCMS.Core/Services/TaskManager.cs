@@ -7,7 +7,7 @@ using SSCMS.Services;
 
 namespace SSCMS.Core.Services
 {
-    public class TaskManager : ITaskManager 
+    public class TaskManager : ITaskManager
     {
         private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems =
             new ConcurrentQueue<Func<CancellationToken, Task>>();

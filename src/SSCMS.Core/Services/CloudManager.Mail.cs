@@ -74,6 +74,31 @@ namespace SSCMS.Core.Services
             return (result.Success, result.ErrorMessage);
         }
 
+        public async Task<(bool success, string errorMessage)> SendMailAsync(string mail, string subject, string url, List<KeyValuePair<string, string>> items)
+        {
+            var templateHtml = await GetMailTemplateHtmlAsync(_pathManager, _cacheManager);
+            var listHtml = await GetMailListHtmlAsync(_pathManager, _cacheManager);
+
+            var list = new StringBuilder();
+            foreach (var kv in items)
+            {
+                list.Append(listHtml.Replace("{{key}}", kv.Key).Replace("{{value}}", kv.Value));
+            }
+
+            var htmlBody = templateHtml
+                .Replace("{{title}}", subject)
+                .Replace("{{url}}", url)
+                .Replace("{{list}}", list.ToString());
+
+            if (string.IsNullOrEmpty(url))
+            {
+                htmlBody = htmlBody.Replace(@"<a class=""btn-link"" href=""""
+            style=""margin: 0;padding: 0;font-family: Helvetica Neue, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;word-break: break-word;display: inline-block;background: #1b9aee;box-shadow: 0 1px 3px 0 rgba(27,154,238,0.12);border-radius: 6px;width: 220px;height: 64px;line-height: 64px;border-radius: 6px;text-align: center;font-size: 24px;color: #fff;text-decoration: none;font-weight: 400;"">查看详情</a>", string.Empty);
+            }
+
+            return await SendMailAsync(mail, subject, htmlBody);
+        }
+
         public static async Task<string> GetMailTemplateHtmlAsync(IPathManager pathManager, ICacheManager cacheManager)
         {
             var htmlPath = pathManager.GetSiteFilesPath("assets/mail/template.html");
@@ -96,7 +121,7 @@ namespace SSCMS.Core.Services
             return html;
         }
 
-        public static async Task SendContentChangedMail(IPathManager pathManager, ICacheManager cacheManager, IMailManager mailManager, IErrorLogRepository errorLogRepository, Site site, Content content, string channelNames, string userName, bool isEdit)
+        public static async Task SendContentChangedMail(IPathManager pathManager, IMailManager mailManager, IErrorLogRepository errorLogRepository, Site site, Content content, string channelNames, string userName, bool isEdit)
         {
             try
             {
@@ -122,13 +147,9 @@ namespace SSCMS.Core.Services
                 }
 
                 var action = isEdit ? "修改" : "添加";
-                var templateHtml = await GetMailTemplateHtmlAsync(pathManager, cacheManager);
-                var listHtml = await GetMailListHtmlAsync(pathManager, cacheManager);
-
+                var subject = $"{action}内容";
                 var url = await pathManager.GetContentUrlByIdAsync(site, content, false);
-
-                var list = new StringBuilder();
-                var keyValueList = new List<KeyValuePair<string, string>>
+                var items = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("内容标题", content.Title),
                     new KeyValuePair<string, string>("栏目", channelNames),
@@ -136,18 +157,8 @@ namespace SSCMS.Core.Services
                     new KeyValuePair<string, string>($"{action}时间", DateTime.Now.ToString("yyyy-MM-dd HH:mm")),
                     new KeyValuePair<string, string>("执行人", userName)
                 };
-                foreach (var kv in keyValueList)
-                {
-                    list.Append(listHtml.Replace("{{key}}", kv.Key).Replace("{{value}}", kv.Value));
-                }
 
-                var subject = $"{action}内容";
-                var htmlBody = templateHtml
-                    .Replace("{{title}}", subject)
-                    .Replace("{{url}}", url)
-                    .Replace("{{list}}", list.ToString());
-
-                await mailManager.SendMailAsync(mailSettings.MailAddress, subject, htmlBody);
+                await mailManager.SendMailAsync(mailSettings.MailAddress, subject, url, items);
             }
             catch (Exception ex)
             {

@@ -25,6 +25,9 @@ namespace SSCMS.Services
             Dictionary<string, string> parameters = null);
 
         Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType,
+            Dictionary<string, string> parameters = null);
+
+        Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType,
             int code);
     }
 }

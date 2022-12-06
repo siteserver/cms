@@ -14,10 +14,14 @@ namespace SSCMS.Core.Services
 {
     public partial class CreateManager
     {
-        public async Task ExecuteAsync(int siteId, CreateType createType, int channelId, int contentId,
-            int fileTemplateId, int specialId)
+        public async Task ExecuteAsync(int siteId, CreateType createType, int channelId = 0, int contentId = 0,
+            int fileTemplateId = 0, int specialId = 0)
         {
-            if (createType == CreateType.Channel)
+            if (createType == CreateType.Index)
+            {
+                await ExecuteChannelAsync(siteId, siteId);
+            }
+            else if (createType == CreateType.Channel)
             {
                 await ExecuteChannelAsync(siteId, channelId);
             }

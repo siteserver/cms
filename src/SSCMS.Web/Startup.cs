@@ -122,7 +122,6 @@ namespace SSCMS.Web
                 // .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
-            services.AddTaskQueue();
 
             services.AddRepositories(assemblies);
             services.AddServices();
@@ -130,6 +129,7 @@ namespace SSCMS.Web
 
             services.AddPseudoServices();
             services.AddPluginServices(pluginManager);
+            services.AddTaskServices();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services

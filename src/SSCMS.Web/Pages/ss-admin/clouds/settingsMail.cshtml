@@ -7,7 +7,7 @@
     <el-card class="box-card">
       <template #header>
         <div class="clearfix">
-          <span>邮件设置</span>
+          <span>邮件集成设置</span>
           <el-button type="primary" v-on:click="btnSubmitClick" size="small" style="float: right; margin-top: -5px;">
             保存设置
           </el-button>
@@ -33,19 +33,19 @@
           </div>
 
           <template v-if="form.isCloudMail">
-            <div style="margin-top: 15px;">
+            <div style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="form.isCloudMailContentAdd" active-text="新增内容时发送邮件通知"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，当有内容新增后系统将发送邮件通知
               </div>
             </div>
-            <div style="margin-top: 15px;">
+            <div style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="form.isCloudMailContentEdit" active-text="修改内容时发送邮件通知"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，当有内容修改后系统将发送邮件通知
               </div>
             </div>
-            <div style="margin-top: 15px;">
+            <div style="margin-top: 15px; margin-left: 30px;">
               <el-form-item label="接受邮件通知邮箱" prop="cloudMailAddress" :rules="{ validator: validateEmail, trigger: 'blur' }">
                 <el-input v-model="form.cloudMailAddress" style="max-width: 400px;"></el-input>
               </el-form-item>

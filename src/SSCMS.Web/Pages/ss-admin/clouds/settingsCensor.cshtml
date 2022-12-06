@@ -39,21 +39,21 @@
               </el-link>
             </div>
     
-            <div v-if="isCloudCensorText" style="margin-top: 15px;">
+            <div v-if="isCloudCensorText" style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="isCloudCensorTextAuto" active-text="保存内容时强制检测"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，当保存内容时系统会自动对包括内容标题、正文、摘要在内的文本进行内容审查，如果识别结果为不合规，系统将禁止保存内容
               </div>
             </div>
     
-            <div v-if="isCloudCensorText" style="margin-top: 15px;">
+            <div v-if="isCloudCensorText" style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="isCloudCensorTextIgnore" active-text="可以忽略违规词"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，可以手动忽略本次检测到的违规词，手动忽略的词语下次检测时依然会作为违规词进行提醒
               </div>
             </div>
     
-            <div v-if="isCloudCensorText" style="margin-top: 15px;">
+            <div v-if="isCloudCensorText" style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="isCloudCensorTextWhiteList" active-text="可以将违规词加入白名单"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，可以手动将检测到的违规词加入白名单，下次检测时白名单内的词语将不再作为违规词进行提醒

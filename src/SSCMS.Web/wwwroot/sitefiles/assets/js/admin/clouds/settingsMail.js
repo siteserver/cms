@@ -35,7 +35,7 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
-      utils.success('邮件发送设置保存成功！');
+      utils.success('邮件集成设置保存成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

@@ -9,6 +9,14 @@ namespace SSCMS.Core.Services
 {
     public partial class CloudManager
     {
+        private class SendSmsRequest
+        {
+            public string PhoneNumbers { get; set; }
+            public SmsCodeType CodeType { get; set; }
+            public string TemplateCode { get; set; }
+            public Dictionary<string, string> Parameters { get; set; }
+        }
+
         [Obsolete]
         public Task<bool> IsEnabledAsync()
         {
@@ -40,19 +48,24 @@ namespace SSCMS.Core.Services
             };
         }
 
-        public Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, string templateCode, Dictionary<string, string> parameters)
+        public async Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, string templateCode, Dictionary<string, string> parameters)
         {
-            throw new System.NotImplementedException();
+            return await SendSmsAsync(phoneNumbers, SmsCodeType.None, templateCode, parameters);
         }
 
-        public class SendSmsRequest
+        public async Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType,
+            Dictionary<string, string> parameters = null)
         {
-            public SmsCodeType Type { get; set; }
-            public string Mobile { get; set; }
-            public int Code { get; set; }
+            return await SendSmsAsync(phoneNumbers, codeType, string.Empty, parameters);
         }
 
         public async Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType, int code)
+        {
+            var parameters = new Dictionary<string, string> { { "code", code.ToString() } };
+            return await SendSmsAsync(phoneNumbers, codeType, string.Empty, parameters);
+        }
+
+        public async Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, SmsCodeType codeType, string templateCode, Dictionary<string, string> parameters)
         {
             var config = await _configRepository.GetAsync();
             var isAuthentication = IsAuthentication(config);
@@ -69,9 +82,10 @@ namespace SSCMS.Core.Services
             var url = GetCloudUrl(RouteSms);
             var (success, result, errorMessage) = await RestUtils.PostAsync<SendSmsRequest, CloudResult>(url, new SendSmsRequest
             {
-                Type = codeType,
-                Mobile = phoneNumbers,
-                Code = code
+                PhoneNumbers = phoneNumbers,
+                CodeType = codeType,
+                TemplateCode = templateCode,
+                Parameters = parameters
             }, config.CloudToken);
 
             if (!success)

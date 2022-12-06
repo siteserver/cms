@@ -67,6 +67,11 @@ var data = utils.init({
   form: null,
   translates: [],
   isPreviewSaving: false,
+  isScheduledDialog: false,
+  scheduledForm: {
+    isScheduled: false,
+    scheduledDate: new Date(),
+  },
   settings: null,
   censorSettings: {
     isCloudCensor: false,
@@ -235,6 +240,8 @@ var methods = {
         contentId: this.contentId,
         content: this.form,
         translates: this.translates,
+        isScheduled: this.scheduledForm.isScheduled,
+        scheduledDate: this.scheduledForm.scheduledDate,
       })
       .then(function (response) {
         var res = response.data;
@@ -642,6 +649,8 @@ var methods = {
         contentId: this.contentId,
         content: this.form,
         translates: this.translates,
+        isScheduled: this.scheduledForm.isScheduled,
+        scheduledDate: this.scheduledForm.scheduledDate,
       })
       .then(function (response) {
         var res = response.data;
@@ -843,8 +852,8 @@ var methods = {
       url: utils.getCommonUrl(options.name, query),
     };
     if (!options.full) {
-      args.width = options.width ? options.width : 700;
-      args.height = options.height ? options.height : 500;
+      args.width = options.width ? options.width : 750;
+      args.height = options.height ? options.height : 550;
     }
 
     utils.openLayer(args);
@@ -856,7 +865,14 @@ var methods = {
     });
   },
 
-  btnSaveClick: function () {
+  btnSaveCommandClick: function (command) {
+    this.scheduledForm.isScheduled = true;
+    this.scheduledForm.scheduledDate = new Date();
+    this.scheduledForm.scheduledDate.setDate(this.scheduledForm.scheduledDate.getDate() + 1);
+    this.isScheduledDialog = command === 'scheduled';
+  },
+
+  btnSubmitClick: function () {
     var $this = this;
     this.syncEditors();
     this.$refs.form.validate(function (valid) {
@@ -867,6 +883,28 @@ var methods = {
         utils.error("保存失败，请检查表单值是否正确");
       }
     });
+  },
+
+  btnScheduledSaveClick: function () {
+    var $this = this;
+    this.$refs.scheduledForm.validate(function (valid) {
+      if (valid) {
+        var minutesDate = new Date();
+        minutesDate.setMinutes(minutesDate.getMinutes() + 5);
+        if (!$this.scheduledForm.scheduledDate || (new Date($this.scheduledForm.scheduledDate)).getTime() < minutesDate.getTime()) {
+          utils.error("定时发布失败，定时发布时间只能是5分钟之后的某一时刻");
+          return;
+        }
+
+        $this.isScheduledDialog = false;
+        $this.btnSubmitClick();
+      }
+    });
+  },
+
+  btnSaveClick: function () {
+    this.scheduledForm.isScheduled = false;
+    this.btnSubmitClick();
   },
 
   btnCensorTextClick: function (isSave) {

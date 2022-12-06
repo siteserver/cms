@@ -135,6 +135,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 IsCloudSpell = _spellManager is ICloudManager,
                 SpellSettings = await _spellManager.GetSpellSettingsAsync(),
                 IsCloudImages = await _cloudManager.IsImagesAsync(),
+                CloudType = await _cloudManager.GetCloudTypeAsync(),
             };
 
             return new GetResult

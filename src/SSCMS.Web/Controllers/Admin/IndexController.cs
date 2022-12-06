@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -24,6 +25,7 @@ namespace SSCMS.Web.Controllers.Admin
         //private readonly IStringLocalizer<IndexController> _local;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly ICloudManager _cloudManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
@@ -33,10 +35,11 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _cloudManager = cloudManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
             _configRepository = configRepository;
@@ -85,6 +88,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string PreviewUrl { get; set; }
             public Local Local { get; set; }
             public bool IsSafeMode { get; set; }
+            public CloudType CloudType { get; set; }
         }
 
         public class SetLanguageRequest

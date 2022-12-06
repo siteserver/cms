@@ -31,7 +31,7 @@ body,textarea{font-family:'Microsoft YaHei',sans-serif}
 .form-fixed .el-form-item--mini.el-form-item,.form-fixed .el-form-item--small.el-form-item{min-width:350px}
 .el-progress-bar__outer{background-color:#909399!important}
 .tips .el-link{margin-top:-3px}
-.el-loading-mask.is-fullscreen, .el-loading-mask {z-index: 2001 !important;}
+.el-time-spinner__item {text-align:center;}
 
 @-webkit-keyframes detection-translate{
   from{-webkit-transform:rotate(225deg) translateX(25px) rotate(-225deg);transform:rotate(225deg) translateX(25px) rotate(-225deg)}

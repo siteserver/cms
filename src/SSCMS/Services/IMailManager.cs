@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SSCMS.Dto;
 
@@ -15,5 +16,7 @@ namespace SSCMS.Services
         Task<MailSettings> GetMailSettingsAsync();
 
         Task<(bool success, string errorMessage)> SendMailAsync(string mail, string subject, string htmlBody);
+
+        Task<(bool success, string errorMessage)> SendMailAsync(string mail, string subject, string url, List<KeyValuePair<string, string>> items);
     }
 }

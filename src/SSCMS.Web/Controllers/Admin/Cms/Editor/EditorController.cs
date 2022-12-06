@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -31,7 +33,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly ICloudManager _cloudManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
-        private readonly ICacheManager _cacheManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
         private readonly ICensorManager _censorManager;
@@ -47,16 +48,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly ITemplateRepository _templateRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
         private readonly ITranslateRepository _translateRepository;
+        private readonly IScheduledTaskRepository _scheduledTaskRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, IMailManager mailManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IErrorLogRepository errorLogRepository)
+        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, IMailManager mailManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IScheduledTaskRepository scheduledTaskRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _cloudManager = cloudManager;
             _createManager = createManager;
             _pathManager = pathManager;
-            _cacheManager = cacheManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
             _censorManager = censorManager;
@@ -72,6 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _templateRepository = templateRepository;
             _contentCheckRepository = contentCheckRepository;
             _translateRepository = translateRepository;
+            _scheduledTaskRepository = scheduledTaskRepository;
             _errorLogRepository = errorLogRepository;
         }
 
@@ -87,6 +89,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public bool IsCloudSpell { get; set; }
             public SpellSettings SpellSettings { get; set; }
             public bool IsCloudImages { get; set; }
+            public CloudType CloudType { get; set; }
         }
 
         public class GetResult
@@ -128,6 +131,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public int ContentId { get; set; }
             public Content Content { get; set; }
             public List<Translate> Translates { get; set; }
+            public bool IsScheduled { get; set; }
+            public DateTime ScheduledDate { get; set; }
         }
 
         public class CensorRequest

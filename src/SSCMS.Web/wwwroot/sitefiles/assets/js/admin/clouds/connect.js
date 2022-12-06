@@ -17,10 +17,12 @@ var methods = {
       'message',
       function(e) {
         if (e.origin !== cloud.host) return;
+        var userId = e.data.userId;
         var userName = e.data.userName;
+        var mobile = e.data.mobile;
         var token = e.data.token;
-        if (userName && token) {
-          $this.apiSubmit(userName, token);
+        if (userId && userName && token) {
+          $this.apiSubmit(userId, userName, mobile, token);
         }
       },
       false,
@@ -45,13 +47,15 @@ var methods = {
     });
   },
 
-  apiSubmit: function(userName, token) {
+  apiSubmit: function(userId, userName, mobile, token) {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($url, {
-      userName,
-      token,
+      userId: userId,
+      userName: userName,
+      mobile: mobile,
+      token: token,
     }).then(function (response) {
       var res = response.data;
       if (!res.value) return;
