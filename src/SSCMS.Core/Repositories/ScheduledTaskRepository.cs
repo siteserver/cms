@@ -48,8 +48,7 @@ namespace SSCMS.Core.Repositories
         public async Task<ScheduledTask> GetNextAsync()
         {
             var tasks = await GetAllAsync();
-            // var nextTask = tasks.Where(x => !x.IsDisabled && x.ScheduledDate.HasValue && x.ScheduledDate.Value < DateTime.Now).OrderBy(x => x.ScheduledDate).FirstOrDefault();
-            var nextTask = tasks.Where(x => !x.IsDisabled && x.ScheduledDate.HasValue).OrderBy(x => x.ScheduledDate).FirstOrDefault();
+            var nextTask = tasks.Where(x => !x.IsDisabled && x.ScheduledDate.HasValue && x.ScheduledDate.Value < DateTime.Now).OrderBy(x => x.ScheduledDate).FirstOrDefault();
             return nextTask;
         }
 
@@ -153,7 +152,7 @@ namespace SSCMS.Core.Repositories
         {
             var now = DateTime.Now;
             var startDate = new DateTime(now.Year, now.Month, now.Day, StringUtils.GetRandomInt(0, 6), StringUtils.GetRandomInt(0, 59), 0);
-            startDate = startDate.AddDays(-1);
+            // startDate = startDate.AddDays(-1);
             var task = new ScheduledTask
             {        
                 Title = TaskType.CloudSync.GetDisplayName(),
