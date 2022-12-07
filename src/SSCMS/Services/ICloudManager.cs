@@ -24,5 +24,7 @@ namespace SSCMS.Services
         Task<OssCredentials> GetOssCredentialsAsync();
 
         Task<bool> IsImagesAsync();
+
+        Task BackupAsync(long size);
     }
 }

@@ -52,6 +52,7 @@
       <el-table-column label="状态" width="120">
         <template #default="scope">
           <el-link v-if="scope.row.isDisabled" type="danger" :underline="false" v-on:click.prevent>禁 用</el-link>
+          <el-link v-else-if="scope.row.isRunning" type="warning" icon="el-icon-loading" :underline="false" v-on:click.prevent>运行中...</el-link>
           <el-link v-else type="success" :underline="false" v-on:click.prevent>准备就绪</el-link>
         </template>
       </el-table-column>
@@ -78,7 +79,7 @@
       <el-table-column label="上次运行结果">
         <template #default="scope">
           <template v-if="scope.row.latestEndDate">
-            <el-link v-if="scope.row.isLatestSuccess" type="success" :underline="false" v-on:click.prevent>运行成功完成</el-link>
+            <el-link v-if="scope.row.isLatestSuccess" type="success" :underline="false" v-on:click.prevent>运行成功</el-link>
             <el-link v-else type="danger" :underline="false" v-on:click.prevent>运行失败：{{ scope.row.latestErrorMessage }}</el-link>
           </template>
         </template>
@@ -180,10 +181,10 @@
               <el-option v-for="taskInterval in taskIntervals" :key="taskInterval.value" :label="taskInterval.label" :value="taskInterval.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="form.taskInterval === 'Everyday'" label="间隔" prop="every" :rules="{ required: true, message: '请输入间隔' }">
+          <el-form-item v-if="form.taskInterval === 'EveryHour' || form.taskInterval === 'EveryDay'" label="间隔" prop="every" :rules="{ required: true, message: '请输入间隔' }">
             <el-input v-model="form.every" style="max-width: 50px;"></el-input>
             <span class="tips">
-              天（每{{form.every}}天执行一次）
+              {{form.taskInterval === 'EveryHour' ? '小时' : '天'}}（每{{form.every + (form.taskInterval === 'EveryHour' ? '小时' : '天')}}执行一次）
             </span>
           </el-form-item>
           <el-form-item v-if="form.taskInterval == 'EveryWeek'" label="" prop="weeks" :rules="{ required: true, message: '请选择' }">

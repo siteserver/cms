@@ -1,9 +1,9 @@
 ﻿using System;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Core
+namespace SSCMS.Dto
 {
-    public class TextLogInfo
+    public class TextLog
     {
         public DateTime DateTime { private get; set; }
         public string Detail { private get; set; }

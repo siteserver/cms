@@ -9,6 +9,7 @@ using Quartz;
 using Quartz.Impl;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Dto;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -24,6 +25,7 @@ namespace SSCMS.Cli
         public static string[] CommandExtras { get; private set; }
 
         private readonly ISettingsManager _settingsManager;
+        private readonly IConsoleUtils _console;
 
         public Application(ISettingsManager settingsManager)
         {
@@ -35,6 +37,7 @@ namespace SSCMS.Cli
             };
 
             _settingsManager = settingsManager;
+            _console = new ConsoleUtils();
         }
 
         public async Task RunAsync(string[] args)
@@ -89,17 +92,20 @@ namespace SSCMS.Cli
             CommandArgs = commandArgs.ToArray();
             CommandExtras = commandExtras.ToArray();
 
-            if (!isJobService)
+            using (_console)
             {
-                await RunHelpAsync(CommandName);
-            }
-            else if (!string.IsNullOrEmpty(_repeat))
-            {
-                await RunRepeatAsync();
-            }
-            else
-            {
-                await RunExecuteAsync(CommandName, CommandArgs, CommandExtras, null);
+                if (!isJobService)
+                {
+                    await RunHelpAsync(CommandName);
+                }
+                else if (!string.IsNullOrEmpty(_repeat))
+                {
+                    await RunRepeatAsync();
+                }
+                else
+                {
+                    await RunExecuteAsync(CommandName, CommandArgs, CommandExtras, null);
+                }
             }
         }
 
@@ -107,22 +113,22 @@ namespace SSCMS.Cli
         {
             if (_isHelp || string.IsNullOrEmpty(commandName))
             {
-                await Console.Out.WriteLineAsync("Welcome to SSCMS Command Line");
-                await Console.Out.WriteLineAsync();
+                await _console.WriteLineAsync("Welcome to SSCMS Command Line");
+                await _console.WriteLineAsync();
 
                 var services = GetJobServices();
                 foreach (var service in services)
                 {
-                    await WriteUtils.PrintRowLine();
-                    await WriteUtils.PrintRow(service.CommandName);
-                    await WriteUtils.PrintRowLine();
+                    await _console.WriteRowLineAsync();
+                    await _console.WriteRowAsync(service.CommandName);
+                    await _console.WriteRowLineAsync();
 
-                    service.PrintUsage();
+                    await service.WriteUsageAsync(_console);
                 }
             }
             else
             {
-                Console.WriteLine($"'{commandName}' is not a sscms command. See 'sscms --help'");
+                await _console.WriteLineAsync($"'{commandName}' is not a sscms command. See 'sscms --help'");
             }
         }
 
@@ -155,7 +161,7 @@ namespace SSCMS.Cli
             }
             catch (Exception ex)
             {
-                await WriteUtils.PrintErrorAsync(ex.Message);
+                await _console.WriteErrorAsync(ex.Message);
             }
         }
 
@@ -172,12 +178,12 @@ namespace SSCMS.Cli
             }
             catch (Exception ex)
             {
-                await WriteUtils.PrintErrorAsync(ex.Message);
+                await _console.WriteErrorAsync(ex.Message);
 
                 try
                 {
                     var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
-                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                    await FileUtils.AppendErrorLogAsync(errorLogFilePath, new TextLog
                     {
                         DateTime = DateTime.Now,
                         Detail = ex.Message,

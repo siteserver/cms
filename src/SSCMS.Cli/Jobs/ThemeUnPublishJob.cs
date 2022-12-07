@@ -4,6 +4,7 @@ using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -32,22 +33,23 @@ namespace SSCMS.Cli.Jobs
             _cliApiService = cliApiService;
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
-            Console.WriteLine("Summary: unpublishes a theme.");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName} <pluginId>");
+            await console.WriteLineAsync("Summary: unpublishes a theme.");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -60,14 +62,14 @@ namespace SSCMS.Cli.Jobs
             }
             if (string.IsNullOrEmpty(_name))
             {
-                await WriteUtils.PrintErrorAsync("missing required name");
+                await console.WriteErrorAsync("missing required name");
                 return;
             }
 
             var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
                 return;
             }
 
@@ -75,11 +77,11 @@ namespace SSCMS.Cli.Jobs
             (success, failureMessage) = await _cliApiService.ThemeUnPublishAsync(_name);
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync($"Theme {_name} unpublished .");
+                await console.WriteSuccessAsync($"Theme {_name} unpublished .");
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

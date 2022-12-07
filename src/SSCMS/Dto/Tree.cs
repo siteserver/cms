@@ -1,13 +1,13 @@
 ﻿using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Core
+namespace SSCMS.Dto
 {
-    public class TreeInfo
+    public class Tree
     {
         public string DirectoryPath { get; }
 
-        public TreeInfo(ISettingsManager settingsManager,  string directory)
+        public Tree(ISettingsManager settingsManager,  string directory)
         {
             DirectoryPath = PathUtils.Combine(settingsManager.ContentRootPath, directory);
         }

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Mono.Options;
+﻿using Mono.Options;
 using SSCMS.Configuration;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -29,45 +26,6 @@ namespace SSCMS.Cli.Core
             var filePath = PathUtils.Combine(settingsManager.ContentRootPath, "sscms-cli.error.log");
             FileUtils.DeleteFileIfExists(filePath);
             return filePath;
-        }
-
-        public static async Task AppendErrorLogsAsync(string filePath, List<TextLogInfo> logs)
-        {
-            if (logs == null || logs.Count <= 0) return;
-
-            if (!FileUtils.IsFileExists(filePath))
-            {
-                await FileUtils.WriteTextAsync(filePath, string.Empty);
-            }
-
-            var builder = new StringBuilder();
-
-            foreach (var log in logs)
-            {
-                builder.AppendLine();
-                builder.Append(log);
-                builder.AppendLine();
-            }
-
-            await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
-        }
-
-        public static async Task AppendErrorLogAsync(string filePath, TextLogInfo log)
-        {
-            if (log == null) return;
-
-            if (!FileUtils.IsFileExists(filePath))
-            {
-                await FileUtils.WriteTextAsync(filePath, string.Empty);
-            }
-
-            var builder = new StringBuilder();
-
-            builder.AppendLine();
-            builder.Append(log);
-            builder.AppendLine();
-
-            await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
 
         public static string GetConfigPath(ISettingsManager settingsManager)

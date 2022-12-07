@@ -11,14 +11,14 @@ namespace SSCMS.Core.Services
         {
             if (task.PublishSiteId == 0 || task.PublishChannelId == 0 || task.PublishContentId == 0) return;
 
-            var site = await _siteRepository.GetAsync(task.PublishSiteId);
-            var channel = await _channelRepository.GetAsync(task.PublishChannelId);
-            var content = await _contentRepository.GetAsync(site, channel,  task.PublishContentId);
+            var site = await _databaseManager.SiteRepository.GetAsync(task.PublishSiteId);
+            var channel = await _databaseManager.ChannelRepository.GetAsync(task.PublishChannelId);
+            var content = await _databaseManager.ContentRepository.GetAsync(site, channel,  task.PublishContentId);
 
             content.Checked = true;
             content.CheckedLevel = 0;
 
-            await _contentRepository.UpdateAsync(site, channel, content);
+            await _databaseManager.ContentRepository.UpdateAsync(site, channel, content);
 
             await _createManager.ExecuteAsync(site.Id, CreateType.Content, channel.Id, content.Id);
             
@@ -36,7 +36,7 @@ namespace SSCMS.Core.Services
                 await _createManager.ExecuteAsync(site.Id, CreateType.Channel, theChannelId);
             }
 
-            await _scheduledTaskRepository.DeleteAsync(task.Id);
+            await _databaseManager.ScheduledTaskRepository.DeleteAsync(task.Id);
         }
     }
 }

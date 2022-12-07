@@ -40,29 +40,30 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: publish plugin to marketplace");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: publish plugin to marketplace");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
                 return;
             }
 
@@ -79,7 +80,7 @@ namespace SSCMS.Cli.Jobs
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
             if (plugin == null)
             {
-                await WriteUtils.PrintErrorAsync(errorMessage);
+                await console.WriteErrorAsync(errorMessage);
                 return;
             }
 
@@ -106,7 +107,7 @@ namespace SSCMS.Cli.Jobs
                 }
                 else
                 {
-                    await WriteUtils.PrintErrorAsync($"Invalid plugin version '{_version}'");
+                    await console.WriteErrorAsync($"Invalid plugin version '{_version}'");
                     return;
                 }
 
@@ -116,7 +117,7 @@ namespace SSCMS.Cli.Jobs
                     (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
                     if (plugin == null)
                     {
-                        await WriteUtils.PrintErrorAsync(errorMessage);
+                        await console.WriteErrorAsync(errorMessage);
                         return;
                     }
                 }
@@ -126,19 +127,19 @@ namespace SSCMS.Cli.Jobs
             var zipPath = PluginPackageJob.Package(_pathManager, plugin);
             var fileSize = FileUtils.GetFileSizeByFilePath(zipPath);
 
-            await Console.Out.WriteLineAsync($"Packaged: {zipPath}");
-            await Console.Out.WriteLineAsync($"Publishing {packageId} ({fileSize})...");
+            await console.WriteLineAsync($"Packaged: {zipPath}");
+            await console.WriteLineAsync($"Publishing {packageId} ({fileSize})...");
 
             bool success;
             (success, failureMessage) = await _cliApiService.PluginPublishAsync(plugin.Publisher, zipPath);
             if (success)
             {
                 
-                await WriteUtils.PrintSuccessAsync($"Published {packageId}, your plugin will live at {CloudUtils.Www.GetPluginUrl(plugin.Publisher, plugin.Name)}.");
+                await console.WriteSuccessAsync($"Published {packageId}, your plugin will live at {CloudUtils.Www.GetPluginUrl(plugin.Publisher, plugin.Name)}.");
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

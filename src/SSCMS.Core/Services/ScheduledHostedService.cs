@@ -20,32 +20,22 @@ namespace SSCMS.Core.Services
         private readonly Ping _ping;
         private readonly ILogger<ScheduledHostedService> _logger;
         private static readonly TimeSpan FREQUENCY = TimeSpan.FromSeconds(5);
+        private readonly ISettingsManager _settingsManager;
         private readonly ICloudManager _cloudManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
-        private readonly IConfigRepository _configRepository;
-        private readonly IScheduledTaskRepository _scheduledTaskRepository;
-        private readonly ISiteRepository _siteRepository;
-        private readonly IChannelRepository _channelRepository;
-        private readonly IContentRepository _contentRepository;
-        private readonly IStorageFileRepository _storageFileRepository;
-        private readonly IErrorLogRepository _errorLogRepository;
+        private readonly IDatabaseManager _databaseManager;
 
         public ScheduledHostedService(ILogger<ScheduledHostedService> logger, IServiceProvider serviceProvider)
         {
             _ping = new Ping();
             _logger = logger;
             serviceProvider = serviceProvider.CreateScope().ServiceProvider;
+            _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
             _cloudManager = serviceProvider.GetRequiredService<ICloudManager>();
             _createManager = serviceProvider.GetRequiredService<ICreateManager>();
             _pathManager = serviceProvider.GetRequiredService<IPathManager>();
-            _configRepository = serviceProvider.GetRequiredService<IConfigRepository>();
-            _scheduledTaskRepository = serviceProvider.GetRequiredService<IScheduledTaskRepository>();
-            _siteRepository = serviceProvider.GetRequiredService<ISiteRepository>();
-            _channelRepository = serviceProvider.GetRequiredService<IChannelRepository>();
-            _contentRepository = serviceProvider.GetRequiredService<IContentRepository>();
-            _storageFileRepository = serviceProvider.GetRequiredService<IStorageFileRepository>();
-            _errorLogRepository = serviceProvider.GetRequiredService<IErrorLogRepository>();
+            _databaseManager = serviceProvider.GetRequiredService<IDatabaseManager>();
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -57,7 +47,7 @@ namespace SSCMS.Core.Services
                 ScheduledTask task = null;
                 try
                 {
-                    task = await _scheduledTaskRepository.GetNextAsync();
+                    task = await _databaseManager.ScheduledTaskRepository.GetNextAsync();
                 }
                 catch (Exception ex)
                 {
@@ -65,47 +55,84 @@ namespace SSCMS.Core.Services
                 }
 
                 if (task == null) continue;
+                await ExecuteTaskAsync(task, stoppingToken);
+            }
+        }
 
-                try
+        public async Task ExecuteTaskAsync(ScheduledTask task, CancellationToken stoppingToken)
+        {
+            try
+            {
+                task.IsRunning = true;
+                task.LatestStartDate = DateTime.Now;
+                await _databaseManager.ScheduledTaskRepository.UpdateAsync(task);
+
+                var running = RunTaskAsync(task);
+                var cancelTask = Task.Delay(TimeSpan.FromMinutes(task.Timeout), stoppingToken);
+
+                //double await so exceptions from either task will bubble up
+                await await Task.WhenAny(running, cancelTask);
+
+                task.IsRunning = false;
+                task.LatestEndDate = DateTime.Now;
+
+                if (running.IsCompletedSuccessfully)
                 {
-                    task.LatestStartDate = DateTime.Now;
-
-                    var running = RunTaskAsync(task);
-                    var cancelTask = Task.Delay(TimeSpan.FromMinutes(task.Timeout), stoppingToken);
-
-                    //double await so exceptions from either task will bubble up
-                    await await Task.WhenAny(running, cancelTask);
-
-                    if (running.IsCompletedSuccessfully)
-                    {
-                        task.IsLatestSuccess = true;
-                        task.LatestEndDate = DateTime.Now;
-                        task.LatestFailureCount = 0;
-                        task.LatestErrorMessage = string.Empty;
-                        await _scheduledTaskRepository.UpdateAsync(task);
-                    }
-                    else
-                    {
-                        task.IsLatestSuccess = false;
-                        task.LatestEndDate = DateTime.Now;
-                        task.LatestFailureCount++;
-                        task.LatestErrorMessage = $"任务执行超时（{task.Timeout}分钟）";
-                        await _scheduledTaskRepository.UpdateAsync(task);
-                    }
+                    task.IsLatestSuccess = true;
+                    task.LatestFailureCount = 0;
+                    task.LatestErrorMessage = string.Empty;
+                    await _databaseManager.ScheduledTaskRepository.UpdateAsync(task);
                 }
-                catch (Exception ex)
+                else
                 {
                     task.IsLatestSuccess = false;
                     task.LatestEndDate = DateTime.Now;
                     task.LatestFailureCount++;
-                    task.LatestErrorMessage = ex.Message;
-                    await _scheduledTaskRepository.UpdateAsync(task);
-
-                    await _errorLogRepository.AddErrorLogAsync(ex);
-                    _logger.LogError(ex.Message);
+                    task.LatestErrorMessage = $"任务执行超时（{task.Timeout}分钟）";
+                    await _databaseManager.ScheduledTaskRepository.UpdateAsync(task);
                 }
+            }
+            catch (Exception ex)
+            {
+                task.IsRunning = false;
+                task.IsLatestSuccess = false;
+                task.LatestEndDate = DateTime.Now;
+                task.LatestFailureCount++;
+                task.LatestErrorMessage = ex.Message;
+                await _databaseManager.ScheduledTaskRepository.UpdateAsync(task);
 
+                await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex);
+                _logger.LogError(ex.Message);
+            }
+
+            try
+            {
                 await NoticeAsync(task);
+            }
+            catch (Exception ex)
+            {
+                await _databaseManager.ErrorLogRepository.AddErrorLogAsync(ex);
+                _logger.LogError(ex.Message);
+            }
+        }
+
+        private async Task RunTaskAsync(ScheduledTask task)
+        {
+            if (task.TaskType == TaskType.Create)
+            {
+                await CreateAsync(task);
+            }
+            else if (task.TaskType == TaskType.Ping)
+            {
+                await PingAsync(task);
+            }
+            else if (task.TaskType == TaskType.Publish)
+            {
+                await PublishAsync(task);
+            }
+            else if (task.TaskType == TaskType.CloudSync)
+            {
+                await CloudSyncAsync(task);
             }
         }
 
@@ -163,27 +190,6 @@ namespace SSCMS.Core.Services
                         await _cloudManager.SendMailAsync(task.NoticeMail, "任务执行失败", string.Empty, items);
                     }
                 }
-            }
-
-        }
-
-        private async Task RunTaskAsync(ScheduledTask task)
-        {
-            if (task.TaskType == TaskType.Create)
-            {
-                await CreateAsync(task);
-            }
-            else if (task.TaskType == TaskType.Ping)
-            {
-                await PingAsync(task);
-            }
-            else if (task.TaskType == TaskType.Publish)
-            {
-                await PublishAsync(task);
-            }
-            else if (task.TaskType == TaskType.CloudSync)
-            {
-                await CloudSyncAsync(task);
             }
         }
     }

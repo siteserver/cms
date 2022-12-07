@@ -4,6 +4,7 @@ using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -38,43 +39,44 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: user login");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: user login");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             if (string.IsNullOrEmpty(_account))
             {
-                _account = ReadUtils.GetString("Username:");
+                _account = console.GetString("Username:");
             }
 
             if (string.IsNullOrEmpty(_password))
             {
-                _password = ReadUtils.GetPassword("Password:");
+                _password = console.GetPassword("Password:");
             }
 
             var (success, failureMessage) = await _cliApiService.LoginAsync(_account, _password);
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync("you have successful logged in");
+                await console.WriteSuccessAsync("you have successful logged in");
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

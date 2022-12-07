@@ -6,6 +6,7 @@ using Datory;
 using Newtonsoft.Json.Linq;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Dto;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -20,7 +21,7 @@ namespace SSCMS.Cli.Services
             _settingsManager = settingsManager;
         }
 
-        public async Task<List<string>> RestoreAsync(List<string> includes, List<string> excludes, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        public async Task<List<string>> RestoreAsync(IConsoleUtils console, List<string> includes, List<string> excludes, string tablesFilePath, Tree tree, string errorLogFilePath)
         {
             var tableNames =
                 TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -40,45 +41,44 @@ namespace SSCMS.Cli.Services
                         if (ListUtils.ContainsIgnoreCase(excludes, tableName)) continue;
                     }
 
-                    var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);
+                    var metadataFilePath = tree.GetTableMetadataFilePath(tableName);
 
                     if (!FileUtils.IsFileExists(metadataFilePath)) continue;
 
-                    var tableInfo =
-                        TranslateUtils.JsonDeserialize<TableInfo>(
+                    var table =
+                        TranslateUtils.JsonDeserialize<Table>(
                             await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
 
-                    await WriteUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
+                    await console.WriteRowAsync(tableName, table.TotalCount.ToString("#,0"));
 
                     if (await _settingsManager.Database.IsTableExistsAsync(tableName))
                     {
                         await _settingsManager.Database.DropTableAsync(tableName);
                     }
 
-                    await _settingsManager.Database.CreateTableAsync(tableName, tableInfo.Columns);
+                    await _settingsManager.Database.CreateTableAsync(tableName, table.Columns);
 
-                    if (tableInfo.RowFiles.Count > 0)
+                    if (table.Rows.Count > 0)
                     {
-                        using var progress = new ProgressBar();
-                        for (var i = 0; i < tableInfo.RowFiles.Count; i++)
+                        for (var i = 0; i < table.Rows.Count; i++)
                         {
-                            progress.Report((double)i / tableInfo.RowFiles.Count);
+                            console.Report((double)i / table.Rows.Count);
 
-                            var fileName = tableInfo.RowFiles[i];
+                            var fileName = table.Rows[i];
 
                             var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
-                                await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
+                                await FileUtils.ReadTextAsync(tree.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
 
                             try
                             {
                                 var repository = new Repository(_settingsManager.Database, tableName,
-                                    tableInfo.Columns);
+                                    table.Columns);
                                 await repository.BulkInsertAsync(objects);
                             }
                             catch (Exception exception)
                             {
                                 errorTableNames.Add(tableName);
-                                await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                                await FileUtils.AppendErrorLogAsync(errorLogFilePath, new TextLog
                                 {
                                     DateTime = DateTime.Now,
                                     Detail = $"插入表 {tableName}, 文件名 {fileName}",
@@ -91,7 +91,7 @@ namespace SSCMS.Cli.Services
                 catch (Exception ex)
                 {
                     errorTableNames.Add(tableName);
-                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                    await FileUtils.AppendErrorLogAsync(errorLogFilePath, new TextLog
                     {
                         DateTime = DateTime.Now,
                         Detail = $"插入表 {tableName}",
@@ -100,7 +100,7 @@ namespace SSCMS.Cli.Services
                 }
             }
 
-            await WriteUtils.PrintRowLineAsync();
+            await console.WriteRowLineAsync();
 
             return errorTableNames;
 

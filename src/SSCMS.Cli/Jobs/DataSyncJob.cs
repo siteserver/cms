@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Dto;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -72,22 +73,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: sync backup files to database");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: sync backup files to database");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -97,30 +99,20 @@ namespace SSCMS.Cli.Jobs
                 directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
             }
 
-            var treeInfo = new TreeInfo(_settingsManager, directory);
-            DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
+            var tree = new Tree(_settingsManager, directory);
+            DirectoryUtils.CreateDirectoryIfNotExists(tree.DirectoryPath);
 
             var backupConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _from);
             if (!FileUtils.IsFileExists(backupConfigPath))
             {
-                await WriteUtils.PrintErrorAsync($"The sscms configuration file does not exist: {backupConfigPath}");
+                await console.WriteErrorAsync($"The sscms configuration file does not exist: {backupConfigPath}");
                 return;
             }
-            //WebConfigUtils.Load(_settingsManager.ContentRootPath, backupWebConfigPath);
-            //if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-            //{
-            //    await CliUtils.PrintErrorAsync($"{backupWebConfigPath} 中数据库连接字符串 connectionString 未设置");
-            //    return;
-            //}
-
-            //await Console.Out.WriteLineAsync($"备份数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
-            //await Console.Out.WriteLineAsync($"备份连接字符串: {WebConfigUtils.ConnectionString}");
-            //await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
             var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
+                await console.WriteErrorAsync($"Unable to connect to database, error message:{errorMessage}");
                 return;
             }
 
@@ -135,33 +127,26 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Tracking");
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
-            await DataBackupJob.Backup(_settingsManager, _databaseManager, _includes, _excludes, _maxRows, _pageSize, treeInfo, errorLogFilePath);
+            await _databaseManager.BackupAsync(console, _includes, _excludes, _maxRows, _pageSize, tree, errorLogFilePath);
 
             var restoreConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _to);
             if (!FileUtils.IsFileExists(restoreConfigPath))
             {
-                await WriteUtils.PrintErrorAsync($"The sscms configuration file does not exist: {restoreConfigPath}");
+                await console.WriteErrorAsync($"The sscms configuration file does not exist: {restoreConfigPath}");
                 return;
             }
-            //WebConfigUtils.Load(_settingsManager.ContentRootPath, restoreWebConfigPath);
-            //if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-            //{
-            //    await CliUtils.PrintErrorAsync($"{restoreWebConfigPath} 中数据库连接字符串 connectionString 未设置");
-            //    return;
-            //}
-            //await Console.Out.WriteLineAsync($"恢复数据库类型: {_settingsManager.Database.DatabaseType.GetValue()}");
-            //await Console.Out.WriteLineAsync($"恢复连接字符串: {WebConfigUtils.ConnectionString}");
+
             (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
+                await console.WriteErrorAsync($"Unable to connect to database, error message:{errorMessage}");
                 return;
             }
 
-            await _restoreService.RestoreAsync(_includes, _excludes, treeInfo.DirectoryPath, treeInfo, errorLogFilePath);
+            await _restoreService.RestoreAsync(console, _includes, _excludes, tree.DirectoryPath, tree, errorLogFilePath);
 
-            await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintSuccessAsync("sync database successfully!");
+            await console.WriteRowLineAsync();
+            await console.WriteSuccessAsync("sync database successfully!");
         }
     }
 }

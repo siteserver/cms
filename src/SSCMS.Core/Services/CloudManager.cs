@@ -12,6 +12,8 @@ namespace SSCMS.Core.Services
 {
     public partial class CloudManager : ICloudManager
     {
+        
+        private const string RouteBackup = "backup";
         private const string RouteGetDownloadUrl = "clouds/actions/getDownloadUrl";
         private const string RouteGetOssCredentials = "clouds/actions/getOssCredentials";
         private const string RouteCensor = "censor";

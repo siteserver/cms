@@ -29,22 +29,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
-            Console.WriteLine("Summary: show plugin metadata");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName} <pluginId>");
+            await console.WriteLineAsync("Summary: show plugin metadata");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -52,11 +53,11 @@ namespace SSCMS.Cli.Jobs
 
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync(TranslateUtils.JsonSerialize(result));
+                await console.WriteSuccessAsync(TranslateUtils.JsonSerialize(result));
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

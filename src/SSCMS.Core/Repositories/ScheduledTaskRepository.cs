@@ -63,7 +63,42 @@ namespace SSCMS.Core.Repositories
                 if (task.StartDate < now) return null;
                 date = task.StartDate;
             }
-            else if (task.TaskInterval == TaskInterval.Everyday)
+            else if (task.TaskInterval == TaskInterval.EveryHour)
+            {
+                if (task.LatestStartDate.HasValue)
+                {
+                    var ts = new TimeSpan(now.Ticks - task.LatestStartDate.Value.Ticks);
+                    if (ts.Hours > task.Every)
+                    {
+                        date = new DateTime(now.Year, now.Month, now.Day, now.Hour, task.StartDate.Minute, task.StartDate.Second);
+                        if (date < now)
+                        {
+                            date = date.Value.AddHours(1);
+                        }
+                    }
+                    else
+                    {
+                        date = new DateTime(now.Year, now.Month, now.Day, task.LatestStartDate.Value.Hour, task.StartDate.Minute, task.StartDate.Second);
+                        date = date.Value.AddHours(task.Every);
+                    }
+                }
+                else
+                {
+                    if (task.StartDate < now)
+                    {
+                        date = new DateTime(now.Year, now.Month, now.Day, now.Hour, task.StartDate.Minute, task.StartDate.Second);
+                        if (date < now)
+                        {
+                            date = date.Value.AddHours(1);
+                        }
+                    }
+                    else
+                    {
+                        date = task.StartDate;
+                    }
+                }
+            }
+            else if (task.TaskInterval == TaskInterval.EveryDay)
             {
                 if (task.LatestStartDate.HasValue)
                 {
@@ -152,12 +187,13 @@ namespace SSCMS.Core.Repositories
         {
             var now = DateTime.Now;
             var startDate = new DateTime(now.Year, now.Month, now.Day, StringUtils.GetRandomInt(0, 6), StringUtils.GetRandomInt(0, 59), 0);
-            // startDate = startDate.AddDays(-1);
             var task = new ScheduledTask
             {        
                 Title = TaskType.CloudSync.GetDisplayName(),
                 TaskType = TaskType.CloudSync,
-                TaskInterval = TaskInterval.Everyday,
+                TaskInterval = TaskInterval.EveryDay,
+                // todo: delete
+                // TaskInterval = TaskInterval.EveryHour,
                 Every = 1,
                 StartDate = startDate,
                 IsDisabled = false,

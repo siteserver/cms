@@ -64,6 +64,9 @@ namespace SSCMS.Models
         public int Timeout { get; set; }
 
         [DataColumn]
+        public bool IsRunning { get; set; }
+
+        [DataColumn]
         public DateTime? LatestStartDate { get; set; }
 
         [DataColumn]

@@ -42,52 +42,53 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: update sscms");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: update sscms");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             var contentRootPath = _settingsManager.ContentRootPath;
             if (!CliUtils.IsSsCmsExists(contentRootPath) || await _configRepository.IsNeedInstallAsync())
             {
-                await WriteUtils.PrintErrorAsync($"SS CMS has not been installed in {contentRootPath}");
+                await console.WriteErrorAsync($"SS CMS has not been installed in {contentRootPath}");
                 return;
             }
 
             var (success, result, failureMessage) = await _cliApiService.GetReleasesAsync(_settingsManager.Version, null);
             if (!success)
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
                 return;
             }
 
             if (!SemVersion.TryParse(result.Cms.Version, out var version) || version <= _settingsManager.Version)
             {
-                Console.WriteLine($"SS CMS {result.Cms.Version} is the latest version and no update is required");
-                var proceed = ReadUtils.GetYesNo("do you still want to update?");
+                await console.WriteLineAsync($"SS CMS {result.Cms.Version} is the latest version and no update is required");
+                var proceed = console.GetYesNo("do you still want to update?");
                 if (!proceed) return;
             }
             else
             {
-                var proceed = ReadUtils.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
+                var proceed = console.GetYesNo($"New version {result.Cms.Version} found, do you want to update?");
                 if (!proceed) return;
             }
 
-            Console.WriteLine($"Downloading SS CMS {result.Cms.Version}...");
+            await console.WriteLineAsync($"Downloading SS CMS {result.Cms.Version}...");
             var directoryPath = await CloudUtils.Dl.DownloadCmsAsync(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
 
             FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, Constants.ConfigFileName));
@@ -95,14 +96,14 @@ namespace SSCMS.Cli.Jobs
             FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, "wwwroot/favicon.ico"));
             FileUtils.DeleteFileIfExists(PathUtils.Combine(directoryPath, "wwwroot/index.html"));
 
-            await WriteUtils.PrintSuccessAsync($"{result.Cms.Version} download successfully!");
-            Console.WriteLine();
-            Console.WriteLine();
+            await console.WriteSuccessAsync($"{result.Cms.Version} download successfully!");
+            await console.WriteLineAsync();
+            await console.WriteLineAsync();
 
-            Console.WriteLine("Please stop website and override files and directories ");
-            Console.WriteLine($"     {directoryPath}");
-            Console.WriteLine("to");
-            Console.WriteLine($"     {contentRootPath}");
+            await console.WriteLineAsync("Please stop website and override files and directories ");
+            await console.WriteLineAsync($"     {directoryPath}");
+            await console.WriteLineAsync("to");
+            await console.WriteLineAsync($"     {contentRootPath}");
 
             var offlinePath = _pathManager.GetPackagesPath("app_offline.htm");
             FileUtils.WriteText(offlinePath, "down for maintenance");
@@ -129,7 +130,7 @@ namespace SSCMS.Cli.Jobs
 
             //FileUtils.DeleteFileIfExists(offlinePath);
 
-            //await WriteUtils.PrintSuccessAsync($"Congratulations, SS CMS was updated to {result.Cms.Version} successfully!");
+            //await console.WriteSuccessAsync($"Congratulations, SS CMS was updated to {result.Cms.Version} successfully!");
         }
 
         //public static void Replacing(string contentRootPath, string directoryPath, List<string> unOverrides)
@@ -139,7 +140,7 @@ namespace SSCMS.Cli.Jobs
 
         //    foreach (var unOverride in unOverrides)
         //    {
-        //        Console.WriteLine($"Replacing {unOverride}...");
+        //        await console.WriteLineAsync($"Replacing {unOverride}...");
 
         //        if (!FileUtils.CopyFile(PathUtils.Combine(directoryPath, unOverride),
         //            PathUtils.Combine(contentRootPath, unOverride), true))

@@ -97,6 +97,34 @@ namespace SSCMS.Utils
             return (false, GetErrorMessage(response));
         }
 
+        public static async Task<(bool success, string failureMessage)> PostAsync(string url, string accessToken = null)
+
+        {
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, errors) => true;
+
+            var client = new RestClient(url);
+            var request = new RestRequest
+            {
+                Method = Method.Post,
+                Timeout = -1,
+            };
+            request.AddHeader("Content-Type", "application/json");
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+            }
+            var response = await client.ExecuteAsync(request);
+
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, null);
+            }
+
+            return (false, GetErrorMessage(response));
+        }
+
+
         public static async Task<(bool success, TResult result, string failureMessage)> PostAsync<TResult>(string url, string accessToken = null) where TResult : class
 
         {
@@ -186,7 +214,7 @@ namespace SSCMS.Utils
 
             return (false, GetErrorMessage(response));
         }
-        
+
         public static async Task DownloadAsync(string url, string filePath)
         {
             ServicePointManager.ServerCertificateValidationCallback +=

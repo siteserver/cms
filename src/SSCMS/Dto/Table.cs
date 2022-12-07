@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using Datory;
 
-namespace SSCMS.Cli.Core
+namespace SSCMS.Dto
 {
-    public class TableInfo
+    public class Table
     {
         public List<TableColumn> Columns { get; set; }
         public int TotalCount { get; set; }
-        public List<string> RowFiles { get; set; }
+        public List<string> Rows { get; set; }
     }
 }

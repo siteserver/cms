@@ -4,6 +4,7 @@ using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -28,35 +29,36 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
-            Console.WriteLine("Summary: unpublishes a plugin. Example plugin id: sscms.hits");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName} <pluginId>");
+            await console.WriteLineAsync("Summary: unpublishes a plugin. Example plugin id: sscms.hits");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             if (context.Extras == null || context.Extras.Length == 0)
             {
-                await WriteUtils.PrintErrorAsync("missing required pluginId");
+                await console.WriteErrorAsync("missing required pluginId");
                 return;
             }
 
             var (status, failureMessage) = await _cliApiService.GetStatusAsync();
             if (status == null)
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
                 return;
             }
 
@@ -64,11 +66,11 @@ namespace SSCMS.Cli.Jobs
             (success, failureMessage) = await _cliApiService.PluginUnPublishAsync(context.Extras[0]);
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync($"Plugin {context.Extras[0]} unpublished.");
+                await console.WriteSuccessAsync($"Plugin {context.Extras[0]} unpublished.");
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

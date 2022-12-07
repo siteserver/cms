@@ -7,6 +7,7 @@ using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -29,22 +30,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: run sscms");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: run sscms");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -61,11 +63,11 @@ namespace SSCMS.Cli.Jobs
 
             if (proc == null)
             {
-                await WriteUtils.PrintErrorAsync("Can not run SSCMS.");
+                await console.WriteErrorAsync("Can not run SSCMS.");
             }
             else
             {
-                Console.WriteLine("Starting SS CMS...");
+                await console.WriteLineAsync("Starting SS CMS...");
                 Thread.Sleep(5000);
 
                 OpenUrl("http://localhost:5000/ss-admin/");
@@ -73,7 +75,7 @@ namespace SSCMS.Cli.Jobs
                 using var sr = proc.StandardOutput;
                 while (!sr.EndOfStream)
                 {
-                    Console.WriteLine(sr.ReadLine());
+                    await console.WriteLineAsync(sr.ReadLine());
                 }
 
                 if (!proc.HasExited)

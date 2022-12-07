@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Dto;
 using SSCMS.Enums;
 
 namespace SSCMS.Utils
@@ -188,19 +190,22 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(filePath)) return string.Empty;
 
             var theFile = new FileInfo(filePath);
-            var fileSize = theFile.Length;
-            if (fileSize < 1024)
+            return GetFileSizeByFileLength(theFile.Length);
+        }
+
+        public static string GetFileSizeByFileLength(long fileLength)
+        {
+            if (fileLength < 1024)
             {
-                return fileSize + "B";
+                return fileLength + "B";
             }
 
-            if (fileSize >= 1024 && fileSize < 1048576)
+            if (fileLength >= 1024 && fileLength < 1048576)
             {
-                return fileSize / 1024 + "KB";
+                return fileLength / 1024 + "KB";
             }
 
-            return fileSize / 1048576 + "MB";
-
+            return fileLength / 1048576 + "MB";
         }
 
         private static bool IsTextEditable(FileType type)
@@ -369,5 +374,45 @@ namespace SSCMS.Utils
 
             return output;
         }
+
+        public static async Task AppendErrorLogsAsync(string filePath, List<TextLog> logs)
+        {
+            if (logs == null || logs.Count <= 0) return;
+
+            if (!IsFileExists(filePath))
+            {
+                await WriteTextAsync(filePath, string.Empty);
+            }
+
+            var builder = new StringBuilder();
+
+            foreach (var log in logs)
+            {
+                builder.AppendLine();
+                builder.Append(log);
+                builder.AppendLine();
+            }
+
+            await AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+        }
+
+        public static async Task AppendErrorLogAsync(string filePath, TextLog log)
+        {
+            if (log == null) return;
+
+            if (!IsFileExists(filePath))
+            {
+                await WriteTextAsync(filePath, string.Empty);
+            }
+
+            var builder = new StringBuilder();
+
+            builder.AppendLine();
+            builder.Append(log);
+            builder.AppendLine();
+
+            await AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+        }
+
     }
 }

@@ -37,22 +37,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: creates a new plugin, includes configuration based on the specified parameters.");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: creates a new plugin, includes configuration based on the specified parameters.");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -62,20 +63,20 @@ namespace SSCMS.Cli.Jobs
 
             var (status, _) = await _cliApiService.GetStatusAsync();
             var publisher = status == null
-                ? ReadUtils.GetString("What's the publisher of your plugin?")
+                ? console.GetString("What's the publisher of your plugin?")
                 : status.UserName;
 
             if (status == null && !StringUtils.IsStrictName(publisher))
             {
-                await WriteUtils.PrintErrorAsync(
+                await console.WriteErrorAsync(
                     $@"Invalid plugin publisher: ""{publisher}"", string does not match the pattern of ""{StringUtils.StrictNameRegex}""");
                 return;
             }
 
-            var name = ReadUtils.GetString("What's the name of your plugin?");
+            var name = console.GetString("What's the name of your plugin?");
             if (!StringUtils.IsStrictName(name))
             {
-                await WriteUtils.PrintErrorAsync(
+                await console.WriteErrorAsync(
                     $@"Invalid plugin name: ""{publisher}"", string does not match the pattern of ""{StringUtils.StrictNameRegex}""");
                 return;
             }
@@ -91,7 +92,7 @@ namespace SSCMS.Cli.Jobs
             var json = TranslateUtils.JsonSerialize(dict);
             await FileUtils.WriteTextAsync(PathUtils.Combine(pluginPath, Constants.PackageFileName), json);
 
-            await WriteUtils.PrintSuccessAsync($@"The plugin ""{pluginId}"" was created successfully.");
+            await console.WriteSuccessAsync($@"The plugin ""{pluginId}"" was created successfully.");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SSCMS.Core.Services
                 }
                 else if (task.CreateType == CreateType.Channel)
                 {
-                    var channelIds = await _channelRepository.GetChannelIdsAsync(siteId);
+                    var channelIds = await _databaseManager.ChannelRepository.GetChannelIdsAsync(siteId);
                     foreach (var channelId in channelIds)
                     {
                         await _createManager.ExecuteAsync(siteId, CreateType.Channel, siteId, channelId);

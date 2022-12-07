@@ -41,22 +41,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: create static pages");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: create static pages");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -69,31 +70,31 @@ namespace SSCMS.Cli.Jobs
             var configPath = CliUtils.GetConfigPath(_settingsManager);
             if (!FileUtils.IsFileExists(configPath))
             {
-                await WriteUtils.PrintErrorAsync($"The sscms.json file does not exist: {configPath}");
+                await console.WriteErrorAsync($"The sscms.json file does not exist: {configPath}");
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"Database type: {_settingsManager.DatabaseType.GetDisplayName()}");
-            await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
+            await console.WriteLineAsync($"Database type: {_settingsManager.DatabaseType.GetDisplayName()}");
+            await console.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
 
             var (isConnectionWorks, errorMessage) = await _settingsManager.Database.IsConnectionWorksAsync();
             if (!isConnectionWorks)
             {
-                await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message: {errorMessage}");
+                await console.WriteErrorAsync($"Unable to connect to database, error message: {errorMessage}");
                 return;
             }
 
             var site = await _databaseManager.SiteRepository.GetSiteByDirectoryAsync(directory);
             if (site == null)
             {
-                await WriteUtils.PrintErrorAsync($"Unable to find the site, directory: {directory}");
+                await console.WriteErrorAsync($"Unable to find the site, directory: {directory}");
                 return;
             }
-            await Console.Out.WriteLineAsync($"site: {site.SiteName}");
+            await console.WriteLineAsync($"site: {site.SiteName}");
 
             await _createManager.ExecuteAsync(site.Id, CreateType.All, 0, 0, 0, 0);
 
-            await WriteUtils.PrintSuccessAsync("create pages successfully!");
+            await console.WriteSuccessAsync("create pages successfully!");
         }
     }
 }

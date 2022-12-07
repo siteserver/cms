@@ -1,10 +1,12 @@
 var $url = "/clouds/settingsBackup"
 var $urlDashboard = "/clouds/dashboard"
+var $urlCloud = "cms/backup";
 
 var data = utils.init({
   activeName: "settings",
   cloudType: null,
   isCloudBackup: false,
+  backups: [],
 });
 
 var methods = {
@@ -58,12 +60,35 @@ var methods = {
     this.apiSubmit();
   },
 
-  btnTabsClick: function () {
+  apiCloudGet: function () {
+    var $this = this;
 
+    cloud
+      .get($urlCloud)
+      .then(function (response) {
+        var res = response.data;
+
+        if ($this.cloudType !== res.cloudType) {
+          $this.cloudType == res.cloudType;
+          $this.apiDashboardSubmit(res.cloudType, res.expirationDate);
+        }
+
+        $this.backups = res.backups;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
   },
 
   btnUpgradeClick: function () {
     location.href = utils.getCloudsUrl('dashboard', {isUpgrade: true});
+  },
+
+  btnRestoreClick: function (backup) {
+    console.log(backup);
   },
 };
 

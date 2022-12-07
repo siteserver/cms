@@ -5,6 +5,7 @@ using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Models;
 using SSCMS.Plugins;
+using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -29,29 +30,30 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: user logout");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: user logout");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             var status = _configService.Status;
             if (status == null || string.IsNullOrEmpty(status.UserName) || string.IsNullOrEmpty(status.AccessToken))
             {
-                await WriteUtils.PrintErrorAsync("you have not logged in");
+                await console.WriteErrorAsync("you have not logged in");
                 return;
             }
 
@@ -63,7 +65,7 @@ namespace SSCMS.Cli.Jobs
 
             await _configService.SaveStatusAsync(status);
 
-            await WriteUtils.PrintSuccessAsync("you have successful logged out");
+            await console.WriteSuccessAsync("you have successful logged out");
         }
     }
 }

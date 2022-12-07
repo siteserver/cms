@@ -37,39 +37,40 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: show user login status");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: show user login status");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils();
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"Cli version: {_settingsManager.Version}");
+            await console.WriteLineAsync($"Cli version: {_settingsManager.Version}");
             var entryAssembly = Assembly.GetExecutingAssembly();
-            await Console.Out.WriteLineAsync($"Cli location: {entryAssembly.Location}");
-            await Console.Out.WriteLineAsync($"Work location: {_settingsManager.ContentRootPath}");
-            await Console.Out.WriteLineAsync($"Api host: {CloudUtils.CloudApiHost}");
+            await console.WriteLineAsync($"Cli location: {entryAssembly.Location}");
+            await console.WriteLineAsync($"Work location: {_settingsManager.ContentRootPath}");
+            await console.WriteLineAsync($"Api host: {CloudUtils.CloudApiHost}");
 
             var configPath = CliUtils.GetConfigPath(_settingsManager);
             if (FileUtils.IsFileExists(configPath))
             {
-                await Console.Out.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
-                await Console.Out.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
+                await console.WriteLineAsync($"Database type: {_settingsManager.Database.DatabaseType.GetDisplayName()}");
+                await console.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");
 
-                await Console.Out.WriteLineAsync($"Database type encrypted: {TranslateUtils.EncryptStringBySecretKey(_settingsManager.Database.DatabaseType.GetDisplayName(), _settingsManager.SecurityKey)}");
-                await Console.Out.WriteLineAsync($"Database connection string encrypted: {TranslateUtils.EncryptStringBySecretKey(_settingsManager.DatabaseConnectionString, _settingsManager.SecurityKey)}");
+                await console.WriteLineAsync($"Database type encrypted: {TranslateUtils.EncryptStringBySecretKey(_settingsManager.Database.DatabaseType.GetDisplayName(), _settingsManager.SecurityKey)}");
+                await console.WriteLineAsync($"Database connection string encrypted: {TranslateUtils.EncryptStringBySecretKey(_settingsManager.DatabaseConnectionString, _settingsManager.SecurityKey)}");
 
                 if (!string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString))
                 {
@@ -78,28 +79,28 @@ namespace SSCMS.Cli.Jobs
 
                     if (!isConnectionWorks)
                     {
-                        await WriteUtils.PrintErrorAsync($"Unable to connect to database, error message:{errorMessage}");
+                        await console.WriteErrorAsync($"Unable to connect to database, error message:{errorMessage}");
                         return;
                     }
 
-                    await Console.Out.WriteLineAsync("Database status: Connection successful");
+                    await console.WriteLineAsync("Database status: Connection successful");
                 }
 
                 var plugins = _pluginManager.Plugins;
                 foreach (var plugin in plugins)
                 {
-                    await Console.Out.WriteLineAsync($"PluginId: {plugin.PluginId}, Version: {plugin.Version}");
+                    await console.WriteLineAsync($"PluginId: {plugin.PluginId}, Version: {plugin.Version}");
                 }
             }
             else
             {
-                await Console.Out.WriteLineAsync($"The sscms.json file does not exist: {configPath}");
+                await console.WriteLineAsync($"The sscms.json file does not exist: {configPath}");
             }
 
             var (status, _) = await _cliApiService.GetStatusAsync();
             if (status != null)
             {
-                await Console.Out.WriteLineAsync($"Login user: {status.UserName}");
+                await console.WriteLineAsync($"Login user: {status.UserName}");
             }
         }
     }

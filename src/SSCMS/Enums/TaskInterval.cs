@@ -9,8 +9,10 @@ namespace SSCMS.Enums
     {
         [DataEnum(DisplayName = "一次")]
         Once,
+        [DataEnum(DisplayName = "每小时")]
+        EveryHour,
         [DataEnum(DisplayName = "每天")]
-        Everyday,
+        EveryDay,
         [DataEnum(DisplayName = "每周")]
         EveryWeek,
     }
