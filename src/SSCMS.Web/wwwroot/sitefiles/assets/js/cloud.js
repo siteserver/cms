@@ -128,6 +128,10 @@ var cloud = _.extend(axios.create({
 
   // cloud authentication
 
+  isAuth: function() {
+    return ($cloudToken && $cloudUserName) ? true : false;
+  },
+
   logout: function() {
     localStorage.removeItem(CLOUD_USER_NAME);
     localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
@@ -143,7 +147,7 @@ var cloud = _.extend(axios.create({
   },
 
   checkAuth: function(callback, url) {
-    if (!$cloudToken || !$cloudUserName) {
+    if (!this.isAuth()) {
       var redirect = url || location.href;
       location.href = utils.getCloudsUrl('connect', {redirect: redirect});
     } else if (callback) {

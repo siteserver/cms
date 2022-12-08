@@ -89,6 +89,8 @@ namespace SSCMS.Web.Controllers.Admin
             public Local Local { get; set; }
             public bool IsSafeMode { get; set; }
             public CloudType CloudType { get; set; }
+            public string CloudUserName { get; set; }
+            public string CloudToken { get; set; }
         }
 
         public class SetLanguageRequest
@@ -299,8 +301,8 @@ namespace SSCMS.Web.Controllers.Admin
             return (redirect, redirectUrl);
         }
 
-        
 
-        
+
+
     }
 }

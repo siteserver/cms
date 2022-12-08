@@ -261,6 +261,8 @@ namespace SSCMS.Web.Controllers.Admin
                 },
                 IsSafeMode = _settingsManager.IsSafeMode,
                 CloudType = cloudType,
+                CloudUserName = config.CloudUserName,
+                CloudToken = config.CloudToken,
             };
         }
     }

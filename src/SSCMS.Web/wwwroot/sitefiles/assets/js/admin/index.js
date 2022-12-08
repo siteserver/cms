@@ -25,6 +25,8 @@ var data = utils.init({
   local: null,
   isSafeMode: null,
   cloudType: null,
+  cloudUserName: null,
+  cloudToken: null,
   menu: null,
   keyword: null,
   newCms: null,
@@ -75,6 +77,11 @@ var methods = {
         $this.local = res.local;
         $this.isSafeMode = res.isSafeMode;
         $this.cloudType = res.cloudType;
+        $this.cloudUserName = res.cloudUserName;
+        $this.cloudToken = res.cloudToken;
+        if (!cloud.isAuth()) {
+          cloud.login($this.cloudUserName, $this.cloudToken);
+        }
 
         var sideMenuIds = [];
         if (location.hash) {

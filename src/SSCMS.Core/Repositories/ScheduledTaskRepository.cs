@@ -186,7 +186,8 @@ namespace SSCMS.Core.Repositories
         public async Task<int> InsertCloudSyncAsync()
         {
             var now = DateTime.Now;
-            var startDate = new DateTime(now.Year, now.Month, now.Day, StringUtils.GetRandomInt(0, 6), StringUtils.GetRandomInt(0, 59), 0);
+            var startDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
+            startDate = startDate.AddHours(-1);
             var task = new ScheduledTask
             {        
                 Title = TaskType.CloudSync.GetDisplayName(),
