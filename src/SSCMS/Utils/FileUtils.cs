@@ -231,6 +231,11 @@ namespace SSCMS.Utils
             return retVal;
         }
 
+        public static bool IsHtml(FileType fileType)
+        {
+            return fileType == FileType.Asp || fileType == FileType.Aspx || fileType == FileType.Htm || fileType == FileType.Html || fileType == FileType.Jsp || fileType == FileType.Php || fileType == FileType.SHtml;
+        }
+
         public static bool IsImage(string fileExtName)
         {
             var retVal = false;
@@ -241,12 +246,17 @@ namespace SSCMS.Utils
                 {
                     fileExtName = "." + fileExtName;
                 }
-                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
+                if (fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".gif" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".bmp"  || fileExtName == ".webp" || fileExtName == ".svg" || fileExtName == ".ico" || fileExtName == ".jfif")
                 {
                     retVal = true;
                 }
             }
             return retVal;
+        }
+
+        public static bool IsImage(FileType fileType)
+        {
+            return fileType == FileType.Jpg || fileType == FileType.Jpeg || fileType == FileType.Gif || fileType == FileType.Png || fileType == FileType.Pneg || fileType == FileType.Bmp || fileType == FileType.Webp || fileType == FileType.Svg || fileType == FileType.Ico || fileType == FileType.Jfif;
         }
 
         public static bool IsZip(string typeStr)
@@ -332,12 +342,12 @@ namespace SSCMS.Utils
             return retVal;
         }
 
-        public static FileType GetType(string typeStr)
+        public static FileType GetFileType(string typeStr)
         {
-            return TranslateUtils.ToEnum(StringUtils.UpperFirst(typeStr), FileType.Unknown);
+            return TranslateUtils.ToEnum(StringUtils.UpperFirst(StringUtils.Replace(typeStr, ".", string.Empty)), FileType.Unknown);
         }
 
-        public static bool IsType(FileType type, string typeStr)
+        public static bool IsFileType(FileType type, string typeStr)
         {
             if (string.IsNullOrEmpty(typeStr)) return false;
             if (StringUtils.EqualsIgnoreCase("." + type.GetValue(), typeStr))

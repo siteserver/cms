@@ -140,7 +140,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var extension = PathUtils.GetExtension(playUrl);
             var elementId = StringUtils.GetElementId();
 
-            var fileType = FileUtils.GetType(extension);
+            var fileType = FileUtils.GetFileType(extension);
 
             if (FileUtils.IsFlash(extension))
             {

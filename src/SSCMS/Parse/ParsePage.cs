@@ -17,7 +17,7 @@ namespace SSCMS.Parse
 
         public SortedDictionary<string, string> FootCodes { get; private set; }
 
-        private Config Config { get; }
+        public Config Config { get; private set; }
 
         public Site Site { get; private set; }
 

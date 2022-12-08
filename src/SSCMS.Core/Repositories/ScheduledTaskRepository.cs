@@ -191,9 +191,24 @@ namespace SSCMS.Core.Repositories
             {        
                 Title = TaskType.CloudSync.GetDisplayName(),
                 TaskType = TaskType.CloudSync,
+                TaskInterval = TaskInterval.EveryHour,
+                Every = 1,
+                StartDate = startDate,
+                IsDisabled = false,
+                Timeout = 60,
+            };
+            return await InsertAsync(task);
+        }
+
+        public async Task<int> InsertCloudBackupAsync()
+        {
+            var now = DateTime.Now;
+            var startDate = new DateTime(now.Year, now.Month, now.Day, StringUtils.GetRandomInt(0, 6), StringUtils.GetRandomInt(0, 59), 0);
+            var task = new ScheduledTask
+            {        
+                Title = TaskType.CloudBackup.GetDisplayName(),
+                TaskType = TaskType.CloudBackup,
                 TaskInterval = TaskInterval.EveryDay,
-                // todo: delete
-                // TaskInterval = TaskInterval.EveryHour,
                 Every = 1,
                 StartDate = startDate,
                 IsDisabled = false,

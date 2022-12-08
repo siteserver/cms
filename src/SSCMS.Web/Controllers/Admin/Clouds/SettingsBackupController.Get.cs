@@ -21,14 +21,14 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             
             var isTask = false;
             var tasks = await _scheduledTaskRepository.GetAllAsync();
-            var cloudSyncs = tasks.Where(task => task.TaskType == TaskType.CloudSync).ToList();
-            if (cloudSyncs.Count >= 1)
+            var cloudBackups = tasks.Where(task => task.TaskType == TaskType.CloudBackup).ToList();
+            if (cloudBackups.Count >= 1)
             {
                 isTask = true;
-                for (int i = 0; i < cloudSyncs.Count; i++)
+                for (int i = 0; i < cloudBackups.Count; i++)
                 {
                     if (i == 0) continue;
-                    await _scheduledTaskRepository.DeleteAsync(cloudSyncs[i].Id);
+                    await _scheduledTaskRepository.DeleteAsync(cloudBackups[i].Id);
                 }
             }
 

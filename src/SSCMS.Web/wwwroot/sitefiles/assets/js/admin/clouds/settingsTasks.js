@@ -50,7 +50,12 @@ var methods = {
       $this.cloudType = res.cloudType;
       $this.taskTypes = res.taskTypes;
       $this.taskIntervals = res.taskIntervals;
-      $this.tasks = res.tasks;
+      $this.tasks = [];
+      for (var task of res.tasks) {
+        if (task.taskType == 'Create' || task.taskType == 'Ping') {
+          $this.tasks.push(task);
+        }
+      }
       $this.sites = res.sites;
       if(isCloudCheck) {
         $this.apiCloudGet();

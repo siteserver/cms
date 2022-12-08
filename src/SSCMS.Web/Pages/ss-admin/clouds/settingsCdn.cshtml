@@ -23,7 +23,7 @@
           </template>
           <div class="text" style="padding: 16px 64px; text-align: center;">
             <div style="text-align: center;width: 100%;">
-              <img src="/sitefiles/assets/images/backup.svg" />
+              <img src="/sitefiles/assets/images/cdn.svg" height="120" />
             </div>
             <h2>
               使用CDN内容分发网络（Content Delivery Network），加快访问速度，提升用户体验。
@@ -65,16 +65,10 @@
             </div>
   
             <div v-if="isCloudCdn" style="margin-top: 15px; margin-left: 30px">
-              <el-switch v-model="isCloudCdnImages" active-text="加快图片加载时间"></el-switch>
-              <div class="tips" style="margin-top: 10px;">
-                勾选后，当保存内容时系统会自动对包括内容标题、正文、摘要在内的文本进行内容审查，如果识别结果为不合规，系统将禁止保存内容
-              </div>
+              <el-switch v-model="isCloudCdnImages" active-text="图片CDN加速"></el-switch>
             </div>
             <div v-if="isCloudCdn" style="margin-top: 15px; margin-left: 30px">
-              <el-switch v-model="isCloudCdnFiles" active-text="加快静态文件加载时间"></el-switch>
-              <div class="tips" style="margin-top: 10px;">
-                勾选后，当保存内容时系统会自动对包括内容标题、正文、摘要在内的文本进行内容审查，如果识别结果为不合规，系统将禁止保存内容
-              </div>
+              <el-switch v-model="isCloudCdnFiles" active-text="静态文件CDN加速"></el-switch>
             </div>
   
           </div>

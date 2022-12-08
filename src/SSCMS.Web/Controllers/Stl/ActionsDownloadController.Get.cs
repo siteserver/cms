@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Stl
 
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
                     var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
-                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                    var fileType = FileUtils.GetFileType(PathUtils.GetExtension(filePath));
                     if (FileUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))
@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Stl
                 else if (!string.IsNullOrEmpty(request.FilePath))
                 {
                     var filePath = _settingsManager.Decrypt(request.FilePath);
-                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                    var fileType = FileUtils.GetFileType(PathUtils.GetExtension(filePath));
                     if (FileUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))
@@ -68,7 +68,7 @@ namespace SSCMS.Web.Controllers.Stl
                     }
 
                     var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
-                    var fileType = FileUtils.GetType(PathUtils.GetExtension(filePath));
+                    var fileType = FileUtils.GetFileType(PathUtils.GetExtension(filePath));
                     if (FileUtils.IsDownload(fileType))
                     {
                         if (FileUtils.IsFileExists(filePath))

@@ -1,5 +1,6 @@
 using Datory;
 using Datory.Annotations;
+using SSCMS.Enums;
 
 namespace SSCMS.Models
 {
@@ -14,5 +15,8 @@ namespace SSCMS.Models
 
         [DataColumn]
         public string Md5 { get; set; }
+
+        [DataColumn]
+        public FileType FileType { get; set; }
     }
 }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
+using Aliyun.OSS;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -133,6 +135,10 @@ namespace SSCMS.Core.Services
             else if (task.TaskType == TaskType.CloudSync)
             {
                 await CloudSyncAsync(task);
+            }
+            else if (task.TaskType == TaskType.CloudBackup)
+            {
+                await CloudBackupAsync(task);
             }
         }
 

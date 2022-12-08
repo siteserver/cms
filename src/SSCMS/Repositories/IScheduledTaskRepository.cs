@@ -21,6 +21,8 @@ namespace SSCMS.Repositories
 
         Task<int> InsertCloudSyncAsync();
 
+        Task<int> InsertCloudBackupAsync();
+
         Task UpdateAsync(ScheduledTask task);
 
         Task<bool> DeleteAsync(int id);

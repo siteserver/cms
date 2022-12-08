@@ -6,6 +6,7 @@ using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -30,6 +31,7 @@ namespace SSCMS.Core.Repositories
         {
             if (string.IsNullOrEmpty(storageFile.Key)) return 0;
 
+            storageFile.FileType = FileUtils.GetFileType(PathUtils.GetExtension(storageFile.Key));
             storageFile.Id = await _repository.InsertAsync(storageFile, Q.CachingRemove(CacheKey));
             return storageFile.Id;
         }

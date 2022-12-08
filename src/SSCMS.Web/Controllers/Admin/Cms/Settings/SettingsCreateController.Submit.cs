@@ -25,6 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.IsCreateBrowserNoCache = request.IsCreateBrowserNoCache;
             site.IsCreateJsIgnoreError = request.IsCreateJsIgnoreError;
             site.IsCreateWithJQuery = request.IsCreateWithJQuery;
+            site.IsCreateFilterGray = request.IsCreateFilterGray;
             site.CreateStaticMaxPage = request.CreateStaticMaxPage;
             site.IsCreateUseDefaultFileName = request.IsCreateUseDefaultFileName;
             site.CreateDefaultFileName = request.CreateDefaultFileName;

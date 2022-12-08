@@ -155,11 +155,11 @@ namespace SSCMS.Core.StlParser.StlElement
             attributes["class"] = "video-js vjs-big-play-centered" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
 
             var innerHtml = string.Empty;
-            if (FileUtils.IsType(FileType.Mp4, PageUtils.GetExtensionFromUrl(videoUrl)))
+            if (FileUtils.IsFileType(FileType.Mp4, PageUtils.GetExtensionFromUrl(videoUrl)))
             {
                 innerHtml = @$"<source src=""{videoUrl}"" type=""video/mp4"" />";
             }
-            else if (FileUtils.IsType(FileType.Webm, PageUtils.GetExtensionFromUrl(videoUrl)))
+            else if (FileUtils.IsFileType(FileType.Webm, PageUtils.GetExtensionFromUrl(videoUrl)))
             {
                 innerHtml = @$"<source src=""{videoUrl}"" type=""video/webm"" />";
             }

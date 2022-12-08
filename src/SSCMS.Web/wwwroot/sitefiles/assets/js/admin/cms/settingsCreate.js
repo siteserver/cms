@@ -27,6 +27,7 @@ var methods = {
         isCreateBrowserNoCache: res.value.isCreateBrowserNoCache,
         isCreateJsIgnoreError: res.value.isCreateJsIgnoreError,
         isCreateWithJQuery: res.value.isCreateWithJQuery,
+        isCreateFilterGray: res.value.isCreateFilterGray,
         isCreateDoubleClick: res.value.isCreateDoubleClick,
         createStaticMaxPage: res.value.createStaticMaxPage,
         isCreateUseDefaultFileName: res.value.isCreateUseDefaultFileName,

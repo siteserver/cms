@@ -18,5 +18,8 @@ namespace SSCMS.Enums
 
         [DataEnum(DisplayName = "云同步")]
         CloudSync,
+
+        [DataEnum(DisplayName = "云备份")]
+        CloudBackup,
     }
 }

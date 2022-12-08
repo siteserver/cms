@@ -110,6 +110,8 @@ namespace SSCMS.Models
 
         public bool IsCreateWithJQuery { get; set; } = true;
 
+        public bool IsCreateFilterGray { get; set; }
+
         public bool IsCreateDoubleClick { get; set; }
 
         public int CreateStaticMaxPage { get; set; } = 10;

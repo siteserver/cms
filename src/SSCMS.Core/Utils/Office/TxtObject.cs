@@ -14,7 +14,7 @@ namespace SSCMS.Core.Utils.Office
             var filePaths = DirectoryUtils.GetFilePaths(directoryPath);
             foreach (var filePath in filePaths)
             {
-                if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(filePath))) continue;
+                if (!FileUtils.IsFileType(FileType.Txt, PathUtils.GetExtension(filePath))) continue;
 
                 try
                 {
