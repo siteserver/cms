@@ -74,22 +74,23 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .get($urlCloud, {
-        params: this.formInline,
-      })
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlCloud, {
+      params: this.formInline,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.count = res.count;
-        $this.cloudWords = res.cloudWords;
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      $this.count = res.count;
+      $this.cloudWords = res.cloudWords;
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudDelete: function (id) {
@@ -97,20 +98,22 @@ var methods = {
 
     utils.loading(this, true);
     cloud.post($urlCloud + "/actions/delete", {
-        id: id,
-      })
-      .then(function (response) {
-        var res = response.data;
+      id: id,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success("错别字白名单删除成功！");
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      utils.success("错别字白名单删除成功！");
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudSubmit: function () {
@@ -118,21 +121,23 @@ var methods = {
 
     utils.loading(this, true);
     cloud.post($urlCloud, {
-        words: this.form.words,
-      })
-      .then(function (response) {
-        var res = response.data;
+      words: this.form.words,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success("错别字白名单添加成功！");
-        $this.isAdd = false;
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      utils.success("错别字白名单添加成功！");
+      $this.isAdd = false;
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnAddClick: function () {

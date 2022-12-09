@@ -31,24 +31,6 @@ var methods = {
     }
   },
 
-  apiCloudGet: function (page) {
-    var $this = this;
-    this.form.page = page;
-
-    utils.loading(this, true);
-    $api.post($urlCloud, this.form).then(function (response) {
-      var res = response.data;
-
-      $this.groups = res.groups;
-      $this.count = res.count;
-      $this.items = res.items;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
   getSmallUrl: function (image) {
     return cloud.hostImages + '/' + image.smallUrl;
   },
@@ -61,24 +43,25 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .get($urlCloud, {
-        params: this.formInline,
-      })
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlCloud, {
+      params: this.formInline,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.count = res.count;
-        for (var image of res.images) {
-          $this.images.push(image);
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      $this.count = res.count;
+      for (var image of res.images) {
+        $this.images.push(image);
+      }
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnSearchClick: function () {

@@ -86,22 +86,23 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .get($urlCloud, {
-        params: this.formInline,
-      })
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlCloud, {
+      params: this.formInline,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.count = res.count;
-        $this.cloudWords = res.cloudWords;
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      $this.count = res.count;
+      $this.cloudWords = res.cloudWords;
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudDelete: function (id) {
@@ -109,21 +110,23 @@ var methods = {
 
     utils.loading(this, true);
     cloud.post($urlCloudDelete, {
-        isWhiteList: this.formInline.isWhiteList,
-        id: id,
-      })
-      .then(function (response) {
-        var res = response.data;
+      isWhiteList: this.formInline.isWhiteList,
+      id: id,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success($this.getWordType() + "违规词删除成功！");
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      utils.success($this.getWordType() + "违规词删除成功！");
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudAddWords: function () {
@@ -131,22 +134,24 @@ var methods = {
 
     utils.loading(this, true);
     cloud.post($urlCloudAddWords, {
-        isWhiteList: this.formInline.isWhiteList,
-        words: this.form.words,
-      })
-      .then(function (response) {
-        var res = response.data;
+      isWhiteList: this.formInline.isWhiteList,
+      words: this.form.words,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success($this.getWordType() + "违规词添加成功！");
-        $this.isAdd = false;
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      utils.success($this.getWordType() + "违规词添加成功！");
+      $this.isAdd = false;
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnAddClick: function () {

@@ -99,24 +99,25 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .get($urlCloud, {
-        params: this.formInline,
-      })
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlCloud, {
+      params: this.formInline,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.count = res.count;
-        for (var image of res.images) {
-          $this.images.push(image);
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      $this.count = res.count;
+      for (var image of res.images) {
+        $this.images.push(image);
+      }
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnSearchClick: function () {

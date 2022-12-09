@@ -77,15 +77,15 @@
     <template v-else-if="activeName === 'backups'">
       <div style="height: 10px"></div>
 
-      <el-table :data="backups" style="width: 100%">
+      <el-table :data="backupJobs" style="width: 100%">
         <el-table-column label="备份时间">
           <template #default="scope">
-            {{ scope.row.createdDate }}
+            {{ scope.row.completeDate }}
           </template>
         </el-table-column>
         <el-table-column label="备份大小">
           <template #default="scope">
-            {{ scope.row.size }} MB
+            {{ scope.row.size }}
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">

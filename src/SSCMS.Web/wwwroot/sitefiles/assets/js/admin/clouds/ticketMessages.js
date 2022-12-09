@@ -41,7 +41,9 @@ var methods = {
       $this.uploadUrl = cloud.defaults.baseURL + '/' + $urlCloudUpload;
     })
     .catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     })
     .then(function () {
       utils.loading($this, false);
@@ -62,7 +64,9 @@ var methods = {
       $this.ticket.status = 'Closed';
     })
     .catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     })
     .then(function () {
       utils.loading($this, false);
@@ -87,7 +91,9 @@ var methods = {
       $this.messages.push(res.message);
     })
     .catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     })
     .then(function () {
       utils.loading($this, false);

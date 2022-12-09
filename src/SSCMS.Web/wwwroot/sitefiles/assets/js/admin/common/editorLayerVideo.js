@@ -157,25 +157,24 @@ var methods = {
         }
       }
     };
-    cloud
-      .post(this.cloudUploadUrl, formData, config)
-      .then(function (response) {
-        var res = response.data;
+    cloud.post(this.cloudUploadUrl, formData, config)
+    .then(function (response) {
+      var res = response.data;
 
-        $this.form.videoUrl = res.playUrl;
-        if (res.coverUrl) {
-          $this.form.isPoster = true;
-          $this.form.imageUrl = res.coverUrl;
-        }
-        $this.form.type = 'url';
-      })
-      .catch(function (error) {
-        $this.cloudUploadProgressPercent = null;
-        $this.cloudUploadErrorMessage = utils.getErrorMessage(error);
-      })
-      .then(function () {
-        clearInterval($this.cloudUploadProgressInterval);
-      });
+      $this.form.videoUrl = res.playUrl;
+      if (res.coverUrl) {
+        $this.form.isPoster = true;
+        $this.form.imageUrl = res.coverUrl;
+      }
+      $this.form.type = 'url';
+    })
+    .catch(function (error) {
+      $this.cloudUploadProgressPercent = null;
+      $this.cloudUploadErrorMessage = utils.getErrorMessage(error);
+    })
+    .then(function () {
+      clearInterval($this.cloudUploadProgressInterval);
+    });
   },
 };
 

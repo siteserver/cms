@@ -210,27 +210,30 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
-        var res = response.data;
+    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order)
+    .then(function (response) {
+      var res = response.data;
 
-        $this.themes = res.themes;
-        $this.count = res.count;
-        $this.pages = res.pages;
-        $this.tags = res.tags;
-        $this.orderedGuids = res.orderedGuids;
+      $this.themes = res.themes;
+      $this.count = res.count;
+      $this.pages = res.pages;
+      $this.tags = res.tags;
+      $this.orderedGuids = res.orderedGuids;
 
-        if ($this.buy) {
-          var userName = $this.buy.split('.')[0];
-          var name = $this.buy.split('.')[1];
-          $this.btnBuyClick(userName, name);
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      if ($this.buy) {
+        var userName = $this.buy.split('.')[0];
+        var name = $this.buy.split('.')[1];
+        $this.btnBuyClick(userName, name);
+      }
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnLocalClick: function () {

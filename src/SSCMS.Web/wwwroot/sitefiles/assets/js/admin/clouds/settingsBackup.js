@@ -6,7 +6,7 @@ var data = utils.init({
   activeName: "settings",
   cloudType: null,
   isCloudBackup: false,
-  backups: [],
+  backupJobs: [],
 });
 
 var methods = {
@@ -63,24 +63,25 @@ var methods = {
   apiCloudGet: function () {
     var $this = this;
 
-    cloud
-      .get($urlCloud)
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlCloud)
+    .then(function (response) {
+      var res = response.data;
 
-        if ($this.cloudType !== res.cloudType) {
-          $this.cloudType == res.cloudType;
-          $this.apiDashboardSubmit(res.cloudType, res.expirationDate);
-        }
+      if ($this.cloudType !== res.cloudType) {
+        $this.cloudType == res.cloudType;
+        $this.apiDashboardSubmit(res.cloudType, res.expirationDate);
+      }
 
-        $this.backups = res.backups;
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      $this.backupJobs = res.backupJobs;
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnUpgradeClick: function () {

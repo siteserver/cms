@@ -129,6 +129,8 @@ namespace SSCMS.Core.Services
 
             if (!isCloudCdnImage && !isCloudCdnFiles) return;
 
+            
+            var webUrl = PageInfo.Site.IsSeparatedWeb ? PageUtils.Combine(PageInfo.Site.SeparatedWebUrl, "/") : "/";
             var storageFiles = await DatabaseManager.StorageFileRepository.GetStorageFileListAsync();
 
             foreach (var file in storageFiles)
@@ -139,14 +141,14 @@ namespace SSCMS.Core.Services
                 {
                     if (isCloudCdnImage)
                     {
-                        contentBuilder.Replace($"/{file.Key}", $"https://a.sscms.net/{PageInfo.Config.CloudUserId}/{file.Key}");
+                        contentBuilder.Replace($"{webUrl}{file.Key}", $"https://a.sscms.net/{PageInfo.Config.CloudUserId}/{file.Key}");
                     }
                 }
                 else
                 {
                     if (isCloudCdnFiles)
                     {
-                        contentBuilder.Replace($"/{file.Key}", $"https://a.sscms.net/{PageInfo.Config.CloudUserId}/{file.Key}");
+                        contentBuilder.Replace($"{webUrl}{file.Key}", $"https://a.sscms.net/{PageInfo.Config.CloudUserId}/{file.Key}");
                     }
                 }
             }

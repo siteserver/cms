@@ -36,21 +36,23 @@ var methods = {
 
     utils.loading(this, true);
     cloud.get($urlCloud, {
-        params: this.formInline,
-      }).then(function (response) {
-        var res = response.data;
+      params: this.formInline,
+    }).then(function (response) {
+      var res = response.data;
 
-        $this.isTicket = res.isTicket;
-        $this.cloudType = res.cloudType;
-        $this.count = res.count;
-        $this.tickets = res.tickets;
-        $this.uploadToken = $cloudToken;
-        $this.uploadUrl = cloud.defaults.baseURL + '/' + $urlCloudUpload;
-      }).catch(function (error) {
-        utils.error(error);
-      }).then(function () {
-        utils.loading($this, false);
+      $this.isTicket = res.isTicket;
+      $this.cloudType = res.cloudType;
+      $this.count = res.count;
+      $this.tickets = res.tickets;
+      $this.uploadToken = $cloudToken;
+      $this.uploadUrl = cloud.defaults.baseURL + '/' + $urlCloudUpload;
+    }).catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiSubmit: function() {
@@ -64,7 +66,9 @@ var methods = {
       $this.isAdd = false;
       $this.apiGet();
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     }).then(function () {
       $this.submitting = false;
     });

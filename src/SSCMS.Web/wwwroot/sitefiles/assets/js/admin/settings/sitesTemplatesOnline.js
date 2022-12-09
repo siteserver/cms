@@ -34,7 +34,8 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
+    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order)
+    .then(function (response) {
       var res = response.data;
 
       $this.themes = res.themes;
@@ -49,7 +50,9 @@ var methods = {
         $this.btnBuyClick(userName, name);
       }
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     }).then(function () {
       utils.loading($this, false);
     });

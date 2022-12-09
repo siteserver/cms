@@ -45,21 +45,20 @@ var methods = {
         }
       }
     };
-    cloud
-      .post(this.uploadUrl, formData, config)
-      .then(function (response) {
-        var res = response.data;
+    cloud.post(this.uploadUrl, formData, config)
+    .then(function (response) {
+      var res = response.data;
 
-        $this.insert(res);
-        utils.closeLayer();
-      })
-      .catch(function (error) {
-        $this.uploadProgressPercent = null;
-        $this.uploadErrorMessage = utils.getErrorMessage(error);
-      })
-      .then(function () {
-        clearInterval($this.uploadProgressInterval);
-      });
+      $this.insert(res);
+      utils.closeLayer();
+    })
+    .catch(function (error) {
+      $this.uploadProgressPercent = null;
+      $this.uploadErrorMessage = utils.getErrorMessage(error);
+    })
+    .then(function () {
+      clearInterval($this.uploadProgressInterval);
+    });
   },
 
   btnCancelClick: function () {

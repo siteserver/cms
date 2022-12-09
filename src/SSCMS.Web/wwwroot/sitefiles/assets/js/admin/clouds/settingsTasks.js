@@ -153,22 +153,23 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .get($urlClouds)
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlClouds)
+    .then(function (response) {
+      var res = response.data;
 
-        if ($this.cloudType !== res.cloudType) {
-          $this.cloudType == res.cloudType;
-          $this.apiDashboardSubmit(res.cloudType, res.expirationDate);
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      if ($this.cloudType !== res.cloudType) {
+        $this.cloudType == res.cloudType;
+        $this.apiDashboardSubmit(res.cloudType, res.expirationDate);
+      }
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiDelete: function (id) {

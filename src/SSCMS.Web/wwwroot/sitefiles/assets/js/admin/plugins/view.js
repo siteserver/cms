@@ -44,7 +44,8 @@ var methods = {
         name = $this.plugin.name;
       }
 
-      cloud.getExtension($this.cmsVersion, publisher, name).then(function (response) {
+      cloud.getExtension($this.cmsVersion, publisher, name)
+      .then(function (response) {
         var res = response.data;
 
         $this.extension = res.extension;

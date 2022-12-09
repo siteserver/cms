@@ -389,8 +389,7 @@ var methods = {
 
     utils.loading(this, true);
     if (this.censorSettings.isCloudCensor) {
-      cloud
-      .post($urlCloudCensorAddWords, {
+      cloud.post($urlCloudCensorAddWords, {
         isWhiteList: true,
         words: word
       })
@@ -400,7 +399,9 @@ var methods = {
         $this.parse('censor_whitelist', word);
       })
       .catch(function (error) {
-        utils.error(error);
+        utils.error(error, {
+          ignoreAuth: true,
+        });
       })
       .then(function () {
         utils.loading($this, false);
@@ -430,34 +431,35 @@ var methods = {
     var $this = this;
     this.censorSettings.isCensorChecking = true;
     if (this.censorSettings.isCloudCensor) {
-      cloud
-        .post($urlCloudCensor, {
-          text: this.getText(true, false),
-        })
-        .then(function (response) {
-          var res = response.data;
-          $this.censorResults = _.assign({}, res);
-          $this.censorSettings.activeNames = [];
-          for (var badWord of $this.censorResults.badWords) {
-            if (badWord.words.length > 0) {
-              $this.censorSettings.activeNames.push(badWord.type);
-            }
+      cloud.post($urlCloudCensor, {
+        text: this.getText(true, false),
+      })
+      .then(function (response) {
+        var res = response.data;
+        $this.censorResults = _.assign({}, res);
+        $this.censorSettings.activeNames = [];
+        for (var badWord of $this.censorResults.badWords) {
+          if (badWord.words.length > 0) {
+            $this.censorSettings.activeNames.push(badWord.type);
           }
-          $this.sideType = "censor";
-          $this.parseText(res);
+        }
+        $this.sideType = "censor";
+        $this.parseText(res);
 
-          if (isSave && !$this.censorResults.isBadWords) {
-            $this.censorSettings.isCensorPassed = true;
-            $this.apiSave();
-          }
-        })
-        .catch(function (error) {
-          utils.error(error);
-          layer.closeAll();
-        })
-        .then(function () {
-          $this.censorSettings.isCensorChecking = false;
+        if (isSave && !$this.censorResults.isBadWords) {
+          $this.censorSettings.isCensorPassed = true;
+          $this.apiSave();
+        }
+      })
+      .catch(function (error) {
+        utils.error(error, {
+          ignoreAuth: true,
         });
+        layer.closeAll();
+      })
+      .then(function () {
+        $this.censorSettings.isCensorChecking = false;
+      });
     } else {
       $api
         .csrfPost(this.csrfToken, $urlCensor, {
@@ -497,8 +499,7 @@ var methods = {
 
     utils.loading(this, true);
     if (this.spellSettings.isCloudSpell) {
-      cloud
-      .post($urlCloudSpellAddWords, {
+      cloud.post($urlCloudSpellAddWords, {
         words: word
       })
       .then(function (response) {
@@ -507,7 +508,9 @@ var methods = {
         $this.parse('spell_whitelist', word);
       })
       .catch(function (error) {
-        utils.error(error);
+        utils.error(error, {
+          ignoreAuth: true,
+        });
       })
       .then(function () {
         utils.loading($this, false);
@@ -537,28 +540,29 @@ var methods = {
     var $this = this;
     this.spellSettings.isSpellChecking = true;
     if (this.spellSettings.isCloudSpell) {
-      cloud
-        .post($urlCloudSpell, {
-          text: this.getText(false, true),
-        })
-        .then(function (response) {
-          var res = response.data;
-          $this.spellResults = _.assign({}, res);
-          $this.sideType = "spell";
-          $this.parseText(res);
+      cloud.post($urlCloudSpell, {
+        text: this.getText(false, true),
+      })
+      .then(function (response) {
+        var res = response.data;
+        $this.spellResults = _.assign({}, res);
+        $this.sideType = "spell";
+        $this.parseText(res);
 
-          if (isSave && !$this.spellResults.isErrorWords) {
-            $this.spellSettings.isSpellPassed = true;
-            $this.apiSave();
-          }
-        })
-        .catch(function (error) {
-          utils.error(error);
-          layer.closeAll();
-        })
-        .then(function () {
-          $this.spellSettings.isSpellChecking = false;
+        if (isSave && !$this.spellResults.isErrorWords) {
+          $this.spellSettings.isSpellPassed = true;
+          $this.apiSave();
+        }
+      })
+      .catch(function (error) {
+        utils.error(error, {
+          ignoreAuth: true,
         });
+        layer.closeAll();
+      })
+      .then(function () {
+        $this.spellSettings.isSpellChecking = false;
+      });
     } else {
       $api
         .csrfPost(this.csrfToken, $urlSpell, {

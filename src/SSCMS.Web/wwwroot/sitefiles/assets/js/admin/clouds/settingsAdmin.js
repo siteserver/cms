@@ -69,7 +69,9 @@ var methods = {
 
       $this.apiGet();
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     }).then(function () {
       utils.loading($this, false);
     });

@@ -80,65 +80,68 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .get($urlCloud, {
-        params: this.formInline,
-      })
-      .then(function (response) {
-        var res = response.data;
+    cloud.get($urlCloud, {
+      params: this.formInline,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.count = res.count;
-        $this.videos = res.videos;
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      $this.count = res.count;
+      $this.videos = res.videos;
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudDelete: function (id) {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .post($urlCloud + "/actions/delete", {
-        id: id,
-      })
-      .then(function (response) {
-        var res = response.data;
+    cloud.post($urlCloud + "/actions/delete", {
+      id: id,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success("云视频删除成功！");
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      utils.success("云视频删除成功！");
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiCloudEdit: function () {
     var $this = this;
 
     utils.loading(this, true);
-    cloud
-      .post($urlCloud + "/actions/edit", this.editForm)
-      .then(function (response) {
-        var res = response.data;
+    cloud.post($urlCloud + "/actions/edit", this.editForm)
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success("视频编辑成功！");
-        $this.isEdit = false;
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
+      utils.success("视频编辑成功！");
+      $this.isEdit = false;
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      utils.error(error, {
+        ignoreAuth: true,
       });
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   btnSearchClick: function () {
@@ -218,22 +221,21 @@ var methods = {
         }
       }
     };
-    cloud
-      .post(this.uploadUrl, formData, config)
-      .then(function (response) {
-        var res = response.data;
+    cloud.post(this.uploadUrl, formData, config)
+    .then(function (response) {
+      var res = response.data;
 
-        utils.success('云视频上传成功!');
-        $this.isUpload = false;
-        $this.apiCloudGet();
-      })
-      .catch(function (error) {
-        $this.uploadProgressPercent = null;
-        $this.uploadErrorMessage = utils.getErrorMessage(error);
-      })
-      .then(function () {
-        clearInterval($this.uploadProgressInterval);
-      });
+      utils.success('云视频上传成功!');
+      $this.isUpload = false;
+      $this.apiCloudGet();
+    })
+    .catch(function (error) {
+      $this.uploadProgressPercent = null;
+      $this.uploadErrorMessage = utils.getErrorMessage(error);
+    })
+    .then(function () {
+      clearInterval($this.uploadProgressInterval);
+    });
   },
 
   btnUploadClick: function () {
