@@ -50,6 +50,13 @@ namespace SSCMS.Web.Controllers.Home
                 }
             }
 
+            entity.Set(nameof(Models.User.Id), user.Id);
+            entity.Set(nameof(Models.User.UserName), user.UserName);
+            entity.Set(nameof(Models.User.DisplayName), user.DisplayName);
+            entity.Set(nameof(Models.User.AvatarUrl), user.AvatarUrl);
+            entity.Set(nameof(Models.User.Mobile), user.Mobile);
+            entity.Set(nameof(Models.User.Email), user.Email);
+
             var isUserVerifyMobile = false;
             var smsSettings = await _smsManager.GetSmsSettingsAsync();
             var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;

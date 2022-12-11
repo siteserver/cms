@@ -77,8 +77,8 @@
     <template v-else-if="activeName === 'backups'">
       <div style="height: 10px"></div>
 
-      <el-table :data="backupJobs" style="width: 100%">
-        <el-table-column label="备份时间">
+      <el-table :data="snapshots" style="width: 100%">
+        <el-table-column label="备份日期">
           <template #default="scope">
             {{ scope.row.completeDate }}
           </template>
@@ -91,11 +91,22 @@
         <el-table-column label="操作" align="center">
           <template #default="scope">
             <el-link type="danger" :underline="false" style="margin-right: 5px"
-              v-on:click.prevent="btnRestoreClick(scope.row)">删 除</el-link>
+              v-on:click.prevent="btnRestoreClick(scope.row)">恢复到此版本</el-link>
           </template>
         </el-table-column>
       </el-table>
 
+    </template>
+    <template v-else-if="activeName == 'progress'">
+      <div style="margin: 1em 2em 2em 2em;">
+        <div style="padding: 5px;">任务完成:
+          <font id="prgressBarPercetage" v-html="restoreProgress + ''">0</font>%
+        </div>
+        <div style="width: 600px; height: 25px;  background: #eee;">
+          <div :style="{width: restoreProgress + '%'}" style="width: 0; height: 25px; background: #00b19d;"></div>
+        </div>
+        <div class="tips" style="margin: 5px">恢复任务进行中，请耐心等待...</div>
+      </div>
     </template>
 
   </template>
