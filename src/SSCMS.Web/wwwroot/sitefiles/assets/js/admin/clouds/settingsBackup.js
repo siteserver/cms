@@ -8,8 +8,8 @@ var data = utils.init({
   activeName: "settings",
   cloudType: null,
   isCloudBackup: false,
-  snapshots: [],
-  restoreSnapshot: null,
+  backups: [],
+  restoreBackup: null,
   restoreId: null,
   restoreProgress: 0,
 });
@@ -73,7 +73,7 @@ var methods = {
         $this.apiDashboardSubmit(res.cloudType, res.expirationDate);
       }
 
-      $this.snapshots = res.snapshots;
+      $this.backups = res.backups;
     })
     .catch(function (error) {
       utils.error(error, {
@@ -89,8 +89,7 @@ var methods = {
     var $this = this;
 
     cloud.post($urlCloudRestore, {
-      snapshotId: this.restoreSnapshot.snapshotId,
-      snapshotHash: this.restoreSnapshot.snapshotHash,
+      backupId: this.restoreBackup.id,
     })
     .then(function (response) {
       var res = response.data;
@@ -118,7 +117,7 @@ var methods = {
       if ($this.restoreProgress == 100) {
         utils.alertSuccess({
           title: '系统恢复成功',
-          text: '恭喜，系统文件与数据已成功恢复到 “' + $this.restoreSnapshot.completeDate + '” 的备份版本！',
+          text: '恭喜，系统文件与数据已成功恢复到 “' + $this.restoreBackup.createdDate + '” 的备份版本！',
           callback: function () {
             window.top.location.href = utils.getIndexUrl();
           }
@@ -144,16 +143,16 @@ var methods = {
     location.href = utils.getCloudsUrl('dashboard', {isUpgrade: true});
   },
 
-  btnRestoreClick: function (snapshot) {
+  btnRestoreClick: function (backup) {
     var $this = this;
 
     utils.alertDelete({
       title: '系统恢复',
-      text: '此操作将把系统的文件与数据恢复到 “' + snapshot.completeDate + '” 的备份版本，确定吗？',
+      text: '此操作将把系统的文件与数据恢复到 “' + backup.createdDate + '” 的备份版本，确定吗？',
       button: '确定恢复',
       callback: function () {
         $this.activeName = 'progress';
-        $this.restoreSnapshot = snapshot;
+        $this.restoreBackup = backup;
         $this.restoreProgress = 0;
         // $this.apiCloudRestore();
         $this.apiCloudGetRestoreProgress();

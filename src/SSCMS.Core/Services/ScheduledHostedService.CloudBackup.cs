@@ -25,11 +25,13 @@ namespace SSCMS.Core.Services
             // if (_settingsManager.DatabaseType != DatabaseType.SQLite)
             // {
             var console = new FakeConsoleUtils();
-            var tree = new Tree(_settingsManager, "data");
+            var tree = new Tree(_settingsManager, "sscms-data");
             DirectoryUtils.DeleteDirectoryIfExists(tree.DirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(tree.DirectoryPath);
             var errorLogFilePath = PathUtils.Combine(tree.DirectoryPath, "sscms-task.error.log");
             await _databaseManager.BackupAsync(console, null, null, 0, 1000, tree, errorLogFilePath);
+
+            // await AddSyncDirectoryTasksAsync(_settingsManager.ContentRootPath, tree.DirectoryPath, context);
 
             var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "sscms-data.zip");
             FileUtils.DeleteFileIfExists(filePath);
@@ -40,8 +42,8 @@ namespace SSCMS.Core.Services
             context.Client.SetObjectAcl(context.Credentials.BucketName, dataKey, CannedAccessControlList.Private);
             // }
 
-            var file = new FileInfo(filePath);
-            context.Size += file.Length;
+            var theFile = new FileInfo(filePath);
+            context.Size += theFile.Length;
             var size = context.Size / 1048576;
 
             await _cloudManager.BackupAsync(size);

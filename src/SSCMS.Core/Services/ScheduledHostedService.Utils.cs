@@ -20,7 +20,6 @@ namespace SSCMS.Core.Services
         {
             public OssCredentials Credentials { get; set; }
             public OssClient Client { get; set; }
-            public string RootPath { get; set; }
             public string StoragePrefix { get; set; }
             public List<StorageFile> StorageFiles { get; set; }
             public Dictionary<string, string> ListObjects { get; set; }
@@ -59,32 +58,32 @@ namespace SSCMS.Core.Services
             }
         }
 
-        private async Task AddSyncDirectoryTasksAsync(string directoryPath, StorageContext context)
+        private async Task AddSyncDirectoryTasksAsync(string rootPath, string directoryPath, StorageContext context)
         {
             if (string.IsNullOrEmpty(directoryPath)) return;
 
-            var key = PathUtils.GetPathDifference(context.RootPath, directoryPath);
+            var key = PathUtils.GetPathDifference(rootPath, directoryPath);
             key = StringUtils.TrimSlash(key.Replace('\\', '/'));
             if (!string.IsNullOrEmpty(key) && ListUtils.ContainsIgnoreCase(StorageExcludes, key)) return;
 
             var filePaths = DirectoryUtils.GetFilePaths(directoryPath);
             foreach (var filePath in filePaths)
             {
-                await AddSyncFileTaskAsync(filePath, context);
+                await AddSyncFileTaskAsync(rootPath, filePath, context);
             }
 
             var directoryPaths = DirectoryUtils.GetDirectoryPaths(directoryPath);
             foreach (var dirPath in directoryPaths)
             {
-                await AddSyncDirectoryTasksAsync(dirPath, context);
+                await AddSyncDirectoryTasksAsync(rootPath, dirPath, context);
             }
         }
 
-        private async Task AddSyncFileTaskAsync(string filePath, StorageContext context)
+        private async Task AddSyncFileTaskAsync(string rootPath, string filePath, StorageContext context)
         {
             if (string.IsNullOrEmpty(filePath)) return;
 
-            var key = PathUtils.GetPathDifference(context.RootPath, filePath);
+            var key = PathUtils.GetPathDifference(rootPath, filePath);
             if (!string.IsNullOrEmpty(key))
             {
                 key = StringUtils.TrimSlash(key.Replace('\\', '/'));

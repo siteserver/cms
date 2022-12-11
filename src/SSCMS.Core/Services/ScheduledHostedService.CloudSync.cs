@@ -32,7 +32,6 @@ namespace SSCMS.Core.Services
             {
                 Credentials = credentials,
                 Client = client,
-                RootPath = rootPath,
                 StoragePrefix = storagePrefix,
                 StorageFiles = storageFiles,
                 ListObjects = listObjects,
@@ -40,7 +39,7 @@ namespace SSCMS.Core.Services
                 Size = 0,
             };
 
-            await AddSyncDirectoryTasksAsync(rootPath, context);
+            await AddSyncDirectoryTasksAsync(rootPath, rootPath, context);
 
             await DeleteStorageKeysAsync(context);
 

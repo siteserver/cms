@@ -252,5 +252,17 @@ namespace SSCMS.Utils
             CreateDirectoryIfNotExists(directoryPath);
             return Directory.GetFiles(directoryPath);
         }
+
+        public static long GetTotalSize(string directoryPath)
+        {
+            var length = 0L;
+            var filePaths = GetFilePaths(directoryPath);
+            foreach (var filePath in filePaths)
+            {
+                var theFile = new FileInfo(filePath);
+                length += theFile.Length;
+            }
+            return length;
+        }
     }
 }
