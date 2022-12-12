@@ -29,15 +29,17 @@ namespace SSCMS.Core.Services
             DirectoryUtils.DeleteDirectoryIfExists(tree.DirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(tree.DirectoryPath);
             var errorLogFilePath = PathUtils.Combine(tree.DirectoryPath, "sscms-task.error.log");
+            FileUtils.DeleteFileIfExists(errorLogFilePath);
+
             await _databaseManager.BackupAsync(console, null, null, 0, 1000, tree, errorLogFilePath);
 
             // await AddSyncDirectoryTasksAsync(_settingsManager.ContentRootPath, tree.DirectoryPath, context);
 
-            var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "sscms-data.zip");
+            var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, CloudManager.DataZipFileName);
             FileUtils.DeleteFileIfExists(filePath);
             _pathManager.CreateZip(filePath, tree.DirectoryPath);
 
-            var dataKey = StringUtils.TrimSlash(PageUtils.Combine(context.StoragePrefix, "sscms-data.zip"));
+            var dataKey = StringUtils.TrimSlash(PageUtils.Combine(context.StoragePrefix, CloudManager.DataZipFileName));
             var result = context.Client.PutObject(context.Credentials.BucketName, dataKey, filePath);
             context.Client.SetObjectAcl(context.Credentials.BucketName, dataKey, CannedAccessControlList.Private);
             // }

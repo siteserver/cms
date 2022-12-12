@@ -23,18 +23,24 @@ namespace SSCMS.Core.Services
         private const string RouteVod = "vod";
         private const string RouteSms = "sms";
         private const string RouteMail = "mail";
+        public const string DomainDns = "https://a.sscms.net";
+        public const string DataZipFileName = "sscms-data.zip";
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly ICacheManager _cacheManager;
+        private readonly IDatabaseManager _databaseManager;
         private readonly IConfigRepository _configRepository;
+        private readonly IStorageFileRepository _storageFileRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public CloudManager(ISettingsManager settingsManager, IPathManager pathManager, ICacheManager cacheManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository)
+        public CloudManager(ISettingsManager settingsManager, IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, IConfigRepository configRepository, IStorageFileRepository storageFileRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _cacheManager = cacheManager;
+            _databaseManager = databaseManager;
             _configRepository = configRepository;
+            _storageFileRepository = storageFileRepository;
             _errorLogRepository = errorLogRepository;
         }
 

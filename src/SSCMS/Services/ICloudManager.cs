@@ -26,5 +26,9 @@ namespace SSCMS.Services
         Task<bool> IsImagesAsync();
 
         Task BackupAsync(long size);
+
+        Task RestoreAsync(string restoreId, DateTime backupDate);
+
+        int GetRestoreProgress(string restoreId);
     }
 }

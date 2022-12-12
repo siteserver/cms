@@ -4,23 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Datory;
 using Newtonsoft.Json.Linq;
-using SSCMS.Cli.Abstractions;
-using SSCMS.Cli.Core;
 using SSCMS.Dto;
-using SSCMS.Services;
 using SSCMS.Utils;
 
-namespace SSCMS.Cli.Services
+namespace SSCMS.Core.Services
 {
-    public class DataRestoreService : IDataRestoreService
+    public partial class DatabaseManager
     {
-        private readonly ISettingsManager _settingsManager;
-
-        public DataRestoreService(ISettingsManager settingsManager)
-        {
-            _settingsManager = settingsManager;
-        }
-
         public async Task<List<string>> RestoreAsync(IConsoleUtils console, List<string> includes, List<string> excludes, string tablesFilePath, Tree tree, string errorLogFilePath)
         {
             var tableNames =
@@ -113,4 +103,5 @@ namespace SSCMS.Cli.Services
             //}
         }
     }
+
 }

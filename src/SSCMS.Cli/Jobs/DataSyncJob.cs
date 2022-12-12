@@ -26,15 +26,12 @@ namespace SSCMS.Cli.Jobs
 
         private readonly ISettingsManager _settingsManager;
         private readonly IDatabaseManager _databaseManager;
-        private readonly IDataRestoreService _restoreService;
         private readonly OptionSet _options;
 
-        public DataSyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager,
-            IDataRestoreService restoreService)
+        public DataSyncJob(ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
-            _restoreService = restoreService;
 
             _options = new OptionSet
             {
@@ -143,7 +140,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            await _restoreService.RestoreAsync(console, _includes, _excludes, tree.DirectoryPath, tree, errorLogFilePath);
+            await _databaseManager.RestoreAsync(console, _includes, _excludes, tree.DirectoryPath, tree, errorLogFilePath);
 
             await console.WriteRowLineAsync();
             await console.WriteSuccessAsync("sync database successfully!");

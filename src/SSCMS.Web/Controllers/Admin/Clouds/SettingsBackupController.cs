@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Enums;
@@ -14,16 +16,23 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
     public partial class SettingsBackupController : ControllerBase
     {
         private const string Route = "clouds/settingsBackup";
+        private const string RouteRestore = "clouds/settingsBackup/actions/restore";
+        private const string RouteGetRestoreProgress = "clouds/settingsBackup/actions/getRestoreProgress";
+        private const string RouteRestart = "clouds/settingsBackup/actions/restart";
 
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly IAuthManager _authManager;
         private readonly ICloudManager _cloudManager;
+        private readonly ITaskManager _taskManager;
         private readonly IConfigRepository _configRepository;
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
 
-        public SettingsBackupController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository, IScheduledTaskRepository scheduledTaskRepository)
+        public SettingsBackupController(IHostApplicationLifetime hostApplicationLifetime, IAuthManager authManager, ICloudManager cloudManager, ITaskManager taskManager, IConfigRepository configRepository, IScheduledTaskRepository scheduledTaskRepository)
         {
+            _hostApplicationLifetime = hostApplicationLifetime;
             _authManager = authManager;
             _cloudManager = cloudManager;
+            _taskManager = taskManager;
             _configRepository = configRepository;
             _scheduledTaskRepository = scheduledTaskRepository;
         }
@@ -37,6 +46,16 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         public class SubmitRequest
         {
             public bool IsCloudBackup { get; set; }
+        }
+
+        public class RestoreRequest
+        {
+            public DateTime BackupDate { get; set; }
+        }
+
+        public class GetRestoreProgressRequest
+        {
+            public string RestoreId { get; set; }
         }
     }
 }

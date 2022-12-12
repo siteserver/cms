@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Aliyun.OSS;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 
@@ -25,7 +26,7 @@ namespace SSCMS.Core.Services
             var listObjects = new Dictionary<string, string>();
             if (storageFiles.Count > 0)
             {
-                listObjects = ListObjects(client, credentials.BucketName, storagePrefix);
+                listObjects = OssUtils.ListObjects(client, credentials.BucketName, storagePrefix);
             }
 
             var context = new StorageContext
@@ -39,7 +40,7 @@ namespace SSCMS.Core.Services
                 Size = 0,
             };
 
-            await AddSyncDirectoryTasksAsync(rootPath, rootPath, context);
+            await SyncDirectoryAsync(rootPath, rootPath, context);
 
             await DeleteStorageKeysAsync(context);
 

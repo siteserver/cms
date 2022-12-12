@@ -12,7 +12,6 @@ namespace SSCMS.Cli.Extensions
             services.AddScoped<ICliApiService, CliApiService>();
             services.AddScoped<IConfigService, ConfigService>();
             services.AddScoped<IDataUpdateService, DataUpdateService>();
-            services.AddScoped<IDataRestoreService, DataRestoreService>();
         }
 
         public static void AddCliJobs(this IServiceCollection services)

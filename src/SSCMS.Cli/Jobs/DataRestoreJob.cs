@@ -22,13 +22,13 @@ namespace SSCMS.Cli.Jobs
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
-        private readonly IDataRestoreService _restoreService;
+        private readonly IDatabaseManager _databaseManager;
         private readonly OptionSet _options;
 
-        public DataRestoreJob(ISettingsManager settingsManager, IDataRestoreService restoreService)
+        public DataRestoreJob(ISettingsManager settingsManager, IDatabaseManager databaseManager)
         {
             _settingsManager = settingsManager;
-            _restoreService = restoreService;
+            _databaseManager = databaseManager;
 
             _options = new OptionSet {
                 { "d|directory=", "Restore folder name",
@@ -130,7 +130,7 @@ namespace SSCMS.Cli.Jobs
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
 
-            var errorTableNames = await _restoreService.RestoreAsync(console, _includes, _excludes, tablesFilePath, tree, errorLogFilePath);
+            var errorTableNames = await _databaseManager.RestoreAsync(console, _includes, _excludes, tablesFilePath, tree, errorLogFilePath);
 
             if (errorTableNames.Count == 0)
             {

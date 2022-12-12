@@ -1,4 +1,8 @@
 var $url = "/clouds/settingsBackup"
+var $urlRestore = "/clouds/settingsBackup/actions/restore";
+var $urlGetRestoreProgress = "/clouds/settingsBackup/actions/getRestoreProgress";
+var $urlRestart = '/clouds/settingsBackup/actions/restart';
+
 var $urlDashboard = "/clouds/dashboard"
 var $urlCloud = "cms/backup";
 var $urlCloudRestore = "cms/backup/actions/restore";
@@ -47,6 +51,70 @@ var methods = {
     });
   },
 
+  apiRestore: function () {
+    var $this = this;
+
+    $api.post($urlRestore, {
+      backupDate: this.restoreBackup.backupDate,
+    })
+    .then(function (response) {
+      var res = response.data;
+      $this.restoreId = res.value;
+
+      $this.apiGetRestoreProgress();
+    })
+    .catch(function (error) {
+      utils.error(error);
+    });
+  },
+
+  apiGetRestoreProgress: function () {
+    var $this = this;
+
+    $api.post($urlGetRestoreProgress, {
+      restoreId: this.restoreId,
+    })
+    .then(function (response) {
+      var res = response.data;
+
+      $this.restoreProgress = res.value;
+      if ($this.restoreProgress == 100) {
+        utils.alertSuccess({
+          title: '系统恢复成功',
+          text: '恭喜，系统文件与数据已成功恢复到 “' + $this.restoreBackup.createdDate + '” 的备份版本，恢复后需要重启，请点击重启按钮重新启动系统！',
+          button: '重启系统',
+          callback: function () {
+            $this.apiRestart();
+          }
+        });
+      } else {
+        setTimeout(function () {
+          $this.apiGetRestoreProgress();
+        }, 3000);
+      }
+    })
+    .catch(function (error) {
+      utils.error(error);
+    });
+  },
+
+  apiRestart: function () {
+    utils.loading(this, true);
+    $api.post($urlRestart).then(function (response) {
+      setTimeout(function() {
+        utils.alertSuccess({
+          title: '系统重启成功',
+          text: '恭喜，系统重启成功',
+          callback: function() {
+            window.top.location.href = utils.getIndexUrl();
+          }
+        });
+      }, 30000);
+    }).catch(function (error) {
+      utils.error(error);
+    });
+  },
+
   apiDashboardSubmit: function (cloudType, expirationDate) {
     $api
       .post($urlDashboard, {
@@ -85,56 +153,6 @@ var methods = {
     });
   },
 
-  apiCloudRestore: function () {
-    var $this = this;
-
-    cloud.post($urlCloudRestore, {
-      backupId: this.restoreBackup.id,
-    })
-    .then(function (response) {
-      var res = response.data;
-
-      $this.restoreId = res.value;
-      $this.apiCloudGetRestoreProgress();
-    })
-    .catch(function (error) {
-      utils.error(error, {
-        ignoreAuth: true,
-      });
-    });
-  },
-
-  apiCloudGetRestoreProgress: function () {
-    var $this = this;
-
-    cloud.post($urlCloudGetRestoreProgress, {
-      restoreId: this.restoreId,
-    })
-    .then(function (response) {
-      var res = response.data;
-
-      $this.restoreProgress = res.value;
-      if ($this.restoreProgress == 100) {
-        utils.alertSuccess({
-          title: '系统恢复成功',
-          text: '恭喜，系统文件与数据已成功恢复到 “' + $this.restoreBackup.createdDate + '” 的备份版本！',
-          callback: function () {
-            window.top.location.href = utils.getIndexUrl();
-          }
-        });
-      } else {
-        setTimeout(function () {
-          $this.apiCloudRestore();
-        }, 3000);
-      }
-    })
-    .catch(function (error) {
-      utils.error(error, {
-        ignoreAuth: true,
-      });
-    });
-  },
-
   btnSubmitClick: function () {
     this.apiSubmit();
   },
@@ -148,14 +166,13 @@ var methods = {
 
     utils.alertDelete({
       title: '系统恢复',
-      text: '此操作将把系统的文件与数据恢复到 “' + backup.createdDate + '” 的备份版本，确定吗？',
+      text: '此操作将把系统的文件与数据恢复到 “' + backup.backupDate + '” 的备份版本，确定吗？',
       button: '确定恢复',
       callback: function () {
         $this.activeName = 'progress';
         $this.restoreBackup = backup;
         $this.restoreProgress = 0;
-        // $this.apiCloudRestore();
-        $this.apiCloudGetRestoreProgress();
+        $this.apiRestore();
       }
     });
   },

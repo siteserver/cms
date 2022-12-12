@@ -141,14 +141,14 @@ namespace SSCMS.Core.Services
                 {
                     if (isCloudCdnImage)
                     {
-                        contentBuilder.Replace($"{webUrl}{file.Key}", $"https://a.sscms.net/{PageInfo.Config.CloudUserId}/{file.Key}");
+                        contentBuilder.Replace($"{webUrl}{file.Key}", $"{CloudManager.DomainDns}/{PageInfo.Config.CloudUserId}/{file.Key}");
                     }
                 }
                 else
                 {
                     if (isCloudCdnFiles)
                     {
-                        contentBuilder.Replace($"{webUrl}{file.Key}", $"https://a.sscms.net/{PageInfo.Config.CloudUserId}/{file.Key}");
+                        contentBuilder.Replace($"{webUrl}{file.Key}", $"{CloudManager.DomainDns}/{PageInfo.Config.CloudUserId}/{file.Key}");
                     }
                 }
             }
