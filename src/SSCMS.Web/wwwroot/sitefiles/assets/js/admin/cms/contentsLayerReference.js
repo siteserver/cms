@@ -6,6 +6,7 @@ var data = utils.init({
   contentId: utils.getQueryInt('contentId'),
   page: utils.getQueryInt('page'),
   content: null,
+  sourceSiteId: null,
   sourceName: null,
   form: {
     siteId: null,
@@ -30,6 +31,7 @@ var methods = {
       var res = response.data;
 
       $this.content = res.content;
+      $this.sourceSiteId = res.sourceSiteId;
       $this.sourceName = res.sourceName;
       $this.form.siteId = $this.siteId;
       $this.form.channelId = $this.channelId;
@@ -61,7 +63,7 @@ var methods = {
 
   btnEditOriginalClick: function() {
     utils.addTab('编辑内容', utils.getCmsUrl('editor', {
-      siteId: this.siteId,
+      siteId: this.sourceSiteId,
       channelId: this.content.sourceId,
       contentId: this.content.referenceId,
       page: this.page,

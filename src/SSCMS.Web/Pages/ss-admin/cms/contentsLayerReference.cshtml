@@ -9,8 +9,8 @@
 
 <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="引用自">
-    {{ sourceName }}
-    <el-button size="small" type="primary" v-on:click="btnEditOriginalClick">编辑原始内容</el-button>
+    <el-tag>{{ sourceName }}</el-tag>
+    <el-button size="small" type="primary" style="margin-left: 5px;" v-on:click="btnEditOriginalClick">编辑原始内容</el-button>
   </el-form-item>
   <el-form-item label="内容标题" prop="title" :rules="{ required: true, message: '请输入内容标题' }">
     <el-input v-model="form.title" placeholder="请输入内容标题"></el-input>

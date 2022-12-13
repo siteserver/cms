@@ -1,50 +1,59 @@
 ﻿using System.Threading.Tasks;
+using SSCMS.Models;
 using SSCMS.Services;
 
 namespace SSCMS.Core.Utils
 {
     public static class SourceManager
-	{
-	    public const int User = -1;         //用户投稿
+    {
+        public const int User = -1;         //用户投稿
         public const int Preview = -99;     //预览
         public const int Default = 0;       //正常录入
 
-        public static async Task<string> GetSourceNameAsync(IDatabaseManager databaseManager, int siteId, int referenceId, int sourceId)
+        public static async Task<string> GetSourceNameAsync(IDatabaseManager databaseManager, Content content)
         {
-            if (sourceId == User)
+            if (content.SourceId == User)
             {
                 return "用户投稿";
             }
-            if (sourceId == Preview)
+            if (content.SourceId == Preview)
             {
                 return "预览插入";
             }
-            if (sourceId <= 0) return string.Empty;
+            if (content.SourceId <= 0) return string.Empty;
 
-            if (referenceId > 0)
+            var sourceSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(content.SourceId);
+            var sourceSite = await databaseManager.SiteRepository.GetAsync(sourceSiteId);
+            if (sourceSite == null) return string.Empty;
+
+            if (content.ReferenceId > 0)
             {
-                var nodeNames = await databaseManager.ChannelRepository.GetChannelNameNavigationAsync(siteId, sourceId);
-                if (!string.IsNullOrEmpty(nodeNames))
+                if (sourceSiteId == content.SiteId)
                 {
-                    return nodeNames;
+                    var nodeNames = await databaseManager.ChannelRepository.GetChannelNameNavigationAsync(sourceSiteId, content.SourceId);
+                    if (!string.IsNullOrEmpty(nodeNames))
+                    {
+                        return "从栏目引用：" + nodeNames;
+                    }
                 }
-            }
-
-            var sourceSiteId = await databaseManager.ChannelRepository.GetSiteIdAsync(sourceId);
-            if (sourceSiteId == siteId)
-            {
-                var nodeNames = await databaseManager.ChannelRepository.GetChannelNameNavigationAsync(sourceSiteId, sourceId);
-                if (!string.IsNullOrEmpty(nodeNames))
+                else
                 {
-                    return "从栏目转移：" + nodeNames;
+                    return "从站点引用：" + sourceSite.SiteName;
                 }
             }
             else
             {
-                var siteInfo = await databaseManager.SiteRepository.GetAsync(sourceSiteId);
-                if (siteInfo != null)
+                if (sourceSiteId == content.SiteId)
                 {
-                    return "从站点转移：" + siteInfo.SiteName;
+                    var nodeNames = await databaseManager.ChannelRepository.GetChannelNameNavigationAsync(sourceSiteId, content.SourceId);
+                    if (!string.IsNullOrEmpty(nodeNames))
+                    {
+                        return "从栏目转移：" + nodeNames;
+                    }
+                }
+                else
+                {
+                    return "从站点转移：" + sourceSite.SiteName;
                 }
             }
 
