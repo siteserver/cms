@@ -63,8 +63,8 @@
             <div class="text">
               <el-switch v-model="isCloudBackup" active-text="启用云备份"></el-switch>
               <div class="tips" style="margin-top: 10px;">
-                云备份功能能够为您提供对站点的细粒度控制，将其恢复到之前的任意状态，并能够随时导出备份。
-                <el-link :underline="false" href="https://sscms.com/docs/v7/official/sms/" target="_blank"
+                云备份功能能够每日自动备份网站实时文件与数据至云端，您可以将其恢复到任何时间点。
+                <el-link :underline="false" href="https://sscms.com/docs/v7/cloud/backup/" target="_blank"
                   icon="el-icon-info">
                   了解更多
                 </el-link>
@@ -80,7 +80,7 @@
       <el-table :data="backups" style="width: 100%">
         <el-table-column label="备份日期">
           <template #default="scope">
-            {{ scope.row.backupDate }}
+            {{ scope.row.createdDate }}
           </template>
         </el-table-column>
         <el-table-column label="备份大小">

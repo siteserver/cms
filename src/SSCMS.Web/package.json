@@ -207,7 +207,7 @@
         ]
       },
       "app_settings_cloudSettingsAdmin": {
-        "text": "后台自定义设置",
+        "text": "后台版权设置",
         "type": [
           "app"
         ]
@@ -1184,7 +1184,7 @@
                 "order": 110
               },
               "app_settings_cloudSettingsAdmin": {
-                "text": "后台自定义设置",
+                "text": "后台版权设置",
                 "iconClass": "el-icon-setting",
                 "link": "./clouds/settingsAdmin/",
                 "permissions": [

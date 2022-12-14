@@ -35,6 +35,13 @@ namespace SSCMS.Core.Services
             return Task.FromResult((false, "未启用短信功能"));
         }
 
+        public async Task<bool> IsSmsEnabledAsync()
+        {
+            var config = await _configRepository.GetAsync();
+            var isAuthentication = IsAuthentication(config);
+            return isAuthentication && config.IsCloudSms;
+        }
+
         public async Task<SmsSettings> GetSmsSettingsAsync()
         {
             var config = await _configRepository.GetAsync();

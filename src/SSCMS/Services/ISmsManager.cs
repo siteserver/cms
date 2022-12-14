@@ -19,6 +19,8 @@ namespace SSCMS.Services
         Task<(bool success, string errorMessage)> SendAsync(string phoneNumbers, SmsCodeType codeType,
             int code);
 
+        Task<bool> IsSmsEnabledAsync();
+
         Task<SmsSettings> GetSmsSettingsAsync();
 
         Task<(bool success, string errorMessage)> SendSmsAsync(string phoneNumbers, string templateCode,

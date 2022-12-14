@@ -58,7 +58,7 @@
             <el-switch v-model="isCloudCdn" active-text="启用CDN加速"></el-switch>
             <div class="tips" style="margin-top: 10px;">
               通过允许云助手启用CDN功能，系统将把站点内的图片和静态文件(如附件、CSS和JavaScript)同步至极速CDN网络中，使得页面加载速度大大加快。
-              <el-link :underline="false" href="https://sscms.com/docs/v7/official/sms/" target="_blank"
+              <el-link :underline="false" href="https://sscms.com/docs/v7/cloud/cdn/" target="_blank"
                 icon="el-icon-info">
                 了解更多
               </el-link>
@@ -66,9 +66,15 @@
   
             <div v-if="isCloudCdn" style="margin-top: 15px; margin-left: 30px">
               <el-switch v-model="isCloudCdnImages" active-text="图片CDN加速"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，系统将把网站中的所有图片上传至CDN，并在生成页面时将图片地址替换为CDN图片地址
+              </div>
             </div>
             <div v-if="isCloudCdn" style="margin-top: 15px; margin-left: 30px">
               <el-switch v-model="isCloudCdnFiles" active-text="静态文件CDN加速"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，系统将把网站中的所有静态文件（如附件、CSS和JavaScript等）上传至CDN，并在生成页面时将静态文件地址替换为CDN静态文件地址
+              </div>
             </div>
   
           </div>

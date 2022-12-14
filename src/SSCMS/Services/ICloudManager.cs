@@ -27,7 +27,7 @@ namespace SSCMS.Services
 
         Task BackupAsync(long size);
 
-        Task RestoreAsync(string restoreId, DateTime backupDate);
+        Task RestoreAsync(string restoreId, string backupGuid);
 
         int GetRestoreProgress(string restoreId);
     }

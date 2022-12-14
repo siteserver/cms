@@ -34,9 +34,6 @@ namespace SSCMS.Models
         public DateTime StartDate { get; set; }
 
         [DataColumn]
-        public DateTime? EndDate { get; set; }
-
-        [DataColumn]
         public bool IsNoticeSuccess { get; set; }
 
         [DataColumn]

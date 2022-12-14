@@ -24,6 +24,13 @@ namespace SSCMS.Core.Services
             return Task.FromResult((false, "未启用邮件功能"));
         }
 
+        public async Task<bool> IsMailEnabledAsync()
+        {
+            var config = await _configRepository.GetAsync();
+            var isAuthentication = IsAuthentication(config);
+            return isAuthentication && config.IsCloudMail;
+        }
+
         public async Task<MailSettings> GetMailSettingsAsync()
         {
             var config = await _configRepository.GetAsync();

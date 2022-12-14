@@ -55,7 +55,6 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             public int Every { get; set; }
             public List<int> Weeks { get; set; }
             public DateTime StartDate { get; set; }
-            public DateTime? EndDate { get; set; }
             public bool IsNoticeSuccess { get; set; }
             public bool IsNoticeFailure { get; set; }
             public int NoticeFailureCount { get; set; }

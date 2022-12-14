@@ -55,7 +55,7 @@ namespace SSCMS.Core.Repositories
         private DateTime? CalcScheduledDate(ScheduledTask task)
         {
             var now = DateTime.Now;
-            if (task.IsDisabled || task.EndDate < now) return null;
+            if (task.IsDisabled) return null;
 
             DateTime? date = null;
             if (task.TaskInterval == TaskInterval.Once)

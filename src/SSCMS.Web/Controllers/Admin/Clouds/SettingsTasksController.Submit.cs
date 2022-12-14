@@ -31,7 +31,6 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             task.Every = request.Every;
             task.Weeks = request.Weeks;
             task.StartDate = request.StartDate;
-            task.EndDate = request.EndDate;
             task.IsNoticeSuccess = request.IsNoticeSuccess;
             task.IsNoticeFailure = request.IsNoticeFailure;
             task.NoticeFailureCount = request.NoticeFailureCount;

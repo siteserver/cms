@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             var restoreId = StringUtils.Guid();
             _taskManager.Queue(async cancel =>
             {
-                await _cloudManager.RestoreAsync(restoreId, request.BackupDate);
+                await _cloudManager.RestoreAsync(restoreId, request.BackupGuid);
             });
 
             return new StringResult

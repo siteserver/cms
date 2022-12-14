@@ -33,7 +33,7 @@
             <el-switch v-model="isCloudCensorText" active-text="启用违规检测"></el-switch>
             <div class="tips" style="margin-top: 10px;">
               违规检测基于自然语言理解、深度学习等技术，有效识别违规文本内容，具备拼音、谐音、拆字、形近字、影射等变体识别能力
-              <el-link :underline="false" href="https://sscms.com/docs/v7/official/sms/" target="_blank"
+              <el-link :underline="false" href="https://sscms.com/docs/v7/cloud/censor/" target="_blank"
                 icon="el-icon-info">
                 了解更多
               </el-link>
@@ -86,7 +86,7 @@
           {{ scope.row.word }}
         </template>
       </el-table-column>
-      <el-table-column label="提交时间" width="180">
+      <el-table-column label="添加时间" width="180">
         <template #default="scope">
           {{ scope.row.createdDate }}
         </template>

@@ -12,7 +12,6 @@ var $defaultForm = {
   every: 1,
   weeks: [],
   startDate: new Date(new Date().setTime(new Date().getTime() + 3600 * 1000)),
-  endDate: null,
   isNoticeSuccess: false,
   isNoticeFailure: true,
   noticeFailureCount: 1,

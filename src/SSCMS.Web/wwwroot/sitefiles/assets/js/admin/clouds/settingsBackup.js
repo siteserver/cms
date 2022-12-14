@@ -55,7 +55,7 @@ var methods = {
     var $this = this;
 
     $api.post($urlRestore, {
-      backupDate: this.restoreBackup.backupDate,
+      backupGuid: this.restoreBackup.guid,
     })
     .then(function (response) {
       var res = response.data;
@@ -166,7 +166,7 @@ var methods = {
 
     utils.alertDelete({
       title: '系统恢复',
-      text: '此操作将把系统的文件与数据恢复到 “' + backup.backupDate + '” 的备份版本，确定吗？',
+      text: '此操作将把系统的文件与数据恢复到 “' + backup.createdDate + '” 的备份版本，确定吗？',
       button: '确定恢复',
       callback: function () {
         $this.activeName = 'progress';

@@ -80,8 +80,8 @@ var methods = {
   checkCloudType: function() {
     if (this.cloudType == 'Free') {
       alert({
-        title: '后台自定义',
-        text: '系统检测到您的云助手版本为免费版，使用后台自定义功能请升级云助手版本！',
+        title: '后台版权设置',
+        text: '系统检测到您的云助手版本为免费版，使用后台版权设置功能请升级云助手版本！',
         type: 'warning',
         confirmButtonText: '关 闭',
         showConfirmButton: true,
