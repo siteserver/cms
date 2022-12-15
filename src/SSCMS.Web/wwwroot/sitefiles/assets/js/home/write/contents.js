@@ -107,11 +107,7 @@ var methods = {
     if (content.linkType == 'NoLink') {
       return 'javascript:;';
     }
-    return utils.getRootUrl('redirect', {
-      siteId: content.siteId,
-      channelId: content.channelId,
-      contentId: content.id
-    });
+    return '/ss-admin/redirect/?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
   },
 
   getContentTarget: function (content) {

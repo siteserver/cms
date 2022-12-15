@@ -1239,9 +1239,9 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir)
+        public async Task<(bool success, string errorMessage)> ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir)
         {
-            if (oldParentSiteId == newParentSiteId) return;
+            if (oldParentSiteId == newParentSiteId) return (true, string.Empty);
 
             string oldPsPath;
             if (oldParentSiteId != 0)
@@ -1270,7 +1270,7 @@ namespace SSCMS.Core.Services
 
             if (DirectoryUtils.IsDirectoryExists(newPsPath))
             {
-                throw new ArgumentException("发布系统修改失败，发布路径文件夹已存在！");
+                return (false, "发布系统修改失败，发布路径文件夹已存在！");
             }
             if (DirectoryUtils.IsDirectoryExists(oldPsPath))
             {
@@ -1280,6 +1280,8 @@ namespace SSCMS.Core.Services
             {
                 DirectoryUtils.CreateDirectoryIfNotExists(newPsPath);
             }
+
+            return (true, string.Empty);
         }
 
         public async Task ChangeToRootAsync(Site site, bool isMoveFiles)

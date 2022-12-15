@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 {
@@ -39,9 +41,24 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var siteTypes = _settingsManager.GetSiteTypes();
 
-            var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x => new
+            var sites = await _siteRepository.GetSitesWithChildrenAsync(0, async x =>
             {
-                SiteUrl = await _pathManager.GetSiteUrlAsync(x, false)
+                var parentIds = await _siteRepository.GetParentIds(x.Id);
+                if (parentIds.Count == 0)
+                {
+                    parentIds.Add(0);
+                }
+                return new
+                {
+                    SiteUrl = await _pathManager.GetSiteUrlAsync(x, false),
+                    ParentIds = parentIds,
+                };
+            });
+            var parentSites = await _siteRepository.GetCascadeChildrenAsync(0);
+            parentSites.Insert(0, new Cascade<int>
+            {
+                Value = 0,
+                Label = "<无上级站点>"
             });
 
             var tableNames = await _siteRepository.GetSiteTableNamesAsync();
@@ -51,7 +68,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 SiteTypes = siteTypes,
                 Sites = sites,
                 RootSiteId = rootSiteId,
-                TableNames = tableNames
+                TableNames = tableNames,
+                ParentSites = parentSites
             };
         }
     }

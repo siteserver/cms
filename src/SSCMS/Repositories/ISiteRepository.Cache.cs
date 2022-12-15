@@ -30,6 +30,8 @@ namespace SSCMS.Repositories
 
         Task<List<int>> GetSiteIdsAsync(int parentId);
 
+        Task<List<int>> GetDescendantSiteIdsAsync(int siteId);
+
         Task<List<string>> GetSiteTableNamesAsync();
 
         Task<List<string>> GetAllTableNamesAsync();

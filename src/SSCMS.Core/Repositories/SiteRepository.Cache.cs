@@ -250,6 +250,29 @@ namespace SSCMS.Core.Repositories
             return siteIdList;
         }
 
+        public async Task<List<int>> GetDescendantSiteIdsAsync(int siteId)
+        {
+            var siteIds = new List<int>();
+            var summaries = await GetSummariesAsync();
+            GetDescendantSiteIdsAsync(siteId, summaries, siteIds);
+
+            return siteIds;
+        }
+
+        private void GetDescendantSiteIdsAsync(int parentId, List<SiteSummary> summaries, List<int> siteIds)
+        {
+            if (parentId == 0) return;
+
+            var childIds = summaries.Where(x => x.ParentId == parentId).Select(x => x.Id).ToList();
+            if (childIds.Count == 0) return;
+
+            foreach (var childId in childIds)
+            {
+              siteIds.Add(childId);
+              GetDescendantSiteIdsAsync(childId, summaries, siteIds);
+            }
+        }
+
         public async Task<List<string>> GetSiteTableNamesAsync()
         {
             return await GetTableNamesAsync(true, false);

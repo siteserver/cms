@@ -81,10 +81,14 @@
         <div class="tips">不同的站点类型拥有独立的表结构与管理菜单</div>
       </el-form-item>
       <el-form-item v-if="!editForm.root" label="上级站点">
-        <el-select v-model="editForm.parentId" placeholder="请选择上级站点">
-          <el-option label="<无上级站点>" :value="0"></el-option>
-          <el-option v-for="parent in sites" v-if="parent.id !== editForm.siteId" :label="parent.siteName" :value="parent.id"></el-option>
-        </el-select>
+        <el-cascader
+          ref="parentIds"
+          v-model="parentIds"
+          :options="parentSites"
+          :props="{ checkStrictly: true }"
+          filterable
+          placeholder="请选择上级站点">
+        </el-cascader>
       </el-form-item>
       <el-form-item prop="taxis" label="站点排序" :rules="[
         { validator: utils.validateInt }

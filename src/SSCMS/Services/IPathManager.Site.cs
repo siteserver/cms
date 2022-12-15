@@ -148,7 +148,7 @@ namespace SSCMS.Services
 
         Task DeleteSiteFilesAsync(Site site);
 
-        Task ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
+        Task<(bool success, string errorMessage)> ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
 
         Task ChangeToRootAsync(Site site, bool isMoveFiles);
 

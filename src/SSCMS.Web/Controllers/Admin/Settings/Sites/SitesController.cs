@@ -49,6 +49,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public List<Site> Sites { get; set; }
             public int RootSiteId { get; set; }
             public List<string> TableNames { get; set; }
+            public List<Cascade<int>> ParentSites { get; set; }
+            public List<int> ParentIds { get; set; }
         }
 
         public class DeleteRequest : SiteRequest
