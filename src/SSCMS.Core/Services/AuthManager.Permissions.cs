@@ -45,7 +45,7 @@ namespace SSCMS.Core.Services
 
             if (await IsSuperAdminAsync())
             {
-                siteIdList = (await _databaseManager.SiteRepository.GetSiteIdsAsync()).ToList();
+                siteIdList = await _databaseManager.SiteRepository.GetSiteIdsAsync();
             }
             else if (await IsSiteAdminAsync())
             {
@@ -289,7 +289,9 @@ namespace SSCMS.Core.Services
         {
             var administrator = await GetAdminAsync();
             if (administrator == null || administrator.Locked)
-                return new List<string> { PredefinedRole.Administrator.GetValue() };
+            {
+              return new List<string> { PredefinedRole.Administrator.GetValue() };
+            }
 
             return await _databaseManager.AdministratorsInRolesRepository.GetRolesForUserAsync(administrator.UserName);
         }

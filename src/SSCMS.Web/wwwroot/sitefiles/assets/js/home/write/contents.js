@@ -25,6 +25,7 @@ var data = utils.init({
   checkedColumns: [],
 
   siteId: 0,
+  siteIds: [],
   channelIds: [],
   permissions: {
     isEdit: true
@@ -50,6 +51,7 @@ var methods = {
 
       $this.sites = res.sites;
       $this.siteId = res.siteId;
+      $this.siteIds = [res.siteId];
       $this.siteName = res.siteName;
       $this.siteUrl = res.siteUrl;
       $this.root = res.root;
@@ -118,6 +120,7 @@ var methods = {
   },
 
   handleSiteIdChange: function() {
+    this.siteId = this.siteIds && this.siteIds.length > 0 ? this.siteIds[this.siteIds.length - 1] : 0;
     this.apiGet();
   },
 

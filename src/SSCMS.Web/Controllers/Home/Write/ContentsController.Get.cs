@@ -23,16 +23,13 @@ namespace SSCMS.Web.Controllers.Home.Write
                 };
             }
 
-            var sites = new List<Select<int>>();
-            foreach (var siteId in siteIds)
+            var sites = await _siteRepository.GetCascadeChildrenAsync(0, summary =>
             {
-                var permissionSite = await _siteRepository.GetAsync(siteId);
-                sites.Add(new Select<int>
+                return new
                 {
-                    Value = permissionSite.Id,
-                    Label = permissionSite.SiteName
-                });
-            }
+                    Disabled = !siteIds.Contains(summary.Id),
+                };
+            });
 
             var site = await _siteRepository.GetAsync(siteIds.Contains(request.SiteId) ? request.SiteId : siteIds[0]);
 

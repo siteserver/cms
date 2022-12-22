@@ -94,6 +94,7 @@ namespace SSCMS.Core.Services
             if (IsAdmin)
             {
                 _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(AdminName);
+                await InitAsync(_admin);
             }
             else if (IsUser)
             {
@@ -119,8 +120,6 @@ namespace SSCMS.Core.Services
                     }
                 }
             }
-
-            await InitAsync(_admin);
 
             return _admin;
         }

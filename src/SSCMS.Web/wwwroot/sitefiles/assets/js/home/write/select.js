@@ -24,6 +24,7 @@ var methods = {
 
       $this.sites = res.sites;
       $this.siteId = res.siteId;
+      $this.siteIds = [res.siteId];
       $this.root = res.root;
     }).catch(function(error) {
       utils.error(error);

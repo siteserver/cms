@@ -71,7 +71,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public class GetResult
         {
             public bool Unauthorized { get; set; }
-            public List<Select<int>> Sites { get; set; }
+            public List<Cascade<int>> Sites { get; set; }
             public int SiteId { get; set; }
             public string SiteName { get; set; }
             public string SiteUrl { get; set; }
