@@ -371,11 +371,16 @@ var methods = {
       });
     }
 
-    if (this.contentId === 0) {
-      this.apiInsert();
-    } else {
-      this.apiUpdate();
-    }
+    var $this = this;
+    this.$refs.form.validate(function (valid) {
+      if (valid) {
+        if ($this.contentId === 0) {
+          $this.apiInsert();
+        } else {
+          $this.apiUpdate();
+        }
+      }
+    });
   },
 
   syncEditors: function () {

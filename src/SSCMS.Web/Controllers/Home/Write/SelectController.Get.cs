@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Home.Write
 {
@@ -20,16 +18,13 @@ namespace SSCMS.Web.Controllers.Home.Write
                 };
             }
 
-            var sites = new List<Select<int>>();
-            foreach (var id in siteIds)
+            var sites = await _siteRepository.GetCascadeChildrenAsync(0, summary =>
             {
-                var permissionSite = await _siteRepository.GetAsync(id);
-                sites.Add(new Select<int>
+                return new
                 {
-                    Value = permissionSite.Id,
-                    Label = permissionSite.SiteName
-                });
-            }
+                    Disabled = !siteIds.Contains(summary.Id),
+                };
+            });
 
             var siteId = siteIds[0];
             var site = await _siteRepository.GetAsync(siteId);

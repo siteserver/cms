@@ -883,8 +883,6 @@ var methods = {
       if (valid) {
         $this.censorSettings.isCensorPassed = $this.spellSettings.isSpellPassed = false;
         $this.apiSave();
-      } else {
-        utils.error("保存失败，请检查表单值是否正确");
       }
     });
   },
