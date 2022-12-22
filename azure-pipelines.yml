@@ -16,7 +16,7 @@ jobs:
 
 - job: Windows
   pool:
-    vmImage: 'VS2022-Win2019'
+    vmImage: 'windows-latest'
   steps:
   - task: UseDotNet@2
     inputs:
