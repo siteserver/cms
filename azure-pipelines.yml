@@ -26,11 +26,11 @@ jobs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm run build-win-x64
-  - task: NuGetCommand@2
-    inputs:
-      command: 'restore'
-      restoreSolution: './build-win-x64/build.sln'
-      feedsToUse: 'select'
+  # - task: NuGetCommand@2
+  #   inputs:
+  #     command: 'restore'
+  #     restoreSolution: './build-win-x64/build.sln'
+  #     feedsToUse: 'select'
   - script: dotnet build ./build-win-x64/build.sln -c $(buildConfiguration)
   - script: dotnet publish ./build-win-x64/src/SSCMS.Cli/SSCMS.Cli.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64
   - script: dotnet publish ./build-win-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-win-x64
