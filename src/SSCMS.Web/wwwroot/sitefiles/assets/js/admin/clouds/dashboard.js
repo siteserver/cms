@@ -8,6 +8,7 @@ var data = utils.init({
   iFrameUrl: '',
   cloudType: null,
   expirationDate: null,
+  expirationDays: -1,
   upgradeAmount: null,
   cloudPriceBasic1Month: null,
   cloudPriceBasic1Year: null,
@@ -59,6 +60,11 @@ var methods = {
 
       $this.cloudType = res.cloudType;
       $this.expirationDate = res.expirationDate;
+
+      var diffInTime = (new Date(res.expirationDate)).getTime() - (new Date()).getTime();
+      $this.expirationDays = parseInt(diffInTime / (1000 * 3600 * 24));
+
+
       $this.upgradeAmount = res.upgradeAmount;
       $this.cloudPriceBasic1Month = res.cloudPriceBasic1Month;
       $this.cloudPriceBasic1Year = res.cloudPriceBasic1Year;
@@ -112,6 +118,13 @@ var methods = {
 
   getUserName: function() {
     return $cloudUserName;
+  },
+
+  getExpirationTip: function() {
+    if (this.expirationDays < 0) return '';
+    if (this.expirationDays <= 10) return 'danger';
+    if (this.expirationDays <= 20) return 'warning';
+    return 'success';
   },
 
   getExpirationDate: function() {

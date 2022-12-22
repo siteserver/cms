@@ -131,8 +131,6 @@ namespace SSCMS.Core.Services
                 }
 
                 PostProcess(contentBuilder, filePath);
-
-                await ReplaceCDNAsync(contentBuilder);
             }
         }
 

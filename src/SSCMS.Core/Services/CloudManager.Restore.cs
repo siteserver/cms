@@ -14,7 +14,7 @@ namespace SSCMS.Core.Services
 {
     public partial class CloudManager
     {
-        public async Task RestoreAsync(string restoreId, string backupGuid)
+        public async Task RestoreAsync(string restoreId, string backupId)
         {
             _cacheManager.AddOrUpdateSliding(restoreId, 5, 100);
 
@@ -28,7 +28,7 @@ namespace SSCMS.Core.Services
             var client = new OssClient(credentials.Endpoint, credentials.AccessKeyId, credentials.AccessKeySecret, credentials.SecurityToken);
 
             var rootPath = _pathManager.GetRootPath();
-            var storagePrefix = GetBackupPrefixKey(config.CloudUserId, backupGuid);
+            var storagePrefix = GetBackupPrefixKey(config.CloudUserId, backupId);
             var storageFiles = await _storageFileRepository.GetStorageFileListAsync();
             var listObjects = OssUtils.ListObjects(client, credentials.BucketName, storagePrefix);
 
@@ -108,9 +108,9 @@ namespace SSCMS.Core.Services
             _cacheManager.AddOrUpdateSliding(restoreId, 100, 100);
         }
 
-        public static string GetBackupPrefixKey(int userId, string backupGuid)
+        public static string GetBackupPrefixKey(int userId, string backupId)
         {
-            return $"backups/{userId}/{backupGuid}/";
+            return $"backups/{userId}/{backupId}/";
         }
 
         public int GetRestoreProgress(string restoreId)

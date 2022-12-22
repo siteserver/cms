@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
-    <Version>7.1.3</Version>
+    <Version>7.2.0</Version>
     <Authors>SS CMS</Authors>
     <Company>SS CMS</Company>
     <PackageDescription>SS CMS .NET Core abstractions for developers.</PackageDescription>
@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Datory" Version="7.1.3" /> -->
+    <!-- <PackageReference Include="Datory" Version="7.2.0" /> -->
     <ProjectReference Include="..\Datory\Datory.csproj" />
   </ItemGroup>
 

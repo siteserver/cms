@@ -352,6 +352,33 @@ namespace SSCMS.Core.Repositories
             return summaries.Select(x => x.Taxis).DefaultIfEmpty().Max();
         }
 
+        public async Task<string> GetSiteDirCascadingAsync(int siteId)
+        {
+            var siteDirs = new List<string>();
+            var summaries = await GetSummariesAsync();
+            GetSiteDirCascading(summaries, siteDirs, siteId);
+            siteDirs.Reverse();
+            return ListUtils.ToString(siteDirs, "/");
+        }
+
+        private void GetSiteDirCascading(List<SiteSummary> summaries, List<string> siteDirs, int siteId)
+        {
+            foreach (var summary in summaries)
+            {
+                if (summary.Id == siteId)
+                {
+                    if (!string.IsNullOrEmpty(summary.SiteDir))
+                    {
+                        siteDirs.Add(summary.SiteDir);
+                    }
+                    if (summary.ParentId > 0)
+                    {
+                        GetSiteDirCascading(summaries, siteDirs, summary.ParentId);
+                    }
+                }
+            }
+        }
+
         public async Task<IList<string>> GetSiteDirsAsync(int parentId)
         {
             var siteDirList = new List<string>();

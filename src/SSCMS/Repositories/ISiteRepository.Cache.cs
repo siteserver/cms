@@ -40,6 +40,8 @@ namespace SSCMS.Repositories
 
         Task<int> GetIdByIsRootAsync();
 
+        Task<string> GetSiteDirCascadingAsync(int siteId);
+
         Task<IList<string>> GetSiteDirsAsync(int parentId);
 
         Task<List<Select<int>>> GetSelectsAsync(List<int> includedSiteIds = null);

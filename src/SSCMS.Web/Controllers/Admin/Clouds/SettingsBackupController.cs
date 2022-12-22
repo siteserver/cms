@@ -50,7 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
 
         public class RestoreRequest
         {
-            public string BackupGuid { get; set; }
+            public string BackupId { get; set; }
         }
 
         public class GetRestoreProgressRequest

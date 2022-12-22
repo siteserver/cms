@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
@@ -114,43 +115,6 @@ namespace SSCMS.Core.Services
             if (!string.IsNullOrEmpty(footCodesHtml))
             {
                 contentBuilder.Append(footCodesHtml + Constants.ReturnAndNewline);
-            }
-        }
-
-        private async Task ReplaceCDNAsync(StringBuilder contentBuilder)
-        {
-            var isCloudCdnImage = false;
-            var isCloudCdnFiles = false;
-            if (PageInfo.Config.CloudUserId > 0 && PageInfo.Config.IsCloudCdn)
-            {
-                isCloudCdnImage = PageInfo.Config.IsCloudCdnImages;
-                isCloudCdnFiles = PageInfo.Config.IsCloudCdnFiles;
-            }
-
-            if (!isCloudCdnImage && !isCloudCdnFiles) return;
-
-            
-            var webUrl = PageInfo.Site.IsSeparatedWeb ? PageUtils.Combine(PageInfo.Site.SeparatedWebUrl, "/") : "/";
-            var storageFiles = await DatabaseManager.StorageFileRepository.GetStorageFileListAsync();
-
-            foreach (var file in storageFiles)
-            {
-                if (FileUtils.IsHtml(file.FileType)) continue;
-
-                if (FileUtils.IsImage(file.FileType))
-                {
-                    if (isCloudCdnImage)
-                    {
-                        contentBuilder.Replace($"{webUrl}{file.Key}", $"{CloudManager.DomainDns}/{PageInfo.Config.CloudUserId}/{file.Key}");
-                    }
-                }
-                else
-                {
-                    if (isCloudCdnFiles)
-                    {
-                        contentBuilder.Replace($"{webUrl}{file.Key}", $"{CloudManager.DomainDns}/{PageInfo.Config.CloudUserId}/{file.Key}");
-                    }
-                }
             }
         }
     }

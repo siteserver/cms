@@ -20,7 +20,30 @@
   .tip p .el-button--primary {
     background-color: #50bfff;
     border-color: #50bfff;
-    margin-right: 8px;
+  }
+  .success {
+    background-color: #f0f9eb;
+    border-left: 5px solid #67C23A;
+  }
+  .success p .el-button--primary {
+    background-color: #85ce61;
+    border-color: #85ce61;
+  }
+  .warning {
+    background-color: #fdf6ec;
+    border-left: 5px solid #E6A23C;
+  }
+  .warning p .el-button--primary {
+    background-color: #ebb563;
+    border-color: #ebb563;
+  }
+  .danger {
+    background-color: #fef0f0;
+    border-left: 5px solid #F56C6C;
+  }
+  .danger p .el-button--primary {
+    background-color: #f78989;
+    border-color: #f78989;
   }
 </style>
 }
@@ -97,20 +120,21 @@
             <div class="el-card__header">
               <div class="clearfix"><span>云助手版本</span></div>
             </div>
-            <div class="tip">
-              <p v-if="cloudType === 'Free'">
-                <el-button type="primary" icon="el-icon-star-off" circle></el-button>
+            <div class="tip" v-if="cloudType === 'Free'">
+              <p>
+                <el-button type="primary" icon="el-icon-star-off" circle style="margin-right: 5px"></el-button>
                 云助手版本：<strong>免费版</strong>，升级云助手版本以获取更多功能
               </p>
-              <p v-else-if="cloudType === 'Basic'">
-                <el-button type="primary" icon="el-icon-star-off" circle></el-button>
-                云助手版本：<strong>基础版</strong>，到期时间：<strong style="margin-right: 10px;">{{ getExpirationDate() }}</strong>
+            </div>
+            <div class="tip" :class="getExpirationTip()" v-else>
+              <p v-if="cloudType === 'Basic'">
+                <el-button type="primary" icon="el-icon-star-off" circle style="margin-right: 5px"></el-button>
+                云助手版本：<strong>基础版</strong>，到期时间：<strong style="margin-right: 10px;">{{ getExpirationDate() }}<span v-if="expirationDays <=20">（剩余{{expirationDays}}天）</span></strong>
                 <el-button v-if="active === 0" type="primary" size="small" v-on:click.prevent="btnRenewalClick">续 费</el-button>
-                <el-button v-if="active === 0" type="primary" size="small" v-on:click.prevent="btnUpgradeClick">升 级</el-button>
               </p>
-              <p v-else-if="cloudType === 'Standard'">
-                <el-button type="primary" icon="el-icon-star-off" circle></el-button>
-                云助手版本：<strong>标准版</strong>，到期时间：<strong style="margin-right: 10px;">{{ getExpirationDate() }}</strong>
+              <p v-if="cloudType === 'Standard'">
+                <el-button type="primary" icon="el-icon-star-off" circle style="margin-right: 5px"></el-button>
+                云助手版本：<strong>标准版</strong>，到期时间：<strong style="margin-right: 10px;">{{ getExpirationDate() }}<span v-if="expirationDays <=20">（剩余{{expirationDays}}天）</span></strong>
                 <el-button v-if="active === 0" type="primary" size="small" v-on:click.prevent="btnRenewalClick">续 费</el-button>
               </p>
             </div>
@@ -128,7 +152,7 @@
                           </span>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="free" label="免费版" width="180">
+                    <el-table-column prop="free" label="免费版" width="240">
                       <template #default="scope">
                         <el-link v-if="scope.row.functions && scope.row.free === 'true'" type="success" :underline="false" v-on:click.prevent>
                           支持
@@ -146,7 +170,7 @@
                         </el-link>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="basic" :label="'基础版（¥' + cloudPriceBasic1Month + '/月）'" width="180">
+                    <el-table-column prop="basic" :label="'基础版（¥' + cloudPriceBasic1Month + '/月）'" width="240">
                       <template #default="scope">
                         <el-link v-if="scope.row.functions && scope.row.basic === 'true'" type="success" :underline="false" v-on:click.prevent>
                           支持
@@ -166,7 +190,7 @@
                         <el-button v-else-if="cloudType == 'Basic'" type="primary" v-on:click.prevent="btnRenewalClick">续费基础版</el-button>
                       </template>
                     </el-table-column>
-                    <el-table-column prop="standard" :label="'标准版（¥' + cloudPriceStandard1Month + '/月）'" width="180">
+                    <el-table-column prop="standard" :label="'标准版（¥' + cloudPriceStandard1Month + '/月）'" width="240">
                       <template #default="scope">
                         <el-link
                           v-if="scope.row.functions && scope.row.standard === 'true'"

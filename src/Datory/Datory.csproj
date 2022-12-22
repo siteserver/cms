@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Datory</PackageId>
-    <Version>7.1.3</Version>
+    <Version>7.2.0</Version>
     <Authors>SS CMS</Authors>
     <Company>SS CMS</Company>
     <Description>基于 Dapper 及 SqlKata 的通用数据库操作库，支持SqlServer、MySql、PostgreSql以及SQLite。</Description>

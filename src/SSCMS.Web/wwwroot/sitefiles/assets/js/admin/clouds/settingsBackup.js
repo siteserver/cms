@@ -55,7 +55,7 @@ var methods = {
     var $this = this;
 
     $api.post($urlRestore, {
-      backupGuid: this.restoreBackup.guid,
+      backupId: this.restoreBackup.backupId,
     })
     .then(function (response) {
       var res = response.data;
