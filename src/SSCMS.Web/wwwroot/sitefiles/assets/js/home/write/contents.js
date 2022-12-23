@@ -51,7 +51,9 @@ var methods = {
 
       $this.sites = res.sites;
       $this.siteId = res.siteId;
-      $this.siteIds = [res.siteId];
+      if ($this.siteIds.length == 0) {
+        $this.siteIds = [res.siteId];
+      }
       $this.siteName = res.siteName;
       $this.siteUrl = res.siteUrl;
       $this.root = res.root;
