@@ -26,12 +26,12 @@ var data = utils.init({
 
 var methods = {
   insert: function(fileUrl) {
-    if (this.inputType === 'Image') {
+    if (this.inputType === 'Video') {
       if (parent.$vue.runMaterialLayerVideoSelect) {
         parent.$vue.runMaterialLayerVideoSelect(this.attributeName, this.no, fileUrl);
       }
     } else if (this.inputType === 'TextEditor') {
-      parent.$vue.insertEditor(this.attributeName, '<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px" imageUrl="' + vod.coverUrl + '"' + ' playUrl="' + vod.playUrl + '" class="siteserver-stl-player" /><br/>');
+      parent.$vue.insertEditor(this.attributeName, '<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px" playUrl="' + fileUrl + '" class="siteserver-stl-player" /><br/>');
     }
   },
 
