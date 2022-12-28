@@ -144,150 +144,162 @@
         "text": "云助手面板",
         "type": [
           "app"
-        ]
+        ],
+        "order": 119
       },
       "app_settings_cloudTickets": {
         "text": "工单技术支持",
         "type": [
           "app"
-        ]
+        ],
+        "order": 120
       },
       "app_settings_cloudSettingsCensor": {
         "text": "违规检测设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 121
       },
       "app_settings_cloudSettingsSpell": {
         "text": "文本纠错设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 122
       },
       "app_settings_cloudSettingsBackup": {
         "text": "云备份设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 123
       },
       "app_settings_cloudSettingsCdn": {
         "text": "CDN加速设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 124
       },
       "app_settings_cloudSettingsVod": {
         "text": "云视频设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 125
       },
       "app_settings_cloudSettingsImages": {
         "text": "免版权图库设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 126
       },
       "app_settings_cloudSettingsSms": {
         "text": "短信集成设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 127
       },
       "app_settings_cloudSettingsMail": {
         "text": "邮件集成设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 128
       },
       "app_settings_cloudSettingsTasks": {
         "text": "定时任务设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 129
       },
       "app_settings_cloudSettingsAdmin": {
         "text": "后台版权设置",
         "type": [
           "app"
-        ]
+        ],
+        "order": 130
       },
       "app_settings_analysisAdminLogin": {
         "text": "管理员登录统计",
         "type": [
           "app"
         ],
-        "order": 119
+        "order": 131
       },
       "app_settings_analysisSiteContent": {
         "text": "站点内容统计",
         "type": [
           "app"
         ],
-        "order": 120
+        "order": 132
       },
       "app_settings_analysisUser": {
         "text": "用户数据统计",
         "type": [
           "app"
         ],
-        "order": 121
+        "order": 133
       },
       "app_settings_logsSite": {
         "text": "站点日志",
         "type": [
           "app"
         ],
-        "order": 122
+        "order": 134
       },
       "app_settings_logsAdmin": {
         "text": "管理员日志",
         "type": [
           "app"
         ],
-        "order": 123
+        "order": 135
       },
       "app_settings_logsUser": {
         "text": "用户日志",
         "type": [
           "app"
         ],
-        "order": 124
+        "order": 136
       },
       "app_settings_logsError": {
         "text": "系统错误日志",
         "type": [
           "app"
         ],
-        "order": 125
+        "order": 137
       },
       "app_settings_logsConfig": {
         "text": "日志设置",
         "type": [
           "app"
         ],
-        "order": 126
+        "order": 138
       },
       "app_settings_utilitiesCache": {
         "text": "系统缓存",
         "type": [
           "app"
         ],
-        "order": 127
+        "order": 139
       },
       "app_settings_utilitiesParameters": {
         "text": "系统参数",
         "type": [
           "app"
         ],
-        "order": 128
+        "order": 140
       },
       "app_settings_utilitiesEncrypt": {
         "text": "加密符串",
         "type": [
           "app"
         ],
-        "order": 129
+        "order": 141
       },
       "site_contents": {
         "text": "内容管理",

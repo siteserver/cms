@@ -65,6 +65,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                     var localSmallFileName = Constants.SmallImageAppendix + fileName;
                     var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
+                    var width = request.ThumbWidth;
+                    var height = request.ThumbHeight;
+                    ImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
+
                     var thumbnailUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localSmallFilePath, true);
                     if (isAutoStorage)
                     {
@@ -74,10 +78,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                             thumbnailUrl = url;
                         }
                     }
-
-                    var width = request.ThumbWidth;
-                    var height = request.ThumbHeight;
-                    ImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
 
                     if (request.IsLinkToOriginal)
                     {

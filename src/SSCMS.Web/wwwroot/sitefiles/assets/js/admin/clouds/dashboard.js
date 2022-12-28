@@ -247,7 +247,7 @@ var methods = {
   },
 
   btnDocsClick: function () {
-    window.open('https://sscms.com/docs/v7/');
+    window.open('https://sscms.com/docs/v7/cloud/');
   },
 
   getOriginalAmount: function() {
