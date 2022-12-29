@@ -24,6 +24,7 @@ namespace Datory.Utils
             {
                 query.Method = "select";
             }
+            tableName = Utilities.FilterSql(tableName);
 
             string sql;
             Dictionary<string, object> namedBindings;

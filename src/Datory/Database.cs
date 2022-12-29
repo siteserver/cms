@@ -254,7 +254,9 @@ namespace Datory
         {
             var sqlBuilder = new StringBuilder();
 
-            sqlBuilder.Append($@"CREATE TABLE {GetQuotedIdentifier(tableName)} (").AppendLine();
+            tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+
+            sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
 
             var primaryKeyColumns = new List<TableColumn>();
             TableColumn identityColumn = null;
@@ -353,8 +355,8 @@ namespace Datory
         {
             if (columns == null || columns.Length == 0) return;
 
-            var fullTableName = GetQuotedIdentifier(tableName);
-            var fullIndexName = GetQuotedIdentifier(indexName);
+            var fullTableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+            var fullIndexName = GetQuotedIdentifier(Utilities.FilterSql(indexName));
             var sqlString = new StringBuilder($@"CREATE INDEX {fullIndexName} ON {fullTableName}(");
 
             foreach (var column in columns)
@@ -470,7 +472,8 @@ namespace Datory
         public async Task DropTableAsync(string tableName)
         {
             using var connection = GetConnection();
-            await connection.ExecuteAsync($"DROP TABLE {GetQuotedIdentifier(tableName)}");
+            tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+            await connection.ExecuteAsync($"DROP TABLE {tableName}");
         }
 
         public async Task<List<string>> GetDatabaseNamesAsync()

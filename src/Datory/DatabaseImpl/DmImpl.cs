@@ -184,8 +184,8 @@ namespace Datory.DatabaseImpl
         public async Task<List<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
-
             var owner = Utilities.GetConnectionStringDatabase(connectionString);
+            tableName = Utilities.FilterSql(tableName);
 
             using (var connection = new DmConnection(connectionString))
             {
@@ -243,7 +243,8 @@ namespace Datory.DatabaseImpl
 
         public string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
-            return $"ALTER TABLE {GetQuotedIdentifier(tableName)} ADD ({columnsSqlString})";
+            tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+            return $"ALTER TABLE {tableName} ADD ({columnsSqlString})";
         }
     }
 }

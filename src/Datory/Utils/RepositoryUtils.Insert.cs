@@ -20,6 +20,8 @@ namespace Datory.Utils
             dataInfo.CreatedDate = DateTime.Now;
             dataInfo.LastModifiedDate = DateTime.Now;
 
+            tableName = Utilities.FilterSql(tableName);
+
             var identityInsert = false;
             if (dataInfo.Id > 0)
             {
@@ -205,6 +207,8 @@ SET IDENTITY_INSERT {database.GetQuotedIdentifier(tableName)} OFF;
 
         private static async Task InsertRowsAsync(IDatabase database, string tableName, string columnNames, List<string> valuesList, DynamicParameters parameterList)
         {
+            tableName = Utilities.FilterSql(tableName);
+            
             if (database.DatabaseType == DatabaseType.SqlServer)
             {
                 var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");

@@ -35,8 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Datory" Version="7.2.0" />
-    <!-- <ProjectReference Include="..\Datory\Datory.csproj" /> -->
+    <!-- <PackageReference Include="Datory" Version="7.2.0" /> -->
+    <ProjectReference Include="..\Datory\Datory.csproj" />
   </ItemGroup>
 
 </Project>
