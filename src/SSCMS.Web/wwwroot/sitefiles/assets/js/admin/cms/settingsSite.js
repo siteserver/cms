@@ -201,6 +201,9 @@ var methods = {
     if (options.no) {
       query.no = options.no;
     }
+    if (options.inputType) {
+      query.inputType = options.inputType;
+    }
 
     var args = {
       title: options.title,
