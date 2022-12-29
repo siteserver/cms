@@ -22,7 +22,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             try
             {
                 var site = await _siteRepository.GetAsync(request.SiteId);
-                var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+
+                var fileName = PathUtils.RemoveParentPath(request.FileName);
+                var filePath = _pathManager.GetTemporaryFilesPath(fileName);
                 var adminId = _authManager.AdminId;
                 var caching = new CacheUtils(_cacheManager);
 

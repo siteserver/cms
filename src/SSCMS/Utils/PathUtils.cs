@@ -140,7 +140,9 @@ namespace SSCMS.Utils
             if (!string.IsNullOrEmpty(path))
             {
                 retVal = path.Replace("../", string.Empty);
+                retVal = retVal.Replace("..\\", string.Empty);
                 retVal = retVal.Replace("./", string.Empty);
+                retVal = retVal.Replace(".\\", string.Empty);
             }
             return retVal;
         }

@@ -67,17 +67,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private async Task<ActionResult<ContentResult>> SaveFile(ContentRequest request, Site site, bool isAdd)
         {
             var filePath = string.Empty;
+            var requestPath = PathUtils.RemoveParentPath(request.Path);
+            var requestDirectoryPath = PathUtils.RemoveParentPath(request.DirectoryPath);
+            var requestFileName = PathUtils.RemoveParentPath(request.FileName);
+
             if (StringUtils.EqualsIgnoreCase(request.FileType, "html"))
             {
-                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsIncludeDir, request.Path + ".html");
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsIncludeDir, requestPath + ".html");
             }
             else if (StringUtils.EqualsIgnoreCase(request.FileType, "css"))
             {
-                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsCssDir, request.Path + ".css");
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsCssDir, requestPath + ".css");
             }
             else if (StringUtils.EqualsIgnoreCase(request.FileType, "js"))
             {
-                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsJsDir, request.Path + ".js");
+                filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsJsDir, requestPath + ".js");
             }
 
             var filePathToDelete = string.Empty;
@@ -90,7 +94,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             }
             else
             {
-                var originalFilePath = await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
+                var originalFilePath = await _pathManager.GetSitePathAsync(site, requestDirectoryPath, requestFileName);
                 if (!StringUtils.EqualsIgnoreCase(originalFilePath, filePath))
                 {
                     filePathToDelete = originalFilePath;

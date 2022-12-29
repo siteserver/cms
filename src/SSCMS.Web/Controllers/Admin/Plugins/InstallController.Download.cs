@@ -16,9 +16,10 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!string.IsNullOrEmpty(request.Path))
+            var path = PathUtils.RemoveParentPath(request.Path);
+            if (!string.IsNullOrEmpty(path))
             {
-                if (!FileUtils.DeleteFileIfExists(request.Path))
+                if (!FileUtils.DeleteFileIfExists(path))
                 {
                     return new BoolResult
                     {

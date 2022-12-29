@@ -17222,7 +17222,8 @@ UE.plugins['fiximgclick'] = (function () {
                     'width': target.width + 'px',
                     'height': target.height + 'px',
                     'left': iframePos.x + imgPos.x - me.editor.document.body.scrollLeft - editorPos.x - parseInt(resizer.style.borderLeftWidth) + 'px',
-                    'top': iframePos.y + imgPos.y - me.editor.document.body.scrollTop - editorPos.y - parseInt(resizer.style.borderTopWidth) + 'px'
+                    // 'top': iframePos.y + imgPos.y - me.editor.document.body.scrollTop - editorPos.y - parseInt(resizer.style.borderTopWidth) + 'px'
+                    'top': iframePos.y + imgPos.y - me.editor.document.documentElement.scrollTop - editorPos.y - parseInt(resizer.style.borderTopWidth) + 'px'
                 });
             }
         }

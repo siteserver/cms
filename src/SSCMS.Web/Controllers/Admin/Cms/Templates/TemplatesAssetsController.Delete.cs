@@ -35,8 +35,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName));
-            await _authManager.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{request.DirectoryPath}:{request.FileName}");
+            var directoryPath = PathUtils.RemoveParentPath(request.DirectoryPath);
+            var fileName = PathUtils.RemoveParentPath(request.FileName);
+
+            FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, directoryPath, fileName));
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{directoryPath}:{fileName}");
 
             return new BoolResult
             {
