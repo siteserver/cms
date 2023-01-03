@@ -533,6 +533,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return string.Empty;
             }
 
+            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
             var elementId = StringUtils.GetElementId();
 
