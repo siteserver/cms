@@ -59,6 +59,30 @@ var utils = {
     });
   },
 
+  loadExternals: function (cssUrls, jsUrls) {
+    if (cssUrls) {
+      var head = document.getElementsByTagName('head')[0];
+      for (var i = 0; i < cssUrls.length; i++) {
+        var url = cssUrls[i];
+        var link = document.createElement('link');
+        link.href = url;
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        head.appendChild(link);
+      }
+    }
+    if (jsUrls) {
+      var head = document.getElementsByTagName('head')[0];
+      for (var i = 0; i < jsUrls.length; i++) {
+        var url = jsUrls[i];
+        var script = document.createElement('script');
+        script.src = url;
+        script.type = 'text/javascript';
+        head.appendChild(script);
+      }
+    }
+  },
+
   loadEditors: function (styles, form) {
     setTimeout(function () {
       for (var i = 0; i < styles.length; i++) {

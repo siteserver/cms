@@ -19,5 +19,6 @@ namespace SSCMS.Services
         IEnumerable<T> GetExtensions<T>(bool useCaching = true) where T : IPluginExtension;
         Task<Dictionary<string, object>> GetConfigAsync(string pluginId);
         Task SaveConfigAsync(string pluginId, Dictionary<string, object> config);
+        (List<string> cssUrls, List<string> jsUrls) GetExternalUrls();
     }
 }

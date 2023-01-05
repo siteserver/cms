@@ -42,6 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             if (!request.Reload)
             {
+                var (cssUrls, jsUrls) = _pluginManager.GetExternalUrls();
                 var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
                 var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
                 var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
@@ -50,6 +51,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 return new TreeResult
                 {
                     Root = root,
+                    CssUrls = cssUrls,
+                    JsUrls = jsUrls,
                     SiteUrl = siteUrl,
                     GroupNames = groupNames,
                     TagNames = tagNames,

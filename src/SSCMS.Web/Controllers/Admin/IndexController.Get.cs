@@ -237,6 +237,8 @@ namespace SSCMS.Web.Controllers.Admin
 
             var cloudType = await _cloudManager.GetCloudTypeAsync();
 
+            var (cssUrls, jsUrls) = _pluginManager.GetExternalUrls();
+
             return new GetResult
             {
                 Value = true,
@@ -263,6 +265,8 @@ namespace SSCMS.Web.Controllers.Admin
                 CloudType = cloudType,
                 CloudUserName = config.CloudUserName,
                 CloudToken = config.CloudToken,
+                CssUrls = cssUrls,
+                JsUrls = jsUrls,
             };
         }
     }

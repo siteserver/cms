@@ -56,7 +56,7 @@ namespace SSCMS.Cli.Jobs
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
-            using var console = new ConsoleUtils();
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
                 await WriteUsageAsync(console);
@@ -119,6 +119,7 @@ namespace SSCMS.Cli.Jobs
             {
                 try
                 {
+                    using var progress = new ConsoleUtils(true);
                     var oldMetadataFilePath = oldTree.GetTableMetadataFilePath(oldTableName);
 
                     if (!FileUtils.IsFileExists(oldMetadataFilePath)) continue;
@@ -131,13 +132,13 @@ namespace SSCMS.Cli.Jobs
                         {
                             var converter = table.GetConverter(oldTableName, oldTable.Columns);
 
-                            await _updateService.UpdateSplitContentsTableAsync(console, splitSiteTableDict, siteIdList, oldTableName,
+                            await _updateService.UpdateSplitContentsTableAsync(progress, splitSiteTableDict, siteIdList, oldTableName,
                                 oldTable, converter);
                         }
                         else
                         {
                             var converter = table.GetConverter(oldTableName, oldTable.Columns);
-                            var tuple = await _updateService.GetNewTableAsync(console, oldTableName, oldTable, converter);
+                            var tuple = await _updateService.GetNewTableAsync(progress, oldTableName, oldTable, converter);
                             if (tuple != null)
                             {
                                 newTableNames.Add(tuple.Item1);
@@ -148,7 +149,7 @@ namespace SSCMS.Cli.Jobs
                     }
                     else
                     {
-                        var tuple = await _updateService.UpdateTableAsync(console, oldTableName, oldTable);
+                        var tuple = await _updateService.UpdateTableAsync(progress, oldTableName, oldTable);
                         if (tuple != null)
                         {
                             newTableNames.Add(tuple.Item1);

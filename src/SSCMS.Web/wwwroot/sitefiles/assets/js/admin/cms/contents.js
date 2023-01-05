@@ -57,6 +57,7 @@ var methods = {
 
       $this.root = [res.root];
       if (!reload) {
+        utils.loadExternals(res.cssUrls, res.jsUrls);
         $this.siteUrl = res.siteUrl;
         $this.groupNames = res.groupNames;
         $this.tagNames = res.tagNames;
@@ -365,7 +366,10 @@ var methods = {
   },
 
   btnMenuClick: function(menu, content) {
-    if (!this.permissions.isEdit) return;
+    if (menu.click) {
+      eval(menu.click + '(content)');
+      return;
+    }
     var url = utils.addQuery(menu.link, {
       siteId: this.siteId,
       channelId: content.channelId,

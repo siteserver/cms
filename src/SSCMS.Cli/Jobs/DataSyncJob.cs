@@ -83,7 +83,7 @@ namespace SSCMS.Cli.Jobs
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
-            using var console = new ConsoleUtils();
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
                 await WriteUsageAsync(console);
@@ -124,7 +124,8 @@ namespace SSCMS.Cli.Jobs
             _excludes.Add("siteserver_Tracking");
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
-            await _databaseManager.BackupAsync(console, _includes, _excludes, _maxRows, _pageSize, tree, errorLogFilePath);
+            using var progress = new ConsoleUtils(true);
+            await _databaseManager.BackupAsync(progress, _includes, _excludes, _maxRows, _pageSize, tree, errorLogFilePath);
 
             var restoreConfigPath = PathUtils.Combine(_settingsManager.ContentRootPath, _to);
             if (!FileUtils.IsFileExists(restoreConfigPath))

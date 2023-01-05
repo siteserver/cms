@@ -79,6 +79,7 @@ var methods = {
         $this.cloudType = res.cloudType;
         $this.cloudUserName = res.cloudUserName;
         $this.cloudToken = res.cloudToken;
+
         if (!cloud.isAuth()) {
           cloud.login($this.cloudUserName, $this.cloudToken);
         }
@@ -105,6 +106,7 @@ var methods = {
         }
 
         document.title = $this.adminTitle;
+        utils.loadExternals(res.cssUrls, res.jsUrls);
         setTimeout($this.ready, 100);
       } else {
         location.href = res.redirectUrl;

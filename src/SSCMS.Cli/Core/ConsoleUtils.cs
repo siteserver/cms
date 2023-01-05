@@ -25,17 +25,22 @@ namespace SSCMS.Cli.Core
         private string currentText = string.Empty;
         private bool disposed = false;
         private int animationIndex = 0;
+        private bool isProgress = false;
 
-        public ConsoleUtils()
+        public ConsoleUtils(bool isProgress)
         {
-            timer = new Timer(TimerHandler);
-
-            // A progress bar is only for temporary display in a console window.
-            // If the console output is redirected to a file, draw nothing.
-            // Otherwise, we'll end up with a lot of garbage in the target file.
-            if (!Console.IsOutputRedirected)
+            this.isProgress = isProgress;
+            if (isProgress)
             {
-                ResetTimer();
+                timer = new Timer(TimerHandler);
+
+                // A progress bar is only for temporary display in a console window.
+                // If the console output is redirected to a file, draw nothing.
+                // Otherwise, we'll end up with a lot of garbage in the target file.
+                if (!Console.IsOutputRedirected)
+                {
+                    ResetTimer();
+                }
             }
         }
 
@@ -54,8 +59,8 @@ namespace SSCMS.Cli.Core
             {
                 if (disposed) return;
 
-                int progressBlockCount = (int) (currentProgress * blockCount);
-                int percent = (int) (currentProgress * 100);
+                int progressBlockCount = (int)(currentProgress * blockCount);
+                int percent = (int)(currentProgress * 100);
                 string text = string.Format("[{0}{1}] {2,3}% {3}",
                     new string('#', progressBlockCount), new string('-', blockCount - progressBlockCount),
                     percent,
@@ -102,10 +107,13 @@ namespace SSCMS.Cli.Core
 
         public void Dispose()
         {
-            lock (timer)
+            if (isProgress)
             {
-                disposed = true;
-                UpdateText(string.Empty);
+                lock (timer)
+                {
+                    disposed = true;
+                    UpdateText(string.Empty);
+                }
             }
         }
 
@@ -135,7 +143,7 @@ namespace SSCMS.Cli.Core
         {
             await Console.Out.WriteLineAsync(value);
         }
-        
+
         public async Task WriteLineAsync()
         {
             await Console.Out.WriteLineAsync();
@@ -172,7 +180,7 @@ namespace SSCMS.Cli.Core
         public string GetString(string text)
         {
             var value = Prompt.GetString(text);
-            return !string.IsNullOrEmpty(value) ? value: GetString(text);
+            return !string.IsNullOrEmpty(value) ? value : GetString(text);
         }
 
         public List<string> GetStringList(string text)

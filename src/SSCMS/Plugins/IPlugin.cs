@@ -22,6 +22,8 @@ namespace SSCMS.Plugins
         string Description { get; }
         string License { get; }
         string Icon { get; }
+        string Css { get; }
+        string Js { get; }
         IEnumerable<string> Categories { get; }
         IEnumerable<string> Keywords { get; }
         string Homepage { get; }
@@ -30,6 +32,7 @@ namespace SSCMS.Plugins
         bool ApplyToChannels { get; }
         bool Disabled { get; }
         bool AllSites { get; }
+        bool AllChannels { get; }
         IEnumerable<int> SiteIds { get; }
         IEnumerable<SiteConfig> SiteConfigs { get; }
         IEnumerable<Table> Tables { get; }

@@ -84,6 +84,8 @@ namespace SSCMS.Core.Plugins
         public string Description => Configuration[nameof(Description)];
         public string License => Configuration[nameof(License)];
         public string Icon => Configuration[nameof(Icon)];
+        public string Css => Configuration[nameof(Css)];
+        public string Js => Configuration[nameof(Js)];
 
         public Dictionary<string, string> Engines => Configuration.GetSection(nameof(Engines)).Get<Dictionary<string, string>>();
 
@@ -93,10 +95,10 @@ namespace SSCMS.Core.Plugins
         public string Output => Configuration[nameof(Output)];
         public string Main => Configuration[nameof(Main)];
         public bool ApplyToSites => Configuration.GetValue(nameof(ApplyToSites), false);
-        public bool ApplyToChannels => Configuration.GetValue(nameof(ApplyToChannels), false);
-
-        public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
         public bool AllSites => Configuration.GetValue(nameof(AllSites), true);
+        public bool ApplyToChannels => Configuration.GetValue(nameof(ApplyToChannels), false);
+        public bool AllChannels => Configuration.GetValue(nameof(AllChannels), true);
+        public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
         public IEnumerable<int> SiteIds => Configuration.GetSection(nameof(SiteIds)).Get<int[]>();
         public IEnumerable<SiteConfig> SiteConfigs => Configuration.GetSection(nameof(SiteConfigs)).Get<SiteConfig[]>();
         public IEnumerable<Table> Tables => Configuration.GetSection(nameof(Tables)).Get<Table[]>();
@@ -133,6 +135,7 @@ namespace SSCMS.Core.Plugins
                             IconClass = menu.IconClass,
                             Link = menu.Link,
                             Target = menu.Target,
+                            Click = menu.Click,
                             Permissions = menu.Permissions,
                             Order = menu.Order,
                             Children = GetMenus(childSection)

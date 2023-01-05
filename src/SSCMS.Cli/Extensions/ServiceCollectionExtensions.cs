@@ -2,6 +2,8 @@
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Jobs;
 using SSCMS.Cli.Services;
+using SSCMS.Core.Services;
+using SSCMS.Services;
 
 namespace SSCMS.Cli.Extensions
 {
@@ -9,6 +11,7 @@ namespace SSCMS.Cli.Extensions
     {
         public static void AddCliServices(this IServiceCollection services)
         {
+            services.AddSingleton<ITaskManager, TaskManager>();
             services.AddScoped<ICliApiService, CliApiService>();
             services.AddScoped<IConfigService, ConfigService>();
             services.AddScoped<IDataUpdateService, DataUpdateService>();

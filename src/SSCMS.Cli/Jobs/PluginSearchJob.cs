@@ -42,7 +42,7 @@ namespace SSCMS.Cli.Jobs
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
-            using var console = new ConsoleUtils();
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
                 await WriteUsageAsync(console);

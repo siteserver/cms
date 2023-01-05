@@ -55,7 +55,7 @@ namespace SSCMS.Cli.Jobs
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
-            using var console = new ConsoleUtils();
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
                 await WriteUsageAsync(console);
@@ -129,8 +129,8 @@ namespace SSCMS.Cli.Jobs
             await console.WriteRowLineAsync();
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
-
-            var errorTableNames = await _databaseManager.RestoreAsync(console, _includes, _excludes, tablesFilePath, tree, errorLogFilePath);
+            using var progress = new ConsoleUtils(true);
+            var errorTableNames = await _databaseManager.RestoreAsync(progress, _includes, _excludes, tablesFilePath, tree, errorLogFilePath);
 
             if (errorTableNames.Count == 0)
             {

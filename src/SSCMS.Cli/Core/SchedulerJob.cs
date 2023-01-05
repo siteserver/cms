@@ -7,7 +7,7 @@ namespace SSCMS.Cli.Core
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            using var console = new ConsoleUtils();
+            using var console = new ConsoleUtils(false);
             await Program.Application.RunExecuteAsync(Application.CommandName, Application.CommandArgs, Application.CommandExtras, context);
 
             if (context.NextFireTimeUtc != null)

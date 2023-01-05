@@ -37,7 +37,7 @@ namespace SSCMS.Cli
             };
 
             _settingsManager = settingsManager;
-            _console = new ConsoleUtils();
+            _console = new ConsoleUtils(false);
         }
 
         public async Task RunAsync(string[] args)
