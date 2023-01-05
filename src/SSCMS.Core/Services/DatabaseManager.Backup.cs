@@ -72,7 +72,6 @@ namespace SSCMS.Core.Services
                         if (table.TotalCount > pageSize)
                         {
                             var pageCount = (int)Math.Ceiling((double)table.TotalCount / pageSize);
-
                             for (; current <= pageCount; current++)
                             {
                                 console.Report((double)(current - 1) / pageCount);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SSCMS.Cli.Abstractions;
+using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater;
 using SSCMS.Cli.Updater.Tables;
 using SSCMS.Dto;
@@ -66,10 +67,11 @@ namespace SSCMS.Cli.Services
 
             if (oldTable.Rows.Count > 0)
             {
+                using var progress = new ConsoleUtils(true);
                 var i = 0;
                 foreach (var fileName in oldTable.Rows)
                 {
-                    console.Report((double)i++ / oldTable.Rows.Count);
+                    progress.Report((double)i++ / oldTable.Rows.Count);
 
                     var oldFilePath = OldTree.GetTableContentFilePath(oldTableName, fileName);
                     var newFilePath = NewTree.GetTableContentFilePath(converter.NewTableName, fileName);
@@ -115,10 +117,11 @@ namespace SSCMS.Cli.Services
 
             if (oldTable.Rows.Count > 0)
             {
+                using var progress = new ConsoleUtils(true);
                 var i = 0;
                 foreach (var fileName in oldTable.Rows)
                 {
-                    console.Report((double)i++ / oldTable.Rows.Count);
+                    progress.Report((double)i++ / oldTable.Rows.Count);
 
                     var newRows = new List<Dictionary<string, object>>();
 

@@ -164,12 +164,17 @@ namespace Datory.DatabaseImpl
 
         public string GetPrimaryKeySqlString(string tableName, string attributeName)
         {
-            return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
+            return $@"CONSTRAINT PK_{RemoveQuotedIdentifier(tableName)}_{RemoveQuotedIdentifier(attributeName)} PRIMARY KEY ({RemoveQuotedIdentifier(attributeName)})";
         }
 
         public string GetQuotedIdentifier(string identifier)
         {
             return $"[{identifier}]";
+        }
+
+        public string RemoveQuotedIdentifier(string identifier)
+        {
+            return identifier.Replace("[", string.Empty).Replace("]", string.Empty);
         }
 
         private DataType ToDataType(string dataTypeStr, string dataLength)

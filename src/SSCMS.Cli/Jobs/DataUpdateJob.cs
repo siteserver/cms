@@ -119,7 +119,6 @@ namespace SSCMS.Cli.Jobs
             {
                 try
                 {
-                    using var progress = new ConsoleUtils(true);
                     var oldMetadataFilePath = oldTree.GetTableMetadataFilePath(oldTableName);
 
                     if (!FileUtils.IsFileExists(oldMetadataFilePath)) continue;
@@ -132,13 +131,13 @@ namespace SSCMS.Cli.Jobs
                         {
                             var converter = table.GetConverter(oldTableName, oldTable.Columns);
 
-                            await _updateService.UpdateSplitContentsTableAsync(progress, splitSiteTableDict, siteIdList, oldTableName,
+                            await _updateService.UpdateSplitContentsTableAsync(console, splitSiteTableDict, siteIdList, oldTableName,
                                 oldTable, converter);
                         }
                         else
                         {
                             var converter = table.GetConverter(oldTableName, oldTable.Columns);
-                            var tuple = await _updateService.GetNewTableAsync(progress, oldTableName, oldTable, converter);
+                            var tuple = await _updateService.GetNewTableAsync(console, oldTableName, oldTable, converter);
                             if (tuple != null)
                             {
                                 newTableNames.Add(tuple.Item1);
@@ -149,7 +148,7 @@ namespace SSCMS.Cli.Jobs
                     }
                     else
                     {
-                        var tuple = await _updateService.UpdateTableAsync(progress, oldTableName, oldTable);
+                        var tuple = await _updateService.UpdateTableAsync(console, oldTableName, oldTable);
                         if (tuple != null)
                         {
                             newTableNames.Add(tuple.Item1);

@@ -129,8 +129,7 @@ namespace SSCMS.Cli.Jobs
             await console.WriteRowLineAsync();
 
             var errorLogFilePath = CliUtils.DeleteErrorLogFileIfExists(_settingsManager);
-            using var progress = new ConsoleUtils(true);
-            var errorTableNames = await _databaseManager.RestoreAsync(progress, _includes, _excludes, tablesFilePath, tree, errorLogFilePath);
+            var errorTableNames = await _databaseManager.RestoreAsync(console, _includes, _excludes, tablesFilePath, tree, errorLogFilePath);
 
             if (errorTableNames.Count == 0)
             {
