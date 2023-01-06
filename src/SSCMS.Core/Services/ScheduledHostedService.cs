@@ -46,6 +46,8 @@ namespace SSCMS.Core.Services
             {
                 await Task.Delay(FREQUENCY, stoppingToken);
 
+                if (string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString)) continue;
+
                 ScheduledTask task = null;
                 try
                 {
@@ -57,6 +59,7 @@ namespace SSCMS.Core.Services
                 }
 
                 if (task == null) continue;
+                
                 await ExecuteTaskAsync(task, stoppingToken);
             }
         }
