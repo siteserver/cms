@@ -62,13 +62,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var channelPlugins = _pluginManager.GetPlugins(request.SiteId, request.ChannelId);
             var contentMenus = new List<Menu>();
+            var contentsMenus = new List<Menu>();
             foreach (var plugin in channelPlugins)
             {
                 var pluginMenus = plugin.GetMenus()
-                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content)).ToList();
-                if (pluginMenus.Count == 0) continue;
-
-                contentMenus.AddRange(pluginMenus);
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.MenuTypes.Content)).ToList();
+                if (pluginMenus.Count > 0)
+                {
+                    contentMenus.AddRange(pluginMenus);
+                }
+                pluginMenus = plugin.GetMenus()
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.MenuTypes.Contents)).ToList();
+                if (pluginMenus.Count > 0)
+                {
+                    contentsMenus.AddRange(pluginMenus);
+                }
             }
 
             if (total > 0)
@@ -117,7 +125,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 IsAllContents = channel.IsAllContents,
                 CheckedLevels = checkedLevels,
                 Permissions = permissions,
-                Menus = contentMenus
+                ContentMenus = contentMenus,
+                ContentsMenus = contentsMenus
             };
         }
     }

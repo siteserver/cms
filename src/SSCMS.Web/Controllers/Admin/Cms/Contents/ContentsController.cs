@@ -98,7 +98,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public bool IsAllContents { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
             public Permissions Permissions { get; set; }
-            public List<Menu> Menus { get; set; }
+            public List<Menu> ContentMenus { get; set; }
+            public List<Menu> ContentsMenus { get; set; }
         }
 
         public class TreeRequest : SiteRequest

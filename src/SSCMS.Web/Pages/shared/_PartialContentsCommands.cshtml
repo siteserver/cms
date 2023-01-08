@@ -48,6 +48,12 @@
     生成
   </el-button>
 
+  <template v-if="typeof(contentsMenus) == 'object'">
+    <el-button v-for="menu in contentsMenus" :key="menu.id" size="mini" :icon="menu.iconClass" v-on:click.stop.native="btnCommandClick(menu)">
+      {{ menu.text }}
+    </el-button>
+  </template>
+
   <el-dropdown size="mini" v-on:command="btnMoreClick">
     <el-button size="mini" :disabled="total === 0">
       更多<i class="el-icon-arrow-down el-icon--right"></i>

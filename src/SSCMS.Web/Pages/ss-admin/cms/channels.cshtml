@@ -217,14 +217,15 @@
           <td rowspan="1" colspan="1" class="commands">
             <div class="cell">
 
-              <el-link v-for="menu in data.menus" :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnMenuClick(menu, data)">
+              <el-link v-if="channelMenus" v-for="menu in channelMenus" :key="menu.id" :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnMenuClick(menu, data)">
+                <i v-if="menu.iconClass" :class="menu.iconClass"></i>
                 {{ menu.text }}
               </el-link>
 
               <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
                 编辑
               </el-link>
-              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
+              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" :disabled="siteId == data.value" v-on:click.stop.native="btnDeleteClick(data)">
                 删除
               </el-link>
 

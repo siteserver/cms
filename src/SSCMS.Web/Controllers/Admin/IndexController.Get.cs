@@ -222,7 +222,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var appPermissions = await _authManager.GetAppPermissionsAsync();
-            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
+            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.MenuTypes.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
             foreach (var appMenu in appMenus)
             {
                 appMenu.Children = GetChildren(appMenu, appPermissions);

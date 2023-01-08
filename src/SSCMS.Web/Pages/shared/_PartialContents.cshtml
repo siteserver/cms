@@ -249,21 +249,22 @@
     </template>
   </el-table-column>
 
-  <el-table-column
-    v-if="menus"
-    v-for="menu in menus"
-    :key="menu.id"
-    fixed="right"
-    align="center"
-    :width="menu.text.length * 20"
-    show-overflow-tooltip>
-    <template slot-scope="scope">
-      <el-link v-if="menus" :disabled="!permissions.isEdit" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">
-        <i v-if="menu.iconClass" :class="menu.iconClass"></i>
-        {{ menu.text }}
-      </el-link>
-    </template>
-  </el-table-column>
+  <template v-if="typeof(contentMenus) == 'object'">
+    <el-table-column
+      v-for="menu in contentMenus"
+      :key="menu.id"
+      fixed="right"
+      align="center"
+      :width="menu.text.length * 20 + (menu.iconClass ? 20 : 0)"
+      show-overflow-tooltip>
+      <template slot-scope="scope">
+        <el-link :disabled="!permissions.isEdit" size="mini" type="primary" :underline="false" v-on:click.stop.native="btnMenuClick(menu, scope.row)">
+          <i v-if="menu.iconClass" :class="menu.iconClass"></i>
+          {{ menu.text }}
+        </el-link>
+      </template>
+    </el-table-column>
+  </template>
 
   <el-table-column
     fixed="right"

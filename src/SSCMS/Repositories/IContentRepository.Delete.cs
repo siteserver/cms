@@ -21,6 +21,8 @@ namespace SSCMS.Repositories
 
         Task RestoreTrashAsync(Site site, int restoreChannelId);
 
+        Task DeleteAsync(Site site, Channel channel, List<int> contentIdList, IPluginManager pluginManager);
+
         Task RestoreTrashAsync(Site site, int channelId, string tableName, List<int> contentIds,
             int restoreChannelId);
     }

@@ -94,6 +94,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<Select<string>> TaxisTypes { get; set; }
             public string SiteUrl { get; set; }
             public Settings Settings { get; set; }
+            public List<Menu> ChannelMenus { get; set; }
+            public List<Menu> ChannelsMenus { get; set; }
         }
 
         public class GetResult

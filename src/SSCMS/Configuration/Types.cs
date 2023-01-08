@@ -16,11 +16,21 @@
             public const string User = nameof(User);
         }
 
-        public static class Resources
+        public static class PermissionTypes
         {
             public const string App = "app";
             public const string Channel = "channel";
             public const string Content = "content";
+        }
+
+        public static class MenuTypes
+        {
+            public const string App = "app";
+            public const string Channels = "channels";
+            public const string Channel = "channel";
+            public const string Contents = "contents";
+            public const string Content = "content";
+            public const string Editor = "editor";
         }
 
         public static class SiteTypes

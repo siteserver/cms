@@ -19,6 +19,8 @@ var data = utils.init({
   editTaxisTypes: [],
   siteUrl: null,
   settings: null,
+  channelMenus: null,
+  channelsMenus: null,
 
   styles: [],
   relatedFields: null,
@@ -68,6 +70,8 @@ var methods = {
       $this.editTaxisTypes = res.taxisTypes;
       $this.siteUrl = res.siteUrl;
       $this.settings = res.settings;
+      $this.channelMenus = res.channelMenus;
+      $this.channelsMenus = res.channelsMenus;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -468,6 +472,8 @@ var methods = {
   },
 
   btnDeleteClick: function(data) {
+    if (this.siteId == data.value) return;
+
     this.deleteForm = {
       siteId: this.siteId,
       channelId: data.value,

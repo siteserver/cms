@@ -178,7 +178,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsConsoleAdministrator(roles))
             {
                 appPermissions.AddRange(_permissions
-                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.App))
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.PermissionTypes.App))
                     .Select(permission => permission.Id));
             }
             else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
@@ -341,7 +341,7 @@ namespace SSCMS.Core.Services
             if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
             {
                 var allContentPermissionList = _permissions
-                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel))
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.PermissionTypes.Channel))
                     .Select(permission => permission.Id).ToList();
 
                 var siteIdList = await GetSiteIdsAsync();

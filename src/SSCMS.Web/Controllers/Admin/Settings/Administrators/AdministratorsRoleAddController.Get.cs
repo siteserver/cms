@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             var allPermissions = _settingsManager.GetPermissions();
 
-            var allAppPermissions = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.App));
+            var allAppPermissions = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.PermissionTypes.App));
 
             foreach (var permission in allAppPermissions)
             {

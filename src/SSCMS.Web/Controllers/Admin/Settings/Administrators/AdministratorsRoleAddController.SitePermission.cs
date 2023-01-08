@@ -56,7 +56,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 //    });
                 //}
 
-                var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content));
+                var contentPermissionList = allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.PermissionTypes.Content));
                 foreach (var permission in contentPermissionList)
                 {
                     if (permission.Id == MenuUtils.ContentPermissions.CheckLevel1)
@@ -141,7 +141,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 var contentPermissionList = await _authManager.GetContentPermissionsAsync(request.SiteId);
                 foreach (var contentPermission in contentPermissionList)
                 {
-                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Content)))
+                    foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.PermissionTypes.Content)))
                     {
                         if (permission.Id == contentPermission)
                         {

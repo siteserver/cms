@@ -14,7 +14,12 @@ namespace SSCMS.Core.Repositories
         public async Task<List<ContentSummary>> SearchAsync(Site site, Channel channel, bool isAllContents, string searchType, string searchText, bool isAdvanced, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = await GetRepositoryAsync(site, channel);
-            var query = Q.Select(nameof(Content.ChannelId), nameof(Content.Id));
+            var query = Q.Select(
+              nameof(Content.Id), 
+              nameof(Content.ChannelId), 
+              nameof(Content.Checked), 
+              nameof(Content.CheckedLevel)
+            );
 
             await QueryWhereAsync(query, site, channel.Id, isAllContents);
 

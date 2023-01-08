@@ -19,7 +19,8 @@ var data = utils.init({
   titleColumn: null,
   columns: null,
   permissions: null,
-  menus: null,
+  contentMenus: null,
+  contentsMenus: null,
 
   asideHeight: 0,
   tableMaxHeight: 0,
@@ -98,7 +99,8 @@ var methods = {
       $this.pageSize = res.pageSize;
       $this.page = page;
       $this.permissions = res.permissions;
-      $this.menus = res.menus;
+      $this.contentMenus = res.contentMenus;
+      $this.contentsMenus = res.contentsMenus;
       $this.expendedChannelIds = [$this.siteId, channelId];
       $this.searchForm.isAllContents = res.isAllContents;
 
@@ -363,6 +365,38 @@ var methods = {
       }),
       full: true
     });
+  },
+
+  btnCommandClick: function(menu) {
+    var args = {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      isContentChecked: this.isContentChecked,
+      channelContentIds: this.channelContentIdsString
+    };
+    if (menu.click) {
+      eval(menu.click + '(args)');
+      return;
+    }
+
+    var url = utils.addQuery(menu.link, args);
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: url,
+        full: true
+      });
+    } else if (menu.target == '_self') {
+      location.href = url;
+    } else if (menu.target == '_parent') {
+      parent.location.href = url;
+    }  else if (menu.target == '_top') {
+      top.location.href = url;
+    } else if (menu.target == '_blank') {
+      window.open(url);
+    } else {
+      utils.addTab(menu.text, url);
+    }
   },
 
   btnMenuClick: function(menu, content) {
