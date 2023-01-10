@@ -744,7 +744,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                query.WhereDate(nameof(User.LastActivityDate), ">=", dateTime);
+                query.Where(nameof(User.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
 
             if (groupId > -1)

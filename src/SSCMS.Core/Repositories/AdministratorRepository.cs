@@ -187,7 +187,7 @@ namespace SSCMS.Core.Repositories
             if (lastActivityDate > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-lastActivityDate);
-                query.WhereDate(nameof(Administrator.LastActivityDate), ">=", dateTime);
+                query.Where(nameof(Administrator.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -221,7 +221,7 @@ namespace SSCMS.Core.Repositories
             if (lastActivityDate > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-lastActivityDate);
-                query.WhereDate(nameof(Administrator.LastActivityDate), ">=", dateTime);
+                query.Where(nameof(Administrator.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
             if (!string.IsNullOrEmpty(keyword))
             {

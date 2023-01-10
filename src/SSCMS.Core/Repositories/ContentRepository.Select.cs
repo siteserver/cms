@@ -137,11 +137,12 @@ namespace SSCMS.Core.Repositories
             {
                 if (!string.IsNullOrEmpty(dateFrom))
                 {
-                    query.WhereDate(nameof(Content.AddDate), ">=", TranslateUtils.ToDateTime(dateFrom));
+                    query.Where(nameof(Content.AddDate), ">=", DateUtils.ToString(dateFrom));
                 }
                 if (!string.IsNullOrEmpty(dateTo))
                 {
-                    query.WhereDate(nameof(Content.AddDate), "<=", TranslateUtils.ToDateTime(dateTo).AddDays(1));
+                    var dateTime = TranslateUtils.ToDateTime(dateTo).AddDays(1);
+                    query.Where(nameof(Content.AddDate), "<=", DateUtils.ToString(dateTime));
                 }
             }
 
@@ -169,11 +170,12 @@ namespace SSCMS.Core.Repositories
         {
             var repository = await GetRepositoryAsync(site.TableName);
 
+            var lastModifiedDate = DateTime.Now.AddHours(-hour);
             return await repository.GetAllAsync<int>(Q
                 .Select(nameof(Content.ChannelId))
                 .Where(nameof(Content.SiteId), site.Id)
                 .WhereTrue(nameof(Content.Checked))
-                .WhereDate(nameof(Content.LastModifiedDate), ">", DateTime.Now.AddHours(-hour))
+                .Where(nameof(Content.LastModifiedDate), ">=", DateUtils.ToString(lastModifiedDate))
             );
         }
 

@@ -186,11 +186,11 @@ namespace SSCMS.Core.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), ">", startDate.Value);
+                query.Where(nameof(Content.AddDate), ">=", DateUtils.ToString(startDate));
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), "<", endDate.Value);
+                query.Where(nameof(Content.AddDate), "<=", DateUtils.ToString(endDate));
             }
 
             if (items != null)
@@ -314,11 +314,11 @@ namespace SSCMS.Core.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), ">", startDate.Value);
+                query.Where(nameof(Content.AddDate), ">=", DateUtils.ToString(startDate));
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), "<", endDate.Value);
+                query.Where(nameof(Content.AddDate), "<=", DateUtils.ToString(endDate));
             }
 
             if (items != null)
@@ -411,11 +411,11 @@ namespace SSCMS.Core.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.LastModifiedDate), ">", startDate.Value);
+                query.Where(nameof(Content.LastModifiedDate), ">=", DateUtils.ToString(startDate));
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.LastModifiedDate), "<", endDate.Value);
+                query.Where(nameof(Content.LastModifiedDate), "<=", DateUtils.ToString(endDate));
             }
 
             if (items != null)

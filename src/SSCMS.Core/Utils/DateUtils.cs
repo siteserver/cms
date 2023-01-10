@@ -12,6 +12,17 @@ namespace SSCMS.Core.Utils
         public const string FormatStringDateOnly = "yyyy-MM-dd";
         private static readonly DateTime JanFirst1970 = new DateTime(1970, 1, 1);
 
+        public static string ToString(string dateTimeStr)
+        {
+            var dateTime = TranslateUtils.ToDateTime(dateTimeStr);
+            return ToString(dateTime);
+        }
+
+        public static string ToString(DateTime? dateTime)
+        {
+            return dateTime.HasValue ? dateTime.Value.ToString(FormatStringDateTime) : string.Empty;
+        }
+
         public static int GetUnixTimestamp(DateTime dateTime)
         {
             return (int)dateTime.Subtract(JanFirst1970).TotalSeconds;

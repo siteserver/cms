@@ -279,11 +279,11 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                query.WhereDate(dateAttribute, ">=", dateFrom);
+                query.Where(dateAttribute, ">=", dateFrom);
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                query.WhereDate(dateAttribute, "<=", dateTo);
+                query.Where(dateAttribute, "<=", dateTo);
             }
             if (!string.IsNullOrEmpty(since))
             {
