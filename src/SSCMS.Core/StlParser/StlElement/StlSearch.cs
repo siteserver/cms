@@ -204,20 +204,22 @@ jQuery(document).ready(function(){{
     var parameters = {apiParameters};
 
     var queryString = document.location.search;
-    if (queryString && queryString.length > 1) {{
-        queryString = queryString.substring(1);
-        var arr = queryString.split('&');
-        for(var i=0; i < arr.length; i++) {{
-            var item = arr[i];
-            var arr2 = item.split('=');
-            if (arr2 && arr2.length == 2) {{
-                var key = (arr2[0] || '').toLowerCase();
-                if (key) {{
-                    var value = decodeURIComponent(arr2[1]) || '';
-                    value = value.replace(/\+/g, ' ');
-                    parameters[key] = value;
-                }}
-            }}
+    if (parameters.isDefaultDisplay || (queryString && queryString.length > 1)) {{
+        if (queryString && queryString.length > 1) {{
+          queryString = queryString.substring(1);
+          var arr = queryString.split('&');
+          for(var i=0; i < arr.length; i++) {{
+              var item = arr[i];
+              var arr2 = item.split('=');
+              if (arr2 && arr2.length == 2) {{
+                  var key = (arr2[0] || '').toLowerCase();
+                  if (key) {{
+                      var value = decodeURIComponent(arr2[1]) || '';
+                      value = value.replace(/\+/g, ' ');
+                      parameters[key] = value;
+                  }}
+              }}
+          }}
         }}
         if (!parameters['page']) {{
             parameters['page'] = 1;

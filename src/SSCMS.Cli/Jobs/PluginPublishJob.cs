@@ -134,7 +134,6 @@ namespace SSCMS.Cli.Jobs
             (success, failureMessage) = await _cliApiService.PluginPublishAsync(plugin.Publisher, zipPath);
             if (success)
             {
-                
                 await console.WriteSuccessAsync($"Published {packageId}, your plugin will live at {CloudUtils.Www.GetPluginUrl(plugin.Publisher, plugin.Name)}.");
             }
             else
