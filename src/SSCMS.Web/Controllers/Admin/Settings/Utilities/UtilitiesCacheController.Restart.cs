@@ -7,17 +7,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     public partial class UtilitiesCacheController
     {
-        [HttpPost, Route(RouteClearCache)]
-        public async Task<ActionResult<BoolResult>> ClearCache()
+        [HttpPost, Route(RouteRestart)]
+        public async Task<ActionResult<BoolResult>> Restart()
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUtilitiesCache))
             {
                 return Unauthorized();
             }
 
-            _cacheManager.Clear();
-            await _dbCacheRepository.ClearAsync();
-            _cacheManager.Clear();
+            _hostApplicationLifetime.StopApplication();
 
             return new BoolResult
             {

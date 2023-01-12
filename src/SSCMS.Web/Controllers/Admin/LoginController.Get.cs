@@ -29,6 +29,7 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 Success = true,
                 Version = _settingsManager.Version,
+                AdminFaviconUrl = config.AdminFaviconUrl,
                 AdminTitle = config.AdminTitle,
                 IsSmsAdmin = isSmsAdmin,
                 IsSmsAdminAndDisableAccount = isSmsAdminAndDisableAccount

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Clouds
@@ -11,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<StringResult>> Upload([FromForm] IFormFile file)
+        public async Task<ActionResult<UploadResult>> Upload([FromQuery] string type, [FromForm] IFormFile file)
         {
             if (!await _authManager.IsSuperAdminAsync())
             {
@@ -24,15 +23,16 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             {
                 return this.Error(Constants.ErrorImageExtensionAllowed);
             }
-            var fileName = $"logo{extension}";
+            var fileName = $"{type}{extension}";
             var filePath = _pathManager.GetSiteFilesPath(fileName);
             await _pathManager.UploadAsync(file, filePath);
 
-            var adminLogoUrl = _pathManager.GetSiteFilesUrl(fileName);
+            var url = _pathManager.GetSiteFilesUrl(fileName);
 
-            return new StringResult
+            return new UploadResult
             {
-                Value = adminLogoUrl
+                Type = type,
+                Url = url
             };
         }
     }

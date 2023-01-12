@@ -29,6 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         public class GetResult
         {
             public string AdminTitle { get; set; }
+            public string AdminFaviconUrl { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminWelcomeHtml { get; set; }
         }
@@ -36,9 +37,16 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         public class SubmitRequest
         {
             public string AdminTitle { get; set; }
+            public string AdminFaviconUrl { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminLogoLinkUrl { get; set; }
             public string AdminWelcomeHtml { get; set; }
+        }
+
+        public class UploadResult
+        {
+            public string Type { get; set; }
+            public string Url { get; set; }
         }
     }
 }

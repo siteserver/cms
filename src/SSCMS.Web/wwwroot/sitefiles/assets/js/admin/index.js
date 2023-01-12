@@ -106,6 +106,13 @@ var methods = {
         }
 
         document.title = $this.adminTitle;
+
+        var head = document.querySelector('head');
+        var favicon = document.createElement('link');
+        favicon.setAttribute('rel', 'shortcut icon');
+        favicon.setAttribute('href', res.adminFaviconUrl || utils.getAssetsUrl('images/favicon.png'));
+        head.appendChild(favicon);
+
         utils.loadExternals(res.cssUrls, res.jsUrls);
         setTimeout($this.ready, 100);
       } else {

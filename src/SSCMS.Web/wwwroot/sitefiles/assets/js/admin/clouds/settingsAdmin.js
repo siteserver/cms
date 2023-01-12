@@ -4,10 +4,13 @@ var $urlCloud = "cms/clouds";
 var data = utils.init({
   cloudType: null,
   expirationDate: null,
-  uploadUrl: null,
-  uploadFileList: [],
+  uploadUrlFavicon: null,
+  uploadUrlLogo: null,
+  uploadFaviconList: [],
+  uploadLogoList: [],
   form: {
     adminTitle: null,
+    adminFaviconUrl: null,
     adminLogoUrl: null,
     adminLogoLinkUrl: null,
     adminWelcomeHtml: null,
@@ -23,12 +26,16 @@ var methods = {
       var res = response.data;
 
       $this.form.adminTitle = res.adminTitle;
+      $this.form.adminFaviconUrl = res.adminFaviconUrl;
       $this.form.adminLogoUrl = res.adminLogoUrl;
       $this.form.adminLogoLinkUrl = res.adminLogoLinkUrl;
       $this.form.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SS CMS 管理后台';
 
+      if ($this.form.adminFaviconUrl) {
+        $this.uploadFaviconList.push({name: 'avatar', url: $this.form.adminFaviconUrl});
+      }
       if ($this.form.adminLogoUrl) {
-        $this.uploadFileList.push({name: 'avatar', url: $this.form.adminLogoUrl});
+        $this.uploadLogoList.push({name: 'avatar', url: $this.form.adminLogoUrl});
       }
     }).catch(function (error) {
       utils.error(error);
@@ -43,6 +50,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, {
       adminTitle: $this.form.adminTitle,
+      adminFaviconUrl: $this.form.adminFaviconUrl,
       adminLogoUrl: $this.form.adminLogoUrl,
       adminLogoLinkUrl: $this.form.adminLogoLinkUrl,
       adminWelcomeHtml: $this.form.adminWelcomeHtml
@@ -129,7 +137,11 @@ var methods = {
   },
 
   uploadSuccess: function(res, file, fileList) {
-    this.form.adminLogoUrl = res.value;
+    if (res.type == 'favicon') {
+      this.form.adminFaviconUrl = res.url;
+    } else if (res.type == 'logo') {
+      this.form.adminLogoUrl = res.url;
+    }
     utils.loading(this, false);
     if (fileList.length > 1) fileList.splice(0, 1);
   },
@@ -140,7 +152,11 @@ var methods = {
     utils.error(error.message);
   },
 
-  uploadRemove(file) {
+  uploadFaviconRemove(file) {
+    this.form.adminFaviconUrl = null;
+  },
+
+  uploadLogoRemove(file) {
     this.form.adminLogoUrl = null;
   },
 
@@ -155,7 +171,8 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
-    this.uploadUrl = $apiUrl + $url + '/actions/upload';
+    this.uploadUrlFavicon = $apiUrl + $url + '/actions/upload?type=favicon';
+    this.uploadUrlLogo = $apiUrl + $url + '/actions/upload?type=logo';
     var $this = this;
     cloud.checkAuth(function() {
       $this.apiCloudGet();

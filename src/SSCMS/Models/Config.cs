@@ -50,6 +50,7 @@ namespace SSCMS.Models
         public int UserLockLoginHours { get; set; } = 3;
         public string UserDefaultGroupAdminName { get; set; }
         public string AdminTitle { get; set; } = "SS CMS";
+        public string AdminFaviconUrl { get; set; }
         public string AdminLogoUrl { get; set; }
         public string AdminLogoLinkUrl { get; set; } = "https://sscms.com";
         public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SSCMS 管理后台";

@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             return new GetResult
             {
                 AdminTitle = config.AdminTitle,
+                AdminFaviconUrl = config.AdminFaviconUrl,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminWelcomeHtml = config.AdminWelcomeHtml
             };

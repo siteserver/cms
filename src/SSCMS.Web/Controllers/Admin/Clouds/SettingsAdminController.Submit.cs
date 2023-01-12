@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             var config = await _configRepository.GetAsync();
 
             config.AdminTitle = request.AdminTitle;
+            config.AdminFaviconUrl = request.AdminFaviconUrl;
             config.AdminLogoUrl = request.AdminLogoUrl;
             config.AdminLogoLinkUrl = request.AdminLogoLinkUrl;
             config.AdminWelcomeHtml = request.AdminWelcomeHtml;

@@ -47,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin
             public bool Success { get; set; }
             public string RedirectUrl { get; set; }
             public string Version { get; set; }
+            public string AdminFaviconUrl { get; set; }
             public string AdminTitle { get; set; }
             public bool IsSmsAdmin { get; set; }
             public bool IsSmsAdminAndDisableAccount { get; set; }
