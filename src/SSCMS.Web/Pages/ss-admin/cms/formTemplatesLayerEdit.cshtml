@@ -1,0 +1,32 @@
+@page
+@{ Layout = "_Layout"; }
+
+<el-alert v-if="isHtml && isClone" type="warning">
+  提示： <strong>{{ name }}</strong> 为系统模板，编辑此模板需要克隆至指定文件夹
+</el-alert>
+
+<div style="height: 10px;"></div>
+
+<el-form ref="form" :model="form" size="small" label-width="120px">
+  <el-form-item v-if="isClone" label="克隆模板">
+    <strong>{{ name }}</strong>
+  </el-form-item>
+  <el-form-item label="模板名称" prop="name" name="name" :rules="{ required: true, message: '请输入模板名称' }">
+    <el-input ref="name" v-model="form.name"></el-input>
+    <div class="tips">模板名称即模板文件夹名称，系统将把模板文件存放在此文件夹中</div>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row>
+  <el-col :span="24" align="right">
+    <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/cms/formTemplatesLayerEdit.js" type="text/javascript"></script>
+}

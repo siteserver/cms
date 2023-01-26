@@ -649,6 +649,12 @@ var utils = {
     });
   },
 
+  focus: function (vue, ref) {
+    setTimeout(function () {
+      vue.$refs[ref] && vue.$refs[ref].focus();
+    }, 100);
+  },
+
   ctrlSave: function (submitFn) {
     $(document).keydown(function (e) {
       var c = e.which || e.keyCode;
@@ -739,12 +745,60 @@ var utils = {
           });
         }, 100);
       } else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
-        if (!form[name] || !Array.isArray(form[name])) {
-          form[name] = [];
+        var arr = [];
+        if (form[name]) {
+          if (typeof form[name] === 'string') {
+            arr = [form[name]];
+          }
+          else if (Array.isArray(form[name])) {
+            arr = form[name];
+          }
         }
+        form[name] = arr;
       }
     }
     return form;
+  },
+
+  getValue: function (styles, content, attributeName) {
+    var value = content[utils.toCamelCase(attributeName)];
+    for (var i = 0; i < styles.length; i++) {
+      var style = styles[i];
+      if (style.attributeName !== attributeName || !style.items || style.items.length === 0) continue;
+      if (style.inputType === 'Radio' || style.inputType === 'SelectOne') {
+        for (var j = 0; j < style.items.length; j++) {
+          var item = style.items[j];
+          if (value === item.value) {
+            value = item.label;
+          }
+        }
+      } else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
+        var arr = [];
+        var values = [];
+        if (value) {
+          if (typeof value === 'string') {
+            arr = [value];
+          }
+          else if (Array.isArray(value)) {
+            arr = value;
+          }
+        }
+
+        for (var j = 0; j < style.items.length; j++) {
+          var item = style.items[j];
+          if (arr.indexOf(item.value) !== -1) {
+            values.push(item.label);
+          }
+        }
+
+        if (values.length > 0) {
+          value = values.join(' , ');
+        } else {
+          value = '';
+        }
+      }
+    }
+    return value;
   },
 
   getRules: function (rules) {

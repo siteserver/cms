@@ -166,35 +166,35 @@ namespace SSCMS.Core.Utils.PathRules
                     {
                         if (addDate.HasValue)
                         {
-                            value = addDate.Value.Month.ToString("D2");
+                            value = StringUtils.PadZeroes(addDate.Value.Month, 2);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Day))
                     {
                         if (addDate.HasValue)
                         {
-                            value = addDate.Value.Day.ToString("D2");
+                            value = StringUtils.PadZeroes(addDate.Value.Day, 2);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Hour))
                     {
                         if (addDate.HasValue)
                         {
-                            value = addDate.Value.Hour.ToString();
+                            value = StringUtils.PadZeroes(addDate.Value.Hour, 2);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Minute))
                     {
                         if (addDate.HasValue)
                         {
-                            value = addDate.Value.Minute.ToString();
+                            value = StringUtils.PadZeroes(addDate.Value.Minute, 2);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Second))
                     {
                         if (addDate.HasValue)
                         {
-                            value = addDate.Value.Second.ToString();
+                            value = StringUtils.PadZeroes(addDate.Value.Second, 2);
                         }
                     }
                 }

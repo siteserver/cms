@@ -43,6 +43,8 @@
             public const string Channels = "site_channels";
             public const string ContentsSearch = "site_contentsSearch";
             public const string ContentsCheck = "site_contentsCheck";
+            public const string FormList = "site_formList";
+            public const string FormTemplates = "site_formTemplates";
             public const string MaterialMessage = "site_materialMessage";
             public const string MaterialImage = "site_materialImage";
             public const string MaterialVideo = "site_materialVideo";

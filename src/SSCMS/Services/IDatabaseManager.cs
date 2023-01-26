@@ -20,13 +20,15 @@ namespace SSCMS.Services
         IContentTagRepository ContentTagRepository { get; }
         IDbCacheRepository DbCacheRepository { get; }
         IErrorLogRepository ErrorLogRepository { get; }
+        IFormRepository FormRepository { get; }
+        IFormDataRepository FormDataRepository { get; }
+        ILogRepository LogRepository { get; }
         IMaterialAudioRepository MaterialAudioRepository { get; }
         IMaterialArticleRepository MaterialArticleRepository { get; }
         IMaterialFileRepository MaterialFileRepository { get; }
         IMaterialGroupRepository MaterialGroupRepository { get; }
         IMaterialImageRepository MaterialImageRepository { get; }
         IMaterialVideoRepository MaterialVideoRepository { get; }
-        ILogRepository LogRepository { get; }
         IPermissionsInRolesRepository PermissionsInRolesRepository { get; }
         IPluginConfigRepository PluginConfigRepository { get; }
         IRelatedFieldItemRepository RelatedFieldItemRepository { get; }

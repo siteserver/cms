@@ -19,12 +19,6 @@ namespace SSCMS.Services
 
         string ParsePath(string directoryPath, string virtualPath);
 
-        string GetSiteFilesPath(params string[] paths);
-
-        string GetSiteFilesUrl(params string[] paths);
-
-        string GetSiteFilesUrl(Site site, params string[] paths);
-
         string GetAdministratorUploadPath(int userId, params string[] paths);
 
         string GetAdministratorUploadUrl(int userId, params string[] paths);
@@ -36,8 +30,6 @@ namespace SSCMS.Services
         string GetHomeUploadPath(params string[] paths);
 
         string GetHomeUploadUrl(params string[] paths);
-
-        string GetTemporaryFilesUrl(params string[] paths);
 
         string DefaultAvatarUrl { get; }
 

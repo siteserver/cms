@@ -126,6 +126,7 @@ namespace SSCMS.Parse
         public static class Const
         {
             public const string Jquery = "Jquery";
+            public const string Axios = "Axios";
             public const string JsCookie = "JsCookie";
             public const string StlClient = "StlClient";
 
@@ -164,7 +165,13 @@ namespace SSCMS.Parse
         {
             var retVal = string.Empty;
 
-            if (pageJsName == Const.Jquery)
+            if (pageJsName == Const.Axios)
+            {
+                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Libraries.AxiosJs);
+                retVal =
+                        $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
+            }
+            else if (pageJsName == Const.Jquery)
             {
                 if (Site.IsCreateWithJQuery)
                 {

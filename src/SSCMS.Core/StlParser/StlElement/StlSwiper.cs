@@ -153,12 +153,13 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 parameters = StringUtils.Trim(parameters);
                 parameters = StringUtils.TrimEnd(parameters, ",");
+                parameters += ",";
             }
 
             var scripts = @$"
 <script>
 var swiper = new Swiper('.swiper', {{
-  {parameters},
+  {parameters}
   direction: '{direction}',
   loop: true,
   spaceBetween: 100,

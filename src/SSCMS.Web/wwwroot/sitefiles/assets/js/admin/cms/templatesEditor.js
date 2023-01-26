@@ -292,6 +292,7 @@ var methods = {
   },
 
   btnCreateClick: function() {
+    if (!this.templateId) return;
     var $this = this;
 
     utils.loading(this, true);
@@ -395,8 +396,16 @@ var $vue = new Vue({
         window.close();
       }
     });
-    utils.ctrlSave(function() {
-      $this.btnSubmitClick();
+    $(document).keydown(function (e) {
+      if (!e.ctrlKey || e.key == "Control") return;
+      var c = e.keyCode || e.which;
+      if (c == 83) {
+        e.preventDefault();
+        $this.btnSubmitClick();
+      } else if (c == 66) {
+        e.preventDefault();
+        $this.btnCreateClick();
+      }
     });
     this.winHeight = $(window).height();
     this.apiGet();

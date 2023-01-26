@@ -148,7 +148,6 @@ var methods = {
 
   handleRemove: function(file) {
     this.fileList.splice(this.fileList.indexOf(file), 1);
-    console.log(this.fileList);
   },
 
   handlePreview: function(file) {

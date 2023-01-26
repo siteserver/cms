@@ -105,6 +105,7 @@ namespace SSCMS.Core.Extensions
             services.AddScoped<IPathManager, PathManager>();
             services.AddScoped<ICreateManager, CreateManager>();
             services.AddScoped<IDatabaseManager, DatabaseManager>();
+            services.AddScoped<IFormManager, FormManager>();
             services.AddScoped<IParseManager, ParseManager>();
         }
 

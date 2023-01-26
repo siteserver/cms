@@ -32,13 +32,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var path = string.Empty;
             var content = string.Empty;
 
-            var directoryPath = PathUtils.RemoveParentPath(request.DirectoryPath);
+            var directoryPath = request.DirectoryPath; // PathUtils.RemoveParentPath(request.DirectoryPath);
             var fileName = PathUtils.RemoveParentPath(request.FileName);
 
             if (!string.IsNullOrEmpty(fileName))
             {
                 var filePath = await _pathManager.GetSitePathAsync(site, directoryPath, fileName);
-                
+
                 if (FileUtils.IsFileExists(filePath))
                 {
                     content = await FileUtils.ReadTextAsync(filePath);
@@ -58,6 +58,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 {
                     path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsJsDir,
                         string.Empty), fileName);
+                }
+                else
+                {
+                    return this.Error("文件获取失败，必须为Html/Css/Js文件！");
                 }
 
                 path = StringUtils.TrimSlash(PathUtils.RemoveExtension(path));

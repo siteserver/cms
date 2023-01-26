@@ -149,5 +149,6 @@ var $vue = new Vue({
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
+    utils.focus(this, 'attributeName');
   }
 });

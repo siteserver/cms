@@ -83,8 +83,8 @@ namespace SSCMS.Core.Services
 
         public async Task<(bool success, string errorMessage)> SendMailAsync(string mail, string subject, string url, List<KeyValuePair<string, string>> items)
         {
-            var templateHtml = await GetMailTemplateHtmlAsync(_pathManager, _cacheManager);
-            var listHtml = await GetMailListHtmlAsync(_pathManager, _cacheManager);
+            var templateHtml = await _pathManager.GetMailTemplateHtmlAsync();
+            var listHtml = await _pathManager.GetMailListHtmlAsync();
 
             var list = new StringBuilder();
             foreach (var kv in items)
@@ -104,28 +104,6 @@ namespace SSCMS.Core.Services
             }
 
             return await SendMailAsync(mail, subject, htmlBody);
-        }
-
-        public static async Task<string> GetMailTemplateHtmlAsync(IPathManager pathManager, ICacheManager cacheManager)
-        {
-            var htmlPath = pathManager.GetSiteFilesPath("assets/mail/template.html");
-            if (cacheManager.Exists(htmlPath)) return cacheManager.Get<string>(htmlPath);
-
-            var html = await FileUtils.ReadTextAsync(htmlPath);
-
-            cacheManager.AddOrUpdate(htmlPath, html);
-            return html;
-        }
-
-        public static async Task<string> GetMailListHtmlAsync(IPathManager pathManager, ICacheManager cacheManager)
-        {
-            var htmlPath = pathManager.GetSiteFilesPath("assets/mail/list.html");
-            if (cacheManager.Exists(htmlPath)) return cacheManager.Get<string>(htmlPath);
-
-            var html = await FileUtils.ReadTextAsync(htmlPath);
-
-            cacheManager.AddOrUpdate(htmlPath, html);
-            return html;
         }
 
         public static async Task SendContentChangedMail(IPathManager pathManager, IMailManager mailManager, IErrorLogRepository errorLogRepository, Site site, Content content, string channelNames, string userName, bool isEdit)

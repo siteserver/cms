@@ -58,6 +58,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlEditable.ElementName), StlEditable.ParseAsync},
             {StringUtils.ToLower(StlFile.ElementName), StlFile.ParseAsync},
             {StringUtils.ToLower(StlFocusViewer.ElementName), StlFocusViewer.ParseAsync},
+            {StringUtils.ToLower(StlForm.ElementName), StlForm.ParseAsync},
             {StringUtils.ToLower(StlIf.ElementName), StlIf.ParseAsync},
             {StringUtils.ToLower(StlImage.ElementName), StlImage.ParseAsync},
             {StringUtils.ToLower(StlInclude.ElementName), StlInclude.ParseAsync},

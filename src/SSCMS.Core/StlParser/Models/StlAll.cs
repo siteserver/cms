@@ -65,6 +65,10 @@ namespace SSCMS.Core.StlParser.Models
                 typeof(StlFocusViewer)
             },
             {
+                StlForm.ElementName,
+                typeof(StlForm)
+            },
+            {
                 StlIf.ElementName,
                 typeof(StlIf)
             },

@@ -68,7 +68,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         {
             var filePath = string.Empty;
             var requestPath = PathUtils.RemoveParentPath(request.Path);
-            var requestDirectoryPath = PathUtils.RemoveParentPath(request.DirectoryPath);
+            var requestDirectoryPath = request.DirectoryPath; // PathUtils.RemoveParentPath(request.DirectoryPath);
             var requestFileName = PathUtils.RemoveParentPath(request.FileName);
 
             if (StringUtils.EqualsIgnoreCase(request.FileType, "html"))
@@ -82,6 +82,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             else if (StringUtils.EqualsIgnoreCase(request.FileType, "js"))
             {
                 filePath = await _pathManager.GetSitePathAsync(site, site.TemplatesAssetsJsDir, requestPath + ".js");
+            }
+            else
+            {
+                return this.Error("文件保存失败，必须为Html/Css/Js文件！");
             }
 
             var filePathToDelete = string.Empty;

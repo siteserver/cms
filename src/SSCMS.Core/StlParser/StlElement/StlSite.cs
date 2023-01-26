@@ -308,7 +308,19 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (pageInfo.Site.Get<string>(type) != null)
             {
-                parsedContent = pageInfo.Site.Get<string>(type);
+                
+
+                var num = TranslateUtils.ToInt(no);
+                if (num <= 1)
+                {
+                    parsedContent = site.Get<string>(type);
+                }
+                else
+                {
+                    var extendName = ColumnsManager.GetExtendName(type, num - 1);
+                    parsedContent = site.Get<string>(extendName);
+                }
+
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(databaseManager.SiteRepository.TableName, type, databaseManager.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
@@ -329,7 +341,8 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                     }
                     else
-                    { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空
+                    {
+                        // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空
                         parsedContent = string.Empty;
                     }
                 }

@@ -20,7 +20,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiConfig: function () {
+  apiGet: function (callback) {
     var $this = this;
 
     utils.loading(this, true);
@@ -41,6 +41,8 @@ var methods = {
       $this.channelTemplateId = $this.defaultChannelTemplate.id;
       $this.contentTemplateId = $this.defaultContentTemplate.id;
 
+      callback && callback();
+
       if ($this.filterChannelTemplateId > 0 || $this.filterContentTemplateId > 0) {
         setTimeout(function() {
           $this.filter($this.filterText, $this.filterChannelTemplateId, $this.filterContentTemplateId);
@@ -60,13 +62,13 @@ var methods = {
     $api.post($url, data).then(function (response) {
       var res = response.data;
 
-      $this.channels = [res.value];
-
-      $this.expandedChannelIds = $this.channelIds;
-      $this.filterText = '';
-      $this.filterChannelTemplateId = 0;
-      $this.filterContentTemplateId = 0;
       utils.success('模板匹配成功！');
+      $this.apiGet(function () {
+        $this.expandedChannelIds = $this.channelIds;
+        $this.filterText = '';
+        $this.filterChannelTemplateId = 0;
+        $this.filterContentTemplateId = 0;
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -81,15 +83,13 @@ var methods = {
     $api.post($url + '/actions/create', data).then(function (response) {
       var res = response.data;
 
-      $this.channels = [res.channels];
-      $this.channelTemplates = res.channelTemplates;
-      $this.contentTemplates = res.contentTemplates;
-
-      $this.expandedChannelIds = $this.channelIds;
-      $this.filterText = '';
-      $this.filterChannelTemplateId = 0;
-      $this.filterContentTemplateId = 0;
       utils.success('模板创建并匹配成功！');
+      $this.apiGet(function() {
+        $this.expandedChannelIds = $this.channelIds;
+        $this.filterText = '';
+        $this.filterChannelTemplateId = 0;
+        $this.filterContentTemplateId = 0;
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -236,6 +236,6 @@ var $vue = new Vue({
   },
   created: function () {
     utils.keyPress(null, this.btnCloseClick);
-    this.apiConfig();
+    this.apiGet();
   }
 });

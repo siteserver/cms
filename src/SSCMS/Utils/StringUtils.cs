@@ -792,7 +792,7 @@ namespace SSCMS.Utils
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
 
-            var reg = new Regex(StrictNameRegex, RegexOptions.Singleline);
+            var reg = new Regex(StrictNameRegex, RegexOptions.Singleline | RegexOptions.IgnoreCase);
             return reg.IsMatch(name);
         }
 
@@ -890,6 +890,11 @@ namespace SSCMS.Utils
               return $"{val}px";
             }
             return val;
+        }
+
+        public static string PadZeroes(int value, int length)
+        {
+            return value.ToString($"D{length}");
         }
     }
 }

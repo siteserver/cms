@@ -310,36 +310,36 @@ namespace SSCMS.Core.Services
 
         private async Task<string> ParseContentUrlAsync(Site site, Content content)
         {
-          if (content.LinkType == LinkType.LinkToChannel)
-          {
-              var url = PageUtils.UnClickableUrl;
-              if (!string.IsNullOrEmpty(content.LinkUrl))
-              {
-                  var channelIds = ListUtils.GetIntList(content.LinkUrl);
-                  if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
-                  {
-                      var targetChannelId = channelIds[channelIds.Count - 1];
-                      var targetChannel = await _channelRepository.GetAsync(targetChannelId);
-                      if (targetChannel != null)
-                      {
-                          url = await GetChannelUrlAsync(site, targetChannel, false);
-                      }
-                  }
-              }
-              return url;
-          }
-          else if (content.LinkType == LinkType.NoLink)
-          {
-              return PageUtils.UnClickableUrl;
-          }
-          else if (content.LinkType == LinkType.None && !string.IsNullOrEmpty(content.LinkUrl))
-          {
-              return await ParseSiteUrlAsync(site, content.LinkUrl, false);
-          }
+            if (content.LinkType == LinkType.LinkToChannel)
+            {
+                var url = PageUtils.UnClickableUrl;
+                if (!string.IsNullOrEmpty(content.LinkUrl))
+                {
+                    var channelIds = ListUtils.GetIntList(content.LinkUrl);
+                    if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                    {
+                        var targetChannelId = channelIds[channelIds.Count - 1];
+                        var targetChannel = await _channelRepository.GetAsync(targetChannelId);
+                        if (targetChannel != null)
+                        {
+                            url = await GetChannelUrlAsync(site, targetChannel, false);
+                        }
+                    }
+                }
+                return url;
+            }
+            else if (content.LinkType == LinkType.NoLink)
+            {
+                return PageUtils.UnClickableUrl;
+            }
+            else if (content.LinkType == LinkType.None && !string.IsNullOrEmpty(content.LinkUrl))
+            {
+                return await ParseSiteUrlAsync(site, content.LinkUrl, false);
+            }
 
-          var rules = new ContentFilePathRules(this, _databaseManager);
-          var contentUrl = await rules.ParseAsync(site, content.ChannelId, content);
-          return await GetSiteUrlAsync(site, contentUrl, false);
+            var rules = new ContentFilePathRules(this, _databaseManager);
+            var contentUrl = await rules.ParseAsync(site, content.ChannelId, content);
+            return await GetSiteUrlAsync(site, contentUrl, false);
         }
 
         public async Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, LinkType linkType, string linkUrl, bool isLocal)
@@ -663,11 +663,18 @@ namespace SSCMS.Core.Services
 
             if (paths == null || paths.Length <= 0) return sitePath;
 
+            var returnPath = sitePath;
             foreach (var t in paths)
             {
                 var path = t?.Replace(PageUtils.SeparatorChar, PathUtils.SeparatorChar).Trim(PathUtils.SeparatorChar) ?? string.Empty;
-                sitePath = PathUtils.Combine(sitePath, path);
+                returnPath = PathUtils.Combine(returnPath, path);
             }
+
+            if (DirectoryUtils.IsInDirectory(_settingsManager.WebRootPath, returnPath))
+            {
+                return returnPath;
+            }
+
             return sitePath;
         }
 
@@ -767,7 +774,7 @@ namespace SSCMS.Core.Services
             {
                 list = list.Where(file => IsVideoExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
             }
-            
+
             return list;
         }
 
@@ -1475,7 +1482,7 @@ namespace SSCMS.Core.Services
                 // ignored
             }
         }
-    
+
         public async Task MoveFileByChannelAsync(Site sourceSite, Site destSite, Channel channel)
         {
             if (channel == null || sourceSite.Id == destSite.Id) return;
@@ -1527,6 +1534,6 @@ namespace SSCMS.Core.Services
                 // ignored
             }
         }
-    
+
     }
 }

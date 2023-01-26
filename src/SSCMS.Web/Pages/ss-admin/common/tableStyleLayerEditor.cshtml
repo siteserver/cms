@@ -3,7 +3,7 @@
 
 <el-form v-on:submit.native.prevent size="small" class="form-fixed" :model="form" ref="form1" :inline="true" label-width="120px">
   <el-form-item label="字段名称" prop="attributeName" :rules="[{ required: true, message: '请输入字段名称' }, { validator: validateAttributeName }]">
-    <el-input v-model="form.attributeName" :disabled="attributeName !== ''" placeholder="请输入字段名称"></el-input>
+    <el-input ref="attributeName" v-model="form.attributeName" :disabled="attributeName !== ''" placeholder="请输入字段名称"></el-input>
   </el-form-item>
   <el-form-item label="显示名称" prop="displayName" :rules="{ required: true, message: '请输入显示名称' }">
     <el-input v-model="form.displayName" placeholder="请输入显示名称"></el-input>

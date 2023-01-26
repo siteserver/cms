@@ -83,6 +83,12 @@ namespace SSCMS.Core.Utils.Serialization
             await templateIe.ImportTemplatesAsync(overwrite, adminId, guid);
         }
 
+        public async Task ImportFormsAsync(string formDirectoryPath, string guid)
+        {
+            var formIe = new FormIe(_pathManager, _databaseManager, _caching, _site.Id, formDirectoryPath);
+            await formIe.ImportFormsAsync(guid);
+        }
+
         public static async Task<string> ImportRelatedFieldByZipFileAsync(IPathManager pathManager, IDatabaseManager databaseManager, Site site, string zipFilePath)
         {
             var directoryPath = pathManager.GetTemporaryFilesPath("RelatedField");

@@ -98,6 +98,7 @@ namespace SSCMS.Core.Utils
             var tableDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.Table);
             var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.FileConfiguration);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
+            var formDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.Form);
 
             var importObject = new ImportObject(_pathManager, _databaseManager, _caching, site, adminId);
 
@@ -140,6 +141,9 @@ namespace SSCMS.Core.Utils
                 await importObject.ImportTableStylesAsync(tableDirectoryPath, guid);
             }
 
+            _caching.SetProcess(guid, $"导入表单: {formDirectoryPath}");
+            await importObject.ImportFormsAsync(formDirectoryPath, guid);
+
             _caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
             await importObject.ImportConfigurationAsync(configurationFilePath, guid);
         }
@@ -162,6 +166,9 @@ namespace SSCMS.Core.Utils
             //导出关联字段
             var relatedFieldDirectoryPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.RelatedField);
             await exportObject.ExportRelatedFieldAsync(relatedFieldDirectoryPath);
+            //导出表单
+            var formDirectoryPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.Form);
+            await exportObject.ExportFormsAsync(formDirectoryPath);
         }
     }
 }

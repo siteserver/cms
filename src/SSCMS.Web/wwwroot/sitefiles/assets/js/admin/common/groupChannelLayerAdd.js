@@ -99,5 +99,6 @@ var $vue = new Vue({
     } else {
       utils.loading(this, false);
     }
+    utils.focus(this, 'groupName');
   }
 });

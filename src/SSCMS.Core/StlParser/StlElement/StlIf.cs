@@ -955,21 +955,37 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (content == null) return theValue;
 
-            if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsTop"))
+            if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsTop") || StringUtils.EqualsIgnoreCase(testTypeStr, nameof(Content.Top)))
             {
-                theValue = content.Get<string>(nameof(Content.Top));
+                var boolValue = content.Get<bool>(nameof(Content.Top));
+                if (boolValue)
+                {
+                    theValue = true.ToString();
+                }
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsRecommend"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsRecommend") || StringUtils.EqualsIgnoreCase(testTypeStr, nameof(Content.Recommend)))
             {
-                theValue = content.Get<string>(nameof(Content.Recommend));
+                var boolValue = content.Get<bool>(nameof(Content.Recommend));
+                if (boolValue)
+                {
+                    theValue = true.ToString();
+                }
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsColor"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsColor") || StringUtils.EqualsIgnoreCase(testTypeStr, nameof(Content.Color)))
             {
-                theValue = content.Get<string>(nameof(Content.Color));
+                var boolValue = content.Get<bool>(nameof(Content.Color));
+                if (boolValue)
+                {
+                    theValue = true.ToString();
+                }
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsHot"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "IsHot") || StringUtils.EqualsIgnoreCase(testTypeStr, nameof(Content.Hot)))
             {
-                theValue = content.Get<string>(nameof(Content.Hot));
+                var boolValue = content.Get<bool>(nameof(Content.Hot));
+                if (boolValue)
+                {
+                    theValue = true.ToString();
+                }
             }
             else if (StringUtils.EqualsIgnoreCase(testTypeStr, "Images"))
             {

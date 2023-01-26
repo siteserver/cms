@@ -96,6 +96,15 @@ namespace SSCMS.Utils
             return i;
         }
 
+        public static decimal ToDecimalWithNegative(string intStr, decimal defaultValue)
+        {
+            if (!decimal.TryParse(intStr?.Trim(), out var i))
+            {
+                i = defaultValue;
+            }
+            return i;
+        }
+
         public static float ToFloat(string intStr, float defaultValue = 0)
         {
             if (!float.TryParse(intStr?.Trim(), out var i))

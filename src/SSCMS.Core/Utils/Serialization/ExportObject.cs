@@ -159,6 +159,12 @@ namespace SSCMS.Core.Utils.Serialization
             await templateIe.ExportTemplatesAsync();
         }
 
+        public async Task ExportFormsAsync(string formDirectoryPath)
+        {
+            var formIe = new FormIe(_pathManager, _databaseManager, _caching, _site.Id, formDirectoryPath);
+            await formIe.ExportFormsAsync();
+        }
+
         public async Task ExportRelatedFieldAsync(string relatedFieldDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
