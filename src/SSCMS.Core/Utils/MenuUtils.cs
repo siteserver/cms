@@ -2,6 +2,16 @@
 {
     public static class MenuUtils
     {
+        public const string IdSite = "site";
+        public const string IdSiteContentsAll = "site_contents_all";
+        public const string IdSiteFormAll = "site_form_all";
+        public const string IdSiteFormList = "site_formList";
+
+        public static string GetFormPermission(int formId)
+        {
+            return $"site_form_{formId}";
+        }
+
         public static class AppPermissions
         {
             public const string PluginsAdd = "app_plugins_add";

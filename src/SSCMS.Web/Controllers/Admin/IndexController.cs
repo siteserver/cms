@@ -16,8 +16,6 @@ namespace SSCMS.Web.Controllers.Admin
     [Route(Constants.ApiAdminPrefix)]
     public partial class IndexController : ControllerBase
     {
-        private const string IdSite = "site";
-
         private const string Route = "index";
         private const string RouteActionsSetLanguage = "index/actions/setLanguage";
         private const string RouteActionsCache = "index/actions/cache";
@@ -34,8 +32,9 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
+        private readonly IFormRepository _formRepository;
 
-        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository, IFormRepository formRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -48,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _dbCacheRepository = dbCacheRepository;
+            _formRepository = formRepository;
         }
 
         public class Local

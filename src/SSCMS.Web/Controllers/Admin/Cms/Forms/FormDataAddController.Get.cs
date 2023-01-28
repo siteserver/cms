@@ -9,8 +9,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                MenuUtils.SitePermissions.FormList))
+            var formPermission = MenuUtils.GetFormPermission(request.SiteId);
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, formPermission))
             {
                 return Unauthorized();
             }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory;
-using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -104,6 +102,23 @@ namespace SSCMS.Core.Repositories
         }
 
         public async Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize)
+        {
+            try
+            {
+                return await GetListPrivateAsync(form, isRepliedOnly, startDate, endDate, word, page, pageSize);
+            }
+            catch
+            {
+                if (!await _settingsManager.Database.IsTableExistsAsync(TableName))
+                {
+                    await _settingsManager.Database.CreateTableAsync(TableName, TableColumns);
+                }
+
+                return await GetListPrivateAsync(form, isRepliedOnly, startDate, endDate, word, page, pageSize);
+            }
+        }
+
+        private async Task<(int Total, List<FormData>)> GetListPrivateAsync(Form form, bool isRepliedOnly, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize)
         {
             if (form.TotalCount == 0)
             {

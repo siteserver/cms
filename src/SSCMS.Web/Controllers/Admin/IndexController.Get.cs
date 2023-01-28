@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Services;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 
@@ -70,6 +71,7 @@ namespace SSCMS.Web.Controllers.Admin
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var isSuperAdmin = await _authManager.IsSuperAdminAsync();
+            var isSiteAdmin = await _authManager.IsSiteAdminAsync();
             var siteIdListWithPermissions = await _authManager.GetSiteIdsAsync();
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
@@ -146,11 +148,46 @@ namespace SSCMS.Web.Controllers.Admin
                         .Where(menu => ListUtils.ContainsIgnoreCase(menu.Type, siteType.Id))
                         .Where(menu => !allPluginMenus.Exists(x => x.Id == menu.Id))
                         .ToList();
+                    var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
+
+                    var contentsAllMenu = siteMenus.FirstOrDefault(x => x.Id == MenuUtils.IdSiteContentsAll);
+                    if (contentsAllMenu != null && contentsAllMenu.Children != null)
+                    {
+                        var formAllMenu = contentsAllMenu.Children.FirstOrDefault(x => x.Id == MenuUtils.IdSiteFormAll);
+                        if (formAllMenu != null && formAllMenu.Children != null)
+                        {
+                            var forms = await _formRepository.GetFormsAsync(site.Id);
+                            forms.Reverse();
+                            foreach (var form in forms)
+                            {
+                                var formPermission = MenuUtils.GetFormPermission(form.Id);
+                                var formMenu = new Menu
+                                {
+                                    Id = formPermission,
+                                    Text = form.Title,
+                                    Type = new List<string>
+                                    {
+                                        siteType.Id
+                                    },
+                                    Permissions = new List<string>
+                                    {
+                                        formPermission
+                                    },
+                                    Link = $"./cms/formData/?formId={form.Id}"
+                                };
+                                if (_authManager.IsMenuValid(formMenu, sitePermissions))
+                                {
+                                    formAllMenu.Children.Insert(0, formMenu);
+                                }
+                            }
+                        }
+                    }
+
                     siteMenus.AddRange(sitePluginMenus);
 
                     var siteMenu = new Menu
                     {
-                        Id = IdSite,
+                        Id = MenuUtils.IdSite,
                         Text = site.SiteName,
                         Type = new List<string>
                         {
@@ -159,13 +196,13 @@ namespace SSCMS.Web.Controllers.Admin
                         Children = siteMenus
                     };
 
-                    var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
                     var query = new NameValueCollection { { "siteId", site.Id.ToString() } };
                     siteMenu.Children = GetChildren(siteMenu, sitePermissions, x =>
                     {
                         x.Link = PageUtils.AddQueryStringIfNotExists(x.Link, query);
                         return x;
                     });
+
                     menus.Add(siteMenu);
 
                     if (siteIdListWithPermissions.Count > 1)

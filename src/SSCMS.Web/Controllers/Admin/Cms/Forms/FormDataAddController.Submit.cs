@@ -11,8 +11,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromQuery] int siteId, [FromBody] FormData request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                MenuUtils.SitePermissions.FormList))
+            var formPermission = MenuUtils.GetFormPermission(request.SiteId);
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, formPermission))
             {
                 return Unauthorized();
             }

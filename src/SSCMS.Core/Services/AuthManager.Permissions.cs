@@ -290,7 +290,7 @@ namespace SSCMS.Core.Services
             var administrator = await GetAdminAsync();
             if (administrator == null || administrator.Locked)
             {
-              return new List<string> { PredefinedRole.Administrator.GetValue() };
+                return new List<string> { PredefinedRole.Administrator.GetValue() };
             }
 
             return await _databaseManager.AdministratorsInRolesRepository.GetRolesForUserAsync(administrator.UserName);
@@ -316,6 +316,13 @@ namespace SSCMS.Core.Services
                     var sitePermissions = _permissions
                         .Where(x => ListUtils.ContainsIgnoreCase(x.Type, siteType))
                         .Select(permission => permission.Id).ToList();
+
+                    var forms = await _databaseManager.FormRepository.GetFormsAsync(site.Id);
+                    foreach (var form in forms)
+                    {
+                        var formPermission = MenuUtils.GetFormPermission(form.Id);
+                        sitePermissions.Add(formPermission);
+                    }
 
                     sitePermissionDict[siteId] = sitePermissions;
                 }

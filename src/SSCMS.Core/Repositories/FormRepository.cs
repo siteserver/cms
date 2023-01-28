@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -32,9 +33,9 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static string GetCacheKey(int siteId)
+        private string GetCacheKey(int siteId)
         {
-            return $"SSCMS.Form.Core.Repositories.FormRepository:{siteId}";
+            return CacheUtils.GetListKey(TableName, siteId);
         }
 
         public async Task<int> InsertAsync(Form form)
@@ -124,6 +125,23 @@ namespace SSCMS.Core.Repositories
         }
 
         public async Task<List<Form>> GetFormsAsync(int siteId)
+        {
+            try
+            {
+                return await GetFormsBySiteIdAsync(siteId);
+            }
+            catch
+            {
+                if (!await _settingsManager.Database.IsTableExistsAsync(TableName))
+                {
+                    await _settingsManager.Database.CreateTableAsync(TableName, TableColumns);
+                }
+
+                return await GetFormsBySiteIdAsync(siteId);
+            }
+        }
+
+        private async Task<List<Form>> GetFormsBySiteIdAsync(int siteId)
         {
             var formList = await _repository.GetAllAsync(Q
                 .Where(nameof(Form.SiteId), siteId)

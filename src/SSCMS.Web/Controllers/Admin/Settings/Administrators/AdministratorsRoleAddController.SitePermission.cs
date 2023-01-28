@@ -38,6 +38,20 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             {
                 foreach (var permission in allPermissions.Where(x => ListUtils.ContainsIgnoreCase(x.Type, site.SiteType)))
                 {
+                    if (permission.Id == MenuUtils.SitePermissions.FormList)
+                    {
+                        var forms = await _formRepository.GetFormsAsync(site.Id);
+                        foreach (var form in forms)
+                        {
+                            var formPermission = MenuUtils.GetFormPermission(form.Id);
+                            sitePermissions.Add(new Option
+                            {
+                                Name = formPermission,
+                                Text = $"表单：{form.Title}",
+                                Selected = ListUtils.ContainsIgnoreCase(sitePermissionsInfo.Permissions, formPermission)
+                            });
+                        }
+                    }
                     sitePermissions.Add(new Option
                     {
                         Name = permission.Id,
@@ -177,8 +191,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-            var channelInfo = await _channelRepository.GetAsync(request.SiteId);
-            channelInfo.Children = await _channelRepository.GetChildrenAsync(request.SiteId, request.SiteId);
+            var channel = await _channelRepository.GetAsync(request.SiteId);
+            channel.Children = await _channelRepository.GetChildrenAsync(request.SiteId, request.SiteId);
             var checkedChannelIdList = new List<int>();
             if (sitePermissionsInfo.ChannelIds != null)
             {
@@ -196,7 +210,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 Site = site,
                 SitePermissions = sitePermissions,
                 ContentPermissions = contentPermissions,
-                Channel = channelInfo,
+                Channel = channel,
                 CheckedChannelIds = checkedChannelIdList
             };
         }

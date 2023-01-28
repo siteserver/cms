@@ -10,8 +10,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] DeleteRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                MenuUtils.SitePermissions.FormList))
+            var formPermission = MenuUtils.GetFormPermission(request.SiteId);
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, formPermission))
             {
                 return Unauthorized();
             }
