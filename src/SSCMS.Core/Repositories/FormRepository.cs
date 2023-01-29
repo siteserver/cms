@@ -178,8 +178,8 @@ namespace SSCMS.Core.Repositories
                 importTitle = title + "_1";
             }
 
-            var inputInfo = await GetByTitleAsync(siteId, title);
-            if (inputInfo != null)
+            var form = await GetByTitleAsync(siteId, title);
+            if (form != null)
             {
                 importTitle = await GetImportTitleAsync(siteId, importTitle);
             }

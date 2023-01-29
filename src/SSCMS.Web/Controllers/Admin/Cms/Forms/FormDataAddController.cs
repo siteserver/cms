@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             public FormData FormData { get; set; }
         }
 
-        public class UploadRequest : SiteRequest
+        public class UploadRequest : FormRequest
         {
             public int FieldId { get; set; }
         }
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             public int FieldId { get; set; }
         }
 
-        public class DeleteRequest : SiteRequest
+        public class DeleteRequest : FormRequest
         {
             public string FileUrl { get; set; }
         }

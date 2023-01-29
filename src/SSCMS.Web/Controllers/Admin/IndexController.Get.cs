@@ -178,6 +178,8 @@ namespace SSCMS.Web.Controllers.Admin
                                 if (_authManager.IsMenuValid(formMenu, sitePermissions))
                                 {
                                     formAllMenu.Children.Insert(0, formMenu);
+                                    formAllMenu.Permissions.Add(formPermission);
+                                    contentsAllMenu.Permissions.Add(formPermission);
                                 }
                             }
                         }

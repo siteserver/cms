@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         [HttpPost, Route(RouteDeleteFile)]
         public async Task<ActionResult<BoolResult>> DeleteFile([FromBody] DeleteRequest request)
         {
-            var formPermission = MenuUtils.GetFormPermission(request.SiteId);
+            var formPermission = MenuUtils.GetFormPermission(request.FormId);
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, formPermission))
             {
                 return Unauthorized();

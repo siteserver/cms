@@ -42,8 +42,13 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('表单添加成功');
-      utils.closeLayer(true);
+      utils.alertSuccess({
+        title: '表单添加成功',
+        text: '表单添加成功，系统需要重载页面',
+        callback: function() {
+          window.top.location.reload(true);
+        }
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -63,8 +68,17 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('表单修改成功');
-      utils.closeLayer(true);
+      if (!res.value) {
+        return utils.error('表单修改失败，已存在同名表单，请修改表单名称！');
+      }
+
+      utils.alertSuccess({
+        title: '表单修改成功',
+        text: '表单修改成功，系统需要重载页面',
+        callback: function() {
+          window.top.location.reload(true);
+        }
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

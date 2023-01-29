@@ -17,6 +17,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             }
 
             var form = await _formRepository.GetAsync(request.SiteId, request.FormId);
+            if (form.Title != request.Title)
+            {
+                var rename = await _formRepository.GetByTitleAsync(request.SiteId, request.Title);
+                if (rename != null)
+                {
+                    return new BoolResult
+                    {
+                        Value = false
+                    };
+                }
+            }
             form.Title = request.Title;
             form.Description = request.Description;
 

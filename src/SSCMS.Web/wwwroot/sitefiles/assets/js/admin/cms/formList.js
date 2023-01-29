@@ -9,6 +9,7 @@ var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   pageType: 'list',
   forms: null,
+  authFormIds: null,
   form: null,
   urlUpload: null,
   files: []
@@ -27,6 +28,7 @@ var methods = {
       var res = response.data;
 
       $this.forms = res.forms;
+      $this.authFormIds = res.authFormIds;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -44,8 +46,13 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('表单删除成功');
-      $this.forms = res.forms;
+      utils.alertSuccess({
+        title: '表单删除成功',
+        text: '表单删除成功，系统需要重载页面',
+        callback: function() {
+          window.top.location.reload(true);
+        }
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -54,10 +61,14 @@ var methods = {
   },
 
   btnViewClick: function (form) {
-    utils.addTab('表单管理：' + form.title, utils.getCmsUrl('formData', {
+    utils.addTab(form.title, utils.getCmsUrl('formData', {
       siteId: this.siteId,
       formId: form.id
     }));
+  },
+
+  isDisabled: function (form) {
+    return this.authFormIds.indexOf(form.id) === -1;
   },
 
   btnUpClick: function (form) {
@@ -105,8 +116,8 @@ var methods = {
         siteId: this.siteId,
         formId: form.id
       }),
-      width: 500,
-      height: 300
+      width: 550,
+      height: 450
     });
   },
 
@@ -116,8 +127,8 @@ var methods = {
       url: utils.getCmsUrl('formListLayerAdd', {
         siteId: this.siteId
       }),
-      width: 500,
-      height: 300
+      width: 550,
+      height: 450
     });
   },
 
@@ -169,8 +180,13 @@ var methods = {
   uploadSuccess: function(res, file) {
     utils.loading(this, false);
 
-    utils.success('表单导入成功');
-    location.reload();
+    utils.alertSuccess({
+      title: '表单导入成功',
+      text: '表单导入成功，系统需要重载页面',
+      callback: function() {
+        window.top.location.reload(true);
+      }
+    });
   },
 
   uploadError: function(err) {

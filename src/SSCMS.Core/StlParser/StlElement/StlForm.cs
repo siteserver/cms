@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Web;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Attributes;
-using SSCMS.Core.StlParser.Utility;
 using SSCMS.Models;
 using SSCMS.Parse;
 using SSCMS.Services;
@@ -16,9 +15,6 @@ namespace SSCMS.Core.StlParser.StlElement
     public static class StlForm
     {
         public const string ElementName = "stl:form";
-
-        [StlAttribute(Title = "表单名称")]
-        private const string Title = nameof(Title);
 
         [StlAttribute(Title = "表单名称")]
         private const string Name = nameof(Name);
@@ -66,7 +62,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var value = parseManager.ContextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(name, Title) || StringUtils.EqualsIgnoreCase(name, Name))
+                if (StringUtils.EqualsIgnoreCase(name, Name) || StringUtils.EqualsIgnoreCase(name, "Title"))
                 {
                     formName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }

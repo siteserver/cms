@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
@@ -18,9 +20,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
 
             var forms = await _formRepository.GetFormsAsync(request.SiteId);
 
+            var authFormIds = new List<int>();
+            if (await _authManager.IsSiteAdminAsync(request.SiteId))
+            {
+                authFormIds = forms.Select(x => x.Id).ToList();
+            }
+            else
+            {
+                foreach (var form in forms)
+                {
+                    var formPermission = MenuUtils.GetFormPermission(form.Id);
+                    if (await _authManager.HasSitePermissionsAsync(request.SiteId, formPermission))
+                    {
+                        authFormIds.Add(form.Id);
+                    }
+                }
+            }
+
             return new GetResult
             {
-                Forms = forms
+                Forms = forms,
+                AuthFormIds = authFormIds
             };
         }
     }

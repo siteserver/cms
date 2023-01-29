@@ -17,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         [HttpPost, Route(RouteImport)]
         public async Task<ActionResult<BoolResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
         {
-            var formPermission = MenuUtils.GetFormPermission(request.SiteId);
+            var formPermission = MenuUtils.GetFormPermission(request.FormId);
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, formPermission))
             {
                 return Unauthorized();

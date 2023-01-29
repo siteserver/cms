@@ -26,7 +26,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
                 Forms = forms,
                 Templates = templates,
                 SiteUrl = siteUrl,
-                SiteDir = site.SiteDir
             };
         }
     }

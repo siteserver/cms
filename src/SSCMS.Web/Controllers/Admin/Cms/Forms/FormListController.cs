@@ -51,16 +51,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         public class GetResult
         {
             public List<Form> Forms { get; set; }
+            public List<int> AuthFormIds { get; set; }
         }
 
         public class DeleteRequest : SiteRequest
         {
             public int FormId { get; set; }
-        }
-
-        public class DeleteResult
-        {
-            public List<Form> Forms { get; set; }
         }
 
         public class TaxisRequest : SiteRequest

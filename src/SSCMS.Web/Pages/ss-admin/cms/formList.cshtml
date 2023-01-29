@@ -12,6 +12,7 @@
       <el-link
         :underline="false"
         type="primary"
+        :disabled="isDisabled(scope.row)"
         v-on:click="btnViewClick(scope.row)">
         {{ scope.row.title }}
       </el-link>

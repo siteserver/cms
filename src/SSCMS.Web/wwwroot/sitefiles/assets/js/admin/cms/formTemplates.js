@@ -9,7 +9,6 @@ var data = utils.init({
   forms: null,
   templates: null,
   siteUrl: null,
-  siteDir: null,
   name: null,
   templateHtml: null,
   urlUpload: null,
@@ -31,7 +30,6 @@ var methods = {
       $this.forms = res.forms;
       $this.templates = res.templates;
       $this.siteUrl = res.siteUrl;
-      $this.siteDir = res.siteDir;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -61,7 +59,7 @@ var methods = {
     if (template.isSystem) {
       return '/sitefiles/assets/forms/' + template.name + '/index.html';
     }
-    return '/' + this.siteDir + '/forms/' + template.name + '/index.html';
+    return this.siteUrl + '/forms/' + template.name + '/index.html';
   },
 
   getCode: function (template) {
