@@ -93,7 +93,7 @@
           <template slot-scope="scope">
 
             <el-image
-              v-if="getAttributeType(attributeName) === 'Image'"
+              v-if="getAttributeType(attributeName) === 'Image' && getAttributeValue(scope.row, attributeName)"
               :src="getAttributeValue(scope.row, attributeName)"
               style="max-height: 100px; max-width: 100px; cursor: pointer;"
               v-on:click="largeImage(scope.row, attributeName)">

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Forms
 {
@@ -57,8 +58,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             //    }
             //}
 
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+
             return new GetResult
             {
+                SiteUrl = StringUtils.TrimEndSlash(siteUrl),
                 Styles = styles,
                 FormData = data
             };

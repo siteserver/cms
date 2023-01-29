@@ -59,7 +59,7 @@ var methods = {
     if (template.isSystem) {
       return '/sitefiles/assets/forms/' + template.name + '/index.html';
     }
-    return this.siteUrl + '/forms/' + template.name + '/index.html';
+    return _.trimEnd(this.siteUrl, '/') + '/forms/' + template.name + '/index.html';
   },
 
   getCode: function (template) {

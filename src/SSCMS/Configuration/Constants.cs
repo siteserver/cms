@@ -89,13 +89,13 @@ namespace SSCMS.Configuration
         public const string ErrorNotFound = "未找到资源!";
         public const string ErrorSafeMode = "安全模式下，此功能已被禁用!";
         public const string ErrorUpload = "请选择有效的文件上传!";
-        public const string ErrorImageExtensionAllowed = "此图片格式已被禁止上传，请转换格式后上传!";
+        public const string ErrorImageExtensionAllowed = "此图片格式已被禁止上传!";
         public const string ErrorImageSizeAllowed = "此图片大小已超过限制，请压缩后上传!";
-        public const string ErrorVideoExtensionAllowed = "此视频格式已被禁止上传，请转换格式后上传!";
+        public const string ErrorVideoExtensionAllowed = "此视频格式已被禁止上传!";
         public const string ErrorVideoSizeAllowed = "此视频大小已超过限制，请压缩后上传!";
-        public const string ErrorAudioExtensionAllowed = "此音频格式已被禁止上传，请转换格式后上传!";
+        public const string ErrorAudioExtensionAllowed = "此音频格式已被禁止上传!";
         public const string ErrorAudioSizeAllowed = "此音频大小已超过限制，请压缩后上传!";
-        public const string ErrorFileExtensionAllowed = "此文件格式已被禁止上传，请转换格式后上传!";
+        public const string ErrorFileExtensionAllowed = "此文件格式已被禁止上传!";
         public const string ErrorFileSizeAllowed = "此文件大小已超过限制，请压缩后上传!";
 
         public const string DefaultImageUploadExtensions = ".gif,.jpg,.jpeg,.bmp,.png,.pneg,.swf,.webp,.svg";

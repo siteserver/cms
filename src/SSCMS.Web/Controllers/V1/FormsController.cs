@@ -16,18 +16,23 @@ namespace SSCMS.Web.Controllers.V1
         private const string Route = "forms";
         private const string RouteStyles = "forms/styles";
         private const string RouteSendSms = "forms/actions/sendSms";
+        private const string RouteUpload = "forms/actions/upload";
 
         private readonly ICacheManager _cacheManager;
+        private readonly IPathManager _pathManager;
         private readonly ISmsManager _smsManager;
         private readonly IFormManager _formManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
 
-        public FormsController(ICacheManager cacheManager, ISmsManager smsManager, IFormManager formManager, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormsController(ICacheManager cacheManager, IPathManager pathManager, ISmsManager smsManager, IFormManager formManager, ISiteRepository siteRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
         {
             _cacheManager = cacheManager;
+            _pathManager = pathManager;
             _smsManager = smsManager;
             _formManager = formManager;
+            _siteRepository = siteRepository;
             _formRepository = formRepository;
             _formDataRepository = formDataRepository;
         }
@@ -39,6 +44,7 @@ namespace SSCMS.Web.Controllers.V1
 
         public class StylesResult
         {
+            public string SiteUrl { get; set; }
             public List<TableStyle> Styles { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
@@ -54,6 +60,19 @@ namespace SSCMS.Web.Controllers.V1
             public int FormId { get; set; }
             public int Page { get; set; }
             public string Word { get; set; }
+        }
+
+        public class UploadRequest : SiteRequest
+        {
+            public int FormId { get; set; }
+            public string AttributeName { get; set; }
+        }
+
+        public class UploadResult
+        {
+            public string AttributeName { get; set; }
+            public string VirtualUrl { get; set; }
+            public string FileUrl { get; set; }
         }
 
         public class GetResult

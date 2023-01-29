@@ -6,7 +6,7 @@
         <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', inputType: style.inputType, attributeName: style.attributeName, no: 0})">
           上传
         </el-button>
-        <el-dropdown v-on:command="btnImageSelectClick">
+        <el-dropdown v-if="typeof btnImageSelectClick !== 'undefined'" v-on:command="btnImageSelectClick">
           <el-button size="mini" type="info" icon="el-icon-folder-opened" plain>
             选择<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
@@ -19,7 +19,7 @@
         <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
           预览
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
+        <el-button v-if="typeof btnExtendAddClick !== 'undefined'" size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
           新增
         </el-button>
       </el-button-group>
@@ -33,7 +33,7 @@
           <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', inputType: style.inputType, attributeName: style.attributeName, no: n})">
             上传
           </el-button>
-          <el-dropdown v-on:command="btnImageSelectClick">
+          <el-dropdown v-if="typeof btnImageSelectClick !== 'undefined'" v-on:command="btnImageSelectClick">
             <el-button size="mini" type="info" icon="el-icon-folder-opened" plain>
               选择<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -46,7 +46,7 @@
           <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, n)">
             预览
           </el-button>
-          <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
+          <el-button v-if="typeof btnExtendAddClick !== 'undefined'" size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
             新增
           </el-button>
           <el-button size="mini" type="info" icon="el-icon-remove-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
@@ -68,10 +68,10 @@
         <el-button size="mini" type="info" icon="el-icon-upload2" plain v-on:click="btnLayerClick({title: '上传附件', name: 'formLayerFileUpload', inputType: style.inputType, attributeName: style.attributeName, no: 0})">
           上传
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'materialLayerFileSelect', inputType: style.inputType, attributeName: style.attributeName, no: 0, full: true})">
+        <el-button v-if="typeof runMaterialLayerFileSelect !== 'undefined'" size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'materialLayerFileSelect', inputType: style.inputType, attributeName: style.attributeName, no: 0, full: true})">
           选择
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
+        <el-button v-if="typeof btnExtendAddClick !== 'undefined'" size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
           新增
         </el-button>
       </el-button-group>
@@ -88,7 +88,7 @@
           <el-button size="mini" type="info" icon="el-icon-folder-opened" plain v-on:click="btnLayerClick({title: '选择附件素材', name: 'materialLayerFileSelect', inputType: style.inputType, attributeName: style.attributeName, no: n, full: true})">
             选择
           </el-button>
-          <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
+          <el-button v-if="typeof btnExtendAddClick !== 'undefined'" size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
             新增
           </el-button>
           <el-button size="mini" type="info" icon="el-icon-remove-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
@@ -116,7 +116,7 @@
         <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewVideoClick(form[utils.toCamelCase(style.attributeName)])">
           预览
         </el-button>
-        <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
+        <el-button v-if="typeof btnExtendAddClick !== 'undefined'" size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="form[utils.getCountName(style.attributeName)] === 0" v-on:click="btnExtendAddClick(style)">
           新增
         </el-button>
       </el-button-group>
@@ -136,7 +136,7 @@
           <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnExtendPreviewVideoClick(form[utils.getExtendName(style.attributeName, n)])">
             预览
           </el-button>
-          <el-button size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
+          <el-button v-if="typeof btnExtendAddClick !== 'undefined'" size="mini" type="info" icon="el-icon-circle-plus-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendAddClick(style)">
             新增
           </el-button>
           <el-button size="mini" type="info" icon="el-icon-remove-outline" plain v-if="n === form[utils.getCountName(style.attributeName)]" v-on:click="btnExtendRemoveClick(style)">
@@ -162,7 +162,7 @@
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', inputType: style.inputType, attributeName: style.attributeName})">
           上传图片
         </el-button>
-        <el-dropdown v-on:command="btnImageSelectClick">
+        <el-dropdown v-if="typeof btnImageSelectClick !== 'undefined'" v-on:command="btnImageSelectClick">
           <el-button size="mini" type="info" plain>
             选择图片<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>

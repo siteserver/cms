@@ -16,21 +16,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
     public partial class FormDataAddController : ControllerBase
     {
         private const string Route = "cms/forms/formDataAdd";
-        private const string RouteUpload = "cms/forms/{siteId}/formDataAdd/actions/upload";
         
         private const string RouteDeleteFile = "cms/forms/{siteId}/formDataAdd/actions/deleteFile";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IFormManager _formManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
 
-        public FormDataAddController(IAuthManager authManager, IPathManager pathManager, IFormManager formManager, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormDataAddController(IAuthManager authManager, IPathManager pathManager, IFormManager formManager, ISiteRepository siteRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _formManager = formManager;
+            _siteRepository = siteRepository;
             _formRepository = formRepository;
             _formDataRepository = formDataRepository;
         }
@@ -47,19 +48,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
 
         public class GetResult
         {
+            public string SiteUrl { get; set; }
             public List<TableStyle> Styles { get; set; }
             public FormData FormData { get; set; }
-        }
-
-        public class UploadRequest : FormRequest
-        {
-            public int FieldId { get; set; }
-        }
-
-        public class UploadResult
-        {
-            public string ImageUrl { get; set; }
-            public int FieldId { get; set; }
         }
 
         public class DeleteRequest : FormRequest

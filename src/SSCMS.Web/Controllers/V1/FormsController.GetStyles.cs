@@ -34,8 +34,12 @@ namespace SSCMS.Web.Controllers.V1
             var formData = await _formDataRepository.GetAsync(0, form.Id, styles);
             var isSmsEnabled = await _smsManager.IsSmsEnabledAsync();
 
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
+
             return new StylesResult
             {
+                SiteUrl = siteUrl,
                 Styles = styles,
                 Title = form.Title,
                 Description = form.Description,

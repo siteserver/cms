@@ -1,5 +1,20 @@
 @page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/custom/custom.css">
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .videojs {
+      width: 100% !important;
+      min-height: 300px;
+    }
+    .el-button-group .el-dropdown {
+      float: left;
+      margin-top: -2.5px;
+      margin-right: -1px;
+    }
+  </style>
+}
 
 <el-container>
   <el-aside width="100px">

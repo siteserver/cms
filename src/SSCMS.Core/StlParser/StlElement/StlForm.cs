@@ -122,7 +122,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrWhiteSpace(context.InnerHtml))
             {
-                return Parse(context, pathManager, site, form, apiUrl, type, height, attributes);
+                return await ParseAsync(parseManager, context, site, form, apiUrl, type, height, attributes);
             }
             else
             {
@@ -130,11 +130,26 @@ namespace SSCMS.Core.StlParser.StlElement
             }
         }
 
-        private static object Parse(ParseContext context, IPathManager pathManager, Site site, Form form, string apiUrl, string type, string height, NameValueCollection attributes)
+        private static async Task<object> ParseAsync(IParseManager parseManager, ParseContext context, Site site, Form form, string apiUrl, string type, string height, NameValueCollection attributes)
         {
             var elementId = StringUtils.GetElementId();
-            var libUrl = pathManager.GetApiHostUrl(site, "sitefiles/assets/lib/iframe-resizer-3.6.3/iframeResizer.min.js");
-            var pageUrl = pathManager.GetApiHostUrl(site, $"sitefiles/assets/forms/{type}/index.html?siteId={site.Id}&channelId={context.ChannelId}&contentId={context.ContentId}&formId={form.Id}&apiUrl={HttpUtility.UrlEncode(apiUrl)}");
+            var libUrl = parseManager.PathManager.GetApiHostUrl(site, "sitefiles/assets/lib/iframe-resizer-3.6.3/iframeResizer.min.js");
+
+            var formTemplate = await parseManager.FormManager.GetFormTemplateAsync(site, type);
+            if (formTemplate == null)
+            {
+                formTemplate = await parseManager.FormManager.GetFormTemplateAsync(site, "submit");
+            }
+            var pageUrl = string.Empty;
+            if (formTemplate.IsSystem)
+            {
+                pageUrl = parseManager.PathManager.GetApiHostUrl(site, $"sitefiles/assets/forms/{type}/index.html?siteId={site.Id}&channelId={context.ChannelId}&contentId={context.ContentId}&formId={form.Id}&apiUrl={HttpUtility.UrlEncode(apiUrl)}");
+            }
+            else
+            {
+                pageUrl = await parseManager.PathManager.GetSiteUrlAsync(site, $"forms/{type}/index.html?siteId={site.Id}&channelId={context.ChannelId}&contentId={context.ContentId}&formId={form.Id}&apiUrl={HttpUtility.UrlEncode(apiUrl)}", false);
+            }
+
             var heightStyle = !string.IsNullOrEmpty(height) ? $"height: {height}" : string.Empty;
             var frameResize = string.Empty;
             if (!string.IsNullOrEmpty(height))
@@ -222,7 +237,7 @@ elem.innerHTML = '{StringUtils.ToJsString(successTemplateString)}';
             {
                 onSuccess += "(res);";
             }
-            
+
             if (string.IsNullOrEmpty(onError))
             {
                 onError = $"""

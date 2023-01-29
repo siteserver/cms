@@ -129,5 +129,27 @@ namespace SSCMS.Core.Services
 
             return (true, filePath, string.Empty);
         }
+    
+        public async Task<(bool success, string filePath, string errorMessage)> UploadFileAsync(Site site, IFormFile file)
+        {
+            var fileName = PathUtils.GetFileName(file.FileName);
+
+            var extName = PathUtils.GetExtension(fileName);
+            if (!IsFileExtensionAllowed(site, extName))
+            {
+                return (false, string.Empty, Constants.ErrorFileExtensionAllowed);
+            }
+            if (!IsFileSizeAllowed(site, file.Length))
+            {
+                return (false, string.Empty, Constants.ErrorFileSizeAllowed);
+            }
+
+            var localDirectoryPath = await GetUploadDirectoryPathAsync(site, UploadType.File);
+            var filePath = PathUtils.Combine(localDirectoryPath, GetUploadFileName(site, fileName));
+
+            await UploadAsync(file, filePath);
+
+            return (true, filePath, string.Empty);
+        }
     }
 }

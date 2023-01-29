@@ -1,7 +1,7 @@
 ﻿var $url = '/common/form/layerImageUpload';
 
 var data = utils.init({
-  inputType: utils.getQueryString('inputType'),
+  inputType: utils.getQueryString('inputType') || 'Image',
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
   editorAttributeName: utils.getQueryString('editorAttributeName'),

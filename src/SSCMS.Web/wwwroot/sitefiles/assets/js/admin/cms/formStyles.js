@@ -104,7 +104,7 @@ var methods = {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
         attributeName: attributeName,
-        excludes: 'TextEditor,SelectCascading,Customize,Image,Video,File'
+        excludes: 'TextEditor,SelectCascading,Customize,Video'
       })
     });
   },
@@ -138,7 +138,7 @@ var methods = {
       url: utils.getCommonUrl('tableStyleLayerEditor', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
-        excludes: 'TextEditor,SelectCascading,Customize,Image,Video,File'
+        excludes: 'TextEditor,SelectCascading,Customize,Video'
       })
     });
   },
@@ -149,7 +149,7 @@ var methods = {
       url: utils.getCommonUrl('tableStyleLayerAddMultiple', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
-        excludes: 'TextEditor,SelectCascading,Customize,Image,Video,File'
+        excludes: 'TextEditor,SelectCascading,Customize,Video'
       })
     });
   },

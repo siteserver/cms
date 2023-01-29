@@ -25,16 +25,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISmsManager _smsManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
 
-        public FormDataController(IAuthManager authManager, IPathManager pathManager, ISmsManager smsManager, IChannelRepository channelRepository, IContentRepository contentRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormDataController(IAuthManager authManager, IPathManager pathManager, ISmsManager smsManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
             _smsManager = smsManager;
+            _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _formRepository = formRepository;

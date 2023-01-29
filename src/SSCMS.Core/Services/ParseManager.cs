@@ -21,13 +21,15 @@ namespace SSCMS.Core.Services
         public ISettingsManager SettingsManager { get; }
         public IPathManager PathManager { get; }
         public IDatabaseManager DatabaseManager { get; }
+        public IFormManager FormManager { get; }
         private readonly IPluginManager _pluginManager;
 
-        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager)
+        public ParseManager(ISettingsManager settingsManager, IPathManager pathManager, IDatabaseManager databaseManager, IFormManager formManager, IPluginManager pluginManager)
         {
             SettingsManager = settingsManager;
             PathManager = pathManager;
             DatabaseManager = databaseManager;
+            FormManager = formManager;
             _pluginManager = pluginManager;
         }
 

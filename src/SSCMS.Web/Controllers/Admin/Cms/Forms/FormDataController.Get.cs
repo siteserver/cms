@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -22,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             var form = await _formRepository.GetAsync(request.SiteId, request.FormId);
             if (form == null) return NotFound();
 
+            var site = await _siteRepository.GetAsync(request.SiteId);
             var styles = await _formRepository.GetTableStylesAsync(form.Id);
 
             var listAttributeNames = ListUtils.GetStringList(form.ListAttributeNames);
@@ -43,6 +45,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
                     var content = await _contentRepository.GetAsync(data.SiteId, data.ChannelId, data.ContentId);
                     var title = content != null ? content.Title : string.Empty;
                     item.Set("contentPage", title);
+                }
+                foreach (var style in styles)
+                {
+                    if (listAttributeNames.Contains(style.AttributeName))
+                    {
+                        if (style.InputType == InputType.Image)
+                        {
+                            var imageUrl = data.Get<string>(style.AttributeName);
+                            imageUrl = await _pathManager.ParseSiteUrlAsync(site, imageUrl, true);
+                            item.Set(style.AttributeName, imageUrl);
+                        }
+                    }
                 }
                 items.Add(item);
             }
