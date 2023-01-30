@@ -75,6 +75,7 @@ namespace SSCMS.Cli
             services.AddSingleton<IConfiguration>(configuration);
             services.AddCache(settingsManager.Redis.ConnectionString);
             services.AddRepositories(assemblies);
+            services.AddPseudoServices();
             services.AddServices();
             services.AddCliServices();
             services.AddCliJobs();
