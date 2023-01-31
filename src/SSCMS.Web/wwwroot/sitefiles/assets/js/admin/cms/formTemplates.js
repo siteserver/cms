@@ -142,7 +142,7 @@ var methods = {
     if (template.isSystem) {
       url = '/sitefiles/assets/forms/' + template.name + '/index.html?siteId=' + this.siteId + '&formId=' + form.id + '&apiUrl=' + encodeURIComponent('/api');
     } else {
-      url = this.siteUrl + '/forms/' + template.name + '/index.html?siteId=' + this.siteId + '&formId=' + form.id + '&apiUrl=' + encodeURIComponent('/api');
+      url = _.trimEnd(this.siteUrl, '/') + '/forms/' + template.name + '/index.html?siteId=' + this.siteId + '&formId=' + form.id + '&apiUrl=' + encodeURIComponent('/api');
     }
     window.open(url);
   },
