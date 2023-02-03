@@ -1,0 +1,264 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+
+  .el-upload-dragger {
+    height: 240px;
+    padding: 20px;
+    line-height: 22px;
+  }
+
+  .mod-component-video-item .video-image {
+    background: #d5d5d5;
+    background-size: 60px;
+    cursor: pointer;
+    display: inline-block;
+    float: left;
+    height: 68px;
+    position: relative;
+    width: 120px;
+  }
+
+  .mod-component-video-item .video-image .video-image-background {
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+  }
+
+  .mod-component-video-item .video-image .video-image-play {
+    color: #fff;
+    left: 47px;
+    opacity: .4;
+    position: absolute;
+    top: 22px;
+    z-index: 3;
+  }
+
+  .next-icon {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-block;
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 400;
+    text-transform: none;
+  }
+
+  .mod-component-video-item .video-image .video-image-time {
+    background-image: linear-gradient(-180deg, transparent, rgba(0, 0, 0, .8));
+    bottom: 0;
+    color: #fff;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 3px;
+    position: absolute;
+    right: 0;
+    text-align: right;
+    width: 100%;
+    z-index: 2;
+    font-size: 12px;
+  }
+
+  .mod-component-video-item .video-info {
+    display: block;
+    padding-left: 120px;
+  }
+
+  .mod-component-video-item .video-info dl {
+    margin: 0;
+  }
+
+  .mod-component-video-item .video-info dl dd {
+    color: #606266;
+    font-family: PingFangSC-Regular;
+    line-height: 17px;
+    margin-left: 8px;
+  }
+
+  .mod-component-video-item .video-info .video-info-title {
+    color: #4a4a4a;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <el-tabs v-model="activeName" v-on:tab-click="btnTabsClick">
+    <el-tab-pane label="云视频设置" name="settings"></el-tab-pane>
+    <el-tab-pane label="云视频管理" name="videos"></el-tab-pane>
+  </el-tabs>
+
+  <template v-if="activeName === 'settings'">
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>云视频设置</span>
+              <el-button type="primary" v-on:click="btnSubmitClick" size="small"
+                style="float: right; margin-top: -5px;">
+                保存设置
+              </el-button>
+            </div>
+          </template>
+          <div class="text">
+            <el-switch v-model="isCloudVod" active-text="启用云视频"></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              云视频集成阿里云视频点播服务，集视频采集、上传、媒体资源管理、自动化转码处理（窄带高清）、分发加速于一体的一站式音视频点播解决方案
+              <el-link :underline="false" href="https://sscms.com/docs/v7/handbook/clouds/vod/" target="_blank"
+                icon="el-icon-info">
+                了解更多
+              </el-link>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+    <div style="height: 10px"></div>
+    <el-row :gutter="20">
+      <el-col :span="20">
+        <el-form :inline="true" size="small" :model="formInline">
+          <el-form-item label="关键字">
+            <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
+    <el-table :data="videos" style="width: 100%">
+      <el-table-column label="云视频">
+        <template #default="scope">
+          <div class="mod-component-video-item">
+            <a href="javascript:;" v-on:click="btnViewClick(scope.row)" class="video-image">
+              <div class="video-image-background" :style="{backgroundImage: 'url(' + scope.row.coverUrl + ')' }">
+              </div>
+              <div class="video-image-cover"></div>
+              <div class="video-image-play"><i class="next-icon el-icon-video-play"></i></div>
+              <div class="video-image-time">
+                {{ getDuration(scope.row) }}
+              </div>
+            </a>
+            <div class="video-info">
+              <dl>
+                <dd class="video-info-title">
+                  视频标题：
+                  {{ scope.row.title }}
+                </dd>
+                <dd>
+                  视频地址：
+                  {{ scope.row.playUrl }}
+                </dd>
+                <dd>
+                  封面图片：
+                  {{ scope.row.coverUrl }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" width="150">
+        <template #default="scope">
+          {{ scope.row.createdDate }}
+        </template>
+      </el-table-column>
+      <el-table-column label="大小" width="120">
+        <template #default="scope">
+          {{ getSize(scope.row) }} MB
+        </template>
+      </el-table-column>
+      <el-table-column label="时长" width="120">
+        <template #default="scope">
+          {{ getDuration(scope.row) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180">
+        <template #default="scope">
+          <el-link type="primary" :underline="false" style="margin-right: 5px"
+            v-on:click.prevent="btnEditClick(scope.row)">编辑标题</el-link>
+          <el-link type="danger" :underline="false" style="margin-right: 5px"
+            v-on:click.prevent="btnDeleteClick(scope.row)">删 除</el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div style="text-align: center; margin-top: 10px">
+      <el-pagination v-on:current-change="handleCurrentChange" :current-page="formInline.currentPage"
+        :page-size="formInline.limit" layout="total, prev, pager, next, jumper" :total="count"></el-pagination>
+    </div>
+
+    <div style="height: 10px"></div>
+
+    <el-form v-if="isCloudVod" :inline="true">
+      <el-form-item>
+        <el-button type="primary" size="small" v-on:click.prevent="btnUploadClick">上传视频</el-button>
+      </el-form-item>
+    </el-form>
+
+  </template>
+
+  <el-dialog title="编辑视频" :visible.sync="isEdit" width="40%">
+    <el-form style="margin: 0 10px" ref="editForm" :model="editForm" label-position="top">
+      <el-form-item label="" prop="title" :rules="{ required: true, message: '请输入标题' }">
+        <el-input v-model="editForm.title" placeholder="请输入标题"></el-input>
+      </el-form-item>
+    </el-form>
+
+    <el-divider></el-divider>
+
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" v-on:click="btnEditSubmitClick">确 定</el-button>
+      <el-button v-on:click="isEdit = false">取 消</el-button>
+    </div>
+  </el-dialog>
+
+  <el-dialog title="上传视频" :visible.sync="isUpload" width="40%">
+    <el-alert type="error" v-if="uploadErrorMessage" :title="uploadErrorMessage"></el-alert>
+    <el-form style="margin: 20px 10px;" label-position="top">
+      <el-form-item>
+        <el-upload :disabled="uploadProgressPercent" :drag="true" :action="uploadUrl" :auto-upload="true"
+          :headers="{ Authorization: 'Bearer ' + uploadToken }" :show-file-list="false" :before-upload="uploadBefore" :http-request="uploadRequest" :multiple="false">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">
+            <strong>
+              将文件拖到此处，或
+              <em>点击上传</em>
+            </strong>
+          </div>
+          <div class="el-upload__tip">
+            支持3GP、ASF、AVI、DAT、DV、FLV、F4V、GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、SWF、TS、VOB、WMV、WEBM
+            等视频格式上传
+          </div>
+        </el-upload>
+        <el-progress v-if="uploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="uploadProgressPercent"></el-progress>
+      </el-form-item>
+    </el-form>
+
+    <el-divider></el-divider>
+
+    <div slot="footer" class="dialog-footer">
+      <el-button v-on:click="isUpload = false">取 消</el-button>
+    </div>
+  </el-dialog>
+
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/vod.js" type="text/javascript"></script>
+}

@@ -247,7 +247,7 @@ var methods = {
   },
 
   btnDocsClick: function () {
-    window.open('https://sscms.com/docs/v7/cloud/');
+    window.open('https://sscms.com/docs/v7/handbook/clouds/');
   },
 
   getOriginalAmount: function() {
@@ -259,6 +259,10 @@ var methods = {
     }
     return amount.toFixed(2);
   },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -266,6 +270,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     var $this = this;
     cloud.checkAuth(function() {
       $this.apiCloudGet();

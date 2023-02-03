@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 
 namespace SSCMS.Models
@@ -49,7 +50,8 @@ namespace SSCMS.Models
         public string UserLockLoginType { get; set; } = "Hours";
         public int UserLockLoginHours { get; set; } = 3;
         public string UserDefaultGroupAdminName { get; set; }
-        public string AdminTitle { get; set; } = "SS CMS";
+        public bool IsCloudAdmin { get; set; }
+        public string AdminTitle { get; set; } = Constants.AdminTitle;
         public string AdminFaviconUrl { get; set; }
         public string AdminLogoUrl { get; set; }
         public string AdminLogoLinkUrl { get; set; } = "https://sscms.com";

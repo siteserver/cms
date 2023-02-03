@@ -254,6 +254,10 @@ var methods = {
   btnSearchClick: function() {
     this.apiGet(1);
   },
+
+  btnCloseClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -275,6 +279,7 @@ var $vue = new Vue({
     },
   },
   created: function () {
+    utils.keyPress(null, this.btnCloseClick);
     this.urlUpload = $apiUrl + $urlImport + '?siteId=' + this.siteId + '&formId=' + this.formId;
     this.apiGet(1);
   },

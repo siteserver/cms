@@ -283,6 +283,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Value = true,
                 CmsVersion = _settingsManager.Version,
                 OSArchitecture = _settingsManager.OSArchitecture,
+                IsCloudAdmin = config.IsCloudAdmin,
                 AdminFaviconUrl = config.AdminFaviconUrl,
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminLogoLinkUrl = config.AdminLogoLinkUrl,

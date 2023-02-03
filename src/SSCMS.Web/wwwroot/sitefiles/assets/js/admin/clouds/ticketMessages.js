@@ -200,6 +200,10 @@ var methods = {
     }
     return '';
   },
+
+  btnRemoveClick: function() {
+    utils.removeTab();
+  },
 };
 
 var $vue = new Vue({
@@ -207,10 +211,10 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnRemoveClick);
     var $this = this;
     cloud.checkAuth(function () {
       $this.apiGet();
     });
-    utils.keyPress(this.btnSubmitClick);
   },
 });

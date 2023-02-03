@@ -146,6 +146,7 @@ var methods = {
         lang = 'javascript';
       }
       setTimeout(function () {
+        $('#content').height($(document).height() - 180);
         require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
             $this.contentEditor = monaco.editor.create(document.getElementById('content'), {

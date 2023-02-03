@@ -1,0 +1,118 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+
+  <template v-if="cloudType === 'Free'">
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>云备份设置</span>
+            </div>
+          </template>
+          <div class="text" style="padding: 16px 64px; text-align: center;">
+            <div style="text-align: center;width: 100%;">
+              <img src="/sitefiles/assets/images/backup.svg" />
+            </div>
+            <h2>
+              云备份作为 SSCMS 统一灾备平台，是一种简单易用、敏捷高效、安全可靠的云端备份与恢复服务
+            </h2>
+            <p>
+              云备份功能能够为您提供对站点的细粒度控制，将其恢复到之前的任意状态，并能够随时导出备份。
+            </p>
+            <el-button type="primary" size="medium" style="margin-top: 20px;" v-on:click="btnUpgradeClick">
+              升级云助手
+            </el-button>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="云备份设置" name="settings"></el-tab-pane>
+      <el-tab-pane label="云备份列表" name="backups"></el-tab-pane>
+    </el-tabs>
+
+    <template v-if="activeName === 'settings'">
+      <el-row :gutter="20">
+        <el-col :span="18" :offset="3">
+          <div style="height: 25px"></div>
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>云备份设置</span>
+                <el-button type="primary" v-on:click="btnSubmitClick" size="small"
+                  style="float: right; margin-top: -5px;">
+                  保存设置
+                </el-button>
+              </div>
+            </template>
+            <div class="text">
+              <el-switch v-model="isCloudBackup" active-text="启用云备份"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                云备份功能能够每日自动备份网站实时文件与数据至云端，您可以将其恢复到任何时间点。
+                <el-link :underline="false" href="https://sscms.com/docs/v7/handbook/clouds/backup/" target="_blank"
+                  icon="el-icon-info">
+                  了解更多
+                </el-link>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </template>
+    <template v-else-if="activeName === 'backups'">
+      <div style="height: 10px"></div>
+
+      <el-table :data="backups" style="width: 100%">
+        <el-table-column label="备份日期">
+          <template #default="scope">
+            {{ scope.row.createdDate }}
+          </template>
+        </el-table-column>
+        <el-table-column label="备份大小">
+          <template #default="scope">
+            {{ scope.row.size }} MB
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center">
+          <template #default="scope">
+            <el-link type="danger" :underline="false" style="margin-right: 5px"
+              v-on:click.prevent="btnRestoreClick(scope.row)">恢复到此版本</el-link>
+          </template>
+        </el-table-column>
+      </el-table>
+
+    </template>
+    <template v-else-if="activeName == 'progress'">
+      <div style="margin: 1em 2em 2em 2em;">
+        <div style="padding: 5px;">任务完成:
+          <font id="prgressBarPercetage" v-html="restoreProgress + ''">0</font>%
+        </div>
+        <div style="width: 600px; height: 25px;  background: #eee;">
+          <div :style="{width: restoreProgress + '%'}" style="width: 0; height: 25px; background: #00b19d;"></div>
+        </div>
+        <div class="tips" style="margin: 5px">恢复任务进行中，请耐心等待...</div>
+      </div>
+    </template>
+
+  </template>
+
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/backup.js" type="text/javascript"></script>
+}

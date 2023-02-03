@@ -639,12 +639,31 @@ var utils = {
     return str && val && str.indexOf(val) !== -1;
   },
 
+  openDocs: function (url) {
+    url = url.replace('.', '');
+    url = url.replace('/', '');
+    url = url.replace('ss-admin/', '');
+    if (url.indexOf('?') !== -1) {
+      url = url.substring(0, url.indexOf('?'));
+    }
+    window.open('https://sscms.com/docs/v7/handbook/' + url, '_docs');
+    // window.open('http://localhost:8080/docs/v7/handbook/' + url, '_docs');
+  },
+
   keyPress: function (submitFn, cancelFn) {
     $(document).keydown(function (e) {
       if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
         submitFn && submitFn();
-      } else if (e.key === "Escape") {
+      } else if (e.key === 'Escape') {
         cancelFn && cancelFn();
+      } else if (e.key === 'F1') {
+        var url = location.href;
+        if (url.indexOf('/ss-admin/') !== -1) {
+          url = url.substring(url.indexOf('/ss-admin/'));
+        }
+        utils.openDocs(url);
+        e.preventDefault();
+        e.stopPropagation();
       }
     });
   },

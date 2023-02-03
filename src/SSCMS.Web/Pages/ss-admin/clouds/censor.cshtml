@@ -1,0 +1,139 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <el-tabs v-model="activeName" v-on:tab-click="btnTabsClick">
+    <el-tab-pane label="违规检测设置" name="settings"></el-tab-pane>
+    <el-tab-pane label="违规词白名单" name="whitelist"></el-tab-pane>
+    <el-tab-pane label="违规词黑名单" name="blacklist"></el-tab-pane>
+  </el-tabs>
+  
+  <template v-if="activeName === 'settings'">
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>违规检测</span>
+              <el-button type="primary" v-on:click="btnSubmitClick" size="small" style="float: right; margin-top: -5px;">
+                保存设置
+              </el-button>
+            </div>
+          </template>
+          <div class="text">
+            <el-switch v-model="isCloudCensorText" active-text="启用违规检测"></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              违规检测基于自然语言理解、深度学习等技术，有效识别违规文本内容，具备拼音、谐音、拆字、形近字、影射等变体识别能力
+              <el-link :underline="false" href="https://sscms.com/docs/v7/handbook/clouds/censor/" target="_blank"
+                icon="el-icon-info">
+                了解更多
+              </el-link>
+            </div>
+    
+            <div v-if="isCloudCensorText" style="margin-top: 15px; margin-left: 30px;">
+              <el-switch v-model="isCloudCensorTextAuto" active-text="保存内容时强制检测"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，当保存内容时系统会自动对包括内容标题、正文、摘要在内的文本进行内容审查，如果识别结果为不合规，系统将禁止保存内容
+              </div>
+            </div>
+    
+            <div v-if="isCloudCensorText" style="margin-top: 15px; margin-left: 30px;">
+              <el-switch v-model="isCloudCensorTextIgnore" active-text="可以忽略违规词"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，可以手动忽略本次检测到的违规词，手动忽略的词语下次检测时依然会作为违规词进行提醒
+              </div>
+            </div>
+    
+            <div v-if="isCloudCensorText" style="margin-top: 15px; margin-left: 30px;">
+              <el-switch v-model="isCloudCensorTextWhiteList" active-text="可以将违规词加入白名单"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，可以手动将检测到的违规词加入白名单，下次检测时白名单内的词语将不再作为违规词进行提醒
+              </div>
+            </div>
+    
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+    <div style="height: 10px"></div>
+    <el-row :gutter="20">
+      <el-col :span="20">
+        <el-form :inline="true" size="small" :model="formInline">
+          <el-form-item label="关键字">
+            <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
+    <el-table :data="cloudWords" style="width: 100%">
+      <el-table-column label="违规词">
+        <template #default="scope">
+          {{ scope.row.word }}
+        </template>
+      </el-table-column>
+      <el-table-column label="添加时间" width="180">
+        <template #default="scope">
+          {{ scope.row.createdDate }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180">
+        <template #default="scope">
+          <el-link type="danger" :underline="false" v-on:click.prevent="btnDeleteClick(scope.row)">删 除</el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div style="text-align: center; margin-top: 10px">
+      <el-pagination
+        v-on:current-change="handleCurrentChange"
+        :current-page="formInline.currentPage"
+        :page-size="formInline.limit"
+        layout="total, prev, pager, next, jumper"
+        :total="count"
+      ></el-pagination>
+    </div>
+
+    <div style="height: 10px"></div>
+
+    <el-form :inline="true">
+      <el-form-item>
+        <el-button type="primary" size="small" v-on:click.prevent="btnAddClick">添 加</el-button>
+      </el-form-item>
+    </el-form>
+
+  </template>
+
+  <el-dialog :title="getDialogTitle()" :visible.sync="isAdd" width="40%">
+    <el-form style="margin: 0 10px" ref="form" :model="form" label-position="top">
+      <el-form-item label="" prop="words" :rules="{ required: true, message: '请输入违规词' }">
+        <el-input v-model="form.words" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}" placeholder="违规词之间用换行分割"></el-input>
+      </el-form-item>
+    </el-form>
+  
+    <el-divider></el-divider>
+  
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" v-on:click="btnAddSubmitClick">确 定</el-button>
+      <el-button v-on:click="isAdd = false">取 消</el-button>
+    </div>
+  </el-dialog>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/censor.js" type="text/javascript"></script>
+}

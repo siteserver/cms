@@ -12,6 +12,7 @@ var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
   cmsVersion: null,
+  isCloudAdmin: null,
   adminLogoUrl: null,
   adminLogoLinkUrl: null,
   adminTitle: null,
@@ -64,9 +65,21 @@ var methods = {
         utils.addTab('首页', utils.getRootUrl('dashboard'));
 
         $this.cmsVersion = res.cmsVersion;
-        $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
-        $this.adminLogoLinkUrl = res.adminLogoLinkUrl;
-        $this.adminTitle = res.adminTitle || 'SS CMS';
+
+        $this.isCloudAdmin = res.isCloudAdmin;
+        var adminFaviconUrl = '';
+        if (res.isCloudAdmin) {
+          $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
+          $this.adminLogoLinkUrl = res.adminLogoLinkUrl;
+          adminFaviconUrl = res.adminFaviconUrl;
+          $this.adminTitle = res.adminTitle || 'SSCMS 管理后台';
+        } else {
+          $this.adminLogoUrl = utils.getAssetsUrl('images/logo.png');
+          $this.adminLogoLinkUrl = 'https://sscms.com';
+          adminFaviconUrl = utils.getAssetsUrl('images/favicon.png');
+          $this.adminTitle = 'SSCMS 管理后台';
+        }
+
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.culture = res.culture;
         $this.plugins = res.plugins;
@@ -110,7 +123,7 @@ var methods = {
         var head = document.querySelector('head');
         var favicon = document.createElement('link');
         favicon.setAttribute('rel', 'shortcut icon');
-        favicon.setAttribute('href', res.adminFaviconUrl || utils.getAssetsUrl('images/favicon.png'));
+        favicon.setAttribute('href', adminFaviconUrl);
         head.appendChild(favicon);
 
         utils.loadExternals(res.cssUrls, res.jsUrls);
@@ -199,6 +212,10 @@ var methods = {
         }
       }
     });
+  },
+
+  openDocs: function(item) {
+    utils.openDocs(item.url);
   },
 
   openContextMenu: function(e) {
