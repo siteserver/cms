@@ -26,32 +26,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             }
             var directoryName = PathUtils.GetFileNameWithoutExtension(file.FileName);
             var directoryPath = _pathManager.GetSiteFilesPath(PathUtils.Combine(DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, directoryName));
-            if (DirectoryUtils.IsDirectoryExists(directoryPath))
-            {
-                return this.Error($"站点模板导入失败，文件夹{directoryName}已存在");
-            }
+            DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
             var filePath = _pathManager.GetSiteFilesPath(PathUtils.Combine(DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, file.FileName));
-
             FileUtils.DeleteFileIfExists(filePath);
-
+            
             await _pathManager.UploadAsync(file, filePath);
-
             _pathManager.ExtractZip(filePath, directoryPath);
-
-            // var caching = new CacheUtils(_cacheManager);
-            // var manager = new SiteTemplateManager(_pathManager, _databaseManager, caching);
-            // var siteTemplates = manager.GetSiteTemplates();
-            // SiteTemplate siteTemplate = null;
-            // foreach (var value in siteTemplates)
-            // {
-            //     if (siteTemplate.DirectoryName == directoryName)
-            //     {
-            //       siteTemplate = value;
-            //       siteTemplate.FileExists = true;
-            //       break;
-            //     }
-            // }
 
             return new UploadResult
             {

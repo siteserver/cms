@@ -15,17 +15,21 @@ namespace SSCMS.Core.Services
         private readonly ICacheManager _cacheManager;
         private readonly ISmsManager _smsManager;
         private readonly IMailManager _mailManager;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
 
-        public FormManager(IPathManager pathManager, IDatabaseManager databaseManager, ICacheManager cacheManager, ISmsManager smsManager, IMailManager mailManager, ITableStyleRepository tableStyleRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormManager(IPathManager pathManager, IDatabaseManager databaseManager, ICacheManager cacheManager, ISmsManager smsManager, IMailManager mailManager, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _cacheManager = cacheManager;
             _smsManager = smsManager;
             _mailManager = mailManager;
+            _channelRepository = channelRepository;
+            _contentRepository = contentRepository;
             _tableStyleRepository = tableStyleRepository;
             _formRepository = formRepository;
             _formDataRepository = formDataRepository;
@@ -93,6 +97,18 @@ namespace SSCMS.Core.Services
                     {
                         keyValueList.Add(new KeyValuePair<string, string>(style.DisplayName,
                             data.Get<string>(style.AttributeName)));
+                    }
+
+                    if (data.ChannelId > 0)
+                    {
+                        var channelName = await _channelRepository.GetChannelNameNavigationAsync(data.SiteId, data.ChannelId);
+                        keyValueList.Add(new KeyValuePair<string, string>("所在栏目页", channelName));
+                    }
+                    if (data.ContentId > 0)
+                    {
+                        var content = await _contentRepository.GetAsync(data.SiteId, data.ChannelId, data.ContentId);
+                        var title = content != null ? content.Title : string.Empty;
+                        keyValueList.Add(new KeyValuePair<string, string>("所在内容页", title));
                     }
 
                     var list = new StringBuilder();

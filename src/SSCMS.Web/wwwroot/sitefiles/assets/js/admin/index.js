@@ -219,8 +219,9 @@ var methods = {
   },
 
   openContextMenu: function(e) {
-    if (e.srcElement.id && _.startsWith(e.srcElement.id, 'tab-')) {
-      this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
+    var ele = $(e.srcElement).parent()[0];
+    if (ele && ele.id && _.startsWith(ele.id, 'tab-')) {
+      this.contextTabName = _.trimStart(ele.id, 'tab-');
       this.contextMenuVisible = true;
       this.contextLeft = e.clientX;
       if (e.clientX + 130 > this.winWidth) {
