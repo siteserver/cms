@@ -40,6 +40,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var activeLinkClass = string.Empty;
             var wordNum = 0;
             var isContainSelf = true;
+            var attributes = new NameValueCollection();
 
             foreach (var name in parseManager.ContextInfo.Attributes.AllKeys)
             {
@@ -69,12 +70,16 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isContainSelf = TranslateUtils.ToBool(value);
                 }
+                else
+                {
+                    attributes[name] = value;
+                }
             }
 
-            return await ParseAsync(parseManager, separator, target, linkClass, activeLinkClass, wordNum, isContainSelf);
+            return await ParseAsync(parseManager, separator, target, linkClass, activeLinkClass, wordNum, isContainSelf, attributes);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string separator, string target, string linkClass, string activeLinkClass, int wordNum, bool isContainSelf)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string separator, string target, string linkClass, string activeLinkClass, int wordNum, bool isContainSelf, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -100,26 +105,26 @@ namespace SSCMS.Core.StlParser.StlElement
                 var currentNodeInfo = await databaseManager.ChannelRepository.GetAsync(currentId);
                 if (currentId == pageInfo.SiteId)
                 {
-                    var attributes = new NameValueCollection();
+                    var attrs = new NameValueCollection();
                     if (!string.IsNullOrEmpty(target))
                     {
-                        attributes["target"] = target;
+                        attrs["target"] = target;
                     }
                     if (!string.IsNullOrEmpty(linkClass))
                     {
-                        attributes["class"] = linkClass;
+                        attrs["class"] = linkClass;
                     }
                     var url = await parseManager.PathManager.GetIndexPageUrlAsync(pageInfo.Site, pageInfo.IsLocal);
                     if (url.Equals(PageUtils.UnClickableUrl))
                     {
-                        attributes["target"] = string.Empty;
+                        attrs["target"] = string.Empty;
                     }
-                    attributes["href"] = url;
+                    attrs["href"] = url;
                     var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                    TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                    TranslateUtils.AddAttributesIfNotExists(attrs, attributes);
 
-                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attrs)}>{innerHtml}</a>");
 
                     if (parentsCount > 0)
                     {
@@ -128,53 +133,53 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (currentId == contextInfo.ChannelId)
                 {
-                    var attributes = new NameValueCollection();
+                    var attrs = new NameValueCollection();
                     if (!string.IsNullOrEmpty(target))
                     {
-                        attributes["target"] = target;
+                        attrs["target"] = target;
                     }
                     if (!string.IsNullOrEmpty(linkClass))
                     {
-                        attributes["class"] = linkClass;
+                        attrs["class"] = linkClass;
                     }
                     if (!string.IsNullOrEmpty(activeLinkClass))
                     {
-                        attributes["class"] = activeLinkClass;
+                        attrs["class"] = activeLinkClass;
                     }
                     var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                     if (url.Equals(PageUtils.UnClickableUrl))
                     {
-                        attributes["target"] = string.Empty;
+                        attrs["target"] = string.Empty;
                     }
-                    attributes["href"] = url;
+                    attrs["href"] = url;
                     var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                    TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                    TranslateUtils.AddAttributesIfNotExists(attrs, attributes);
 
-                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attrs)}>{innerHtml}</a>");
                 }
                 else
                 {
-                    var attributes = new NameValueCollection();
+                    var attrs = new NameValueCollection();
                     if (!string.IsNullOrEmpty(target))
                     {
-                        attributes["target"] = target;
+                        attrs["target"] = target;
                     }
                     if (!string.IsNullOrEmpty(linkClass))
                     {
-                        attributes["class"] = linkClass;
+                        attrs["class"] = linkClass;
                     }
                     var url = await parseManager.PathManager.GetChannelUrlAsync(pageInfo.Site, currentNodeInfo, pageInfo.IsLocal);
                     if (url.Equals(PageUtils.UnClickableUrl))
                     {
-                        attributes["target"] = string.Empty;
+                        attrs["target"] = string.Empty;
                     }
-                    attributes["href"] = url;
+                    attrs["href"] = url;
                     var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                    TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                    TranslateUtils.AddAttributesIfNotExists(attrs, attributes);
 
-                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
+                    builder.Append($@"<a {TranslateUtils.ToAttributesString(attrs)}>{innerHtml}</a>");
 
                     if (parentsCount > 0)
                     {
