@@ -53,7 +53,7 @@ var methods = {
           $this.insert($this.no + i, result);
         }
       }
-      
+
       utils.closeLayer();
     })
     .catch(function(error) {
@@ -75,6 +75,10 @@ var methods = {
 
   btnCancelClick: function () {
     utils.closeLayer();
+  },
+
+  btnChangeClick: function() {
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&isChangeFileName=' + this.form.isChangeFileName;
   },
 
   uploadProgress: function() {

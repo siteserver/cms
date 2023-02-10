@@ -86,6 +86,10 @@ var methods = {
     utils.closeLayer();
   },
 
+  btnChangeClick: function() {
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&isChangeFileName=' + this.form.isChangeFileName;
+  },
+
   uploadProgress: function() {
     utils.loading(this, true);
   },
