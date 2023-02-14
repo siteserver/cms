@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.V1
                 var pageContent =
                     await columnsManager.CalculateContentListAsync(sequence++, site, content.ChannelId, content, columns);
                 var navigationUrl = await _parseManager.PathManager.GetContentUrlAsync(site, content, false);
-                pageContent.Set("NavigationUrl", navigationUrl);
+                pageContent.Set(nameof(ColumnsManager.NavigationUrl), navigationUrl);
 
                 pageContents.Add(pageContent);
             }
