@@ -199,6 +199,12 @@ namespace SSCMS.Core.StlParser.StlElement
             attributes["height"] = string.IsNullOrEmpty(height) ? "500" : height;
             attributes["data-setup"] = "{}";
 
+            // 如果是实体标签，则只返回url
+            if (contextInfo.IsStlEntity)
+            {
+                return videoUrl;
+            }
+
             return $@"
             <style>{styles}</style>
             <video {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</video>
