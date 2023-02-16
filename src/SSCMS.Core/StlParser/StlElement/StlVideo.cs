@@ -6,6 +6,7 @@ using SSCMS.Services;
 using SSCMS.Utils;
 using System.Collections.Specialized;
 using SSCMS.Enums;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -16,6 +17,9 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "指定视频的字段")]
         private const string Type = nameof(Type);
+
+        [StlAttribute(Title = "显示字段存储的第几条视频，默认为 1")]
+        private const string No = nameof(No);
 
         [StlAttribute(Title = "视频地址")]
         private const string PlayUrl = nameof(PlayUrl);
@@ -41,6 +45,7 @@ namespace SSCMS.Core.StlParser.StlElement
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var type = nameof(Content.VideoUrl);
+            var no = 0;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var width = string.Empty;
@@ -57,6 +62,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, No))
+                {
+                    no = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, PlayUrl))
                 {
@@ -92,10 +101,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            return await ParseAsync(parseManager, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop, attributes);
+            return await ParseAsync(parseManager, type, no, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop, attributes);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, string type, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, string type, int no, string playUrl, string imageUrl, string width, string height, bool isAutoPlay, bool isControls, bool isLoop, NameValueCollection attributes)
         {
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
@@ -115,10 +124,18 @@ namespace SSCMS.Core.StlParser.StlElement
                         var contentInfo = await parseManager.GetContentAsync();
                         if (contentInfo != null)
                         {
-                            videoUrl = contentInfo.Get<string>(type);
-                            if (string.IsNullOrEmpty(videoUrl))
+                            if (no <= 1)
                             {
-                                videoUrl = contentInfo.VideoUrl;
+                                videoUrl = contentInfo.Get<string>(type);
+                                if (string.IsNullOrEmpty(videoUrl))
+                                {
+                                    videoUrl = contentInfo.VideoUrl;
+                                }
+                            }
+                            else
+                            {
+                                var extendName = ColumnsManager.GetExtendName(type, no - 1);
+                                videoUrl = contentInfo.Get<string>(extendName);
                             }
                         }
                     }

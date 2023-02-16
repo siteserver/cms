@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 return this.Error(Constants.ErrorVideoSizeAllowed);
             }
 
-            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.File);
+            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Video);
             var localFileName = PathUtils.GetUploadFileName(fileName, request.IsChangeFileName);
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 

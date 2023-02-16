@@ -96,7 +96,7 @@
     <el-col :span="6" v-for="(o, index) in items" :key="o.id">
       <el-card size="small" style="margin-bottom: 15px; margin-right: 15px; height: 305px" :body-style="{ padding: '0px', textAlign: 'center' }">
         <el-image 
-          style="width: 100%; min-height: 120px; max-height:220px;"
+          style="width: 100%; min-height: 220px; max-height:220px;"
           :src="o.url"
           :preview-src-list="getPreviewSrcList(o.url)">
           <div slot="error" class="image-slot">

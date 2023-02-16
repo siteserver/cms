@@ -31,7 +31,7 @@
 <el-row :gutter="10">
   <el-col :span="6" v-for="image in images" :key="image.id">
     <el-image
-      style="width: 100%; min-height: 120px; max-height: 220px; margin-bottom: 15px; cursor: pointer"
+      style="width: 100%; min-height: 220px; max-height: 220px; margin-bottom: 15px; cursor: pointer"
       :src="getSmallUrl(image)"
       v-on:click="btnImageClick(image)"
     >
@@ -61,7 +61,7 @@
 
   <div style="text-align: center">
     <el-image
-      style="min-height: 120px; max-height: 220px; margin-bottom: 15px;"
+      style="min-height: 220px; max-height: 220px; margin-bottom: 15px;"
       :src="getSmallUrl(image)"
     >
       <template #error>

@@ -74,7 +74,7 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypeChannelName = "ChannelName";			                            //栏目名称
         private const string TypeChannelIndex = "ChannelIndex";			                          //栏目索引
         private const string TypeTemplateName = "TemplateName";			                          //模板名称
-        private const string TypTemplateType = "TemplateType";			                          //模板类型
+        private const string TypeTemplateType = "TemplateType";			                          //模板类型
         private const string TypeTopLevel = "TopLevel";			                                  //栏目级别
         private const string TypeUpChannel = "UpChannel";			                                //上级栏目
         private const string TypeSelf = "Self";			                                          //当前栏目
@@ -271,7 +271,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 isSuccess = TestTypeValue(testOperate, testValue, pageInfo.Template.TemplateName);
             }
-            else if (StringUtils.EqualsIgnoreCase(testType, TypTemplateType))
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeTemplateType))
             {
                 isSuccess = TestTypeValue(testOperate, testValue, pageInfo.Template.TemplateType.GetValue());
             }
