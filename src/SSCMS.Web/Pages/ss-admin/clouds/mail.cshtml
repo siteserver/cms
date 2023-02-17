@@ -34,6 +34,15 @@
 
           <template v-if="form.isCloudMail">
             <div style="margin-top: 15px; margin-left: 30px;">
+              <el-form-item label="发件人别名" prop="cloudMailFromAlias">
+                <el-input v-model="form.cloudMailFromAlias" style="max-width: 400px;"></el-input>
+                <div class="tips" style="margin-top: 10px;">
+                  发件人别名将显示在邮件发件人邮箱之前
+                </div>
+              </el-form-item>
+            </div>
+
+            <div style="margin-top: 15px; margin-left: 30px;">
               <el-switch v-model="form.isCloudMailContentAdd" active-text="新增内容时发送邮件通知"></el-switch>
               <div class="tips" style="margin-top: 10px;">
                 勾选后，当有内容新增后系统将发送邮件通知

@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             return new GetResult
             {
                 IsCloudMail = config.IsCloudMail,
+                CloudMailFromAlias = config.CloudMailFromAlias,
                 IsCloudMailContentAdd = config.IsCloudMailContentAdd,
                 IsCloudMailContentEdit = config.IsCloudMailContentEdit,
                 CloudMailAddress = config.CloudMailAddress,

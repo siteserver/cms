@@ -89,6 +89,7 @@ namespace SSCMS.Models
         public bool IsCloudSmsAdminAndDisableAccount { get; set; }
         public bool IsCloudSmsUser { get; set; }
         public bool IsCloudMail { get; set; }
+        public string CloudMailFromAlias { get; set; }
         public bool IsCloudMailContentAdd { get; set; }
         public bool IsCloudMailContentEdit { get; set; }
         public string CloudMailAddress { get; set; }

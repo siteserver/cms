@@ -46,6 +46,7 @@ namespace SSCMS.Core.Services
 
         public class SendMailRequest
         {
+            public string FromAlias { get; set; }
             public string Mail { get; set; }
             public string Subject { get; set; }
             public string HtmlBody { get; set; }
@@ -68,6 +69,7 @@ namespace SSCMS.Core.Services
             var url = GetCloudUrl(RouteMail);
             var (success, result, errorMessage) = await RestUtils.PostAsync<SendMailRequest, CloudResult>(url, new SendMailRequest
             {
+                FromAlias = config.CloudMailFromAlias,
                 Mail = mail,
                 Subject = subject,
                 HtmlBody = htmlBody

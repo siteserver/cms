@@ -28,6 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         public class GetResult
         {
             public bool IsCloudMail { get; set; }
+            public string CloudMailFromAlias { get; set; }
             public bool IsCloudMailContentAdd { get; set; }
             public bool IsCloudMailContentEdit { get; set; }
             public string CloudMailAddress { get; set; }
@@ -36,6 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         public class SubmitRequest
         {
             public bool IsCloudMail { get; set; }
+            public string CloudMailFromAlias { get; set; }
             public bool IsCloudMailContentAdd { get; set; }
             public bool IsCloudMailContentEdit { get; set; }
             public string CloudMailAddress { get; set; }

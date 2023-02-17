@@ -3,6 +3,7 @@ var $url = "/clouds/mail"
 var data = utils.init({
   form: {
     isCloudMail: false,
+    cloudMailFromAlias: '',
     isCloudMailContentAdd: false,
     isCloudMailContentEdit: false,
     cloudMailAddress: '',
@@ -18,6 +19,7 @@ var methods = {
       var res = response.data;
 
       $this.form.isCloudMail = res.isCloudMail;
+      $this.form.cloudMailFromAlias = res.cloudMailFromAlias;
       $this.form.isCloudMailContentAdd = res.isCloudMailContentAdd;
       $this.form.isCloudMailContentEdit = res.isCloudMailContentEdit;
       $this.form.cloudMailAddress = res.cloudMailAddress;
