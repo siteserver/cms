@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="排序方向">
     <el-radio-group v-model="form.isUp">
       <el-radio-button :label="true">上升</el-radio-button>

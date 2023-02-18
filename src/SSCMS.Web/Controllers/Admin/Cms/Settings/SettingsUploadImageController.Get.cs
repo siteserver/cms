@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
-using SSCMS.Models;
 using SSCMS.Core.Utils;
 using SSCMS.Configuration;
 
@@ -24,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             {
                 imageUploadExtensions = Constants.DefaultImageUploadExtensions;
             }
+            var imageUploadTypeMaxSize = site.ImageUploadTypeMaxSize / 1024;
 
             return new GetResult
             {
@@ -33,9 +33,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 ImageUploadDateFormatString = site.ImageUploadDateFormatString,
                 IsImageUploadChangeFileName = site.IsImageUploadChangeFileName,
                 ImageUploadExtensions = imageUploadExtensions,
-                ImageUploadTypeMaxSize = site.ImageUploadTypeMaxSize,
-                PhotoSmallWidth = site.PhotoSmallWidth,
-                PhotoMiddleWidth = site.PhotoMiddleWidth,
+                ImageUploadTypeMaxSize = imageUploadTypeMaxSize,
+                IsImageAutoResize = site.IsImageAutoResize,
+                ImageAutoResizeWidth = site.ImageAutoResizeWidth,
             };
         }
     }

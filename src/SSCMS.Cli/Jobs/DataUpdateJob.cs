@@ -9,6 +9,7 @@ using SSCMS.Cli.Updater;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
+using SSCMS.Dto;
 
 namespace SSCMS.Cli.Jobs
 {
@@ -42,70 +43,71 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: update database to latest schema");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: update database to latest schema");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             if (string.IsNullOrEmpty(_directory))
             {
-                await WriteUtils.PrintErrorAsync("Backup folder name not specified: --directory");
+                await console.WriteErrorAsync("Backup folder name not specified: --directory");
                 return;
             }
 
-            var oldTreeInfo = new TreeInfo(_settingsManager, _directory);
-            var newTreeInfo = new TreeInfo(_settingsManager, Folder);
+            var oldTree = new Tree(_settingsManager, _directory);
+            var newTree = new Tree(_settingsManager, Folder);
 
-            if (!DirectoryUtils.IsDirectoryExists(oldTreeInfo.DirectoryPath))
+            if (!DirectoryUtils.IsDirectoryExists(oldTree.DirectoryPath))
             {
-                await WriteUtils.PrintErrorAsync($"The backup folder does not exist: {oldTreeInfo.DirectoryPath}");
+                await console.WriteErrorAsync($"The backup folder does not exist: {oldTree.DirectoryPath}");
                 return;
             }
-            DirectoryUtils.CreateDirectoryIfNotExists(newTreeInfo.DirectoryPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(newTree.DirectoryPath);
 
-            _updateService.Load(oldTreeInfo, newTreeInfo);
+            _updateService.Load(oldTree, newTree);
 
-            await Console.Out.WriteLineAsync($"Backup folder: {oldTreeInfo.DirectoryPath}, Update folder: {newTreeInfo.DirectoryPath}, Update to SSCMS version: {_settingsManager.Version}");
+            await console.WriteLineAsync($"Backup folder: {oldTree.DirectoryPath}, Update folder: {newTree.DirectoryPath}, Update to SSCMS version: {_settingsManager.Version}");
 
-            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTreeInfo.TablesFilePath, Encoding.UTF8));
+            var oldTableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(oldTree.TablesFilePath, Encoding.UTF8));
             var newTableNames = new List<string>();
 
-            await WriteUtils.PrintRowLineAsync();
-            await WriteUtils.PrintRowAsync("Backup table name", "Update table Name", "Count");
-            await WriteUtils.PrintRowLineAsync();
+            await console.WriteRowLineAsync();
+            await console.WriteRowAsync("Backup table name", "Update table Name", "Count");
+            await console.WriteRowLineAsync();
 
             var siteIdList = new List<int>();
             var tableNames = new List<string>();
 
-            UpdateUtils.LoadSites(_settingsManager, oldTreeInfo, siteIdList, tableNames);
+            UpdateUtils.LoadSites(_settingsManager, oldTree, siteIdList, tableNames);
 
             var table = new TableContentConverter(_settingsManager);
 
-            var splitSiteTableDict = new Dictionary<int, TableInfo>();
+            var splitSiteTableDict = new Dictionary<int, Table>();
             if (_splitContents)
             {
                 var converter = table.GetSplitConverter();
                 foreach (var siteId in siteIdList)
                 {
-                    splitSiteTableDict.Add(siteId, new TableInfo
+                    splitSiteTableDict.Add(siteId, new Table
                     {
                         Columns = converter.NewColumns,
                         TotalCount = 0,
-                        RowFiles = new List<string>()
+                        Rows = new List<string>()
                     });
                 }
             }
@@ -117,48 +119,48 @@ namespace SSCMS.Cli.Jobs
             {
                 try
                 {
-                    var oldMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldTableName);
+                    var oldMetadataFilePath = oldTree.GetTableMetadataFilePath(oldTableName);
 
                     if (!FileUtils.IsFileExists(oldMetadataFilePath)) continue;
 
-                    var oldTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
+                    var oldTable = TranslateUtils.JsonDeserialize<Table>(await FileUtils.ReadTextAsync(oldMetadataFilePath, Encoding.UTF8));
 
                     if (ListUtils.ContainsIgnoreCase(tableNames, oldTableName))
                     {
                         if (_splitContents)
                         {
-                            var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
+                            var converter = table.GetConverter(oldTableName, oldTable.Columns);
 
-                            await _updateService.UpdateSplitContentsTableInfoAsync(splitSiteTableDict, siteIdList, oldTableName,
-                                oldTableInfo, converter);
+                            await _updateService.UpdateSplitContentsTableAsync(console, splitSiteTableDict, siteIdList, oldTableName,
+                                oldTable, converter);
                         }
                         else
                         {
-                            var converter = table.GetConverter(oldTableName, oldTableInfo.Columns);
-                            var tuple = await _updateService.GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
+                            var converter = table.GetConverter(oldTableName, oldTable.Columns);
+                            var tuple = await _updateService.GetNewTableAsync(console, oldTableName, oldTable, converter);
                             if (tuple != null)
                             {
                                 newTableNames.Add(tuple.Item1);
 
-                                await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
+                                await FileUtils.WriteTextAsync(newTree.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
                             }
                         }
                     }
                     else
                     {
-                        var tuple = await _updateService.UpdateTableInfoAsync(oldTableName, oldTableInfo);
+                        var tuple = await _updateService.UpdateTableAsync(console, oldTableName, oldTable);
                         if (tuple != null)
                         {
                             newTableNames.Add(tuple.Item1);
 
-                            await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
+                            await FileUtils.WriteTextAsync(newTree.GetTableMetadataFilePath(tuple.Item1), TranslateUtils.JsonSerialize(tuple.Item2));
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     errorTableNames.Add(oldTableName);
-                    await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                    await FileUtils.AppendErrorLogAsync(errorLogFilePath, new TextLog
                     {
                         Exception = ex,
                         DateTime = DateTime.Now,
@@ -171,26 +173,26 @@ namespace SSCMS.Cli.Jobs
             {
                 foreach (var siteId in siteIdList)
                 {
-                    var siteTableInfo = splitSiteTableDict[siteId];
+                    var siteTable = splitSiteTableDict[siteId];
                     var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
-                    await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTableInfo));
+                    await FileUtils.WriteTextAsync(newTree.GetTableMetadataFilePath(siteTableName), TranslateUtils.JsonSerialize(siteTable));
                 }
 
-                await UpdateUtils.UpdateSitesSplitTableNameAsync(_databaseManager, newTreeInfo, splitSiteTableDict);
+                await UpdateUtils.UpdateSitesSplitTableNameAsync(_databaseManager, newTree, splitSiteTableDict);
             }
 
-            await FileUtils.WriteTextAsync(newTreeInfo.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));
+            await FileUtils.WriteTextAsync(newTree.TablesFilePath, TranslateUtils.JsonSerialize(newTableNames));
 
-            await WriteUtils.PrintRowLineAsync();
+            await console.WriteRowLineAsync();
             if (errorTableNames.Count == 0)
             {
-                await WriteUtils.PrintSuccessAsync("Update the backup data to the new version successfully!");
+                await console.WriteSuccessAsync("Update the backup data to the new version successfully!");
             }
             else
             {
-                await WriteUtils.PrintErrorAsync($"Database update failed and the following table was not successfully update: {ListUtils.ToString(errorTableNames)}");
+                await console.WriteErrorAsync($"Database update failed and the following table was not successfully update: {ListUtils.ToString(errorTableNames)}");
             }
         }
     }

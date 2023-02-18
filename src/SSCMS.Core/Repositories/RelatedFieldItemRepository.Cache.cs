@@ -27,6 +27,13 @@ namespace SSCMS.Core.Repositories
             return list.FirstOrDefault(x => x.Id == id);
         }
 
+        public async Task<string> GetValueAsync(int siteId, int id)
+        {
+            var list = await GetAllAsync(siteId);
+            var item = list.FirstOrDefault(x => x.Id == id);
+            return item != null ? item.Value : string.Empty;
+        }
+
         public async Task<List<Cascade<int>>> GetCascadesAsync(int siteId, int relatedFieldId, int parentId)
         {
             var list = new List<Cascade<int>>();

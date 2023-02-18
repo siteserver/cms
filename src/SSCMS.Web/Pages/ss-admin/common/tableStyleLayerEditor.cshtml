@@ -1,15 +1,9 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form 
-  size="small" 
-  class="form-fixed"
-  :model="form" 
-  ref="form1"
-  :inline="true"
-  label-width="120px">
+<el-form v-on:submit.native.prevent size="small" class="form-fixed" :model="form" ref="form1" :inline="true" label-width="120px">
   <el-form-item label="字段名称" prop="attributeName" :rules="[{ required: true, message: '请输入字段名称' }, { validator: validateAttributeName }]">
-    <el-input v-model="form.attributeName" :disabled="attributeName !== ''" placeholder="请输入字段名称"></el-input>
+    <el-input ref="attributeName" v-model="form.attributeName" :disabled="attributeName !== ''" placeholder="请输入字段名称"></el-input>
   </el-form-item>
   <el-form-item label="显示名称" prop="displayName" :rules="{ required: true, message: '请输入显示名称' }">
     <el-input v-model="form.displayName" placeholder="请输入显示名称"></el-input>
@@ -42,28 +36,16 @@
   </template>
 </el-form>
 
-<el-form 
-  v-if="isSelect && form.isRapid" 
-  size="small" 
-  class="form-fixed"
-  :model="form" 
-  ref="form2"
-  label-width="120px">
+<el-form v-on:submit.native.prevent v-if="isSelect && form.isRapid" size="small" class="form-fixed" :model="form" ref="form2" label-width="120px">
   <el-form-item label="选项可选值" prop="rapidValues" :rules="{ required: true, message: '请输入选项可选值' }">
     <el-input v-model="form.rapidValues" :rows="10" type="textarea" placeholder="请输入选项可选值"></el-input>
     <div class="tips">多个选项使用换行分隔</div>
   </el-form-item>
 </el-form>
 
-<el-form 
-  v-if="isSelect && !form.isRapid" 
-  size="small" 
-  class="form-fixed"
-  :inline="true"
-  :model="form" 
-  ref="form3"
-  label-width="120px">
+<el-form v-on:submit.native.prevent v-if="isSelect && !form.isRapid" size="small" class="form-fixed" :inline="true" :model="form" ref="form3" label-width="120px">
   <template v-for="(item, index) in form.items">
+    <el-divider></el-divider>
     <el-form-item :label="'标题（选项' + (index + 1) + '）'" :prop="'items.' + index + '.label'" :rules="{
       required: true, message: '请输入选项标题'
     }">
@@ -83,13 +65,17 @@
   </template>
 </el-form>
 
-<el-form 
-  v-if="form.inputType === 'Customize'"
-  size="small" 
-  class="form-fixed"
-  :model="form" 
-  ref="form4"
-  label-width="120px">
+<el-form v-on:submit.native.prevent v-if="form.inputType === 'SelectCascading'" size="small" class="form-fixed" :model="form" ref="form4" label-width="120px">
+  <el-form-item label="联动字段" prop="relatedFieldId" :rules="{
+    required: true, message: '请选择联动字段'
+  }">
+    <el-select v-model="form.relatedFieldId" placeholder="请选择表单提交类型">
+      <el-option v-for="relatedField in relatedFields" :key="relatedField.id" :label="relatedField.title" :value="relatedField.id"></el-option>
+    </el-select>
+  </el-form-item>
+</el-form>
+
+<el-form v-on:submit.native.prevent v-if="form.inputType === 'Customize'" size="small" class="form-fixed" :model="form" ref="form5" label-width="120px">
   <el-form-item label="自定义代码" prop="customizeCode" :rules="{
     required: true, message: '请输入自定义代码'
   }">

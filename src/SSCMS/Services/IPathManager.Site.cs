@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using SSCMS.Dto;
 using SSCMS.Enums;
@@ -47,7 +48,7 @@ namespace SSCMS.Services
 
         Task<string> GetContentUrlByIdAsync(Site site, Content contentCurrent, bool isLocal);
 
-        Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, string linkUrl, bool isLocal);
+        Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, LinkType linkType, string linkUrl, bool isLocal);
 
         Task<string> GetChannelUrlNotComputedAsync(Site site, int channelId, bool isLocal);
 
@@ -68,7 +69,7 @@ namespace SSCMS.Services
 
         bool IsRelativeUrl(string url);
 
-        List<Select<string>> GetLinkTypeSelects();
+        List<Select<string>> GetLinkTypeSelects(bool isChannel);
 
         Task<string> GetSitePathAsync(Site site);
 
@@ -83,6 +84,8 @@ namespace SSCMS.Services
         Task<string> GetUploadDirectoryPathAsync(Site site, string fileExtension);
 
         Task<string> GetUploadDirectoryPathAsync(Site site, DateTime datetime, string fileExtension);
+
+        Task<List<FileInfo>> GetAllFilesOrderByCreationTimeDescAsync(Site site, UploadType uploadType);
 
         Task<string> GetUploadDirectoryPathAsync(Site site, UploadType uploadType);
 
@@ -145,7 +148,7 @@ namespace SSCMS.Services
 
         Task DeleteSiteFilesAsync(Site site);
 
-        Task ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
+        Task<(bool success, string errorMessage)> ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
 
         Task ChangeToRootAsync(Site site, bool isMoveFiles);
 
@@ -156,6 +159,8 @@ namespace SSCMS.Services
         Task AddWaterMarkAsync(Site site, string imagePath);
 
         Task MoveFileAsync(Site sourceSite, Site destSite, string relatedUrl);
+
+        Task MoveFileByChannelAsync(Site sourceSite, Site destSite, Channel channel);
 
         Task MoveFileByContentAsync(Site sourceSite, Site destSite, Content content);
     }

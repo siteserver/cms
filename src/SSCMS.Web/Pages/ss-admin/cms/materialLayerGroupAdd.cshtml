@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form size="small" ref="form" :model="form" label-position="top">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-position="top">
   <el-form-item label="请输入分组名称" prop="groupName" :rules="{ required: true, message: '请输入分组名称' }">
     <el-input v-model="form.groupName" placeholder="请输入分组名称"></el-input>
   </el-form-item>

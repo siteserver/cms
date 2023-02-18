@@ -50,5 +50,24 @@ namespace SSCMS.Core.Repositories
                 .CachingGet(GetListKey())
             );
         }
+
+        public async Task<List<int>> GetParentIds(int siteId)
+        {
+            var parentIds = new List<int>();
+            var summaries = await GetSummariesAsync();
+            GetParentIds(siteId, summaries, parentIds);
+            parentIds.Reverse();
+            return parentIds;
+        }
+
+        private void GetParentIds(int siteId, List<SiteSummary> summaries, List<int> parentIds)
+        {
+            var site = summaries.Where(x => x.Id == siteId).FirstOrDefault<SiteSummary>();
+            if (site != null && site.ParentId > 0)
+            {
+                parentIds.Add(site.ParentId);
+                GetParentIds(site.ParentId, summaries, parentIds);
+            }
+        }
     }
 }

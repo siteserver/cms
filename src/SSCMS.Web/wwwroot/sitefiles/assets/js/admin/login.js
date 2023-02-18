@@ -18,7 +18,9 @@ var data = utils.init({
   captchaUrl: null,
   version: null,
   adminTitle: null,
-  isSmsEnabled: false,
+  isSmsAdmin: false,
+  isSmsAdminAndDisableAccount: false,
+
   isSmsLogin: false,
   mobile: null,
   code: null,
@@ -43,7 +45,18 @@ var methods = {
       if (res.success) {
         $this.version = res.version;
         $this.adminTitle = res.adminTitle;
-        $this.isSmsEnabled = res.isSmsEnabled;
+        $this.isSmsAdmin = res.isSmsAdmin;
+        $this.isSmsAdminAndDisableAccount = res.isSmsAdminAndDisableAccount;
+        if (res.isSmsAdmin && res.isSmsAdminAndDisableAccount) {
+          $this.isSmsLogin = true;
+        }
+
+        var head = document.querySelector('head');
+        var favicon = document.createElement('link');
+        favicon.setAttribute('rel', 'shortcut icon');
+        favicon.setAttribute('href', res.adminFaviconUrl || utils.getAssetsUrl('images/favicon.png'));
+        head.appendChild(favicon);
+
         $this.apiCaptcha();
       } else {
         location.href = res.redirectUrl;
@@ -170,7 +183,7 @@ var methods = {
   },
 
   isMobile: function (value) {
-    return /^1[3|4|5|7|8][0-9]\d{8}$/.test(value);
+    return /^1[3-9]\d{9}$/.test(value);
   },
 
   btnSendSmsClick: function () {

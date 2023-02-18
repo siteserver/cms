@@ -1,5 +1,31 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .plan-name {
+      color: #28AB94;
+      margin: 0 auto;
+      width: 80%;
+      white-space: nowrap;
+      display: block;
+      overflow: hidden;
+      font-size: 16px;
+      text-overflow: ellipsis;
+    }
+    .plan-price {
+      margin-top: 10px;
+    }
+    .ga-border {
+      height: 3px;
+      width: 40px;
+      background-color: #00b19d;
+      margin: 10px auto;
+    }
+    .el-badge__content.is-fixed {
+      right: 0px;
+    }
+  </style>
+}
 
 <template v-if="pageType == 'selectType'">
   <el-alert>
@@ -34,7 +60,7 @@
     <div class="drawer__content">
       <br />
 
-      <el-form ref="uploadForm" label-width="200px">
+      <el-form v-on:submit.native.prevent ref="uploadForm" label-width="200px">
         <el-upload
           :drag="true"
           :limit="1"
@@ -88,7 +114,7 @@
 
   <el-row>
     <el-col :span="20">
-      <el-form :inline="true" size="mini">
+      <el-form v-on:submit.native.prevent :inline="true" size="mini">
         <el-form-item label="价格">
           <el-select v-on:change="priceChanged" v-model="price">
             <el-option value="" label="全部"></el-option>
@@ -139,7 +165,7 @@
 
   <el-row>
     <el-col :span="6" v-for="(theme, index) in themes" :key="index">
-      <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
+      <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center', height: '450px', overflow: 'hidden' }">
         <el-image 
           style="width: 100%; min-height: 120px; max-height: 240px; cursor: pointer;"
           v-on:click="btnImageClick(theme)"
@@ -149,15 +175,29 @@
           </div>
         </el-image>
         <div style="padding: 14px;">
-          <div :title="theme.summary">{{ theme.name }}</div>
+          
+          <h4 class="text-center plan-name">
+            {{ theme.name }}（{{ theme.updatedDate.substr(0, 10) }}）
+            <div v-if="theme.price" class="plan-price">
+              <el-badge v-if="isCreatable(theme)" value="已购">
+                ￥{{ theme.price.toFixed(2) }}
+              </el-badge>
+              <span v-else>￥{{ theme.price.toFixed(2) }}</span>
+            </div>
+            <div v-else class="plan-price">免费</div>
+          </h4>
+          <div class="ga-border"></div>
+          <p class="text-muted text-center" style="height: 45px; overflow: hidden;">
+            <small>{{ theme.summary }}</small>
+          </p>
           
           <div style="margin-top: 10px;">
             <el-button plain type="info" v-on:click="btnPreviewClick(theme)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
-            <el-button plain type="primary" v-if="theme.price === 0" v-on:click="btnCreateCloudClick(theme.userName, theme.name)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">
+            <el-button plain type="primary" v-if="isCreatable(theme)" v-on:click="btnCreateCloudClick(theme)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">
               创建站点
             </el-button>
-            <el-button plain type="primary" v-else v-on:click="btnBuyClick(theme)" size="mini" icon="el-icon-s-goods" style="margin: 0 5px;">
-              购买并导入
+            <el-button plain type="primary" v-else v-on:click="btnBuyClick(theme.userName, theme.name)" size="mini" icon="el-icon-s-goods" style="margin: 0 5px;">
+              购买并创建站点
             </el-button>
           </div>
         </div>
@@ -197,7 +237,7 @@
 
   <div style="height: 10px"></div>
 
-  <el-form size="small" ref="form" :model="form" label-width="150px">
+  <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="150px">
     <el-form-item label="站点名称" prop="siteName" :rules="{ required: true, message: '请输入站点名称' }">
       <el-input v-model="form.siteName" placeholder="请输入站点名称"></el-input>
     </el-form-item>
@@ -222,7 +262,7 @@
       <el-input v-model="form.siteDir" placeholder="请输入文件夹名称"></el-input>
       <div class="tips">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</div>
     </el-form-item>
-    <el-form-item v-if="form.siteType === 'default'" label="内容表" prop="tableRule" :rules="{ required: true, message: '请选择内容表' }">
+    <el-form-item label="内容表" prop="tableRule" :rules="{ required: true, message: '请选择内容表' }">
       <el-radio-group v-model="form.tableRule">
         <el-radio label="Choose">选择内容表</el-radio>
         <el-radio label="Create">创建新的内容表</el-radio>
@@ -230,7 +270,7 @@
       </el-radio-group>
       <div v-if="form.tableRule == 'Create'" class="tips">系统将创建内容表，表名称为 <strong>siteserver_&lt;随机字符串&gt;</strong></div>
     </el-form-item>
-    <el-form-item v-if="form.siteType === 'default' && form.tableRule == 'Choose'" label="选择内容表" prop="tableChoose" :rules="{ required: true, message: '请选择内容表' }">
+    <el-form-item v-if="form.tableRule == 'Choose'" label="选择内容表" prop="tableChoose" :rules="{ required: true, message: '请选择内容表' }">
       <el-select v-model="form.tableChoose" placeholder="请选择内容表">
         <el-option
           v-for="tableName in tableNameList"
@@ -240,7 +280,7 @@
       </el-select>
       <div class="tips">请选择已存在的内容表</div>
     </el-form-item>
-    <el-form-item v-else-if="form.siteType === 'default' && form.tableRule == 'HandWrite'" label="指定内容表" prop="tableHandWrite" :rules="{ required: true, message: '请输入指定内容表' }">
+    <el-form-item v-else-if="form.tableRule == 'HandWrite'" label="指定内容表" prop="tableHandWrite" :rules="{ required: true, message: '请输入指定内容表' }">
       <el-input v-model="form.tableHandWrite" placeholder="请输入指定内容表"></el-input>
       <div class="tips">请输入内容表名称，系统将检测数据库是否已存在指定的内容表，如果不存在系统将创建此内容表</div>
     </el-form-item>

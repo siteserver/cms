@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Authorization;
@@ -32,6 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
         private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
+        private readonly ICloudManager _cloudManager;
         private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
@@ -42,11 +42,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly IChannelGroupRepository _channelGroupRepository;
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
-        public ChannelsController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository)
+        public ChannelsController(ICacheManager cacheManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
+            _cloudManager = cloudManager;
             _pathManager = pathManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
@@ -57,6 +59,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             _channelGroupRepository = channelGroupRepository;
             _templateRepository = templateRepository;
             _tableStyleRepository = tableStyleRepository;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
         }
 
         public class ChannelColumn
@@ -72,7 +75,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public List<string> AttributeNames { get; set; }
         }
 
-        public class ChannelsResult
+        public class Settings
+        {
+            public bool IsCloudImages { get; set; }
+        }
+
+        public class ListResult
         {
             public Cascade<int> Channel { get; set; }
             public IEnumerable<string> IndexNames { get; set; }
@@ -85,12 +93,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public IEnumerable<Select<string>> LinkTypes { get; set; }
             public IEnumerable<Select<string>> TaxisTypes { get; set; }
             public string SiteUrl { get; set; }
+            public Settings Settings { get; set; }
+            public List<Menu> ChannelMenus { get; set; }
+            public List<Menu> ChannelsMenus { get; set; }
         }
 
-        public class ChannelResult
+        public class GetResult
         {
             public Entity Entity { get; set; }
             public IEnumerable<TableStyle> Styles { get; set; }
+            public Dictionary<int, List<Dto.Cascade<int>>> RelatedFields { get; set; }
             public string FilePath { get; set; }
             public string ChannelFilePathRule { get; set; }
             public string ContentFilePathRule { get; set; }
@@ -119,25 +131,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public int ChannelId { get; set; }
             public string ChannelName { get; set; }
             public bool DeleteFiles { get; set; }
-        }
-
-        public class UpdateRequest : Entity
-        {
-            public int SiteId { get; set; }
-            public string ChannelName { get; set; }
-            public string IndexName { get; set; }
-            public List<string> GroupNames { get; set; }
-            public string Content { get; set; }
-            public int ChannelTemplateId { get; set; }
-            public int ContentTemplateId { get; set; }
-            public string LinkUrl { get; set; }
-            public LinkType LinkType { get; set; }
-            public TaxisType DefaultTaxisType { get; set; }
-            public string FilePath { get; set; }
-            public string ChannelFilePathRule { get; set; }
-            public string ContentFilePathRule { get; set; }
-            public string Keywords { get; set; }
-            public string Description { get; set; }
         }
 
         public class AppendRequest : SiteRequest

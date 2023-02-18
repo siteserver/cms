@@ -9,14 +9,14 @@
   </style>
 }
 
-<el-form :inline="true" size="mini">
+<el-form v-on:submit.native.prevent :inline="true" size="mini">
   <el-form-item label="关键字">
     <el-input v-model="keyword" placeholder="请输入关键字..."></el-input>
   </el-form-item>
   <el-form-item>
     <el-button type="primary" v-on:click="btnSearchClick">搜索插件</el-button>
     <el-button size="mini" type="primary" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnUploadClick">
-      离线安装/更新插件
+      离线安装插件
     </el-button>
   </el-form-item>
 </el-form>
@@ -49,7 +49,7 @@
           </el-badge>
         </el-link>
       </div>
-      <el-form size="mini" label-width="70px">
+      <el-form v-on:submit.native.prevent size="mini" label-width="70px">
         <el-form-item label="标识">
           <el-link :underline="false" type="primary" v-on:click="btnViewClick(item)">
             {{ item.extension.userName }}.{{ item.extension.name }}

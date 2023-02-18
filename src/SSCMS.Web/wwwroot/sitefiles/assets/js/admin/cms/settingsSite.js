@@ -6,6 +6,8 @@ var data = utils.init({
   pageType: null,
   form: null,
   styles: null,
+  relatedFields: null,
+  settings: null,
   files: []
 });
 
@@ -70,7 +72,9 @@ var methods = {
 
       $this.siteUrl = res.siteUrl;
       $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
       $this.form = res.entity;
+      $this.settings = res.settings;
 
       $this.loadEditor(res);
     }).catch(function (error) {
@@ -78,6 +82,59 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  apiSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, _.assign({
+      siteId: this.siteId
+    }, this.form)).then(function (response) {
+      var res = response.data;
+
+      utils.success('站点设置保存成功！');
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnImageSelectClick: function(args) {
+    var inputType = args.inputType;
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'uploadedImages') {
+      this.btnLayerClick({
+        title: '选择已上传图片',
+        name: 'formLayerImageSelect',
+        inputType: inputType,
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        inputType: inputType,
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          inputType: inputType,
+          no: args.no,
+        }),
+      });
+    }
   },
 
   btnSiteStylesClick: function() {
@@ -102,12 +159,6 @@ var methods = {
               $this.form[this.attributeName] = this.getContent();
             });
           });
-        } else if (style.inputType === 'Date' || style.inputType === 'DateTime') {
-          if (!$this.form[attributeName]) {
-            $this.form[attributeName] = new Date().Format("yyyy-MM-dd hh:mm:ss");
-          } else {
-            $this.form[attributeName] = new Date($this.form[attributeName]).Format("yyyy-MM-dd hh:mm:ss");
-          }
         }
       }
     }, 100);
@@ -154,6 +205,9 @@ var methods = {
     if (options.no) {
       query.no = options.no;
     }
+    if (options.inputType) {
+      query.inputType = options.inputType;
+    }
 
     var args = {
       title: options.title,
@@ -164,23 +218,6 @@ var methods = {
       args.height = options.height ? options.height : 500;
     }
     utils.openLayer(args);
-  },
-
-  apiSubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, _.assign({
-      siteId: this.siteId
-    }, this.form)).then(function (response) {
-      var res = response.data;
-
-      utils.success('站点设置保存成功！');
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
   },
 
   btnSubmitClick: function () {

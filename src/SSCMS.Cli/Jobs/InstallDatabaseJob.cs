@@ -45,43 +45,44 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: install sscms");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: install sscms");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             if (!await _configRepository.IsNeedInstallAsync())
             {
-                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {_settingsManager.ContentRootPath}");
+                await console.WriteErrorAsync($"SS CMS has been installed in {_settingsManager.ContentRootPath}");
                 return;
             }
 
             var userName = string.IsNullOrEmpty(_userName)
-                ? ReadUtils.GetString("Super administrator username:")
+                ? console.GetString("Super administrator username:")
                 : _userName;
             var password = string.IsNullOrEmpty(_password)
-                ? ReadUtils.GetPassword("Super administrator password:")
+                ? console.GetPassword("Super administrator password:")
                 : _password;
 
             var (valid, message) =
                 await _administratorRepository.InsertValidateAsync(userName, password, string.Empty, string.Empty);
             if (!valid)
             {
-                await WriteUtils.PrintErrorAsync(message);
+                await console.WriteErrorAsync(message);
                 return;
             }
 
@@ -113,13 +114,13 @@ namespace SSCMS.Cli.Jobs
             (valid, message) = await _databaseManager.InstallAsync(userName, password, string.Empty, string.Empty);
             if (!valid)
             {
-                await WriteUtils.PrintErrorAsync(message);
+                await console.WriteErrorAsync(message);
                 return;
             }
 
             await FileUtils.WriteTextAsync(_pathManager.GetRootPath("index.html"), Constants.Html5Empty);
 
-            await WriteUtils.PrintSuccessAsync("Congratulations, SS CMS was installed successfully!");
+            await console.WriteSuccessAsync("Congratulations, SS CMS was installed successfully!");
         }
     }
 }

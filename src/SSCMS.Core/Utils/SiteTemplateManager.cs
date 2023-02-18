@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SSCMS.Core.Utils.Serialization;
+using SSCMS.Core.Utils.Serialization.Components;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -96,6 +98,7 @@ namespace SSCMS.Core.Utils
             var tableDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.Table);
             var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.FileConfiguration);
             var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.SiteContent);
+            var formDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.Form);
 
             var importObject = new ImportObject(_pathManager, _databaseManager, _caching, site, adminId);
 
@@ -112,11 +115,34 @@ namespace SSCMS.Core.Utils
                 await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents, guid);
             }
 
+            var channels = await _databaseManager.ChannelRepository.GetChannelsAsync(site.Id);
+            foreach (var channel in channels)
+            {
+                var contentIds = await _databaseManager.ContentRepository.GetContentIdsByLinkTypeAsync(site, channel, LinkType.LinkToChannel);
+                foreach (var contentId in contentIds)
+                {
+                    var content = await _databaseManager.ContentRepository.GetAsync(site, channel, contentId);
+                    var linkToChannelName = content.Get<string>(ContentIe.LinkToChannelName);
+                    if (!string.IsNullOrEmpty(linkToChannelName))
+                    {
+                        var linkToChannel = channels.FirstOrDefault(x => x.ChannelName == linkToChannelName);
+                        if (linkToChannel != null)
+                        {
+                            content.LinkUrl = ListUtils.ToString(linkToChannel.ParentsPath) + "," + linkToChannel.Id;
+                            await _databaseManager.ContentRepository.UpdateAsync(site, channel, content);
+                        }
+                    }
+                }
+            }
+
             if (isImportTableStyles)
             {
                 _caching.SetProcess(guid, $"导入表字段: {tableDirectoryPath}");
                 await importObject.ImportTableStylesAsync(tableDirectoryPath, guid);
             }
+
+            _caching.SetProcess(guid, $"导入表单: {formDirectoryPath}");
+            await importObject.ImportFormsAsync(formDirectoryPath, guid);
 
             _caching.SetProcess(guid, $"导入配置文件: {configurationFilePath}");
             await importObject.ImportConfigurationAsync(configurationFilePath, guid);
@@ -140,6 +166,9 @@ namespace SSCMS.Core.Utils
             //导出关联字段
             var relatedFieldDirectoryPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.RelatedField);
             await exportObject.ExportRelatedFieldAsync(relatedFieldDirectoryPath);
+            //导出表单
+            var formDirectoryPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteFiles.SiteTemplates.Form);
+            await exportObject.ExportFormsAsync(formDirectoryPath);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.FileUploadDateFormatString = request.FileUploadDateFormatString;
             site.IsFileUploadChangeFileName = request.IsFileUploadChangeFileName;
             site.FileUploadExtensions = request.FileUploadExtensions.Replace("|", ",");
-            site.FileUploadTypeMaxSize = request.FileUploadTypeMaxSize;
+            site.FileUploadTypeMaxSize = request.FileUploadTypeMaxSize * 1024;
 
             if (_settingsManager.IsSafeMode)
             {

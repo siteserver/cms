@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 {
                     var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                    if (!FileUtils.IsType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
+                    if (!FileUtils.IsFileType(FileType.Zip, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
@@ -53,7 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 {
                     var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
 
-                    if (!FileUtils.IsType(FileType.Xlsx, PathUtils.GetExtension(localFilePath)))
+                    if (!FileUtils.IsFileType(FileType.Xlsx, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
@@ -65,7 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 foreach (var fileName in request.FileNames)
                 {
                     var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
-                    if (!FileUtils.IsType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
+                    if (!FileUtils.IsFileType(FileType.Txt, PathUtils.GetExtension(localFilePath)))
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);

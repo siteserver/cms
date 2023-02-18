@@ -25,6 +25,7 @@ var data = utils.init({
   checkedColumns: [],
 
   siteId: 0,
+  siteIds: [],
   channelIds: [],
   permissions: {
     isEdit: true
@@ -50,6 +51,9 @@ var methods = {
 
       $this.sites = res.sites;
       $this.siteId = res.siteId;
+      if ($this.siteIds.length == 0) {
+        $this.siteIds = [res.siteId];
+      }
       $this.siteName = res.siteName;
       $this.siteUrl = res.siteUrl;
       $this.root = res.root;
@@ -92,8 +96,6 @@ var methods = {
   },
 
   apiColumns: function(attributeNames) {
-    var $this = this;
-
     $api.post($url + '/actions/columns', {
       siteId: this.siteId,
       attributeNames: attributeNames
@@ -106,14 +108,21 @@ var methods = {
   },
 
   getContentUrl: function (content) {
-    return utils.getRootUrl('redirect', {
-      siteId: content.siteId,
-      channelId: content.channelId,
-      contentId: content.id
-    });
+    if (content.linkType == 'NoLink') {
+      return 'javascript:;';
+    }
+    return '/ss-admin/redirect/?siteId=' + content.siteId + '&channelId=' + content.channelId + '&contentId=' + content.id;
+  },
+
+  getContentTarget: function (content) {
+    if (content.linkType == 'NoLink') {
+      return '';
+    }
+    return '_blank';
   },
 
   handleSiteIdChange: function() {
+    this.siteId = this.siteIds && this.siteIds.length > 0 ? this.siteIds[this.siteIds.length - 1] : 0;
     this.apiGet();
   },
 

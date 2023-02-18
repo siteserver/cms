@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.VideoUploadDateFormatString = request.VideoUploadDateFormatString;
             site.IsVideoUploadChangeFileName = request.IsVideoUploadChangeFileName;
             site.VideoUploadExtensions = request.VideoUploadExtensions.Replace("|", ",");
-            site.VideoUploadTypeMaxSize = request.VideoUploadTypeMaxSize;
+            site.VideoUploadTypeMaxSize = request.VideoUploadTypeMaxSize * 1024;
 
             if (_settingsManager.IsSafeMode)
             {

@@ -20,29 +20,12 @@
 <el-row>
   <el-col :span="20">
     <el-row>
-      <el-form :inline="true" :model="form" size="mini">
+      <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
         <el-form-item label="搜索">
           <el-input v-model="form.keyword" placeholder="关键字"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
-        </el-form-item>
-      </el-form>
-    </el-row>
-    <el-row>
-      <el-form :inline="true" :model="form">
-        <el-form-item label="分组">
-
-          <el-tag
-            v-for="group in groups"
-            :key="group.id"
-            type="success"
-            style="cursor: pointer; margin: 0 3px 6px 0;"
-            v-on:click="btnGroupClick(group.id)"
-            :effect="form.groupId === group.id ? 'dark' : 'plain'">
-            {{ group.groupName }}
-          </el-tag>
-         
         </el-form-item>
       </el-form>
     </el-row>
@@ -59,6 +42,17 @@
     </el-dropdown>
   </el-col>
 </el-row>
+<el-row>
+  <el-tag
+    v-for="group in groups"
+    :key="group.id"
+    type="success"
+    style="cursor: pointer; margin: 0 3px 6px 0;"
+    v-on:click="btnGroupClick(group.id)"
+    :effect="form.groupId === group.id ? 'dark' : 'plain'">
+    {{ group.groupName }}
+  </el-tag>
+</el-row>
 
 <template v-if="pageType === 'card'">
   <el-row>
@@ -66,7 +60,7 @@
       <el-card style="margin-bottom: 15px; margin-right: 15px; height: 305px" :body-style="{ padding: '0px', textAlign: 'center' }">
         <el-link :underline="false" v-on:click="btnSelectClick(o)">
           <el-image 
-            style="width: 100%; min-height: 120px; max-height:220px;"
+            style="width: 100%; min-height: 220px; max-height:220px;"
             :src="o.url">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>

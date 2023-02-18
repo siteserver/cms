@@ -1,0 +1,269 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+
+  <template v-if="cloudType === 'Free'">
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>定时任务设置</span>
+            </div>
+          </template>
+          <div class="text" style="padding: 16px 64px; text-align: center;">
+            <div style="text-align: center;width: 100%;">
+              <img src="/sitefiles/assets/images/tasks.svg" height="120" />
+            </div>
+            <h2>
+              定时任务为您实现定时发布、定时生成、定时备份、监控报警等功能，具备可运维、低延时等能力。
+            </h2>
+            <p>
+              无需开发，仅通过在调度中心进行配置，即可快速实现周期性定时业务功能，还可针对历史执行记录、失败日志进行查看、任务重跑等操作。
+            </p>
+            <el-button type="primary" size="medium" style="margin-top: 20px;" v-on:click="btnUpgradeClick">
+              升级云助手
+            </el-button>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+
+    <div style="height: 10px"></div>
+
+    <el-table :data="tasks" style="width: 100%">
+      <el-table-column label="名称" width="180">
+        <template #default="scope">
+          {{ scope.row.title }}
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" width="120">
+        <template #default="scope">
+          <el-link v-if="scope.row.isDisabled" type="danger" :underline="false" v-on:click.prevent>禁 用</el-link>
+          <el-link v-else-if="scope.row.isRunning" type="warning" icon="el-icon-loading" :underline="false" v-on:click.prevent>运行中...</el-link>
+          <el-link v-else type="success" :underline="false" v-on:click.prevent>准备就绪</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="任务类型" width="120">
+        <template #default="scope">
+          {{ getTaskType(scope.row) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="执行频率" width="120">
+        <template #default="scope">
+          {{ getTaskInterval(scope.row.taskInterval) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="下次运行时间" width="180">
+        <template #default="scope">
+          {{ scope.row.scheduledDate }}
+        </template>
+      </el-table-column>
+      <el-table-column label="上次运行时间" width="180">
+        <template #default="scope">
+          {{ scope.row.latestEndDate }}
+        </template>
+      </el-table-column>
+      <el-table-column label="上次运行结果">
+        <template #default="scope">
+          <template v-if="scope.row.latestEndDate">
+            <el-link v-if="scope.row.isLatestSuccess" type="success" :underline="false" v-on:click.prevent>运行成功</el-link>
+            <el-link v-else type="danger" :underline="false" v-on:click.prevent>运行失败：{{ scope.row.latestErrorMessage }}</el-link>
+          </template>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" width="180">
+        <template #default="scope">
+          {{ scope.row.createdDate }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180">
+        <template #default="scope">
+          <el-link type="primary" :underline="false" v-on:click.prevent="btnEditClick(scope.row)">编 辑</el-link>
+          <el-link type="danger" :underline="false" v-on:click.prevent="btnEnableClick(scope.row)">
+            {{ scope.row.isDisabled ? '启 用' : '禁 用' }}
+          </el-link>
+          <el-link type="danger" :underline="false" v-on:click.prevent="btnDeleteClick(scope.row)">删 除</el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div style="height: 10px"></div>
+
+    <el-form :inline="true">
+      <el-form-item>
+        <el-button type="primary" size="small" v-on:click.prevent="btnAddClick">创建任务</el-button>
+      </el-form-item>
+    </el-form>
+
+  </template>
+
+  <el-drawer
+    id="addForm"
+    v-if="isAdd"
+    :title="task ? '编辑任务' : '创建任务'"
+    :visible.sync="isAdd"
+    destroy-on-close
+    :wrapperClosable="false"
+    direction="rtl"
+    size="60%">
+    <div class="drawer__content">
+      <el-steps style="margin: 0 30px 20px;" :active="active">
+        <el-step title="基本配置"></el-step>
+        <el-step title="定时配置"></el-step>
+        <el-step title="通知配置"></el-step>
+      </el-steps>
+
+      <el-form v-on:submit.native.prevent size="small" ref="addForm" :model="form" label-width="120px">
+        
+        <template v-if="active === 1">
+
+          <el-form-item label="任务名称" prop="title" :rules="{ required: true, message: '请输入任务名称' }">
+            <el-input v-model="form.title" placeholder="请输入任务名称"></el-input>
+          </el-form-item>
+          <el-form-item label="任务描述">
+            <el-input type="textarea" v-model="form.description"></el-input>
+          </el-form-item>
+          <el-form-item label="任务类型" prop="taskType" :rules="{ required: true, message: '请选择任务类型' }">
+            <el-select v-model="form.taskType" placeholder="请选择任务类型">
+              <el-option label="定时生成" value="Create"></el-option>
+              <el-option label="监控报警(PING)" value="Ping"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="超时时间" prop="timeout" :rules="[
+            { required: true, message: '请输入任务执行超时时间' },
+            { validator: utils.validateInt }
+          ]">
+            <el-input v-model.number="form.timeout" style="width: 120px" placeholder="请输入任务执行超时时间"></el-input>
+            <span class="tips">分钟，任务执行时间超过此时间将自动终止，以免影响后面任务执行</span>
+          </el-form-item>
+
+          <template v-if="form.taskType == 'Create'">
+            <el-form-item label="站点" prop="createSiteIds" :rules="{ required: true, message: '请选择站点' }">
+              <el-checkbox-group v-model="form.createSiteIds" placeholder="请选择站点">
+                <el-checkbox v-for="site in sites" :key="site.value" :label="site.value">
+                  {{site.label}}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>            
+            <el-form-item label="生成类型" prop="createType" :rules="{ required: true, message: '请选择生成页面类型' }">
+              <el-select v-model="form.createType" placeholder="请选择任务类型">
+                <el-option label="首页" value="Index"></el-option>
+                <el-option label="所有栏目页" value="Channel"></el-option>
+                <el-option label="所有页面" value="All"></el-option>
+              </el-select>
+            </el-form-item>
+          </template>
+  
+          <template v-else-if="form.taskType == 'Ping'">
+            <el-form-item label="域名/IP地址" prop="pingHost" :rules="{ required: true, message: '请输入域名或IP地址' }">
+              <el-input v-model="form.pingHost" placeholder="请输入任务名称"></el-input>
+            </el-form-item>
+          </template>
+
+        </template>
+        <template v-else-if="active === 2">
+
+          <el-form-item label="执行频率" prop="taskInterval" :rules="{ required: true, message: '请选择执行频率' }">
+            <el-select v-model="form.taskInterval" placeholder="请选择执行频率">
+              <el-option v-for="taskInterval in taskIntervals" :key="taskInterval.value" :label="taskInterval.label" :value="taskInterval.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="form.taskInterval === 'EveryHour' || form.taskInterval === 'EveryDay'" label="间隔" prop="every" :rules="{ required: true, message: '请输入间隔' }">
+            <el-input v-model="form.every" style="max-width: 50px;"></el-input>
+            <span class="tips">
+              {{form.taskInterval === 'EveryHour' ? '小时' : '天'}}（每{{form.every + (form.taskInterval === 'EveryHour' ? '小时' : '天')}}执行一次）
+            </span>
+          </el-form-item>
+          <el-form-item v-if="form.taskInterval == 'EveryWeek'" label="" prop="weeks" :rules="{ required: true, message: '请选择' }">
+            <el-checkbox-group v-model="form.weeks">
+              <el-checkbox :label="1" name="weeks">星期一</el-checkbox>
+              <el-checkbox :label="2" name="weeks">星期二</el-checkbox>
+              <el-checkbox :label="3" name="weeks">星期三</el-checkbox>
+              <el-checkbox :label="4" name="weeks">星期四</el-checkbox>
+              <el-checkbox :label="5" name="weeks">星期五</el-checkbox>
+              <el-checkbox :label="6" name="weeks">星期六</el-checkbox>
+              <el-checkbox :label="0" name="weeks">星期日</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          
+
+          <el-form-item label="开始时间" prop="startDate" :rules="{ required: true, message: '请选择开始时间' }">
+            <el-date-picker
+              v-model="form.startDate"
+              type="datetime"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              placeholder="请选择开始时间">
+            </el-date-picker>
+          </el-form-item>
+
+        </template>
+        <template v-else-if="active === 3">
+
+          <div style="margin-left: 10px; margin-bottom: 30px">
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+              <el-switch v-model="form.isNoticeSuccess" active-text="成功通知"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                任务执行成功会通过配置的渠道推送给联系人
+              </div>
+            </div>
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+              <el-switch v-model="form.isNoticeFailure" active-text="失败报警"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                任务执行失败会通过配置的渠道推送给联系人
+              </div>
+            </div>
+            <div v-if="form.isNoticeFailure" style="margin-top: 15px; margin-bottom: 15px">
+              <el-form-item label="连续失败次数" label-width="200px" prop="noticeFailureCount">
+                <el-input v-model="form.noticeFailureCount" style="max-width: 400px;"></el-input>
+                <div class="tips">
+                  只有连续失败超过配置次数才会收到报警
+                </div>
+              </el-form-item>
+            </div>
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+              <el-switch v-model="form.isNoticeMobile" active-text="接受短信通知"></el-switch>
+            </div>
+            <div v-if="form.isNoticeMobile" style="margin-top: 15px; margin-bottom: 15px">
+              <el-form-item label="接受短信通知手机号码" label-width="200px" prop="noticeMobile" :rules="{ validator: validateMobile, trigger: 'blur' }">
+                <el-input v-model="form.noticeMobile" style="max-width: 400px;"></el-input>
+              </el-form-item>
+            </div>
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+              <el-switch v-model="form.isNoticeMail" active-text="接受邮件通知"></el-switch>
+            </div>
+            <div v-if="form.isNoticeMail" style="margin-top: 15px; margin-bottom: 15px">
+              <el-form-item label="接受邮件通知邮箱" label-width="200px" prop="noticeMail" :rules="{ validator: validateEmail, trigger: 'blur' }">
+                <el-input v-model="form.noticeMail" style="max-width: 400px;"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+
+        </template>
+
+        <el-divider></el-divider>
+        <div class="drawer__footer">
+          <el-button size="small" :disabled="active == 1" v-on:click="btnPreviousClick">上一步</el-button>
+          <el-button type="primary" v-on:click="btnNextClick" size="small">下一步</el-button>
+        </div>
+      </el-form>
+    </div>
+  </el-drawer>
+
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/tasks.js" type="text/javascript"></script>
+}

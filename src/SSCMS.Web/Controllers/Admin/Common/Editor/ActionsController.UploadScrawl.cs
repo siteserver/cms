@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Utils;
 
@@ -38,8 +39,22 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var filePath = PathUtils.Combine(localDirectoryPath, fileName);
 
             await _pathManager.UploadAsync(bytes, filePath);
+            if (site.IsImageAutoResize)
+            {
+                ImageUtils.ResizeImageIfExceeding(filePath, site.ImageAutoResizeWidth);
+            }
+            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var isAutoStorage = await _storageManager.IsAutoStorageAsync(siteId, SyncType.Images);
+            if (isAutoStorage)
+            {
+                var (success, url) = await _storageManager.StorageAsync(siteId, filePath);
+                if (success)
+                {
+                    imageUrl = url;
+                }
+            }
 
             return new UploadScrawlResult
             {
@@ -49,20 +64,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 Original = original,
                 Error = null
             };
-        }
-
-        public class UploadScrawlRequest
-        {
-            public string File { get; set; }
-        }
-
-        public class UploadScrawlResult
-        {
-            public string State { get; set; }
-            public string Url { get; set; }
-            public string Title { get; set; }
-            public string Original { get; set; }
-            public string Error { get; set; }
         }
     }
 }

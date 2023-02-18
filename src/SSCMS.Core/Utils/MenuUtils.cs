@@ -2,6 +2,16 @@
 {
     public static class MenuUtils
     {
+        public const string IdSite = "site";
+        public const string IdSiteContentsAll = "site_contents_all";
+        public const string IdSiteFormAll = "site_form_all";
+        public const string IdSiteFormList = "site_formList";
+
+        public static string GetFormPermission(int formId)
+        {
+            return $"site_form_{formId}";
+        }
+
         public static class AppPermissions
         {
             public const string PluginsAdd = "app_plugins_add";
@@ -43,12 +53,15 @@
             public const string Channels = "site_channels";
             public const string ContentsSearch = "site_contentsSearch";
             public const string ContentsCheck = "site_contentsCheck";
+            public const string FormList = "site_formList";
+            public const string FormTemplates = "site_formTemplates";
             public const string MaterialMessage = "site_materialMessage";
             public const string MaterialImage = "site_materialImage";
             public const string MaterialVideo = "site_materialVideo";
             public const string MaterialAudio = "site_materialAudio";
             public const string MaterialFile = "site_materialFile";
             public const string ChannelsTranslate = "site_channelsTranslate";
+            public const string ContentsReplace = "site_contentsReplace";
             public const string ContentsRecycle = "site_contentsRecycle";
             public const string Templates = "site_templates";
             public const string Specials = "site_specials";

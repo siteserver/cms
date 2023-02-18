@@ -35,7 +35,7 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-form size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="删除选项">
     <el-radio v-model="form.isRetainFiles" :label="true">保留生成的内容页面</el-radio>
     <el-radio v-model="form.isRetainFiles" :label="false">同时删除内容页面</el-radio>

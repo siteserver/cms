@@ -13,7 +13,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form ref="form" :model="form" size="small" status-icon label-width="110px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="110px">
   <el-form-item label="角色名称" prop="roleName" :rules="[{ required: true, message: '请输入角色名称' }]">
     <el-input v-model="form.roleName" :disabled="roleId > 0"></el-input>
     <small class="tips">唯一标识此角色的字符串</small>

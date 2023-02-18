@@ -26,8 +26,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly IRoleRepository _roleRepository;
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
+        private readonly IFormRepository _formRepository;
 
-        public AdministratorsRoleAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository)
+        public AdministratorsRoleAddController(ICacheManager cacheManager, ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IFormRepository formRepository)
         {
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
@@ -37,6 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             _roleRepository = roleRepository;
             _sitePermissionsRepository = sitePermissionsRepository;
             _permissionsInRolesRepository = permissionsInRolesRepository;
+            _formRepository = formRepository;
         }
 
         public class Option

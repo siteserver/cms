@@ -8,13 +8,15 @@ using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Dto;
+using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
     public partial class EditorController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> Get([FromQuery]GetRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
@@ -61,6 +63,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 };
             }
 
+            var relatedFields = new Dictionary<int, List<Cascade<int>>>();
+
             foreach (var style in styles)
             {
                 if (style.InputType == InputType.CheckBox || style.InputType == InputType.SelectMultiple)
@@ -99,10 +103,40 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                         content.Set(style.AttributeName, string.Empty);
                     }
                 }
+                else if (style.InputType == InputType.SelectCascading)
+                {
+                    if (style.RelatedFieldId > 0)
+                    {
+                        var items = await _relatedFieldItemRepository.GetCascadesAsync(request.SiteId, style.RelatedFieldId, 0);
+                        relatedFields[style.RelatedFieldId] = items;
+                    }
+                }
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
-            var isCensorTextEnabled = await _censorManager.IsTextEnabledAsync();
+
+            var linkTypes = _pathManager.GetLinkTypeSelects(false);
+            var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId));
+            if (content.LinkType == LinkType.LinkToChannel)
+            {
+                var channelIds = ListUtils.GetIntList(content.LinkUrl);
+                if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                {
+                    var targetChannelId = channelIds[channelIds.Count - 1];
+                    var name = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, targetChannelId);
+                    content.Set("LinkToChannel", name);
+                }
+            }
+
+            var settings = new Settings
+            {
+                IsCloudCensor = _censorManager is ICloudManager,
+                CensorSettings = await _censorManager.GetCensorSettingsAsync(),
+                IsCloudSpell = _spellManager is ICloudManager,
+                SpellSettings = await _spellManager.GetSpellSettingsAsync(),
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+                CloudType = await _cloudManager.GetCloudTypeAsync(),
+            };
 
             return new GetResult
             {
@@ -114,10 +148,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 Styles = styles,
+                RelatedFields = relatedFields,
                 Templates = templates,
                 CheckedLevels = checkedLevels,
                 CheckedLevel = userCheckedLevel,
-                IsCensorTextEnabled = isCensorTextEnabled
+                LinkTypes = linkTypes,
+                Root = root,
+                Settings = settings,
             };
         }
     }

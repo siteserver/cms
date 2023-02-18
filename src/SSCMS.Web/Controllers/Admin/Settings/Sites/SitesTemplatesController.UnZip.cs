@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 return Unauthorized();
             }
 
-            var fileNameToUnZip = request.FileName;
+            var fileNameToUnZip = PathUtils.RemoveParentPath(request.FileName);
 
             var directoryPathToUnZip = _pathManager.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileNameToUnZip));
             var zipFilePath = _pathManager.GetSiteTemplatesPath(fileNameToUnZip);

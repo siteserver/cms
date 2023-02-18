@@ -88,6 +88,8 @@ namespace SSCMS.Core.Utils
 
                     foreach (var fileName in DirectoryUtils.GetFileNames(directoryPath))
                     {
+                        if (fileName == "index.html") continue;
+                        
                         FileUtils.CopyFile(
                             PathUtils.Combine(directoryPath, fileName),
                             PathUtils.Combine(contentRootPath, Constants.WwwrootDirectory, fileName),
@@ -168,6 +170,24 @@ namespace SSCMS.Core.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 connectionString = $"Data Source={Constants.LocalDbHostVirtualPath};Version=3;";
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                connectionString = $"Server={server};";
+                if (!isDefaultPort && port > 0)
+                {
+                    connectionString += $"Port={port};";
+                }
+                else
+                {
+                    connectionString += "Port=5236;";
+                }
+                connectionString += $"UserId={userName};Pwd={password};";
+                if (!string.IsNullOrEmpty(databaseName))
+                {
+                    connectionString += $"Database={databaseName};";
+                }
+                connectionString += "encoding=utf-8;";
             }
 
             return connectionString;

@@ -48,16 +48,14 @@ namespace SSCMS.Core.Utils
         {
             if (string.IsNullOrEmpty(html)) return string.Empty;
 
-            html = html.Replace("<p>　　", "<p>");
-            html = html.Replace("<p>", @"<p>　　");
-            return html;
+            return html.Replace("<p>", @"<p style=""text-indent: 2em;"">");
         }
 
         public static string ClearFontSize(string html)
         {
             if (string.IsNullOrEmpty(html)) return string.Empty;
-            html = RegexUtils.Replace(@"font-size:\w+;", html, string.Empty);
-            return html;
+            
+            return RegexUtils.Replace(@"font-size:\w+;", html, string.Empty);
         }
 
         public static string ClearFontFamily(string html)

@@ -35,7 +35,7 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-form size="small" ref="form" :model="form" :inline="true">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" :inline="true">
   <el-form-item label="转移到站点" prop="transSiteIds" :rules="{ required: true, message: '请选择转移到的站点' }">
     <el-cascader
       v-model="form.transSiteIds"

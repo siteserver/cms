@@ -26,6 +26,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var site = await _siteRepository.GetAsync(request.SiteId);
 
+            if (site.ParentId != request.ParentId)
+            {
+                var siteIds = await _siteRepository.GetDescendantSiteIdsAsync(site.Id);
+                siteIds.Add(site.Id);
+                if (siteIds.Contains(request.ParentId))
+                {
+                    return this.Error("站点修改失败，上级站点不能为本站点或下级站点");
+                }
+            }
+
             site.SiteName = request.SiteName;
             site.SiteType = _settingsManager.GetSiteType(request.SiteType).Id;
             site.Taxis = request.Taxis;
@@ -86,7 +96,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                         return this.Error("站点修改失败，已存在相同的发布路径！");
                     }
 
-                    await _pathManager.ChangeParentSiteAsync(site.ParentId, request.ParentId, request.SiteId, request.SiteDir);
+                    var (success, errorMessage) = await _pathManager.ChangeParentSiteAsync(site.ParentId, request.ParentId, request.SiteId, request.SiteDir);
+                    if (!success)
+                    {
+                        return this.Error(errorMessage);
+                    }
                     site.ParentId = request.ParentId;
                 }
 

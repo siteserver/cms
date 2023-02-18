@@ -34,22 +34,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: package plugin to zip file");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: package plugin to zip file");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -66,14 +67,14 @@ namespace SSCMS.Cli.Jobs
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
             if (plugin == null)
             {
-                await WriteUtils.PrintErrorAsync(errorMessage);
+                await console.WriteErrorAsync(errorMessage);
                 return;
             }
 
             var zipPath = Package(_pathManager, plugin);
             var fileSize = FileUtils.GetFileSizeByFilePath(zipPath);
 
-            await WriteUtils.PrintSuccessAsync($"Packaged: {zipPath} ({fileSize})");
+            await console.WriteSuccessAsync($"Packaged: {zipPath} ({fileSize})");
         }
 
         public static string Package(IPathManager pathManager, Plugin plugin)

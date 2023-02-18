@@ -2,6 +2,9 @@
 @{ Layout = "_Layout"; }
 @section Styles{
   <style>
+    html {
+      height: 100%;
+    }
     body {
       height: 100%;
       overflow: hidden;
@@ -32,15 +35,12 @@
     .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td {
       background: rgb(230, 247, 245) !important;
     }
-    
-  
     .input-with-select .el-input-group__prepend {
       background-color: #fff;
     }
     .el-input-group {
       width: 350px;
     }
-
     .disabled {
       color: #bcc0c7;
       cursor: not-allowed;
@@ -90,6 +90,7 @@
           <el-input v-model="searchForm.searchText" v-on:change="btnSearchClick" suffix-icon="el-icon-search" size="mini" placeholder="搜索关键词" class="input-with-select">
             <el-select v-model="searchForm.searchType" v-on:change="btnSearchClick" slot="prepend" placeholder="请选择">
               <el-option :label="titleColumn.displayName" value="Title"></el-option>
+              <el-option label="正文" value="Body"></el-option>
               <el-option v-for="column in columns" v-if="column.isSearchable" :label="column.displayName" :value="column.attributeName"></el-option>
             </el-select>
           </el-input>
@@ -101,7 +102,7 @@
             width="580"
             v-model="isAdvancedForm"
             trigger="click">
-            <el-form size="mini" :model="advancedForm" style="margin-top: 10px;" label-width="80px">
+            <el-form v-on:submit.native.prevent size="mini" :model="advancedForm" style="margin-top: 10px;" label-width="80px">
               <el-form-item label="审核状态">
                 <el-checkbox-group v-model="advancedForm.checkedLevels" v-on:change="btnSearchClick">
                   <el-checkbox v-for="level in checkedLevels" v-key="level.label" :label="level.label">{{level.text}}</el-checkbox>

@@ -100,6 +100,12 @@ var methods = {
   },
 
   btnTranslateClick: function() {
+    var transChannelIds = [];
+    this.form.transChannelIds.forEach(function(arr) {
+      var transChannelId = arr[arr.length - 1];
+      transChannelIds.push(transChannelId);
+    });
+
     var $this = this;
     this.$refs.form.validate(function(valid) {
       if (valid) {
@@ -107,7 +113,7 @@ var methods = {
           siteId: $this.siteId,
           channelIds: $this.channelIds,
           transSiteId: $this.form.transSiteId,
-          transChannelId: $this.form.transChannelIds[$this.form.transChannelIds.length - 1],
+          transChannelIds: transChannelIds,
           translateType: $this.form.translateType,
           isDeleteAfterTranslate: $this.form.isDeleteAfterTranslate
         });

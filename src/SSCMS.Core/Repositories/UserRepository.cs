@@ -242,7 +242,7 @@ namespace SSCMS.Core.Repositories
                 byte[] inArray = null;
                 Buffer.BlockCopy(buffer2, 0, dst, 0, buffer2.Length);
                 Buffer.BlockCopy(src, 0, dst, buffer2.Length, src.Length);
-                var algorithm = HashAlgorithm.Create("SHA1");
+                var algorithm = SHA1.Create(); // HashAlgorithm.Create("SHA1");
                 if (algorithm != null) inArray = algorithm.ComputeHash(dst);
 
                 if (inArray != null) retVal = Convert.ToBase64String(inArray);
@@ -744,7 +744,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                query.WhereDate(nameof(User.LastActivityDate), ">=", dateTime);
+                query.Where(nameof(User.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
 
             if (groupId > -1)

@@ -17,7 +17,7 @@
 
 <el-row>
   <el-col :span="12">
-    <el-form :inline="true" :model="form" size="mini">
+    <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
       <el-form-item label="搜索">
         <el-input v-model="form.keyword" placeholder="关键字"></el-input>
       </el-form-item>
@@ -45,7 +45,7 @@
   </el-col>
 </el-row>
 
-<el-form :inline="true" :model="form">
+<el-form v-on:submit.native.prevent :inline="true" :model="form">
   <el-form-item label="分组">
 
     <el-tag
@@ -105,11 +105,10 @@
       <el-button v-on:click="btnDownloadClick(scope.row)" type="text" size="mini" icon="el-icon-download" style="margin: 0 5px">下载</el-button>
       <el-button v-on:click="btnTitleClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">重命名</el-button>
       <el-popover
-        v-if="groups.length > 1"
         placement="right"
         width="400"
         v-model="scope.row.isSelectGroups"
-        trigger="click">
+        trigger="manual">
         <div>
           <el-tag
             title="移动分组"
@@ -126,7 +125,7 @@
           <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="primary">确 定</el-button>
           <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
         </div>
-        <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px">移动分组</el-button>
+        <el-button slot="reference" v-if="groups.length > 1" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-right" style="margin: 0 5px">移动分组</el-button>
       </el-popover>
       <el-button v-on:click="btnDeleteClick(scope.row)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px">删除</el-button>
     </template>

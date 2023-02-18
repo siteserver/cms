@@ -21,7 +21,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var adminId = _authManager.AdminId;
-            await TranslateAsync(site, request.TransSiteId, request.TransChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, adminId);
+            foreach (var transChannelId in request.TransChannelIds)
+            {
+                await TranslateAsync(site, request.TransSiteId, transChannelId, request.TranslateType, request.ChannelIds, request.IsDeleteAfterTranslate, adminId);
+            }
 
             return new BoolResult
             {

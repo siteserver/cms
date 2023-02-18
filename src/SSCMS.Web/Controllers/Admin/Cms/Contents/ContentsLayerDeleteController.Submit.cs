@@ -41,13 +41,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 if (content != null)
                 {
                     await _authManager.AddSiteLogAsync(request.SiteId, summary.ChannelId, summary.Id, "删除内容",
-                        $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, summary.ChannelId)},内容标题:{content.Title}");
+                        $"栏目：{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, summary.ChannelId)}，内容标题：{content.Title}");
                 }
             }
             else
             {
                 await _authManager.AddSiteLogAsync(request.SiteId, "批量删除内容",
-                    $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)},内容条数:{summaries.Count}");
+                    $"栏目：{await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId)}，内容条数：{summaries.Count}");
             }
 
             var adminId = _authManager.AdminId;

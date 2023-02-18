@@ -9,26 +9,26 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils.Serialization.Components
 {
-	internal class TemplateIe
+    internal class TemplateIe
     {
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly CacheUtils _caching;
         private readonly Site _site;
-		private readonly string _filePath;
+        private readonly string _filePath;
 
-		public TemplateIe(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string filePath)
+        public TemplateIe(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string filePath)
         {
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _caching = caching;
             _site = site;
-			_filePath = filePath;
-		}
+            _filePath = filePath;
+        }
 
-		public async Task ExportTemplatesAsync()
-		{
-			var feed = AtomUtility.GetEmptyFeed();
+        public async Task ExportTemplatesAsync()
+        {
+            var feed = AtomUtility.GetEmptyFeed();
 
             var summaries = await _databaseManager.TemplateRepository.GetSummariesAsync(_site.Id);
             foreach (var summary in summaries)
@@ -36,10 +36,10 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var template = await _databaseManager.TemplateRepository.GetAsync(summary.Id);
                 var entry = await ExportTemplateInfoAsync(template);
                 feed.Entries.Add(entry);
-			}
+            }
 
-			feed.Save(_filePath);
-		}
+            feed.Save(_filePath);
+        }
 
         public async Task ExportTemplatesAsync(List<int> templateIdList)
         {
@@ -47,44 +47,44 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
             foreach (var templateId in templateIdList)
             {
-				var template = await _databaseManager.TemplateRepository.GetAsync(templateId);
+                var template = await _databaseManager.TemplateRepository.GetAsync(templateId);
                 var entry = await ExportTemplateInfoAsync(template);
                 feed.Entries.Add(entry);
-			}
+            }
             feed.Save(_filePath);
         }
 
-		private async Task<AtomEntry> ExportTemplateInfoAsync(Template template)
-		{
-			var entry = AtomUtility.GetEmptyEntry();
+        private async Task<AtomEntry> ExportTemplateInfoAsync(Template template)
+        {
+            var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(Template.Id), "TemplateID" }, template.Id.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, template.SiteId.ToString());
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateName), template.TemplateName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateType), template.TemplateType.GetValue());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.Id), "TemplateID" }, template.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, template.SiteId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateName), template.TemplateName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateType), template.TemplateType.GetValue());
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.RelatedFileName), template.RelatedFileName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileFullName), template.CreatedFileFullName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileFullName), template.CreatedFileFullName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), template.CreatedFileExtName);
             AtomUtility.AddDcElement(entry.AdditionalElements, "Charset", "utf-8");
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.DefaultTemplate), template.DefaultTemplate.ToString());
 
             var templateContent = await _pathManager.GetTemplateContentAsync(_site, template);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Content), AtomUtility.Encrypt(templateContent));
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Content), AtomUtility.Encrypt(templateContent));
 
-			return entry;
-		}
+            return entry;
+        }
 
-		public async Task ImportTemplatesAsync(bool overwrite, int adminId, string guid)
-		{
-			if (!FileUtils.IsFileExists(_filePath)) return;
+        public async Task ImportTemplatesAsync(bool overwrite, int adminId, string guid)
+        {
+            if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
             var templates = new List<Template>();
 
-			foreach (AtomEntry entry in feed.Entries)
-			{
-				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));
-			    if (string.IsNullOrEmpty(templateName)) continue;
+            foreach (AtomEntry entry in feed.Entries)
+            {
+                var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));
+                if (string.IsNullOrEmpty(templateName)) continue;
 
                 var template = new Template
                 {
@@ -108,31 +108,31 @@ namespace SSCMS.Core.Utils.Serialization.Components
                     await _databaseManager.TemplateRepository.ExistsAsync(_site.Id, template.TemplateType,
                         templateName);
 
-			    if (exists)
-			    {
-			        if (overwrite)
-			        {
+                if (exists)
+                {
+                    if (overwrite)
+                    {
                         var info = await _databaseManager.TemplateRepository.GetTemplateByTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
 
-						info.RelatedFileName = template.RelatedFileName;
-			            info.TemplateType = template.TemplateType;
-			            info.CreatedFileFullName = template.CreatedFileFullName;
-			            info.CreatedFileExtName = template.CreatedFileExtName;
+                        info.RelatedFileName = template.RelatedFileName;
+                        info.TemplateType = template.TemplateType;
+                        info.CreatedFileFullName = template.CreatedFileFullName;
+                        info.CreatedFileExtName = template.CreatedFileExtName;
                         info.Content = template.Content;
 
                         templates.Add(info);
                     }
-			        else
-			        {
-			            template.TemplateName = await _databaseManager.TemplateRepository.GetImportTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
+                    else
+                    {
+                        template.TemplateName = await _databaseManager.TemplateRepository.GetImportTemplateNameAsync(_site.Id, template.TemplateType, template.TemplateName);
                         templates.Add(template);
                     }
-			    }
-			    else
-			    {
+                }
+                else
+                {
                     templates.Add(template);
-			    }
-			}
+                }
+            }
 
             foreach (var template in templates)
             {
@@ -141,7 +141,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 if (template.Id > 0)
                 {
                     await _databaseManager.TemplateRepository.UpdateAsync(template);
-				}
+                }
                 else
                 {
                     template.Id = await _databaseManager.TemplateRepository.InsertAsync(template);
@@ -149,7 +149,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
                 await _pathManager.WriteContentToTemplateFileAsync(_site, template, template.Content, adminId);
             }
-		}
+        }
 
-	}
+    }
 }

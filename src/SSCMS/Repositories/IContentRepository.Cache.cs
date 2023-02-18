@@ -19,7 +19,7 @@ namespace SSCMS.Repositories
         string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isTopExists, bool isTop,
             string where);
 
-        Task<int> GetContentIdAsync(string tableName, int channelId, int taxis, bool isNextContent);
+        Task<int> GetContentIdAsync(string tableName, int siteId, int channelId, int taxis, bool isNextContent);
 
         Task<int> GetContentIdAsync(string tableName, int channelId, bool isCheckedOnly, string orderByString);
 

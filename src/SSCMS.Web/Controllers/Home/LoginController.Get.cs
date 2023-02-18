@@ -12,10 +12,13 @@ namespace SSCMS.Web.Controllers.Home
             var config = await _configRepository.GetAsync();
             if (config.IsHomeClosed) return this.Error("对不起，用户中心已被禁用！");
 
+            var smsSettings = await _smsManager.GetSmsSettingsAsync();
+            var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;
+
             return new GetResult
             {
                 HomeTitle = config.HomeTitle,
-                IsSmsEnabled = await _smsManager.IsEnabledAsync()
+                IsSmsEnabled = isSmsEnabled
             };
         }
     }

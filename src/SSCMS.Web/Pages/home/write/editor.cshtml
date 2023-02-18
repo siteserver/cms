@@ -13,6 +13,11 @@
       margin-bottom: 5px;
       margin-right: 5px;
     }
+    .el-button-group .el-dropdown {
+      float: left;
+      margin-top: -2.5px;
+      margin-right: -1px;
+    }
   </style>
 }
 
@@ -31,7 +36,7 @@
     <el-main style="padding: 0; margin: 0">
       <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
         
-        <el-form style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="80px">
+        <el-form v-on:submit.native.prevent style="margin: 10px 20px 20px 10px" ref="form" :model="form" size="small" status-icon label-width="80px">
           @await Html.PartialAsync("_PartialForm")
         </el-form>
   
@@ -89,7 +94,7 @@
               v-model="form.addDate"
               size="small"
               type="datetime"
-              value-format="yyyy-MM-ddTHH:mm:ss.000Z"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择内容添加时间">
             </el-date-picker>
           </el-collapse-item>

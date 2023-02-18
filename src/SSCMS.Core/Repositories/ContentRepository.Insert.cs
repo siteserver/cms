@@ -25,7 +25,7 @@ namespace SSCMS.Core.Repositories
                 if (content.AddDate.HasValue)
                 {
                     taxis = (await repository.MaxAsync(nameof(Content.Taxis), query.Clone()
-                                 .WhereDate(nameof(Content.AddDate), ">", content.AddDate.Value)
+                                 .Where(nameof(Content.AddDate), ">", DateUtils.ToString(content.AddDate))
                              ) ?? 0) + 1;
                     updateHigher = true;
                 }
@@ -35,7 +35,7 @@ namespace SSCMS.Core.Repositories
                 if (content.AddDate.HasValue)
                 {
                     taxis = (await repository.MaxAsync(nameof(Content.Taxis), query.Clone()
-                                 .WhereDate(nameof(Content.AddDate), "<", content.AddDate.Value)
+                                 .Where(nameof(Content.AddDate), "<", DateUtils.ToString(content.AddDate))
                              ) ?? 0) + 1;
                     updateHigher = true;
                 }

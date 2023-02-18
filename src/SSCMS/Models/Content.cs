@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Datory;
 using Datory.Annotations;
+using SSCMS.Enums;
 
 namespace SSCMS.Models
 {
@@ -90,6 +91,9 @@ namespace SSCMS.Models
 
         [DataColumn]
         public bool Color { get; set; }
+
+        [DataColumn] 
+        public LinkType LinkType { get; set; }
 
         [DataColumn] 
         public string LinkUrl { get; set; }

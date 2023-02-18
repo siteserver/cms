@@ -11,6 +11,8 @@ namespace SSCMS.Repositories
 
         Task<RelatedFieldItem> GetAsync(int siteId, int id);
 
+        Task<string> GetValueAsync(int siteId, int id);
+
         Task<List<Cascade<int>>> GetCascadesAsync(int siteId, int relatedFieldId, int parentId);
     }
 }

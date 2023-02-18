@@ -38,6 +38,11 @@ namespace SSCMS.Configuration
         /// </summary>
         public string Target { get; set; }
 
+        /// <summary>
+        /// 获取或设置菜单的点击触发函数。
+        /// </summary>
+        public string Click { get; set; }
+
         public IList<string> Permissions { get; set; }
 
         /// <summary>

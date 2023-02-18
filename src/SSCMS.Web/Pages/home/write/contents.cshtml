@@ -37,21 +37,17 @@
   <el-main>
     <el-row style="height: 80px; overflow: hidden;">
       <el-col :span="20">
-        <el-form :inline="true" size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent :inline="true" size="small" label-width="100px">
           <el-form-item label="站点" prop="siteId">
-            <el-select
-              ref="siteId"
-              v-model="siteId"
-              filterable
+            <el-cascader
+              ref="siteIds"
+              v-model="siteIds"
+              :options="sites"
+              :props="{ multiple: false, checkStrictly: true }"
               v-on:change="handleSiteIdChange"
+              filterable
               placeholder="请选择投稿站点">
-              <el-option
-                v-for="site in sites"
-                :key="site.value"
-                :label="site.label"
-                :value="site.value">
-              </el-option>
-            </el-select>
+            </el-cascader>
           </el-form-item>
           <el-form-item label="栏目" prop="channelIds">
             <el-cascader
@@ -61,7 +57,7 @@
               :props="{ multiple: false, checkStrictly: true }"
               v-on:change="btnSearchClick"
               filterable
-              placeholder="请选择栏目">
+              placeholder="请选择投稿栏目">
               <span slot-scope="{ node, data }">
                 {{ node.label }} ({{ data.count }})
               </span>
@@ -75,7 +71,7 @@
         </el-form>
       </el-col>
       <el-col :span="4" align="right">
-        <el-form :inline="true" size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent :inline="true" size="small" label-width="100px">
           <el-form-item>
             <el-popover
               id="sortColumns"

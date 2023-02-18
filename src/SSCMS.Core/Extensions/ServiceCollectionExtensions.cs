@@ -85,15 +85,14 @@ namespace SSCMS.Core.Extensions
                 var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
                 if (interfaceType != null)
                 {
-                    //if (interfaceType == typeof(IContentRepository)) continue;
-
                     services.AddScoped(interfaceType, implementType);
                 }
             }
         }
 
-        public static void AddTaskQueue(this IServiceCollection services)
+        public static void AddTaskServices(this IServiceCollection services)
         {
+            services.AddHostedService<ScheduledHostedService>();
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<ITaskManager, TaskManager>();
         }
@@ -101,18 +100,23 @@ namespace SSCMS.Core.Extensions
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<ICacheManager, Services.CacheManager>();
+            services.AddScoped<ICloudManager, CloudManager>();
             services.AddScoped<IAuthManager, AuthManager>();
             services.AddScoped<IPathManager, PathManager>();
             services.AddScoped<ICreateManager, CreateManager>();
             services.AddScoped<IDatabaseManager, DatabaseManager>();
+            services.AddScoped<IFormManager, FormManager>();
             services.AddScoped<IParseManager, ParseManager>();
         }
 
         public static void AddPseudoServices(this IServiceCollection services)
         {
-            services.AddScoped<ICensorManager, CensorManager>();
-            services.AddScoped<IMailManager, MailManager>();
-            services.AddScoped<ISmsManager, SmsManager>();
+            services.AddScoped<ICensorManager, CloudManager>();
+            services.AddScoped<ISpellManager, CloudManager>();
+            services.AddScoped<IMailManager, CloudManager>();
+            services.AddScoped<ISmsManager, CloudManager>();
+            services.AddScoped<IStorageManager, CloudManager>();
+            services.AddScoped<IVodManager, CloudManager>();
         }
 
         public static void AddWxManager(this IServiceCollection services, IConfiguration configuration)

@@ -4,7 +4,7 @@ using Datory.Annotations;
 namespace SSCMS.Models
 {
     [DataTable("siteserver_DbCache")]
-	public class DbCache : Entity
+    public class DbCache : Entity
     {
         [DataColumn]
         public string CacheKey { get; set; }

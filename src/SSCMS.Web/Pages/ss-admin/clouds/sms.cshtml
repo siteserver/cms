@@ -1,0 +1,62 @@
+@page
+@{ Layout = "_Layout"; }
+
+<el-row :gutter="20">
+  <el-col :span="18" :offset="3">
+    <div style="height: 25px"></div>
+    <el-card class="box-card">
+      <template #header>
+        <div class="clearfix">
+          <span>短信集成设置</span>
+          <el-button type="primary" v-on:click="btnSubmitClick" size="small" style="float: right; margin-top: -5px;">
+            保存设置
+          </el-button>
+        </div>
+      </template>
+      <div class="text">
+        <el-switch
+          v-model="isCloudSms"
+          active-text="启用短信发送"
+        ></el-switch>
+        <div class="tips" style="margin-top: 10px;">
+          短信发送能够实现身份验证、登录确认、用户注册、修改密码、信息变更等情景下的短信发送功能
+          <el-link
+            :underline="false"
+            href="https://sscms.com/docs/v7/handbook/clouds/sms/"
+            target="_blank"
+            icon="el-icon-info"
+          >
+            了解更多
+          </el-link>
+        </div>
+
+        <template v-if="isCloudSms">
+          <div style="margin-top: 15px; margin-left: 30px;">
+            <el-switch v-model="isCloudSmsAdmin" active-text="后台启用短信验证"></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              勾选后，SSCMS 后台将集成短信功能，管理员能够通过短信登录后台及重置密码等操作
+            </div>
+          </div>
+
+          <div v-if="isCloudSmsAdmin" style="margin-top: 15px; margin-left: 60px;">
+            <el-switch v-model="isCloudSmsAdminAndDisableAccount" active-text="后台禁用账户密码验证"></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              勾选后，将只能通过短信验证登录 SSCMS 后台
+            </div>
+          </div>
+  
+          <div style="margin-top: 15px; margin-left: 30px;">
+            <el-switch v-model="isCloudSmsUser" active-text="用户中心启用短信验证"></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              勾选后，前台用户中心将集成短信功能，前台用户能够通过短信注册账户、登录用户中心及重置密码等操作
+            </div>
+          </div>
+        </template>
+      </div>
+    </el-card>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/clouds/sms.js" type="text/javascript"></script>
+}

@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form :inline="true">
+<el-form v-on:submit.native.prevent :inline="true">
   <el-form-item label="文件路径">
     <el-input v-model="filterText" size="mini" placeholder="输入文件路径进行过滤"></el-input>
   </el-form-item>
@@ -15,7 +15,7 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-form :inline="true" size="small">
+<el-form v-on:submit.native.prevent :inline="true" size="small">
   <el-form-item label="">
     <el-checkbox label="全选" v-on:change="selectAll" v-model="isAllChecked"></el-checkbox>
   </el-form-item>

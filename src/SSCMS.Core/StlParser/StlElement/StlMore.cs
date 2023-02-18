@@ -63,7 +63,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return @$"
 <script id=""{elementId}"" type=""text/javascript"">
 var {elementId}_page = 1;
-function {trigger}(noFunction){{
+function {trigger}(noMore, complete){{
   var parameters = {apiParameters};
   parameters['page'] = {elementId}_page++;
   $.ajax({{
@@ -75,8 +75,9 @@ function {trigger}(noFunction){{
     success: function (result) {{
       $(""#{elementId}"").before(result.html);
       if (!result.value) {{
-        noFunction && noFunction();
+        noMore && noMore();
       }}
+      complete && complete();
     }}
   }});
 }};

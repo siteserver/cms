@@ -250,6 +250,29 @@ namespace SSCMS.Core.Repositories
             return siteIdList;
         }
 
+        public async Task<List<int>> GetDescendantSiteIdsAsync(int siteId)
+        {
+            var siteIds = new List<int>();
+            var summaries = await GetSummariesAsync();
+            GetDescendantSiteIdsAsync(siteId, summaries, siteIds);
+
+            return siteIds;
+        }
+
+        private void GetDescendantSiteIdsAsync(int parentId, List<SiteSummary> summaries, List<int> siteIds)
+        {
+            if (parentId == 0) return;
+
+            var childIds = summaries.Where(x => x.ParentId == parentId).Select(x => x.Id).ToList();
+            if (childIds.Count == 0) return;
+
+            foreach (var childId in childIds)
+            {
+              siteIds.Add(childId);
+              GetDescendantSiteIdsAsync(childId, summaries, siteIds);
+            }
+        }
+
         public async Task<List<string>> GetSiteTableNamesAsync()
         {
             return await GetTableNamesAsync(true, false);
@@ -327,6 +350,33 @@ namespace SSCMS.Core.Repositories
         {
             var summaries = await GetSummariesAsync();
             return summaries.Select(x => x.Taxis).DefaultIfEmpty().Max();
+        }
+
+        public async Task<string> GetSiteDirCascadingAsync(int siteId)
+        {
+            var siteDirs = new List<string>();
+            var summaries = await GetSummariesAsync();
+            GetSiteDirCascading(summaries, siteDirs, siteId);
+            siteDirs.Reverse();
+            return ListUtils.ToString(siteDirs, "/");
+        }
+
+        private void GetSiteDirCascading(List<SiteSummary> summaries, List<string> siteDirs, int siteId)
+        {
+            foreach (var summary in summaries)
+            {
+                if (summary.Id == siteId)
+                {
+                    if (!string.IsNullOrEmpty(summary.SiteDir))
+                    {
+                        siteDirs.Add(summary.SiteDir);
+                    }
+                    if (summary.ParentId > 0)
+                    {
+                        GetSiteDirCascading(summaries, siteDirs, summary.ParentId);
+                    }
+                }
+            }
         }
 
         public async Task<IList<string>> GetSiteDirsAsync(int parentId)

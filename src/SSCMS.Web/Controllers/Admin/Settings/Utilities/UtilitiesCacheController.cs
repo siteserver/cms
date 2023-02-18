@@ -1,6 +1,7 @@
 ﻿using CacheManager.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Repositories;
@@ -14,13 +15,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
     public partial class UtilitiesCacheController : ControllerBase
     {
         private const string Route = "settings/utilitiesCache";
+        private const string RouteClearCache = "settings/utilitiesCache/actions/clearCache";
+        private const string RouteRestart = "settings/utilitiesCache/actions/restart";
 
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public UtilitiesCacheController(ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
+        public UtilitiesCacheController(IHostApplicationLifetime hostApplicationLifetime, ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
+            _hostApplicationLifetime = hostApplicationLifetime;
             _cacheManager = cacheManager;
             _authManager = authManager;
             _dbCacheRepository = dbCacheRepository;

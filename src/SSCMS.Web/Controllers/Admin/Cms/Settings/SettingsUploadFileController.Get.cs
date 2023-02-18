@@ -23,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             {
                 fileUploadExtensions = Constants.DefaultFileUploadExtensions;
             }
+            var fileUploadTypeMaxSize = site.FileUploadTypeMaxSize / 1024;
 
             return new GetResult
             {
@@ -32,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 FileUploadDateFormatString = site.FileUploadDateFormatString,
                 IsFileUploadChangeFileName = site.IsFileUploadChangeFileName,
                 FileUploadExtensions = fileUploadExtensions,
-                FileUploadTypeMaxSize = site.FileUploadTypeMaxSize
+                FileUploadTypeMaxSize = fileUploadTypeMaxSize
             };
         }
     }

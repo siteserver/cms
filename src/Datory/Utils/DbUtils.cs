@@ -27,6 +27,10 @@ namespace Datory.Utils
             {
                 compiler = SQLiteImpl.Instance.GetCompiler(connectionString);
             }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                compiler = DmImpl.Instance.GetCompiler(connectionString);
+            }
 
             return compiler;
         }
@@ -50,6 +54,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.ColumnIncrement(columnName, plusNum);
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.ColumnIncrement(columnName, plusNum);
             }
 
             return retVal;
@@ -75,6 +83,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.ColumnDecrement(columnName, minusNum);
             }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.ColumnDecrement(columnName, minusNum);
+            }
 
             return retVal;
         }
@@ -98,6 +110,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.GetAutoIncrementDataType(alterTable);
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.GetAutoIncrementDataType(alterTable);
             }
 
             return retVal;
@@ -123,6 +139,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetColumnSqlString(tableColumn);
             }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.GetColumnSqlString(tableColumn);
+            }
 
             return retVal;
         }
@@ -146,6 +166,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
             }
 
             return retVal;
@@ -171,6 +195,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetQuotedIdentifier(identifier);
             }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.GetQuotedIdentifier(identifier);
+            }
 
             return retVal;
         }
@@ -194,6 +222,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                retVal = DmImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
             }
 
             return retVal;

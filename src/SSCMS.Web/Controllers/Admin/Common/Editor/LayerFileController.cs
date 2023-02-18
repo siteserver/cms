@@ -15,11 +15,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private const string RouteUpload = "common/editor/layerFile/actions/upload";
 
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerFileController(IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerFileController(IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository)
         {
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
         }
 

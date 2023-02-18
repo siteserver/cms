@@ -5,6 +5,7 @@ using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Parse;
+using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -12,11 +13,13 @@ namespace SSCMS.Core.Utils
 {
     public class InputParserManager
     {
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
         private readonly IPathManager _pathManager;
 
-        public InputParserManager(IPathManager pathManager)
+        public InputParserManager(IPathManager pathManager, IRelatedFieldItemRepository relatedFieldItemRepository)
         {
             _pathManager = pathManager;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
         }
 
         public async Task<string> GetContentByTableStyleAsync(string content, string separator, Site site, TableStyle style, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
@@ -72,7 +75,7 @@ namespace SSCMS.Core.Utils
                         }
                     }
                 }
-                
+
                 parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             //else if (style.InputType == InputType.TextArea)
@@ -147,7 +150,7 @@ namespace SSCMS.Core.Utils
                         }
                     }
                 }
-                
+
                 parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             else if (inputType == InputType.TextEditor)
@@ -192,6 +195,24 @@ namespace SSCMS.Core.Utils
                     var extend = content.Get<string>(extendName);
                     parsedContent = GetFileHtmlWithoutCount(site, extend, attributes, innerHtml, isStlEntity, false, false);
                 }
+            }
+            else if (inputType == InputType.SelectCascading)
+            {
+                var texts = obj.ToString();
+                var selectedTexts = new List<string>();
+                if (!string.IsNullOrEmpty(texts))
+                {
+                    var itemIds = ListUtils.GetIntList(texts.Trim('[').Trim(']'));
+                    foreach (var itemId in itemIds)
+                    {
+                        var value = await _relatedFieldItemRepository.GetValueAsync(site.Id, itemId);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            selectedTexts.Add(value);
+                        }
+                    }
+                }
+                parsedContent = separator == null ? ListUtils.ToString(selectedTexts) : ListUtils.ToString(selectedTexts, separator);
             }
             else
             {
@@ -320,7 +341,7 @@ namespace SSCMS.Core.Utils
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl( site, fileUrl);
+                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(site, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

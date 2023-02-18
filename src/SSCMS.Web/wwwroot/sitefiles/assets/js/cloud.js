@@ -1,10 +1,16 @@
+var CLOUD_ACCESS_TOKEN_NAME = 'ss_cloud_access_token';
+var CLOUD_USER_NAME = 'ss_cloud_user_name';
+var $cloudToken = localStorage.getItem(CLOUD_ACCESS_TOKEN_NAME);
+var $cloudUserName = localStorage.getItem(CLOUD_USER_NAME);
+
 var cloud = _.extend(axios.create({
   baseURL: 'http://localhost:6060/v7',
   headers: {
-    Authorization: "Bearer " + localStorage.getItem('ss_cloud_access_token'),
+    Authorization: "Bearer " + $cloudToken,
   },
 }), {
   host: 'https://sscms.com',
+  hostImages: 'https://images.sscms.com',
   hostDl: 'https://dl.sscms.com',
   hostDemo: 'https://demo.sscms.com',
   hostStorage: 'https://storage.sscms.com',
@@ -118,5 +124,34 @@ var cloud = _.extend(axios.create({
 
     //1 >, -1 <, 0 ==
     return 0;
+  },
+
+  // cloud authentication
+
+  isAuth: function() {
+    return ($cloudToken && $cloudUserName) ? true : false;
+  },
+
+  logout: function() {
+    localStorage.removeItem(CLOUD_USER_NAME);
+    localStorage.removeItem(CLOUD_ACCESS_TOKEN_NAME);
+  },
+
+  login: function(userName, token) {
+    if (userName && token) {
+      localStorage.setItem(CLOUD_USER_NAME, userName);
+      localStorage.setItem(CLOUD_ACCESS_TOKEN_NAME, token);
+    } else {
+      this.logout();
+    }
+  },
+
+  checkAuth: function(callback, url) {
+    if (!this.isAuth()) {
+      var redirect = url || location.href;
+      location.href = utils.getCloudsUrl('connect', {redirect: redirect});
+    } else if (callback) {
+      callback();
+    }
   },
 });

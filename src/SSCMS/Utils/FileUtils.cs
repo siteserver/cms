@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Dto;
 using SSCMS.Enums;
 
 namespace SSCMS.Utils
-{	
-	public static class FileUtils
-	{
+{
+    public static class FileUtils
+    {
         public static string ReadText(string filePath)
         {
             return ReadText(filePath, Encoding.UTF8);
@@ -39,8 +41,8 @@ namespace SSCMS.Utils
                 text = await sr.ReadToEndAsync();
                 sr.Close();
             }
-	        return text;
-	    }
+            return text;
+        }
 
         public static async Task WriteStreamAsync(string filePath, MemoryStream stream)
         {
@@ -76,20 +78,20 @@ namespace SSCMS.Utils
             file.Close();
         }
 
-	    public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
-	    {
-	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+        public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
-	        using (var writer = new StreamWriter(file, encoding))
-	        {
-	            await writer.WriteAsync(content);
-	            writer.Flush();
-	            writer.Close();
+            var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
+            using (var writer = new StreamWriter(file, encoding))
+            {
+                await writer.WriteAsync(content);
+                writer.Flush();
+                writer.Close();
 
-	            file.Close();
-	        }
-	    }
+                file.Close();
+            }
+        }
 
         public static void RemoveReadOnlyAndHiddenIfExists(string filePath)
         {
@@ -118,13 +120,13 @@ namespace SSCMS.Utils
             return new FileStream(filePath, FileMode.Open);
         }
 
-		public static bool IsFileExists(string filePath)
-		{
+        public static bool IsFileExists(string filePath)
+        {
             return File.Exists(filePath);
-		}
+        }
 
         public static bool DeleteFileIfExists(string filePath)
-		{
+        {
             var retVal = true;
             try
             {
@@ -147,23 +149,23 @@ namespace SSCMS.Utils
                 retVal = false;
             }
             return retVal;
-		}
+        }
 
         public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride = true)
-		{
+        {
             var retVal = true;
-		    try
-		    {
-		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
+            try
+            {
+                DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
 
-		        File.Copy(sourceFilePath, destFilePath, isOverride);
-		    }
-		    catch
-		    {
-		        retVal = false;
-		    }
-		    return retVal;
-		}
+                File.Copy(sourceFilePath, destFilePath, isOverride);
+            }
+            catch
+            {
+                retVal = false;
+            }
+            return retVal;
+        }
 
         public static void MoveFile(string sourceFilePath, string destFilePath, bool isOverride)
         {
@@ -188,19 +190,22 @@ namespace SSCMS.Utils
             if (string.IsNullOrEmpty(filePath)) return string.Empty;
 
             var theFile = new FileInfo(filePath);
-            var fileSize = theFile.Length;
-            if (fileSize < 1024)
+            return GetFileSizeByFileLength(theFile.Length);
+        }
+
+        public static string GetFileSizeByFileLength(long fileLength)
+        {
+            if (fileLength < 1024)
             {
-                return fileSize + "B";
+                return fileLength + "B";
             }
 
-            if (fileSize >= 1024 && fileSize < 1048576)
+            if (fileLength >= 1024 && fileLength < 1048576)
             {
-                return fileSize / 1024 + "KB";
+                return fileLength / 1024 + "KB";
             }
 
-            return fileSize / 1048576 + "MB";
-
+            return fileLength / 1048576 + "MB";
         }
 
         private static bool IsTextEditable(FileType type)
@@ -226,6 +231,11 @@ namespace SSCMS.Utils
             return retVal;
         }
 
+        public static bool IsHtml(FileType fileType)
+        {
+            return fileType == FileType.Asp || fileType == FileType.Aspx || fileType == FileType.Htm || fileType == FileType.Html || fileType == FileType.Jsp || fileType == FileType.Php || fileType == FileType.SHtml;
+        }
+
         public static bool IsImage(string fileExtName)
         {
             var retVal = false;
@@ -236,12 +246,17 @@ namespace SSCMS.Utils
                 {
                     fileExtName = "." + fileExtName;
                 }
-                if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
+                if (fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".gif" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".bmp"  || fileExtName == ".webp" || fileExtName == ".svg" || fileExtName == ".ico" || fileExtName == ".jfif")
                 {
                     retVal = true;
                 }
             }
             return retVal;
+        }
+
+        public static bool IsImage(FileType fileType)
+        {
+            return fileType == FileType.Jpg || fileType == FileType.Jpeg || fileType == FileType.Gif || fileType == FileType.Png || fileType == FileType.Pneg || fileType == FileType.Bmp || fileType == FileType.Webp || fileType == FileType.Svg || fileType == FileType.Ico || fileType == FileType.Jfif;
         }
 
         public static bool IsZip(string typeStr)
@@ -327,12 +342,12 @@ namespace SSCMS.Utils
             return retVal;
         }
 
-        public static FileType GetType(string typeStr)
+        public static FileType GetFileType(string typeStr)
         {
-            return TranslateUtils.ToEnum(StringUtils.UpperFirst(typeStr), FileType.Unknown);
+            return TranslateUtils.ToEnum(StringUtils.UpperFirst(StringUtils.Replace(typeStr, ".", string.Empty)), FileType.Unknown);
         }
 
-        public static bool IsType(FileType type, string typeStr)
+        public static bool IsFileType(FileType type, string typeStr)
         {
             if (string.IsNullOrEmpty(typeStr)) return false;
             if (StringUtils.EqualsIgnoreCase("." + type.GetValue(), typeStr))
@@ -369,5 +384,45 @@ namespace SSCMS.Utils
 
             return output;
         }
+
+        public static async Task AppendErrorLogsAsync(string filePath, List<TextLog> logs)
+        {
+            if (logs == null || logs.Count <= 0) return;
+
+            if (!IsFileExists(filePath))
+            {
+                await WriteTextAsync(filePath, string.Empty);
+            }
+
+            var builder = new StringBuilder();
+
+            foreach (var log in logs)
+            {
+                builder.AppendLine();
+                builder.Append(log);
+                builder.AppendLine();
+            }
+
+            await AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+        }
+
+        public static async Task AppendErrorLogAsync(string filePath, TextLog log)
+        {
+            if (log == null) return;
+
+            if (!IsFileExists(filePath))
+            {
+                await WriteTextAsync(filePath, string.Empty);
+            }
+
+            var builder = new StringBuilder();
+
+            builder.AppendLine();
+            builder.Append(log);
+            builder.AppendLine();
+
+            await AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+        }
+
     }
 }

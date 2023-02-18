@@ -640,36 +640,25 @@ namespace SSCMS.Core.Repositories
             {
                 isCreatable = true;
             }
-            else if (linkType == LinkType.NoLinkIfContentNotExists)
+            else if (linkType == LinkType.LinkToFirstChannel)
             {
-                isCreatable = count != 0;
+                isCreatable = false;
             }
-            else if (linkType == LinkType.LinkToOnlyOneContent)
+            else if (linkType == LinkType.LinkToChannel)
             {
-                isCreatable = count != 1;
-            }
-            else if (linkType == LinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
-            {
-                if (count != 0 && count != 1)
-                {
-                    isCreatable = true;
-                }
+                isCreatable = false;
             }
             else if (linkType == LinkType.LinkToFirstContent)
             {
                 isCreatable = count < 1;
             }
-            else if (linkType == LinkType.NoLinkIfChannelNotExists)
+            else if (linkType == LinkType.LinkToOnlyOneContent)
             {
-                isCreatable = channel.ChildrenCount != 0;
+                isCreatable = count != 1;
             }
-            else if (linkType == LinkType.LinkToLastAddChannel)
+            else if (linkType == LinkType.NoLink)
             {
-                isCreatable = channel.ChildrenCount <= 0;
-            }
-            else if (linkType == LinkType.LinkToFirstChannel)
-            {
-                isCreatable = channel.ChildrenCount <= 0;
+                isCreatable = false;
             }
 
             return isCreatable;

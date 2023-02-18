@@ -80,24 +80,24 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
             }
 
-            StlParserUtility.GetLoading(contextInfo.InnerHtml, out var loading, out var template);
-            if (!string.IsNullOrEmpty(loading))
-            {
-                var innerBuilder = new StringBuilder(loading);
-                await parseManager.ParseInnerContentAsync(innerBuilder);
-                loading = innerBuilder.ToString();
-            }
+            // StlParserUtility.GetLoading(contextInfo.InnerHtml, out var loading, out var template);
+            // if (!string.IsNullOrEmpty(loading))
+            // {
+            //     var innerBuilder = new StringBuilder(loading);
+            //     await parseManager.ParseInnerContentAsync(innerBuilder);
+            //     loading = innerBuilder.ToString();
+            // }
 
-            return await ParseAsync(parseManager, contextInfo.Site, loading, template, inline, onBeforeSend, onSuccess, onComplete, onError);
+            return await ParseAsync(parseManager, contextInfo.Site, contextInfo.InnerHtml, inline, onBeforeSend, onSuccess, onComplete, onError);
         }
 
         internal static async Task<string> ParseAsync(string stlElement, IParseManager parseManager, Site site)
         {
             stlElement = StringUtils.ReplaceIgnoreCase(stlElement, "isdynamic=\"true\"", string.Empty);
-            return await ParseAsync(parseManager, site, string.Empty, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
+            return await ParseAsync(parseManager, site, stlElement, true, string.Empty, string.Empty, string.Empty, string.Empty);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string loading, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
+        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
             await parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
 
@@ -108,7 +108,6 @@ namespace SSCMS.Core.StlParser.StlElement
                 ContentId = parseManager.ContextInfo.ContentId,
                 TemplateId = parseManager.PageInfo.Template.Id,
                 ElementId = StringUtils.GetElementId(),
-                LoadingTemplate = loading,
                 YesTemplate = template,
                 IsInline = inline,
                 OnBeforeSend = onBeforeSend,

@@ -1,0 +1,91 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+
+  <template v-if="cloudType === 'Free'">
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>CDN加速设置</span>
+            </div>
+          </template>
+          <div class="text" style="padding: 16px 64px; text-align: center;">
+            <div style="text-align: center;width: 100%;">
+              <img src="/sitefiles/assets/images/cdn.svg" height="120" />
+            </div>
+            <h2>
+              使用CDN内容分发网络（Content Delivery Network），加快访问速度，提升用户体验。
+            </h2>
+            <p>
+              通过允许云助手启用CDN功能，系统将把站点内的图片和静态文件(如附件、CSS和JavaScript)同步至极速CDN网络中，使得页面加载速度大大加快。
+            </p>
+            <el-button type="primary" size="medium" style="margin-top: 20px;" v-on:click="btnUpgradeClick">
+              升级云助手
+            </el-button>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>CDN加速设置</span>
+              <el-button type="primary" v-on:click="btnSubmitClick" size="small"
+                style="float: right; margin-top: -5px;">
+                保存设置
+              </el-button>
+            </div>
+          </template>
+          <div class="text">
+            <el-switch v-model="isCloudCdn" active-text="启用CDN加速"></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              通过允许云助手启用CDN功能，系统将把站点内的图片和静态文件(如附件、CSS和JavaScript)同步至极速CDN网络中，使得页面加载速度大大加快。
+              <el-link :underline="false" href="https://sscms.com/docs/v7/handbook/clouds/cdn/" target="_blank"
+                icon="el-icon-info">
+                了解更多
+              </el-link>
+            </div>
+  
+            <div v-if="isCloudCdn" style="margin-top: 15px; margin-left: 30px">
+              <el-switch v-model="isCloudCdnImages" active-text="图片CDN加速"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，系统将把网站中的所有图片上传至CDN，并在生成页面时将图片地址替换为CDN图片地址
+              </div>
+            </div>
+            <div v-if="isCloudCdn" style="margin-top: 15px; margin-left: 30px">
+              <el-switch v-model="isCloudCdnFiles" active-text="静态文件CDN加速"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，系统将把网站中的所有静态文件（如附件、CSS和JavaScript等）上传至CDN，并在生成页面时将静态文件地址替换为CDN静态文件地址
+              </div>
+            </div>
+  
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+  </template>
+
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/cdn.js" type="text/javascript"></script>
+}

@@ -120,7 +120,7 @@ var methods = {
       isPersistent: this.form.isPersistent
     }).then(function (response) {
       var res = response.data;
-      
+
       localStorage.removeItem(ACCESS_TOKEN_NAME);
       localStorage.setItem(ACCESS_TOKEN_NAME, res.token);
       if (res.redirectToVerifyMobile) {
@@ -169,7 +169,7 @@ var methods = {
   },
 
   isMobile: function (value) {
-    return /^1[3|4|5|7|8][0-9]\d{8}$/.test(value);
+    return /^1[3-9]\d{9}$/.test(value);
   },
 
   btnSendSmsClick: function () {

@@ -1,4 +1,6 @@
 ﻿var $url = '/settings/utilitiesCache';
+var $urlClearCache = '/settings/utilitiesCache/actions/clearCache';
+var $urlRestart = '/settings/utilitiesCache/actions/restart';
 
 var data = utils.init({
   configuration: null,
@@ -31,7 +33,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url).then(function (response) {
+    $api.post($urlClearCache).then(function (response) {
       var res = response.data;
 
       utils.success('成功清空缓存！');
@@ -39,6 +41,26 @@ var methods = {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
+    });
+  },
+
+  btnRestartClick: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlRestart).then(function (response) {
+      var res = response.data;
+
+      setTimeout(function () {
+        utils.alertSuccess({
+          title: '成功重启系统',
+          callback: function() {
+            window.top.location.reload(true);
+          }
+        });
+      }, 30000);
+    }).catch(function (error) {
+      utils.error(error);
     });
   },
 

@@ -21,16 +21,25 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private const string Route = "cms/settings/settingsSite";
 
         private readonly IAuthManager _authManager;
+        private readonly ICloudManager _cloudManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
-        public SettingsSiteController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository)
+        public SettingsSiteController(IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository)
         {
             _authManager = authManager;
+            _cloudManager = cloudManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
             _tableStyleRepository = tableStyleRepository;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
+        }
+
+        public class Settings
+        {
+            public bool IsCloudImages { get; set; }
         }
 
         public class GetResult
@@ -38,6 +47,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public string SiteUrl { get; set; }
             public Entity Entity { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
+            public Dictionary<int, List<Dto.Cascade<int>>> RelatedFields { get; set; }
+            public Settings Settings { get; set; }
         }
 
         public class SubmitRequest : Entity

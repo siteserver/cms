@@ -1,0 +1,27 @@
+@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px;"></div>
+
+<el-form ref="form" :model="form" size="small" label-width="120px">
+  <el-form-item label="表单名称" prop="title" name="title" :rules="{ required: true, message: '请输入表单名称' }">
+    <el-input ref="title" v-model="form.title"></el-input>
+  </el-form-item>
+  <el-form-item label="表单简介">
+    <el-input type="textarea" v-model="form.description"></el-input>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row>
+  <el-col :span="24" align="right">
+    <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/cms/formListLayerAdd.js" type="text/javascript"></script>
+}

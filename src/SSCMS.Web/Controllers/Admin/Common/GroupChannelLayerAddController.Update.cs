@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
 
             await _channelGroupRepository.UpdateAsync(groupInfo);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{groupInfo.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组：{groupInfo.GroupName}");
 
             var groups = await _channelGroupRepository.GetChannelGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);

@@ -29,7 +29,7 @@ var methods = {
       utils.loading($this, false);
     });
   },
-  
+
   apiSubmit: function () {
     var $this = this;
 

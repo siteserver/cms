@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
@@ -56,6 +57,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 rapidValues = ListUtils.ToStringByReturnAndNewline(list);
             }
 
+            var relatedFields = new List<RelatedField>();
+            if (request.SiteId > 0)
+            {
+                relatedFields = await _relatedFieldRepository.GetRelatedFieldsAsync(request.SiteId);
+            }
+
             var form = new SubmitRequest
             {
                 TableName = style.TableName,
@@ -71,12 +78,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 Horizontal = style.Horizontal,
                 Items = style.Items,
                 Height = style.Height,
+                RelatedFieldId = style.RelatedFieldId,
                 CustomizeCode = style.CustomizeCode
             };
 
             return new GetResult
             {
                 InputTypes = InputTypeUtils.GetInputTypes(),
+                RelatedFields = relatedFields,
                 Form = form
             };
         }

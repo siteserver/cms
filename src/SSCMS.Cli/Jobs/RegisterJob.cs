@@ -19,9 +19,9 @@ namespace SSCMS.Cli.Jobs
         private bool _isHelp;
         private readonly OptionSet _options;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
 
-        public RegisterJob(IApiService apiService)
+        public RegisterJob(ICliApiService cliApiService)
         {
             _options = new OptionSet
             {
@@ -39,55 +39,56 @@ namespace SSCMS.Cli.Jobs
                 }
             };
 
-            _apiService = apiService;
+            _cliApiService = cliApiService;
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: register a new user");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: register a new user");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             if (string.IsNullOrEmpty(_userName))
             {
-                await WriteUtils.PrintErrorAsync("missing required options '--username'");
+                await console.WriteErrorAsync("missing required options '--username'");
                 return;
             }
 
             if (!StringUtils.IsStrictName(_userName))
             {
-                await WriteUtils.PrintErrorAsync(
+                await console.WriteErrorAsync(
                     $@"Invalid username: ""{_userName}"", string does not match the pattern of ""{StringUtils.StrictNameRegex}""");
                 return;
             }
 
             if (string.IsNullOrEmpty(_password))
             {
-                await WriteUtils.PrintErrorAsync("missing required options '--password'");
+                await console.WriteErrorAsync("missing required options '--password'");
                 return;
             }
 
-            var (success, failureMessage) = await _apiService.RegisterAsync(_userName, _mobile, _email, _password);
+            var (success, failureMessage) = await _cliApiService.RegisterAsync(_userName, _mobile, _email, _password);
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync("you have registered successfully, run sscms login to log in.");
+                await console.WriteSuccessAsync("you have registered successfully, run sscms login to log in.");
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

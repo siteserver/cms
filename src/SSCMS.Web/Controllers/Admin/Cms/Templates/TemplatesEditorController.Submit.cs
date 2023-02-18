@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             await _authManager.AddSiteLogAsync(site.Id,
                 $"修改{template.TemplateType.GetDisplayName()}",
-                $"模板名称:{template.TemplateName}");
+                $"模板名称：{template.TemplateName}");
 
             return new BoolResult
             {

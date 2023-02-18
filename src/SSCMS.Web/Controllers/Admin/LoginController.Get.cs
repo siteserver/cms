@@ -21,14 +21,18 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var config = await _configRepository.GetAsync();
-            var isSmsEnabled = await _smsManager.IsEnabledAsync();
+            var smsSettings = await _smsManager.GetSmsSettingsAsync();
+            var isSmsAdmin = smsSettings.IsSms && smsSettings.IsSmsAdmin;
+            var isSmsAdminAndDisableAccount = isSmsAdmin && smsSettings.IsSmsAdminAndDisableAccount;
 
             return new GetResult
             {
                 Success = true,
                 Version = _settingsManager.Version,
+                AdminFaviconUrl = config.AdminFaviconUrl,
                 AdminTitle = config.AdminTitle,
-                IsSmsEnabled = isSmsEnabled
+                IsSmsAdmin = isSmsAdmin,
+                IsSmsAdminAndDisableAccount = isSmsAdminAndDisableAccount
             };
         }
     }

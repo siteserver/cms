@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
-using SSCMS.Models;
 using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
@@ -17,7 +16,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            var isCensorTextEnabled = await _censorManager.IsTextEnabledAsync();
+            // var isCensorTextEnabled = await _censorManager.IsCensorTextAsync();
+            var isCensorTextEnabled = true;
 
             return new GetResult
             {

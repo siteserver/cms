@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>7.1.2</Version>
+    <Version>7.2.0</Version>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <!--<EnableDefaultContentItems>false</EnableDefaultContentItems>-->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <AssemblyName>SSCMS.Web</AssemblyName>
@@ -25,16 +24,6 @@
     <None Remove="plugins\**" />
   </ItemGroup>
 
-  <!--<ItemGroup>
-    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>-->
-
-  <!--<ItemGroup>
-    https://github.com/dotnet/core/blob/master/Documentation/build-and-install-rhel6-prerequisites.md
-    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
-    this code will cause sqlserver connection not work
-  </ItemGroup>-->
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
@@ -50,9 +39,5 @@
   <ItemGroup>
     <Watch Include="plugins\**\*.cshtml;plugins\**\*.cs" Exclude="plugins\*\obj\**\*;plugins\bin\**\*" />
   </ItemGroup>
-
-  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet build plugins\SSCMS.Advertisement" />
-  </Target>-->
 
 </Project>

@@ -32,12 +32,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             if (await _channelGroupRepository.IsExistsAsync(request.SiteId, group.GroupName))
             {
                 await _channelGroupRepository.UpdateAsync(group);
-                await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目组", $"栏目组：{group.GroupName}");
             }
             else
             {
                 await _channelGroupRepository.InsertAsync(group);
-                await _authManager.AddSiteLogAsync(request.SiteId, "添加栏目组", $"栏目组:{group.GroupName}");
+                await _authManager.AddSiteLogAsync(request.SiteId, "添加栏目组", $"栏目组：{group.GroupName}");
             }
 
             var expendedChannelIds = new List<int>
@@ -61,7 +61,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 await _channelRepository.UpdateAsync(channel);
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置栏目组", $"栏目组:{group.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置栏目组", $"栏目组：{group.GroupName}");
 
             return expendedChannelIds;
         }

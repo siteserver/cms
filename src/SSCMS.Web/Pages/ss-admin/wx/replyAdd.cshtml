@@ -88,7 +88,7 @@
 </div>
 <div v-else>
 
-  <el-form ref="rule1" :model="form" size="small" status-icon label-width="100px">
+  <el-form v-on:submit.native.prevent ref="rule1" :model="form" size="small" status-icon label-width="100px">
     <el-form-item label="规则名称" prop="ruleName" :rules="{ required: true, message: '请输入规则名称' }">
       <el-input
         v-model="form.ruleName"
@@ -98,7 +98,7 @@
     </el-form-item>
   </el-form>
 
-  <el-form v-for="(keyword, index) in keywords" :key="'keyword' + index" ref="keywords" :model="keyword" size="small" label-width="100px">
+  <el-form v-on:submit.native.prevent v-for="(keyword, index) in keywords" :key="'keyword' + index" ref="keywords" :model="keyword" size="small" label-width="100px">
     <el-form-item label="关键词" prop="text" :rules="{ required: true, message: '请添加关键词' }">
       
       <el-input placeholder="请输入关键词" v-model="keyword.text" class="input-with-select">
@@ -115,7 +115,7 @@
     </el-form-item>
   </el-form>
 
-  <el-form ref="rule2" :model="form" size="small" label-width="100px">
+  <el-form v-on:submit.native.prevent ref="rule2" :model="form" size="small" label-width="100px">
     <el-form-item label="回复消息" prop="messages" :rules="{ required: true, message: '请添加回复消息' }">
 
       <template v-for="(message, index) in messages">
@@ -138,7 +138,7 @@
                 </div>
                 <a href="javascript:;">
                   <el-image 
-                    style="width: 100%; min-height: 120px; max-height:220px;"
+                    style="width: 100%; min-height: 220px; max-height:220px;"
                     :src="message.items[0].thumbUrl">
                     <div slot="error" class="image-slot">
                       <i class="el-icon-picture-outline"></i>
@@ -202,7 +202,7 @@
         <div v-else-if="message.materialType === 'Image' && message.materialId">
           <el-card shadow="never" style="width: 25%; margin-right: 5px; display: inline-block">
             <el-image 
-              style="width: 100%; min-height: 120px; max-height:220px;"
+              style="width: 100%; min-height: 220px; max-height:220px;"
               :src="message.image.url">
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline"></i>
@@ -290,7 +290,7 @@
     </el-form-item>
   </el-form>
 
-  <el-form ref="rule3" :model="form" size="small" status-icon label-width="100px">
+  <el-form v-on:submit.native.prevent ref="rule3" :model="form" size="small" status-icon label-width="100px">
     <el-form-item label="回复方式" prop="random" :rules="{ required: true, message: '请选择回复方式' }">
       <el-radio-group v-model="form.random">
         <el-radio :label="false">回复全部</el-radio>

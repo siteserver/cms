@@ -73,7 +73,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 var channel = await _databaseManager.ChannelRepository.ImportGetAsync(_site.Id);
                 await _channelIe.ImportChannelAsync(channel, feed.AdditionalElements, parentId, indexNameList);
 
-                _caching.SetProcess(guid, $"导入栏目: {channel.ChannelName}");
+                _caching.SetProcess(guid, $"导入栏目：{channel.ChannelName}");
                 await _databaseManager.ChannelRepository.UpdateAsync(channel);
 
                 if (isImportContents)
@@ -144,7 +144,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 foreach (var contentId in contentIds)
                 {
                     var content = await _databaseManager.ContentRepository.GetAsync(site, channelInfo, contentId);
-                    var entry = _contentIe.ExportContent(content);
+                    var entry = await _contentIe.ExportContentAsync(content);
                     feed.Entries.Add(entry);
                 }
             }

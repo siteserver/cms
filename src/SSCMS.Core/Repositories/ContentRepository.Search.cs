@@ -14,7 +14,12 @@ namespace SSCMS.Core.Repositories
         public async Task<List<ContentSummary>> SearchAsync(Site site, Channel channel, bool isAllContents, string searchType, string searchText, bool isAdvanced, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = await GetRepositoryAsync(site, channel);
-            var query = Q.Select(nameof(Content.ChannelId), nameof(Content.Id));
+            var query = Q.Select(
+              nameof(Content.Id), 
+              nameof(Content.ChannelId), 
+              nameof(Content.Checked), 
+              nameof(Content.CheckedLevel)
+            );
 
             await QueryWhereAsync(query, site, channel.Id, isAllContents);
 
@@ -181,11 +186,11 @@ namespace SSCMS.Core.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), ">", startDate.Value);
+                query.Where(nameof(Content.AddDate), ">=", DateUtils.ToString(startDate));
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), "<", endDate.Value);
+                query.Where(nameof(Content.AddDate), "<=", DateUtils.ToString(endDate));
             }
 
             if (items != null)
@@ -309,11 +314,11 @@ namespace SSCMS.Core.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), ">", startDate.Value);
+                query.Where(nameof(Content.AddDate), ">=", DateUtils.ToString(startDate));
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.AddDate), "<", endDate.Value);
+                query.Where(nameof(Content.AddDate), "<=", DateUtils.ToString(endDate));
             }
 
             if (items != null)
@@ -406,11 +411,11 @@ namespace SSCMS.Core.Repositories
 
             if (startDate.HasValue)
             {
-                query.WhereDate(nameof(Content.LastModifiedDate), ">", startDate.Value);
+                query.Where(nameof(Content.LastModifiedDate), ">=", DateUtils.ToString(startDate));
             }
             if (endDate.HasValue)
             {
-                query.WhereDate(nameof(Content.LastModifiedDate), "<", endDate.Value);
+                query.Where(nameof(Content.LastModifiedDate), "<=", DateUtils.ToString(endDate));
             }
 
             if (items != null)

@@ -139,7 +139,7 @@
         </el-form>
       </el-col>
       <el-col :span="4" align="right">
-        <el-form :inline="true" size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent :inline="true" size="small" label-width="100px">
           <el-form-item>
             <el-popover
               id="sortColumns"
@@ -181,7 +181,7 @@
         </el-form>
       </el-col>
       <el-col :span="24">
-        <el-form :inline="true" size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent :inline="true" size="small" label-width="100px">
           <el-form-item label="删除日期">
             <el-col :span="11">
               <el-date-picker
@@ -206,7 +206,7 @@
         </el-form>
       </el-col>
       <el-col :span="24">
-        <el-form size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent size="small" label-width="100px">
           <el-form-item
             v-for="column in searchColumns"
             :key="column.attributeName"
@@ -221,7 +221,7 @@
             </el-input>
           </el-form-item>
         </el-form>
-        <el-form size="small" label-width="100px">
+        <el-form v-on:submit.native.prevent size="small" label-width="100px">
           <el-form-item>
             <el-popover placement="top" width="400" trigger="click">
               <div>
@@ -807,7 +807,7 @@
 </el-container>
 
 <el-dialog :title="restoreTitle" :visible.sync="isRestoreForm">
-  <el-form size="small" :model="restoreForm" ref="restoreForm">
+  <el-form v-on:submit.native.prevent size="small" :model="restoreForm" ref="restoreForm">
     <el-form-item
       label="还原至栏目"
       prop="restoreChannelIds"

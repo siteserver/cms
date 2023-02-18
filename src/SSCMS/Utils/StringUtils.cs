@@ -122,6 +122,15 @@ namespace SSCMS.Utils
             return GetShortGuid(false) + GetShortGuid(false) + GetShortGuid(false);
         }
 
+        public static byte[] GetSecurityKeyBytes(string securityKey)
+        {
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                securityKey = GetSecurityKey();
+            }
+            return Encoding.UTF8.GetBytes(securityKey);
+        }
+
         public static string GetShortGuid(bool isUppercase)
         {
             long i = 1;
@@ -257,9 +266,22 @@ namespace SSCMS.Utils
             return contentBuilder.ToString();
         }
 
+        public static string StripBlank(string inputString)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+            
+            var retVal = inputString.Replace(" ", string.Empty);
+            retVal = retVal.Replace("　", string.Empty);
+            retVal = retVal.Replace("&nbsp;", string.Empty);
+            return retVal;
+        }
+
         public static string StripTags(string inputString)
         {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+            
             var retVal = RegexUtils.Replace("<script[^>]*>.*?<\\/script>", inputString, string.Empty);
+            retVal = RegexUtils.Replace("<style[^>]*>.*?<\\/style>", retVal, string.Empty);
             retVal = RegexUtils.Replace("<[\\/]?[^>]*>|<[\\S]+", retVal, string.Empty);
             return retVal;
         }
@@ -770,12 +792,14 @@ namespace SSCMS.Utils
         {
             if (string.IsNullOrWhiteSpace(name)) return false;
 
-            var reg = new Regex(StrictNameRegex, RegexOptions.Singleline);
+            var reg = new Regex(StrictNameRegex, RegexOptions.Singleline | RegexOptions.IgnoreCase);
             return reg.IsMatch(name);
         }
 
-        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
+        public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
+            if (string.IsNullOrEmpty(content)) return string.Empty;
+
             var parsedContent = content;
 
             if (!string.IsNullOrEmpty(replace))
@@ -786,6 +810,11 @@ namespace SSCMS.Utils
             if (isClearTags)
             {
                 parsedContent = StripTags(parsedContent);
+            }
+
+            if (isClearBlank)
+            {
+                parsedContent = StripBlank(parsedContent);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))
@@ -861,6 +890,11 @@ namespace SSCMS.Utils
               return $"{val}px";
             }
             return val;
+        }
+
+        public static string PadZeroes(int value, int length)
+        {
+            return value.ToString($"D{length}");
         }
     }
 }

@@ -74,7 +74,7 @@ namespace SSCMS.Core.Utils
 
         public static string ToSqlBool(DatabaseType databaseType, bool val)
         {
-            if (databaseType == DatabaseType.SqlServer)
+            if (databaseType == DatabaseType.SqlServer || databaseType == DatabaseType.Dm)
             {
                 return val ? "1" : "0";
             }

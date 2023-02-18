@@ -39,9 +39,10 @@ namespace SSCMS.Web.Controllers.Home.Write
                 if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
 
                 var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                var (title, imageUrl, content) = await WordManager.GetWordAsync(_pathManager, site, request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                var wordManager = new WordManager(request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                await wordManager.ParseAsync(_pathManager, site);
 
-                if (string.IsNullOrEmpty(title)) continue;
+                if (string.IsNullOrEmpty(wordManager.Title)) continue;
 
                 var dict = await ColumnsManager.SaveAttributesAsync(_pathManager, site, styles, new NameValueCollection(), ColumnsManager.MetadataAttributes.Value);
 
@@ -59,9 +60,9 @@ namespace SSCMS.Web.Controllers.Home.Write
                 };
                 contentInfo.LoadDict(dict);
 
-                contentInfo.Title = title;
-                contentInfo.ImageUrl = imageUrl;
-                contentInfo.Body = content;
+                contentInfo.Title = wordManager.Title;
+                contentInfo.ImageUrl = wordManager.ImageUrl;
+                contentInfo.Body = wordManager.Body;
 
                 contentInfo.Id = await _contentRepository.InsertAsync(site, channel, contentInfo);
 

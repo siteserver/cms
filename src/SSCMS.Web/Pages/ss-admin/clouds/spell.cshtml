@@ -1,0 +1,145 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <el-tabs v-model="activeName" v-on:tab-click="btnTabsClick">
+    <el-tab-pane label="文本纠错设置" name="settings"></el-tab-pane>
+    <el-tab-pane label="文本纠错白名单" name="whitelist"></el-tab-pane>
+  </el-tabs>
+
+  <template v-if="activeName === 'settings'">
+    <el-row :gutter="20">
+      <el-col :span="18" :offset="3">
+        <div style="height: 25px"></div>
+        <el-card class="box-card">
+          <template #header>
+            <div class="clearfix">
+              <span>文本纠错设置</span>
+              <el-button type="primary" v-on:click="btnSubmitClick" size="small" style="float: right; margin-top: -5px;">
+                保存设置
+              </el-button>
+            </div>
+          </template>
+          <div class="text">
+            <el-switch
+              v-model="isCloudSpellingCheck"
+              active-text="启用文本纠错"
+            ></el-switch>
+            <div class="tips" style="margin-top: 10px;">
+              文本纠错功能能够对文本中的拼写、语法、标点等多种问题进行纠错校对，提示错误位置并给出正确的建议文本内容
+              <el-link
+                :underline="false"
+                href="https://sscms.com/docs/v7/handbook/clouds/spell/"
+                target="_blank"
+                icon="el-icon-info"
+              >
+                了解更多
+              </el-link>
+            </div>
+    
+            <div v-if="isCloudSpellingCheck" style="margin-top: 15px; margin-left: 30px;">
+              <el-switch v-model="isCloudSpellingCheckAuto" active-text="保存内容时强制检查"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，当保存内容时系统会自动对内容正文进行文本纠错，如果存在疑似错误，系统将禁止保存内容
+              </div>
+            </div>
+    
+            <div v-if="isCloudSpellingCheck" style="margin-top: 15px; margin-left: 30px;">
+              <el-switch v-model="isCloudSpellingCheckIgnore" active-text="可以忽略错误"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，可以手动忽略本次检查到的疑似错误，手动忽略的词语下次检查时依然会作为错误进行提醒
+              </div>
+            </div>
+    
+            <div v-if="isCloudSpellingCheck" style="margin-top: 15px; margin-left: 30px;">
+              <el-switch v-model="isCloudSpellingCheckWhiteList" active-text="可以将错误加入白名单"></el-switch>
+              <div class="tips" style="margin-top: 10px;">
+                勾选后，可以手动将检查到的疑似错误加入白名单，下次检查时白名单内的词语将不再作为错误进行提醒
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </template>
+  <template v-else>
+    <div style="height: 10px"></div>
+    <el-row :gutter="20">
+      <el-col :span="20">
+        <el-form :inline="true" size="small" :model="formInline">
+          <el-form-item label="关键字">
+            <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
+    <el-table :data="cloudWords" style="width: 100%">
+      <el-table-column label="文本">
+        <template #default="scope">
+          {{ scope.row.word }}
+        </template>
+      </el-table-column>
+      <el-table-column label="提交时间" width="180">
+        <template #default="scope">
+          {{ scope.row.createdDate }}
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180">
+        <template #default="scope">
+          <el-link type="danger" :underline="false" v-on:click.prevent="btnDeleteClick(scope.row)">删 除</el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div style="text-align: center; margin-top: 10px">
+      <el-pagination
+        v-on:current-change="handleCurrentChange"
+        :current-page="formInline.currentPage"
+        :page-size="formInline.limit"
+        layout="total, prev, pager, next, jumper"
+        :total="count"
+      ></el-pagination>
+    </div>
+
+    <div style="height: 10px"></div>
+
+    <el-form :inline="true">
+      <el-form-item>
+        <el-button type="primary" size="small" v-on:click.prevent="btnAddClick">添 加</el-button>
+      </el-form-item>
+    </el-form>
+
+  </template>
+
+  <el-dialog title="添加错别字白名单" :visible.sync="isAdd" width="40%">
+    <el-form style="margin: 0 10px" ref="form" :model="form" label-position="top">
+      <el-form-item label="" prop="words" :rules="{ required: true, message: '请输入错别字' }">
+        <el-input v-model="form.words" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}" placeholder="错别字之间用换行分割"></el-input>
+      </el-form-item>
+    </el-form>
+  
+    <el-divider></el-divider>
+  
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" v-on:click="btnAddSubmitClick">确 定</el-button>
+      <el-button v-on:click="isAdd = false">取 消</el-button>
+    </div>
+  </el-dialog>
+
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/clouds/spell.js" type="text/javascript"></script>
+}

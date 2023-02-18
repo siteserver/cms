@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
             {
                 settings.Add(new KeyValuePair<string, string>("系统根目录地址", _settingsManager.ContentRootPath));
                 settings.Add(new KeyValuePair<string, string>("站点根目录地址", _settingsManager.WebRootPath));
-                settings.Add(new KeyValuePair<string, string>("数据库类型", _settingsManager.Database.DatabaseType.GetValue()));
+                settings.Add(new KeyValuePair<string, string>("数据库类型", _settingsManager.Database.DatabaseType.GetDisplayName()));
                 settings.Add(new KeyValuePair<string, string>("数据库名称", _databaseManager.GetDatabaseNameFormConnectionString(_settingsManager.Database.ConnectionString)));
                 settings.Add(new KeyValuePair<string, string>("缓存类型", string.IsNullOrEmpty(_settingsManager.Redis.ConnectionString) ? "Memory" : "Redis"));
             }

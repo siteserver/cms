@@ -66,7 +66,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public int SiteId { get; set; }
             public IEnumerable<int> ChannelIds { get; set; }
             public int TransSiteId { get; set; }
-            public int TransChannelId { get; set; }
+            public List<int> TransChannelIds { get; set; }
             public ChannelTranslateType TranslateType { get; set; }
             public bool IsDeleteAfterTranslate { get; set; }
         }
@@ -138,6 +138,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 return;
             }
 
+            var targetSite = await _siteRepository.GetAsync(targetSiteId);
+
             if (nodeIndexNameList == null)
             {
                 nodeIndexNameList = await _channelRepository.GetIndexNamesAsync(targetSiteId);
@@ -150,6 +152,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             foreach (var oldNodeInfo in nodeInfoList)
             {
+                await _pathManager.MoveFileByChannelAsync(site, targetSite, oldNodeInfo);
                 var nodeInfo = oldNodeInfo.Clone<Channel>();
 
                 nodeInfo.SiteId = targetSiteId;

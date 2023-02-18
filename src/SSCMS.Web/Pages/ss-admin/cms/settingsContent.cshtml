@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <div style="height: 10px"></div>
-<el-form size="small" ref="form" :model="form" label-width="200px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="200px">
   <el-form-item label="编辑器外部图片">
     <el-radio-group v-model="form.isSaveImageInTextEditor">
       <el-radio :label="true">自动保存外部图片</el-radio>
@@ -44,16 +44,6 @@
       <el-radio :label="false">不启用</el-radio>
     </el-radio-group>
     <div class="tips">副标题字段输入两连续的英文空格，内容页中副标题将自动换行，列表页将忽略此空格</div>
-  </el-form-item>
-  <el-form-item label="内容审查（需要插件支持）">
-    <el-radio-group :disabled="!isCensorTextEnabled" v-model="form.isAutoCheckKeywords">
-      <el-radio :label="true">强制</el-radio>
-      <el-radio :label="false">非强制</el-radio>
-    </el-radio-group>
-    <div class="tips">
-      内容审查设为强制后，当保存内容时系统会自动对包括内容标题、正文、摘要在内的文本进行内容审查；<br />
-      如果识别结果为不合规，系统将禁止保存内容；<br />
-      如果识别结果为疑似，系统将提示管理员是否依旧保存内容。</div>
   </el-form-item>
   <el-form-item label="内容审核机制" prop="checkContentLevel" :rules="{ required: true, message: '请选择内容审核机制' }">
     <el-select v-model="form.checkContentLevel" placeholder="请选择内容审核机制">

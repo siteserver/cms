@@ -39,6 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public class GetResult
         {
             public Content Content { get; set; }
+            public int SourceSiteId { get; set; }
             public string SourceName { get; set; }
         }
 

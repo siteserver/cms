@@ -1,0 +1,55 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/lib/ueditor/third-party/custom/custom.css">
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .videojs {
+      width: 100% !important;
+      min-height: 300px;
+    }
+    .el-button-group .el-dropdown {
+      float: left;
+      margin-top: -2.5px;
+      margin-right: -1px;
+    }
+  </style>
+}
+
+<el-container>
+  <el-aside width="100px">
+    <el-tabs v-model="navType" tab-position="left" style="height: 100%;" v-on:tab-click="btnNavClick">
+      <el-tab-pane label="数据列表" name="Data"></el-tab-pane>
+      <el-tab-pane label="字段管理" name="Styles"></el-tab-pane>
+      <el-tab-pane label="选项设置" name="Settings"></el-tab-pane>
+    </el-tabs>
+  </el-aside>
+
+  <el-container>
+    <el-main>
+
+      <div v-if="dataId">修改数据</div>
+      <div v-else>新增数据</div>
+      <div style="height: 10px"></div>
+      <el-divider></el-divider>
+      <div style="height: 10px"></div>
+
+      <el-form size="small" ref="form" :model="form" label-width="160px">
+        
+        @await Html.PartialAsync("_PartialForm")
+        
+        <el-divider></el-divider>
+        <div style="height: 10px"></div>
+        <el-form-item>
+          <el-button type="primary" v-on:click="btnSubmitClick" size="small">保 存</el-button>
+          <el-button size="small" type="default" v-on:click="btnReturnClick">返 回</el-button>
+        </el-form-item>
+      </el-form>
+
+    </el-main>
+  </el-container>
+</el-container>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/cms/formDataAdd.js" type="text/javascript"></script>
+}

@@ -18,7 +18,8 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
 
             // _pluginManager.UnInstall(request.PluginId);
 
-            var filePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+            var fileName = PathUtils.RemoveParentPath(request.FileName);
+            var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var pluginPath = _pathManager.GetPluginPath(request.PluginId);
             DirectoryUtils.DeleteDirectoryIfExists(pluginPath);
             DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);

@@ -1,0 +1,44 @@
+﻿@page
+@{ Layout = "_LayoutHome"; }
+@section Styles{
+  <style>
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .el-upload-dragger {
+      height: 240px;
+      padding: 20px;
+      line-height: 22px;
+    }
+  </style>
+}
+
+<el-alert type="error" v-if="uploadErrorMessage" :title="uploadErrorMessage"></el-alert>
+<el-form style="margin: 20px 10px;" label-position="top">
+  <el-form-item>
+    <el-upload :disabled="uploadProgressPercent" :drag="true" :action="uploadUrl" :auto-upload="true"
+      :headers="{ Authorization: 'Bearer ' + uploadToken }" :show-file-list="false" :before-upload="uploadBefore" :http-request="uploadRequest" :multiple="false">
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text">
+        <strong>
+          将文件拖到此处，或
+          <em>点击上传</em>
+        </strong>
+      </div>
+      <div class="el-upload__tip">
+        支持3GP、ASF、AVI、DAT、DV、FLV、F4V、GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、SWF、TS、VOB、WMV、WEBM
+        等视频格式上传
+      </div>
+    </el-upload>
+    <el-progress v-if="uploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="uploadProgressPercent"></el-progress>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/home/clouds/layerVodUpload.js" type="text/javascript"></script>
+}

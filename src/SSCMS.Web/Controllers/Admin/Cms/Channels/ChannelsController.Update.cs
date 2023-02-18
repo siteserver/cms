@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
@@ -11,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsController
     {
         [HttpPost, Route(RouteUpdate)]
-        public async Task<ActionResult<List<int>>> Update([FromBody] UpdateRequest request)
+        public async Task<ActionResult<List<int>>> Update([FromBody] Channel request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Channels))
@@ -102,27 +103,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         channel.Set(ColumnsManager.GetExtendName(style.AttributeName, n), request.Get(ColumnsManager.GetExtendName(style.AttributeName, n), string.Empty));
                     }
                 }
-                else if (inputType == InputType.CheckBox ||
-                         style.InputType == InputType.SelectMultiple)
-                {
-                    var list = request.Get<List<object>>(style.AttributeName);
-                    channel.Set(style.AttributeName, ListUtils.ToString(list));
-                }
                 else
                 {
-                    var value = request.Get(style.AttributeName, string.Empty);
-                    channel.Set(style.AttributeName, value);
+                    channel.Set(style.AttributeName, request.Get(style.AttributeName));
                 }
             }
 
             channel.ChannelName = request.ChannelName;
             channel.IndexName = request.IndexName;
             channel.GroupNames = request.GroupNames;
-            //channel.Content = request.Content;
             channel.ChannelTemplateId = request.ChannelTemplateId;
             channel.ContentTemplateId = request.ContentTemplateId;
-            channel.LinkUrl = request.LinkUrl;
             channel.LinkType = request.LinkType;
+            channel.LinkUrl = request.LinkUrl;
             channel.DefaultTaxisType = request.DefaultTaxisType;
             channel.FilePath = request.FilePath;
             channel.ChannelFilePathRule = request.ChannelFilePathRule;

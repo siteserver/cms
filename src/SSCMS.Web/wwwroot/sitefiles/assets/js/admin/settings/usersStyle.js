@@ -88,6 +88,7 @@ var methods = {
     utils.openLayer({
       title: '编辑字段',
       url: utils.getCommonUrl('tableStyleLayerEditor', {
+        siteId: 0,
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
         attributeName: attributeName,
@@ -123,6 +124,7 @@ var methods = {
     utils.openLayer({
       title: '新增字段',
       url: utils.getCommonUrl('tableStyleLayerEditor', {
+        siteId: 0,
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
         excludes: 'TextEditor,SelectCascading,Customize'

@@ -26,7 +26,6 @@ namespace SSCMS.Core.Services
                         var extendName = ColumnsManager.GetExtendName(style.AttributeName, i);
                         var value = content.Get<string>(extendName);
                         value = GetVirtualUrl(site, value);
-
                         content.Set(extendName, value);
                     }
                 }
@@ -35,7 +34,7 @@ namespace SSCMS.Core.Services
                     var value = content.Get<string>(style.AttributeName);
                     value = await EncodeTextEditorAsync(site, value);
                     value = UEditorUtils.TranslateToStlElement(value);
-
+                    value = StringUtils.TrimEnd(value, @"<p><br/></p>");
                     content.Set(style.AttributeName, value);
                 }
             }
@@ -93,15 +92,21 @@ namespace SSCMS.Core.Services
 
             var builder = new StringBuilder(content);
 
-            var url = await GetWebUrlAsync(site);
-            if (!string.IsNullOrEmpty(url) && url != "/")
+            var webUrl = await GetWebUrlAsync(site);
+            if (!string.IsNullOrEmpty(webUrl) && webUrl != "/")
             {
-                StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+                StringUtils.ReplaceHrefOrSrc(builder, webUrl, "@");
             }
             //if (!string.IsNullOrEmpty(url))
             //{
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
+
+            var localUrl = await GetSiteUrlAsync(site, true);
+            if (!string.IsNullOrEmpty(localUrl) && localUrl != "/")
+            {
+                StringUtils.ReplaceHrefOrSrc(builder, localUrl, "@");
+            }
 
             var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
@@ -157,14 +162,41 @@ namespace SSCMS.Core.Services
             if (!string.IsNullOrEmpty(imageUrl) && IsVirtualUrl(imageUrl))
             {
                 collection[imageUrl] = await ParseSitePathAsync(site, imageUrl);
+
+                var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    collection[extend] = await ParseSitePathAsync(site, extend);
+                }
             }
             if (!string.IsNullOrEmpty(videoUrl) && IsVirtualUrl(videoUrl))
             {
                 collection[videoUrl] = await ParseSitePathAsync(site, videoUrl);
+
+                var countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    collection[extend] = await ParseSitePathAsync(site, extend);
+                }
             }
             if (!string.IsNullOrEmpty(fileUrl) && IsVirtualUrl(fileUrl))
             {
                 collection[fileUrl] = await ParseSitePathAsync(site, fileUrl);
+
+                var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
+                var count = content.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
+                    var extend = content.Get<string>(extendName);
+                    collection[extend] = await ParseSitePathAsync(site, extend);
+                }
             }
 
             var srcList = RegexUtils.GetOriginalImageSrcs(body);

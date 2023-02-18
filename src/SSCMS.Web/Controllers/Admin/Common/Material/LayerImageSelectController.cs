@@ -52,5 +52,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         {
             public int MaterialId { get; set; }
         }
+
+        public class SelectResult
+        {
+            public string VirtualUrl { get; set; }
+            public string ImageUrl { get; set; }
+        }
     }
 }

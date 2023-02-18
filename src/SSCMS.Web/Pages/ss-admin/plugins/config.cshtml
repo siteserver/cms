@@ -4,7 +4,7 @@
 <div style="height: 10px"></div>
 
 <template v-if="pageType === 'sites'">
-  <el-form ref="form" :model="form" size="small" status-icon label-width="120px">
+  <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="120px">
     <el-form-item label="插件">
       {{ pluginId }}
     </el-form-item>
@@ -60,7 +60,7 @@
 </template>
 
 <template v-if="pageType === 'channels'">
-  <el-form ref="channelsForm" :model="channelsForm" size="small" status-icon label-width="160px">
+  <el-form v-on:submit.native.prevent ref="channelsForm" :model="channelsForm" size="small" status-icon label-width="160px">
     <el-form-item label="插件">
       {{ pluginId }}
     </el-form-item>

@@ -17,8 +17,9 @@ namespace SSCMS.Core.Services
         private readonly ISiteRepository _siteRepository;
         private readonly ISpecialRepository _specialRepository;
         private readonly ITemplateRepository _templateRepository;
+        private readonly IStorageFileRepository _storageFileRepository;
 
-        public CreateManager(IPathManager pathManager, IParseManager parseManager, ITaskManager taskManager, IChannelRepository channelRepository, IContentRepository contentRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository)
+        public CreateManager(IPathManager pathManager, IParseManager parseManager, ITaskManager taskManager, IChannelRepository channelRepository, IContentRepository contentRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository, IStorageFileRepository storageFileRepository)
         {
             _pathManager = pathManager;
             _parseManager = parseManager;
@@ -28,6 +29,7 @@ namespace SSCMS.Core.Services
             _siteRepository = siteRepository;
             _specialRepository = specialRepository;
             _templateRepository = templateRepository;
+            _storageFileRepository = storageFileRepository;
         }
 
         public async Task CreateByAllAsync(int siteId)

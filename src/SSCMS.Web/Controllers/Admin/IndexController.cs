@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -15,8 +16,6 @@ namespace SSCMS.Web.Controllers.Admin
     [Route(Constants.ApiAdminPrefix)]
     public partial class IndexController : ControllerBase
     {
-        private const string IdSite = "site";
-
         private const string Route = "index";
         private const string RouteActionsSetLanguage = "index/actions/setLanguage";
         private const string RouteActionsCache = "index/actions/cache";
@@ -24,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin
         //private readonly IStringLocalizer<IndexController> _local;
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
+        private readonly ICloudManager _cloudManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly IConfigRepository _configRepository;
@@ -32,11 +32,13 @@ namespace SSCMS.Web.Controllers.Admin
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
+        private readonly IFormRepository _formRepository;
 
-        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository)
+        public IndexController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IDbCacheRepository dbCacheRepository, IFormRepository formRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
+            _cloudManager = cloudManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
             _configRepository = configRepository;
@@ -45,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _dbCacheRepository = dbCacheRepository;
+            _formRepository = formRepository;
         }
 
         public class Local
@@ -73,7 +76,10 @@ namespace SSCMS.Web.Controllers.Admin
             public string RedirectUrl { get; set; }
             public string CmsVersion { get; set; }
             public string OSArchitecture { get; set; }
+            public bool IsCloudAdmin { get; set; }
+            public string AdminFaviconUrl { get; set; }
             public string AdminLogoUrl { get; set; }
+            public string AdminLogoLinkUrl { get; set; }
             public string AdminTitle { get; set; }
             public bool IsSuperAdmin { get; set; }
             public string Culture { get; set; }
@@ -84,6 +90,11 @@ namespace SSCMS.Web.Controllers.Admin
             public string PreviewUrl { get; set; }
             public Local Local { get; set; }
             public bool IsSafeMode { get; set; }
+            public CloudType CloudType { get; set; }
+            public string CloudUserName { get; set; }
+            public string CloudToken { get; set; }
+            public List<string> CssUrls { get; set; }
+            public List<string> JsUrls { get; set; }
         }
 
         public class SetLanguageRequest
@@ -110,168 +121,6 @@ namespace SSCMS.Web.Controllers.Admin
             return children.Where(x => _authManager.IsMenuValid(x, permissions)).ToList();
         }
 
-        //private async Task<IList<Menu>> GetTopMenusAsync(Site siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions, List<string> permissionList)
-        //{
-        //    IList<Menu> menus = new List<Menu>();
-
-        //    if (siteInfo != null && siteIdListWithPermissions.Contains(siteInfo.Id))
-        //    {
-        //        var siteMenu = _menusAccessor.CurrentValue.FirstOrDefault(x => x.Id == IdSite);
-
-        //        if (siteMenu != null)
-        //        {
-        //            siteMenu.Text = siteInfo.SiteName;
-        //            menus.Add(siteMenu);
-        //        }
-
-        //        if (siteIdListWithPermissions.Count > 1)
-        //        {
-        //            var switchMenus = new List<Menu>();
-        //            var allSiteMenus = new List<Menu>();
-
-        //            var siteIdList = await _siteRepository.GetLatestSiteIdListAsync(siteIdListLatestAccessed, siteIdListWithPermissions);
-        //            foreach (var siteId in siteIdList)
-        //            {
-        //                var site = await _siteRepository.GetAsync(siteId);
-        //                if (site == null) continue;
-
-        //                allSiteMenus.Add(new Menu
-        //                {
-        //                    Link = $"{_pathManager.GetAdminUrl()}?siteId={site.Id}",
-        //                    Target = "_top",
-        //                    Text = site.SiteName
-        //                });
-        //            }
-
-        //            switchMenus.Add(new Menu
-        //            {
-        //                IconClass = "el-icon-refresh",
-        //                Link = _pathManager.GetAdminUrl(SitesLayerSelectController.Route),
-        //                Target = "_layer",
-        //                Text = "选择站点"
-        //            });
-        //            switchMenus.Add(new Menu
-        //            {
-        //                IconClass = "ion-earth",
-        //                Text = "最近访问",
-        //                Selected = true,
-        //                Children = allSiteMenus.ToArray()
-        //            });
-
-        //            menus.Add(new Menu
-        //            {
-        //                Text = "切换站点",
-        //                Children = switchMenus.ToArray()
-        //            });
-        //        }
-        //    }
-
-        //    var topMenus = _menusAccessor.CurrentValue.Where(x => x.Id != IdSite).ToList();
-
-        //    if (isSuperAdmin)
-        //    {
-        //        menus = topMenus;
-        //    }
-        //    else
-        //    {
-        //        foreach (var tab in topMenus)
-        //        {
-        //            if (!_authManager.IsValid(tab, permissionList)) continue;
-
-        //            var tabToAdd = new Menu
-        //            {
-        //                Id = tab.Id,
-        //                Text = tab.Text,
-        //                Target = tab.Target,
-        //                Link = tab.Link
-        //            };
-        //            var tabs = tab.Children;
-        //            var tabsToAdd = new List<Menu>();
-        //            foreach (var menu in tabs)
-        //            {
-        //                if (!_authManager.IsValid(menu, permissionList)) continue;
-
-        //                List<Menu> children = null;
-        //                if (menu.Children != null)
-        //                {
-        //                    children = menu.Children.Where(child => _authManager.IsValid(child, permissionList)).ToList();
-        //                }
-
-        //                tabsToAdd.Add(new Menu
-        //                {
-        //                    Id = menu.Id,
-        //                    Text = menu.Text,
-        //                    Target = menu.Target,
-        //                    Link = menu.Link,
-        //                    Children = children
-        //                });
-        //            }
-        //            tabToAdd.Children = tabsToAdd.ToArray();
-
-        //            menus.Add(tabToAdd);
-        //        }
-        //    }
-
-        //    return menus;
-        //}
-
-        //private List<Menu> GetLeftMenus(Site site, bool isSuperAdmin, List<string> permissionList)
-        //{
-        //    var menus = new List<Menu>();
-
-        //    var siteMenu = _menusAccessor.CurrentValue.FirstOrDefault(x => x.Id == IdSite);
-        //    if (siteMenu == null) return menus;
-
-        //    foreach (var parent in siteMenu.Children)
-        //    {
-        //        if (!isSuperAdmin && !_authManager.IsValid(parent, permissionList)) continue;
-
-        //        var children = new List<Menu>();
-        //        if (parent.Children != null)
-        //        {
-        //            var tabCollection = new List<Menu>(parent.Children);
-        //            foreach (var childTab in tabCollection)
-        //            {
-        //                if (!isSuperAdmin && !_authManager.IsValid(childTab, permissionList)) continue;
-
-        //                children.Add(new Menu
-        //                {
-        //                    Id = childTab.Id,
-        //                    Link = GetHref(childTab, site.Id),
-        //                    Text = childTab.Text,
-        //                    Target = childTab.Target,
-        //                    IconClass = childTab.IconClass
-        //                });
-        //            }
-        //        }
-
-        //        menus.Add(new Menu
-        //        {
-        //            Id = parent.Id,
-        //            Link = GetHref(parent, site.Id),
-        //            Text = parent.Text,
-        //            Target = parent.Target,
-        //            IconClass = parent.IconClass,
-        //            Selected = parent.Selected,
-        //            Children = children.ToArray()
-        //        });
-        //    }
-
-        //    return menus;
-        //}
-
-        //private static string GetHref(Menu tab, int siteId)
-        //{
-        //    var href = tab.Link;
-        //    if (!PageUtils.IsAbsoluteUrl(href))
-        //    {
-        //        href = PageUtils.AddQueryString(href,
-        //            new NameValueCollection { { "siteId", siteId.ToString() } });
-        //    }
-
-        //    return href;
-        //}
-
         private async Task<(bool redirect, string redirectUrl)> AdminRedirectCheckAsync()
         {
             var redirect = false;
@@ -294,8 +143,8 @@ namespace SSCMS.Web.Controllers.Admin
             return (redirect, redirectUrl);
         }
 
-        
 
-        
+
+
     }
 }

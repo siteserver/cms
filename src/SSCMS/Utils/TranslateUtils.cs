@@ -51,6 +51,16 @@ namespace SSCMS.Utils
             return Enum.TryParse<T>(value, true, out var result) ? result : defaultValue;
         }
 
+        public static (bool, T) ToEnum<T>(string value) where T : struct
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return (false, default(T));
+            }
+
+            return Enum.TryParse<T>(value, true, out var result) ? (true, result) : (false, default(T));
+        }
+
         public static int ToInt(string intStr, int defaultValue = 0)
         {
             if (!int.TryParse(intStr?.Trim().TrimStart('0'), out var i))
@@ -76,6 +86,28 @@ namespace SSCMS.Utils
         public static decimal ToDecimal(string intStr, decimal defaultValue = 0)
         {
             if (!decimal.TryParse(intStr?.Trim(), out var i))
+            {
+                i = defaultValue;
+            }
+            if (i < 0)
+            {
+                i = defaultValue;
+            }
+            return i;
+        }
+
+        public static decimal ToDecimalWithNegative(string intStr, decimal defaultValue)
+        {
+            if (!decimal.TryParse(intStr?.Trim(), out var i))
+            {
+                i = defaultValue;
+            }
+            return i;
+        }
+
+        public static float ToFloat(string intStr, float defaultValue = 0)
+        {
+            if (!float.TryParse(intStr?.Trim(), out var i))
             {
                 i = defaultValue;
             }

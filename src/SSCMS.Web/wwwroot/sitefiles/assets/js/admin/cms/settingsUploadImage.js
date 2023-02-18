@@ -30,8 +30,8 @@ var methods = {
         isImageUploadChangeFileName: res.isImageUploadChangeFileName,
         imageUploadExtensions: res.imageUploadExtensions,
         imageUploadTypeMaxSize: res.imageUploadTypeMaxSize,
-        photoSmallWidth: res.photoSmallWidth,
-        photoMiddleWidth: res.photoMiddleWidth,
+        isImageAutoResize: res.isImageAutoResize,
+        imageAutoResizeWidth: res.imageAutoResizeWidth,
       };
     }).catch(function (error) {
       utils.error(error);

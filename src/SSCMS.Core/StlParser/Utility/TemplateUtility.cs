@@ -29,12 +29,12 @@ namespace SSCMS.Core.StlParser.Utility
             var preSite = pageInfo.Site;
             var prePageChannelId = pageInfo.PageChannelId;
             var prePageContentId = pageInfo.PageContentId;
-            if (content.SiteId != pageInfo.SiteId)
-            {
-                var siteInfo = await parseManager.DatabaseManager.SiteRepository.GetAsync(content.SiteId);
-                parseManager.ContextInfo.Site = siteInfo;
-                pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, parseManager.ContextInfo);
-            }
+            // if (content.SiteId != pageInfo.SiteId)
+            // {
+            //     var siteInfo = await parseManager.DatabaseManager.SiteRepository.GetAsync(content.SiteId);
+            //     parseManager.ContextInfo.Site = siteInfo;
+            //     pageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, parseManager.ContextInfo);
+            // }
 
             var theTemplateString = string.Empty;
 
@@ -75,10 +75,10 @@ namespace SSCMS.Core.StlParser.Utility
 
             DbItemContainer.PopContentItem(pageInfo);
 
-            if (content.SiteId != pageInfo.SiteId)
-            {
-                pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, parseManager.ContextInfo);
-            }
+            // if (content.SiteId != pageInfo.SiteId)
+            // {
+            //     pageInfo.ChangeSite(preSite, prePageChannelId, prePageContentId, parseManager.ContextInfo);
+            // }
 
             parseManager.ContextInfo = context;
 

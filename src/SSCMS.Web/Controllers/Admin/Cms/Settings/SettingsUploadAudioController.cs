@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public DateFormatType AudioUploadDateFormatString { get; set; }
             public bool IsAudioUploadChangeFileName { get; set; }
             public string AudioUploadExtensions { get; set; }
-            public int AudioUploadTypeMaxSize { get; set; }
+            public long AudioUploadTypeMaxSize { get; set; }
         }
 
         public class SubmitRequest : SiteRequest
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public DateFormatType AudioUploadDateFormatString { get; set; }
             public bool IsAudioUploadChangeFileName { get; set; }
             public string AudioUploadExtensions { get; set; }
-            public int AudioUploadTypeMaxSize { get; set; }
+            public long AudioUploadTypeMaxSize { get; set; }
         }
     }
 }

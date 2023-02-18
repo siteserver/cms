@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SSCMS.Configuration;
@@ -14,10 +15,14 @@ namespace SSCMS.Core.Services
 {
     public partial class CreateManager
     {
-        public async Task ExecuteAsync(int siteId, CreateType createType, int channelId, int contentId,
-            int fileTemplateId, int specialId)
+        public async Task ExecuteAsync(int siteId, CreateType createType, int channelId = 0, int contentId = 0,
+            int fileTemplateId = 0, int specialId = 0)
         {
-            if (createType == CreateType.Channel)
+            if (createType == CreateType.Index)
+            {
+                await ExecuteChannelAsync(siteId, siteId);
+            }
+            else if (createType == CreateType.Channel)
             {
                 await ExecuteChannelAsync(siteId, channelId);
             }
@@ -478,12 +483,55 @@ namespace SSCMS.Core.Services
 
             try
             {
+                await ReplaceCDNAsync(contentBuilder);
                 await FileUtils.WriteTextAsync(filePath, contentBuilder.ToString());
             }
             catch
             {
                 FileUtils.RemoveReadOnlyAndHiddenIfExists(filePath);
                 await FileUtils.WriteTextAsync(filePath, contentBuilder.ToString());
+            }
+        }
+
+        private async Task ReplaceCDNAsync(StringBuilder contentBuilder)
+        {
+            var isCloudCdnImage = false;
+            var isCloudCdnFiles = false;
+            var pageInfo = _parseManager.PageInfo;
+            if (pageInfo.Config.CloudUserId > 0 && pageInfo.Config.IsCloudCdn)
+            {
+                isCloudCdnImage = pageInfo.Config.IsCloudCdnImages;
+                isCloudCdnFiles = pageInfo.Config.IsCloudCdnFiles;
+            }
+
+            if (!isCloudCdnImage && !isCloudCdnFiles) return;
+
+            var webUrl = pageInfo.Site.IsSeparatedWeb ? PageUtils.Combine(pageInfo.Site.SeparatedWebUrl, "/") : "/";
+            var siteDirs = await _siteRepository.GetSiteDirCascadingAsync(pageInfo.SiteId);
+
+            var storageFiles = await _storageFileRepository.GetStorageFileListAsync();
+            var siteFiles = storageFiles.Where(x => !FileUtils.IsHtml(x.FileType));
+            if (!string.IsNullOrEmpty(siteDirs))
+            {
+                siteFiles = siteFiles.Where(x => StringUtils.StartsWithIgnoreCase(x.Key, siteDirs));
+            }
+
+            foreach (var file in siteFiles)
+            {
+                if (FileUtils.IsImage(file.FileType))
+                {
+                    if (isCloudCdnImage)
+                    {
+                        contentBuilder.Replace($"{webUrl}{file.Key}", $"{CloudManager.DomainDns}/{pageInfo.Config.CloudUserId}/{file.Key}");
+                    }
+                }
+                else
+                {
+                    if (isCloudCdnFiles)
+                    {
+                        contentBuilder.Replace($"{webUrl}{file.Key}", $"{CloudManager.DomainDns}/{pageInfo.Config.CloudUserId}/{file.Key}");
+                    }
+                }
             }
         }
     }

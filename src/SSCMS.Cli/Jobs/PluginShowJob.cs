@@ -14,12 +14,12 @@ namespace SSCMS.Cli.Jobs
 
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly OptionSet _options;
 
-        public PluginShowJob(IApiService apiService)
+        public PluginShowJob(ICliApiService cliApiService)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _options = new OptionSet
             {
                 {
@@ -29,34 +29,35 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName} <pluginId>");
-            Console.WriteLine("Summary: show plugin metadata");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName} <pluginId>");
+            await console.WriteLineAsync("Summary: show plugin metadata");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
-            var (success, result, failureMessage) = await _apiService.PluginShowAsync(string.Join(' ', context.Extras));
+            var (success, result, failureMessage) = await _cliApiService.PluginShowAsync(string.Join(' ', context.Extras));
 
             if (success)
             {
-                await WriteUtils.PrintSuccessAsync(TranslateUtils.JsonSerialize(result));
+                await console.WriteSuccessAsync(TranslateUtils.JsonSerialize(result));
             }
             else
             {
-                await WriteUtils.PrintErrorAsync(failureMessage);
+                await console.WriteErrorAsync(failureMessage);
             }
         }
     }

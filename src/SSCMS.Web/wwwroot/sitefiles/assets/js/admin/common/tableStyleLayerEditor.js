@@ -1,11 +1,13 @@
 ﻿var $url = '/common/tableStyle/layerEditor';
 
 var data = utils.init({
+  siteId: utils.getQueryInt('siteId'),
   tableName: utils.getQueryString('tableName'),
   attributeName: utils.getQueryString('attributeName'),
   relatedIdentities: utils.getQueryString('relatedIdentities'),
   excludes: utils.getQueryStringList('excludes'),
   inputTypes: null,
+  relatedFields: null,
   form: null
 });
 
@@ -16,6 +18,7 @@ var methods = {
     utils.loading(this, true);
     $api.get($url, {
       params: {
+        siteId: this.siteId,
         tableName: this.tableName,
         attributeName: this.attributeName,
         relatedIdentities: this.relatedIdentities
@@ -27,7 +30,12 @@ var methods = {
         return $this.excludes.indexOf(x.key) == -1;
       });
 
+      $this.relatedFields = res.relatedFields;
+
       $this.form = res.form;
+      if ($this.form.relatedFieldId === 0) {
+        $this.form.relatedFieldId = null;
+      }
       if (!$this.form.items || $this.form.items.length === 0) {
         $this.form.items.push({
           label: '',
@@ -81,7 +89,8 @@ var methods = {
       this.$refs['form1'],
       this.$refs['form2'],
       this.$refs['form3'],
-      this.$refs['form4']
+      this.$refs['form4'],
+      this.$refs['form5']
     ];
     var success = true;
     _.forEach(forms, function(value) {
@@ -140,5 +149,6 @@ var $vue = new Vue({
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
+    utils.focus(this, 'attributeName');
   }
 });

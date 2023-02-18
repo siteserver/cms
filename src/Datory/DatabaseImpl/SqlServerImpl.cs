@@ -164,12 +164,17 @@ namespace Datory.DatabaseImpl
 
         public string GetPrimaryKeySqlString(string tableName, string attributeName)
         {
-            return $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
+            return $@"CONSTRAINT PK_{RemoveQuotedIdentifier(tableName)}_{RemoveQuotedIdentifier(attributeName)} PRIMARY KEY ({RemoveQuotedIdentifier(attributeName)})";
         }
 
         public string GetQuotedIdentifier(string identifier)
         {
             return $"[{identifier}]";
+        }
+
+        public string RemoveQuotedIdentifier(string identifier)
+        {
+            return identifier.Replace("[", string.Empty).Replace("]", string.Empty);
         }
 
         private DataType ToDataType(string dataTypeStr, string dataLength)
@@ -220,6 +225,7 @@ namespace Datory.DatabaseImpl
         public async Task<List<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
+            tableName = Utilities.FilterSql(tableName);
 
             using (var connection = GetConnection(connectionString))
             {
@@ -291,7 +297,8 @@ namespace Datory.DatabaseImpl
 
         public string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
-            return $"ALTER TABLE {GetQuotedIdentifier(tableName)} ADD {columnsSqlString}";
+            tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+            return $"ALTER TABLE {tableName} ADD {columnsSqlString}";
         }
     }
 }

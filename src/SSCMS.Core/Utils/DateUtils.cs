@@ -6,11 +6,22 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
-	public static class DateUtils
-	{
+    public static class DateUtils
+    {
         public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
         private static readonly DateTime JanFirst1970 = new DateTime(1970, 1, 1);
+
+        public static string ToString(string dateTimeStr)
+        {
+            var dateTime = TranslateUtils.ToDateTime(dateTimeStr);
+            return ToString(dateTime);
+        }
+
+        public static string ToString(DateTime? dateTime)
+        {
+            return dateTime.HasValue ? dateTime.Value.ToString(FormatStringDateTime) : string.Empty;
+        }
 
         public static int GetUnixTimestamp(DateTime dateTime)
         {
@@ -18,9 +29,9 @@ namespace SSCMS.Core.Utils
         }
 
         public static DateTime GetExpiresAt(TimeSpan expiresAt)
-	    {
-	        return DateTime.UtcNow.Add(expiresAt);
-	    }
+        {
+            return DateTime.UtcNow.Add(expiresAt);
+        }
 
         public static string GetRelatedDateTimeString(DateTime datetime)
         {
@@ -30,7 +41,7 @@ namespace SSCMS.Core.Utils
             {
                 if (interval.Days >= 7 && interval.Days < 35)
                 {
-                    retrieval = $"{interval.Days/7}周";
+                    retrieval = $"{interval.Days / 7}周";
                 }
                 else
                 {
@@ -78,9 +89,9 @@ namespace SSCMS.Core.Utils
         }
 
         public static string GetDateAndTimeString(DateTimeOffset? offset)
-	    {
-	        return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
-	    }
+        {
+            return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
+        }
 
         public static string GetDateString(DateTime datetime, DateFormatType dateFormat)
         {
@@ -104,10 +115,10 @@ namespace SSCMS.Core.Utils
             return datetime.ToString(format);
         }
 
-		public static string GetTimeString(DateTime datetime)
-		{
-			return GetTimeString(datetime, TimeFormatType.ShortTime);
-		}
+        public static string GetTimeString(DateTime datetime)
+        {
+            return GetTimeString(datetime, TimeFormatType.ShortTime);
+        }
 
         private static string GetTimeString(DateTime datetime, TimeFormatType timeFormat)
         {
@@ -167,9 +178,9 @@ namespace SSCMS.Core.Utils
         }
 
         public static string Format(DateTimeOffset? offset, string formatString)
-	    {
-	        return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;
-	    }
+        {
+            return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;
+        }
 
         public static string Format(DateTime datetime, string formatString)
         {
@@ -244,11 +255,11 @@ namespace SSCMS.Core.Utils
             }
             else if (interval == "minute")
             {
-                retVal = (long) ts.TotalMinutes;
+                retVal = (long)ts.TotalMinutes;
             }
             else if (interval == "hour")
             {
-                retVal = (long) ts.TotalHours;
+                retVal = (long)ts.TotalHours;
             }
             else if (interval == "day")
             {

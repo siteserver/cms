@@ -17,6 +17,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
+            var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Images);
+
             var result = new List<SubmitResult>();
             foreach (var filePath in request.FilePaths)
             {
@@ -28,6 +30,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
 
                 var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+                if (isAutoStorage)
+                {
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        imageUrl = url;
+                    }
+                }
 
                 if (request.IsMaterial)
                 {
@@ -55,11 +65,19 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                     var localSmallFileName = Constants.SmallImageAppendix + fileName;
                     var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
-                    var thumbnailUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localSmallFilePath, true);
-
                     var width = request.ThumbWidth;
                     var height = request.ThumbHeight;
-                    OldImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
+                    ImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
+
+                    var thumbnailUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, localSmallFilePath, true);
+                    if (isAutoStorage)
+                    {
+                        var (success, url) = await _storageManager.StorageAsync(request.SiteId, localSmallFilePath);
+                        if (success)
+                        {
+                            thumbnailUrl = url;
+                        }
+                    }
 
                     if (request.IsLinkToOriginal)
                     {

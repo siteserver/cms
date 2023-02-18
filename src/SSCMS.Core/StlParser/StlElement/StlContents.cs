@@ -38,19 +38,13 @@ namespace SSCMS.Core.StlParser.StlElement
                 return ParseEntity(dataSource);
             }
 
-            var innerHtml = await ParseAsync(parseManager, listInfo, dataSource);
-            string parsedContent;
+            var parsedContent = await ParseAsync(parseManager, listInfo, dataSource);
             if (pageInfo.EditMode == EditMode.Visual)
             {
                 var attributes = new NameValueCollection(contextInfo.Attributes);
-                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
-                parsedContent = @$"<div {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</div>";
+                VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, parsedContent);
+                parsedContent = @$"<template {TranslateUtils.ToAttributesString(attributes)}>{parsedContent}</template>";
             }
-            else
-            {
-                parsedContent = innerHtml;
-            }
-
             return parsedContent;
         }
 
@@ -237,6 +231,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(order, StlParserUtility.OrderRandom))
                 {
                     taxisType = TaxisType.OrderByRandom;
+                }
+                else
+                {
+                    taxisType = TranslateUtils.ToEnum<TaxisType>($"OrderBy{order}", TaxisType.OrderByTaxis);
                 }
             }
 

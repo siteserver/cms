@@ -11,11 +11,53 @@ var data = utils.init({
   user: null,
   form: null,
   styles: null,
+  settings: null,
   mobileValidateRules: null,
   countdown: 0
 });
 
 var methods = {
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
   apiGet: function () {
     var $this = this;
 
@@ -24,11 +66,12 @@ var methods = {
 
       $this.isSmsEnabled = res.isSmsEnabled;
       $this.isUserVerifyMobile = res.isUserVerifyMobile;
-      $this.user = res.user;
-      $this.form = _.assign({}, res.user, {
+      $this.user = res.entity;
+      $this.form = _.assign({}, res.entity, {
         code: ''
       });
       $this.styles = res.styles;
+      $this.settings = res.settings;
 
       if ($this.isUserVerifyMobile) {
         $this.mobileValidateRules = [
@@ -108,7 +151,83 @@ var methods = {
   },
 
   isMobile: function (value) {
-    return /^1[3|4|5|7|8][0-9]\d{8}$/.test(value);
+    return /^1[3-9]\d{9}$/.test(value);
+  },
+
+  btnImageSelectClick: function(args) {
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
+    }
+  },
+
+  btnLayerClick: function(options) {
+    var query = {
+      attributeName: options.attributeName
+    };
+    if (options.no) {
+      query.no = options.no;
+    }
+
+    var args = {
+      title: options.title,
+      url: utils.getCommonUrl(options.name, query)
+    };
+    if (!options.full) {
+      args.width = options.width ? options.width : 700;
+      args.height = options.height ? options.height : 500;
+    }
+    utils.openLayer(args);
+  },
+
+  btnExtendAddClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)] + 1;
+    this.form[utils.getCountName(style.attributeName)] = no;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
+  },
+
+  btnExtendRemoveClick: function(style) {
+    var no = this.form[utils.getCountName(style.attributeName)];
+    this.form[utils.getCountName(style.attributeName)] = no - 1;
+    this.form[utils.getExtendName(style.attributeName, no)] = '';
+    this.form = _.assign({}, this.form);
+  },
+
+  btnExtendPreviewClick: function(attributeName, no) {
+    var count = this.form[utils.getCountName(attributeName)];
+    var data = [];
+    for (var i = 0; i <= count; i++) {
+      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
+      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
+      data.push({
+        "src": imageUrl
+      });
+    }
+    layer.photos({
+      photos: {
+        "start": no,
+        "data": data
+      }
+      ,anim: 5
+    });
   },
 
   btnSendSmsClick: function () {

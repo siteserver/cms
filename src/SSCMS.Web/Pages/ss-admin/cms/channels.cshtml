@@ -7,12 +7,17 @@
       text-align: right;
       padding-right: 10px;
     }
+    .el-button-group .el-dropdown {
+      float: left;
+      margin-top: -1px;
+      margin-right: -1px;
+    }
   </style>
 }
 
 <el-row>
   <el-col :span="20">
-    <el-form size="mini" :inline="true">
+    <el-form v-on:submit.native.prevent size="mini" :inline="true">
       <el-form-item label="关键字">
         <el-input v-model="filterText" placeholder="请输入栏目名称/栏目Id"></el-input>
       </el-form-item>
@@ -147,7 +152,6 @@
                 <i class="el-icon-link"></i>
               </el-link>
               {{ data.label }} ({{ data.count }})
-
               <!-- imageUrl -->
               <el-popover
                 v-if="data.imageUrl"
@@ -159,11 +163,9 @@
                 </el-link>
               </el-popover>
 
-              <!-- linkUrl -->
-              <el-tooltip v-if="data.channel.linkUrl" effect="light" content="外部链接" placement="top">
-                <el-link :underline="false" :href="data.channel.linkUrl" target="_blank" v-on:click.stop.native title="外部链接">
-                  <i class="fa fa-external-link"></i>
-                </el-link>
+              <!-- linkType && linkUrl -->
+              <el-tooltip v-if="data.channel.linkType != 'None' || data.channel.linkUrl" effect="light" content="指定链接" placement="top">
+                <i class="fa fa-external-link"></i>
               </el-tooltip>
 
             </div>
@@ -215,14 +217,15 @@
           <td rowspan="1" colspan="1" class="commands">
             <div class="cell">
 
-              <el-link v-for="menu in data.menus" :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnMenuClick(menu, data)">
+              <el-link v-if="channelMenus" v-for="menu in channelMenus" :key="menu.id" :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnMenuClick(menu, data)">
+                <i v-if="menu.iconClass" :class="menu.iconClass"></i>
                 {{ menu.text }}
               </el-link>
 
               <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
                 编辑
               </el-link>
-              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-if="siteId !== data.value" v-on:click.stop.native="btnDeleteClick(data)">
+              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" :disabled="siteId == data.value" v-on:click.stop.native="btnDeleteClick(data)">
                 删除
               </el-link>
 
@@ -271,9 +274,9 @@
   destroy-on-close
   :wrapperClosable="false"
   direction="rtl"
-  size="100%">
+  size="90%">
   <div class="drawer__content">
-    <el-form ref="appendForm" :model="appendForm" size="small" label-width="120px">
+    <el-form v-on:submit.native.prevent ref="appendForm" :model="appendForm" size="small" label-width="120px">
       <el-form-item label="父栏目" prop="parentIds" :rules="{ required: true, message: '请选择父栏目' }">
         <el-cascader
           v-model="appendForm.parentIds"
@@ -332,7 +335,7 @@
     </el-alert>
 
     <br />
-    <el-form size="mini" ref="deleteForm" :model="deleteForm" label-width="160px">
+    <el-form v-on:submit.native.prevent size="mini" ref="deleteForm" :model="deleteForm" label-width="160px">
       <el-form-item>
         <el-radio v-model="deleteForm.deleteFiles" :label="false">保留生成的文件</el-radio>
         <el-radio v-model="deleteForm.deleteFiles" :label="true">删除生成的文件</el-radio>
@@ -365,7 +368,7 @@
   direction="rtl"
   size="80%">
   <div class="drawer__content">
-    <el-form ref="importForm" size="small" :model="importForm" label-width="160px">
+    <el-form v-on:submit.native.prevent ref="importForm" size="small" :model="importForm" label-width="160px">
 
       <el-form-item label="栏目压缩包" prop="fileName" :rules="{ required: true, message: '请上传栏目压缩包' }">
         <el-upload
@@ -418,11 +421,11 @@
   destroy-on-close
   :wrapperClosable="false"
   direction="rtl"
-  size="100%">
+  size="90%">
   <div class="drawer__content">
-    <el-form size="mini" ref="editForm" :model="form" label-width="200px">
-      <el-form-item label="栏目名称" prop="channelName">
-        <el-input v-model="form.channelName" placeholder="请输入栏目名称" :rules="{ required: true, message: '请输入栏目名称' }"></el-input>
+    <el-form v-on:submit.native.prevent size="mini" ref="editForm" :model="form" label-width="200px">
+      <el-form-item label="栏目名称" prop="channelName" :rules="{ required: true, message: '请输入栏目名称' }">
+        <el-input v-model="form.channelName" placeholder="请输入栏目名称"></el-input>
       </el-form-item>
       <el-form-item label="栏目索引">
         <el-input v-model="form.indexName" placeholder="请输入栏目索引"></el-input>
@@ -463,15 +466,34 @@
           编辑
         </el-link>
       </el-form-item>
-      <el-form-item label="外部链接">
-        <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
-      </el-form-item>
       <el-form-item label="链接类型">
         <el-tooltip effect="light" content="设置此栏目的链接与子栏目及内容的关系" placement="right">
-          <el-select v-model="form.linkType" placeholder="请选择链接类型">
+          <el-select v-model="form.linkType" placeholder="请选择链接类型" v-on:change="form.linkUrl = form.linkToChannel = '';">
             <el-option v-for="linkType in editLinkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
           </el-select>
         </el-tooltip>
+      </el-form-item>
+      <el-form-item v-if="form.linkType == 'None'" label="外部链接">
+        <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
+      </el-form-item>
+      <el-form-item v-if="form.linkType == 'LinkToChannel'" label="指定栏目" prop="linkUrl" :rules="{ required: true, message: '请选择链接到指定栏目' }">
+        <el-tag
+          v-if="form.linkToChannel"
+          closable
+          size="small"
+          v-on:close="form.linkToChannel = ''"
+          type="primary">
+          {{ form.linkToChannel }}
+        </el-tag>
+        <el-cascader
+          v-else
+          v-model="form.linkUrl"
+          filterable
+          :options="root"
+          :props="{ checkStrictly: true }"
+          style="width: 100%;"
+          placeholder="请选择栏目">
+        </el-cascader>
       </el-form-item>
       <el-form-item label="新增内容排序规则">
         <el-tooltip effect="light" content="新增或导入的内容将按照此排序规则进行排序" placement="right">

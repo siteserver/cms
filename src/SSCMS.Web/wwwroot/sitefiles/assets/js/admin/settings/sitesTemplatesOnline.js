@@ -7,10 +7,12 @@ var data = utils.init({
   tag: utils.getQueryString('tag'),
   price: utils.getQueryString('price'),
   order: utils.getQueryString('order'),
+  buy: utils.getQueryString('buy'),
   themes: null,
   count: null,
   pages: null,
-  tags: []
+  tags: [],
+  orderedGuids: [],
 });
 
 var methods = {
@@ -32,15 +34,25 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order).then(function (response) {
+    cloud.getThemes(this.page, this.word, this.tag, this.price, this.order)
+    .then(function (response) {
       var res = response.data;
 
       $this.themes = res.themes;
       $this.count = res.count;
       $this.pages = res.pages;
       $this.tags = res.tags;
+      $this.orderedGuids = res.orderedGuids;
+
+      if ($this.buy) {
+        var userName = $this.buy.split('.')[0];
+        var name = $this.buy.split('.')[1];
+        $this.btnBuyClick(userName, name);
+      }
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     }).then(function () {
       utils.loading($this, false);
     });
@@ -58,6 +70,10 @@ var methods = {
     return cloud.hostStorage + '/themes/' + theme.userName + '/' + theme.name + '/' + _.trim(theme.coverUrl, '/');
   },
 
+  isCreatable: function (theme) {
+    return theme.price === 0 || this.orderedGuids.indexOf(theme.guid) !== -1;
+  },
+
   btnImageClick: function(theme) {
     window.open(this.getDisplayUrl(theme));
   },
@@ -72,6 +88,7 @@ var methods = {
       createType: 'cloud',
       cloudThemeUserName: theme.userName,
       cloudThemeName: theme.name,
+      isCloudThemeFree: theme.price === 0
     });
   },
 
@@ -132,8 +149,32 @@ var methods = {
     return 'javascript:;';
   },
 
-  btnBuyClick: function(theme) {
-    window.open(this.getThemeUrl(theme));
+  btnBuyClick: function(userName, name) {
+    var $this = this;
+    var url = utils.addQuery(location.href, {
+      buy: userName + '.' + name
+    });
+    cloud.checkAuth(function() {
+      utils.openLayer({
+        title: '购买',
+        width: 600,
+        height: 500,
+        url: cloud.host + '/layer/pay.html?resourceType=Theme&userName=' + userName + '&name=' + name
+      });
+
+      window.addEventListener(
+        'message',
+        function(e) {
+          if (e.origin !== cloud.host) return;
+          var userName = e.data.userName;
+          var name = e.data.name;
+          if (userName && name) {
+            $this.btnCreateClick(e.data);
+          }
+        },
+        false,
+      );
+    }, url);
   },
 
   btnCloseClick: function() {

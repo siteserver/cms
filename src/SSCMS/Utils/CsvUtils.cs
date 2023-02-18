@@ -4,7 +4,7 @@ using System.Text;
 namespace SSCMS.Utils
 {
     public class CsvUtils
-	{
+    {
         public static void Export(string filePath, List<string> head, List<List<string>> rows)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -67,5 +67,5 @@ namespace SSCMS.Utils
                 rows.Add(row);
             }
         }
-	}
+    }
 }

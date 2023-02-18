@@ -21,11 +21,17 @@ namespace SSCMS.Web.Controllers.Home
                 .Select(x => new InputStyle(x));
 
             var isUserVerifyMobile = false;
-            var isSmsEnabled = await _smsManager.IsEnabledAsync();
+            var smsSettings = await _smsManager.GetSmsSettingsAsync();
+            var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;
             if (isSmsEnabled && config.IsUserForceVerifyMobile)
             {
                 isUserVerifyMobile = true;
             }
+
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
 
             return new GetResult
             {
@@ -37,7 +43,8 @@ namespace SSCMS.Web.Controllers.Home
                 IsHomeAgreement = config.IsHomeAgreement,
                 HomeAgreementHtml = config.HomeAgreementHtml,
                 Styles = styles,
-                Groups = await _userGroupRepository.GetUserGroupsAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync(),
+                Settings = settings
             };
         }
     }

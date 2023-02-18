@@ -11,7 +11,7 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
-    groupId: -utils.getQueryInt("siteId"),
+    groupId: 0,
     page: 1,
     perPage: 24,
     articleIds: utils.getQueryString("articleIds"),

@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 
                     var width = request.ThumbWidth;
                     var height = request.ThumbHeight;
-                    OldImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
+                    ImageUtils.MakeThumbnail(filePath, localSmallFilePath, width, height, true);
 
                     if (request.IsLinkToOriginal)
                     {

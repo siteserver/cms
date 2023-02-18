@@ -24,23 +24,13 @@ var methods = {
     });
   },
 
-  apiVerify: function (securityKey) {
-    var $this = this;
-
-    $api.post($urlVerify, {
-      securityKey: securityKey
-    }).then(function (response) {
-      $this.apiSubmit();
-    }).catch(function (error) {
-      utils.error(error);
-    });
-  },
-
-  apiSubmit: function () {
+  apiSubmit: function (securityKey) {
     var $this = this;
 
     this.pageType = 'update';
-    $api.post($url).then(function (response) {
+    $api.post($url, {
+      securityKey: securityKey
+    }).then(function (response) {
       $this.pageType = 'done';
     }).catch(function (error) {
       utils.error(error);
@@ -60,10 +50,10 @@ var methods = {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
       }).then(function(val) {
-        $this.apiVerify(val.value);
+        $this.apiSubmit(val.value);
       });
     } else {
-      this.apiSubmit();
+      this.apiSubmit('');
     }
   }
 };

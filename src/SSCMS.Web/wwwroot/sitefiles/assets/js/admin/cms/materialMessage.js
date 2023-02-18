@@ -20,7 +20,7 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
-    groupId: -utils.getQueryInt("siteId"),
+    groupId: 0,
     page: 1,
     perPage: 24
   }
@@ -43,7 +43,10 @@ var methods = {
 
       $this.groups = res.groups;
       $this.count = res.count;
-      $this.messages = res.messages;
+      $this.messages = [];
+      for (var message of res.messages) {
+        $this.messages.push(_.assign({isSelectGroups: false}, message));
+      }
       $this.siteType = res.siteType;
       $this.urlList = _.map($this.messages, function (item) {
         return item.thumbUrl;

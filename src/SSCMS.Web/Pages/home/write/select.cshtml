@@ -14,21 +14,17 @@
   
   <div style="height: 10px"></div>
 
-  <el-form size="small" label-width="100px">
+  <el-form v-on:submit.native.prevent size="small" label-width="100px">
     <el-form-item label="站点" prop="siteId">
-      <el-select
-        ref="siteId"
-        v-model="siteId"
-        filterable
+      <el-cascader
+        ref="siteIds"
+        v-model="siteIds"
+        :options="sites"
+        :props="{ multiple: false, checkStrictly: true }"
         v-on:change="handleSiteIdChange"
+        filterable
         placeholder="请选择投稿站点">
-        <el-option
-          v-for="site in sites"
-          :key="site.value"
-          :label="site.label"
-          :value="site.value">
-        </el-option>
-      </el-select>
+      </el-cascader>
     </el-form-item>
     <el-form-item label="栏目" prop="channelIds">
       <el-cascader
@@ -37,7 +33,7 @@
         :options="[root]"
         :props="{ multiple: false, checkStrictly: true }"
         filterable
-        placeholder="请选择栏目">
+        placeholder="请选择投稿栏目">
         <span slot-scope="{ node, data }">
           {{ node.label }} ({{ data.count }})
         </span>

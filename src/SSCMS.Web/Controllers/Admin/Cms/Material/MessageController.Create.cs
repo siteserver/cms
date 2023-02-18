@@ -39,11 +39,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             await _pathManager.UploadAsync(file, filePath);
 
-            var (title, imageUrl, wordContent) = await WordManager.GetWordAsync(_pathManager, site, false, true, true, true, true, false, filePath, fileTitle);
+            var wordManager = new WordManager(false, true, true, true, true, false, filePath, fileTitle);
+            await wordManager.ParseAsync(_pathManager, site);
             FileUtils.DeleteFileIfExists(filePath);
 
-            var summary = StringUtils.MaxLengthText(StringUtils.StripTags(wordContent), 100);
-            await _materialMessageRepository.InsertAsync(request.GroupId, title, imageUrl, summary, wordContent);
+            var summary = StringUtils.MaxLengthText(StringUtils.StripTags(wordManager.Body), 100);
+            await _materialMessageRepository.InsertAsync(request.GroupId, wordManager.Title, wordManager.ImageUrl, summary, wordManager.Body);
 
             return new BoolResult
             {

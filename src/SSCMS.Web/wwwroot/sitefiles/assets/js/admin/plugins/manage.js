@@ -56,7 +56,8 @@ var methods = {
 
       var pluginIds = $this.enabledPlugins.map(function(x) { return x.pluginId });
 
-      cloud.getUpdates($this.cmsVersion, pluginIds).then(function (response) {
+      cloud.getUpdates($this.cmsVersion, pluginIds)
+      .then(function (response) {
         var res = response.data;
 
         var releases = res.releases;
@@ -83,7 +84,9 @@ var methods = {
         }
       });
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     }).then(function () {
       $this.btnNavSelect($this.pageType || 'enabled');
       utils.loading($this, false);
@@ -284,9 +287,7 @@ var $vue = new Vue({
       var pluginIds = [];
       for (var i = 0; i < this.updatePlugins.length; i++) {
         var plugin = this.updatePlugins[i];
-        if (plugin.price === 0) {
-          pluginIds.push(plugin.pluginId);
-        }
+        pluginIds.push(plugin.pluginId);
       }
       return pluginIds;
     }

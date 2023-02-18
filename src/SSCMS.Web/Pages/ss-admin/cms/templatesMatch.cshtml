@@ -9,7 +9,7 @@
   </style>
 }
 
-<el-form :inline="true">
+<el-form v-on:submit.native.prevent :inline="true">
   <el-form-item label="栏目名称">
     <el-input v-model="filterText" size="mini" placeholder="输入栏目进行过滤"></el-input>
   </el-form-item>
@@ -62,7 +62,10 @@
         v-on:check-change="handleCheckChange">
         <div slot-scope="{ node, data }">
           <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank"><i class="el-icon-link"></i></el-link>
-          {{ data.label }} 
+          {{ data.label }} ({{ data.count }})
+          <el-tooltip v-if="data.linkType != 'None' || data.linkUrl" effect="light" content="指定链接" placement="top">
+            <i class="fa fa-external-link"></i>
+          </el-tooltip>
           <el-tag size="mini">
             {{ getChannelTemplateName(data.channelTemplateId) }}
           </el-tag>

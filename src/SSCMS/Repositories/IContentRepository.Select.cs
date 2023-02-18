@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Enums;
 using SSCMS.Models;
 
 namespace SSCMS.Repositories
@@ -23,6 +24,8 @@ namespace SSCMS.Repositories
         Task<List<int>> GetContentIdsCheckedAsync(Site site, Channel channel);
 
         Task<List<int>> GetContentIdsAsync(Site site, Channel channel, bool isPeriods, string dateFrom, string dateTo, bool? checkedState);
+
+        Task<List<int>> GetContentIdsByLinkTypeAsync(Site site, Channel channel, LinkType linkType);
 
         Task<List<int>> GetChannelIdsCheckedByLastModifiedDateHourAsync(Site site, int hour);
 

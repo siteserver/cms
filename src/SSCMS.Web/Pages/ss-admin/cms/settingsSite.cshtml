@@ -8,11 +8,16 @@
       width: 100% !important;
       min-height: 300px;
     }
+    .el-button-group .el-dropdown {
+      float: left;
+      margin-top: -2.5px;
+      margin-right: -1px;
+    }
   </style>
 }
 
 <div style="height: 10px"></div>
-<el-form size="small" ref="form" :model="form" label-width="160px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="160px">
 
   @await Html.PartialAsync("_PartialForm")
   

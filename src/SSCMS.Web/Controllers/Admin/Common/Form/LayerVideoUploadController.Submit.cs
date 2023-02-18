@@ -15,6 +15,9 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
+            var vodSettings = await _vodManager.GetVodSettingsAsync();
+            var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
+
             var result = new List<SubmitResult>();
             foreach (var filePath in request.FilePaths)
             {
@@ -23,23 +26,50 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 var fileName = PathUtils.GetFileName(filePath);
 
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
-                var fileUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                var playUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                var coverUrl = string.Empty;
+
+                if (vodSettings.IsVod)
+                {
+                    var vodPlay = await _vodManager.UploadVodAsync(filePath);
+                    if (vodPlay.Success)
+                    {
+                        virtualUrl = playUrl = vodPlay.PlayUrl;
+                        coverUrl = vodPlay.CoverUrl;
+                    }
+                }
+                else if (isAutoStorage)
+                {
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        virtualUrl = playUrl = url;
+                    }
+                }
 
                 if (request.IsLibrary)
                 {
-                    var materialFileName = PathUtils.GetMaterialFileName(fileName);
-                    var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
+                    var url = string.Empty;
+                    if (vodSettings.IsVod)
+                    {
+                        url = playUrl;
+                    }
+                    else
+                    {
+                        var materialFileName = PathUtils.GetMaterialFileName(fileName);
+                        var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
+                        var directoryPath = _pathManager.ParsePath(virtualDirectoryPath);
+                        var materialFilePath = PathUtils.Combine(directoryPath, materialFileName);
+                        DirectoryUtils.CreateDirectoryIfNotExists(materialFilePath);
+                        FileUtils.CopyFile(filePath, materialFilePath, true);
 
-                    var directoryPath = _pathManager.ParsePath(virtualDirectoryPath);
-                    var materialFilePath = PathUtils.Combine(directoryPath, materialFileName);
-                    DirectoryUtils.CreateDirectoryIfNotExists(materialFilePath);
-
-                    FileUtils.CopyFile(filePath, materialFilePath, true);
+                        url = PageUtils.Combine(virtualDirectoryPath, materialFileName);
+                    }
 
                     var video = new MaterialVideo
                     {
                         Title = fileName,
-                        Url = PageUtils.Combine(virtualDirectoryPath, materialFileName)
+                        Url = url
                     };
 
                     await _materialVideoRepository.InsertAsync(video);
@@ -48,8 +78,9 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                 result.Add(new SubmitResult
                 {
-                    FileUrl = fileUrl,
-                    FileVirtualUrl = virtualUrl
+                    PlayUrl = playUrl,
+                    VirtualUrl = virtualUrl,
+                    CoverUrl = coverUrl
                 });
             }
 

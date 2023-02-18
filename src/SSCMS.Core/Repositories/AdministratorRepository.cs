@@ -187,7 +187,7 @@ namespace SSCMS.Core.Repositories
             if (lastActivityDate > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-lastActivityDate);
-                query.WhereDate(nameof(Administrator.LastActivityDate), ">=", dateTime);
+                query.Where(nameof(Administrator.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -221,7 +221,7 @@ namespace SSCMS.Core.Repositories
             if (lastActivityDate > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-lastActivityDate);
-                query.WhereDate(nameof(Administrator.LastActivityDate), ">=", dateTime);
+                query.Where(nameof(Administrator.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -327,7 +327,7 @@ namespace SSCMS.Core.Repositories
                 var dst = new byte[buffer2.Length + src.Length];
                 Buffer.BlockCopy(buffer2, 0, dst, 0, buffer2.Length);
                 Buffer.BlockCopy(src, 0, dst, buffer2.Length, src.Length);
-                var algorithm = HashAlgorithm.Create("SHA1");
+                var algorithm = SHA1.Create(); // HashAlgorithm.Create("SHA1");
                 if (algorithm == null) return retVal;
                 var inArray = algorithm.ComputeHash(dst);
 

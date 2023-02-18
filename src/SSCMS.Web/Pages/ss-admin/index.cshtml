@@ -14,7 +14,7 @@
 
   <template v-if="isDesktop">
 
-    <el-link v-for="topMenu in menus" class="nav" :key="topMenu.id" :underline="false" :icon="topMenu.iconClass"  v-on:click="btnTopMenuClick(topMenu)" :style="{backgroundColor: (topMenu == menu ? '#2e9c90' : '')}">
+    <el-link v-for="topMenu in menus" class="nav" :key="topMenu.id" :underline="false" :icon="topMenu.iconClass" v-on:click="btnTopMenuClick(topMenu)" :style="{backgroundColor: (topMenu == menu ? '#2e9c90' : '')}">
       {{ topMenu.text }}
     </el-link>
 
@@ -114,6 +114,10 @@
         </a>
       </div>
 
+      <el-link v-if="cloudType && cloudType != 'Free'" class="nav" :underline="false" icon="el-icon-service" style="float: none; padding: 0 10px;" v-on:click="btnMenuClick({text: '工单技术支持', link: './clouds/tickets/'})">
+        工单中心
+      </el-link>
+
       <el-dropdown v-on:command="btnUserMenuClick">
         <span class="el-dropdown-link" style="top: 7px;position: inherit;">
           <el-avatar size="small" :src="local.avatarUrl || '/sitefiles/assets/images/default_avatar.png'"></el-avatar>
@@ -148,6 +152,11 @@
         <el-link :underline="false" :href="siteUrl" target="_blank" style="margin-left: -15px;">
           <i :class="siteType.iconClass"></i>
           访问站点
+        </el-link>
+      </div>
+      <div v-else-if="menu.id === $idSiteSwitch">
+        <el-link :underline="false" style="margin-left: -15px;" v-on:click="btnMenuClick(menu.children[0])">
+          {{ menu.text }}
         </el-link>
       </div>
       <div v-else>
@@ -235,6 +244,14 @@
       v-for="(item, index) in tabs"
       :label="item.title"
       :name="item.name">
+      <span slot="label">
+        <!-- <el-link v-if="!isCloudAdmin" :underline="false" v-on:click="openDocs(item)">
+          <el-tooltip class="item" effect="dark" content="操作手册" placement="bottom">
+            <i class="el-icon-info"></i>
+          </el-tooltip>
+        </el-link> -->
+        {{item.title}}
+      </span>
       <iframe :id="'frm-' + item.name" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
     </el-tab-pane>
   </el-tabs>

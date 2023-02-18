@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using SqlKata;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -104,11 +105,11 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                query.WhereDate(nameof(SiteLog.CreatedDate), ">=", TranslateUtils.ToDateTime(dateFrom));
+                query.Where(nameof(SiteLog.CreatedDate), ">=", DateUtils.ToString(dateFrom));
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                query.WhereDate(nameof(SiteLog.CreatedDate), "<=", TranslateUtils.ToDateTime(dateTo));
+                query.Where(nameof(SiteLog.CreatedDate), "<=", DateUtils.ToString(dateTo));
             }
 
             return query;

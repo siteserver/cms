@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Datory;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -35,6 +36,20 @@ namespace SSCMS.Core.Repositories
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
         public const string AttrExtendValues = "ExtendValues";
+
+        public async Task<Repository<Content>> GetRepositoryAsync(string tableName)
+        {
+            if (TableNameRepositories.TryGetValue(tableName, out var repository))
+            {
+                return repository;
+            }
+
+            repository = new Repository<Content>(_settingsManager.Database, tableName, _settingsManager.Redis);
+            await repository.LoadTableColumnsAsync(tableName);
+
+            TableNameRepositories[tableName] = repository;
+            return repository;
+        }
 
         private string GetComparableNow()
         {

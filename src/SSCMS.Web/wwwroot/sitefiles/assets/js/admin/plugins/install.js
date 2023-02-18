@@ -123,7 +123,8 @@ var methods = {
   getPackages: function () {
     var $this = this;
 
-    cloud.getUpdates($this.cmsVersion, $this.pluginIds).then(function (response) {
+    cloud.getUpdates($this.cmsVersion, $this.pluginIds)
+    .then(function (response) {
       var res = response.data;
 
       var releases = res.releases;
@@ -150,7 +151,9 @@ var methods = {
       });
 
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {
+        ignoreAuth: true,
+      });
     });
   },
 

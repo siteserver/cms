@@ -1,0 +1,226 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    padding: 0 30px;
+  }
+
+  .message-header {
+    padding: 10px 15px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f7;
+  }
+
+  .table-expand {
+    font-size: 0;
+    width: 100%;
+    display: flex;
+  }
+
+  .table-expand label {
+    width: 90px;
+  }
+
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 25%;
+  }
+
+  .message-footer {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f7;
+    padding-top: 20px;
+    width: 100%;
+    display: flex;
+  }
+
+  .message-list {
+    font-size: 16px;
+    background-color: #ebebeb;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+
+  .message-item {
+    width: 100%;
+    display: flex;
+    margin-top: 8px;
+  }
+
+  .message-item .avatar {
+    margin: 0 10px;
+  }
+
+  .message-item--right {
+    flex-direction: row-reverse;
+  }
+
+  .message-time {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    line-height: 20px;
+    margin-bottom: 0;
+    margin-top: 10px;
+    display: block;
+  }
+
+  .message-bubble {
+    border: 1px solid #ddd;
+    padding: 7px 10px;
+    border-radius: 3px;
+    max-width: 80%;
+    position: relative;
+  }
+
+  .message-item--left .message-bubble {
+    background-color: #fff;
+  }
+
+  .message-item--left .message-bubble::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    top: 14px;
+    left: -6px;
+    transform: rotate(-45deg);
+    border-radius: 0 0 20px 0;
+  }
+
+  .message-item--right .message-bubble {
+    background-color: #9fe759;
+    border-color: #87cd51;
+  }
+
+  .message-item--right .message-bubble::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: #9fe759;
+    top: 14px;
+    right: -6px;
+    transform: rotate(135deg);
+    border-radius: 0 0 20px 0;
+  }
+
+  .message-document {
+    width: 200px;
+    text-align: center;
+    font-size: 16px;
+    color: #000;
+  }
+
+  .message-document i {
+    display: block;
+    font-size: 32px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    color: #000;
+  }
+
+  .message-document span {
+    display: inline-block;
+    padding: 0 3px;
+    margin-bottom: 15px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <div style="height: 5px"></div>
+
+  <div class="message-header">
+    <el-form label-position="left" inline class="table-expand">
+      <el-form-item label="工单编号">
+        <span>{{ ticket.ticketNo }}</span>
+      </el-form-item>
+      <el-form-item label="优先级">
+        <span>{{ getTicketPriority() }}</span>
+      </el-form-item>
+      <el-form-item label="工单类型">
+        {{ getTicketCategory() }}
+        <span v-if="ticket.resourceId">{{ ticket.resourceId }}</span>
+      </el-form-item>
+      <el-form-item label="提交时间">
+        <span>{{ ticket.createdDate }}</span>
+      </el-form-item>
+      <el-form-item label="工单状态">
+        <el-tag :type="getTicketStatusType()">{{ getTicketStatus() }}</el-tag>
+      </el-form-item>
+      <el-form-item label="" v-if="ticket.status !== 'Closed'">
+        <el-button type="danger" v-on:click="btnCloseClick">关闭工单</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+
+  <div class="message-list">
+    <div v-for="message in messages" :key="message.id">
+      <div class="message-time">
+        {{ message.createdDate }}
+      </div>
+      <div :class="getClassName(message)" class="message-item">
+        <el-avatar v-if="message.isReply" :size="35" class="avatar" src="https://sscms.com/home/img/assistant.svg"></el-avatar>
+        <el-avatar v-else :size="35" class="avatar" :src="getAvatarUrl()"></el-avatar>
+        <div class="message-bubble">
+          <template v-if="isImage(message)">
+            <el-link :underline="false" :href="getStorageUrl(message)" target="_blank">
+              <el-image :src="getStorageUrl(message)" lazy>
+                <template #placeholder>
+                  <div class="image-slot">
+                    加载中
+                    <span class="dot">...</span>
+                  </div>
+                </template>
+              </el-image>
+            </el-link>
+          </template>
+          <template v-else-if="isDocument(message)">
+            <el-link :underline="false" target="_blank" :href="getStorageUrl(message)">
+              <div class="message-document">
+                <i class="el-icon-paperclip"></i>
+                <span v-html="message.content"></span>
+              </div>
+            </el-link>
+          </template>
+          <template v-else>
+            <span v-html="message.content"></span>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="isInputArea()" class="message-footer">
+    <el-form label-position="left" ref="form" :model="form" style="width: 100%; margin: 10px">
+      <el-form-item>
+        <el-upload :drag="true" :action="uploadUrl" :auto-upload="true"
+          :headers="{ Authorization: 'Bearer ' + uploadToken }" :show-file-list="false" :before-upload="uploadBefore"
+          :on-progress="uploadProgress" :on-success="uploadSuccess" :on-error="uploadError" :multiple="false">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">
+            将文件拖到此处，或
+            <em>点击上传</em>
+          </div>
+        </el-upload>
+      </el-form-item>
+      <el-form-item>
+        <el-input type="textarea" :rows="2" :autosize="{ minRows: 4, maxRows: 10 }" placeholder="请输入内容"
+          v-model="form.content"></el-input>
+      </el-form-item>
+      <el-form-item align="center">
+        <el-button type="primary" v-on:click="btnSubmitClick">提 交</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/ticketMessages.js" type="text/javascript"></script>
+}

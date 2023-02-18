@@ -25,7 +25,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
 
             await _contentGroupRepository.InsertAsync(groupInfo);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组:{groupInfo.GroupName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "新增内容组", $"内容组：{groupInfo.GroupName}");
 
             var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);
             var groupNames = groups.Select(x => x.GroupName);

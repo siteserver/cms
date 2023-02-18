@@ -3,7 +3,7 @@
 
 <div style="height: 10px"></div>
 
-<el-form ref="form" :model="form" size="small" status-icon label-width="260px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="260px">
   <el-form-item label="管理员用户名最小长度" prop="adminUserNameMinLength" :rules="[
     { required: true, message: '请输入管理员用户名最小长度' },
     { validator: utils.validateInt }

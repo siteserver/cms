@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form v-if="isAddForm" size="small" ref="addForm" :model="addForm" label-width="120px">
+<el-form v-on:submit.native.prevent v-if="isAddForm" size="small" ref="addForm" :model="addForm" label-width="120px">
   <el-form-item label="栏目组名称" prop="groupName" :rules="{ required: true, message: '请输入栏目组名称' }">
     <el-input v-model="addForm.groupName" placeholder="请输入栏目组名称"></el-input>
   </el-form-item>
@@ -9,7 +9,7 @@
     <el-input type="textarea" v-model="addForm.description" placeholder="请输入栏目组说明"></el-input>
   </el-form-item>
 </el-form>
-<el-form v-else size="small" ref="form" :model="form" label-width="120px">
+<el-form v-on:submit.native.prevent v-else size="small" ref="form" :model="form" label-width="120px">
   <el-form-item label="操作">
     <el-radio-group v-model="form.isCancel">
       <el-radio-button :label="false">设置栏目组</el-radio-button>

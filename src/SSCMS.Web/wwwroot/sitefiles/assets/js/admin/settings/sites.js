@@ -7,6 +7,8 @@ var data = utils.init({
   sites: null,
   rootSiteId: null,
   tableNames: null,
+  parentSites: null,
+  parentIds: null,
   site: null,
 
   editPanel: false,
@@ -47,6 +49,7 @@ var methods = {
       $this.sites = res.sites;
       $this.rootSiteId = res.rootSiteId;
       $this.tableNames = res.tableNames;
+      $this.parentSites = res.parentSites;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -75,11 +78,13 @@ var methods = {
   apiEdit: function() {
     var $this = this;
 
+    this.editForm.parentId = this.parentIds && this.parentIds.length > 0 ? this.parentIds[this.parentIds.length - 1] : 0;
     $api.post($urlUpdate, this.editForm).then(function (response) {
       var res = response.data;
 
-      $this.sites = res.sites;
+      // $this.sites = res.sites;
       $this.editPanel = false;
+      $this.apiGet();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -101,6 +106,7 @@ var methods = {
   },
 
   btnEditClick: function(site) {
+    this.parentIds = _.concat([], site.parentIds);
     this.editForm = {
       siteId: site.id,
       root: site.root,

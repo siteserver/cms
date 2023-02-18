@@ -19,7 +19,8 @@ var data = utils.init({
   titleColumn: null,
   columns: null,
   permissions: null,
-  menus: null,
+  contentMenus: null,
+  contentsMenus: null,
 
   asideHeight: 0,
   tableMaxHeight: 0,
@@ -57,6 +58,7 @@ var methods = {
 
       $this.root = [res.root];
       if (!reload) {
+        utils.loadExternals(res.cssUrls, res.jsUrls);
         $this.siteUrl = res.siteUrl;
         $this.groupNames = res.groupNames;
         $this.tagNames = res.tagNames;
@@ -97,7 +99,8 @@ var methods = {
       $this.pageSize = res.pageSize;
       $this.page = page;
       $this.permissions = res.permissions;
-      $this.menus = res.menus;
+      $this.contentMenus = res.contentMenus;
+      $this.contentsMenus = res.contentsMenus;
       $this.expendedChannelIds = [$this.siteId, channelId];
       $this.searchForm.isAllContents = res.isAllContents;
 
@@ -169,6 +172,9 @@ var methods = {
   },
 
   getContentUrl: function (content) {
+    if (content.linkType == 'NoLink') {
+      return 'javascript:;';
+    }
     if (content.referenceId > 0 && content.sourceId > 0) {
       return utils.getRootUrl('redirect', {
         siteId: content.siteId,
@@ -181,6 +187,13 @@ var methods = {
       channelId: content.channelId,
       contentId: content.id
     });
+  },
+
+  getContentTarget: function (content) {
+    if (content.linkType == 'NoLink') {
+      return '';
+    }
+    return '_blank';
   },
 
   btnTitleClick: function(content) {
@@ -354,8 +367,43 @@ var methods = {
     });
   },
 
+  btnCommandClick: function(menu) {
+    var args = {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      isContentChecked: this.isContentChecked,
+      channelContentIds: this.channelContentIdsString
+    };
+    if (menu.click) {
+      eval(menu.click + '(args)');
+      return;
+    }
+
+    var url = utils.addQuery(menu.link, args);
+    if (menu.target == '_layer') {
+      utils.openLayer({
+        title: menu.text,
+        url: url,
+        full: true
+      });
+    } else if (menu.target == '_self') {
+      location.href = url;
+    } else if (menu.target == '_parent') {
+      parent.location.href = url;
+    }  else if (menu.target == '_top') {
+      top.location.href = url;
+    } else if (menu.target == '_blank') {
+      window.open(url);
+    } else {
+      utils.addTab(menu.text, url);
+    }
+  },
+
   btnMenuClick: function(menu, content) {
-    if (!this.permissions.isEdit) return;
+    if (menu.click) {
+      eval(menu.click + '(content)');
+      return;
+    }
     var url = utils.addQuery(menu.link, {
       siteId: this.siteId,
       channelId: content.channelId,

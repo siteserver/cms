@@ -74,7 +74,7 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             await _authManager.AddSiteLogAsync(siteId, channelId, content.Id, "添加内容",
-                $"栏目:{await _channelRepository.GetChannelNameNavigationAsync(siteId, content.ChannelId)},内容标题:{content.Title}");
+                $"栏目：{await _channelRepository.GetChannelNameNavigationAsync(siteId, content.ChannelId)}，内容标题：{content.Title}");
 
             return content;
         }

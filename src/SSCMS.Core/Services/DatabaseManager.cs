@@ -27,6 +27,8 @@ namespace SSCMS.Core.Services
         public IContentTagRepository ContentTagRepository { get; }
         public IDbCacheRepository DbCacheRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
+        public IFormRepository FormRepository { get; }
+        public IFormDataRepository FormDataRepository { get; }
         public ILogRepository LogRepository { get; }
         public IMaterialArticleRepository MaterialArticleRepository { get; }
         public IMaterialAudioRepository MaterialAudioRepository { get; }
@@ -41,11 +43,13 @@ namespace SSCMS.Core.Services
         public IRelatedFieldItemRepository RelatedFieldItemRepository { get; }
         public IRelatedFieldRepository RelatedFieldRepository { get; }
         public IRoleRepository RoleRepository { get; }
+        public IScheduledTaskRepository ScheduledTaskRepository { get; }
         public ISiteLogRepository SiteLogRepository { get; }
         public ISitePermissionsRepository SitePermissionsRepository { get; }
         public ISiteRepository SiteRepository { get; }
         public ISpecialRepository SpecialRepository { get; }
         public IStatRepository StatRepository { get; }
+        public IStorageFileRepository StorageFileRepository { get; }
         public ITableStyleRepository TableStyleRepository { get; }
         public ITemplateLogRepository TemplateLogRepository { get; }
         public ITemplateRepository TemplateRepository { get; }
@@ -61,7 +65,7 @@ namespace SSCMS.Core.Services
         public IWxReplyRuleRepository WxReplyRuleRepository { get; }
         public IWxUserRepository WxUserRepository { get; }
 
-        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelRepository channelRepository, IChannelGroupRepository channelGroupRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, ILogRepository logRepository, IMaterialArticleRepository materialArticleRepository, IMaterialAudioRepository materialAudioRepository, IMaterialFileRepository materialFileRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, IMaterialMessageRepository materialMessageRepository, IMaterialMessageItemRepository materialMessageItemRepository, IMaterialVideoRepository materialVideoRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ITranslateRepository translateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository, IWxAccountRepository wxAccountRepository, IWxChatRepository wxChatRepository, IWxMenuRepository wxMenuRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository, IWxUserRepository wxUserRepository)
+        public DatabaseManager(ISettingsManager settingsManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IChannelRepository channelRepository, IChannelGroupRepository channelGroupRepository, IConfigRepository configRepository, IContentCheckRepository contentCheckRepository, IContentGroupRepository contentGroupRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository, IDbCacheRepository dbCacheRepository, IErrorLogRepository errorLogRepository, IFormRepository formRepository, IFormDataRepository formDataRepository, ILogRepository logRepository, IMaterialArticleRepository materialArticleRepository, IMaterialAudioRepository materialAudioRepository, IMaterialFileRepository materialFileRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, IMaterialMessageRepository materialMessageRepository, IMaterialMessageItemRepository materialMessageItemRepository, IMaterialVideoRepository materialVideoRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IPluginConfigRepository pluginConfigRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IRelatedFieldRepository relatedFieldRepository, IRoleRepository roleRepository, IScheduledTaskRepository scheduledTaskRepository, ISiteLogRepository siteLogRepository, ISitePermissionsRepository sitePermissionsRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IStatRepository statRepository, IStorageFileRepository storageFileRepository, ITableStyleRepository tableStyleRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ITranslateRepository translateRepository, IUserGroupRepository userGroupRepository, IUserMenuRepository userMenuRepository, IUserRepository userRepository, IWxAccountRepository wxAccountRepository, IWxChatRepository wxChatRepository, IWxMenuRepository wxMenuRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository, IWxUserRepository wxUserRepository)
         {
             _settingsManager = settingsManager;
             AccessTokenRepository = accessTokenRepository;
@@ -76,6 +80,8 @@ namespace SSCMS.Core.Services
             ContentTagRepository = contentTagRepository;
             DbCacheRepository = dbCacheRepository;
             ErrorLogRepository = errorLogRepository;
+            FormRepository = formRepository;
+            FormDataRepository = formDataRepository;
             LogRepository = logRepository;
             MaterialArticleRepository = materialArticleRepository;
             MaterialAudioRepository = materialAudioRepository;
@@ -90,11 +96,13 @@ namespace SSCMS.Core.Services
             RelatedFieldItemRepository = relatedFieldItemRepository;
             RelatedFieldRepository = relatedFieldRepository;
             RoleRepository = roleRepository;
+            ScheduledTaskRepository = scheduledTaskRepository;
             SiteLogRepository = siteLogRepository;
             SitePermissionsRepository = sitePermissionsRepository;
             SiteRepository = siteRepository;
             SpecialRepository = specialRepository;
             StatRepository = statRepository;
+            StorageFileRepository = storageFileRepository;
             TableStyleRepository = tableStyleRepository;
             TemplateLogRepository = templateLogRepository;
             TemplateRepository = templateRepository;
@@ -127,6 +135,8 @@ namespace SSCMS.Core.Services
                 ContentTagRepository,
                 DbCacheRepository,
                 ErrorLogRepository,
+                FormRepository,
+                FormDataRepository,
                 LogRepository,
                 MaterialArticleRepository,
                 MaterialAudioRepository,
@@ -141,11 +151,13 @@ namespace SSCMS.Core.Services
                 RelatedFieldItemRepository,
                 RelatedFieldRepository,
                 RoleRepository,
+                ScheduledTaskRepository,
                 SiteLogRepository,
                 SitePermissionsRepository,
                 SiteRepository,
                 SpecialRepository,
                 StatRepository,
+                StorageFileRepository,
                 TableStyleRepository,
                 TemplateLogRepository,
                 TemplateRepository,

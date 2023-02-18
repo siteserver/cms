@@ -14,7 +14,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<ChannelsResult>> List([FromQuery] SiteRequest request)
+        public async Task<ActionResult<ListResult>> List([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Channels))
@@ -26,24 +26,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
-            var max = 0;
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 var count = await _contentRepository.GetCountAsync(site, summary);
                 var groupNames = await _channelRepository.GetGroupNamesAsync(summary.Id);
-
-                var channelPlugins = _pluginManager.GetPlugins(request.SiteId, summary.Id);
-                var menus = new List<Menu>();
-                foreach (var plugin in channelPlugins)
-                {
-                    var pluginMenus = plugin.GetMenus()
-                        .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.Channel)).ToList();
-                    if (pluginMenus.Count == 0) continue;
-
-                    menus.AddRange(pluginMenus);
-                }
-
-                max = Math.Max(max, menus.Count);
 
                 var node = await _channelRepository.GetAsync(summary.Id);
                 var imageUrl = string.Empty;
@@ -58,7 +44,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     Count = count,
                     ImageUrl = imageUrl,
                     GroupNames = groupNames,
-                    Menus = menus
                 };
             });
 
@@ -68,6 +53,28 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var channelTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ChannelTemplate);
             var contentTemplates = await _templateRepository.GetTemplatesByTypeAsync(request.SiteId, TemplateType.ContentTemplate);
 
+            var max = 0;
+            var channelPlugins = _pluginManager.GetPlugins(request.SiteId);
+            var channelMenus = new List<Menu>();
+            var channelsMenus = new List<Menu>();
+            foreach (var plugin in channelPlugins)
+            {
+                var pluginMenus = plugin.GetMenus()
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.MenuTypes.Channel)).ToList();
+                if (pluginMenus.Count > 0)
+                {
+                    channelMenus.AddRange(pluginMenus);
+                }
+                pluginMenus = plugin.GetMenus()
+                    .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.MenuTypes.Channels)).ToList();
+                if (pluginMenus.Count > 0)
+                {
+                    channelsMenus.AddRange(pluginMenus);
+                }
+            }
+
+            max = Math.Max(max, channelMenus.Count);
+
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetChannelListColumnsAsync(site);
 
@@ -75,7 +82,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var isTemplateEditable =
                 await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates);
 
-            var linkTypes = _pathManager.GetLinkTypeSelects();
+            var linkTypes = _pathManager.GetLinkTypeSelects(true);
             var taxisTypes = new List<Select<string>>
             {
                 new Select<string>(TaxisType.OrderByTaxisDesc),
@@ -85,7 +92,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             };
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
 
-            return new ChannelsResult
+            var settings = new Settings
+            {
+                IsCloudImages = await _cloudManager.IsImagesAsync(),
+            };
+
+            return new ListResult
             {
                 Channel = cascade,
                 IndexNames = indexNames,
@@ -97,7 +109,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 IsTemplateEditable = isTemplateEditable,
                 LinkTypes = linkTypes,
                 TaxisTypes = taxisTypes,
-                SiteUrl = siteUrl
+                SiteUrl = siteUrl,
+                Settings = settings,
+                ChannelMenus = channelMenus,
+                ChannelsMenus = channelsMenus,
             };
         }
     }

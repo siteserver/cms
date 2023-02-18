@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
     public partial class UtilitiesCacheController
     {
-        [HttpPost, Route(Route)]
+        [HttpPost, Route(RouteClearCache)]
         public async Task<ActionResult<BoolResult>> ClearCache()
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUtilitiesCache))

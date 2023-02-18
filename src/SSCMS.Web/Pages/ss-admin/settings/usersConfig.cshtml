@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <div style="height: 10px"></div>
-<el-form ref="form" :model="form" size="small" status-icon label-width="260px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="260px">
   <el-form-item label="允许新用户注册">
     <el-radio v-model="form.isUserRegistrationAllowed" :label="true">允许</el-radio>
     <el-radio v-model="form.isUserRegistrationAllowed" :label="false">禁止</el-radio>

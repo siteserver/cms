@@ -23,7 +23,7 @@
 
     <el-row>
       <el-col :span="12">
-        <el-form :inline="true" :model="form" size="mini">
+        <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
           <el-form-item label="用户昵称">
             <el-input v-model="form.keyword" placeholder="请输入关键字"></el-input>
           </el-form-item>
@@ -39,7 +39,7 @@
           width="300"
           v-model="popAddTags"
           trigger="manual">
-          <el-form size="small" label-position="top" ref="formAddTags" :model="formAddTags">
+          <el-form v-on:submit.native.prevent size="small" label-position="top" ref="formAddTags" :model="formAddTags">
             <el-form-item label="标签名称" prop="tagName" :rules="{ required: true, message: '请输入标签名称' }">
               <el-input v-model="formAddTags.tagName"></el-input>
             </el-form-item>
@@ -59,7 +59,7 @@
           width="300"
           v-model="popEditTags"
           trigger="manual">
-          <el-form size="small" label-position="top" ref="formEditTags" :model="formEditTags">
+          <el-form v-on:submit.native.prevent size="small" label-position="top" ref="formEditTags" :model="formEditTags">
             <el-form-item label="标签名称" prop="tagName" :rules="{ required: true, message: '请输入标签名称' }">
               <el-input v-model="formEditTags.tagName"></el-input>
             </el-form-item>
@@ -266,7 +266,7 @@
   :visible.sync="dialogRemark"
   size="small"
   width="30%">
-  <el-form size="small" label-position="top" ref="formRemark" :model="formRemark">
+  <el-form v-on:submit.native.prevent size="small" label-position="top" ref="formRemark" :model="formRemark">
     <el-form-item label="备注" prop="remark" :rules="{ required: true, message: '请输入备注' }">
       <el-input v-model="formRemark.remark"></el-input>
     </el-form-item>

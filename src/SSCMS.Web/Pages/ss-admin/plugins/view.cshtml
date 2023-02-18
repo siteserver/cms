@@ -63,8 +63,14 @@
           版本：<el-link type="primary" :underline="false"> {{ getVersion() }} </el-link>
           <template v-if="!plugin && extension && extension.price">
             <span style="color: #999; margin: 0 5px"> | </span>
-            价格：<el-link type="primary" :underline="false">
-              ￥{{ extension.price.toFixed(2) }}
+            价格：
+            <el-link type="primary" :underline="false">
+              <el-badge v-if="isPurchased" value="已购">
+                ￥{{ extension.price.toFixed(2) }}
+              </el-badge>
+              <span v-else>
+                ￥{{ extension.price.toFixed(2) }}
+              </span>
             </el-link>
           </template>
         </template>
@@ -103,14 +109,11 @@
         </template>
         
         <template v-if="extension">
-          <el-button type="primary" v-if="isShouldUpdate && plugin.price === 0" v-on:click="btnUpdateClick" size="small">
+          <el-button type="primary" v-if="isShouldUpdate" v-on:click="btnUpdateClick" size="small">
             升级插件
           </el-button>
-          <el-button type="primary" v-if="isShouldUpdate && plugin.price > 0" v-on:click="btnUploadClick" size="small">
-            离线升级插件
-          </el-button>
-          <el-button type="primary" v-else-if="!plugin && extension.price" v-on:click="btnBuyClick" size="small">
-            购买并下载安装
+          <el-button type="primary" v-else-if="!plugin && extension.price && !isPurchased" v-on:click="btnBuyClick" size="small">
+            购买并安装插件
           </el-button>
           <el-button type="primary" v-else-if="!plugin" v-on:click="btnInstallClick" size="small">
             安装插件

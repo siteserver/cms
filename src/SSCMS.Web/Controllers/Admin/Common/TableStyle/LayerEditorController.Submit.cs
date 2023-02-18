@@ -113,6 +113,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             {
                 style.Height = request.Height;
             }
+            else if (request.InputType == InputType.SelectCascading && request.RelatedFieldId.HasValue)
+            {
+                style.RelatedFieldId = request.RelatedFieldId.Value;
+            }
             else if (request.InputType == InputType.Customize)
             {
                 style.CustomizeCode = request.CustomizeCode;
@@ -173,6 +177,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             else if (request.InputType == InputType.TextArea || request.InputType == InputType.TextEditor)
             {
                 style.Height = request.Height;
+            }
+            else if (request.InputType == InputType.SelectCascading && request.RelatedFieldId.HasValue)
+            {
+                style.RelatedFieldId = request.RelatedFieldId.Value;
             }
             else if (request.InputType == InputType.Customize)
             {

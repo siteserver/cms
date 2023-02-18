@@ -5,7 +5,6 @@ var $urlDelete = $url + '/actions/delete';
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   root: null,
-  expandedChannelIds: [],
   indexNames: [],
   groupNames: [],
   channelTemplates: [],
@@ -14,93 +13,33 @@ var data = utils.init({
   defaultContentTemplate: null,
   columns: null,
   commandsWidth: 160,
+  isTemplateEditable: false,
+  expandedChannelIds: [],
+  editLinkTypes: [],
+  editTaxisTypes: [],
+  siteUrl: null,
+  settings: null,
+  channelMenus: null,
+  channelsMenus: null,
 
+  styles: [],
+  relatedFields: null,
   channelIds: [],
-
   filterText: '',
   filterIndexName: '',
   filterGroupName: '',
-
   appendPanel: false,
   appendForm: null,
-
   editPanel: false,
   form: null,
-  editLinkTypes: [],
-  editTaxisTypes: [],
-  styles: [],
-  siteUrl: null,
-  isTemplateEditable: false,
-
   deletePanel: false,
   deleteForm: null,
-
   importPanel: false,
   importForm: null,
   importUploadList: []
 });
 
 var methods = {
-  runFormLayerImageUploadText: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerImageUploadEditor: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  runMaterialLayerImageSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerFileUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerFileSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runFormLayerVideoUpload: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runMaterialLayerVideoSelect: function(attributeName, no, text) {
-    this.insertText(attributeName, no, text);
-  },
-
-  runEditorLayerImage: function(attributeName, html) {
-    this.insertEditor(attributeName, html);
-  },
-
-  insertText: function(attributeName, no, text) {
-    var count = this.form[utils.getCountName(attributeName)] || 0;
-    if (count <= no) {
-      this.form[utils.getCountName(attributeName)] = no;
-    }
-    this.form[utils.getExtendName(attributeName, no)] = text;
-    this.form = _.assign({}, this.form);
-  },
-
-  insertEditor: function(attributeName, html) {
-    if (!attributeName) attributeName = 'Body';
-    if (!html) return;
-    utils.getEditor(attributeName).execCommand('insertHTML', html);
-  },
-
-  setRuleText: function(rule, isChannel) {
-    if (isChannel) {
-      this.form.channelFilePathRule = rule;
-    } else {
-      this.form.contentFilePathRule = rule;
-    }
-  },
-
-  updateGroups: function(res, message) {
-    this.groupNames = res.groupNames;
-    utils.success(message);
-  },
-
   apiList: function(expandedChannelIds) {
     var $this = this;
 
@@ -130,6 +69,9 @@ var methods = {
       $this.editLinkTypes = res.linkTypes;
       $this.editTaxisTypes = res.taxisTypes;
       $this.siteUrl = res.siteUrl;
+      $this.settings = res.settings;
+      $this.channelMenus = res.channelMenus;
+      $this.channelsMenus = res.channelsMenus;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -149,10 +91,10 @@ var methods = {
         $this.form.groupNames = [];
       }
       $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
       $this.form.filePath = res.filePath;
       $this.form.channelFilePathRule = res.channelFilePathRule;
       $this.form.contentFilePathRule = res.contentFilePathRule;
-
       $this.editPanel = true;
       utils.loadEditors($this.styles, $this.form);
     }).catch(function (error) {
@@ -273,6 +215,66 @@ var methods = {
     });
   },
 
+  runFormLayerImageUploadText: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerImageUploadEditor: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  runMaterialLayerImageSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerFileUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerFileSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runFormLayerVideoUpload: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runMaterialLayerVideoSelect: function(attributeName, no, text) {
+    this.insertText(attributeName, no, text);
+  },
+
+  runEditorLayerImage: function(attributeName, html) {
+    this.insertEditor(attributeName, html);
+  },
+
+  insertText: function(attributeName, no, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    if (count <= no) {
+      this.form[utils.getCountName(attributeName)] = no;
+    }
+    this.form[utils.getExtendName(attributeName, no)] = text;
+    this.form = _.assign({}, this.form);
+  },
+
+  insertEditor: function(attributeName, html) {
+    if (!attributeName) attributeName = 'Body';
+    if (!html) return;
+    utils.getEditor(attributeName).execCommand('insertHTML', html);
+  },
+
+  setRuleText: function(rule, isChannel) {
+    if (isChannel) {
+      this.form.channelFilePathRule = rule;
+    } else {
+      this.form.contentFilePathRule = rule;
+    }
+  },
+
+  updateGroups: function(res, message) {
+    this.groupNames = res.groupNames;
+    utils.success(message);
+  },
+
   handleColumnsChange: function() {
     var listColumns = _.filter(this.columns, function(o) { return o.isList; });
     var attributeNames = _.map(listColumns, function(column) {
@@ -286,7 +288,7 @@ var methods = {
       siteId: this.siteId,
       isChannel: isChannel,
       channelId: channelId,
-      rule: rule
+      rule: rule || ''
     });
 
     utils.openLayer({
@@ -337,6 +339,42 @@ var methods = {
       width: 500,
       height: 300
     });
+  },
+
+  btnImageSelectClick: function(args) {
+    var inputType = args.inputType;
+    var attributeName = args.attributeName;
+    var no = args.no;
+    var type = args.type;
+
+    if (type === 'uploadedImages') {
+      this.btnLayerClick({
+        title: '选择已上传图片',
+        name: 'formLayerImageSelect',
+        inputType: inputType,
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'materialImages') {
+      this.btnLayerClick({
+        title: '选择素材库图片',
+        name: 'materialLayerImageSelect',
+        inputType: inputType,
+        attributeName: attributeName,
+        no: no,
+        full: true
+      });
+    } else if (type === 'cloudImages') {
+      utils.openLayer({
+        title: '选择免版权图库',
+        url: utils.getCloudsUrl('layerImagesSelect', {
+          inputType: inputType,
+          attributeName: args.attributeName,
+          no: args.no,
+        }),
+      });
+    }
   },
 
   handleDrop: function(draggingNode, dropNode, dropType, ev) {
@@ -434,6 +472,8 @@ var methods = {
   },
 
   btnDeleteClick: function(data) {
+    if (this.siteId == data.value) return;
+
     this.deleteForm = {
       siteId: this.siteId,
       channelId: data.value,
@@ -588,9 +628,13 @@ var methods = {
 
   btnLayerClick: function(options) {
     var query = {
-      siteId: this.siteId
+      siteId: this.siteId,
+      editorAttributeName: "Body",
     };
 
+    if (options.inputType) {
+      query.inputType = options.inputType;
+    }
     if (options.attributeName) {
       query.attributeName = options.attributeName;
     }

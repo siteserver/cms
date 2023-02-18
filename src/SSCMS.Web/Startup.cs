@@ -71,13 +71,7 @@ namespace SSCMS.Web
             });
 
             services.AddHttpContextAccessor();
-
-            var securityKey = settingsManager.SecurityKey;
-            if (string.IsNullOrEmpty(securityKey))
-            {
-                securityKey = StringUtils.GetSecurityKey();
-            }
-            var key = Encoding.UTF8.GetBytes(securityKey);
+            
             services.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -90,7 +84,7 @@ namespace SSCMS.Web
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(settingsManager.SecurityKey)),
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
@@ -128,7 +122,6 @@ namespace SSCMS.Web
                 // .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
-            services.AddTaskQueue();
 
             services.AddRepositories(assemblies);
             services.AddServices();
@@ -136,6 +129,7 @@ namespace SSCMS.Web
 
             services.AddPseudoServices();
             services.AddPluginServices(pluginManager);
+            services.AddTaskServices();
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services
@@ -313,16 +307,16 @@ namespace SSCMS.Web
                 //.UseSenparcGlobal(false, () => GetExCacheStrategies(senparcSetting.Value))   
                 ;
 
-            if (!settingsManager.IsSafeMode)
-            {
-                app.UseOpenApi();
-                app.UseSwaggerUi3();
-                app.UseReDoc(settings =>
-                {
-                    settings.Path = "/api/docs";
-                    settings.DocumentPath = "/swagger/v1/swagger.json";
-                }); 
-            }
+            // if (!settingsManager.IsSafeMode)
+            // {
+            //     app.UseOpenApi();
+            //     app.UseSwaggerUi3();
+            //     app.UseReDoc(settings =>
+            //     {
+            //         settings.Path = "/api/docs";
+            //         settings.DocumentPath = "/swagger/v1/swagger.json";
+            //     }); 
+            // }
         }
     }
 }

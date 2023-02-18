@@ -7,6 +7,7 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt('siteId'),
     isChangeFileName: true,
+    isLibrary: true,
     filePaths: []
   }
 });
@@ -14,7 +15,7 @@ var data = utils.init({
 var methods = {
   insert: function(no, result) {
     if (parent.$vue.runFormLayerVideoUpload) {
-      parent.$vue.runFormLayerVideoUpload(this.attributeName, no, result.fileVirtualUrl);
+      parent.$vue.runFormLayerVideoUpload(this.attributeName, no, result.virtualUrl, result.coverUrl);
     }
   },
 
@@ -29,7 +30,15 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
+      if (res.isCloudVod) {
+        location.href = utils.getCloudsUrl('layerVodUpload', {
+          attributeName: $this.attributeName,
+          no: $this.no,
+        });
+      }
+
       $this.form.isChangeFileName = res.isChangeFileName;
+      $this.form.isLibrary = res.isLibrary;
       $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&isChangeFileName=' + $this.form.isChangeFileName;
     })
     .catch(function(error) {
@@ -53,7 +62,7 @@ var methods = {
           $this.insert($this.no + i, result);
         }
       }
-      
+
       utils.closeLayer();
     })
     .catch(function(error) {
@@ -75,6 +84,10 @@ var methods = {
 
   btnCancelClick: function () {
     utils.closeLayer();
+  },
+
+  btnChangeClick: function() {
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&isChangeFileName=' + this.form.isChangeFileName;
   },
 
   uploadProgress: function() {
@@ -105,6 +118,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
+    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
     this.apiGet();
   }
 });

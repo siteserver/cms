@@ -258,5 +258,45 @@ namespace SSCMS.Core.Repositories
                     )
             );
         }
+
+        public async Task DeleteAsync(Site site, Channel channel, List<int> contentIdList, IPluginManager pluginManager)
+        {
+            if (contentIdList == null || contentIdList.Count == 0) return;
+
+            var repository = await GetRepositoryAsync(site, channel);
+
+            var cacheKeys = new List<string>
+            {
+                GetListKey(repository.TableName, site.Id, channel.Id)
+            };
+            foreach (var contentId in contentIdList)
+            {
+                cacheKeys.Add(GetEntityKey(repository.TableName, contentId));
+            }
+
+            await repository.DeleteAsync(Q
+                .Where(nameof(Content.SiteId), site.Id)
+                .Where(nameof(Content.ChannelId), channel.Id)
+                .WhereIn(nameof(Content.Id), contentIdList)
+                .CachingRemove(cacheKeys.ToArray())
+            );
+
+            var handlers = pluginManager.GetExtensions<PluginContentHandler>();
+            foreach (var handler in handlers)
+            {
+                try
+                {
+                    foreach (var contentId in contentIdList)
+                    {
+                        handler.OnDeleted(site.Id, channel.Id, contentId);
+                        await handler.OnDeletedAsync(site.Id, channel.Id, contentId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await _errorLogRepository.AddErrorLogAsync(ex);
+                }
+            }
+        }
     }
 }

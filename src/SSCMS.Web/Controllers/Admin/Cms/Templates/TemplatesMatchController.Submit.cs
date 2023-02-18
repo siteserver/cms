@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     public partial class TemplatesMatchController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<ObjectResult<Cascade<int>>>> Submit([FromBody] MatchRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] MatchRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.TemplatesMatch))
             {
@@ -26,40 +26,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 {
                     foreach (var channelId in request.ChannelIds)
                     {
-                        var channelInfo = await _channelRepository.GetAsync(channelId);
-                        channelInfo.ChannelTemplateId = request.TemplateId;
-                        await _channelRepository.UpdateChannelTemplateIdAsync(channelInfo);
+                        var channel = await _channelRepository.GetAsync(channelId);
+                        channel.ChannelTemplateId = request.TemplateId;
+                        await _channelRepository.UpdateChannelTemplateIdAsync(channel);
                     }
                 }
                 else
                 {
                     foreach (var channelId in request.ChannelIds)
                     {
-                        var channelInfo = await _channelRepository.GetAsync(channelId);
-                        channelInfo.ContentTemplateId = request.TemplateId;
-                        await _channelRepository.UpdateContentTemplateIdAsync(channelInfo);
+                        var channel = await _channelRepository.GetAsync(channelId);
+                        channel.ContentTemplateId = request.TemplateId;
+                        await _channelRepository.UpdateContentTemplateIdAsync(channel);
                     }
                 }
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "模板匹配");
+            await _authManager.AddSiteLogAsync(request.SiteId, "匹配模板");
 
-            var channel = await _channelRepository.GetAsync(request.SiteId);
-            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
+            return new BoolResult
             {
-                var count = await _contentRepository.GetCountAsync(site, summary);
-                var entity = await _channelRepository.GetAsync(summary.Id);
-                return new
-                {
-                    Count = count,
-                    entity.ChannelTemplateId,
-                    entity.ContentTemplateId
-                };
-            });
-
-            return new ObjectResult<Cascade<int>>
-            {
-                Value = cascade
+                Value = true
             };
         }
     }

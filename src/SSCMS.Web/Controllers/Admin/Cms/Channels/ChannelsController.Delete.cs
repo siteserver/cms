@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 await _channelRepository.DeleteAsync(site, channelId, adminId);
             }
 
-            await _authManager.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目:{channel.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除栏目", $"栏目：{channel.ChannelName}");
 
             return new List<int>
             {

@@ -207,7 +207,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else
             {
-                var inputParser = new InputParserManager(parseManager.PathManager);
+                var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                 parsedContent = contentInfo != null
                     ? inputParser.GetFileHtmlWithCount(pageInfo.Site, contentInfo.ChannelId,

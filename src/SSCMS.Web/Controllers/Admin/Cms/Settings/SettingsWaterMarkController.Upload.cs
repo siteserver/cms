@@ -28,22 +28,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var fileName = Path.GetFileName(file.FileName);
-
-            var fileExtName = StringUtils.ToLower(PathUtils.GetExtension(fileName));
-            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, fileExtName);
-            var localFileName = _pathManager.GetUploadFileName(site, fileName);
-            var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
-
-            if (!_pathManager.IsImageExtensionAllowed(site, fileExtName))
+            var (success, filePath, errorMessage) = await _pathManager.UploadImageAsync(site, file);
+            if (!success)
             {
-                return this.Error(Constants.ErrorImageExtensionAllowed);
+                return this.Error(errorMessage);
             }
-            if (!_pathManager.IsImageSizeAllowed(site, file.Length))
-            {
-                return this.Error(Constants.ErrorImageSizeAllowed);
-            }
-
-            await _pathManager.UploadAsync(file, filePath);
 
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var virtualUrl = _pathManager.GetVirtualUrl(site, imageUrl);

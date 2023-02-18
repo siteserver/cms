@@ -22,12 +22,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var content = await _contentRepository.GetAsync(site, request.ChannelId, request.ContentId);
-
-            var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, request.SiteId, content.ReferenceId, content.SourceId);
+            var sourceSiteId = await _channelRepository.GetSiteIdAsync(content.SourceId);
+            var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, content);
 
             return new GetResult
             {
                 Content = content,
+                SourceSiteId = sourceSiteId,
                 SourceName = sourceName
             };
         }

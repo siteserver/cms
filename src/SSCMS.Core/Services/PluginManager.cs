@@ -127,8 +127,11 @@ namespace SSCMS.Core.Services
         private static bool IsEnabled(IPlugin plugin, int siteId, int channelId)
         {
             if (!IsEnabled(plugin, siteId)) return false;
+            if (plugin.ApplyToChannels && plugin.AllChannels) return true;
+
             var siteConfig = plugin.SiteConfigs?.FirstOrDefault(x => x.SiteId == siteId);
             if (siteConfig == null) return false;
+            
             return siteConfig.AllChannels || ListUtils.Contains(siteConfig.ChannelIds, channelId);
         }
 
@@ -180,6 +183,25 @@ namespace SSCMS.Core.Services
                 var configValue = TranslateUtils.JsonSerialize(config);
                 await FileUtils.WriteTextAsync(configPath, configValue);
             }
+        }
+
+        public (List<string> cssUrls, List<string> jsUrls) GetExternalUrls()
+        {
+            var cssUrls = new List<string>();
+            var jsUrls = new List<string>();
+            foreach (var enabledPlugin in EnabledPlugins)
+            {
+                if (!string.IsNullOrEmpty(enabledPlugin.Css) && !cssUrls.Contains(enabledPlugin.Css))
+                {
+                    cssUrls.Add(enabledPlugin.Css);
+                }
+                if (!string.IsNullOrEmpty(enabledPlugin.Js) && !jsUrls.Contains(enabledPlugin.Js))
+                {
+                    jsUrls.Add(enabledPlugin.Js);
+                }
+            }
+
+            return (cssUrls, jsUrls);
         }
     }
 }

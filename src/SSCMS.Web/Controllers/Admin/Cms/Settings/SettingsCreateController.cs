@@ -35,6 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public bool IsCreateBrowserNoCache { get; set; }
             public bool IsCreateJsIgnoreError { get; set; }
             public bool IsCreateWithJQuery { get; set; }
+            public bool IsCreateFilterGray { get; set; }
             public int CreateStaticMaxPage { get; set; }
             public bool IsCreateUseDefaultFileName { get; set; }
             public string CreateDefaultFileName { get; set; }

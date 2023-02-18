@@ -13,33 +13,39 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] int siteId, [FromForm] IFormFile file)
         {
-            var siteIds = await _authManager.GetSiteIdsAsync();
-            if (!ListUtils.Contains(siteIds, siteId)) return Unauthorized();
-
-            var site = await _siteRepository.GetAsync(siteId);
-
             if (file == null)
             {
                 return this.Error(Constants.ErrorUpload);
             }
 
-            var fileName = PathUtils.GetFileName(file.FileName);
+            var fileName = string.Empty;
+            var filePath = string.Empty;
 
-            var extName = PathUtils.GetExtension(fileName);
-            if (!_pathManager.IsImageExtensionAllowed(site, extName))
+            if (siteId > 0)
             {
-                return this.Error(Constants.ErrorImageExtensionAllowed);
+                var siteIds = await _authManager.GetSiteIdsAsync();
+                if (!ListUtils.Contains(siteIds, siteId)) return Unauthorized();
+
+                var site = await _siteRepository.GetAsync(siteId);
+
+                fileName = PathUtils.GetFileName(file.FileName);
+                (var success, filePath, var errorMessage) = await _pathManager.UploadImageAsync(site, file);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
             }
-            if (!_pathManager.IsImageSizeAllowed(site, file.Length))
+            else
             {
-                return this.Error(Constants.ErrorImageSizeAllowed);
+                fileName = _pathManager.GetUploadFileName(file.FileName);
+                filePath = _pathManager.GetUserUploadPath(_authManager.UserId, fileName);
+                if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+                {
+                    return this.Error(Constants.ErrorImageExtensionAllowed);
+                }
+
+                await _pathManager.UploadAsync(file, filePath);
             }
-
-            var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
-            var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, fileName));
-
-            await _pathManager.UploadAsync(file, filePath);
-            await _pathManager.AddWaterMarkAsync(site, filePath);
 
             return new UploadResult
             {

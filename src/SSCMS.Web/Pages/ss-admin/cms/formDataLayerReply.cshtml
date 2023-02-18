@@ -1,0 +1,39 @@
+@page
+@{ Layout = "_Layout"; }
+
+<div style="height: 10px;"></div>
+
+<el-form ref="form" :model="form" size="small" label-width="160px">
+  <el-form-item
+    v-for="attributeName in attributeNames" 
+    :key="attributeName" 
+    :label="getAttributeText(attributeName)">
+    <span v-html="getAttributeValue(attributeName)"></span>
+  </el-form-item>
+  <el-form-item v-if="formData.channelPage" label="所在栏目页">
+    <span v-html="formData.channelPage"></span>
+  </el-form-item>
+  <el-form-item v-if="formData.contentPage" label="所在内容页">
+    <span v-html="formData.contentPage"></span>
+  </el-form-item>
+  <el-form-item v-if="formData.isReplied" label="回复时间">
+    <span v-html="formData.replyDate"></span>
+  </el-form-item>
+  <el-form-item label="回复内容" prop="replyContent" name="replyContent" :rules="{ required: true, message: '请输入回复内容' }">
+    <el-input type="textarea" :rows="10" v-model="form.replyContent"></el-input>
+  </el-form-item>
+</el-form>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row>
+  <el-col :span="24" align="right">
+    <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/cms/formDataLayerReply.js" type="text/javascript"></script>
+}

@@ -61,7 +61,7 @@
 
 <el-row>
   <el-col :span="12">
-    <el-form :inline="true" :model="form" size="mini">
+    <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
       <el-form-item label="搜索">
         <el-input v-model="form.keyword" placeholder="关键字"></el-input>
       </el-form-item>
@@ -78,7 +78,7 @@
   </el-col>
 </el-row>
 
-<el-form :inline="true" :model="form">
+<el-form v-on:submit.native.prevent :inline="true" :model="form">
   <el-form-item label="分组">
 
     <el-tag
@@ -100,7 +100,7 @@
       <el-card size="small" style="margin-bottom: 15px; margin-right: 15px; height: 305px" :body-style="{ padding: '0px', textAlign: 'center' }">
         <el-link :underline="false" v-on:click="btnImageClick(image)">
           <el-image 
-            style="width: 100%; min-height: 120px; max-height:220px;"
+            style="width: 100%; min-height: 220px; max-height:220px;"
             :src="image.url">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>

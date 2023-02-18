@@ -174,7 +174,8 @@ namespace SSCMS.Core.Services
             //    //}
             //}
 
-            foreach (var logInfo in TaskLogs)
+            // https://www.tutorialspoint.com/why-the-error-collection-was-modified-enumeration-operation-may-not-execute-occurs-and-how-to-handle-it-in-chash#:~:text=Why%20the%20error%20Collection%20was%20modified%3B%20enumeration%20operation,modified%20%28data%20added%20or%20removed%29%20during%20the%20runtime.
+            foreach (var logInfo in TaskLogs.ToList())
             {
                 if (logInfo.SiteId != siteId) continue;
                 var summaryItem = new CreateTaskSummaryItem(logInfo);

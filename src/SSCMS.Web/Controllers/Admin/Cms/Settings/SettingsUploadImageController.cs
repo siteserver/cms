@@ -35,9 +35,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public DateFormatType ImageUploadDateFormatString { get; set; }
             public bool IsImageUploadChangeFileName { get; set; }
             public string ImageUploadExtensions { get; set; }
-            public int ImageUploadTypeMaxSize { get; set; }
-            public int PhotoSmallWidth { get; set; }
-            public int PhotoMiddleWidth { get; set; }
+            public long ImageUploadTypeMaxSize { get; set; }
+            public bool IsImageAutoResize { get; set; }
+            public int ImageAutoResizeWidth { get; set; }
         }
 
         public class SubmitRequest : SiteRequest
@@ -46,9 +46,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public DateFormatType ImageUploadDateFormatString { get; set; }
             public bool IsImageUploadChangeFileName { get; set; }
             public string ImageUploadExtensions { get; set; }
-            public int ImageUploadTypeMaxSize { get; set; }
-            public int PhotoSmallWidth { get; set; }
-            public int PhotoMiddleWidth { get; set; }
+            public long ImageUploadTypeMaxSize { get; set; }
+            public bool IsImageAutoResize { get; set; }
+            public int ImageAutoResizeWidth { get; set; }
         }
     }
 }

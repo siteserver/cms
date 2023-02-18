@@ -35,7 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public DateFormatType VideoUploadDateFormatString { get; set; }
             public bool IsVideoUploadChangeFileName { get; set; }
             public string VideoUploadExtensions { get; set; }
-            public int VideoUploadTypeMaxSize { get; set; }
+            public long VideoUploadTypeMaxSize { get; set; }
         }
 
         public class SubmitRequest : SiteRequest
@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public DateFormatType VideoUploadDateFormatString { get; set; }
             public bool IsVideoUploadChangeFileName { get; set; }
             public string VideoUploadExtensions { get; set; }
-            public int VideoUploadTypeMaxSize { get; set; }
+            public long VideoUploadTypeMaxSize { get; set; }
         }
     }
 }

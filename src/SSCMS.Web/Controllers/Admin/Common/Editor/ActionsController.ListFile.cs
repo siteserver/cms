@@ -39,25 +39,5 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 List = list
             };
         }
-
-        public class ListFileRequest : SiteRequest
-        {
-            public int Start { get; set; }
-            public int Size { get; set; }
-        }
-
-        public class FileResult
-        {
-            public string Url { get; set; }
-        }
-
-        public class ListFileResult
-        {
-            public string State { get; set; }
-            public int Start { get; set; }
-            public int Size { get; set; }
-            public int Total { get; set; }
-            public IEnumerable<FileResult> List { get; set; }
-        }
     }
 }

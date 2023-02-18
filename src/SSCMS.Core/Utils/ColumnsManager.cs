@@ -85,8 +85,9 @@ namespace SSCMS.Core.Utils
             nameof(Content.Hot),
             nameof(Content.Color),
             nameof(Content.AddDate),
+            nameof(Content.LinkType),
             nameof(Content.LinkUrl),
-            "ExtendValues"
+            "ExtendValues",
         });
 
 
@@ -112,7 +113,11 @@ namespace SSCMS.Core.Utils
             "AddUserName",
             "LastEditUserName",
             "Content",
-            "LastEditDate"
+            "LastEditDate",
+            "HitsByDay",
+            "HitsByWeek",
+            "HitsByMonth",
+            "LastHitsDate"
         });
 
         private static readonly List<string> CalculatedAttributes = new List<string>
@@ -185,6 +190,12 @@ namespace SSCMS.Core.Utils
 
             list.AddRange(new List<TableStyle>
             {
+                new TableStyle
+                {
+                    AttributeName = nameof(Content.LinkType),
+                    DisplayName = "链接类型",
+                    Taxis = taxis++
+                },
                 new TableStyle
                 {
                     AttributeName = nameof(Content.LinkUrl),
@@ -298,20 +309,25 @@ namespace SSCMS.Core.Utils
                 var checkedLevel = source.CheckedLevel;
                 var title = source.Title;
 
-                var reference =
-                    await _databaseManager.ContentRepository.GetAsync(site, source.SourceId, source.ReferenceId);
-                if (reference != null)
-                {
-                    source.LoadDict(reference.ToDictionary());
-                    source.Id = contentId;
-                    source.ChannelId = channelId;
-                    source.Checked = isChecked;
-                    source.CheckedLevel = checkedLevel;
-                    source.Title = title;
+                var referenceSiteId = await _databaseManager.ChannelRepository.GetSiteIdAsync(source.SourceId);
+                if (referenceSiteId == 0) return null;
 
-                    source.SourceId = reference.ChannelId;
-                    source.ReferenceId = reference.Id;
-                }
+                var referenceSite = await _databaseManager.SiteRepository.GetAsync(referenceSiteId);
+                if (referenceSiteId == 0) return null;
+
+                var reference =
+                    await _databaseManager.ContentRepository.GetAsync(referenceSite, source.SourceId, source.ReferenceId);
+                if (reference == null) return null;
+
+                source.LoadDict(reference.ToDictionary());
+                source.Id = contentId;
+                source.ChannelId = channelId;
+                source.Checked = isChecked;
+                source.CheckedLevel = checkedLevel;
+                source.Title = title;
+
+                source.SourceId = reference.ChannelId;
+                source.ReferenceId = reference.Id;
             }
 
             var channel = await _databaseManager.ChannelRepository.GetAsync(source.ChannelId);
@@ -364,7 +380,7 @@ namespace SSCMS.Core.Utils
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))
                 {
-                    var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, source.SiteId, source.ReferenceId, source.SourceId);
+                    var sourceName = await SourceManager.GetSourceNameAsync(_databaseManager, source);
                     content.Set(SourceName, sourceName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.TemplateId)))

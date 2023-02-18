@@ -1,10 +1,36 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .plan-name {
+      color: #28AB94;
+      margin: 0 auto;
+      width: 80%;
+      white-space: nowrap;
+      display: block;
+      overflow: hidden;
+      font-size: 16px;
+      text-overflow: ellipsis;
+    }
+    .plan-price {
+      margin-top: 10px;
+    }
+    .ga-border {
+      height: 3px;
+      width: 40px;
+      background-color: #00b19d;
+      margin: 10px auto;
+    }
+    .el-badge__content.is-fixed {
+      right: 0px;
+    }
+  </style>
+}
 
 <div style="height: 10px"></div>
 <el-row>
   <el-col :span="20">
-    <el-form :inline="true" size="mini">
+    <el-form v-on:submit.native.prevent :inline="true" size="mini">
       <el-form-item label="价格">
         <el-select v-on:change="priceChanged" v-model="price">
           <el-option value="" label="全部"></el-option>
@@ -55,7 +81,7 @@
 
 <el-row>
   <el-col :span="6" v-for="(theme, index) in themes" :key="index">
-    <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center' }">
+    <el-card style="margin-bottom: 15px; margin-right: 15px;" :body-style="{ padding: '0px', textAlign: 'center', height: '450px', overflow: 'hidden' }">
       <el-image 
         style="width: 100%; min-height: 120px; max-height: 240px; cursor: pointer;"
         v-on:click="btnImageClick(theme)"
@@ -65,15 +91,29 @@
         </div>
       </el-image>
       <div style="padding: 14px;">
-        <div :title="theme.summary">{{ theme.name }}</div>
+
+        <h4 class="text-center plan-name">
+          {{ theme.name }}（{{ theme.updatedDate.substr(0, 10) }}）
+          <div v-if="theme.price" class="plan-price">
+            <el-badge v-if="isCreatable(theme)" value="已购">
+              ￥{{ theme.price.toFixed(2) }}
+            </el-badge>
+            <span v-else>￥{{ theme.price.toFixed(2) }}</span>
+          </div>
+          <div v-else class="plan-price">免费</div>
+        </h4>
+        <div class="ga-border"></div>
+        <p class="text-muted text-center" style="height: 45px; overflow: hidden;">
+          <small>{{ theme.summary }}</small>
+        </p>
         
         <div style="margin-top: 10px;">
           <el-button plain type="info" v-on:click="btnPreviewClick(theme)" size="mini" icon="el-icon-view" style="margin: 0 5px;">预览站点</el-button>
-          <el-button plain type="primary" v-if="siteAddPermission && theme.price === 0" v-on:click="btnCreateClick(theme)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">
+          <el-button plain type="primary" v-if="siteAddPermission && isCreatable(theme)" v-on:click="btnCreateClick(theme)" size="mini" icon="el-icon-circle-plus" style="margin: 0 5px;">
             创建站点
           </el-button>
-          <el-button plain type="primary" v-if="siteAddPermission && theme.price > 0" v-on:click="btnBuyClick(theme)" size="mini" icon="el-icon-s-goods" style="margin: 0 5px;">
-            购买并导入
+          <el-button plain type="primary" v-if="siteAddPermission && !isCreatable(theme)" v-on:click="btnBuyClick(theme.userName, theme.name)" size="mini" icon="el-icon-s-goods" style="margin: 0 5px;">
+            购买并创建站点
           </el-button>
         </div>
       </div>

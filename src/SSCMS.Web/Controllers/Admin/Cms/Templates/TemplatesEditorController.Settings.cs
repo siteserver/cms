@@ -107,7 +107,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                 await _authManager.AddSiteLogAsync(request.Settings.SiteId,
                   $"修改{template.TemplateType.GetDisplayName()}",
-                  $"模板名称:{template.TemplateName}");
+                  $"模板名称：{template.TemplateName}");
             }
             else
             {
@@ -136,7 +136,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 template.Id = await _templateRepository.InsertAsync(template);
                 await _authManager.AddSiteLogAsync(request.Settings.SiteId,
                   $"添加{template.TemplateType.GetDisplayName()}",
-                  $"模板名称:{template.TemplateName}");
+                  $"模板名称：{template.TemplateName}");
 
                 await _pathManager.WriteContentToTemplateFileAsync(site, template, request.Content, _authManager.AdminId);
             }

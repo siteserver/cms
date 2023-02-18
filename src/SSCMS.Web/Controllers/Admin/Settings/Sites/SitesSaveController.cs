@@ -19,6 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private const string RouteSettings = "settings/sitesSave/actions/settings";
         private const string RouteFiles = "settings/sitesSave/actions/files";
         private const string RouteActionsData = "settings/sitesSave/actions/data";
+        private const string RouteZip = "settings/sitesSave/actions/zip";
 
         private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
@@ -66,6 +67,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             public bool IsSaveContents { get; set; }
             public bool IsSaveAllChannels { get; set; }
             public IList<int> CheckedChannelIds { get; set; }
+        }
+
+        public class ZipRequest
+        {
+            public string DirectoryName { get; set; }
         }
     }
 }

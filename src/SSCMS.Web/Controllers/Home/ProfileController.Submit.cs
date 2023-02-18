@@ -13,7 +13,19 @@ namespace SSCMS.Web.Controllers.Home
         {
             if (request.Id != _authManager.UserId) return Unauthorized();
 
-            var (success, errorMessage) = await _userRepository.UpdateAsync(request);
+            var user = await _authManager.GetUserAsync();
+            user.AvatarUrl = request.AvatarUrl;
+            user.Mobile = request.Mobile;
+            user.Email = request.Email;
+
+            var styles = await _tableStyleRepository.GetUserStylesAsync();
+
+            foreach (var style in styles)
+            {
+                user.Set(style.AttributeName, request.Get(style.AttributeName));
+            }
+
+            var (success, errorMessage) = await _userRepository.UpdateAsync(user);
             if (!success)
             {
                 return this.Error($"修改资料失败：{errorMessage}");

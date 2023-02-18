@@ -32,9 +32,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var path = string.Empty;
             var content = string.Empty;
 
-            if (!string.IsNullOrEmpty(request.FileName))
+            var directoryPath = request.DirectoryPath; // PathUtils.RemoveParentPath(request.DirectoryPath);
+            var fileName = PathUtils.RemoveParentPath(request.FileName);
+
+            if (!string.IsNullOrEmpty(fileName))
             {
-                var filePath = await _pathManager.GetSitePathAsync(site, request.DirectoryPath, request.FileName);
+                var filePath = await _pathManager.GetSitePathAsync(site, directoryPath, fileName);
+
                 if (FileUtils.IsFileExists(filePath))
                 {
                     content = await FileUtils.ReadTextAsync(filePath);
@@ -42,18 +46,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
                 if (StringUtils.EqualsIgnoreCase(request.FileType, "html"))
                 {
-                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsIncludeDir,
-                        string.Empty), request.FileName);
+                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsIncludeDir,
+                        string.Empty), fileName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(request.FileType, "css"))
                 {
-                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsCssDir,
-                        string.Empty), request.FileName);
+                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsCssDir,
+                        string.Empty), fileName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(request.FileType, "js"))
                 {
-                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(request.DirectoryPath, site.TemplatesAssetsJsDir,
-                        string.Empty), request.FileName);
+                    path = PageUtils.Combine(StringUtils.ReplaceStartsWithIgnoreCase(directoryPath, site.TemplatesAssetsJsDir,
+                        string.Empty), fileName);
+                }
+                else
+                {
+                    return this.Error("文件获取失败，必须为Html/Css/Js文件！");
                 }
 
                 path = StringUtils.TrimSlash(PathUtils.RemoveExtension(path));

@@ -61,7 +61,7 @@
 
 <el-row>
   <el-col :span="12">
-    <el-form :inline="true" :model="form" size="mini">
+    <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
       <el-form-item label="搜索">
         <el-input v-model="form.keyword" placeholder="关键字"></el-input>
       </el-form-item>
@@ -106,7 +106,7 @@
   </el-col>
 </el-row>
 
-<el-form :inline="true" :model="form">
+<el-form v-on:submit.native.prevent :inline="true" :model="form">
   <el-form-item label="分组">
 
     <el-tag
@@ -155,7 +155,7 @@
           </div>
           <a href="javascript:;" v-on:click="btnUpdateClick(message)">
             <el-image 
-              style="width: 100%; min-height: 120px; max-height:220px;"
+              style="width: 100%; min-height: 220px; max-height:220px;"
               :src="message.items[0].thumbUrl">
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline"></i>
@@ -180,11 +180,10 @@
                 
                 <el-tooltip content="移动分组" placement="top">
                   <el-popover
-                    v-if="groups.length > 1"
                     placement="right"
                     width="400"
                     v-model="message.isSelectGroups"
-                    trigger="click">
+                    trigger="manual">
                     <div>
                       <el-tag
                         title="移动分组"
@@ -201,7 +200,7 @@
                       <el-button size="small" v-on:click="btnSelectGroupSubmit(message)" type="primary">确 定</el-button>
                       <el-button size="small" v-on:click="message.isSelectGroups = false;">取 消</el-button>
                     </div>
-                    <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" slot="reference" v-on:click="message.isSelectGroups = true; selectedGroupId = message.groupId" icon="el-icon-menu"></el-link>
+                    <el-link slot="reference" v-if="groups.length > 1" style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" v-on:click="message.isSelectGroups = true; selectedGroupId = message.groupId" icon="el-icon-menu"></el-link>
                   </el-popover>
                 </el-tooltip>
   
@@ -255,11 +254,10 @@
               
               <el-tooltip content="移动分组" placement="top">
                 <el-popover
-                  v-if="groups.length > 1"
                   placement="right"
                   width="400"
                   v-model="message.isSelectGroups"
-                  trigger="click">
+                  trigger="manual">
                   <div>
                     <el-tag
                       title="移动分组"
@@ -276,7 +274,7 @@
                     <el-button size="small" v-on:click="btnSelectGroupSubmit(message)" type="primary">确 定</el-button>
                     <el-button size="small" v-on:click="message.isSelectGroups = false;">取 消</el-button>
                   </div>
-                  <el-link style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" slot="reference" v-on:click="message.isSelectGroups = true; selectedGroupId = message.groupId" icon="el-icon-menu"></el-link>
+                  <el-link slot="reference" v-if="groups.length > 1" style="font-size: 18px; margin: 0 5px; color: #999;" :underline="false" v-on:click="message.isSelectGroups = true; selectedGroupId = message.groupId" icon="el-icon-menu"></el-link>
                 </el-popover>
               </el-tooltip>
   
@@ -322,11 +320,10 @@
         <template slot-scope="scope">
             <el-button v-on:click="btnUpdateClick(scope.row)" type="text" size="mini" icon="el-icon-edit" style="margin: 0 5px">编辑</el-button>
             <el-popover
-              v-if="groups.length > 1"
               placement="right"
               width="400"
               v-model="scope.row.isSelectGroups"
-              trigger="click">
+              trigger="manual">
               <div>
                 <el-tag
                   title="移动分组"
@@ -343,7 +340,7 @@
                 <el-button size="small" v-on:click="btnSelectGroupSubmit(scope.row)" type="primary">确 定</el-button>
                 <el-button size="small" v-on:click="scope.row.isSelectGroups = false;">取 消</el-button>
               </div>
-              <el-button slot="reference" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-menu" style="margin: 0 5px">移动分组</el-button>
+              <el-button slot="reference" v-if="groups.length > 1" v-on:click="scope.row.isSelectGroups = true; selectedGroupId = scope.row.groupId" type="text" size="mini" icon="el-icon-menu" style="margin: 0 5px">移动分组</el-button>
             </el-popover>
             <el-button v-on:click="btnDeleteClick(scope.row)" type="text" size="mini" icon="el-icon-delete" style="margin: 0 5px">删除</el-button>
         </template>

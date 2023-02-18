@@ -22,7 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.AudioUploadDateFormatString = request.AudioUploadDateFormatString;
             site.IsAudioUploadChangeFileName = request.IsAudioUploadChangeFileName;
             site.AudioUploadExtensions = request.AudioUploadExtensions.Replace("|", ",");
-            site.AudioUploadTypeMaxSize = request.AudioUploadTypeMaxSize;
+            site.AudioUploadTypeMaxSize = request.AudioUploadTypeMaxSize * 1024;
 
             if (_settingsManager.IsSafeMode)
             {

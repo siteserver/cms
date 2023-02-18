@@ -4,6 +4,7 @@ if (window.top != self) {
 
 var $url = '/index';
 var $idSite = 'site';
+var $idSiteSwitch = 'site_switch';
 var $sidebarWidth = 200;
 var $collapseWidth = 60;
 
@@ -11,7 +12,9 @@ var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   sessionId: localStorage.getItem('sessionId'),
   cmsVersion: null,
+  isCloudAdmin: null,
   adminLogoUrl: null,
+  adminLogoLinkUrl: null,
   adminTitle: null,
   isSuperAdmin: null,
   culture: null,
@@ -22,6 +25,9 @@ var data = utils.init({
   previewUrl: null,
   local: null,
   isSafeMode: null,
+  cloudType: null,
+  cloudUserName: null,
+  cloudToken: null,
   menu: null,
   keyword: null,
   newCms: null,
@@ -59,8 +65,21 @@ var methods = {
         utils.addTab('首页', utils.getRootUrl('dashboard'));
 
         $this.cmsVersion = res.cmsVersion;
-        $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
-        $this.adminTitle = res.adminTitle || 'SS CMS';
+
+        $this.isCloudAdmin = res.isCloudAdmin;
+        var adminFaviconUrl = '';
+        if (res.isCloudAdmin) {
+          $this.adminLogoUrl = res.adminLogoUrl || utils.getAssetsUrl('images/logo.png');
+          $this.adminLogoLinkUrl = res.adminLogoLinkUrl;
+          adminFaviconUrl = res.adminFaviconUrl;
+          $this.adminTitle = res.adminTitle || 'SSCMS 管理后台';
+        } else {
+          $this.adminLogoUrl = utils.getAssetsUrl('images/logo.png');
+          $this.adminLogoLinkUrl = 'https://sscms.com';
+          adminFaviconUrl = utils.getAssetsUrl('images/favicon.png');
+          $this.adminTitle = 'SSCMS 管理后台';
+        }
+
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.culture = res.culture;
         $this.plugins = res.plugins;
@@ -70,6 +89,13 @@ var methods = {
         $this.previewUrl = res.previewUrl;
         $this.local = res.local;
         $this.isSafeMode = res.isSafeMode;
+        $this.cloudType = res.cloudType;
+        $this.cloudUserName = res.cloudUserName;
+        $this.cloudToken = res.cloudToken;
+
+        if (!cloud.isAuth()) {
+          cloud.login($this.cloudUserName, $this.cloudToken);
+        }
 
         var sideMenuIds = [];
         if (location.hash) {
@@ -93,6 +119,14 @@ var methods = {
         }
 
         document.title = $this.adminTitle;
+
+        var head = document.querySelector('head');
+        var favicon = document.createElement('link');
+        favicon.setAttribute('rel', 'shortcut icon');
+        favicon.setAttribute('href', adminFaviconUrl);
+        head.appendChild(favicon);
+
+        utils.loadExternals(res.cssUrls, res.jsUrls);
         setTimeout($this.ready, 100);
       } else {
         location.href = res.redirectUrl;
@@ -180,9 +214,14 @@ var methods = {
     });
   },
 
+  openDocs: function(item) {
+    utils.openDocs(item.url);
+  },
+
   openContextMenu: function(e) {
-    if (e.srcElement.id && _.startsWith(e.srcElement.id, 'tab-')) {
-      this.contextTabName = _.trimStart(e.srcElement.id, 'tab-');
+    var ele = $(e.srcElement).parent()[0];
+    if (ele && ele.id && _.startsWith(ele.id, 'tab-')) {
+      this.contextTabName = _.trimStart(ele.id, 'tab-');
       this.contextMenuVisible = true;
       this.contextLeft = e.clientX;
       if (e.clientX + 130 > this.winWidth) {
@@ -245,7 +284,7 @@ var methods = {
   },
 
   getHostUrl: function() {
-    return cloud.host;
+    return this.adminLogoLinkUrl || cloud.host;
   },
 
   btnSearchClick: function() {
@@ -331,7 +370,8 @@ var methods = {
       utils.openLayer({
         title: '修改资料',
         url: utils.getSettingsUrl('administratorsLayerProfile', {userName: this.local.userName}),
-        full: true
+        width: 650,
+        height: 600
       });
     } else if (command === 'password') {
       utils.openLayer({

@@ -179,7 +179,7 @@ namespace SSCMS.Core.Repositories
             var cacheKeys = new List<string> { GetListKey(site.Id) };
             cacheKeys.AddRange(idList.Select(GetEntityKey));
 
-            var deletedNum = await _repository.DeleteAsync(Q
+            await _repository.DeleteAsync(Q
                 .Where(nameof(Channel.SiteId), site.Id)
                 .WhereIn(nameof(Channel.Id), idList)
                 .CachingRemove(cacheKeys.ToArray())
@@ -187,10 +187,10 @@ namespace SSCMS.Core.Repositories
 
             if (channelEntity.ParentId != 0)
             {
-                await _repository.DecrementAsync(nameof(Channel.Taxis), Q
-                    .Where(nameof(Channel.SiteId), channelEntity.SiteId)
-                    .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
-                , deletedNum);
+                // await _repository.DecrementAsync(nameof(Channel.Taxis), Q
+                //     .Where(nameof(Channel.SiteId), channelEntity.SiteId)
+                //     .Where(nameof(Channel.Taxis), ">", channelEntity.Taxis)
+                // , deletedNum);
 
                 await UpdateChildrenCountAsync(channelEntity.SiteId, channelEntity.ParentId);
             }

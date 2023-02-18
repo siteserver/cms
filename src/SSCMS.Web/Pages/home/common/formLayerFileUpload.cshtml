@@ -25,9 +25,9 @@
 
 <div style="height: 10px"></div>
 
-<el-form ref="form" :model="form" size="mini">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="mini">
   <el-form-item>
-    <el-checkbox label="重命名文件" v-model="form.isChangeFileName"></el-checkbox>
+    <el-checkbox label="重命名文件" v-model="form.isChangeFileName" v-on:change="btnChangeClick"></el-checkbox>
   </el-form-item>
 </el-form>
 

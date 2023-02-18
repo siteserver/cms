@@ -8,7 +8,7 @@
   </style>
 }
 
-<el-form ref="form" :model="form" size="small" status-icon label-width="140px">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="140px">
   <el-form-item label="账号" prop="userName" :rules="[{ required: true, message: '请输入账号' }]">
     <el-input v-model="form.userName" :disabled="userId > 0"></el-input>
     <small class="tips">账号用于登录系统</small>

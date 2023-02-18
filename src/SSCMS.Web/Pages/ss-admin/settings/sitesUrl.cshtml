@@ -52,7 +52,7 @@
   direction="rtl"
   size="50%">
   <div class="drawer__content">
-    <el-form ref="editForm" :model="editForm" size="small" :rules="editRules" label-width="200px">
+    <el-form v-on:submit.native.prevent ref="editForm" :model="editForm" size="small" :rules="editRules" label-width="200px">
       <el-form-item label="站点名称">{{ editForm.siteName }}</el-form-item>
 
       <el-form-item label="站点部署方式">

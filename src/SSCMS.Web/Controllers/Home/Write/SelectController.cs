@@ -32,7 +32,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         public class GetResult
         {
             public bool Unauthorized { get; set; }
-            public List<Select<int>> Sites { get; set; }
+            public List<Cascade<int>> Sites { get; set; }
             public int SiteId { get; set; }
             public Cascade<int> Root { get; set; }
         }

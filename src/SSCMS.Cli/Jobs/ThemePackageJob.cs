@@ -42,42 +42,43 @@ namespace SSCMS.Cli.Jobs
             _databaseManager = databaseManager;
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: package theme to zip file");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: package theme to zip file");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
             var (success, _, filePath) =
-                await PackageAsync(_pathManager, _cacheManager, _databaseManager, _directory, true);
+                await PackageAsync(console, _pathManager, _cacheManager, _databaseManager, _directory, true);
             if (success)
             {
                 var fileSize = FileUtils.GetFileSizeByFilePath(filePath);
-                await WriteUtils.PrintSuccessAsync($"Theme packaged: {filePath} ({fileSize})");
+                await console.WriteSuccessAsync($"Theme packaged: {filePath} ({fileSize})");
             }
         }
 
-        public static async Task<(bool Success, string name, string filePath)> PackageAsync(IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, string directory, bool isOverride)
+        public static async Task<(bool Success, string name, string filePath)> PackageAsync(IConsoleUtils console, IPathManager pathManager, ICacheManager cacheManager, IDatabaseManager databaseManager, string directory, bool isOverride)
         {
             var site = await databaseManager.SiteRepository.GetSiteByDirectoryAsync(directory);
             var sitePath = await pathManager.GetSitePathAsync(site);
 
             if (site == null || !DirectoryUtils.IsDirectoryExists(sitePath))
             {
-                await WriteUtils.PrintErrorAsync($@"Invalid site directory path: ""{directory}""");
+                await console.WriteErrorAsync($@"Invalid site directory path: ""{directory}""");
                 return (false, null, null);
             }
 
@@ -102,13 +103,13 @@ namespace SSCMS.Cli.Jobs
                 writeReadme = true;
                 theme = new Theme
                 {
-                    Name = ReadUtils.GetString("name:"),
-                    CoverUrl = ReadUtils.GetString("cover image url:"),
-                    Summary = ReadUtils.GetString("repository url:"),
-                    Tags = ReadUtils.GetStringList("tags:"),
-                    ThumbUrls = ReadUtils.GetStringList("thumb image urls:"),
-                    Compatibilities = ReadUtils.GetStringList("compatibilities:"),
-                    Price = ReadUtils.GetYesNo("is free?") ? 0 : ReadUtils.GetDecimal("price:"),
+                    Name = console.GetString("name:"),
+                    CoverUrl = console.GetString("cover image url:"),
+                    Summary = console.GetString("repository url:"),
+                    Tags = console.GetStringList("tags:"),
+                    ThumbUrls = console.GetStringList("thumb image urls:"),
+                    Compatibilities = console.GetStringList("compatibilities:"),
+                    Price = console.GetYesNo("is free?") ? 0 : console.GetDecimal("price:"),
                 };
             }
 
@@ -135,9 +136,9 @@ namespace SSCMS.Cli.Jobs
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(packagePath);
 
-            await Console.Out.WriteLineAsync($"Theme name: {theme.Name}");
-            await Console.Out.WriteLineAsync($"Theme folder: {packagePath}");
-            await Console.Out.WriteLineAsync("Theme packaging...");
+            await console.WriteLineAsync($"Theme name: {theme.Name}");
+            await console.WriteLineAsync($"Theme folder: {packagePath}");
+            await console.WriteLineAsync("Theme packaging...");
 
             var caching = new CacheUtils(cacheManager);
             var manager = new SiteTemplateManager(pathManager, databaseManager, caching);

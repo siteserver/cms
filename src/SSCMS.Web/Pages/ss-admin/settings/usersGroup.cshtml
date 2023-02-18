@@ -51,7 +51,7 @@
   direction="rtl"
   size="50%">
   <div class="drawer__content">
-    <el-form size="small" ref="form" :model="form" label-width="150px" :rules="{
+    <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="150px" :rules="{
       groupName: [
           { required: true, message: '请输入用户组名称' }
         ]

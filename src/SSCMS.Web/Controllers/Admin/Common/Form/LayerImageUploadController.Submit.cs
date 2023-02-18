@@ -20,6 +20,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 var site = await _siteRepository.GetAsync(request.SiteId);
                 if (site == null) return this.Error("无法确定内容对应的站点");
 
+                var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Images);
+
                 foreach (var filePath in request.FilePaths)
                 {
                     if (string.IsNullOrEmpty(filePath)) continue;
@@ -31,6 +33,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                     var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
                     var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                    if (isAutoStorage)
+                    {
+                        var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+                        if (success)
+                        {
+                            virtualUrl = imageUrl = url;
+                        }
+                    }
 
                     if (request.IsMaterial)
                     {
@@ -60,8 +70,16 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                         var thumbnailVirtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, localSmallFilePath);
                         var thumbnailUrl = await _pathManager.ParseSiteUrlAsync(site, thumbnailVirtualUrl, true);
-
                         _pathManager.ResizeImageByMax(filePath, localSmallFilePath, request.ThumbWidth, request.ThumbHeight);
+                        
+                        if (isAutoStorage)
+                        {
+                            var (success, url) = await _storageManager.StorageAsync(request.SiteId, localSmallFilePath);
+                            if (success)
+                            {
+                                thumbnailVirtualUrl = thumbnailUrl = url;
+                            }
+                        }
 
                         if (request.IsLinkToOriginal)
                         {

@@ -6,6 +6,7 @@ var data = utils.init({
   sites: null,
   root: null,
   siteId: 0,
+  siteIds: [],
   channelIds: []
 });
 
@@ -23,6 +24,7 @@ var methods = {
 
       $this.sites = res.sites;
       $this.siteId = res.siteId;
+      $this.siteIds = [res.siteId];
       $this.root = res.root;
     }).catch(function(error) {
       utils.error(error);
@@ -50,6 +52,7 @@ var methods = {
   },
 
   handleSiteIdChange: function() {
+    this.siteId = this.siteIds && this.siteIds.length > 0 ? this.siteIds[this.siteIds.length - 1] : 0;
     this.apiSubmit(this.siteId);
   },
 
@@ -66,8 +69,8 @@ var methods = {
     if (this.channelId == 0) return;
 
     utils.openLayer({
-      title: '批量导入Word', 
-      name: 'Word', 
+      title: '批量导入Word',
+      name: 'Word',
       url: utils.getRootUrl('write/contentsLayerWord', {
         siteId: this.siteId,
         channelId: this.channelId

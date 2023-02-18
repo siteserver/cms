@@ -16,9 +16,10 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
                 return Unauthorized();
             }
 
-            if (!string.IsNullOrEmpty(request.Path))
+            var path = PathUtils.RemoveParentPath(request.Path);
+            if (!string.IsNullOrEmpty(path))
             {
-                if (!FileUtils.DeleteFileIfExists(request.Path))
+                if (!FileUtils.DeleteFileIfExists(path))
                 {
                     return new BoolResult
                     {
@@ -30,7 +31,13 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
             var userName = request.PluginId.Split('.')[0];
             var name = request.PluginId.Split('.')[1];
 
-            await _pluginManager.InstallAsync(userName, name, request.Version);
+            var downloadUrl = CloudUtils.Dl.GetExtensionsDownloadUrl(userName, name, request.Version);
+            if (await _cloudManager.IsAuthenticationAsync())
+            {
+                downloadUrl = await _cloudManager.GetExtensionDownloadUrlAsync(userName, name, request.Version);
+            }
+
+            await _pluginManager.InstallAsync(userName, name, request.Version, downloadUrl);
 
             await _authManager.AddAdminLogAsync("安装插件", $"插件:{userName}.{name}");
 

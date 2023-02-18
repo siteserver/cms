@@ -98,7 +98,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public bool IsAllContents { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
             public Permissions Permissions { get; set; }
-            public List<Menu> Menus { get; set; }
+            public List<Menu> ContentMenus { get; set; }
+            public List<Menu> ContentsMenus { get; set; }
         }
 
         public class TreeRequest : SiteRequest
@@ -109,6 +110,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public class TreeResult
         {
             public Cascade<int> Root { get; set; }
+            public List<string> CssUrls { get; set; }
+            public List<string> JsUrls { get; set; }
             public string SiteUrl { get; set; }
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }

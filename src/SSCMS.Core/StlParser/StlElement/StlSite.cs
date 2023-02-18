@@ -56,8 +56,11 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "替换replace的文字信息")]
         private const string To = nameof(To);
 
-        [StlAttribute(Title = "是否清除标签信息")]
+        [StlAttribute(Title = "是否清除HTML标签")]
         private const string IsClearTags = nameof(IsClearTags);
+
+        [StlAttribute(Title = "是否清除空格")]
+        private const string IsClearBlank = nameof(IsClearBlank);
 
         [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
@@ -101,6 +104,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
+            var isClearBlank = false;
             var isReturnToBr = false;
             var isLower = false;
             var isUpper = false;
@@ -162,6 +166,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isClearTags = TranslateUtils.ToBool(value, false);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsClearBlank))
+                {
+                    isClearBlank = TranslateUtils.ToBool(value, false);
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr))
                 {
                     isReturnToBr = TranslateUtils.ToBool(value, false);
@@ -196,10 +204,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 return site;
             }
 
-            return await ParseAsync(parseManager, site, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, attributes);
+            return await ParseAsync(parseManager, site, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, attributes);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -238,7 +246,7 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeImageUrl))
             {
-                var inputParser = new InputParserManager(parseManager.PathManager);
+                var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                 if (no == "all")
                 {
@@ -300,7 +308,19 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (pageInfo.Site.Get<string>(type) != null)
             {
-                parsedContent = pageInfo.Site.Get<string>(type);
+                
+
+                var num = TranslateUtils.ToInt(no);
+                if (num <= 1)
+                {
+                    parsedContent = site.Get<string>(type);
+                }
+                else
+                {
+                    var extendName = ColumnsManager.GetExtendName(type, num - 1);
+                    parsedContent = site.Get<string>(extendName);
+                }
+
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     var styleInfo = await databaseManager.TableStyleRepository.GetTableStyleAsync(databaseManager.SiteRepository.TableName, type, databaseManager.TableStyleRepository.GetRelatedIdentities(pageInfo.SiteId));
@@ -313,17 +333,16 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            var inputParser = new InputParserManager(parseManager.PathManager);
+                            var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                             parsedContent = await inputParser.GetContentByTableStyleAsync(parsedContent, separator, pageInfo.Site, styleInfo, format, attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
 
                             inputType = styleInfo.InputType;
-
-                            //parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                     }
                     else
-                    { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空
+                    {
+                        // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空
                         parsedContent = string.Empty;
                     }
                 }
@@ -331,7 +350,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
-            return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, format);
+            return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
         }
     }
 }

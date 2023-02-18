@@ -18,19 +18,29 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
         private const string RouteUpload = "common/form/layerVideoUpload/actions/upload";
 
         private readonly IAuthManager _authManager;
+        private readonly IVodManager _vodManager;
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoUploadController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerVideoUploadController(IAuthManager authManager, IVodManager vodManager, IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
+            _vodManager = vodManager;
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
         }
 
         public class Options
         {
             public bool IsChangeFileName { get; set; }
+            public bool IsLibrary { get; set; }
+        }
+
+        public class GetResult : Options
+        {
+            public bool IsCloudVod { get; set; }
         }
 
         public class UploadRequest : SiteRequest

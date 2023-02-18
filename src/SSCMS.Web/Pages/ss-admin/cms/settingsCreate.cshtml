@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form size="small" ref="form" :model="form" label-width="280px">
+<el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="280px">
 
   <el-form-item label="启用双击生成页面">
     <el-radio-group v-model="form.isCreateDoubleClick">
@@ -51,6 +51,13 @@
       <el-radio :label="true">包含</el-radio>
       <el-radio :label="false">不包含</el-radio>
     </el-radio-group>
+  </el-form-item>
+  <el-form-item label="启用网站黑白模式">
+    <el-radio-group v-model="form.isCreateFilterGray">
+      <el-radio :label="true">启用</el-radio>
+      <el-radio :label="false">不启用</el-radio>
+    </el-radio-group>
+    <div class="tips">此功能通常用于国殇期间</div>
   </el-form-item>
   <el-form-item label="翻页中生成的静态页面最大数（页）" prop="createStaticMaxPage" :rules="[
     { required: true, message: '请输入翻页中生成的静态页面最大数' },

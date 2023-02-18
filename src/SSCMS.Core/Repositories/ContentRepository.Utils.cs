@@ -20,20 +20,6 @@ namespace SSCMS.Core.Repositories
             return await GetRepositoryAsync(tableName);
         }
 
-        private async Task<Repository<Content>> GetRepositoryAsync(string tableName)
-        {
-            if (TableNameRepositories.TryGetValue(tableName, out var repository))
-            {
-                return repository;
-            }
-
-            repository = new Repository<Content>(_settingsManager.Database, tableName, _settingsManager.Redis);
-            await repository.LoadTableColumnsAsync(tableName);
-
-            TableNameRepositories[tableName] = repository;
-            return repository;
-        }
-
         private Query GetQuery(int siteId, int channelId = 0)
         {
             return GetQuery(Q.NewQuery(), siteId, channelId);

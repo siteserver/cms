@@ -19,7 +19,7 @@
 </div>
 <div v-else>
 
-  <el-form :inline="true" :model="form" size="mini">
+  <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
     <el-form-item label="内容">
       <el-input v-model="form.keyword" placeholder="请输入关键字"></el-input>
     </el-form-item>

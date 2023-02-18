@@ -157,7 +157,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var url = string.Empty;
             var removeTarget = false;
-            var onclick = string.Empty;
+            var onClick = string.Empty;
             if (!string.IsNullOrEmpty(href))
             {
                 url = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, href, pageInfo.IsLocal);
@@ -207,7 +207,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         innerHtml = innerBuilder.ToString();
                     }
 
-                    if (string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(contentInfo?.LinkUrl))
+                    if (string.IsNullOrEmpty(target) && (contentInfo?.LinkType == LinkType.None && !string.IsNullOrEmpty(contentInfo?.LinkUrl)))
                     {
                         target = "_blank";
                     }
@@ -260,9 +260,9 @@ namespace SSCMS.Core.StlParser.StlElement
 
             attributes["href"] = url;
 
-            if (!string.IsNullOrEmpty(onclick))
+            if (!string.IsNullOrEmpty(onClick))
             {
-                attributes["onclick"] = onclick;
+                attributes["onClick"] = onClick;
             }
 
             if (removeTarget)
@@ -280,7 +280,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 return url;
             }
 
-            if (pageInfo.EditMode == EditMode.Visual)
+            if (pageInfo.EditMode == EditMode.Visual && !contextInfo.IsInnerElement)
             {
                 VisualUtility.AddEditableToPage(pageInfo, contextInfo, attributes, innerHtml);
             }

@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Datory;
 using Datory.Utils;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 
 namespace SSCMS.Utils
 {
@@ -25,6 +27,11 @@ namespace SSCMS.Utils
         public static bool Contains(string strCollection, int inInt)
         {
             return Contains(GetIntList(strCollection), inInt);
+        }
+
+        public static bool ContainsIgnoreCase(string collection, string target)
+        {
+            return !string.IsNullOrEmpty(collection) && ContainsIgnoreCase(GetStringList(collection), target);
         }
 
         public static bool ContainsIgnoreCase(IEnumerable<string> list, string target)
@@ -137,6 +144,20 @@ namespace SSCMS.Utils
             return Utilities.ToString(collection, separator);
         }
 
+        public static string ToString<T>(List<T> collection, string separator = ",") where T : struct
+        {
+            var stringList = new List<string>();
+            foreach (var item in collection)
+            {
+                var str = Enum.GetName(typeof(T),item);
+                if (!string.IsNullOrEmpty(str) && !stringList.Contains(str))
+                {
+                    stringList.Add(str);
+                }
+            }
+            return Utilities.ToString(stringList, separator);
+        }
+
         public static string ToStringByReturnAndNewline(List<string> collection)
         {
             return Utilities.ToString(collection, Constants.ReturnAndNewline);
@@ -182,6 +203,21 @@ namespace SSCMS.Utils
             }
 
             return new List<string>();
+        }
+
+        public static List<T> GetEnumList<T>(string collection, char split = ',') where T : struct
+        {
+            var stringList = GetStringList(collection);
+            var list = new List<T>();
+            foreach (var str in stringList)
+            {
+                var (valid, item) = TranslateUtils.ToEnum<T>(str);
+                if (valid && !list.Contains(item))
+                {
+                    list.Add(item);
+                }
+            }
+            return list;
         }
     }
 }

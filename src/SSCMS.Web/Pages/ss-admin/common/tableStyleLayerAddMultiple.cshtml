@@ -1,13 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form 
-  size="small" 
-  :model="form" 
-  ref="form"
-  :inline="true"
-  label-position="top"
-  label-width="130px">
+<el-form v-on:submit.native.prevent size="small" :model="form" ref="form" :inline="true" label-position="top" label-width="130px">
 
   <template v-for="(style, index) in form.styles">
     <el-form-item :label="'字段名称（' + (index + 1) + '）'" :prop="'styles.' + index + '.attributeName'" :rules="{

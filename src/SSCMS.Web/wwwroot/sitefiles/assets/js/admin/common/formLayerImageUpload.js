@@ -1,6 +1,7 @@
 ﻿var $url = '/common/form/layerImageUpload';
 
 var data = utils.init({
+  inputType: utils.getQueryString('inputType') || 'Image',
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
   editorAttributeName: utils.getQueryString('editorAttributeName'),
@@ -22,17 +23,30 @@ var data = utils.init({
 
 var methods = {
   parentInsert: function(no, result) {
-    var vue = parent.$vue;
-    if (vue.runFormLayerImageUploadText) {
-      vue.runFormLayerImageUploadText(this.attributeName, no, result.imageVirtualUrl);
-    }
-    if (vue.runFormLayerImageUploadEditor && this.editorAttributeName && this.form.isEditor) {
-      var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
-      if (result.previewUrl) {
-        var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
-        html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
+    if (this.inputType === 'Image') {
+      var vue = parent.$vue;
+      if (vue.runFormLayerImageUploadText) {
+        vue.runFormLayerImageUploadText(this.attributeName, no, result.imageVirtualUrl);
       }
-      vue.runFormLayerImageUploadEditor(this.editorAttributeName, html);
+      if (vue.runFormLayerImageUploadEditor && this.editorAttributeName && this.form.isEditor) {
+        var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
+        if (result.previewUrl) {
+          var previewUrl = "'" + result.previewUrl + "'";
+          var vueHtml = '<el-image src="' + result.imageUrl + '" :preview-src-list="[' + previewUrl + ']" style="border: 0; max-width: 100%"></el-image>';
+          html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
+        }
+        vue.runFormLayerImageUploadEditor(this.editorAttributeName, html);
+      }
+    } else if (this.inputType === 'TextEditor') {
+      if (parent.$vue.runEditorLayerImage) {
+        var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
+        if (result.previewUrl) {
+          var previewUrl = "'" + result.previewUrl + "'";
+          var vueHtml = '<el-image src="' + result.imageUrl + '" :preview-src-list="[' + previewUrl + ']" style="border: 0; max-width: 100%"></el-image>';
+          html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
+        }
+        parent.$vue.runEditorLayerImage(this.attributeName, html);
+      }
     }
   },
 

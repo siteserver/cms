@@ -39,6 +39,7 @@ namespace SSCMS.Utils
                 public const string SiteContent = "SiteContent";                        //频道内容导入导出临时文件夹名
                 public const string Table = "Table";                                    //辅助表导入导出临时文件夹名
                 public const string RelatedField = "RelatedField";                      //关联字段导入导出临时文件夹名
+                public const string Form = "Form";                                      //表单导入导出临时文件夹名
 
                 //文件
                 public const string FileTemplate = "Template.xml";                      //序列化模板的文件名
@@ -251,6 +252,18 @@ namespace SSCMS.Utils
         {
             CreateDirectoryIfNotExists(directoryPath);
             return Directory.GetFiles(directoryPath);
+        }
+
+        public static long GetTotalSize(string directoryPath)
+        {
+            var length = 0L;
+            var filePaths = GetFilePaths(directoryPath);
+            foreach (var filePath in filePaths)
+            {
+                var theFile = new FileInfo(filePath);
+                length += theFile.Length;
+            }
+            return length;
         }
     }
 }

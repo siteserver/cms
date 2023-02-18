@@ -59,6 +59,30 @@ var utils = {
     });
   },
 
+  loadExternals: function (cssUrls, jsUrls) {
+    if (cssUrls) {
+      var head = document.getElementsByTagName('head')[0];
+      for (var i = 0; i < cssUrls.length; i++) {
+        var url = cssUrls[i];
+        var link = document.createElement('link');
+        link.href = url;
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        head.appendChild(link);
+      }
+    }
+    if (jsUrls) {
+      var head = document.getElementsByTagName('head')[0];
+      for (var i = 0; i < jsUrls.length; i++) {
+        var url = jsUrls[i];
+        var script = document.createElement('script');
+        script.src = url;
+        script.type = 'text/javascript';
+        head.appendChild(script);
+      }
+    }
+  },
+
   loadEditors: function (styles, form) {
     setTimeout(function () {
       for (var i = 0; i < styles.length; i++) {
@@ -77,14 +101,15 @@ var utils = {
     }, 100);
   },
 
-  getEditor: function (attributeName) {
+  getEditor: function (attributeName, height) {
     return UE.getEditor(attributeName, {
       allowDivTransToP: false,
       maximumWords: 99999999,
-      initialFrameWidth:null ,
+      initialFrameWidth: null,
+      initialFrameHeight: height && height > 0 ? height : 320,
       autoHeightEnabled: false,
       autoFloatEnabled: false,
-      zIndex: 2001,
+      zIndex: 2000,
     });
   },
 
@@ -166,6 +191,10 @@ var utils = {
 
   getAssetsUrl: function (url) {
     return "/sitefiles/assets/" + url;
+  },
+
+  getCloudsUrl: function (name, query) {
+    return utils.getPageUrl("clouds", name, query);
   },
 
   getCmsUrl: function (name, query) {
@@ -486,7 +515,9 @@ var utils = {
     } else if (error.response) {
       var message = utils.getErrorMessage(error);
 
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      var ignoreAuth = (options && options.ignoreAuth) ? true : false;
+
+      if (!ignoreAuth && error.response && (error.response.status === 401 || error.response.status === 403)) {
         var location = _.trimEnd(window.location.href, '/');
         if (_.endsWith(location, '/ss-admin') || _.endsWith(location, '/home')) {
           top.location.href = utils.getRootUrl('login');
@@ -593,6 +624,10 @@ var utils = {
       success: config.success
     });
 
+    setTimeout(function() {
+      document.getElementById('layui-layer-iframe' + index).focus();
+    }, 100);
+
     if (config.max) {
       layer.full(index);
     }
@@ -604,12 +639,47 @@ var utils = {
     return str && val && str.indexOf(val) !== -1;
   },
 
+  openDocs: function (url) {
+    url = url.replace('.', '');
+    url = url.replace('/', '');
+    url = url.replace('ss-admin/', '');
+    if (url.indexOf('?') !== -1) {
+      url = url.substring(0, url.indexOf('?'));
+    }
+    window.open('https://sscms.com/docs/v7/handbook/' + url, '_docs');
+    // window.open('http://localhost:8080/docs/v7/handbook/' + url, '_docs');
+  },
+
   keyPress: function (submitFn, cancelFn) {
     $(document).keydown(function (e) {
       if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
         submitFn && submitFn();
-      } else if (e.key === "Escape") {
+      } else if (e.key === 'Escape') {
         cancelFn && cancelFn();
+      } else if (e.key === 'F1') {
+        var url = location.href;
+        if (url.indexOf('/ss-admin/') !== -1) {
+          url = url.substring(url.indexOf('/ss-admin/'));
+        }
+        utils.openDocs(url);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  },
+
+  focus: function (vue, ref) {
+    setTimeout(function () {
+      vue.$refs[ref] && vue.$refs[ref].focus();
+    }, 100);
+  },
+
+  ctrlSave: function (submitFn) {
+    $(document).keydown(function (e) {
+      var c = e.which || e.keyCode;
+      if (e.ctrlKey && c == 83) {
+        e.preventDefault();
+        submitFn && submitFn();
       }
     });
   },
@@ -617,7 +687,7 @@ var utils = {
   validateMobile: function (rule, value, callback) {
     if (!value) {
       callback();
-    } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
+    } else if (!/^1[3-9]\d{9}$/.test(value)) {
       callback(new Error(rule.message || '字段必须是有效的手机号码'));
     } else {
       callback()
@@ -694,12 +764,60 @@ var utils = {
           });
         }, 100);
       } else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
-        if (!form[name] || !Array.isArray(form[name])) {
-          form[name] = [];
+        var arr = [];
+        if (form[name]) {
+          if (typeof form[name] === 'string') {
+            arr = [form[name]];
+          }
+          else if (Array.isArray(form[name])) {
+            arr = form[name];
+          }
         }
+        form[name] = arr;
       }
     }
     return form;
+  },
+
+  getValue: function (styles, content, attributeName) {
+    var value = content[utils.toCamelCase(attributeName)];
+    for (var i = 0; i < styles.length; i++) {
+      var style = styles[i];
+      if (style.attributeName !== attributeName || !style.items || style.items.length === 0) continue;
+      if (style.inputType === 'Radio' || style.inputType === 'SelectOne') {
+        for (var j = 0; j < style.items.length; j++) {
+          var item = style.items[j];
+          if (value === item.value) {
+            value = item.label;
+          }
+        }
+      } else if (style.inputType === 'CheckBox' || style.inputType === 'SelectMultiple') {
+        var arr = [];
+        var values = [];
+        if (value) {
+          if (typeof value === 'string') {
+            arr = [value];
+          }
+          else if (Array.isArray(value)) {
+            arr = value;
+          }
+        }
+
+        for (var j = 0; j < style.items.length; j++) {
+          var item = style.items[j];
+          if (arr.indexOf(item.value) !== -1) {
+            values.push(item.label);
+          }
+        }
+
+        if (values.length > 0) {
+          value = values.join(' , ');
+        } else {
+          value = '';
+        }
+      }
+    }
+    return value;
   },
 
   getRules: function (rules) {

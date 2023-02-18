@@ -58,18 +58,6 @@ namespace SSCMS.Cli.Updater
         [JsonProperty("hits")]
         public long Hits { get; set; }
 
-        [JsonProperty("hitsByDay")]
-        public long HitsByDay { get; set; }
-
-        [JsonProperty("hitsByWeek")]
-        public long HitsByWeek { get; set; }
-
-        [JsonProperty("hitsByMonth")]
-        public long HitsByMonth { get; set; }
-
-        [JsonProperty("lastHitsDate")]
-        public DateTimeOffset LastHitsDate { get; set; }
-
         [JsonProperty("settingsXML")]
         public string SettingsXml { get; set; }
 

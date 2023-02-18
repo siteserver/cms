@@ -1,0 +1,115 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    margin: 30px auto 100px;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <div class="content">
+    <section role="main">
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <div style="height: 25px"></div>
+          <el-card class="box-card">
+            <template v-if="isConnect">
+              <div style="text-align: center; margin: 60px auto">
+                <h1>通过设置 云助手 来激活基本的 SSCMS 安全和性能工具</h1>
+                <iframe id="connectWindow" frameborder="0" scrolling="no"
+                  style="width: 1px;min-width: 100%;min-height: 600px;" :src="iFrameUrl"></iframe>
+              </div>
+            </template>
+            <template v-else>
+              <div style="text-align: center; margin: 60px auto">
+                <h1>通过设置 Cloud 云助手 来激活基本的 SSCMS 安全和性能工具</h1>
+                <div class="tips">
+                  点击设置 Cloud 云助手 按钮即表示，您同意遵守我们的
+                  <el-link :underline="false" href="https://sscms.com/docs/v7/handbook/clouds/terms-of-service.html"
+                    target="_blank">服务条款</el-link>
+                  ，并与 sscms.com
+                  <el-link :underline="false" href="https://sscms.com/docs/v7/handbook/clouds/privacy.html" target="_blank">共享详细信息
+                  </el-link>
+                </div>
+                <div style="height: 20px"></div>
+                <el-button type="primary" size="medium" v-on:click="btnConnectClick">
+                  设置 Cloud 云助手
+                </el-button>
+              </div>
+
+              <div style="text-align: center; margin: 60px auto">
+                <el-row :gutter="20">
+                  <el-col :span="8" align="center">
+                    <img src="/sitefiles/assets/images/security.svg" />
+                    <h3>安全</h3>
+                    <ul>
+                      <li>云备份功能能够每日自动备份网站实时文件与数据至云端，备份文件无法被删除，您可以将其恢复到任何时间点，避免了数据的意外丢失风险。</li>
+                      <li>云助手可以帮助您监控网站是否正常运行/停机，并通过短信或电子邮件获得任何变化的即时警报。</li>
+                      <li>
+                        违规检测能够准确识别出文本中的违禁违规、文本色情、政治敏感、低俗辱骂、低质灌水、恶意推广等内容，避免用户上传违规内容到平台，降低业务风险。
+                      </li>
+                      <li>
+                        短信发送能够实现身份验证、登录确认、用户注册、修改密码、信息变更等情景下的短信发送功能，使得后台及用户中心更安全可信任。
+                      </li>
+                    </ul>
+                  </el-col>
+                  <el-col :span="8" align="center">
+                    <img src="/sitefiles/assets/images/performance.svg" />
+                    <h3>快速</h3>
+                    <ul>
+                      <li>使用CDN加速获得极快的网站速度，加快您的网站速度，以减少带宽使用并节省资金。</li>
+                      <li>高速无广告的云视频通过转码处理、分发加速实现视频快速播放，避免由于原始视频过大而导致长时间等待。</li>
+                      <li>
+                        使用工单技术支持获取工单极速响应、技术专家7*8小时提供服务，快速解决问题，专业高效，安全无忧。
+                      </li>
+                      <li>
+                        可以在新增或编辑内容时设置指定时间进行发布，内容将在指定时间发布至网站。
+                      </li>
+                    </ul>
+                  </el-col>
+                  <el-col :span="8" align="center">
+                    <img src="/sitefiles/assets/images/efficiency.png" style="height: 200px; background: #f4f8fd; border-radius: 10px;" />
+                    <h3>效率</h3>
+                    <ul>
+                      <li>
+                        可以设置定时生成任务，系统将在指定时间内自动生成首页、栏目页或者整站所有页面。
+                      </li>
+                      <li>文本纠错功能能够对文本中的拼写、语法、标点等多种问题进行纠错校对，提示错误位置并给出正确的建议文本内容。</li>
+                      <li>我们收集了海量的可以随意使用（商用或个人使用均可），无需请求使用许可的高清图库供您使用，避免了图片版权风险。</li>
+                      <li>可以使用邮件发送功能，实现内容变更通知以及表单提交等情景下的邮件通知。</li>
+                    </ul>
+                  </el-col>
+                </el-row>
+              </div>
+
+              <div style="text-align: center; margin: 60px auto">
+                <h3>更多出色功能等待发现</h3>
+              </div>
+            </template>
+          </el-card>
+        </el-col>
+      </el-row>
+    </section>
+  </div>
+  <footer>
+    <table class="footer">
+      <tbody>
+        <tr>
+          <td>
+            <a href="https://sscms.com/cloud/" target="_blank">云助手</a>
+            <a href="https://sscms.com/docs/v7/handbook/clouds/" target="_blank">关于</a>
+            <a href="https://sscms.com/docs/v7/handbook/clouds/terms-of-service.html" target="_blank">条款</a>
+            <a href="https://sscms.com/docs/v7/handbook/clouds/privacy.html" target="_blank">隐私</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </footer>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/connect.js" type="text/javascript"></script>
+}

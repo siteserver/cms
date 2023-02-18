@@ -36,8 +36,17 @@ namespace SSCMS.Core.Repositories
         /// <summary>
         /// 添加后台发布节点
         /// </summary>
-        public async Task<int> InsertSiteAsync(Channel channel, Site site, int adminId)
+        public async Task<(int, string)> InsertSiteAsync(Channel channel, Site site, int adminId)
         {
+            if (_settingsManager.MaxSites > 0)
+            {
+                var siteIds = await GetSiteIdsAsync();
+                if (siteIds.Count >= _settingsManager.MaxSites)
+                {
+                    return (0, "站点数量已超过限制，无法创建新站点!");
+                }
+            }
+
             await _channelRepository.InsertChannelAsync(null, channel);
 
             site.Id = channel.Id;
@@ -52,10 +61,10 @@ namespace SSCMS.Core.Repositories
 
             await _templateRepository.CreateDefaultTemplateAsync(site.Id);
 
-            return channel.Id;
+            return (channel.Id, string.Empty);
         }
 
-        public async Task<int> InsertAsync(Site site)
+        private async Task<int> InsertAsync(Site site)
         {
             site.Taxis = await GetMaxTaxisAsync() + 1;
             site.Id = await _repository.InsertAsync(site, Q

@@ -53,6 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                         ? administratorInfo.UserName
                         : administratorInfo.DisplayName,
                     Mobile = administratorInfo.Mobile,
+                    MobileVerified = administratorInfo.MobileVerified,
                     LastActivityDate = administratorInfo.LastActivityDate,
                     CountOfLogin = administratorInfo.CountOfLogin,
                     Locked = administratorInfo.Locked,

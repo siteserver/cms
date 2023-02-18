@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Services;
+using SSCMS.Core.Utils;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Admin.Settings.Sites;
 
@@ -39,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin
                     return this.Error("系统启动失败，请检查 SS CMS 容器运行环境变量设置");
                 }
             }
-            
+
             var allowed = PageUtils.IsVisitAllowed(_settingsManager, Request);
             if (!allowed)
             {
@@ -70,26 +71,37 @@ namespace SSCMS.Web.Controllers.Admin
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var isSuperAdmin = await _authManager.IsSuperAdminAsync();
+            var isSiteAdmin = await _authManager.IsSiteAdminAsync();
             var siteIdListWithPermissions = await _authManager.GetSiteIdsAsync();
 
             if (site == null || !siteIdListWithPermissions.Contains(site.Id))
             {
                 if (siteIdListWithPermissions.Contains(admin.SiteId))
                 {
-                    return new GetResult
+                    var theSite = await _siteRepository.GetAsync(admin.SiteId);
+                    if (theSite != null)
                     {
-                        Value = false,
-                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={admin.SiteId}"
-                    };
+                        return new GetResult
+                        {
+                            Value = false,
+                            RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}"
+                        };
+                    }
                 }
-
                 if (siteIdListWithPermissions.Count > 0)
                 {
-                    return new GetResult
+                    foreach (var theSiteId in siteIdListWithPermissions)
                     {
-                        Value = false,
-                        RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={siteIdListWithPermissions[0]}"
-                    };
+                        var theSite = await _siteRepository.GetAsync(theSiteId);
+                        if (theSite != null)
+                        {
+                            return new GetResult
+                            {
+                                Value = false,
+                                RedirectUrl = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}"
+                            };
+                        }
+                    }
                 }
 
                 if (isSuperAdmin)
@@ -136,11 +148,48 @@ namespace SSCMS.Web.Controllers.Admin
                         .Where(menu => ListUtils.ContainsIgnoreCase(menu.Type, siteType.Id))
                         .Where(menu => !allPluginMenus.Exists(x => x.Id == menu.Id))
                         .ToList();
+                    var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
+
+                    var contentsAllMenu = siteMenus.FirstOrDefault(x => x.Id == MenuUtils.IdSiteContentsAll);
+                    if (contentsAllMenu != null && contentsAllMenu.Children != null)
+                    {
+                        var formAllMenu = contentsAllMenu.Children.FirstOrDefault(x => x.Id == MenuUtils.IdSiteFormAll);
+                        if (formAllMenu != null && formAllMenu.Children != null)
+                        {
+                            var forms = await _formRepository.GetFormsAsync(site.Id);
+                            forms.Reverse();
+                            foreach (var form in forms)
+                            {
+                                var formPermission = MenuUtils.GetFormPermission(form.Id);
+                                var formMenu = new Menu
+                                {
+                                    Id = formPermission,
+                                    Text = form.Title,
+                                    Type = new List<string>
+                                    {
+                                        siteType.Id
+                                    },
+                                    Permissions = new List<string>
+                                    {
+                                        formPermission
+                                    },
+                                    Link = $"./cms/formData/?formId={form.Id}"
+                                };
+                                if (_authManager.IsMenuValid(formMenu, sitePermissions))
+                                {
+                                    formAllMenu.Children.Insert(0, formMenu);
+                                    formAllMenu.Permissions.Add(formPermission);
+                                    contentsAllMenu.Permissions.Add(formPermission);
+                                }
+                            }
+                        }
+                    }
+
                     siteMenus.AddRange(sitePluginMenus);
 
                     var siteMenu = new Menu
                     {
-                        Id = IdSite,
+                        Id = MenuUtils.IdSite,
                         Text = site.SiteName,
                         Type = new List<string>
                         {
@@ -149,13 +198,13 @@ namespace SSCMS.Web.Controllers.Admin
                         Children = siteMenus
                     };
 
-                    var sitePermissions = await _authManager.GetSitePermissionsAsync(site.Id);
                     var query = new NameValueCollection { { "siteId", site.Id.ToString() } };
                     siteMenu.Children = GetChildren(siteMenu, sitePermissions, x =>
                     {
                         x.Link = PageUtils.AddQueryStringIfNotExists(x.Link, query);
                         return x;
                     });
+
                     menus.Add(siteMenu);
 
                     if (siteIdListWithPermissions.Count > 1)
@@ -212,7 +261,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
 
             var appPermissions = await _authManager.GetAppPermissionsAsync();
-            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.Resources.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
+            var appMenus = allMenus.Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.MenuTypes.App) && _authManager.IsMenuValid(x, appPermissions)).ToList();
             foreach (var appMenu in appMenus)
             {
                 appMenu.Children = GetChildren(appMenu, appPermissions);
@@ -225,12 +274,19 @@ namespace SSCMS.Web.Controllers.Admin
             var culture = requestCulture.RequestCulture.UICulture.Name;
             var plugins = enabledPlugins.Select(plugin => new GetPlugin { PluginId = plugin.PluginId, DisplayName = plugin.DisplayName, Version = plugin.Version }).ToList();
 
+            var cloudType = await _cloudManager.GetCloudTypeAsync();
+
+            var (cssUrls, jsUrls) = _pluginManager.GetExternalUrls();
+
             return new GetResult
             {
                 Value = true,
                 CmsVersion = _settingsManager.Version,
                 OSArchitecture = _settingsManager.OSArchitecture,
+                IsCloudAdmin = config.IsCloudAdmin,
+                AdminFaviconUrl = config.AdminFaviconUrl,
                 AdminLogoUrl = config.AdminLogoUrl,
+                AdminLogoLinkUrl = config.AdminLogoLinkUrl,
                 AdminTitle = config.AdminTitle,
                 IsSuperAdmin = isSuperAdmin,
                 Culture = culture,
@@ -246,7 +302,12 @@ namespace SSCMS.Web.Controllers.Admin
                     AvatarUrl = admin.AvatarUrl,
                     Level = await _authManager.GetAdminLevelAsync()
                 },
-                IsSafeMode = _settingsManager.IsSafeMode
+                IsSafeMode = _settingsManager.IsSafeMode,
+                CloudType = cloudType,
+                CloudUserName = config.CloudUserName,
+                CloudToken = config.CloudToken,
+                CssUrls = cssUrls,
+                JsUrls = jsUrls,
             };
         }
     }

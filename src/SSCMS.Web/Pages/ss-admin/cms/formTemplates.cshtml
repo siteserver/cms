@@ -1,0 +1,106 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<style>
+  .el-dropdown {
+    top: 2px;
+  }
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #00B19D;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
+  .code {
+    padding: 4px 8px;
+    width: fit-content;
+  }
+  .uploader {display:inline-block;}
+</style>
+}
+
+<el-table :data="templates">
+  <el-table-column label="模板名称" width="150">
+    <template slot-scope="scope">
+      {{ scope.row.name }}
+    </template>
+  </el-table-column>
+  <el-table-column label="模板类型" width="150">
+    <template slot-scope="scope">
+      {{ scope.row.isSystem ? '系统模板' : '自定义模板' }}
+    </template>
+  </el-table-column>
+  <el-table-column label="模板位置">
+    <template slot-scope="scope">
+      {{ getTemplatePath(scope.row) }}
+    </template>
+  </el-table-column>
+  <el-table-column label="调用代码">
+    <template slot-scope="scope">
+      <el-alert type="info" class="code" :closable="false">
+        {{ getCode(scope.row) }}
+      </el-alert>
+    </template>
+  </el-table-column>
+  <el-table-column label="操作" width="320">
+    <template slot-scope="scope">
+      <el-dropdown v-if="forms && forms.length > 0" type="primary" v-on:command="btnPreviewClick">
+        <span class="el-dropdown-link">
+          预 览<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-for="form in forms" :key="form.id" :command="{form: form, template: scope.row}">
+            {{ form.title }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <el-link type="primary" :underline="false" style="margin-right: 5px; margin-left: 5px;" :disabled="scope.row.isSystem"
+        v-on:click="btnEditClick(scope.row)">
+        设 置
+      </el-link>
+      <el-link type="primary" :underline="false" style="margin-right: 5px;" v-on:click="btnHtmlClick(scope.row)">
+        代码编辑
+      </el-link>
+
+      <el-link :underline="false" style="margin-right: 5px;" v-on:click="btnCloneClick(scope.row)" type="primary">
+        克 隆
+      </el-link>
+
+      <el-link :underline="false" style="margin-right: 5px;" v-on:click="btnExportClick(scope.row)" type="primary">
+        导 出
+      </el-link>
+
+      <el-link type="danger" :underline="false" style="margin-right: 5px;" :disabled="scope.row.isSystem"
+        v-on:click="btnDeleteClick(scope.row)">删 除</el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<div style="height: 10px"></div>
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-upload
+  class="uploader"
+  :action="urlUpload"
+  :headers="{Authorization: 'Bearer ' + $token}"
+  :show-file-list="false"
+  :drag="false"
+  :limit="1"
+  :before-upload="uploadBefore"
+  :on-progress="uploadProgress"
+  :on-success="uploadSuccess"
+  :on-error="uploadError"
+  :multiple="false">
+  <el-button
+    size="small"
+    type="default">
+    导入表单模板
+  </el-button>
+</el-upload>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/formTemplates.js" type="text/javascript"></script>
+}

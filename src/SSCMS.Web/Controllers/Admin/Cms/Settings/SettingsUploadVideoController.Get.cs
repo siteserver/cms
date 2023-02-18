@@ -4,6 +4,8 @@ using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
 using SSCMS.Configuration;
+using SSCMS.Utils;
+using System;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -24,6 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             {
                 videoUploadExtensions = Constants.DefaultVideoUploadExtensions;
             }
+            var videoUploadTypeMaxSize = site.VideoUploadTypeMaxSize / 1024;
 
             return new GetResult
             {
@@ -34,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 VideoUploadDateFormatString = site.VideoUploadDateFormatString,
                 IsVideoUploadChangeFileName = site.IsVideoUploadChangeFileName,
                 VideoUploadExtensions = videoUploadExtensions,
-                VideoUploadTypeMaxSize = site.VideoUploadTypeMaxSize,
+                VideoUploadTypeMaxSize = videoUploadTypeMaxSize,
             };
         }
     }

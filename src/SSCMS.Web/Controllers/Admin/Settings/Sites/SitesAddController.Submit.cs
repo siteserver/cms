@@ -73,7 +73,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
 
             var adminId = _authManager.AdminId;
 
-            var siteId = await _siteRepository.InsertSiteAsync(channelInfo, new Site
+            var (siteId, errorMessage) = await _siteRepository.InsertSiteAsync(channelInfo, new Site
             {
                 SiteName = request.SiteName,
                 SiteType = Types.SiteTypes.Web,
@@ -82,6 +82,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 ParentId = request.ParentId,
                 Root = request.Root
             }, adminId);
+
+            if (siteId == 0)
+            {
+                return this.Error(errorMessage);
+            }
 
             if (string.IsNullOrEmpty(tableName))
             {
@@ -120,6 +125,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
                 var filePath = _pathManager.GetSiteTemplatesPath($"T_{request.CloudThemeName}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
                 var downloadUrl = CloudUtils.Dl.GetThemesDownloadUrl(request.CloudThemeUserName, request.CloudThemeName);
+                if (!request.IsCloudThemeFree && await _cloudManager.IsAuthenticationAsync())
+                {
+                    downloadUrl = await _cloudManager.GetThemeDownloadUrlAsync(request.CloudThemeUserName, request.CloudThemeName);
+                }
                 await HttpClientUtils.DownloadAsync(downloadUrl, filePath);
 
                 caching.SetProcess(request.Guid, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");

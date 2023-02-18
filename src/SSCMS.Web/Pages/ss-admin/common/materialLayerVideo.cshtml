@@ -11,7 +11,7 @@
   </style>
 }
 
-<el-form ref="form" :model="form" size="small">
+<el-form v-on:submit.native.prevent ref="form" :model="form" size="small">
 
 <el-tabs v-on:tab-click="btnTabsClick" v-model="activeName">
   <el-tab-pane label="视频设置" name="first">

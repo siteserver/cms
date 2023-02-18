@@ -7,6 +7,8 @@ namespace SSCMS.Enums
     [JsonConverter(typeof(StringEnumConverter))]
     public enum SmsCodeType
     {
+        [DataEnum(DisplayName = "自定义")] None,
+
         [DataEnum(DisplayName = "身份验证")] Authentication,
 
         [DataEnum(DisplayName = "登录确认")] LoginConfirmation,
@@ -17,6 +19,12 @@ namespace SSCMS.Enums
 
         [DataEnum(DisplayName = "修改密码")] ChangePassword,
 
-        [DataEnum(DisplayName = "信息变更")] InformationChanges
+        [DataEnum(DisplayName = "信息变更")] InformationChanges,
+
+        [DataEnum(DisplayName = "任务执行成功")] TaskSuccess,
+
+        [DataEnum(DisplayName = "任务执行失败")] TaskFailure,
+
+        [DataEnum(DisplayName = "工单回复通知")] TicketReplied,
     }
 }

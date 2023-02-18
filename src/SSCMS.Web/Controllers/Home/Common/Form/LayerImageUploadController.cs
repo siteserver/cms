@@ -18,12 +18,14 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerImageUploadController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerImageUploadController(IAuthManager authManager, IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
         }
 

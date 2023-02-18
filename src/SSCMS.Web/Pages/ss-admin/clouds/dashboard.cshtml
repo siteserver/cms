@@ -1,0 +1,358 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+<link href="/sitefiles/assets/css/cloud.css" rel="stylesheet" type="text/css" />
+<style>
+  .main-wrapper {
+    margin: 30px auto 100px;
+  }
+  .tip {
+    padding: 1px 16px;
+    background-color: #ecf8ff;
+    border-left: 5px solid #50bfff;
+    margin: 0;
+  }
+  .tip p {
+    font-size: 14px;
+    color: #5e6d82;
+    line-height: 1.5em;
+  }
+  .tip p .el-button--primary {
+    background-color: #50bfff;
+    border-color: #50bfff;
+  }
+  .success {
+    background-color: #f0f9eb;
+    border-left: 5px solid #67C23A;
+  }
+  .success p .el-button--primary {
+    background-color: #85ce61;
+    border-color: #85ce61;
+  }
+  .warning {
+    background-color: #fdf6ec;
+    border-left: 5px solid #E6A23C;
+  }
+  .warning p .el-button--primary {
+    background-color: #ebb563;
+    border-color: #ebb563;
+  }
+  .danger {
+    background-color: #fef0f0;
+    border-left: 5px solid #F56C6C;
+  }
+  .danger p .el-button--primary {
+    background-color: #f78989;
+    border-color: #f78989;
+  }
+</style>
+}
+
+<div class="main-wrapper">
+  <div class="content">
+    <section role="main">
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>账户连接</span>
+              </div>
+            </template>
+            <div class="text">
+              <div style="margin: 10px auto; text-align: center">
+                <div style="margin: 10px">
+                  已使用
+                  <strong>{{ getUserName() }}</strong>
+                  的身份连接
+                </div>
+                <div style="margin: 10px">
+                  云助手版本
+                  <strong>{{ getCloudType() }}</strong>
+                </div>
+                <div class="tips" style="margin: 10px">
+                  如需更换账号可以断开连接并使用其他
+                  <el-link :underline="false" href="https://sscms.com" target="_blank">
+                    sscms.com
+                  </el-link>
+                  账号登录
+                </div>
+                <el-button type="danger" v-on:click="btnDisconnectClick">断开连接</el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>用量统计</span>
+              </div>
+            </template>
+            <div class="text">
+              <div style="margin: 10px auto; text-align: center">
+                <el-row :gutter="20">
+                  <template v-for="count in counts" :key="count.product">
+                    <el-col :sm="12" :lg="6" v-if="count.maxCount > 0" style="text-align: center; font-size: 14px; padding: 20px">
+                      <div style="font-size: 16px; margin: 20px 0">
+                        {{ count.product }}
+                        <br />
+                        用量：{{ count.count }}/{{ count.maxCount }}（{{ count.unit }}）
+                      </div>
+                      <el-progress type="circle" :percentage="((count.count / count.maxCount) * 100).toFixed(2)" :color="colors"></el-progress>
+                    </el-col>
+                  </template>
+                </el-row>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <a id="upgrade" name="upgrade"></a>
+
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <div class="el-card box-card is-always-shadow">
+            <div class="el-card__header">
+              <div class="clearfix"><span>云助手版本</span></div>
+            </div>
+            <div class="tip" v-if="cloudType === 'Free'">
+              <p>
+                <el-button type="primary" icon="el-icon-star-off" circle style="margin-right: 5px"></el-button>
+                云助手版本：<strong>免费版</strong>，升级云助手版本以获取更多功能
+              </p>
+            </div>
+            <div class="tip" :class="getExpirationTip()" v-else>
+              <p v-if="cloudType === 'Basic'">
+                <el-button type="primary" icon="el-icon-star-off" circle style="margin-right: 5px"></el-button>
+                云助手版本：<strong>基础版</strong>，到期时间：<strong style="margin-right: 10px;">{{ getExpirationDate() }}<span v-if="expirationDays <=20">（剩余{{expirationDays}}天）</span></strong>
+                <el-button v-if="active === 0" type="primary" size="small" v-on:click.prevent="btnRenewalClick">续 费</el-button>
+              </p>
+              <p v-if="cloudType === 'Standard'">
+                <el-button type="primary" icon="el-icon-star-off" circle style="margin-right: 5px"></el-button>
+                云助手版本：<strong>标准版</strong>，到期时间：<strong style="margin-right: 10px;">{{ getExpirationDate() }}<span v-if="expirationDays <=20">（剩余{{expirationDays}}天）</span></strong>
+                <el-button v-if="active === 0" type="primary" size="small" v-on:click.prevent="btnRenewalClick">续 费</el-button>
+              </p>
+            </div>
+            <div class="el-card__body">
+              <div class="text">
+                <template v-if="active === 0">
+                  <el-table :data="features" style="width: 100%; margin: 0 10px" stripe size="large">
+                    <el-table-column prop="functions" label="功能（模块）">
+                      <template #default="scope">
+                          {{ scope.row.functions }}
+                          <span v-if="scope.row.tips" style="margin-left: 5px">
+                            <el-tooltip class="item" effect="dark" :content="scope.row.tips" placement="right">
+                              <i class="el-icon-info"></i>
+                            </el-tooltip>
+                          </span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="free" label="免费版" width="240">
+                      <template #default="scope">
+                        <el-link v-if="scope.row.functions && scope.row.free === 'true'" type="success" :underline="false" v-on:click.prevent>
+                          支持
+                        </el-link>
+                        <el-link
+                          v-else-if="scope.row.functions && scope.row.free === 'false'"
+                          type="danger"
+                          :underline="false"
+                          v-on:click.prevent
+                        >
+                          不支持
+                        </el-link>
+                        <el-link v-else-if="scope.row.functions && scope.row.free" :underline="false" v-on:click.prevent>
+                          {{ scope.row.free }}
+                        </el-link>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="basic" :label="'基础版（¥' + cloudPriceBasic1Month + '/月）'" width="240">
+                      <template #default="scope">
+                        <el-link v-if="scope.row.functions && scope.row.basic === 'true'" type="success" :underline="false" v-on:click.prevent>
+                          支持
+                        </el-link>
+                        <el-link
+                          v-else-if="scope.row.functions && scope.row.basic === 'false'"
+                          type="danger"
+                          :underline="false"
+                          v-on:click.prevent
+                        >
+                          不支持
+                        </el-link>
+                        <el-link v-else-if="scope.row.functions && scope.row.basic" :underline="false" v-on:click.prevent>
+                          {{ scope.row.basic }}
+                        </el-link>
+                        <el-button v-else-if="cloudType == 'Free'" type="primary" v-on:click.prevent="btnBuyClick('Basic')">升级基础版</el-button>
+                        <el-button v-else-if="cloudType == 'Basic'" type="primary" v-on:click.prevent="btnRenewalClick">续费基础版</el-button>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="standard" :label="'标准版（¥' + cloudPriceStandard1Month + '/月）'" width="240">
+                      <template #default="scope">
+                        <el-link
+                          v-if="scope.row.functions && scope.row.standard === 'true'"
+                          type="success"
+                          :underline="false"
+                          v-on:click.prevent
+                        >
+                          支持
+                        </el-link>
+                        <el-link
+                          v-else-if="scope.row.functions && scope.row.standard === 'false'"
+                          type="danger"
+                          :underline="false"
+                          v-on:click.prevent
+                        >
+                          不支持
+                        </el-link>
+                        <el-link v-else-if="scope.row.functions && scope.row.standard" :underline="false" v-on:click.prevent>
+                          {{ scope.row.standard }}
+                        </el-link>
+                        <el-button v-else-if="cloudType == 'Free'" type="primary" v-on:click.prevent="btnBuyClick('Standard')">升级标准版</el-button>
+                        <el-button v-else-if="cloudType == 'Basic'" type="primary" v-on:click.prevent="btnUpgradeClick">升级标准版</el-button>
+                        <el-button v-else-if="cloudType == 'Standard'" type="primary" v-on:click.prevent="btnRenewalClick">续费标准版</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </template>
+                <template v-if="active === 1">
+                  <el-form style="margin: 0 30px" ref="buyForm" :model="buyForm" label-position="top">
+                    <el-form-item label="云助手版本" prop="cloudType" :rules="{ required: true, message: '请选择云助手版本' }">
+                      <el-radio-group v-model="buyForm.cloudType" v-on:change="btnChangeClick">
+                        <el-radio-button label="Basic">基础版（¥{{ cloudPriceBasic1Month }}/月）</el-radio-button>
+                        <el-radio-button label="Standard">标准版（¥{{ cloudPriceStandard1Month }}/月）</el-radio-button>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="购买时长" prop="periods" :rules="{ required: true, message: '请选择购买时长' }">
+                      <el-radio-group v-model="buyForm.periods" v-on:change="btnChangeClick">
+                        <el-radio-button :label="'M1'">1月</el-radio-button>
+                        <el-radio-button :label="'Y1'">1年</el-radio-button>
+                        <el-radio-button :label="'Y2'">2年</el-radio-button>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="费用合计">
+                      <div style="font-size: 16px;">
+                        <template v-if="buyForm.periods !== 'M1'">
+                          原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
+                          现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                          （节省：{{ buyForm.save }}%）
+                        </template>
+                        <template v-else>
+                          合计：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        </template>
+                      </div>
+                    </el-form-item>
+                    <el-divider></el-divider>
+            
+                    <div class="el-dialog__footer" style="text-align: center">
+                      <el-button type="default" v-on:click.prevent="btnPreviousClick">上一步</el-button>
+                      <el-button type="primary" v-on:click.prevent="btnPayClick">下一步</el-button>
+                    </div>
+                  </el-form>
+                </template>
+                <template v-if="active === 2">
+                  <el-form style="margin: 0 30px" ref="buyForm" :model="buyForm" label-position="top">
+                    <el-form-item label="续费版本" prop="cloudType" :rules="{ required: true, message: '请选择续费版本' }">
+                      <el-radio-group v-model="buyForm.cloudType">
+                        <el-radio-button :label="buyForm.cloudType">{{ buyForm.renewalTitle }}</el-radio-button>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="续费时长" prop="periods" :rules="{ required: true, message: '请选择续费时长' }">
+                      <el-radio-group v-model="buyForm.periods" v-on:change="btnChangeClick">
+                        <el-radio-button :label="'M1'">1月</el-radio-button>
+                        <el-radio-button :label="'Y1'">1年</el-radio-button>
+                        <el-radio-button :label="'Y2'">2年</el-radio-button>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="费用合计">
+                      <div style="font-size: 16px;">
+                        <template v-if="buyForm.periods !== 'M1'">
+                          原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
+                          现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                          （节省：{{ buyForm.save }}%）
+                        </template>
+                        <template v-else>
+                          合计：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        </template>
+                      </div>
+                    </el-form-item>
+                    <el-divider></el-divider>
+            
+                    <div class="el-dialog__footer" style="text-align: center">
+                      <el-button type="default" v-on:click.prevent="btnPreviousClick">上一步</el-button>
+                      <el-button type="primary" v-on:click.prevent="btnPayClick">下一步</el-button>
+                    </div>
+                  </el-form>
+                </template>
+                <template v-if="active === 3">
+                  <el-form style="margin: 0 30px" ref="buyForm" :model="buyForm" label-position="top">
+                    <el-form-item label="升级版本" prop="cloudType" :rules="{ required: true, message: '请选择云助手版本' }">
+                      <el-radio-group v-model="buyForm.cloudType">
+                        <el-radio-button label="Standard">标准版（¥{{ cloudPriceStandard1Month }}/月）</el-radio-button>
+                      </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="到期时间">
+                      <span style="font-size: 16px;">
+                        {{ getExpirationDate() }}
+                      </span>
+                    </el-form-item>
+                    <el-form-item label="费用合计">
+                      <span style="font-size: 16px; color: #fa5300">￥{{ buyForm.amount.toFixed(2) }}</span>
+                    </el-form-item>
+                    <el-divider></el-divider>
+            
+                    <div class="el-dialog__footer" style="text-align: center">
+                      <el-button type="default" v-on:click.prevent="btnPreviousClick">上一步</el-button>
+                      <el-button type="primary" v-on:click.prevent="btnPayClick">下一步</el-button>
+                    </div>
+                  </el-form>
+                </template>
+              </div>
+            </div>
+          </div>
+
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="20" :offset="2">
+          <el-card class="box-card">
+            <template #header>
+              <div class="clearfix">
+                <span>我们随时为您提供支持</span>
+              </div>
+            </template>
+            <div class="text">
+              <div style="margin: 10px auto; text-align: center">
+                <div style="margin: 10px 10px 20px">SSCMS 通过工单为所有付费用户提供技术支持</div>
+                <el-button type="primary" :disabled="cloudType === 'Free'" v-on:click="btnTicketClick">发起工单</el-button>
+                <el-button type="default" v-on:click="btnDocsClick">SSCMS 文档中心</el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </section>
+  </div>
+  <footer>
+    <table class="footer">
+      <tbody>
+        <tr>
+          <td>
+            <a href="https://sscms.com/cloud/" target="_blank">云助手</a>
+            <a href="https://sscms.com/docs/v7/handbook/clouds/" target="_blank">关于</a>
+            <a href="https://sscms.com/docs/v7/handbook/clouds/terms-of-service.html" target="_blank">条款</a>
+            <a href="https://sscms.com/docs/v7/handbook/clouds/privacy.html" target="_blank">隐私</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </footer>
+</div>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/clouds/dashboard.js" type="text/javascript"></script>
+}

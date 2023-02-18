@@ -96,7 +96,7 @@
   direction="rtl"
   size="40%">
   <div class="drawer__content">
-    <el-form size="small" ref="settings" :model="settings" label-width="150px">
+    <el-form v-on:submit.native.prevent size="small" ref="settings" :model="settings" label-width="150px">
       <el-form-item label="模板类型">
         {{ getTemplateType() }}
       </el-form-item>
@@ -141,7 +141,7 @@
   direction="rtl"
   size="40%">
   <div class="drawer__content">
-    <el-form size="small" ref="dataSource" :model="dataSource" label-width="80px">
+    <el-form v-on:submit.native.prevent size="small" ref="dataSource" :model="dataSource" label-width="80px">
       <el-form-item label="栏目" prop="channelIds" :rules="{
         required: true, message: '请选择栏目'
       }">

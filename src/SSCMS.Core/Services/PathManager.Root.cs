@@ -20,16 +20,6 @@ namespace SSCMS.Core.Services
             return GetRootUrl(requestPath);
         }
 
-        public string GetTemporaryFilesUrl(params string[] paths)
-        {
-            return GetSiteFilesUrl(DirectoryUtils.SiteFiles.TemporaryFiles, PageUtils.Combine(paths));
-        }
-
-        public string GetSiteTemplatesUrl(string relatedUrl)
-        {
-            return GetRootUrl(DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.SiteTemplates.DirectoryName, relatedUrl);
-        }
-
         public string ParseUrl(string virtualUrl)
         {
             if (string.IsNullOrEmpty(virtualUrl)) return string.Empty;
@@ -89,18 +79,6 @@ namespace SSCMS.Core.Services
             return ParsePath(resolvedPath);
         }
 
-        public string GetSiteFilesUrl(params string[] paths)
-        {
-            return GetRootUrl(DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths));
-        }
-
-        public string GetSiteFilesUrl(Site site, params string[] paths)
-        {
-            return site == null
-                ? GetSiteFilesUrl(paths)
-                : GetApiHostUrl(site, DirectoryUtils.SiteFiles.DirectoryName, PageUtils.Combine(paths));
-        }
-
         public string GetAdministratorUploadUrl(int userId, params string[] paths)
         {
             return GetSiteFilesUrl(DirectoryUtils.SiteFiles.Administrators,
@@ -145,18 +123,22 @@ namespace SSCMS.Core.Services
 
         public string GetRootPath(params string[] paths)
         {
-            return PathUtils.Combine(_settingsManager.WebRootPath, PathUtils.Combine(paths));
+            var path = PathUtils.Combine(_settingsManager.WebRootPath, PathUtils.Combine(paths));
+            if (DirectoryUtils.IsInDirectory(_settingsManager.WebRootPath, path))
+            {
+                return path;
+            }
+            return _settingsManager.WebRootPath;
         }
 
         public string GetContentRootPath(params string[] paths)
         {
-            return PathUtils.Combine(_settingsManager.ContentRootPath, PathUtils.Combine(paths));
-        }
-
-        public string GetSiteFilesPath(params string[] paths)
-        {
-            var path = PathUtils.Combine(_settingsManager.WebRootPath, DirectoryUtils.SiteFiles.DirectoryName, PathUtils.Combine(paths));
-            return path;
+            var path = PathUtils.Combine(_settingsManager.ContentRootPath, PathUtils.Combine(paths));
+            if (DirectoryUtils.IsInDirectory(_settingsManager.ContentRootPath, path))
+            {
+                return path;
+            }
+            return _settingsManager.ContentRootPath;
         }
 
         public string GetAdministratorUploadPath(int userId, params string[] paths)

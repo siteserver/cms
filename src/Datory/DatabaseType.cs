@@ -10,6 +10,7 @@ namespace Datory
         [DataEnum(DisplayName = "MySql")] MySql,
         [DataEnum(DisplayName = "SqlServer")] SqlServer,
         [DataEnum(DisplayName = "PostgreSql")] PostgreSql,
-        [DataEnum(DisplayName = "SQLite")] SQLite
+        [DataEnum(DisplayName = "SQLite")] SQLite,
+        [DataEnum(DisplayName = "达梦数据库")] Dm,
     }
 }

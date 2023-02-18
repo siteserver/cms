@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
@@ -255,6 +256,7 @@ namespace SSCMS.Core.Services
 
             var sourceId = contentCurrent.SourceId;
             var referenceId = contentCurrent.ReferenceId;
+            var linkType = contentCurrent.LinkType;
             var linkUrl = contentCurrent.LinkUrl;
             var channelId = contentCurrent.ChannelId;
             if (referenceId > 0)
@@ -286,25 +288,61 @@ namespace SSCMS.Core.Services
                     linkUrl = reference.LinkUrl;
                     if (await _channelRepository.IsExistsAsync(channelId))
                     {
-                        return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkUrl, false);
+                        return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkType, linkUrl, false);
                     }
                     var targetSiteId = await _channelRepository.GetSiteIdAsync(channelId);
                     var targetSite = await _siteRepository.GetAsync(targetSiteId);
-                    return await GetContentUrlByIdAsync(targetSite, channelId, referenceId, 0, 0, linkUrl, false);
+                    return await GetContentUrlByIdAsync(targetSite, channelId, referenceId, 0, 0, linkType, linkUrl, false);
                 }
             }
 
-            if (!string.IsNullOrEmpty(linkUrl))
+            // if (!string.IsNullOrEmpty(linkUrl))
+            // {
+            //     return await ParseSiteUrlAsync(site, linkUrl, false);
+            // }
+
+            // var rules = new ContentFilePathRules(this, _databaseManager);
+            // var contentUrl = await rules.ParseAsync(site, channelId, contentCurrent);
+            // return await GetSiteUrlAsync(site, contentUrl, false);
+
+            return await ParseContentUrlAsync(site, contentCurrent);
+        }
+
+        private async Task<string> ParseContentUrlAsync(Site site, Content content)
+        {
+            if (content.LinkType == LinkType.LinkToChannel)
             {
-                return await ParseSiteUrlAsync(site, linkUrl, false);
+                var url = PageUtils.UnClickableUrl;
+                if (!string.IsNullOrEmpty(content.LinkUrl))
+                {
+                    var channelIds = ListUtils.GetIntList(content.LinkUrl);
+                    if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                    {
+                        var targetChannelId = channelIds[channelIds.Count - 1];
+                        var targetChannel = await _channelRepository.GetAsync(targetChannelId);
+                        if (targetChannel != null)
+                        {
+                            url = await GetChannelUrlAsync(site, targetChannel, false);
+                        }
+                    }
+                }
+                return url;
+            }
+            else if (content.LinkType == LinkType.NoLink)
+            {
+                return PageUtils.UnClickableUrl;
+            }
+            else if (content.LinkType == LinkType.None && !string.IsNullOrEmpty(content.LinkUrl))
+            {
+                return await ParseSiteUrlAsync(site, content.LinkUrl, false);
             }
 
             var rules = new ContentFilePathRules(this, _databaseManager);
-            var contentUrl = await rules.ParseAsync(site, channelId, contentCurrent);
+            var contentUrl = await rules.ParseAsync(site, content.ChannelId, content);
             return await GetSiteUrlAsync(site, contentUrl, false);
         }
 
-        public async Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, string linkUrl, bool isLocal)
+        public async Task<string> GetContentUrlByIdAsync(Site site, int channelId, int contentId, int sourceId, int referenceId, LinkType linkType, string linkUrl, bool isLocal)
         {
             if (isLocal)
             {
@@ -327,26 +365,53 @@ namespace SSCMS.Core.Services
                     }
                     if (contentInfo.SiteId == targetSite.Id)
                     {
-                        return await GetContentUrlByIdAsync(targetSite, contentInfo.ChannelId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.LinkUrl, false);
+                        return await GetContentUrlByIdAsync(targetSite, contentInfo.ChannelId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.LinkType, contentInfo.LinkUrl, false);
                     }
                     var siteTmp = await _siteRepository.GetAsync(contentInfo.SiteId);
-                    return await GetContentUrlByIdAsync(siteTmp, contentInfo.ChannelId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.LinkUrl, false);
+                    return await GetContentUrlByIdAsync(siteTmp, contentInfo.ChannelId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.LinkType, contentInfo.LinkUrl, false);
                 }
 
                 var reference = await _contentRepository.GetAsync(site, channelId, referenceId);
 
                 channelId = reference.ChannelId;
+                linkType = reference.LinkType;
                 linkUrl = reference.LinkUrl;
-                return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkUrl, false);
-            }
-            if (!string.IsNullOrEmpty(linkUrl))
-            {
-                return await ParseSiteUrlAsync(site, linkUrl, false);
+                return await GetContentUrlByIdAsync(site, channelId, referenceId, 0, 0, linkType, linkUrl, false);
             }
 
-            var rules = new ContentFilePathRules(this, _databaseManager);
-            var contentUrl = await rules.ParseAsync(site, channelId, contentId);
-            return await GetSiteUrlAsync(site, contentUrl, false);
+            var content = await _contentRepository.GetAsync(site, channelId, contentId);
+            return await ParseContentUrlAsync(site, content);
+
+            // if (linkType == LinkType.LinkToChannel)
+            // {
+            //     var url = PageUtils.UnClickableUrl;
+            //     if (!string.IsNullOrEmpty(linkUrl))
+            //     {
+            //         var channelIds = ListUtils.GetIntList(linkUrl);
+            //         if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+            //         {
+            //             var targetChannelId = channelIds[channelIds.Count - 1];
+            //             var targetChannel = await _channelRepository.GetAsync(targetChannelId);
+            //             if (targetChannel != null)
+            //             {
+            //                 url = await GetChannelUrlAsync(site, targetChannel, false);
+            //             }
+            //         }
+            //     }
+            //     return url;
+            // }
+            // else if (linkType == LinkType.NoLink)
+            // {
+            //     return PageUtils.UnClickableUrl;
+            // }
+            // else if (linkType == LinkType.None && !string.IsNullOrEmpty(linkUrl))
+            // {
+            //     return await ParseSiteUrlAsync(site, linkUrl, false);
+            // }
+
+            // var rules = new ContentFilePathRules(this, _databaseManager);
+            // var contentUrl = await rules.ParseAsync(site, channelId, contentId);
+            // return await GetSiteUrlAsync(site, contentUrl, false);
         }
 
         public async Task<string> GetChannelUrlNotComputedAsync(Site site, int channelId, bool isLocal)
@@ -404,101 +469,60 @@ namespace SSCMS.Core.Services
                 {
                     url = await GetChannelUrlNotComputedAsync(site, channel.Id, false);
                 }
+                else if (linkType == LinkType.LinkToFirstChannel)
+                {
+                    url = PageUtils.UnClickableUrl;
+                    var firstChannel = await _channelRepository.GetChannelByTaxisAsync(site.Id, channel.Id);
+                    if (firstChannel != null)
+                    {
+                        url = await GetChannelUrlAsync(site, firstChannel, false);
+                    }
+                }
+                else if (linkType == LinkType.LinkToChannel)
+                {
+                    url = PageUtils.UnClickableUrl;
+                    if (!string.IsNullOrEmpty(channel.LinkUrl))
+                    {
+                        var channelIds = ListUtils.GetIntList(channel.LinkUrl);
+                        if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                        {
+                            var channelId = channelIds[channelIds.Count - 1];
+                            var targetChannel = await _channelRepository.GetAsync(channelId);
+                            if (targetChannel != null)
+                            {
+                                url = await GetChannelUrlAsync(site, targetChannel, false);
+                            }
+                        }
+                    }
+                }
+                else if (linkType == LinkType.LinkToFirstContent)
+                {
+                    url = PageUtils.UnClickableUrl;
+                    var count = await _contentRepository.GetCountAsync(site, channel);
+                    if (count >= 1)
+                    {
+                        var tableName = _channelRepository.GetTableName(site, channel);
+                        var contentId = await _contentRepository.GetContentIdAsync(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
+                        url = await GetContentUrlAsync(site, channel, contentId, false);
+                    }
+                }
+                else if (linkType == LinkType.LinkToOnlyOneContent)
+                {
+                    var count = await _contentRepository.GetCountAsync(site, channel);
+                    if (count == 1)
+                    {
+                        var tableName = _channelRepository.GetTableName(site, channel);
+                        var contentId = await _contentRepository.GetContentIdAsync(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
+                        url = await GetContentUrlAsync(site, channel, contentId, false);
+                    }
+                    else
+                    {
+                        url = await GetChannelUrlNotComputedAsync(site, channel.Id, false);
+                    }
+                }
                 else if (linkType == LinkType.NoLink)
                 {
                     url = PageUtils.UnClickableUrl;
-                }
-                else
-                {
-                    if (linkType == LinkType.NoLinkIfContentNotExists)
-                    {
-                        var count = await _contentRepository.GetCountAsync(site, channel);
-                        url = count == 0 ? PageUtils.UnClickableUrl : await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                    }
-                    else if (linkType == LinkType.LinkToOnlyOneContent)
-                    {
-                        var count = await _contentRepository.GetCountAsync(site, channel);
-                        if (count == 1)
-                        {
-                            var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = await _contentRepository.GetContentIdAsync(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
-                            url = await GetContentUrlAsync(site, channel, contentId, false);
-                        }
-                        else
-                        {
-                            url = await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                        }
-                    }
-                    else if (linkType == LinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
-                    {
-                        var count = await _contentRepository.GetCountAsync(site, channel);
-                        if (count == 0)
-                        {
-                            url = PageUtils.UnClickableUrl;
-                        }
-                        else if (count == 1)
-                        {
-                            var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = await _contentRepository.GetContentIdAsync(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
-                            url = await GetContentUrlAsync(site, channel, contentId, false);
-                        }
-                        else
-                        {
-                            url = await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                        }
-                    }
-                    else if (linkType == LinkType.LinkToFirstContent)
-                    {
-                        var count = await _contentRepository.GetCountAsync(site, channel);
-                        if (count >= 1)
-                        {
-                            var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = await _contentRepository.GetContentIdAsync(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
-                            url = await GetContentUrlAsync(site, channel, contentId, false);
-                        }
-                        else
-                        {
-                            url = await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                        }
-                    }
-                    else if (linkType == LinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
-                    {
-                        var count = await _contentRepository.GetCountAsync(site, channel);
-                        if (count >= 1)
-                        {
-                            var tableName = _channelRepository.GetTableName(site, channel);
-                            var contentId = await _contentRepository.GetContentIdAsync(tableName, channel.Id, true, _databaseManager.GetContentOrderByString(channel.DefaultTaxisType));
-                            url = await GetContentUrlAsync(site, channel, contentId, false);
-                        }
-                        else
-                        {
-                            url = PageUtils.UnClickableUrl;
-                        }
-                    }
-                    else if (linkType == LinkType.NoLinkIfChannelNotExists)
-                    {
-                        url = channel.ChildrenCount == 0 ? PageUtils.UnClickableUrl : await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                    }
-                    else if (linkType == LinkType.LinkToLastAddChannel)
-                    {
-                        var lastAddChannelInfo = await _channelRepository.GetChannelByLastAddDateAsyncTask(site.Id, channel.Id);
-                        url = lastAddChannelInfo != null ? await GetChannelUrlAsync(site, lastAddChannelInfo, false) : await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                    }
-                    else if (linkType == LinkType.LinkToFirstChannel)
-                    {
-                        var firstChannelInfo = await _channelRepository.GetChannelByTaxisAsync(site.Id, channel.Id);
-                        url = firstChannelInfo != null ? await GetChannelUrlAsync(site, firstChannelInfo, false) : await GetChannelUrlNotComputedAsync(site, channel.Id, false);
-                    }
-                    else if (linkType == LinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
-                    {
-                        var lastAddChannelInfo = await _channelRepository.GetChannelByLastAddDateAsyncTask(site.Id, channel.Id);
-                        url = lastAddChannelInfo != null ? await GetChannelUrlAsync(site, lastAddChannelInfo, false) : PageUtils.UnClickableUrl;
-                    }
-                    else if (linkType == LinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
-                    {
-                        var firstChannelInfo = await _channelRepository.GetChannelByTaxisAsync(site.Id, channel.Id);
-                        url = firstChannelInfo != null ? await GetChannelUrlAsync(site, firstChannelInfo, false) : PageUtils.UnClickableUrl;
-                    }
                 }
             }
 
@@ -591,22 +615,26 @@ namespace SSCMS.Core.Services
             return url.StartsWith("/");
         }
 
-        public List<Select<string>> GetLinkTypeSelects()
+        public List<Select<string>> GetLinkTypeSelects(bool isChannel)
         {
+            if (isChannel)
+            {
+                return new List<Select<string>>
+              {
+                  new Select<string>(LinkType.None),
+                  new Select<string>(LinkType.LinkToFirstChannel),
+                  new Select<string>(LinkType.LinkToChannel),
+                  new Select<string>(LinkType.LinkToFirstContent),
+                  new Select<string>(LinkType.LinkToOnlyOneContent),
+                  new Select<string>(LinkType.NoLink),
+              };
+            }
+
             return new List<Select<string>>
             {
                 new Select<string>(LinkType.None),
-                new Select<string>(LinkType.LinkToFirstChannel),
-                new Select<string>(LinkType.LinkToFirstContent),
-                new Select<string>(LinkType.LinkToOnlyOneContent),
-                new Select<string>(LinkType.NoLinkIfContentNotExists),
-                new Select<string>(LinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent),
-                new Select<string>(LinkType.NoLinkIfContentNotExistsAndLinkToFirstContent),
-                new Select<string>(LinkType.NoLinkIfChannelNotExists),
-                new Select<string>(LinkType.LinkToLastAddChannel),
-                new Select<string>(LinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel),
-                new Select<string>(LinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel),
-                new Select<string>(LinkType.NoLink)
+                new Select<string>(LinkType.LinkToChannel),
+                new Select<string>(LinkType.NoLink),
             };
         }
 
@@ -635,11 +663,18 @@ namespace SSCMS.Core.Services
 
             if (paths == null || paths.Length <= 0) return sitePath;
 
+            var returnPath = sitePath;
             foreach (var t in paths)
             {
                 var path = t?.Replace(PageUtils.SeparatorChar, PathUtils.SeparatorChar).Trim(PathUtils.SeparatorChar) ?? string.Empty;
-                sitePath = PathUtils.Combine(sitePath, path);
+                returnPath = PathUtils.Combine(returnPath, path);
             }
+
+            if (DirectoryUtils.IsInDirectory(_settingsManager.WebRootPath, returnPath))
+            {
+                return returnPath;
+            }
+
             return sitePath;
         }
 
@@ -694,6 +729,53 @@ namespace SSCMS.Core.Services
                 extension = ".xml";
             }
             return PathUtils.Combine(PhysicalSiteFilesPath, DirectoryUtils.SiteFiles.BackupFiles, site.SiteDir, DateTime.Now.ToString("yyyy-MM"), backupType.GetValue() + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extension);
+        }
+
+        public async Task<List<FileInfo>> GetAllFilesOrderByCreationTimeDescAsync(Site site, UploadType uploadType)
+        {
+            var uploadDirectoryName = string.Empty;
+            if (uploadType == UploadType.Image)
+            {
+                uploadDirectoryName = site.ImageUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Audio)
+            {
+                uploadDirectoryName = site.AudioUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Video)
+            {
+                uploadDirectoryName = site.VideoUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.File)
+            {
+                uploadDirectoryName = site.FileUploadDirectoryName;
+            }
+            else if (uploadType == UploadType.Special)
+            {
+                uploadDirectoryName = "/special";
+            }
+
+            var directoryPath = PathUtils.Combine(await GetSitePathAsync(site), uploadDirectoryName);
+            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+            var directory = new DirectoryInfo(directoryPath);
+            var files = directory.GetFiles("*.*", SearchOption.AllDirectories);
+            Array.Sort(files, delegate (FileInfo fi1, FileInfo fi2) { return fi2.CreationTime.CompareTo(fi1.CreationTime); });
+
+            var list = new List<FileInfo>(files);
+            if (uploadType == UploadType.Image)
+            {
+                list = list.Where(file => IsImageExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
+            }
+            else if (uploadType == UploadType.Audio)
+            {
+                list = list.Where(file => IsAudioExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
+            }
+            else if (uploadType == UploadType.Video)
+            {
+                list = list.Where(file => IsVideoExtensionAllowed(site, PathUtils.GetExtension(file.Name))).ToList();
+            }
+
+            return list;
         }
 
         public async Task<string> GetUploadDirectoryPathAsync(Site site, string fileExtension)
@@ -1164,9 +1246,9 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir)
+        public async Task<(bool success, string errorMessage)> ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir)
         {
-            if (oldParentSiteId == newParentSiteId) return;
+            if (oldParentSiteId == newParentSiteId) return (true, string.Empty);
 
             string oldPsPath;
             if (oldParentSiteId != 0)
@@ -1195,7 +1277,7 @@ namespace SSCMS.Core.Services
 
             if (DirectoryUtils.IsDirectoryExists(newPsPath))
             {
-                throw new ArgumentException("发布系统修改失败，发布路径文件夹已存在！");
+                return (false, "发布系统修改失败，发布路径文件夹已存在！");
             }
             if (DirectoryUtils.IsDirectoryExists(oldPsPath))
             {
@@ -1205,6 +1287,8 @@ namespace SSCMS.Core.Services
             {
                 DirectoryUtils.CreateDirectoryIfNotExists(newPsPath);
             }
+
+            return (true, string.Empty);
         }
 
         public async Task ChangeToRootAsync(Site site, bool isMoveFiles)
@@ -1288,7 +1372,7 @@ namespace SSCMS.Core.Services
                         {
                             if (!string.IsNullOrEmpty(site.WaterMarkImagePath))
                             {
-                                OldImageUtils.AddImageWaterMark(imagePath, await ParseSitePathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, await ParseSitePathAsync(site, site.WaterMarkImagePath), site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                         else
@@ -1296,7 +1380,7 @@ namespace SSCMS.Core.Services
                             if (!string.IsNullOrEmpty(site.WaterMarkFormatString))
                             {
                                 var now = DateTime.Now;
-                                OldImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
+                                ImageUtils.AddTextWaterMark(imagePath, string.Format(site.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), site.WaterMarkFontName, site.WaterMarkFontSize, site.WaterMarkPosition, site.WaterMarkTransparency, site.WaterMarkMinWidth, site.WaterMarkMinHeight);
                             }
                         }
                     }
@@ -1398,5 +1482,58 @@ namespace SSCMS.Core.Services
                 // ignored
             }
         }
+
+        public async Task MoveFileByChannelAsync(Site sourceSite, Site destSite, Channel channel)
+        {
+            if (channel == null || sourceSite.Id == destSite.Id) return;
+
+            try
+            {
+                var fileUrls = new List<string>
+                {
+                    channel.ImageUrl,
+                };
+
+                var countName = ColumnsManager.GetCountName(nameof(Channel.ImageUrl));
+                var count = channel.Get<int>(countName);
+                for (var i = 1; i <= count; i++)
+                {
+                    var extendName = ColumnsManager.GetExtendName(nameof(Channel.ImageUrl), i);
+                    var extend = channel.Get<string>(extendName);
+                    if (!fileUrls.Contains(extend))
+                    {
+                        fileUrls.Add(extend);
+                    }
+                }
+
+                foreach (var url in RegexUtils.GetOriginalImageSrcs(channel.Content))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in RegexUtils.GetOriginalLinkHrefs(channel.Content))
+                {
+                    if (!fileUrls.Contains(url) && IsVirtualUrl(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+
+                foreach (var fileUrl in fileUrls)
+                {
+                    if (!string.IsNullOrEmpty(fileUrl) && IsVirtualUrl(fileUrl))
+                    {
+                        await MoveFileAsync(sourceSite, destSite, fileUrl);
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
     }
 }

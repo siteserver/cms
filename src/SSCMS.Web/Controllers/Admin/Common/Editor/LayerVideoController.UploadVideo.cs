@@ -38,13 +38,38 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             await _pathManager.UploadAsync(file, filePath);
 
-            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var videoUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var coverUrl = string.Empty;
+
+            var vodSettings = await _vodManager.GetVodSettingsAsync();
+            if (vodSettings.IsVod)
+            {
+                var vodPlay = await _vodManager.UploadVodAsync(filePath);
+                if (vodPlay.Success)
+                {
+                    videoUrl = vodPlay.PlayUrl;
+                    coverUrl = vodPlay.CoverUrl;
+                }
+            }
+            else
+            {
+                var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
+                if (isAutoStorage)
+                {
+                    var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+                    if (success)
+                    {
+                        videoUrl = url;
+                    }
+                }
+            }
 
             return new UploadResult
             {
                 Name = fileName,
                 Path = filePath,
-                Url = imageUrl
+                Url = videoUrl,
+                CoverUrl = coverUrl
             };
         }
     }

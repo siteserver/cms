@@ -58,12 +58,6 @@ namespace SSCMS.Models
 
         public bool IsContentSubTitleBreakLine { get; set; } = true;
 
-        public bool IsAutoCheckKeywords { get; set; }
-
-        public int PhotoSmallWidth { get; set; } = 70;
-
-        public int PhotoMiddleWidth { get; set; } = 400;
-
         public bool IsWaterMark { get; set; }
 
         public bool IsImageWaterMark { get; set; }
@@ -78,9 +72,9 @@ namespace SSCMS.Models
 
         public string WaterMarkFormatString { get; set; }
 
-        public string WaterMarkFontName { get; set; }
+        public string WaterMarkFontName { get; set; } = "SimHei";
 
-        public int WaterMarkFontSize { get; set; } = 12;
+        public int WaterMarkFontSize { get; set; } = 18;
 
         public string WaterMarkImagePath { get; set; }
 
@@ -115,6 +109,8 @@ namespace SSCMS.Models
         public bool IsCreateJsIgnoreError { get; set; }
 
         public bool IsCreateWithJQuery { get; set; } = true;
+
+        public bool IsCreateFilterGray { get; set; }
 
         public bool IsCreateDoubleClick { get; set; }
 
@@ -208,7 +204,11 @@ namespace SSCMS.Models
 
         public string ImageUploadExtensions { get; set; } = Constants.DefaultImageUploadExtensions;
 
-        public int ImageUploadTypeMaxSize { get; set; } = 15360;
+        public long ImageUploadTypeMaxSize { get; set; } = 15360;
+
+        public bool IsImageAutoResize { get; set; }
+
+        public int ImageAutoResizeWidth { get; set; } = 1024;
 
         public string AudioUploadDirectoryName { get; set; } = "upload/audio";
 
@@ -218,7 +218,7 @@ namespace SSCMS.Models
 
         public string AudioUploadExtensions { get; set; } = Constants.DefaultAudioUploadExtensions;
 
-        public int AudioUploadTypeMaxSize { get; set; } = 307200;
+        public long AudioUploadTypeMaxSize { get; set; } = 307200;
 
         public string VideoUploadDirectoryName { get; set; } = "upload/videos";
 
@@ -228,7 +228,7 @@ namespace SSCMS.Models
 
         public string VideoUploadExtensions { get; set; } = Constants.DefaultVideoUploadExtensions;
 
-        public int VideoUploadTypeMaxSize { get; set; } = 307200;
+        public long VideoUploadTypeMaxSize { get; set; } = 307200;
 
         public string FileUploadDirectoryName { get; set; } = "upload/files";
 
@@ -238,7 +238,7 @@ namespace SSCMS.Models
 
         public string FileUploadExtensions { get; set; } = Constants.DefaultFileUploadExtensions;
 
-        public int FileUploadTypeMaxSize { get; set; } = 307200;
+        public long FileUploadTypeMaxSize { get; set; } = 307200;
 
         public string TemplatesAssetsIncludeDir { get; set; } = "include";
 

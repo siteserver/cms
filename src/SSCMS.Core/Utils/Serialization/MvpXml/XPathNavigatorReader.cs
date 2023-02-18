@@ -128,7 +128,7 @@ namespace SSCMS.Core.Utils.Serialization.MvpXml
 				// We do this because when an attribute is accessed by index, it's 
 				// because of a usage pattern using a for loop as follows:
 				// for (int i = 0; i < reader.AttributeCount; i++)
-				//   Console.WriteLine(reader[i]);
+				//   await console.WriteLineAsync(reader[i]);
 
 				// Init list. 
 				_orderedattributes = new ArrayList();

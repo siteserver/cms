@@ -37,7 +37,7 @@ namespace SSCMS.Core.Services
         public string AuthenticateAdministrator(Administrator administrator, bool isPersistent)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_settingsManager.SecurityKey);
+            var key = StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey);
             SecurityTokenDescriptor tokenDescriptor;
             var identity = GetAdministratorIdentity(administrator, isPersistent);
 
@@ -76,12 +76,11 @@ namespace SSCMS.Core.Services
         public async Task<string> RefreshAdministratorTokenAsync(string accessToken)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_settingsManager.SecurityKey);
             var principal = tokenHandler.ValidateToken(accessToken,
                 new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 }, out var validatedToken);
@@ -111,7 +110,7 @@ namespace SSCMS.Core.Services
         public string AuthenticateUser(User user, bool isPersistent)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_settingsManager.SecurityKey);
+            var key = StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey);
             SecurityTokenDescriptor tokenDescriptor;
             var identity = GetUserIdentity(user, isPersistent);
 
@@ -150,12 +149,11 @@ namespace SSCMS.Core.Services
         public async Task<string> RefreshUserTokenAsync(string accessToken)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_settingsManager.SecurityKey);
             var principal = tokenHandler.ValidateToken(accessToken,
                 new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 }, out var validatedToken);

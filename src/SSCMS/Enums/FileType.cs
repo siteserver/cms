@@ -20,7 +20,12 @@ namespace SSCMS.Enums
         Jpeg,
         Gif,
         Png,
+        Pneg,
         Bmp,
+        Webp,
+        Svg,
+        Ico,
+        Jfif,
         Swf,
         Flv,
         Doc,
@@ -50,10 +55,11 @@ namespace SSCMS.Enums
         Smi,
         Rar,
         Zip,
-        Dll,
-        Image,
-        Video,
-        Directory,
+        Md,
+        Eot,
+        Ttf,
+        Woff,
+        Woff2,
         Unknown
     }
 }

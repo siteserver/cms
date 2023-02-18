@@ -8,10 +8,10 @@ using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Cli.Updater;
 using SSCMS.Cli.Updater.Tables;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
-using TableInfo = SSCMS.Cli.Core.TableInfo;
 
 namespace SSCMS.Cli.Services
 {
@@ -24,17 +24,17 @@ namespace SSCMS.Cli.Services
             _databaseManager = databaseManager;
         }
 
-        protected TreeInfo OldTreeInfo { get; private set; }
+        protected Tree OldTree { get; private set; }
 
-        protected TreeInfo NewTreeInfo { get; private set; }
+        protected Tree NewTree { get; private set; }
 
-        public void Load(TreeInfo oldTreeInfo, TreeInfo newTreeInfo)
+        public void Load(Tree oldTree, Tree newTree)
         {
-            OldTreeInfo = oldTreeInfo;
-            NewTreeInfo = newTreeInfo;
+            OldTree = oldTree;
+            NewTree = newTree;
         }
 
-        public async Task<Tuple<string, TableInfo>> GetNewTableInfoAsync(string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
+        public async Task<Tuple<string, Table>> GetNewTableAsync(IConsoleUtils console, string oldTableName, Table oldTable, ConvertInfo converter)
         {
             if (converter == null)
             {
@@ -43,7 +43,7 @@ namespace SSCMS.Cli.Services
 
             if (converter.IsAbandon)
             {
-                await WriteUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                await console.WriteRowAsync(oldTableName, "Abandon", "--");
                 return null;
             }
 
@@ -53,51 +53,49 @@ namespace SSCMS.Cli.Services
             }
             if (converter.NewColumns == null || converter.NewColumns.Count == 0)
             {
-                converter.NewColumns = oldTableInfo.Columns;
+                converter.NewColumns = oldTable.Columns;
             }
 
-            var newTableInfo = new TableInfo
+            var newTable = new Table
             {
                 Columns = converter.NewColumns,
-                TotalCount = oldTableInfo.TotalCount,
-                RowFiles = oldTableInfo.RowFiles
+                TotalCount = oldTable.TotalCount,
+                Rows = oldTable.Rows
             };
 
-            await WriteUtils.PrintRowAsync(oldTableName, converter.NewTableName, oldTableInfo.TotalCount.ToString("#,0"));
+            await console.WriteRowAsync(oldTableName, converter.NewTableName, oldTable.TotalCount.ToString("#,0"));
 
-            if (oldTableInfo.RowFiles.Count > 0)
+            if (oldTable.Rows.Count > 0)
             {
+                using var progress = new ConsoleUtils(true);
                 var i = 0;
-                using (var progress = new ProgressBar())
+                foreach (var fileName in oldTable.Rows)
                 {
-                    foreach (var fileName in oldTableInfo.RowFiles)
+                    progress.Report((double)i++ / oldTable.Rows.Count);
+
+                    var oldFilePath = OldTree.GetTableContentFilePath(oldTableName, fileName);
+                    var newFilePath = NewTree.GetTableContentFilePath(converter.NewTableName, fileName);
+
+                    if (converter.ConvertKeyDict != null)
                     {
-                        progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
+                        var oldRows =
+                            TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
 
-                        var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
-                        var newFilePath = NewTreeInfo.GetTableContentFilePath(converter.NewTableName, fileName);
+                        var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process);
 
-                        if (converter.ConvertKeyDict != null)
-                        {
-                            var oldRows =
-                                TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
-
-                            var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process);
-
-                            await FileUtils.WriteTextAsync(newFilePath, TranslateUtils.JsonSerialize(newRows));
-                        }
-                        else
-                        {
-                            FileUtils.CopyFile(oldFilePath, newFilePath);
-                        }
+                        await FileUtils.WriteTextAsync(newFilePath, TranslateUtils.JsonSerialize(newRows));
+                    }
+                    else
+                    {
+                        FileUtils.CopyFile(oldFilePath, newFilePath);
                     }
                 }
             }
 
-            return new Tuple<string, TableInfo>(converter.NewTableName, newTableInfo);
+            return new Tuple<string, Table>(converter.NewTableName, newTable);
         }
 
-        public async Task UpdateSplitContentsTableInfoAsync(Dictionary<int, TableInfo> splitSiteTableDict, List<int> siteIdList, string oldTableName, TableInfo oldTableInfo, ConvertInfo converter)
+        public async Task UpdateSplitContentsTableAsync(IConsoleUtils console, Dictionary<int, Table> splitSiteTableDict, List<int> siteIdList, string oldTableName, Table oldTable, ConvertInfo converter)
         {
             if (converter == null)
             {
@@ -106,28 +104,28 @@ namespace SSCMS.Cli.Services
 
             if (converter.IsAbandon)
             {
-                await WriteUtils.PrintRowAsync(oldTableName, "Abandon", "--");
+                await console.WriteRowAsync(oldTableName, "Abandon", "--");
                 return;
             }
 
             if (converter.NewColumns == null || converter.NewColumns.Count == 0)
             {
-                converter.NewColumns = oldTableInfo.Columns;
+                converter.NewColumns = oldTable.Columns;
             }
 
-            await WriteUtils.PrintRowAsync(oldTableName, "#split-contents#", oldTableInfo.TotalCount.ToString("#,0"));
+            await console.WriteRowAsync(oldTableName, "#split-contents#", oldTable.TotalCount.ToString("#,0"));
 
-            if (oldTableInfo.RowFiles.Count > 0)
+            if (oldTable.Rows.Count > 0)
             {
+                using var progress = new ConsoleUtils(true);
                 var i = 0;
-                using var progress = new ProgressBar();
-                foreach (var fileName in oldTableInfo.RowFiles)
+                foreach (var fileName in oldTable.Rows)
                 {
-                    progress.Report((double)i++ / oldTableInfo.RowFiles.Count);
+                    progress.Report((double)i++ / oldTable.Rows.Count);
 
                     var newRows = new List<Dictionary<string, object>>();
 
-                    var oldFilePath = OldTreeInfo.GetTableContentFilePath(oldTableName, fileName);
+                    var oldFilePath = OldTree.GetTableContentFilePath(oldTableName, fileName);
 
                     var oldRows =
                         TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
@@ -158,22 +156,22 @@ namespace SSCMS.Cli.Services
                         var siteRows = siteIdWithRows[siteId];
                         var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
 
-                        var siteTableInfo = splitSiteTableDict[siteId];
-                        siteTableInfo.TotalCount += siteRows.Count;
+                        var siteTable = splitSiteTableDict[siteId];
+                        siteTable.TotalCount += siteRows.Count;
 
                         foreach(var tableColumn in converter.NewColumns)
                         {
-                            if (!siteTableInfo.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
+                            if (!siteTable.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
                             {
-                                siteTableInfo.Columns.Add(tableColumn);
+                                siteTable.Columns.Add(tableColumn);
                             }
                         }
 
                         if (siteRows.Count > 0)
                         {
-                            var siteTableFileName = $"{siteTableInfo.RowFiles.Count + 1}.json";
-                            siteTableInfo.RowFiles.Add(siteTableFileName);
-                            var filePath = NewTreeInfo.GetTableContentFilePath(siteTableName, siteTableFileName);
+                            var siteTableFileName = $"{siteTable.Rows.Count + 1}.json";
+                            siteTable.Rows.Add(siteTableFileName);
+                            var filePath = NewTree.GetTableContentFilePath(siteTableName, siteTableFileName);
                             await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(siteRows));
                         }
                     }
@@ -181,7 +179,7 @@ namespace SSCMS.Cli.Services
             }
         }
 
-        public async Task<Tuple<string, TableInfo>> UpdateTableInfoAsync(string oldTableName, TableInfo oldTableInfo)
+        public async Task<Tuple<string, Table>> UpdateTableAsync(IConsoleUtils console, string oldTableName, Table oldTable)
         {
             ConvertInfo converter = null;
 
@@ -295,7 +293,7 @@ namespace SSCMS.Cli.Services
                 converter = table.Converter;
             }
 
-            return await GetNewTableInfoAsync(oldTableName, oldTableInfo, converter);
+            return await GetNewTableAsync(console, oldTableName, oldTable, converter);
         }
     }
 }

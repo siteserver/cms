@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -25,11 +26,12 @@ namespace SSCMS.Core.Repositories
 
         public async Task<bool> UserAdd(WxChat chat)
         {
+            var dateTime = DateTime.Now.AddDays(-1);
             var isSession = await _repository.ExistsAsync(Q
                 .Where(nameof(WxChat.SiteId), chat.SiteId)
                 .Where(nameof(WxChat.OpenId), chat.OpenId)
                 .Where(nameof(WxChat.IsReply), true)
-                .WhereDate(nameof(WxChat.CreatedDate), ">", DateTime.Now.AddDays(-1))
+                .Where(nameof(WxChat.CreatedDate), ">=", DateUtils.ToString(dateTime))
             );
 
             await _repository.InsertAsync(chat);

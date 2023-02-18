@@ -86,10 +86,6 @@ namespace SSCMS.Core.StlParser.StlElement
                 tagInfoList = tagInfoList.OrderBy(x => x.TagName).ToList();
             }
 
-            if (totalNum > 0)
-            {
-                tagInfoList = tagInfoList.Take(totalNum).ToList();
-            }
             tagInfoList = parseManager.DatabaseManager.ContentTagRepository.GetTagsByLevel(tagInfoList, totalNum, tagLevel);
             var contentInfo = parseManager.ContextInfo.Content;
             if (parseManager.ContextInfo.ContextType == ParseType.Content && contentInfo != null)
@@ -125,6 +121,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     }
                 }
                 tagInfoList = tagInfoList2;
+            }
+
+            if (totalNum > 0)
+            {
+                tagInfoList = tagInfoList.Take(totalNum).ToList();
             }
 
             foreach (var tagInfo in tagInfoList)

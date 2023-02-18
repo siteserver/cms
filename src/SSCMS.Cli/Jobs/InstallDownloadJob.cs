@@ -20,15 +20,15 @@ namespace SSCMS.Cli.Jobs
 
         private bool _isHelp;
 
-        private readonly IApiService _apiService;
+        private readonly ICliApiService _cliApiService;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly OptionSet _options;
 
-        public InstallDownloadJob(IApiService apiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
+        public InstallDownloadJob(ICliApiService cliApiService, ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository)
         {
-            _apiService = apiService;
+            _cliApiService = cliApiService;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _configRepository = configRepository;
@@ -39,22 +39,23 @@ namespace SSCMS.Cli.Jobs
             };
         }
 
-        public void PrintUsage()
+        public async Task WriteUsageAsync(IConsoleUtils console)
         {
-            Console.WriteLine($"Usage: sscms {CommandName}");
-            Console.WriteLine("Summary: download sscms and save settings");
-            Console.WriteLine("Options:");
-            _options.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
+            await console.WriteLineAsync($"Usage: sscms {CommandName}");
+            await console.WriteLineAsync("Summary: download sscms and save settings");
+            await console.WriteLineAsync("Options:");
+            _options.WriteOptionDescriptions(console.Out);
+            await console.WriteLineAsync();
         }
 
         public async Task ExecuteAsync(IPluginJobContext context)
         {
             if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
+            using var console = new ConsoleUtils(false);
             if (_isHelp)
             {
-                PrintUsage();
+                await WriteUsageAsync(console);
                 return;
             }
 
@@ -62,20 +63,20 @@ namespace SSCMS.Cli.Jobs
 
             if (!CliUtils.IsSsCmsExists(contentRootPath))
             {
-                var (success, result, failureMessage) = await _apiService.GetReleasesAsync(_settingsManager.Version, null);
+                var (success, result, failureMessage) = await _cliApiService.GetReleasesAsync(_settingsManager.Version, null);
                 if (!success)
                 {
-                    await WriteUtils.PrintErrorAsync(failureMessage);
+                    await console.WriteErrorAsync(failureMessage);
                     return;
                 }
 
-                var proceed = ReadUtils.GetYesNo($"Do you want to install SS CMS in {contentRootPath}?");
+                var proceed = console.GetYesNo($"Do you want to install SS CMS in {contentRootPath}?");
                 if (!proceed) return;
 
-                Console.WriteLine($"Downloading SS CMS {result.Cms.Version}...");
+                await console.WriteLineAsync($"Downloading SS CMS {result.Cms.Version}...");
                 var directoryPath = await CloudUtils.Dl.DownloadCmsAsync(_pathManager, _settingsManager.OSArchitecture, result.Cms.Version);
 
-                await WriteUtils.PrintSuccessAsync($"{result.Cms.Version} download successfully!");
+                await console.WriteSuccessAsync($"{result.Cms.Version} download successfully!");
 
                 DirectoryUtils.Copy(directoryPath, contentRootPath, true);
             }
@@ -84,11 +85,11 @@ namespace SSCMS.Cli.Jobs
 
             if (!await _configRepository.IsNeedInstallAsync())
             {
-                await WriteUtils.PrintErrorAsync($"SS CMS has been installed in {contentRootPath}");
+                await console.WriteErrorAsync($"SS CMS has been installed in {contentRootPath}");
                 return;
             }
 
-            var databaseTypeInput = ReadUtils.GetSelect("Database type", new List<string>
+            var databaseTypeInput = console.GetSelect("Database type", new List<string>
             {
                 DatabaseType.MySql.GetValue().ToLower(),
                 DatabaseType.SqlServer.GetValue().ToLower(),
@@ -106,15 +107,15 @@ namespace SSCMS.Cli.Jobs
 
             if (databaseType != DatabaseType.SQLite)
             {
-                databaseHost = ReadUtils.GetString("Database hostname / IP:");
-                isDatabaseDefaultPort = ReadUtils.GetYesNo("Use default port?");
+                databaseHost = console.GetString("Database hostname / IP:");
+                isDatabaseDefaultPort = console.GetYesNo("Use default port?");
                 
                 if (!isDatabaseDefaultPort)
                 {
-                    databasePort = ReadUtils.GetInt("Database port:");
+                    databasePort = console.GetInt("Database port:");
                 }
-                databaseUserName = ReadUtils.GetString("Database userName:");
-                databasePassword = ReadUtils.GetPassword("Database password:");
+                databaseUserName = console.GetString("Database userName:");
+                databasePassword = console.GetPassword("Database password:");
 
                 var connectionStringWithoutDatabaseName = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, string.Empty);
 
@@ -123,20 +124,20 @@ namespace SSCMS.Cli.Jobs
                 var (success, errorMessage) = await db.IsConnectionWorksAsync();
                 if (!success)
                 {
-                    await WriteUtils.PrintErrorAsync(errorMessage);
+                    await console.WriteErrorAsync(errorMessage);
                     return;
                 }
 
                 var databaseNames = await db.GetDatabaseNamesAsync();
-                databaseName = ReadUtils.GetSelect("Database name", databaseNames);
+                databaseName = console.GetSelect("Database name", databaseNames);
             }
 
             var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
 
-            var isProtectData = ReadUtils.GetYesNo("Protect settings in sscms.json?");
+            var isProtectData = console.GetYesNo("Protect settings in sscms.json?");
             _settingsManager.SaveSettings(isProtectData, false, false, databaseType, databaseConnectionString, string.Empty, string.Empty, null, null);
 
-            await WriteUtils.PrintSuccessAsync("SS CMS was download and ready for install, please run: sscms install database");
+            await console.WriteSuccessAsync("SS CMS was download and ready for install, please run: sscms install database");
 
         }
     }

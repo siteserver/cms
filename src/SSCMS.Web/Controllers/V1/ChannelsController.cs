@@ -18,15 +18,17 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteChannelDelete = "channels/{siteId:int}/{channelId:int}/actions/delete";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ICreateManager _createManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ChannelsController(IAuthManager authManager, ICreateManager createManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ChannelsController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IAccessTokenRepository accessTokenRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _createManager = createManager;
             _accessTokenRepository = accessTokenRepository;
             _siteRepository = siteRepository;

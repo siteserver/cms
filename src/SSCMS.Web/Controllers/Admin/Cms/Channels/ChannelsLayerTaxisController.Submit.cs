@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     await _channelRepository.UpdateTaxisAsync(request.SiteId, channel.ParentId, channelId, request.IsUp);
                 }
 
-                await _authManager.AddSiteLogAsync(request.SiteId, channelId, 0, "栏目排序" + (request.IsUp ? "上升" : "下降"), $"栏目:{_channelRepository.GetChannelNameAsync(request.SiteId, channelId)}");
+                await _authManager.AddSiteLogAsync(request.SiteId, channelId, 0, "栏目排序" + (request.IsUp ? "上升" : "下降"), $"栏目：{_channelRepository.GetChannelNameAsync(request.SiteId, channelId)}");
             }
 
             return expendedChannelIds;

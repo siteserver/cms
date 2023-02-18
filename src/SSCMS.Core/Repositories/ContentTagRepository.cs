@@ -158,7 +158,6 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(ContentTag.SiteId), siteId)
                 .WhereNotNull(nameof(ContentTag.TagName))
                 .WhereNot(nameof(ContentTag.TagName), string.Empty)
-                .Distinct()
                 .OrderByDesc(nameof(ContentTag.UseNum))
                 .CachingGet(GetCacheKey(siteId))
             );
@@ -173,32 +172,32 @@ namespace SSCMS.Core.Repositories
         public List<ContentTag> GetTagsByLevel(List<ContentTag> tagInfoList, int totalNum, int tagLevel)
         {
             var list = new List<ContentTag>();
-            var sortedlist = new SortedList();
+            var sortedList = new SortedList();
             foreach (var tagInfo in tagInfoList)
             {
                 list.Add(tagInfo);
 
-                var tagNames = (List<string>)sortedlist[tagInfo.UseNum];
+                var tagNames = (List<string>)sortedList[tagInfo.UseNum];
                 if (tagNames == null || tagNames.Count == 0)
                 {
                     tagNames = new List<string>();
                 }
                 tagNames.Add(tagInfo.TagName);
-                sortedlist[tagInfo.UseNum] = tagNames;
+                sortedList[tagInfo.UseNum] = tagNames;
             }
 
             var count1 = 1;
             var count2 = 2;
             var count3 = 3;
-            if (sortedlist.Keys.Count > 3)
+            if (sortedList.Keys.Count > 3)
             {
-                count1 = (int)Math.Ceiling(0.3 * sortedlist.Keys.Count);
+                count1 = (int)Math.Ceiling(0.3 * sortedList.Keys.Count);
                 if (count1 < 1)
                 {
                     count1 = 1;
                 }
-                count2 = (int)Math.Ceiling(0.7 * sortedlist.Keys.Count);
-                if (count2 == sortedlist.Keys.Count)
+                count2 = (int)Math.Ceiling(0.7 * sortedList.Keys.Count);
+                if (count2 == sortedList.Keys.Count)
                 {
                     count2--;
                 }
@@ -210,7 +209,7 @@ namespace SSCMS.Core.Repositories
             }
 
             var currentCount = 0;
-            foreach (int count in sortedlist.Keys)
+            foreach (int count in sortedList.Keys)
             {
                 currentCount++;
 
@@ -233,7 +232,7 @@ namespace SSCMS.Core.Repositories
                     level = 4;
                 }
 
-                var tagNames = (List<string>)sortedlist[count];
+                var tagNames = (List<string>)sortedList[count];
                 foreach (var tagInfo in list)
                 {
                     if (tagNames.Contains(tagInfo.TagName))

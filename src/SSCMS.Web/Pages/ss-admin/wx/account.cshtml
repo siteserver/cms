@@ -9,7 +9,7 @@
 
     <div style="height: 10px"></div>
 
-    <el-form size="small" ref="mpForm" label-width="260px" status-icon :model="mpForm">
+    <el-form v-on:submit.native.prevent size="small" ref="mpForm" label-width="260px" status-icon :model="mpForm">
       <el-form-item label="AppId" prop="mpAppId" :rules="{ required: true, message: '请输入AppId' }">
         <el-input v-model="mpForm.mpAppId" placeholder="请输入AppId"></el-input>
       </el-form-item>
@@ -24,7 +24,7 @@
     </el-alert>
     <div style="height: 10px"></div>
 
-    <el-form size="small" label-width="260px" status-icon>
+    <el-form v-on:submit.native.prevent size="small" label-width="260px" status-icon>
       <el-form-item label="服务器地址(URL)">
         {{mpUrl}}
       </el-form-item>
@@ -57,7 +57,7 @@
     <el-alert type="info" title="此处设置的支付接口将作用于系统所有支持的在线支付插件"></el-alert>
     <div style="height: 10px"></div>
 
-    <el-form size="small" ref="tenPayForm" label-width="260px" status-icon :model="tenPayForm">
+    <el-form v-on:submit.native.prevent size="small" ref="tenPayForm" label-width="260px" status-icon :model="tenPayForm">
       <el-form-item label="AppId" prop="tenPayAppId" :rules="{ required: true, message: '请输入AppId' }">
         <el-input v-model="tenPayForm.tenPayAppId" placeholder="请输入AppId"></el-input>
       </el-form-item>

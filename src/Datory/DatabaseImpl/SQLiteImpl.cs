@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using SqlKata.Compilers;
 using Datory.Utils;
+using System;
 
 [assembly: InternalsVisibleTo("Datory.Tests")]
 
@@ -130,6 +131,10 @@ namespace Datory.DatabaseImpl
             {
                 dataType = DataType.Decimal;
             }
+            else if (dataTypeStr.StartsWith("INT2"))
+            {
+                dataType = DataType.Boolean;
+            }
             else if (dataTypeStr == "INTEGER")
             {
                 dataType = DataType.Integer;
@@ -146,9 +151,18 @@ namespace Datory.DatabaseImpl
             return dataType;
         }
 
+        private int ToLength(string dataTypeStr)
+        {
+            if (string.IsNullOrEmpty(dataTypeStr) || !(dataTypeStr.Contains('(') && dataTypeStr.EndsWith(')'))) return 0;
+            var length = dataTypeStr.Substring(dataTypeStr.IndexOf('(') + 1).TrimEnd(')');
+            if (length.Contains(',')) return 0;
+            return Convert.ToInt32(length);
+        }
+
         public async Task<List<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
+            tableName = Utilities.FilterSql(tableName);
 
             using (var connection = new SQLiteConnection(connectionString))
             {
@@ -161,6 +175,7 @@ namespace Datory.DatabaseImpl
                 {
                     var columnName = column.name;
                     var dataType = ToDataType(column.type);
+                    var length = ToLength(column.type);
 
                     var isPrimaryKey = Utilities.EqualsIgnoreCase(columnName, "id");
 
@@ -168,9 +183,9 @@ namespace Datory.DatabaseImpl
                     {
                         AttributeName = columnName,
                         DataType = dataType,
-                        DataLength = 2000,
+                        DataLength = length,
                         IsPrimaryKey = isPrimaryKey,
-                        IsIdentity = isPrimaryKey
+                        IsIdentity = isPrimaryKey && tableName.ToLower() != "siteserver_site"
                     };
                     list.Add(info);
                 }
@@ -181,7 +196,8 @@ namespace Datory.DatabaseImpl
 
         public string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
-            return $"ALTER TABLE {GetQuotedIdentifier(tableName)} ADD " + columnsSqlString;
+            tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+            return $"ALTER TABLE {tableName} ADD " + columnsSqlString;
         }
     }
 }

@@ -1,0 +1,53 @@
+html {
+  position: relative;
+  min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+/* body {
+  margin: 15px 5px 50px;
+  max-width: 100%;
+  overflow-x: hidden;
+} */
+.content {
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+.box-card {
+  margin-bottom: 20px;
+}
+footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 50px;
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 45px;
+  margin-bottom: 3px;
+  line-height: 1.5em;
+}
+.footer {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: #fff;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+.footer td {
+  border-top: 1px solid #dcdfe6;
+  padding: 15px;
+  max-width: 250px;
+  text-align: center;
+}
+.footer td a {
+  color: #606266;
+  text-decoration: none;
+  margin-right: 10px;
+}
+li {
+  text-align: left;
+  font-size: 15px;
+  line-height: 30px;
+}

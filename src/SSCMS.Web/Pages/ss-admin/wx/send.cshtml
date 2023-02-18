@@ -195,7 +195,7 @@
       <div v-if="form.materialId && image">
         <el-card shadow="never" style="width: 25%; margin-left: 25px; margin-right: 5px; display: inline-block">
           <el-image 
-            style="width: 100%; min-height: 120px; max-height:220px;"
+            style="width: 100%; min-height: 220px; max-height:220px;"
             :src="image.url">
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline"></i>
@@ -321,7 +321,7 @@
   
   <div style="height: 25px"></div>
   
-  <el-form ref="form" :inline="true" status-icon :model="form" size="small">
+  <el-form v-on:submit.native.prevent ref="form" :inline="true" status-icon :model="form" size="small">
     <el-form-item label="群发对象">
       <el-select  v-model="form.isToAll" placeholder="请选择">
         <el-option label="全部用户" :value="true"></el-option>
@@ -388,7 +388,7 @@
     width="60%"
     center>
   
-    <el-form ref="previewForm" :model="previewForm" label-position="top" size="small">
+    <el-form v-on:submit.native.prevent ref="previewForm" :model="previewForm" label-position="top" size="small">
       <el-form-item label="微信号(关注公众号后，才能接收图文消息预览)" prop="wxNames" :rules="{ required: true, message: '请输入微信号' }">
         <el-input
           type="textarea"

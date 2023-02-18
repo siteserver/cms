@@ -2,114 +2,205 @@
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using HtmlAgilityPack;
 using OpenXmlPowerTools;
+using SSCMS.Core.Utils.Office.Word2Html;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
-using FileUtils = SSCMS.Utils.FileUtils;
 
 namespace SSCMS.Core.Utils.Office
 {
-    public static class WordManager
+    public class WordManager
     {
-        public class ConverterSettings
+        private string ImageDirectoryPath { get; set; }
+        private string ImageDirectoryUrl { get; set; }
+        private bool IsFirstLineTitle { get; set; }
+        private bool IsClearFormat { get; set; }
+        private bool IsFirstLineIndent { get; set; }
+        private bool IsClearFontSize { get; set; }
+        private bool IsClearFontFamily { get; set; }
+        private bool IsClearImages { get; set; }
+        private string DocsFilePath { get; set; }
+        private string DocsFileTitle { get; set; }
+        private IPathManager PathManager { get; set; }
+        private Site Site { get; set; }
+
+        public string Title { get; set; }
+        public string ImageUrl { get; set; }
+        public string Body { get; set; }
+
+        public WordManager(bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath, string docsFileTitle)
         {
-            public bool IsFirstLineTitle { get; set; }
-            public bool IsClearFormat { get; set; }
-            public bool IsFirstLineIndent { get; set; }
-            public bool IsClearFontSize { get; set; }
-            public bool IsClearFontFamily { get; set; }
-            public bool IsClearImages { get; set; }
-            public bool IsSaveHtml { get; set; }
-            public string HtmlDirectoryPath { get; set; }
-            public string ImageDirectoryPath { get; set; }
-            public string ImageDirectoryUrl { get; set; }
+            IsFirstLineTitle = isFirstLineTitle;
+            IsClearFormat = isClearFormat;
+            IsFirstLineIndent = isFirstLineIndent;
+            IsClearFontSize = isClearFontSize;
+            IsClearFontFamily = isClearFontFamily;
+            IsClearImages = isClearImages;
+            DocsFilePath = docsFilePath;
+            DocsFileTitle = docsFileTitle;
         }
 
-        public static async Task<(string title, string imageUrl, string body)> GetWordAsync(IPathManager pathManager, Site siteInfo, bool isFirstLineTitle, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string docsFilePath, string docsFileTitle)
+        public async Task InitAsync(IPathManager pathManager, Site siteInfo)
         {
-            string imageDirectoryPath;
-            string imageDirectoryUrl;
             if (siteInfo != null)
             {
-                imageDirectoryPath = await pathManager.GetUploadDirectoryPathAsync(siteInfo, UploadType.Image);
-                imageDirectoryUrl = await pathManager.GetSiteUrlByPhysicalPathAsync(siteInfo, imageDirectoryPath, true);
+                ImageDirectoryPath = await pathManager.GetUploadDirectoryPathAsync(siteInfo, UploadType.Image);
+                ImageDirectoryUrl = await pathManager.GetSiteUrlByPhysicalPathAsync(siteInfo, ImageDirectoryPath, true);
             }
             else
             {
-                var fileName = PathUtils.GetFileName(docsFilePath);
-                imageDirectoryPath = PathUtils.Combine(pathManager.WebRootPath, PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image));
-                imageDirectoryUrl = PathUtils.GetMaterialVirtualFilePath(UploadType.Image, fileName);
+                var fileName = PathUtils.GetFileName(DocsFilePath);
+                ImageDirectoryPath = PathUtils.Combine(pathManager.WebRootPath, PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image));
+                ImageDirectoryUrl = PathUtils.GetMaterialVirtualFilePath(UploadType.Image, fileName);
             }
 
-            var settings = new ConverterSettings
-            {
-                IsFirstLineTitle = isFirstLineTitle,
-                IsClearFormat = isClearFormat,
-                IsFirstLineIndent = isFirstLineIndent,
-                IsClearFontSize = isClearFontSize,
-                IsClearFontFamily = isClearFontFamily,
-                IsClearImages = isClearImages,
-                ImageDirectoryPath = imageDirectoryPath,
-                ImageDirectoryUrl = imageDirectoryUrl,
-                IsSaveHtml = false
-            };
-
-            var (title, imageUrl, body) = ConvertToHtml(docsFilePath, settings);
-
-            FileUtils.DeleteFileIfExists(docsFilePath);
-
-            if (siteInfo != null)
-            {
-                body = await pathManager.DecodeTextEditorAsync(siteInfo, body, true);
-            }
-
-            if (string.IsNullOrEmpty(title))
-            {
-                title = docsFileTitle;
-            }
-
-            return (title, imageUrl, body);
+            PathManager = pathManager;
+            Site = siteInfo;
         }
 
-        public static (string title, string imageUrl, string body) ConvertToHtml(string docxFilePath, ConverterSettings settings)
+        public async Task ParseAsync(IPathManager pathManager, Site siteInfo)
         {
-            var title = string.Empty;
-            var imageUrl = string.Empty;
-            string content;
-            var fi = new FileInfo(docxFilePath);
+            await InitAsync(pathManager, siteInfo);
+
+            try
+            {
+                ConvertToHtml();
+                if (string.IsNullOrEmpty(Body))
+                {
+                    await ConvertToHtmlAsync();
+                }
+            }
+            catch
+            {
+                await ConvertToHtmlAsync();
+            }
+
+            SSCMS.Utils.FileUtils.DeleteFileIfExists(DocsFilePath);
+
+            if (Site != null)
+            {
+                Body = await pathManager.DecodeTextEditorAsync(Site, Body, true);
+            }
+
+            if (string.IsNullOrEmpty(Title))
+            {
+                Title = DocsFileTitle;
+            }
+
+            if (IsFirstLineTitle)
+            {
+                var contentTitle = RegexUtils.GetInnerContent("p", Body);
+                contentTitle = StringUtils.StripTags(contentTitle);
+                if (!string.IsNullOrEmpty(contentTitle))
+                {
+                    contentTitle = contentTitle.Trim();
+                    contentTitle = contentTitle.Trim('　', ' ');
+                    contentTitle = StringUtils.StripEntities(contentTitle);
+                }
+
+                if (!string.IsNullOrEmpty(contentTitle))
+                {
+                    Title = contentTitle;
+                }
+            }
+
+            if (IsClearFormat)
+            {
+                Body = HtmlUtils.ClearFormat(Body);
+            }
+
+            if (IsFirstLineIndent)
+            {
+                Body = HtmlUtils.FirstLineIndent(Body);
+            }
+
+            if (IsClearFontSize)
+            {
+                Body = HtmlUtils.ClearFontSize(Body);
+            }
+
+            if (IsClearFontFamily)
+            {
+                Body = HtmlUtils.ClearFontFamily(Body);
+            }
+        }
+
+        public async Task ConvertToHtmlAsync()
+        {
+            FileStream stream = new FileStream(DocsFilePath, FileMode.Open, FileAccess.Read);
+            var npoiDoc = new NpoiDoc();
+            Body = await npoiDoc.NpoiDocx(stream, UploadImageUrlDelegate);
+        }
+
+        private string UploadImageUrlDelegate(byte[] imgByte, string picType)
+        {
+            var extension = StringUtils.ToLower(picType.Split('/')[1]);
+            var imageFileName = StringUtils.GetShortGuid(false) + "." + extension;
+
+            var imageFilePath = PathUtils.Combine(ImageDirectoryPath, imageFileName);
+            try
+            {
+                ImageUtils.Save(imgByte, imageFilePath);
+
+                if (Site.IsImageAutoResize)
+                {
+                    ImageUtils.ResizeImageIfExceeding(imageFilePath, Site.ImageAutoResizeWidth);
+                }
+
+                // AddWaterMarkAsync(Site, imageFilePath);
+
+                var imgSrc = PageUtils.Combine(ImageDirectoryUrl, imageFileName);
+
+                if (string.IsNullOrEmpty(ImageUrl))
+                {
+                    ImageUrl = imgSrc;
+                }
+
+                return imgSrc;
+            }
+            catch
+            {
+
+            }
+
+            return $"data:{picType};base64,{Convert.ToBase64String(imgByte)}";
+        }
+
+        private void ConvertToHtml()
+        {
+            var fi = new FileInfo(DocsFilePath);
 
             var byteArray = File.ReadAllBytes(fi.FullName);
             using (var memoryStream = new MemoryStream())
             {
                 memoryStream.Write(byteArray, 0, byteArray.Length);
+
                 using (var wDoc = WordprocessingDocument.Open(memoryStream, true))
                 {
                     var part = wDoc.CoreFilePropertiesPart;
                     if (part != null)
                     {
-                        title = (string)part.GetXDocument().Descendants(DC.title).FirstOrDefault();
+                        Title = (string)part.GetXDocument().Descendants(DC.title).FirstOrDefault();
                     }
 
                     var htmlSettings = new HtmlConverterSettings
                     {
                         // AdditionalCss = "body { margin: 1cm auto; max-width: 20cm; padding: 0; }",
-                        PageTitle = title,
+                        PageTitle = Title,
                         FabricateCssClasses = true,
                         CssClassPrefix = "pt-",
                         RestrictToSupportedLanguages = false,
                         RestrictToSupportedNumberingFormats = false,
                         ImageHandler = imageInfo =>
                         {
-                            if (settings.IsClearImages || string.IsNullOrEmpty(settings.ImageDirectoryPath)) return null;
-                            DirectoryUtils.CreateDirectoryIfNotExists(settings.ImageDirectoryPath);
+                            if (IsClearImages || string.IsNullOrEmpty(ImageDirectoryPath)) return null;
+                            DirectoryUtils.CreateDirectoryIfNotExists(ImageDirectoryPath);
 
                             var extension = StringUtils.ToLower(imageInfo.ContentType.Split('/')[1]);
                             ImageFormat imageFormat = null;
@@ -140,7 +231,7 @@ namespace SSCMS.Core.Utils.Office
 
                             var imageFileName = StringUtils.GetShortGuid(false) + "." + extension;
 
-                            var imageFilePath = PathUtils.Combine(settings.ImageDirectoryPath, imageFileName);
+                            var imageFilePath = PathUtils.Combine(ImageDirectoryPath, imageFileName);
                             try
                             {
                                 imageInfo.Bitmap.Save(imageFilePath, imageFormat);
@@ -149,10 +240,10 @@ namespace SSCMS.Core.Utils.Office
                             {
                                 return null;
                             }
-                            var imageSource = PageUtils.Combine(settings.ImageDirectoryUrl, imageFileName);
-                            if (string.IsNullOrEmpty(imageUrl))
+                            var imageSource = PageUtils.Combine(ImageDirectoryUrl, imageFileName);
+                            if (string.IsNullOrEmpty(ImageUrl))
                             {
-                                imageUrl = imageSource;
+                                ImageUrl = imageSource;
                             }
 
                             var img = new XElement(Xhtml.img,
@@ -185,196 +276,9 @@ namespace SSCMS.Core.Utils.Office
                     var style = htmlDoc.DocumentNode.SelectSingleNode("//style").OuterHtml;
                     var body = htmlDoc.DocumentNode.SelectSingleNode("//body").InnerHtml;
 
-                    content = $"{style}{Environment.NewLine}{body}";
-
-                    if (settings.IsSaveHtml && !string.IsNullOrEmpty(settings.HtmlDirectoryPath) && DirectoryUtils.IsDirectoryExists(settings.HtmlDirectoryPath))
-                    {
-                        var htmlFilePath = PathUtils.Combine(settings.HtmlDirectoryPath, PathUtils.GetFileNameWithoutExtension(docxFilePath) + ".html");
-                        File.WriteAllText(htmlFilePath, htmlString, Encoding.UTF8);
-                    }
+                    Body = $"{style}{Environment.NewLine}{body}";
                 }
             }
-
-            if (settings.IsFirstLineTitle)
-            {
-                var contentTitle = RegexUtils.GetInnerContent("p", content);
-                contentTitle = StringUtils.StripTags(contentTitle);
-                if (!string.IsNullOrEmpty(contentTitle))
-                {
-                    contentTitle = contentTitle.Trim();
-                    contentTitle = contentTitle.Trim('　', ' ');
-                    contentTitle = StringUtils.StripEntities(contentTitle);
-                }
-
-                if (!string.IsNullOrEmpty(contentTitle))
-                {
-                    title = contentTitle;
-                }
-            }
-
-            if (settings.IsClearFormat)
-            {
-                content = HtmlUtils.ClearFormat(content);
-            }
-
-            if (settings.IsFirstLineIndent)
-            {
-                content = HtmlUtils.FirstLineIndent(content);
-            }
-
-            if (settings.IsClearFontSize)
-            {
-                content = HtmlUtils.ClearFontSize(content);
-            }
-
-            if (settings.IsClearFontFamily)
-            {
-                content = HtmlUtils.ClearFontFamily(content);
-            }
-
-            return (title, imageUrl, content);
         }
-
-        public static void ConvertToDocx(string file, string destinationDir)
-        {
-            var sourceHtmlFi = new FileInfo(file);
-
-            var destCssFi = new FileInfo(Path.Combine(destinationDir, sourceHtmlFi.Name.Replace(".html", "-2.css")));
-            var destDocxFi = new FileInfo(Path.Combine(destinationDir, sourceHtmlFi.Name.Replace(".html", "-3-ConvertedByHtmlToWml.docx")));
-            var annotatedHtmlFi = new FileInfo(Path.Combine(destinationDir, sourceHtmlFi.Name.Replace(".html", "-4-Annotated.txt")));
-
-            var html = ReadAsXElement(sourceHtmlFi);
-
-            var usedAuthorCss = HtmlToWmlConverter.CleanUpCss((string)html.Descendants().FirstOrDefault(d => StringUtils.ToLower(d.Name.LocalName) == "style"));
-            File.WriteAllText(destCssFi.FullName, usedAuthorCss);
-
-            var settings = HtmlToWmlConverter.GetDefaultSettings();
-            // image references in HTML files contain the path to the subdir that contains the images, so base URI is the name of the directory
-            // that contains the HTML files
-            settings.BaseUriForImages = sourceHtmlFi.DirectoryName;
-
-            var doc = HtmlToWmlConverter.ConvertHtmlToWml(DefaultCss, usedAuthorCss, UserCss, html, settings, null, annotatedHtmlFi.FullName);
-            doc.SaveAs(destDocxFi.FullName);
-        }
-
-        private static XElement ReadAsXElement(FileInfo sourceHtmlFi)
-        {
-            var htmlString = File.ReadAllText(sourceHtmlFi.FullName);
-            XElement html;
-            try
-            {
-                html = XElement.Parse(htmlString);
-            }
-            catch (XmlException)
-            {
-                var htmlDoc = new HtmlDocument();
-                htmlDoc.Load(sourceHtmlFi.FullName, Encoding.Default);
-                htmlDoc.OptionOutputAsXml = true;
-                htmlDoc.Save(sourceHtmlFi.FullName, Encoding.Default);
-                var sb = new StringBuilder(File.ReadAllText(sourceHtmlFi.FullName, Encoding.Default));
-                sb.Replace("&amp;", "&");
-                sb.Replace("&nbsp;", "\xA0");
-                sb.Replace("&quot;", "\"");
-                sb.Replace("&lt;", "~lt;");
-                sb.Replace("&gt;", "~gt;");
-                sb.Replace("&#", "~#");
-                sb.Replace("&", "&amp;");
-                sb.Replace("~lt;", "&lt;");
-                sb.Replace("~gt;", "&gt;");
-                sb.Replace("~#", "&#");
-                File.WriteAllText(sourceHtmlFi.FullName, sb.ToString(), Encoding.Default);
-                html = XElement.Parse(sb.ToString());
-            }
-            // HtmlToWmlConverter expects the HTML elements to be in no namespace, so convert all elements to no namespace.
-            html = (XElement)ConvertToNoNamespace(html);
-            return html;
-        }
-
-        private static object ConvertToNoNamespace(XNode node)
-        {
-            var element = node as XElement;
-            if (element != null)
-            {
-                return new XElement(element.Name.LocalName,
-                    element.Attributes().Where(a => !a.IsNamespaceDeclaration),
-                    element.Nodes().Select(n => ConvertToNoNamespace(n)));
-            }
-            return node;
-        }
-
-        private const string DefaultCss =
-            @"html, address,
-blockquote,
-body, dd, div,
-dl, dt, fieldset, form,
-frame, frameset,
-h1, h2, h3, h4,
-h5, h6, noframes,
-ol, p, ul, center,
-dir, hr, menu, pre { display: block; unicode-bidi: embed }
-li { display: list-item }
-head { display: none }
-table { display: table }
-tr { display: table-row }
-thead { display: table-header-group }
-tbody { display: table-row-group }
-tfoot { display: table-footer-group }
-col { display: table-column }
-colgroup { display: table-column-group }
-td, th { display: table-cell }
-caption { display: table-caption }
-th { font-weight: bolder; text-align: center }
-caption { text-align: center }
-body { margin: auto; }
-h1 { font-size: 2em; margin: auto; }
-h2 { font-size: 1.5em; margin: auto; }
-h3 { font-size: 1.17em; margin: auto; }
-h4, p,
-blockquote, ul,
-fieldset, form,
-ol, dl, dir,
-menu { margin: auto }
-a { color: blue; }
-h5 { font-size: .83em; margin: auto }
-h6 { font-size: .75em; margin: auto }
-h1, h2, h3, h4,
-h5, h6, b,
-strong { font-weight: bolder }
-blockquote { margin-left: 40px; margin-right: 40px }
-i, cite, em,
-var, address { font-style: italic }
-pre, tt, code,
-kbd, samp { font-family: monospace }
-pre { white-space: pre }
-button, textarea,
-input, select { display: inline-block }
-big { font-size: 1.17em }
-small, sub, sup { font-size: .83em }
-sub { vertical-align: sub }
-sup { vertical-align: super }
-table { border-spacing: 2px; }
-thead, tbody,
-tfoot { vertical-align: middle }
-td, th, tr { vertical-align: inherit }
-s, strike, del { text-decoration: line-through }
-hr { border: 1px inset }
-ol, ul, dir,
-menu, dd { margin-left: 40px }
-ol { list-style-type: decimal }
-ol ul, ul ol,
-ul ul, ol ol { margin-top: 0; margin-bottom: 0 }
-u, ins { text-decoration: underline }
-br:before { content: ""\A""; white-space: pre-line }
-center { text-align: center }
-:link, :visited { text-decoration: underline }
-:focus { outline: thin dotted invert }
-/* Begin bidirectionality settings (do not change) */
-BDO[DIR=""ltr""] { direction: ltr; unicode-bidi: bidi-override }
-BDO[DIR=""rtl""] { direction: rtl; unicode-bidi: bidi-override }
-*[DIR=""ltr""] { direction: ltr; unicode-bidi: embed }
-*[DIR=""rtl""] { direction: rtl; unicode-bidi: embed }
-";
-
-        private const string UserCss = @"";
     }
 }
