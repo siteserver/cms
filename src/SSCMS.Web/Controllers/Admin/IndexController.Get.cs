@@ -177,9 +177,17 @@ namespace SSCMS.Web.Controllers.Admin
                                 };
                                 if (_authManager.IsMenuValid(formMenu, sitePermissions))
                                 {
-                                    formAllMenu.Children.Insert(0, formMenu);
-                                    formAllMenu.Permissions.Add(formPermission);
-                                    contentsAllMenu.Permissions.Add(formPermission);
+                                    var formAllChildren = new List<Menu>(formAllMenu.Children);
+                                    var formAllPermissions = new List<string>(formAllMenu.Permissions);
+                                    var contentsAllPermissions = new List<string>(contentsAllMenu.Permissions);
+
+                                    formAllChildren.Insert(0, formMenu);
+                                    formAllPermissions.Add(formPermission);
+                                    contentsAllPermissions.Add(formPermission);
+
+                                    formAllMenu.Children = formAllChildren;
+                                    formAllMenu.Permissions = formAllPermissions;
+                                    contentsAllMenu.Permissions = contentsAllPermissions;
                                 }
                             }
                         }
