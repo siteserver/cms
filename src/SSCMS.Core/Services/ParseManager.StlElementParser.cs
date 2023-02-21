@@ -81,6 +81,7 @@ namespace SSCMS.Core.Services
             {StringUtils.ToLower(StlSites.ElementName), StlSites.ParseAsync},
             {StringUtils.ToLower(StlSqlContent.ElementName), StlSqlContent.ParseAsync},
             {StringUtils.ToLower(StlSqlContents.ElementName), StlSqlContents.ParseAsync},
+            {StringUtils.ToLower(StlStyle.ElementName), StlStyle.ParseAsync},
             {StringUtils.ToLower(StlSwiper.ElementName), StlSwiper.ParseAsync},
             {StringUtils.ToLower(StlTabs.ElementName), StlTabs.ParseAsync},
             {StringUtils.ToLower(StlTags.ElementName), StlTags.ParseAsync},
