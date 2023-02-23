@@ -873,10 +873,10 @@
           "app_settings_administratorsRole",
           "app_settings_administratorsAccessTokens",
           "app_settings_administratorsConfig",
-          "app_settings_user",
-          "app_settings_userGroup",
-          "app_settings_userStyle",
-          "app_settings_userConfig",
+          "app_settings_users",
+          "app_settings_usersGroup",
+          "app_settings_usersStyle",
+          "app_settings_usersConfig",
           "app_settings_homeConfig",
           "app_settings_homeMenus",
           "app_settings_cloudsDashboard",
@@ -900,10 +900,9 @@
           "app_settings_logsError",
           "app_settings_logsConfig",
           "app_settings_configAdmin",
-          "app_settings_utilityCache",
-          "app_settings_utilityParameters",
-          "app_settings_utilityEncrypt",
-          "app_settings_utilityDbLogDelete"
+          "app_settings_utilitiesCache",
+          "app_settings_utilitiesParameters",
+          "app_settings_utilitiesEncrypt"
         ],
         "order": 102,
         "menus": {

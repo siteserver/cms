@@ -230,7 +230,7 @@ namespace SSCMS.Core.Repositories
                 return sites.OrderBy(x => x.LastModifiedDate).ToList();
             }
 
-            if (taxisType == TaxisType.OrderByLastModifiedDate)
+            if (taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
                 return sites.OrderByDescending(x => x.LastModifiedDate).ToList();
             }
