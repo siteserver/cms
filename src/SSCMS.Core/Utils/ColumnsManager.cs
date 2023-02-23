@@ -87,6 +87,10 @@ namespace SSCMS.Core.Utils
             nameof(Content.AddDate),
             nameof(Content.LinkType),
             nameof(Content.LinkUrl),
+            "HitsByDay",
+            "HitsByWeek",
+            "HitsByMonth",
+            "LastHitsDate",
             "ExtendValues",
         });
 

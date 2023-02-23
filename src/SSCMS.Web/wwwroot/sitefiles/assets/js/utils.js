@@ -694,6 +694,26 @@ var utils = {
     }
   },
 
+  validateDecimal: function (rule, value, callback) {
+    if (!value) {
+      callback();
+    } else if (!/^-?\d+(\.\d{1,2})?$/.test(value)) {
+      callback(new Error(rule.message || '字段必须是数字'));
+    } else {
+      callback()
+    }
+  },
+
+  validateDigits: function (rule, value, callback) {
+    if (!value) {
+      callback();
+    } else if (!/^-?\d+$/.test(value)) {
+      callback(new Error(rule.message || '字段必须是整数'));
+    } else {
+      callback()
+    }
+  },
+
   validateMax: function (rule, value, callback) {
     if (value && value.length > parseInt(rule.value)) {
       callback(new Error(rule.message || '字段不能超过指定的长度'));
@@ -832,8 +852,8 @@ var utils = {
       { alphaSpaces: "字段只能包含英文字母或空格" },
       { creditCard: "字段必须是有效的信用卡" },
       { between: "字段必须有一个以最小值和最大值为界的数值" },
-      { decimal: "字段必须是数字，并且可能包含指定数量的小数点" },
-      { digits: "字段必须是整数，并且具有指定的位数" },
+      { decimal: "字段必须是数字" },
+      { digits: "字段必须是整数" },
       { included: "字段必须具有指定列表中的值" },
       { excluded: "字段不能具有指定列表中的值" },
       { max: "字段不能超过指定的长度" },
@@ -905,13 +925,13 @@ var utils = {
           });
         } else if (ruleType === "decimal") {
           array.push({
-            type: "decimal",
-            message: rule.message || options.decimal,
+            validator: utils.validateDecimal,
+            message: rule.message || options.decimal
           });
         } else if (ruleType === "digits") {
           array.push({
-            type: "digits",
-            message: rule.message || options.digits,
+            validator: utils.validateDigits,
+            message: rule.message || options.digits
           });
         } else if (ruleType === "included") {
           array.push({

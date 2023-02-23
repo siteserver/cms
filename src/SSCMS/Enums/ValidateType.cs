@@ -29,9 +29,9 @@ namespace SSCMS.Enums
         CreditCard,
         [DataEnum(DisplayName = "字段必须有一个以最小值和最大值为界的数值")]
         Between,
-        [DataEnum(DisplayName = "字段必须是数字，并且可能包含指定数量的小数点")]
+        [DataEnum(DisplayName = "字段必须是数字")]
         Decimal,
-        [DataEnum(DisplayName = "字段必须是整数，并且具有指定的位数")]
+        [DataEnum(DisplayName = "字段必须是整数")]
         Digits,
         [DataEnum(DisplayName = "字段必须具有指定列表中的值")]
         Included,

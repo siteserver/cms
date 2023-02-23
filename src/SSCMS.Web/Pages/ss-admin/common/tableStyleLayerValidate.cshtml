@@ -88,38 +88,6 @@ style="width: 100%">
         <el-input v-model="addForm.value" placeholder="请输入最小值最大值，中间以逗号分隔"></el-input>
       </el-form-item>
 
-      <el-form-item
-        v-if="addForm.type === 'Decimal'"
-        label="最多允许的小数位数"
-        prop="value" 
-        :rules="{
-          validator: function(rule, value, callback) {
-            if (!value || /^\+?\d+$/.test(value)) {
-              callback();
-            } else {
-              callback(new Error('请输入数字值'));
-            }
-          }
-        }">
-        <el-input v-model="addForm.value" placeholder="请输入最多允许的小数位数"></el-input>
-      </el-form-item>
-
-      <el-form-item
-        v-if="addForm.type === 'Digits'"
-        label="整数位数"
-        prop="value" 
-        :rules="{
-          validator: function(rule, value, callback) {
-            if (!value || /^\+?\d+$/.test(value)) {
-              callback();
-            } else {
-              callback(new Error('请输入数字值'));
-            }
-          }
-        }">
-        <el-input v-model="addForm.value" placeholder="请输入整数位数"></el-input>
-      </el-form-item>
-
       <el-form-item 
         v-if="addForm.type === 'Included'" 
         label="指定列表" 
