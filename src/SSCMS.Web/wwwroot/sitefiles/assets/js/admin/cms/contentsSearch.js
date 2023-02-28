@@ -14,6 +14,7 @@ var data = utils.init({
   pageSize: null,
   page: 1,
   titleColumn: null,
+  bodyColumn: null,
   columns: null,
   permissions: null,
   menus: null,
@@ -55,6 +56,7 @@ var methods = {
       $this.tagNames = res.tagNames;
       $this.checkedLevels = res.checkedLevels;
       $this.titleColumn = res.titleColumn;
+      $this.bodyColumn = res.bodyColumn;
       $this.columns = res.columns;
       $this.permissions = res.permissions;
       $this.permissions.isAdd = false;
@@ -63,6 +65,11 @@ var methods = {
         attributeName: $this.titleColumn.attributeName,
         displayName: $this.titleColumn.displayName,
         value: keyword
+      });
+      $this.searchColumns.push({
+        attributeName: $this.bodyColumn.attributeName,
+        displayName: $this.bodyColumn.displayName,
+        value: ''
       });
 
       $this.searchForm.checkedLevels = _.map(res.checkedLevels, function(x) { return x.label; });

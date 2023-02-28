@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
@@ -55,6 +56,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
                 columns.Remove(titleColumn);
 
+                var bodyColumn = new ContentColumn
+                {
+                    AttributeName = nameof(Models.Content.Body),
+                    DisplayName = "内容正文",
+                    InputType = InputType.TextEditor,
+                    IsSearchable = true,
+                };
+
                 return new TreeResult
                 {
                     Root = root,
@@ -63,6 +72,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     TagNames = tagNames,
                     CheckedLevels = checkedLevels,
                     TitleColumn = titleColumn,
+                    BodyColumn = bodyColumn,
                     Columns = columns,
                     Permissions = permissions
                 };
