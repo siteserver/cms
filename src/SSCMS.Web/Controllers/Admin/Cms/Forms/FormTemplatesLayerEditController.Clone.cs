@@ -33,7 +33,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             }
             else
             {
-                await _formManager.CloneAsync(site, request.IsSystemOriginal, request.NameOriginal, request.Name);
+                if (request.IsSystemOriginal && site.IsSeparatedApi && !string.IsNullOrEmpty(site.SeparatedApiUrl))
+                {
+                    var html = await _formManager.GetTemplateHtmlAsync(site, request.IsSystemOriginal, request.NameOriginal);
+                    var prefix = PageUtils.Combine(site.SeparatedApiUrl, "/sitefiles/");
+                    html = html.Replace("/sitefiles/", prefix);
+                    await _formManager.CloneAsync(site, request.IsSystemOriginal, request.NameOriginal, request.Name, html);
+                }
+                else
+                {
+                    await _formManager.CloneAsync(site, request.IsSystemOriginal, request.NameOriginal, request.Name);
+                }
             }
 
             return new BoolResult
