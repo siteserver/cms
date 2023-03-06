@@ -45,17 +45,20 @@ var methods = {
       if (res.success) {
         $this.version = res.version;
         $this.adminTitle = res.adminTitle;
+        document.title = $this.adminTitle + ' 管理后台';
         $this.isSmsAdmin = res.isSmsAdmin;
         $this.isSmsAdminAndDisableAccount = res.isSmsAdminAndDisableAccount;
         if (res.isSmsAdmin && res.isSmsAdminAndDisableAccount) {
           $this.isSmsLogin = true;
         }
 
-        var head = document.querySelector('head');
-        var favicon = document.createElement('link');
-        favicon.setAttribute('rel', 'shortcut icon');
-        favicon.setAttribute('href', res.adminFaviconUrl || utils.getAssetsUrl('images/favicon.png'));
-        head.appendChild(favicon);
+        if (res.adminFaviconUrl) {
+          var head = document.querySelector('head');
+          var favicon = document.createElement('link');
+          favicon.setAttribute('rel', 'shortcut icon');
+          favicon.setAttribute('href', res.adminFaviconUrl || utils.getAssetsUrl('images/favicon.png'));
+          head.appendChild(favicon);
+        }
 
         $this.apiCaptcha();
       } else {

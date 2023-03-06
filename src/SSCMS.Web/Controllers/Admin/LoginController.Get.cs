@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin
 {
@@ -29,8 +30,8 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 Success = true,
                 Version = _settingsManager.Version,
-                AdminFaviconUrl = config.AdminFaviconUrl,
-                AdminTitle = config.AdminTitle,
+                AdminFaviconUrl = config.IsCloudAdmin ? config.AdminFaviconUrl : string.Empty,
+                AdminTitle = config.IsCloudAdmin ? config.AdminTitle : Constants.AdminTitle,
                 IsSmsAdmin = isSmsAdmin,
                 IsSmsAdminAndDisableAccount = isSmsAdminAndDisableAccount
             };
