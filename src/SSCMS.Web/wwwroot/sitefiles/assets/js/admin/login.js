@@ -18,6 +18,7 @@ var data = utils.init({
   captchaUrl: null,
   version: null,
   adminTitle: null,
+  isAdminCaptchaDisabled: false,
   isSmsAdmin: false,
   isSmsAdminAndDisableAccount: false,
 
@@ -46,6 +47,7 @@ var methods = {
         $this.version = res.version;
         $this.adminTitle = res.adminTitle;
         document.title = $this.adminTitle + ' 管理后台';
+        $this.isAdminCaptchaDisabled = res.isAdminCaptchaDisabled;
         $this.isSmsAdmin = res.isSmsAdmin;
         $this.isSmsAdminAndDisableAccount = res.isSmsAdminAndDisableAccount;
         if (res.isSmsAdmin && res.isSmsAdminAndDisableAccount) {
@@ -222,7 +224,8 @@ var methods = {
       if (!this.mobile || !this.code) return;
       this.apiSubmit(false);
     } else {
-      if (!this.account || !this.password || !this.captchaValue) return;
+      if (!this.account || !this.password) return;
+      if (!this.isAdminCaptchaDisabled && !this.captchaValue) return;
       this.apiSubmit(false);
     }
   }

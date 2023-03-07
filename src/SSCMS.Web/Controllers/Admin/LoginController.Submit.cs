@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.Admin
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             Administrator administrator;
+            var config = await _configRepository.GetAsync();
             if (request.IsSmsLogin)
             {
                 var codeCacheKey = GetSmsCodeCacheKey(request.Mobile);
@@ -42,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin
             }
             else
             {
-                if (!request.IsForceLogoutAndLogin)
+                if (!request.IsForceLogoutAndLogin && !config.IsAdminCaptchaDisabled)
                 {
                     var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
 
@@ -99,8 +100,6 @@ namespace SSCMS.Web.Controllers.Admin
             var isEnforcePasswordChange = false;
             var sessionId = StringUtils.Guid();
             await _dbCacheRepository.RemoveAndInsertAsync(cacheKey, sessionId);
-
-            var config = await _configRepository.GetAsync();
 
             if (config.IsAdminEnforcePasswordChange)
             {

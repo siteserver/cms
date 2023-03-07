@@ -32,6 +32,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Version = _settingsManager.Version,
                 AdminFaviconUrl = config.IsCloudAdmin ? config.AdminFaviconUrl : string.Empty,
                 AdminTitle = config.IsCloudAdmin ? config.AdminTitle : Constants.AdminTitle,
+                IsAdminCaptchaDisabled = config.IsAdminCaptchaDisabled,
                 IsSmsAdmin = isSmsAdmin,
                 IsSmsAdminAndDisableAccount = isSmsAdminAndDisableAccount
             };

@@ -13,6 +13,7 @@ var data = utils.init({
     adminEnforcePasswordChangeDays: null,
     isAdminEnforceLogout: null,
     adminEnforceLogoutMinutes: null,
+    isAdminCaptchaDisabled: null,
   }
 });
 
@@ -35,6 +36,7 @@ var methods = {
       $this.form.adminEnforcePasswordChangeDays = res.config.adminEnforcePasswordChangeDays;
       $this.form.isAdminEnforceLogout = res.config.isAdminEnforceLogout;
       $this.form.adminEnforceLogoutMinutes = res.config.adminEnforceLogoutMinutes;
+      $this.form.isAdminCaptchaDisabled = res.config.isAdminCaptchaDisabled;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -58,6 +60,7 @@ var methods = {
       adminEnforcePasswordChangeDays: this.form.adminEnforcePasswordChangeDays,
       isAdminEnforceLogout: this.form.isAdminEnforceLogout,
       adminEnforceLogoutMinutes: this.form.adminEnforceLogoutMinutes,
+      isAdminCaptchaDisabled: this.form.isAdminCaptchaDisabled,
     }).then(function (response) {
       var res = response.data;
 

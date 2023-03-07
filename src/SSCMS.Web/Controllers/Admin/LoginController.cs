@@ -49,6 +49,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string Version { get; set; }
             public string AdminFaviconUrl { get; set; }
             public string AdminTitle { get; set; }
+            public bool IsAdminCaptchaDisabled { get; set; }
             public bool IsSmsAdmin { get; set; }
             public bool IsSmsAdminAndDisableAccount { get; set; }
         }

@@ -34,6 +34,7 @@ namespace SSCMS.Models
         public int AdminEnforcePasswordChangeDays { get; set; } = 90;
         public bool IsAdminEnforceLogout { get; set; }
         public int AdminEnforceLogoutMinutes { get; set; } = 960;
+        public bool IsAdminCaptchaDisabled { get; set; }
         public bool IsUserRegistrationAllowed { get; set; } = true;
         public List<string> UserRegistrationAttributes { get; set; }
         public bool IsUserRegistrationMobile { get; set; }
