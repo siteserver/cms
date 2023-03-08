@@ -363,19 +363,27 @@
 
 <el-row align="center" style="text-align: center; padding-top:4px">
   
-
-  <el-dropdown style="margin-right: 10px;" v-if="form.checkedLevel === site.checkContentLevel" split-button type="primary" size="medium" v-on:click="btnSaveClick" v-on:command="btnSaveCommandClick">
-    发 布
-    <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="scheduled" :disabled="settings.cloudType == 'Free'">定时发布</el-dropdown-item>
-    </el-dropdown-menu>
-  </el-dropdown>
-  <el-button v-else size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+  <el-tooltip v-if="form.checkedLevel === site.checkContentLevel" class="item" effect="dark" placement="top">
+    <div slot="content" style="text-align: center">发布内容<br/>Ctrl+回车</div>
+    <el-dropdown style="margin-right: 10px;" split-button type="primary" size="medium" v-on:click="btnSaveClick" v-on:command="btnSaveCommandClick">
+      发 布
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item command="scheduled" :disabled="settings.cloudType == 'Free'">定时发布</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+  </el-tooltip>
+  <el-tooltip v-else class="item" effect="dark" placement="top">
+    <div slot="content" style="text-align: center">保存内容<br/>Ctrl+回车</div>
+    <el-button size="medium" v-on:click="btnSaveClick" type="primary">保 存</el-button>
+  </el-tooltip>
 
   <el-button size="medium" v-on:click="btnPreviewClick" type="info">预 览</el-button>
   <el-button size="medium" v-if="isCensorButton()" type="success" v-on:click="btnCensorTextClick(false)">违规检测</el-button>
   <el-button size="medium" v-if="isSpellButton()" type="success" v-on:click="btnSpellingCheckClick(false)">文本纠错</el-button>
-  <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
+  <el-tooltip class="item" effect="dark" placement="top">
+    <div slot="content" style="text-align: center">关闭窗口<br/>Escape</div>
+    <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
+  </el-tooltip>
   <el-button size="medium" icon="el-icon-setting" circle :type="isSettings ? 'info' : 'default'" v-on:click="isSettings = !isSettings"></el-button>
 </el-row>
 

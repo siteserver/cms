@@ -39,6 +39,10 @@
           <el-radio v-model="form.isReply" :label="true">启用表单回复功能</el-radio>
           <el-radio v-model="form.isReply" :label="false">禁用表单回复功能</el-radio>
         </el-form-item>
+        <el-form-item v-if="form.isReply" label="表单列表前台显示">
+          <el-radio v-model="form.isReplyListAll" :label="true">显示所有数据</el-radio>
+          <el-radio v-model="form.isReplyListAll" :label="false">仅显示已回复数据</el-radio>
+        </el-form-item>
         <el-form-item label="表单每页显示数目(条)" prop="pageSize" :rules="{ required: true, message: '请输入表单每页显示数目' }">
           <el-input v-model.number="form.pageSize" placeholder="请输入表单每页显示数目"></el-input>
         </el-form-item>
@@ -137,7 +141,10 @@
 
       <el-row>
         <el-col :span="24" align="center">
-          <el-button type="primary" v-on:click="btnSubmitClick" size="small">保 存</el-button>
+          <el-tooltip class="item" effect="dark" placement="top">
+            <div slot="content" style="text-align: center">保存设置<br/>Ctrl+回车</div>
+            <el-button type="primary" v-on:click="btnSubmitClick" size="small">保 存</el-button>
+          </el-tooltip>
         </el-col>
       </el-row>
 

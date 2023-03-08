@@ -36,6 +36,8 @@ namespace SSCMS.Models
 
         public string SuccessCallback { get; set; }
 
+        public bool IsReplyListAll { get; set; }
+
         public bool IsCaptcha { get; set; }
         
         public bool IsSms { get; set; }

@@ -101,7 +101,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    utils.keyPress(null, this.btnCloseClick);
+    utils.keyPress(this.btnSubmitClick, this.btnCloseClick);
     this.apiGet();
   }
 });
