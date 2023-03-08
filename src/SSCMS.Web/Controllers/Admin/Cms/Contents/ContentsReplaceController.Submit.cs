@@ -4,6 +4,7 @@ using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -20,7 +21,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
+            var channelIds = new List<int>();
             foreach (var channelId in request.ChannelIds)
+            {
+                if (!channelIds.Contains(channelId))
+                {
+                    channelIds.Add(channelId);
+                }
+                if (request.IsDescendant)
+                {
+                    var descendantChannelIds = await _channelRepository.GetChannelIdsAsync(request.SiteId, channelId, Enums.ScopeType.Descendant);
+                    foreach (var descendantChannelId in descendantChannelIds)
+                    {
+                        if (!channelIds.Contains(descendantChannelId))
+                        {
+                            channelIds.Add(descendantChannelId);
+                        }
+                    }
+                }
+            }
+
+            foreach (var channelId in channelIds)
             {
                 var channel = await _channelRepository.GetAsync(channelId);
                 var contentIdList = await _contentRepository.GetContentIdsAsync(site, channel);

@@ -53,6 +53,8 @@
         <el-form-item label="查找设置">
           <el-checkbox label="区分大小写" :disabled="form.isRegex" v-model="form.isCaseSensitive"></el-checkbox>
           <el-checkbox label="使用正则表达式" :disabled="form.isCaseSensitive" v-model="form.isRegex"></el-checkbox>
+          <el-checkbox label="包含下级栏目" v-model="form.isDescendant"></el-checkbox>
+          
         </el-form-item>
         <el-form-item label="替换文字" prop="to">
           <el-input autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" v-model="form.to"></el-input>
@@ -63,9 +65,13 @@
       <el-divider></el-divider>
       <div style="margin: 10px 0"></div>
 
-      <el-button v-on:click="btnReplaceClick" :disabled="channelIds.length === 0" type="primary" size="medium">
-        批量替换
-      </el-button>
+      <el-tooltip class="item" effect="dark" placement="top">
+        <div slot="content" style="text-align: center">批量替换<br/>Ctrl+回车</div>
+        <el-button v-on:click="btnReplaceClick" :disabled="channelIds.length === 0" type="primary" size="medium">
+          批量替换
+        </el-button>
+      </el-tooltip>
+
     </el-card>
   </el-col>
 </el-row>
