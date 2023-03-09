@@ -22,8 +22,8 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
       parent.$vue.apiList(res);
-      utils.success('页面生成成功!');
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);

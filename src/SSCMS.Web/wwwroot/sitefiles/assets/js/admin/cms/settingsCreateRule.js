@@ -117,7 +117,7 @@ var methods = {
       title: '构造',
       url: url,
       width: 800,
-      height: 500
+      height: 550
     });
   },
 

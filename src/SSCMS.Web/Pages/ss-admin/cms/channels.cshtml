@@ -503,14 +503,14 @@
         </el-tooltip>
       </el-form-item>
       <el-form-item label="生成页面路径">
-        <el-input v-model="form.filePath" placeholder="在此设置栏目的生成页面地址"></el-input>
+        <el-input v-model="form.filePath" placeholder="设置栏目的生成页面地址"></el-input>
       </el-form-item>
       <el-form-item label="下级栏目页面命名规则">
-        <el-input style="width: 70%" v-model="form.channelFilePathRule" placeholder="在此设置下级栏目页面命名规则"></el-input>
+        <el-input style="width: 70%" v-model="form.channelFilePathRule" placeholder="设置下级栏目页面命名规则"></el-input>
         <el-button v-on:click.prevent="btnSetClick(form.id, true, form.channelFilePathRule)">构造</el-button>
       </el-form-item>
       <el-form-item label="内容页面命名规则">
-        <el-input style="width: 70%" v-model="form.contentFilePathRule" placeholder="在此设置栏目页面命名规则"></el-input>
+        <el-input style="width: 70%" v-model="form.contentFilePathRule" placeholder="设置此栏目下的内容页面命名规则"></el-input>
         <el-button v-on:click.prevent="btnSetClick(form.id, false, form.contentFilePathRule)">构造</el-button>
       </el-form-item>
       <el-form-item label="栏目关键字">
