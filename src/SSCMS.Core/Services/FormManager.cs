@@ -121,6 +121,7 @@ namespace SSCMS.Core.Services
                     var htmlBody = templateHtml
                         .Replace("{{title}}", form.Title)
                         .Replace("{{list}}", list.ToString());
+                    htmlBody = "<style>.link-content{display: none;}</style>" + htmlBody;
 
                     await _mailManager.SendMailAsync(form.AdministratorMailNotifyAddress, subject,
                         htmlBody);
