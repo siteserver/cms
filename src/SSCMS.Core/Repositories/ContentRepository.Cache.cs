@@ -406,7 +406,7 @@ namespace SSCMS.Core.Repositories
             return await repository.CountAsync(GetQuery(site.Id, channel.Id)
                        .WhereTrue(nameof(Content.Checked))
                        .WhereNotNullOrEmpty(nameof(Content.ImageUrl))
-                   ) + 1;
+                   );
         }
 
         public async Task RemoveListCacheAsync(Site site, Channel channel)
