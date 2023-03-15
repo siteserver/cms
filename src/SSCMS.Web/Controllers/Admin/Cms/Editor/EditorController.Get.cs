@@ -117,14 +117,35 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             var linkTypes = _pathManager.GetLinkTypeSelects(false);
             var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId));
-            if (content.LinkType == LinkType.LinkToChannel)
+
+            var linkTo = new LinkTo
             {
-                var channelIds = ListUtils.GetIntList(content.LinkUrl);
-                if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
+                ChannelIds = new List<int>(),
+                ContentId = 0,
+                ContentTitle = string.Empty
+            };
+            if (content.LinkType == Enums.LinkType.LinkToChannel)
+            {
+                linkTo.ChannelIds = ListUtils.GetIntList(content.LinkUrl);
+            }
+            else if (content.LinkType == Enums.LinkType.LinkToContent)
+            {
+                if (!string.IsNullOrEmpty(content.LinkUrl) && content.LinkUrl.IndexOf('_') != -1)
                 {
-                    var targetChannelId = channelIds[channelIds.Count - 1];
-                    var name = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, targetChannelId);
-                    content.Set("LinkToChannel", name);
+                    var arr = content.LinkUrl.Split('_');
+                    if (arr.Length == 2)
+                    {
+                        var channelIds = ListUtils.GetIntList(arr[0]);
+                        var contentId = TranslateUtils.ToInt(arr[1]);
+                        var channelId = channelIds.Count > 0 ? channelIds[channelIds.Count - 1] : 0;
+                        var linkToContent = await _contentRepository.GetAsync(site.Id, channelId, contentId);
+                        if (linkToContent != null)
+                        {
+                            linkTo.ChannelIds = channelIds;
+                            linkTo.ContentId = contentId;
+                            linkTo.ContentTitle = linkToContent.Title;
+                        }
+                    }
                 }
             }
 
@@ -153,6 +174,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 CheckedLevels = checkedLevels,
                 CheckedLevel = userCheckedLevel,
                 LinkTypes = linkTypes,
+                LinkTo = linkTo,
                 Root = root,
                 Settings = settings,
             };

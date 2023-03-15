@@ -60,6 +60,11 @@ var data = utils.init({
   tagNames: null,
   checkedLevels: null,
   linkTypes: null,
+  linkTo: {
+    channelIds: [],
+    contentId: 0,
+    contentTitle: '',
+  },
   root: null,
   styles: null,
   relatedFields: null,
@@ -129,6 +134,7 @@ var methods = {
         $this.tagNames = res.tagNames;
         $this.checkedLevels = res.checkedLevels;
         $this.linkTypes = res.linkTypes;
+        $this.linkTo = res.linkTo;
         $this.root = [res.root];
         $this.settings = res.settings;
         $this.censorSettings = _.assign({}, $this.censorSettings, res.settings.censorSettings, {
@@ -240,6 +246,7 @@ var methods = {
         contentId: this.contentId,
         content: this.form,
         translates: this.translates,
+        linkTo: this.linkTo,
         isScheduled: this.scheduledForm.isScheduled,
         scheduledDate: this.scheduledForm.scheduledDate,
       })
@@ -653,6 +660,7 @@ var methods = {
         contentId: this.contentId,
         content: this.form,
         translates: this.translates,
+        linkTo: this.linkTo,
         isScheduled: this.scheduledForm.isScheduled,
         scheduledDate: this.scheduledForm.scheduledDate,
       })
@@ -724,6 +732,19 @@ var methods = {
 
   runEditorLayerImage: function (attributeName, html) {
     this.insertEditor(attributeName, html);
+  },
+
+  runLayerContentSelect: function (content) {
+    this.linkTo.contentId = content.id;
+    this.linkTo.contentTitle = content.title;
+  },
+
+  getContentUrl: function() {
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId:  this.linkTo.channelIds[this.linkTo.channelIds.length - 1],
+      contentId: this.linkTo.contentId
+    });
   },
 
   insertText: function (attributeName, no, text) {
@@ -960,6 +981,18 @@ var methods = {
       }),
       width: 620,
       height: 400,
+    });
+  },
+
+  btnLinkToContentClick: function () {
+    var channelId = this.linkTo.channelIds[this.linkTo.channelIds.length - 1];
+    utils.openLayer({
+      title: "选择指定内容",
+      url: utils.getCmsUrl("layerContentSelect", {
+        siteId: this.siteId,
+        channelId: channelId,
+        contentId: this.contentId,
+      }),
     });
   },
 

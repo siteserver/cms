@@ -16,6 +16,9 @@ namespace SSCMS.Enums
         [DataEnum(DisplayName = "链接到指定栏目")] 
         LinkToChannel,
 
+        [DataEnum(DisplayName = "链接到指定内容")] 
+        LinkToContent,
+
         [DataEnum(DisplayName = "链接到第一条内容")] 
         LinkToFirstContent,
 

@@ -1,0 +1,60 @@
+﻿@page
+@{ Layout = "_Layout"; }
+
+<el-table
+  :data="pageContents"
+  style="width: 100%;"
+  size="small"
+  row-key="id"
+  stripe>
+  <el-table-column prop="id" label="内容Id" width="80"></el-table-column>
+  <el-table-column
+    label="内容标题"
+    show-overflow-tooltip>
+    <template slot-scope="scope">
+      <el-tooltip effect="light" content="点击选择此内容" placement="top">
+        <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" v-on:click.stop.native="btnContentClick(scope.row)"></el-link>
+      </el-tooltip>
+    </template>
+  </el-table-column>
+  <el-table-column prop="addDate" label="添加时间"  width="150"></el-table-column>
+  <el-table-column
+    fixed="right"
+    width="90"
+    align="center"
+    show-overflow-tooltip
+    label="状态">
+    <template slot-scope="scope">
+      <el-link size="mini" :underline="false" type="primary" :href="getContentUrl(scope.row)" target="_blank">
+        查看
+      </el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
+<el-row style="margin-top: 7px;">
+  <el-col :span="24" align="center">
+    <el-pagination
+      size="mini"
+      background
+      v-on:current-change="handleCurrentChange"
+      :current-page="page"
+      :page-size="pageSize"
+      layout="total, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+  </el-col>
+</el-row>
+
+<el-divider></el-divider>
+<el-row align="right" style="margin-right: 5px; margin-top: 10px;">
+  <el-col :span="24" align="right">
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
+  </el-col>
+</el-row>
+
+@section Scripts{
+<script src="/sitefiles/assets/js/admin/cms/layerContentSelect.js" type="text/javascript"></script> }

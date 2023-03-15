@@ -5,9 +5,6 @@ using SSCMS.Dto;
 using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Core.Services;
-using SSCMS.Models;
-using SSCMS.Enums;
-using System;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -50,10 +47,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 }
             }
 
+            if (content.LinkType == Enums.LinkType.None)
+            {
+                content.LinkUrl = request.Content.LinkUrl;
+            }
+            else if (content.LinkType == Enums.LinkType.LinkToChannel)
+            {
+                content.LinkUrl = ListUtils.ToString(request.LinkTo.ChannelIds);
+            }
+            else if (content.LinkType == Enums.LinkType.LinkToContent)
+            {
+                content.LinkUrl = ListUtils.ToString(request.LinkTo.ChannelIds) + "_" + request.LinkTo.ContentId;
+            }
+            else
+            {
+                content.LinkUrl = string.Empty;
+            }
+
             content.Id = await _contentRepository.InsertAsync(site, channel, content);
 
             if (request.IsScheduled)
-            {                
+            {
                 await _scheduledTaskRepository.InsertPublishAsync(content, request.ScheduledDate);
             }
 

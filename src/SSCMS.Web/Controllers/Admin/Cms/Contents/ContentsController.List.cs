@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            if (channel == null) return this.Error("无法确定内容对应的栏目");
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
 
             if (channel.IsPreviewContentsExists)
             {

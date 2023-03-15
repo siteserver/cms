@@ -328,6 +328,26 @@ namespace SSCMS.Core.Services
                 }
                 return url;
             }
+            else if (content.LinkType == LinkType.LinkToContent)
+            {
+                var url = PageUtils.UnClickableUrl;
+                if (!string.IsNullOrEmpty(content.LinkUrl) && content.LinkUrl.IndexOf('_') != -1)
+                {
+                    var arr = content.LinkUrl.Split('_');
+                    if (arr.Length == 2)
+                    {
+                        var channelIds = ListUtils.GetIntList(arr[0]);
+                        var contentId = TranslateUtils.ToInt(arr[1]);
+                        var channelId = channelIds.Count > 0 ? channelIds[channelIds.Count - 1] : 0;
+                        var linkToContent = await _contentRepository.GetAsync(site.Id, channelId, contentId);
+                        if (linkToContent != null)
+                        {
+                            url = await GetContentUrlAsync(site, linkToContent, false);
+                        }
+                    }
+                }
+                return url;
+            }
             else if (content.LinkType == LinkType.NoLink)
             {
                 return PageUtils.UnClickableUrl;
@@ -634,6 +654,7 @@ namespace SSCMS.Core.Services
             {
                 new Select<string>(LinkType.None),
                 new Select<string>(LinkType.LinkToChannel),
+                new Select<string>(LinkType.LinkToContent),
                 new Select<string>(LinkType.NoLink),
             };
         }

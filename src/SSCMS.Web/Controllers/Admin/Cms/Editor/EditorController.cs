@@ -107,6 +107,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public List<Select<int>> CheckedLevels { get; set; }
             public int CheckedLevel { get; set; }
             public IEnumerable<Select<string>> LinkTypes { get; set; }
+            public LinkTo LinkTo { get; set; }
             public Cascade<int> Root { get; set; }
             public Settings Settings { get; set; }
         }
@@ -124,6 +125,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public string Url { get; set; }
         }
 
+        public class LinkTo
+        {
+            public List<int> ChannelIds { get; set; }
+
+            public int ContentId { get; set; }
+
+            public string ContentTitle { get; set; }
+        }
+
         public class SubmitRequest
         {
             public int SiteId { get; set; }
@@ -131,6 +141,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public int ContentId { get; set; }
             public Content Content { get; set; }
             public List<Translate> Translates { get; set; }
+            public LinkTo LinkTo { get; set; }
             public bool IsScheduled { get; set; }
             public DateTime ScheduledDate { get; set; }
         }

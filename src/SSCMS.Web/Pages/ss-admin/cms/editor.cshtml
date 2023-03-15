@@ -169,24 +169,24 @@
                 <el-form-item v-if="form.linkType == 'None'" label="外部链接">
                   <el-input v-model="form.linkUrl" name="linkUrl" placeholder="设置后栏目链接将转向此地址" autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" data-vv-as="外部链接" v-validate="'url'"></el-input>
                 </el-form-item>
-                <el-form-item v-if="form.linkType == 'LinkToChannel'" label="指定栏目">
-                  <el-tag
-                    v-if="form.linkToChannel"
-                    closable
-                    size="small"
-                    v-on:close="form.linkToChannel = ''"
-                    type="primary">
-                    {{ form.linkToChannel }}
-                  </el-tag>
+                <el-form-item v-if="form.linkType == 'LinkToChannel' || form.linkType == 'LinkToContent'" label="指定栏目">
                   <el-cascader
-                    v-else
-                    v-model="form.linkUrl"
+                    v-model="linkTo.channelIds"
                     filterable
                     :options="root"
                     :props="{ checkStrictly: true }"
                     style="width: 100%;"
                     placeholder="请选择栏目">
                   </el-cascader>
+                </el-form-item>
+                <el-form-item v-if="form.linkType == 'LinkToContent' && linkTo.channelIds && linkTo.channelIds.length > 0" label="指定内容">
+                  <div style="clear: both;" v-if="linkTo.contentId > 0">
+                    <el-link type="primary" :underline="false" :href="getContentUrl()" v-html="linkTo.contentTitle" target="_blank"></el-link>
+                  </div>
+                  <div style="clear: both;"></div>
+                  <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnLinkToContentClick">
+                    指定内容
+                  </el-button>
                 </el-form-item>
               </el-form>
             </el-collapse-item>

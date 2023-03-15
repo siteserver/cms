@@ -65,11 +65,31 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             {
                 content.Checked = false;
                 content.CheckedLevel = CheckManager.LevelInt.ScheduledPublish;
+            }
 
-                await _scheduledTaskRepository.InsertPublishAsync(content, request.ScheduledDate);
+            if (content.LinkType == Enums.LinkType.None)
+            {
+                content.LinkUrl = request.Content.LinkUrl;
+            }
+            else if (content.LinkType == Enums.LinkType.LinkToChannel)
+            {
+                content.LinkUrl = ListUtils.ToString(request.LinkTo.ChannelIds);
+            }
+            else if (content.LinkType == Enums.LinkType.LinkToContent)
+            {
+                content.LinkUrl = ListUtils.ToString(request.LinkTo.ChannelIds) + "_" + request.LinkTo.ContentId;
+            }
+            else
+            {
+                content.LinkUrl = string.Empty;
             }
 
             await _contentRepository.UpdateAsync(site, channel, content);
+
+            if (request.IsScheduled)
+            {
+                await _scheduledTaskRepository.InsertPublishAsync(content, request.ScheduledDate);
+            }
 
             var channelNames = await _channelRepository.GetChannelNameNavigationAsync(content.SiteId, content.ChannelId);
             await _authManager.AddSiteLogAsync(content.SiteId, content.ChannelId, content.Id, "修改内容",
