@@ -116,11 +116,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
 
             var linkTypes = _pathManager.GetLinkTypeSelects(false);
-            var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId));
+            var root = await _channelRepository.GetCascadeAsync(site, await _channelRepository.GetAsync(request.SiteId), async summary =>
+            {
+                var count = await _contentRepository.GetCountAsync(site, summary);
+
+                return new
+                {
+                    Count = count
+                };
+            });
 
             var linkTo = new LinkTo
             {
-                ChannelIds = new List<int>(),
+                ChannelIds = new List<int> {
+                  request.SiteId,
+                },
                 ContentId = 0,
                 ContentTitle = string.Empty
             };

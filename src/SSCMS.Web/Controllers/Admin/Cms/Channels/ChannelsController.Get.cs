@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var styles = await GetStylesAsync(channel);
             var entity = new Entity(channel.ToDictionary());
             var relatedFields = new Dictionary<int, List<Cascade<int>>>();
-            
+
             foreach (var style in styles)
             {
                 if (style.InputType == InputType.Image ||
@@ -91,20 +91,43 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     entity.Set(style.AttributeName, channel.Get(style.AttributeName));
                 }
             }
-            if (channel.LinkType == LinkType.LinkToChannel)
-            {
-                var channelIds = ListUtils.GetIntList(channel.LinkUrl);
-                if (channelIds.Count > 0 && channelIds[channelIds.Count - 1] > 0)
-                {
-                    var targetChannelId = channelIds[channelIds.Count - 1];
-                    var name = await _channelRepository.GetChannelNameNavigationAsync(siteId, targetChannelId);
-                    entity.Set("LinkToChannel", name);
-                }
-            }
 
             var filePath = channel.FilePath;
             var channelFilePathRule = channel.ChannelFilePathRule;
             var contentFilePathRule = channel.ContentFilePathRule;
+
+            var linkTo = new LinkTo
+            {
+                ChannelIds = new List<int> {
+                  siteId,
+                },
+                ContentId = 0,
+                ContentTitle = string.Empty
+            };
+            if (channel.LinkType == Enums.LinkType.LinkToChannel)
+            {
+                linkTo.ChannelIds = ListUtils.GetIntList(channel.LinkUrl);
+            }
+            else if (channel.LinkType == Enums.LinkType.LinkToContent)
+            {
+                if (!string.IsNullOrEmpty(channel.LinkUrl) && channel.LinkUrl.IndexOf('_') != -1)
+                {
+                    var arr = channel.LinkUrl.Split('_');
+                    if (arr.Length == 2)
+                    {
+                        var channelIds = ListUtils.GetIntList(arr[0]);
+                        var linkContentId = TranslateUtils.ToInt(arr[1]);
+                        var linkChannelId = channelIds.Count > 0 ? channelIds[channelIds.Count - 1] : 0;
+                        var linkToContent = await _contentRepository.GetAsync(site.Id, linkChannelId, linkContentId);
+                        if (linkToContent != null)
+                        {
+                            linkTo.ChannelIds = channelIds;
+                            linkTo.ContentId = linkContentId;
+                            linkTo.ContentTitle = linkToContent.Title;
+                        }
+                    }
+                }
+            }
 
             return new GetResult
             {
@@ -113,7 +136,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                 RelatedFields = relatedFields,
                 FilePath = filePath,
                 ChannelFilePathRule = channelFilePathRule,
-                ContentFilePathRule = contentFilePathRule
+                ContentFilePathRule = contentFilePathRule,
+                LinkTo = linkTo,
             };
         }
     }

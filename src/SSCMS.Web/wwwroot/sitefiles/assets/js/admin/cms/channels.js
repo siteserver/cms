@@ -86,7 +86,7 @@ var methods = {
     $api.get($url + '/' + this.siteId + '/' + channelId).then(function (response) {
       var res = response.data;
 
-      $this.form = _.assign({}, res.entity);
+      $this.form = _.assign({}, res.entity, res.linkTo);
       if (!$this.form.groupNames) {
         $this.form.groupNames = [];
       }
@@ -247,6 +247,19 @@ var methods = {
     this.insertEditor(attributeName, html);
   },
 
+  runLayerContentSelect: function (content) {
+    this.form.contentId = content.id;
+    this.form.contentTitle = content.title;
+  },
+
+  getContentUrl: function() {
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId:  this.form.channelIds[this.form.channelIds.length - 1],
+      contentId: this.form.contentId
+    });
+  },
+
   insertText: function(attributeName, no, text) {
     var count = this.form[utils.getCountName(attributeName)] || 0;
     if (count <= no) {
@@ -296,6 +309,18 @@ var methods = {
       url: url,
       width: 800,
       height: 550
+    });
+  },
+
+  btnLinkToContentClick: function () {
+    var channelId = this.form.channelIds[this.form.channelIds.length - 1];
+    utils.openLayer({
+      title: "选择指定内容",
+      url: utils.getCmsUrl("layerContentSelect", {
+        siteId: this.siteId,
+        channelId: channelId,
+        contentId: 0,
+      }),
     });
   },
 

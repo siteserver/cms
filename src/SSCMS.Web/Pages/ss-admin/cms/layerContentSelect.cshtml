@@ -12,7 +12,7 @@
     label="内容标题"
     show-overflow-tooltip>
     <template slot-scope="scope">
-      <el-tooltip effect="light" content="点击选择此内容" placement="top">
+      <el-tooltip content="点击选择此内容" placement="top">
         <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" v-on:click.stop.native="btnContentClick(scope.row)"></el-link>
       </el-tooltip>
     </template>

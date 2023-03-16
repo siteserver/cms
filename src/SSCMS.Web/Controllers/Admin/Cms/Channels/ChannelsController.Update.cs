@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsController
     {
         [HttpPost, Route(RouteUpdate)]
-        public async Task<ActionResult<List<int>>> Update([FromBody] Channel request)
+        public async Task<ActionResult<List<int>>> Update([FromBody] UpdateRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Channels))
@@ -115,7 +115,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             channel.ChannelTemplateId = request.ChannelTemplateId;
             channel.ContentTemplateId = request.ContentTemplateId;
             channel.LinkType = request.LinkType;
-            channel.LinkUrl = request.LinkUrl;
+            if (channel.LinkType == Enums.LinkType.None)
+            {
+                channel.LinkUrl = request.LinkUrl;
+            }
+            else if (channel.LinkType == Enums.LinkType.LinkToChannel)
+            {
+                channel.LinkUrl = ListUtils.ToString(request.ChannelIds);
+            }
+            else if (channel.LinkType == Enums.LinkType.LinkToContent)
+            {
+                channel.LinkUrl = ListUtils.ToString(request.ChannelIds) + "_" + request.ContentId;
+            }
+            else
+            {
+                channel.LinkUrl = string.Empty;
+            }
             channel.DefaultTaxisType = request.DefaultTaxisType;
             channel.FilePath = request.FilePath;
             channel.ChannelFilePathRule = request.ChannelFilePathRule;

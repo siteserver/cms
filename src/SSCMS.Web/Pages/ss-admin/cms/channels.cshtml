@@ -476,24 +476,41 @@
       <el-form-item v-if="form.linkType == 'None'" label="外部链接">
         <el-input v-model="form.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
       </el-form-item>
-      <el-form-item v-if="form.linkType == 'LinkToChannel'" label="指定栏目" prop="linkUrl" :rules="{ required: true, message: '请选择链接到指定栏目' }">
-        <el-tag
-          v-if="form.linkToChannel"
-          closable
-          size="small"
-          v-on:close="form.linkToChannel = ''"
-          type="primary">
-          {{ form.linkToChannel }}
-        </el-tag>
+      <el-form-item
+        v-if="form.linkType == 'LinkToChannel' || form.linkType == 'LinkToContent'" 
+        label="指定栏目"
+        prop="channelIds"
+        :rules="[{ required: true, message: '请选择栏目' }]"
+        >
         <el-cascader
-          v-else
-          v-model="form.linkUrl"
+          v-model="form.channelIds"
           filterable
           :options="root"
           :props="{ checkStrictly: true }"
+          filterable 
+          v-on:change="form.contentId = 0; form.contentTitle = '';"
           style="width: 100%;"
           placeholder="请选择栏目">
+          <template slot-scope="{ node, data }">
+            <span>{{ data.label }}</span>
+            <span> ({{ data.count }}) </span>
+          </template>
         </el-cascader>
+      </el-form-item>
+      <el-form-item 
+        v-if="form.linkType == 'LinkToContent' && form.channelIds && form.channelIds.length > 0" 
+        label="指定内容"
+        prop="contentTitle"
+        :rules="[{ required: true, message: '请选择内容' }]"
+        >
+        <template v-if="form.contentId > 0">
+          <el-link type="primary" :underline="false" :href="getContentUrl()" v-html="form.contentTitle" target="_blank"></el-link>
+          <div style="clear: both;"></div>
+        </template>
+        
+        <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnLinkToContentClick">
+          指定内容
+        </el-button>
       </el-form-item>
       <el-form-item label="新增内容排序规则">
         <el-tooltip effect="light" content="新增或导入的内容将按照此排序规则进行排序" placement="right">

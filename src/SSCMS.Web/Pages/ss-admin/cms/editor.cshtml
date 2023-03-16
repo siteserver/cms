@@ -160,7 +160,7 @@
 
             </el-collapse-item>
             <el-collapse-item title="内容链接" name="link">
-              <el-form v-on:submit.native.prevent size="small">
+              <el-form ref="linkToForm" :model="linkTo" v-on:submit.native.prevent size="small">
                 <el-form-item label="链接类型">
                   <el-select v-model="form.linkType" placeholder="请选择链接类型" v-on:change="form.linkUrl = form.linkToChannel = '';">
                     <el-option v-for="linkType in linkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
@@ -169,17 +169,33 @@
                 <el-form-item v-if="form.linkType == 'None'" label="外部链接">
                   <el-input v-model="form.linkUrl" name="linkUrl" placeholder="设置后栏目链接将转向此地址" autosize :autosize="{ minRows: 2, maxRows: 4}" type="textarea" data-vv-as="外部链接" v-validate="'url'"></el-input>
                 </el-form-item>
-                <el-form-item v-if="form.linkType == 'LinkToChannel' || form.linkType == 'LinkToContent'" label="指定栏目">
+                <el-form-item
+                  v-if="form.linkType == 'LinkToChannel' || form.linkType == 'LinkToContent'" 
+                  label="指定栏目"
+                  prop="channelIds"
+                  :rules="[{ required: true, message: '请选择栏目' }]"
+                  >
                   <el-cascader
                     v-model="linkTo.channelIds"
                     filterable
                     :options="root"
                     :props="{ checkStrictly: true }"
+                    filterable 
+                    v-on:change="linkTo.contentId = 0; linkTo.contentTitle = '';"
                     style="width: 100%;"
                     placeholder="请选择栏目">
+                    <template slot-scope="{ node, data }">
+                      <span>{{ data.label }}</span>
+                      <span> ({{ data.count }}) </span>
+                    </template>
                   </el-cascader>
                 </el-form-item>
-                <el-form-item v-if="form.linkType == 'LinkToContent' && linkTo.channelIds && linkTo.channelIds.length > 0" label="指定内容">
+                <el-form-item 
+                  v-if="form.linkType == 'LinkToContent' && linkTo.channelIds && linkTo.channelIds.length > 0" 
+                  label="指定内容"
+                  prop="contentTitle"
+                  :rules="[{ required: true, message: '请选择内容' }]"
+                  >
                   <div style="clear: both;" v-if="linkTo.contentId > 0">
                     <el-link type="primary" :underline="false" :href="getContentUrl()" v-html="linkTo.contentTitle" target="_blank"></el-link>
                   </div>

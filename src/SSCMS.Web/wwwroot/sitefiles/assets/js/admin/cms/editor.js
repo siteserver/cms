@@ -902,8 +902,12 @@ var methods = {
     this.syncEditors();
     this.$refs.form.validate(function (valid) {
       if (valid) {
-        $this.censorSettings.isCensorPassed = $this.spellSettings.isSpellPassed = false;
-        $this.apiSave();
+        $this.$refs.linkToForm.validate(function(valid) {
+          if (valid) {
+            $this.censorSettings.isCensorPassed = $this.spellSettings.isSpellPassed = false;
+            $this.apiSave();
+          }
+        });
       }
     });
   },

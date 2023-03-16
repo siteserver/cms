@@ -644,6 +644,7 @@ namespace SSCMS.Core.Services
                   new Select<string>(LinkType.None),
                   new Select<string>(LinkType.LinkToFirstChannel),
                   new Select<string>(LinkType.LinkToChannel),
+                  new Select<string>(LinkType.LinkToContent),
                   new Select<string>(LinkType.LinkToFirstContent),
                   new Select<string>(LinkType.LinkToOnlyOneContent),
                   new Select<string>(LinkType.NoLink),
