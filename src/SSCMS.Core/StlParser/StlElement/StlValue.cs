@@ -158,20 +158,20 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private static async Task<object> ParseAsync(IParseManager parseManager, string type, string format, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper)
         {
+            var parsedContent = string.Empty;
+
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            if (string.IsNullOrEmpty(type)) return string.Empty;
-
-            var parsedContent = string.Empty;
-
-            if (contextInfo.ContextType == ParseType.Each)
+            if (string.IsNullOrEmpty(type))
             {
-                parsedContent = contextInfo.ItemContainer.EachItem.Value as string;
-                return parsedContent;
+                if (contextInfo.ContextType == ParseType.Each)
+                {
+                    parsedContent = contextInfo.ItemContainer.EachItem.Value as string;
+                    parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
+                }
             }
-
-            if (StringUtils.EqualsIgnoreCase(type, TypeDate))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
             {
                 if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
                 {

@@ -132,14 +132,20 @@ SSCMS 产品将每隔两月发布新的正式版本，我们将在每次迭代�
 
 ## 问题与建议
 
-如果发现任何 BUG 以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues) 或者  [Gitee Issues](https://gitee.com/siteserver/cms/issues)。
+如果发现任何 BUG 以及对产品使用的问题与建议，请提交至 [Github Issues](https://github.com/siteserver/cms/issues) 或者 [Gitee Issues](https://gitee.com/siteserver/cms/issues)。
 
 ## 关注最新动态
 
 [![qrcode](https://sscms.com/assets/images/qrcode_for_wx.jpg)](https://sscms.com/)
 
+## 特别声明
+
+SSCMS 项目已加入 [dotNET China](https://gitee.com/dotnetchina)  组织。<br/>
+
+![dotnetchina](https://gitee.com/dotnetchina/home/raw/master/assets/dotnetchina-raw.png "dotNET China LOGO")
+
 ## License
 
 [GNU Affero General Public License v3.0](LICENSE)
 
-Copyright (C) 2003-2022 SSCMS
+Copyright (C) 2003-2023 SSCMS

@@ -226,7 +226,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                     }
                 }
-                else if (contextType == ParseType.Channel) //获取栏目图片
+                else if (contextType == ParseType.Channel)
                 {
                     var dataManager = new StlDataManager(parseManager.DatabaseManager);
                     var channelId = await dataManager.GetChannelIdByLevelAsync(pageInfo.SiteId, contextInfo.ChannelId,
@@ -245,6 +245,18 @@ namespace SSCMS.Core.StlParser.StlElement
                     {
                         var extendName = ColumnsManager.GetExtendName(type, no - 1);
                         picUrl = channel.Get<string>(extendName);
+                    }
+                }
+                else if (contextType == ParseType.Site)
+                {
+                    if (no <= 1)
+                    {
+                        picUrl = pageInfo.Site.Get<string>(type);
+                    }
+                    else
+                    {
+                        var extendName = ColumnsManager.GetExtendName(type, no - 1);
+                        picUrl = pageInfo.Site.Get<string>(extendName);
                     }
                 }
                 else if (contextType == ParseType.Each)
