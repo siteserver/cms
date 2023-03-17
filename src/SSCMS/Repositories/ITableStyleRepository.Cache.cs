@@ -10,9 +10,15 @@ namespace SSCMS.Repositories
 
         Task<List<TableStyle>> GetSiteStylesAsync(int siteId);
 
+        Task<TableStyle> GetSiteStyleAsync(int siteId, string attributeName);
+
         Task<List<TableStyle>> GetChannelStylesAsync(Channel channel);
 
+        Task<TableStyle> GetChannelStyleAsync(Channel channel, string attributeName);
+
         Task<List<TableStyle>> GetContentStylesAsync(Site site, Channel channel);
+
+        Task<TableStyle> GetContentStyleAsync(Site site, Channel channel, string attributeName);
 
         Task<List<TableStyle>> GetUserStylesAsync();
 

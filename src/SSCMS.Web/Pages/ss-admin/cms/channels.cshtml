@@ -278,13 +278,13 @@
   <div class="drawer__content">
     <el-form v-on:submit.native.prevent ref="appendForm" :model="appendForm" size="small" label-width="120px">
       <el-form-item label="父栏目" prop="parentIds" :rules="{ required: true, message: '请选择父栏目' }">
-        <el-cascader
+        <el-cascader-panel
           v-model="appendForm.parentIds"
           :options="root"
           :props="{ checkStrictly: true }"
           style="width: 100%;"
           placeholder="请选择父栏目">
-        </el-cascader>
+        </el-cascader-panel>
       </el-form-item>
       <el-form-item label="栏目" prop="channels" :rules="{ required: true, message: '请输入栏目名称' }">
         <el-input v-model="appendForm.channels" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}" placeholder="栏目之间用换行分割，下级栏目在栏目前添加“-”字符，索引可以放到括号中，如：&#10;栏目一(栏目索引)&#10;-下级栏目(下级索引)&#10;--下下级栏目"></el-input>
@@ -507,7 +507,6 @@
           <el-link type="primary" :underline="false" :href="getContentUrl()" v-html="form.contentTitle" target="_blank"></el-link>
           <div style="clear: both;"></div>
         </template>
-        
         <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnLinkToContentClick">
           指定内容
         </el-button>

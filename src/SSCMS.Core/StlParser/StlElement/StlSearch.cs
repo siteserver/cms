@@ -71,6 +71,18 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否默认显示全部内容")]
         public const string IsDefaultDisplay = nameof(IsDefaultDisplay);
 
+        [StlAttribute(Title = "动态请求发送前执行的JS代码")]
+        private const string OnBeforeSend = nameof(OnBeforeSend);
+
+        [StlAttribute(Title = "动态请求成功后执行的JS代码")]
+        private const string OnSuccess = nameof(OnSuccess);
+
+        [StlAttribute(Title = "动态请求结束后执行的JS代码")]
+        private const string OnComplete = nameof(OnComplete);
+
+        [StlAttribute(Title = "动态请求失败后执行的JS代码")]
+        private const string OnError = nameof(OnError);
+
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var pageInfo = parseManager.PageInfo;
@@ -92,6 +104,10 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageNum = 0;
             var isHighlight = true;
             var isDefaultDisplay = false;
+            var onBeforeSend = string.Empty;
+            var onSuccess = string.Empty;
+            var onComplete = string.Empty;
+            var onError = string.Empty;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -161,6 +177,22 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isDefaultDisplay = TranslateUtils.ToBool(value);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, OnBeforeSend))
+                {
+                    onBeforeSend = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, OnSuccess))
+                {
+                    onSuccess = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, OnComplete))
+                {
+                    onComplete = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, OnError))
+                {
+                    onError = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                }
             }
 
             StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
@@ -225,6 +257,8 @@ jQuery(document).ready(function(){{
             parameters['page'] = 1;
         }}
 
+        {onBeforeSend}
+
         jQuery.support.cors = true;
         jQuery.ajax({{
             url: url,
@@ -237,11 +271,15 @@ jQuery(document).ready(function(){{
                 jQuery(""#{elementId} .stl_yes"").show();
                 jQuery(""#{elementId} .stl_no"").hide();
                 jQuery(""#{elementId} .stl_yes"").html(res.value);
+                {onSuccess}
+                {onComplete}
             }},
             error: function(e) {{
                 jQuery(""#{elementId} .stl_loading"").hide();
                 jQuery(""#{elementId} .stl_yes"").hide();
                 jQuery(""#{elementId} .stl_no"").show();
+                {onError}
+                {onComplete}
             }}
         }});
     }} else {{

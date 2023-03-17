@@ -84,6 +84,23 @@ namespace Datory.Utils
             return list;
         }
 
+        public static List<string> GetStringList(string collection, string split)
+        {
+            var list = new List<string>();
+            if (!string.IsNullOrEmpty(collection))
+            {
+                var array = collection.Split(split);
+                foreach (var s in array)
+                {
+                    if (!string.IsNullOrEmpty(s))
+                    {
+                        list.Add(s);
+                    }
+                }
+            }
+            return list;
+        }
+
         public static List<string> GetStringList(IEnumerable<string> collection)
         {
             return collection == null ? new List<string>() : new List<string>(collection);
