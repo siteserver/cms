@@ -42,15 +42,41 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 if (string.IsNullOrWhiteSpace(value)) continue;
 
                 var title = string.Empty;
+                var body = string.Empty;
                 var attributes = new NameValueCollection();
+                
                 if (value.Contains('(') && value.Contains(')'))
                 {
                     var length = value.IndexOf(')') - value.IndexOf('(') - 1;
                     if (length > 0)
                     {
                         var separateString = value.Substring(value.IndexOf('(') + 1, length);
-                        attributes = TranslateUtils.ToNameValueCollection(separateString);
+                        if (StringUtils.Contains(separateString, "="))
+                        {
+                            attributes = TranslateUtils.ToNameValueCollection(separateString);
+                        }
+                        else
+                        {
+                            body = separateString;
+                        }
                         title = value.Substring(0, value.IndexOf('('));
+                    }
+                }
+                else if (value.Contains('（') && value.Contains('）'))
+                {
+                    var length = value.IndexOf('）') - value.IndexOf('（') - 1;
+                    if (length > 0)
+                    {
+                        var separateString = value.Substring(value.IndexOf('（') + 1, length);
+                        if (StringUtils.Contains(separateString, "="))
+                        {
+                            attributes = TranslateUtils.ToNameValueCollection(separateString);
+                        }
+                        else
+                        {
+                            body = separateString;
+                        }
+                        title = value.Substring(0, value.IndexOf('（'));
                     }
                 }
                 if (string.IsNullOrWhiteSpace(title))
@@ -69,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     CheckedLevel = request.CheckedLevel,
                     Title = StringUtils.Trim(title),
                     ImageUrl = string.Empty,
-                    Body = string.Empty
+                    Body = body
                 };
                 foreach (string key in attributes.Keys)
                 {
