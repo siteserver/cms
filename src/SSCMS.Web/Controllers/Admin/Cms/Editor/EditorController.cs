@@ -110,6 +110,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public LinkTo LinkTo { get; set; }
             public Cascade<int> Root { get; set; }
             public Settings Settings { get; set; }
+            public List<Select<int>> BreadcrumbItems { get; set; }
         }
 
         public class PreviewRequest

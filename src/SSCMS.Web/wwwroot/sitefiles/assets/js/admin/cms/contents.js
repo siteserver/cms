@@ -441,7 +441,6 @@ var methods = {
   },
 
   btnChannelClick: function(data) {
-    console.log(data);
     if (data.disabled) return;
     this.channelId = data.value;
     this.apiList(data.value, 1);

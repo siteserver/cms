@@ -70,6 +70,7 @@ var data = utils.init({
   relatedFields: null,
   templates: null,
   form: null,
+  breadcrumbItems: [],
   translates: [],
   isPreviewSaving: false,
   isScheduledDialog: false,
@@ -148,6 +149,7 @@ var methods = {
         $this.relatedFields = res.relatedFields;
         $this.templates = res.templates;
         $this.form = _.assign({}, res.content);
+        $this.breadcrumbItems = res.breadcrumbItems;
 
         if (!$this.form.addDate) {
           $this.form.addDate = new Date().Format("yyyy-MM-dd hh:mm:ss");
@@ -261,6 +263,13 @@ var methods = {
       .then(function () {
         utils.loading($this, false);
       });
+  },
+
+  getChannelUrl: function(data) {
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId: data.value
+    });
   },
 
   getText: function (isCensor, isSpell) {

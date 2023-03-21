@@ -169,6 +169,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 CloudType = await _cloudManager.GetCloudTypeAsync(),
             };
 
+            var breadcrumbItems = new List<Select<int>>();
+            if (channel.ParentsPath != null && channel.ParentsPath.Count > 0)
+            {
+                foreach (var channelId in channel.ParentsPath)
+                {
+                    var channelName = await _channelRepository.GetChannelNameAsync(request.SiteId, channelId);
+                    if (string.IsNullOrEmpty(channelName)) continue;
+                    
+                    breadcrumbItems.Add(new Select<int>
+                    {
+                        Value = channelId,
+                        Label = channelName,
+                    });
+                }
+            }
+            breadcrumbItems.Add(new Select<int>
+            {
+                Value = channel.Id,
+                Label = channel.ChannelName,
+            });
+
             return new GetResult
             {
                 CSRFToken = _authManager.GetCSRFToken(),
@@ -187,6 +208,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 LinkTo = linkTo,
                 Root = root,
                 Settings = settings,
+                BreadcrumbItems = breadcrumbItems,
             };
         }
     }

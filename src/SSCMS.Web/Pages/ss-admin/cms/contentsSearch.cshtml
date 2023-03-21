@@ -288,6 +288,20 @@
     <div style="height: 10px"></div>
 
     @await Html.PartialAsync("_PartialContents")
+
+    <el-row style="margin-top: 7px;">
+      <el-col :span="24" align="center">
+        <el-pagination
+        size="mini"
+        background
+        v-on:current-change="handleCurrentChange"
+        :current-page="page"
+        :page-size="pageSize"
+        layout="total, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
+      </el-col>
+    </el-row>
   </el-main>
 </el-container>
 

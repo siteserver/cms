@@ -45,6 +45,9 @@
       color: #bcc0c7;
       cursor: not-allowed;
     }
+    .el-breadcrumb__inner a, .el-breadcrumb__inner.is-link {
+      font-weight: normal;
+    }
   </style>
 }
 
@@ -190,6 +193,25 @@
       <div style="height: 10px;"></div>
 
       @await Html.PartialAsync("_PartialContents")
+
+      <el-row style="margin-top: 7px;">
+        <el-col :span="12" align="left">
+          <el-breadcrumb style="margin-top: 5px;">
+            <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.value"><a v-if="item.value" href="javascript:;" v-on:click="btnChannelClick(item)">{{ item.label }}</a><span v-else>{{ item.label }}</span></el-breadcrumb-item>
+          </el-breadcrumb>
+        </el-col>
+        <el-col :span="12" align="right">
+          <el-pagination
+          size="mini"
+          background
+          v-on:current-change="handleCurrentChange"
+          :current-page="page"
+          :page-size="pageSize"
+          layout="total, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+        </el-col>
+      </el-row>
     </el-main>
   </el-container>
 </el-container>

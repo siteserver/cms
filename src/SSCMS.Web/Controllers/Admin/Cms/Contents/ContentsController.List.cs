@@ -133,7 +133,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     });
                 }
             }
-
             breadcrumbItems.Add(new Enable<int>
             {
                 Value = 0,
