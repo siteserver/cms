@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -115,6 +116,31 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
             columns.Remove(titleColumn);
 
+            var breadcrumbItems = new List<Enable<int>>();
+            if (channel.ParentsPath != null && channel.ParentsPath.Count > 0)
+            {
+                foreach (var channelId in channel.ParentsPath)
+                {
+                    var channelName = await _channelRepository.GetChannelNameAsync(request.SiteId, channelId);
+                    if (string.IsNullOrEmpty(channelName)) continue;
+                    
+                    var disabled = !await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, MenuUtils.ContentPermissions.View);
+                    breadcrumbItems.Add(new Enable<int>
+                    {
+                        Value = channelId,
+                        Label = channelName,
+                        Disabled = disabled,
+                    });
+                }
+            }
+
+            breadcrumbItems.Add(new Enable<int>
+            {
+                Value = 0,
+                Label = channel.ChannelName,
+                Disabled = false,
+            });
+
             return new ListResult
             {
                 PageContents = pageContents,
@@ -126,7 +152,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 CheckedLevels = checkedLevels,
                 Permissions = permissions,
                 ContentMenus = contentMenus,
-                ContentsMenus = contentsMenus
+                ContentsMenus = contentsMenus,
+                BreadcrumbItems = breadcrumbItems,
             };
         }
     }

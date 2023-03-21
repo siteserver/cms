@@ -100,6 +100,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public Permissions Permissions { get; set; }
             public List<Menu> ContentMenus { get; set; }
             public List<Menu> ContentsMenus { get; set; }
+            public List<Enable<int>> BreadcrumbItems { get; set; }
         }
 
         public class TreeRequest : SiteRequest

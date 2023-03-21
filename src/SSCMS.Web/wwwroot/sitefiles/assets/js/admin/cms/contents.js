@@ -21,12 +21,11 @@ var data = utils.init({
   permissions: null,
   contentMenus: null,
   contentsMenus: null,
-
   asideHeight: 0,
   tableMaxHeight: 0,
   multipleSelection: [],
-
   checkedColumns: [],
+  breadcrumbItems: [],
 
   searchForm: {
     searchType: 'Title',
@@ -103,6 +102,7 @@ var methods = {
       $this.contentsMenus = res.contentsMenus;
       $this.expendedChannelIds = [$this.siteId, channelId];
       $this.searchForm.isAllContents = res.isAllContents;
+      $this.breadcrumbItems = res.breadcrumbItems;
 
       if (message) {
         utils.success(message);
@@ -441,6 +441,7 @@ var methods = {
   },
 
   btnChannelClick: function(data) {
+    console.log(data);
     if (data.disabled) return;
     this.channelId = data.value;
     this.apiList(data.value, 1);
