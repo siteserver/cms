@@ -95,7 +95,7 @@ namespace SSCMS.Core.Services
             var webUrl = await GetWebUrlAsync(site);
             if (!string.IsNullOrEmpty(webUrl) && webUrl != "/")
             {
-                StringUtils.ReplaceHrefOrSrc(builder, webUrl, "@");
+                StringUtils.ReplaceHrefOrSrc(builder, webUrl, "@/");
             }
             //if (!string.IsNullOrEmpty(url))
             //{
@@ -105,11 +105,11 @@ namespace SSCMS.Core.Services
             var localUrl = await GetSiteUrlAsync(site, true);
             if (!string.IsNullOrEmpty(localUrl) && localUrl != "/")
             {
-                StringUtils.ReplaceHrefOrSrc(builder, localUrl, "@");
+                StringUtils.ReplaceHrefOrSrc(builder, localUrl, "@/");
             }
 
             var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
-            StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
+            StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@/");
 
             builder.Replace("@'@", "'@");
             builder.Replace("@\"@", "\"@");
