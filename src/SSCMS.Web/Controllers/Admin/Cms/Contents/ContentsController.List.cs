@@ -116,7 +116,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
             columns.Remove(titleColumn);
 
-            var breadcrumbItems = new List<Enable<int>>();
+            var breadcrumbItems = new List<Select<int>>();
             if (channel.ParentsPath != null && channel.ParentsPath.Count > 0)
             {
                 foreach (var channelId in channel.ParentsPath)
@@ -124,20 +124,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     var channelName = await _channelRepository.GetChannelNameAsync(request.SiteId, channelId);
                     if (string.IsNullOrEmpty(channelName)) continue;
                     
-                    var disabled = !await _authManager.HasContentPermissionsAsync(request.SiteId, channelId, MenuUtils.ContentPermissions.View);
-                    breadcrumbItems.Add(new Enable<int>
+                    breadcrumbItems.Add(new Select<int>
                     {
                         Value = channelId,
                         Label = channelName,
-                        Disabled = disabled,
                     });
                 }
             }
-            breadcrumbItems.Add(new Enable<int>
+            breadcrumbItems.Add(new Select<int>
             {
-                Value = 0,
+                Value = channel.Id,
                 Label = channel.ChannelName,
-                Disabled = false,
             });
 
             return new ListResult

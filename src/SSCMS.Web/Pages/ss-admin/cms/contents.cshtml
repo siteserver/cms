@@ -48,6 +48,9 @@
     .el-breadcrumb__inner a, .el-breadcrumb__inner.is-link {
       font-weight: normal;
     }
+    .el-breadcrumb__item:last-child .el-breadcrumb__inner, .el-breadcrumb__item:last-child .el-breadcrumb__inner a, .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover {
+      cursor: pointer;
+    }
   </style>
 }
 
@@ -197,7 +200,7 @@
       <el-row style="margin-top: 7px;">
         <el-col :span="12" align="left">
           <el-breadcrumb style="margin-top: 5px;">
-            <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.value"><a v-if="item.value" href="javascript:;" v-on:click="btnChannelClick(item)">{{ item.label }}</a><span v-else>{{ item.label }}</span></el-breadcrumb-item>
+            <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.value"><a :href="getChannelUrl(item)" target="_blank">{{ item.label }}</a></el-breadcrumb-item>
           </el-breadcrumb>
         </el-col>
         <el-col :span="12" align="right">
