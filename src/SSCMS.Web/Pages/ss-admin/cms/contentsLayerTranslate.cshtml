@@ -52,8 +52,13 @@
       v-model="form.transChannelIds"
       :options="transChannels"
       :props="{ checkStrictly: true }"
-      filterable 
+      filterable
+      clearable
       placeholder="请选择栏目">
+      <template slot-scope="{ node, data }">
+        <span>{{ data.label }}</span>
+        <span> ({{ data.count }}) </span>
+      </template>
     </el-cascader>
   </el-form-item>
 </el-form>

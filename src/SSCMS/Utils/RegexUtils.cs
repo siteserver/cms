@@ -35,7 +35,7 @@ namespace SSCMS.Utils
 
         public static List<string> GetTagInnerContents(string tagName, string html)
         {
-            string regex = $"<{tagName}\\s+[^><]*>\\s*(?<content>[\\s\\S]+?)\\s*</{tagName}>";
+            string regex = $"<{tagName}\\s*[^><]*>\\s*(?<content>[\\s\\S]+?)\\s*</{tagName}>";
             return GetContents("content", regex, html);
         }
 

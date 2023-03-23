@@ -96,6 +96,7 @@
   /* .el-loading-mask.is-fullscreen, .el-loading-mask {z-index: 2001 !important;} */
   .el-breadcrumb__inner a, .el-breadcrumb__inner.is-link {
     font-weight: normal;
+    color: #999;
   }
   .el-breadcrumb__item:last-child .el-breadcrumb__inner, .el-breadcrumb__item:last-child .el-breadcrumb__inner a, .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover {
     cursor: pointer;
@@ -188,10 +189,10 @@
                   >
                   <el-cascader
                     v-model="linkTo.channelIds"
-                    filterable
                     :options="root"
                     :props="{ checkStrictly: true }"
-                    filterable 
+                    filterable
+                    clearable
                     v-on:change="linkTo.contentId = 0; linkTo.contentTitle = '';"
                     style="width: 100%;"
                     placeholder="请选择栏目">
