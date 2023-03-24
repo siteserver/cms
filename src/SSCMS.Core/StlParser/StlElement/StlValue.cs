@@ -72,6 +72,7 @@ namespace SSCMS.Core.StlParser.StlElement
         public static string TypeLoginUrl = "LoginUrl";
         public static string TypeRegisterUrl = "RegisterUrl";
         public static string TypeLogoutUrl = "LogoutUrl";
+        public static string TypeItemIndex = "ItemIndex";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
@@ -170,6 +171,11 @@ namespace SSCMS.Core.StlParser.StlElement
                     parsedContent = contextInfo.ItemContainer.EachItem.Value as string;
                     parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
                 }
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, TypeItemIndex))
+            {
+                var itemIndex = StlParserUtility.GetItemIndex(contextInfo);
+                parsedContent = itemIndex.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
             {
