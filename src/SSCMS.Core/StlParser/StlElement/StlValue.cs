@@ -57,22 +57,22 @@ namespace SSCMS.Core.StlParser.StlElement
 
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
-
+        
+        public const string TypeItemIndex = "ItemIndex";
         public const string TypeDate = "Date";
         public const string TypeDateOfTraditional = "DateOfTraditional";
-        public static string TypeSiteId = "SiteId";
-        public static string TypeSiteDir = "SiteDir";
-        public static string TypeSiteName = "SiteName";
-        public static string TypeSiteUrl = "SiteUrl";
-        public static string TypeRootUrl = "RootUrl";
-        public static string TypeApiUrl = "ApiUrl";
-        public static string TypeCurrentUrl = "CurrentUrl";
-        public static string TypeChannelUrl = "ChannelUrl";
-        public static string TypeHomeUrl = "HomeUrl";
-        public static string TypeLoginUrl = "LoginUrl";
-        public static string TypeRegisterUrl = "RegisterUrl";
-        public static string TypeLogoutUrl = "LogoutUrl";
-        public static string TypeItemIndex = "ItemIndex";
+        public const string TypeSiteId = "SiteId";
+        public const string TypeSiteDir = "SiteDir";
+        public const string TypeSiteName = "SiteName";
+        public const string TypeSiteUrl = "SiteUrl";
+        public const string TypeRootUrl = "RootUrl";
+        public const string TypeApiUrl = "ApiUrl";
+        public const string TypeCurrentUrl = "CurrentUrl";
+        public const string TypeChannelUrl = "ChannelUrl";
+        public const string TypeHomeUrl = "HomeUrl";
+        public const string TypeLoginUrl = "LoginUrl";
+        public const string TypeRegisterUrl = "RegisterUrl";
+        public const string TypeLogoutUrl = "LogoutUrl";
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {

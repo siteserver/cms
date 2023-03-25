@@ -13,7 +13,7 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item v-if="typeof siteId !== 'undefined'" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'uploadedImages'}">已上传图片</el-dropdown-item>
             <el-dropdown-item :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'materialImages'}">素材库图片</el-dropdown-item>
-            <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'cloudImages'}">免版权图库</el-dropdown-item>
+            <!-- <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'cloudImages'}">免版权图库</el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
         <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
@@ -40,7 +40,7 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-if="typeof siteId !== 'undefined'" :command="{inputType: style.inputType, attributeName: style.attributeName, no: n, type: 'uploadedImages'}">已上传图片</el-dropdown-item>
               <el-dropdown-item :command="{inputType: style.inputType, attributeName: style.attributeName, no: n, type: 'materialImages'}">素材库图片</el-dropdown-item>
-              <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: n, type: 'cloudImages'}">免版权图库</el-dropdown-item>
+              <!-- <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: n, type: 'cloudImages'}">免版权图库</el-dropdown-item> -->
             </el-dropdown-menu>
           </el-dropdown>
           <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.getExtendName(style.attributeName, n)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, n)">
@@ -169,7 +169,7 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item v-if="typeof siteId !== 'undefined'" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'uploadedImages'}">已上传图片</el-dropdown-item>
             <el-dropdown-item :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'materialImages'}">素材库图片</el-dropdown-item>
-            <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'cloudImages'}">免版权图库</el-dropdown-item>
+            <!-- <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'cloudImages'}">免版权图库</el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
 

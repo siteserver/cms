@@ -189,13 +189,6 @@
         ],
         "order": 125
       },
-      "app_settings_cloudsImages": {
-        "text": "免版权图库设置",
-        "type": [
-          "app"
-        ],
-        "order": 126
-      },
       "app_settings_cloudsSms": {
         "text": "短信集成设置",
         "type": [
@@ -886,7 +879,6 @@
           "app_settings_cloudsBackup",
           "app_settings_cloudsCdn",
           "app_settings_cloudsVod",
-          "app_settings_cloudsImages",
           "app_settings_cloudsSms",
           "app_settings_cloudsMail",
           "app_settings_cloudsTasks",
@@ -1102,7 +1094,6 @@
               "app_settings_cloudsBackup",
               "app_settings_cloudsCdn",
               "app_settings_cloudsVod",
-              "app_settings_cloudsImages",
               "app_settings_cloudsSms",
               "app_settings_cloudsMail",
               "app_settings_cloudsTasks",
@@ -1173,15 +1164,6 @@
                   "app_settings_cloudsVod"
                 ],
                 "order": 106
-              },
-              "app_settings_cloudsImages": {
-                "text": "免版权图库设置",
-                "iconClass": "el-icon-picture-outline-round",
-                "link": "./clouds/images/",
-                "permissions": [
-                  "app_settings_cloudsImages"
-                ],
-                "order": 107
               },
               "app_settings_cloudsSms": {
                 "text": "短信集成设置",
