@@ -384,9 +384,7 @@ var methods = {
   },
 
   handleHeaderDragend: function(newWidth, oldWidth, column) {
-    if (column.columnKey) {
-      this.apiWidth(column.columnKey, newWidth);
-    }
+
   },
 
   handleColumnsChange: function() {

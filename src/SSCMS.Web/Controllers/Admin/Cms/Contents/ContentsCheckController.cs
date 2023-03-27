@@ -69,6 +69,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public int PageSize { get; set; }
         }
 
+        public class Permissions
+        {
+            public bool IsAdd { get; set; }
+            public bool IsDelete { get; set; }
+            public bool IsEdit { get; set; }
+            public bool IsArrange { get; set; }
+            public bool IsTranslate { get; set; }
+            public bool IsCheck { get; set; }
+            public bool IsCreate { get; set; }
+        }
+
         public class TreeResult
         {
             public Cascade<int> Root { get; set; }
@@ -76,7 +87,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
+            public ContentColumn TitleColumn { get; set; }
+            public ContentColumn BodyColumn { get; set; }
             public List<ContentColumn> Columns { get; set; }
+            public Permissions Permissions { get; set; }
         }
     }
 }

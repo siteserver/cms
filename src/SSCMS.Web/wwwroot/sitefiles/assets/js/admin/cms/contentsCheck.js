@@ -14,7 +14,11 @@ var data = utils.init({
   pageSize: null,
   page: 1,
   columns: null,
+  titleColumn: null,
+  bodyColumn: null,
+  permissions: null,
 
+  tableMaxHeight: 999999999999,
   multipleSelection: [],
 
   checkedColumns: [],
@@ -49,12 +53,20 @@ var methods = {
       $this.tagNames = res.tagNames;
       $this.checkedLevels = res.checkedLevels;
       $this.columns = res.columns;
-      var titleColumn = _.find($this.columns, function(o) { return o.attributeName == 'Title'; });
+      $this.titleColumn = res.titleColumn;
+      $this.bodyColumn = res.bodyColumn;
+      $this.permissions = res.permissions;
       $this.searchColumns.push({
-        attributeName: titleColumn.attributeName,
-        displayName: titleColumn.displayName,
+        attributeName: $this.titleColumn.attributeName,
+        displayName: $this.titleColumn.displayName,
         value: ''
       });
+      $this.searchColumns.push({
+        attributeName: $this.bodyColumn.attributeName,
+        displayName: $this.bodyColumn.displayName,
+        value: ''
+      });
+
       $this.searchForm.checkedLevels = [0];
 
       $this.apiList($this.siteId, 1);
@@ -163,6 +175,11 @@ var methods = {
   btnSearchClick: function () {
     var $this = this;
 
+    if (this.searchForm.checkedLevels.length === 0) {
+      utils.error('请选择审核状态！');
+      return;
+    }
+
     this.$refs.searchForm.validate(function(valid) {
       if (valid) {
         $this.apiList($this.siteId, 1);
@@ -261,6 +278,10 @@ var methods = {
 
   toggleSelection: function(row) {
     this.$refs.multipleTable.toggleRowSelection(row);
+  },
+
+  handleHeaderDragend: function(newWidth, oldWidth, column) {
+
   },
 
   handleCurrentChange: function(val) {
