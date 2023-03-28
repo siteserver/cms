@@ -258,15 +258,42 @@ var utils = {
     if (Object.prototype.toString.call(date) !== '[object Date]') {
       date = new Date(date);
     }
-    var delta = Math.round((new Date() - date) / 1000);
-    var minute = 60, hour = minute * 60, day = hour * 24;
-    if (delta < day) {
-      return utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes());
+    var now = new Date();
+    var delta = Math.round((now - date) / 1000);
+    if (delta > 0) {
+      var minute = 60, hour = minute * 60, day = hour * 24;
+      if (delta < day) {
+        return '今天';
+      }
+      if (delta < day * 2) {
+        return '昨天';
+      }
+      if (date.getFullYear() === now.getFullYear()) {
+        return utils.pad(date.getMonth() + 1) + '月' + utils.pad(date.getDate()) + '日';
+      }
     }
-    if (delta < day * 2) {
-      return '昨天 ' + utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes());
+    return date.getFullYear() + '-' + utils.pad(date.getMonth() + 1) + '-' + utils.pad(date.getDate());
+  },
+
+  getFriendlyDateTime: function(date) {
+    if (Object.prototype.toString.call(date) !== '[object Date]') {
+      date = new Date(date);
     }
-    return utils.pad(date.getMonth() + 1) + '月' + utils.pad(date.getDate()) + '日';
+    var now = new Date();
+    var delta = Math.round((now - date) / 1000);
+    if (delta > 0) {
+      var minute = 60, hour = minute * 60, day = hour * 24;
+      if (delta < day) {
+        return '今天 ' + utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes()) + ':' + utils.pad(date.getSeconds());
+      }
+      if (delta < day * 2) {
+        return '昨天 ' + utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes()) + ':' + utils.pad(date.getSeconds());
+      }
+      if (date.getFullYear() === now.getFullYear()) {
+        return utils.pad(date.getMonth() + 1) + '月' + utils.pad(date.getDate()) + '日 ' + utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes()) + ':' + utils.pad(date.getSeconds());
+      }
+    }
+    return date.getFullYear() + '-' + utils.pad(date.getMonth() + 1) + '-' + utils.pad(date.getDate()) + ' ' + utils.pad(date.getHours()) + ':' + utils.pad(date.getMinutes()) + ':' + utils.pad(date.getSeconds());
   },
 
   getRootVue: function() {

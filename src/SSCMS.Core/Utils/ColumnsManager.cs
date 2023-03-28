@@ -29,7 +29,7 @@ namespace SSCMS.Core.Utils
         public const string CheckDate = nameof(CheckDate);                          //审核时间
         public const string CheckReasons = nameof(CheckReasons);                    //审核原因
 
-        private const string Sequence = nameof(Sequence);                            //序号
+        public const string Sequence = nameof(Sequence);                            //序号
         private const string ChannelName = nameof(ChannelName);
         private const string AdminName = nameof(AdminName);
         private const string LastEditAdminName = nameof(LastEditAdminName);
@@ -216,12 +216,14 @@ namespace SSCMS.Core.Utils
                 {
                     AttributeName = nameof(Content.AddDate),
                     DisplayName = "添加时间",
+                    InputType = InputType.DateTime,
                     Taxis = taxis++
                 },
                 new TableStyle
                 {
                     AttributeName = nameof(Content.LastModifiedDate),
                     DisplayName = "最后修改时间",
+                    InputType = InputType.DateTime,
                     Taxis = taxis++
                 },
                 new TableStyle
@@ -288,6 +290,7 @@ namespace SSCMS.Core.Utils
                 {
                     AttributeName = CheckDate,
                     DisplayName = "审核时间",
+                    InputType = InputType.DateTime,
                     Taxis = taxis++
                 },
                 new TableStyle
@@ -494,7 +497,7 @@ namespace SSCMS.Core.Utils
             styles.Insert(0, new TableStyle
             {
                 AttributeName = Sequence,
-                DisplayName = "序号"
+                DisplayName = "序号",
             });
 
             foreach (var style in styles)

@@ -5,6 +5,8 @@ using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using SSCMS.Utils;
+using System.Linq;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -33,6 +35,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.RecycleContents);
 
+            var titleColumn =
+                columns.FirstOrDefault(x => StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(Models.Content.Title)));
+            var bodyColumn = new ContentColumn
+            {
+                AttributeName = nameof(Models.Content.Body),
+                DisplayName = "内容正文",
+                InputType = InputType.TextEditor,
+                IsSearchable = true,
+            };
+
             return new TreeResult
             {
                 Root = root,
@@ -40,18 +52,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 GroupNames = groupNames,
                 TagNames = tagNames,
                 CheckedLevels = checkedLevels,
-                Columns = columns
+                Columns = columns,
+                TitleColumn = titleColumn,
+                BodyColumn = bodyColumn,
             };
-        }
-
-        public class TreeResult
-        {
-            public Cascade<int> Root { get; set; }
-            public string SiteUrl { get; set; }
-            public IEnumerable<string> GroupNames { get; set; }
-            public IEnumerable<string> TagNames { get; set; }
-            public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
-            public List<ContentColumn> Columns { get; set; }
         }
     }
 }

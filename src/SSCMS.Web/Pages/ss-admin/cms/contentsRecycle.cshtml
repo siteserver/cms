@@ -723,7 +723,7 @@
 
       <el-table-column
         width="160"
-        align="center"
+        align="left"
         show-overflow-tooltip
         label="原栏目"
       >
@@ -739,7 +739,7 @@
         label="删除时间"
       >
         <template slot-scope="scope">
-          {{ utils.getFriendlyDate(scope.row.lastModifiedDate) }}
+          {{ utils.getFriendlyDateTime(scope.row.lastModifiedDate) }}
         </template>
       </el-table-column>
 

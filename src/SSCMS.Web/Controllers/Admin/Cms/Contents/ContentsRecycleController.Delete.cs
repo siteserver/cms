@@ -77,20 +77,5 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 Value = true
             };
         }
-
-        public enum Action
-        {
-            Delete,
-            DeleteAll,
-            Restore,
-            RestoreAll
-        }
-
-        public class DeleteRequest : SiteRequest
-        {
-            public Action Action { get; set; }
-            public string ChannelContentIds { get; set; }
-            public int RestoreChannelId { get; set; }
-        }
     }
 }

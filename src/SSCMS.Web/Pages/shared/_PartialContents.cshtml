@@ -93,6 +93,20 @@
   <el-table-column type="selection" width="45" align="center"></el-table-column>
 
   <el-table-column
+    v-for="column in columns"
+    v-if="column.isList && (column.attributeName == 'Sequence' || column.attributeName == 'Id' || column.attributeName == 'Guid')"
+    :key="column.attributeName"
+    :column-key="column.attributeName"
+    :label="column.displayName"
+    :width="column.width"
+    show-overflow-tooltip
+    resizable>
+    <template slot-scope="scope">
+      {{ scope.row.getEntityValue(column.attributeName) }}
+    </template>
+  </el-table-column>
+
+  <el-table-column
     :label="titleColumn.displayName"
     :column-key="titleColumn.attributeName"
     :min-width="titleColumn.width"
@@ -154,7 +168,7 @@
 
   <el-table-column
     v-for="column in columns"
-    v-if="column.isList"
+    v-if="column.isList && column.attributeName !== 'Sequence' && column.attributeName !== 'Id' && column.attributeName !== 'Guid'"
     :key="column.attributeName"
     :column-key="column.attributeName"
     :label="column.displayName"
@@ -226,6 +240,20 @@
       <!-- TemplateId -->
       <template v-else-if="column.attributeName === 'TemplateId'">
         {{scope.row.templateName || '<默认>'}}
+      </template>
+
+      <!-- Date -->
+      <template v-else-if="column.inputType === 'Date'">
+        <span>
+          {{ utils.getFriendlyDate(scope.row.getEntityValue(column.attributeName)) }}
+        </span>
+      </template>
+
+      <!-- DateTime -->
+      <template v-else-if="column.inputType === 'DateTime'">
+        <span>
+          {{ utils.getFriendlyDateTime(scope.row.getEntityValue(column.attributeName)) }}
+        </span>
       </template>
 
       <!-- Others -->
