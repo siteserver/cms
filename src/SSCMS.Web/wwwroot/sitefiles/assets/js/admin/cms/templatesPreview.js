@@ -29,6 +29,10 @@ var methods = {
       $this.content = res.content;
 
       setTimeout(function () {
+        $('#content').height($(document).height() - 120);
+        $('#parsedContent').height($(document).height() - 20);
+        $('#preview').height($(document).height() - 20);
+
         require.config({ paths: { 'vs': utils.getAssetsUrl('lib/monaco-editor/min/vs') }});
         require(['vs/editor/editor.main'], function() {
             $this.contentEditor = monaco.editor.create(document.getElementById('content'), {

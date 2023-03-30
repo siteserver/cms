@@ -1674,7 +1674,7 @@
           },
           "site_templatesIncludes": {
             "text": "包含文件管理",
-            "link": "./cms/templatesAssets/?fileType=html",
+            "link": "./cms/templatesIncludes/",
             "permissions": [
               "site_templatesIncludes"
             ],

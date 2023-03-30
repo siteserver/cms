@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
@@ -499,7 +500,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
                 AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Content.AddDate), content.AddDate.Value.ToString(CultureInfo.InvariantCulture));
             }
 
-            foreach (var attributeName in content.ToDictionary().Keys)
+            foreach (var attributeName in content.ToDictionary().Keys.ToList())
             {
                 if (!ListUtils.ContainsIgnoreCase(ColumnsManager.MetadataAttributes.Value, attributeName))
                 {

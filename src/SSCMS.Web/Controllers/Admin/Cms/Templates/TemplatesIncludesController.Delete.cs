@@ -7,7 +7,7 @@ using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 {
-    public partial class TemplatesAssetsController
+    public partial class TemplatesIncludesController
     {
         [HttpPost, Route(RouteDelete)]
         public async Task<ActionResult<BoolResult>> Delete([FromBody] FileRequest request)
@@ -17,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return this.Error(Constants.ErrorSafeMode);
             }
             
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.TemplatesAssets))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.TemplatesIncludes))
             {
                 return Unauthorized();
             }
@@ -29,7 +29,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             var fileName = PathUtils.RemoveParentPath(request.FileName);
 
             FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, directoryPath, fileName));
-            await _authManager.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{directoryPath}:{fileName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "删除包含文件", $"{directoryPath}:{fileName}");
 
             return new BoolResult
             {

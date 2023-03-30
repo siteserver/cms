@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-tabs tab-position="right" v-model="activeName">
+<el-tabs tab-position="left" v-model="activeName">
   <el-tab-pane label="STL 标签" name="first">
 
     <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
@@ -34,7 +34,7 @@
     <div id="parsedContent" style="width:99%; height: 450px; border: 1px solid #d7dae2;"></div>
   </el-tab-pane>
   <el-tab-pane label="界面预览" name="third">
-    <div v-html="parsedContent" style="width:99%; min-height: 450px; border: 1px solid #d7dae2;"></div>
+    <div id="preview" v-html="parsedContent" style="width:99%; min-height: 450px; border: 1px solid #d7dae2;"></div>
   </el-tab-pane>
 </el-tabs>
 

@@ -1,4 +1,4 @@
-﻿var $url = '/cms/templates/templatesAssets';
+﻿var $url = '/cms/templates/templatesIncludes';
 var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
@@ -7,9 +7,7 @@ var data = utils.init({
   allFiles: null,
   files: null,
   siteUrl: null,
-  cssDir: null,
-  jsDir: null,
-  fileType: utils.getQueryString("fileType") || 'All',
+  includeDir: null,
   directoryPaths: [],
   keyword: '',
 
@@ -26,7 +24,6 @@ var methods = {
     $api.get($url, {
       params: {
         siteId: this.siteId,
-        fileType: this.fileType
       }
     }).then(function (response) {
       var res = response.data;
@@ -34,8 +31,7 @@ var methods = {
       $this.directories = res.directories;
       $this.allFiles = res.files;
       $this.siteUrl = res.siteUrl;
-      $this.cssDir = res.cssDir;
-      $this.jsDir = res.jsDir;
+      $this.includeDir = res.includeDir;
       $this.reload();
     }).catch(function (error) {
       utils.error(error);
@@ -50,7 +46,6 @@ var methods = {
     utils.loading(this, true);
     $api.post($urlDelete, {
       siteId: this.siteId,
-      fileType: this.fileType,
       directoryPath: file.directoryPath,
       fileName: file.fileName
     }).then(function (response) {
@@ -76,8 +71,7 @@ var methods = {
       $this.directories = res.directories;
       $this.allFiles = res.files;
       $this.siteUrl = res.siteUrl;
-      $this.cssDir = res.cssDir;
-      $this.jsDir = res.jsDir;
+      $this.includeDir = res.includeDir;
       $this.reload();
 
       $this.configPanel = false;
@@ -87,15 +81,6 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
-  },
-
-  getFileType: function(fileType) {
-    if (fileType === 'css') {
-      return '样式文件';
-    } else if (fileType === 'js') {
-      return '脚本文件';
-    }
-    return '';
   },
 
   btnCopyClick: function(template) {
@@ -131,20 +116,20 @@ var methods = {
     });
   },
 
-  btnAddClick: function(fileType) {
-    utils.addTab('新增' + this.getFileType(fileType), this.getEditorUrl('', '', fileType));
+  btnAddClick: function() {
+    utils.addTab('新增包含文件', this.getEditorUrl('', ''));
   },
 
   btnEditClick: function(file) {
-    utils.addTab('编辑' + ':' + file.directoryPath + '/' + file.fileName, this.getEditorUrl(file.directoryPath, file.fileName, file.fileType));
+    utils.addTab('编辑' + ':' + file.directoryPath + '/' + file.fileName, this.getEditorUrl(file.directoryPath, file.fileName));
   },
 
-  getEditorUrl: function(directoryPath, fileName, fileType) {
+  getEditorUrl: function(directoryPath, fileName) {
     return utils.getCmsUrl('templatesAssetsEditor', {
       siteId: this.siteId,
       directoryPath: directoryPath,
       fileName: fileName,
-      fileType: fileType,
+      fileType: 'html',
       tabName: utils.getTabName()
     });
   },
@@ -157,12 +142,8 @@ var methods = {
     var $this = this;
 
     this.files = _.filter(this.allFiles, function(o) {
-      var isFileType = true;
       var isDirectoryPath = true;
       var isKeyword = true;
-      if ($this.fileType != 'All') {
-        isFileType = _.endsWith(o.fileName, $this.fileType);
-      }
       if ($this.directoryPaths.length > 0) {
         isDirectoryPath = false;
         for (var i = 0; i < $this.directoryPaths.length; i++) {
@@ -176,16 +157,14 @@ var methods = {
         isKeyword = (o.directoryPath || '').indexOf($this.keyword) !== -1 || (o.fileName || '').indexOf($this.keyword) !== -1;
       }
 
-      return isFileType && isDirectoryPath && isKeyword;
+      return isDirectoryPath && isKeyword;
     });
   },
 
   btnConfigClick: function() {
     this.configForm = {
       siteId: this.siteId,
-      fileType: this.fileType,
-      cssDir: this.cssDir,
-      jsDir: this.jsDir
+      includeDir: this.includeDir,
     };
     this.configPanel = true;
   },
