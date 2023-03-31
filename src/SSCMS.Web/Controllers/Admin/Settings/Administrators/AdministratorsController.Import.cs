@@ -40,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             var success = 0;
             var failure = 0;
 
-            var sheet = ExcelUtils.GetDataTable(filePath);
+            var sheet = ExcelUtils.Read(filePath);
             if (sheet != null)
             {
                 for (var i = 1; i < sheet.Rows.Count; i++) //行

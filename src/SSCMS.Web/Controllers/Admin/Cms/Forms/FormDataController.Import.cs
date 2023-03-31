@@ -42,7 +42,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             await _pathManager.UploadAsync(file, filePath);
 
-            var sheet = ExcelUtils.GetDataTable(filePath);
+            var sheet = ExcelUtils.Read(filePath);
             if (sheet != null)
             {
                 var items = new List<FormData>();

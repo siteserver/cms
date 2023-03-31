@@ -19,55 +19,6 @@ namespace SSCMS.Core.Utils.Office
         }
 
         public async Task CreateExcelFileForContentsAsync(string filePath, Site site,
-            Channel channel, IEnumerable<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
-            string endDate, bool? checkedState)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
-
-            var head = new List<string>();
-            var rows = new List<List<string>>();
-
-            var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
-
-            foreach (var style in styles)
-            {
-                if (displayAttributes.Contains(style.AttributeName))
-                {
-                    head.Add(style.DisplayName);
-                }
-            }
-
-            if (contentIdList == null)
-            {
-                contentIdList = await _databaseManager.ContentRepository.GetContentIdsAsync(site, channel, isPeriods,
-                    startDate, endDate, checkedState);
-            }
-
-            foreach (var contentId in contentIdList)
-            {
-                var contentInfo = await _databaseManager.ContentRepository.GetAsync(site, channel, contentId);
-                if (contentInfo != null)
-                {
-                    var row = new List<string>();
-
-                    foreach (var style in styles)
-                    {
-                        if (displayAttributes.Contains(style.AttributeName))
-                        {
-                            var value = contentInfo.Get<string>(style.AttributeName);
-                            row.Add(StringUtils.StripTags(value));
-                        }
-                    }
-
-                    rows.Add(row);
-                }
-            }
-
-            CsvUtils.Export(filePath, head, rows);
-        }
-
-        public async Task CreateExcelFileForContentsAsync(string filePath, Site site,
             Channel channel, List<Content> contentInfoList, List<string> columnNames)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -103,7 +54,7 @@ namespace SSCMS.Core.Utils.Office
                 rows.Add(row);
             }
 
-            CsvUtils.Export(filePath, head, rows);
+            ExcelUtils.Write(filePath, head, rows);
         }
 
         public async Task CreateExcelFileForUsersAsync(string filePath, bool? checkedState)
@@ -148,7 +99,7 @@ namespace SSCMS.Core.Utils.Office
                 });
             }
 
-            CsvUtils.Export(filePath, head, rows);
+            ExcelUtils.Write(filePath, head, rows);
         }
 
         public async Task CreateExcelFileForAdministratorsAsync(string filePath)
@@ -184,7 +135,7 @@ namespace SSCMS.Core.Utils.Office
                 });
             }
 
-            CsvUtils.Export(filePath, head, rows);
+            ExcelUtils.Write(filePath, head, rows);
         }
 
         public async Task<List<Content>> GetContentsByFileAsync(string filePath, Site site, Channel channel)
@@ -192,7 +143,7 @@ namespace SSCMS.Core.Utils.Office
             var contents = new List<Content>();
             var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
 
-            var sheet = ExcelUtils.GetDataTable(filePath);
+            var sheet = ExcelUtils.Read(filePath);
             if (sheet != null)
             {
                 var columns = new List<string>();

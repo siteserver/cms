@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 return Unauthorized();
             }
 
-            const string fileName = "administrators.csv";
+            const string fileName = "管理员.xlsx";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
             var excelObject = new ExcelObject(_databaseManager, _pathManager);

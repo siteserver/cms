@@ -533,7 +533,7 @@
         <el-input v-model="form.keywords"></el-input>
       </el-form-item>
       <el-form-item label="栏目描述">
-        <el-input type="textarea" v-model="form.description"></el-input>
+        <el-input type="textarea" v-model="form.description" :autosize="{ minRows: 3, maxRows: 10}"></el-input>
       </el-form-item>
       @await Html.PartialAsync("_PartialForm")
 

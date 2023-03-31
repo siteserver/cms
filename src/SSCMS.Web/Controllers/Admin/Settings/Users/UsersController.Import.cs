@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils.Office;
 using SSCMS.Models;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
@@ -41,7 +40,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             var success = 0;
             var failure = 0;
 
-            var sheet = ExcelUtils.GetDataTable(filePath);
+            var sheet = ExcelUtils.Read(filePath);
             if (sheet != null)
             {
                 for (var i = 1; i < sheet.Rows.Count; i++) //行
