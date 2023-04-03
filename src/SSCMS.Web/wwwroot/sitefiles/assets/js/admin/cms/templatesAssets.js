@@ -1,5 +1,6 @@
 ﻿var $url = '/cms/templates/templatesAssets';
 var $urlDelete = $url + '/actions/delete';
+var $urlConfig = $url + '/actions/config';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -9,7 +10,8 @@ var data = utils.init({
   siteUrl: null,
   cssDir: null,
   jsDir: null,
-  fileType: utils.getQueryString("fileType") || 'All',
+  imagesDir: null,
+  fileType: utils.getQueryString("fileType") || 'css',
   directoryPaths: [],
   keyword: '',
 
@@ -19,7 +21,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function () {
+  apiGet: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -31,11 +33,15 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      $this.directoryPaths = [];
+      $this.keyword = '';
+
       $this.directories = res.directories;
       $this.allFiles = res.files;
       $this.siteUrl = res.siteUrl;
       $this.cssDir = res.cssDir;
       $this.jsDir = res.jsDir;
+      $this.imagesDir = res.imagesDir;
       $this.reload();
     }).catch(function (error) {
       utils.error(error);
@@ -70,18 +76,13 @@ var methods = {
     var $this = this;
 
     this.loading = this.$loading();
-    $api.post($url + '/actions/config', this.configForm).then(function (response) {
+    $api.post($urlConfig, this.configForm).then(function (response) {
       var res = response.data;
-
-      $this.directories = res.directories;
-      $this.allFiles = res.files;
-      $this.siteUrl = res.siteUrl;
-      $this.cssDir = res.cssDir;
-      $this.jsDir = res.jsDir;
-      $this.reload();
 
       $this.configPanel = false;
       utils.success('文件夹路径设置成功!');
+
+      $this.apiGet();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -94,29 +95,14 @@ var methods = {
       return '样式文件';
     } else if (fileType === 'js') {
       return '脚本文件';
+    } else if (fileType === 'images') {
+      return '图片文件';
     }
     return '';
   },
 
-  btnCopyClick: function(template) {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url + '/actions/copy', {
-      siteId: this.siteId,
-      templateId: template.id
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.directories = res.directories;
-      $this.allFiles = res.files;
-      $this.reload();
-      utils.success('快速复制成功！');
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+  btnNavClick: function() {
+    this.apiGet();
   },
 
   btnDeleteClick: function (file) {
@@ -136,6 +122,11 @@ var methods = {
   },
 
   btnEditClick: function(file) {
+    if (this.fileType == 'images') {
+      var url = this.getPageUrl(file.directoryPath + '/' + file.fileName);
+      window.open(url);
+      return;
+    }
     utils.addTab('编辑' + ':' + file.directoryPath + '/' + file.fileName, this.getEditorUrl(file.directoryPath, file.fileName, file.fileType));
   },
 
@@ -149,20 +140,12 @@ var methods = {
     });
   },
 
-  getPageUrl: function(directoryPath) {
-    return this.siteUrl + '/' + directoryPath;
-  },
-
   reload: function() {
     var $this = this;
 
     this.files = _.filter(this.allFiles, function(o) {
-      var isFileType = true;
       var isDirectoryPath = true;
       var isKeyword = true;
-      if ($this.fileType != 'All') {
-        isFileType = _.endsWith(o.fileName, $this.fileType);
-      }
       if ($this.directoryPaths.length > 0) {
         isDirectoryPath = false;
         for (var i = 0; i < $this.directoryPaths.length; i++) {
@@ -176,8 +159,12 @@ var methods = {
         isKeyword = (o.directoryPath || '').indexOf($this.keyword) !== -1 || (o.fileName || '').indexOf($this.keyword) !== -1;
       }
 
-      return isFileType && isDirectoryPath && isKeyword;
+      return isDirectoryPath && isKeyword;
     });
+  },
+
+  getPageUrl: function(directoryPath) {
+    return this.siteUrl + '/' + directoryPath;
   },
 
   btnConfigClick: function() {
@@ -185,7 +172,8 @@ var methods = {
       siteId: this.siteId,
       fileType: this.fileType,
       cssDir: this.cssDir,
-      jsDir: this.jsDir
+      jsDir: this.jsDir,
+      imagesDir: this.imagesDir
     };
     this.configPanel = true;
   },
@@ -201,6 +189,34 @@ var methods = {
         $this.apiConfig();
       }
     });
+  },
+
+  getUploadUrl: function() {
+    var directories = '';
+    if (this.directoryPaths.length > 0) {
+      var arr = this.directoryPaths[this.directoryPaths.length - 1];
+      directories = arr[arr.length - 1];
+    }
+    return $apiUrl + $url + '/actions/upload?siteId=' + this.siteId + '&fileType=' + this.fileType + '&directories=' + encodeURIComponent(directories);
+  },
+
+  uploadBefore(file) {
+    return true;
+  },
+
+  uploadProgress: function() {
+    utils.loading(this, true);
+  },
+
+  uploadSuccess: function(res) {
+    utils.success('文件上传成功!');
+    this.apiGet();
+  },
+
+  uploadError: function(err) {
+    utils.loading(this, false);
+    var error = JSON.parse(err.message);
+    utils.error(error.message);
   },
 
   btnCloseClick: function() {
@@ -225,6 +241,6 @@ var $vue = new Vue({
         $this.btnCloseClick();
       }
     });
-    this.apiList();
+    this.apiGet();
   }
 });

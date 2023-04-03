@@ -23,9 +23,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             var directories = new List<Cascade<string>>();
             var files = new List<AssetFile>();
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
-            await GetDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
-
+            if (request.FileType == ExtCss)
+            {
+                await GetDirectoriesAndFilesByFileTypeAsync(directories, files, site, site.TemplatesAssetsCssDir, ExtCss);
+            }
+            else if (request.FileType == ExtJs)
+            {
+                await GetDirectoriesAndFilesByFileTypeAsync(directories, files, site, site.TemplatesAssetsJsDir, ExtJs);
+            }
+            else if (request.FileType == ExtImages)
+            {
+                await GetImagesDirectoriesAndFilesAsync(directories, files, site, site.TemplatesAssetsImagesDir);
+            }
             var siteUrl = (await _pathManager.GetSiteUrlAsync(site, string.Empty, true)).TrimEnd('/');
 
             return new GetResult
@@ -34,7 +43,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 Files = files,
                 SiteUrl = siteUrl,
                 CssDir = site.TemplatesAssetsCssDir,
-                JsDir = site.TemplatesAssetsJsDir
+                JsDir = site.TemplatesAssetsJsDir,
+                ImagesDir = site.TemplatesAssetsImagesDir
             };
         }
     }

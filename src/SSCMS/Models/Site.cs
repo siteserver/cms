@@ -242,8 +242,10 @@ namespace SSCMS.Models
 
         public string TemplatesAssetsIncludeDir { get; set; } = "include";
 
+        public string TemplatesAssetsCssDir { get; set; } = "css";
+
         public string TemplatesAssetsJsDir { get; set; } = "js";
 
-        public string TemplatesAssetsCssDir { get; set; } = "css";
+        public string TemplatesAssetsImagesDir { get; set; } = "images";
     }
 }

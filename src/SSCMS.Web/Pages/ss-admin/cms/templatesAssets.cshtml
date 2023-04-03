@@ -1,35 +1,107 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .commands div { display: inline-block; width: auto; }
+    .el-upload, .el-upload-dragger { display: inline-block; width: auto; }
+  </style>
+}
 
 <el-container>
   <el-aside width="100px">
-    <el-tabs v-model="fileType" tab-position="left" style="height: 100%;" v-on:tab-click="reload">
-      <el-tab-pane label="全部" name="All"></el-tab-pane>
+    <el-tabs v-model="fileType" tab-position="left" style="height: 100%;" v-on:tab-click="btnNavClick">
       <el-tab-pane label="样式文件" name="css"></el-tab-pane>
       <el-tab-pane label="脚本文件" name="js"></el-tab-pane>
+      <el-tab-pane label="图片文件" name="images"></el-tab-pane>
     </el-tabs>
   </el-aside>
 
   <el-container>
     <el-main>
-      <el-form v-on:submit.native.prevent :inline="true" size="small">
-        <el-form-item label="文件夹路径" prop="directoryPaths">
-          <el-cascader
-            v-model="directoryPaths"
-            :options="directories"
-            :props="{ multiple: true, checkStrictly: true }"
-            filterable
-            v-on:change="reload"
-            placeholder="请选择文件夹路径"></el-cascader>
-        </el-form-item>
-        <el-form-item label="文件夹路径/文件名">
-          <el-input
-            v-model="keyword"
-            v-on:change="reload"
-            placeholder="请输入文件夹路径名称或文件名称"
-          ></el-input>
-        </el-form-item>
-      </el-form>
+      <el-row>
+        <el-col :span="12">
+          <el-form v-on:submit.native.prevent :inline="true" size="small">
+            <el-form-item label="文件夹路径" prop="directoryPaths">
+              <el-cascader
+                v-model="directoryPaths"
+                :options="directories"
+                :props="{ multiple: true, checkStrictly: true }"
+                filterable
+                v-on:change="reload"
+                placeholder="请选择文件夹路径"></el-cascader>
+            </el-form-item>
+            <el-form-item label="文件夹路径/文件名">
+              <el-input
+                v-model="keyword"
+                v-on:change="reload"
+                placeholder="请输入文件夹路径名称或文件名称"
+              ></el-input>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-col class="commands" align="right" :span="12">
+          <template v-if="fileType == 'css'">
+            <el-button size="small" type="primary" v-on:click="btnAddClick('css')">
+              <i class="el-icon-circle-plus-outline"></i>
+              新增样式文件
+            </el-button>
+            <el-upload
+              :action="getUploadUrl()"
+              :headers="{Authorization: 'Bearer ' + $token}"
+              :before-upload="uploadBefore"
+              :on-progress="uploadProgress"
+              :on-success="uploadSuccess"
+              :on-error="uploadError"
+              :multiple="true"
+              :show-file-list="false">
+              <el-button size="small" type="primary">
+                <i class="el-icon-upload"></i>
+                上传样式文件
+              </el-button>
+          </template>
+          <template v-if="fileType == 'js'">
+            <el-button size="small" type="primary" v-on:click="btnAddClick('js')">
+              <i class="el-icon-circle-plus-outline"></i>
+              新增脚本文件
+            </el-button>
+            <el-upload
+              :action="getUploadUrl()"
+              :headers="{Authorization: 'Bearer ' + $token}"
+              :before-upload="uploadBefore"
+              :on-progress="uploadProgress"
+              :on-success="uploadSuccess"
+              :on-error="uploadError"
+              :multiple="true"
+              :show-file-list="false">
+              <el-button size="small" type="primary">
+                <i class="el-icon-upload"></i>
+                上传脚本文件
+              </el-button>
+            </el-upload>
+          </template>
+          <template v-if="fileType == 'images'">
+            <el-upload
+              :action="getUploadUrl()"
+              :headers="{Authorization: 'Bearer ' + $token}"
+              :before-upload="uploadBefore"
+              :on-progress="uploadProgress"
+              :on-success="uploadSuccess"
+              :on-error="uploadError"
+              :multiple="true"
+              :show-file-list="false">
+              <el-button size="small" type="primary">
+                <i class="el-icon-upload"></i>
+                上传图片文件
+              </el-button>
+            </el-upload>
+          </template>
+          
+          <el-button size="small" type="primary" v-on:click="btnConfigClick">
+            <i class="el-icon-setting"></i> 文件夹路径设置
+          </el-button>
+        </el-col>
+      </el-row>
+      
 
       <el-table :data="files" style="width: 100%">
         <el-table-column label="资源文件">
@@ -52,6 +124,7 @@
               查看
             </el-link>
             <el-link
+              v-if="fileType == 'css' || fileType == 'js'"
               :underline="false"
               v-on:click="btnEditClick(scope.row)"
               type="primary">
@@ -67,19 +140,6 @@
         </el-table-column>
       </el-table>
 
-      <div style="height: 10px"></div>
-      <el-divider></el-divider>
-      <div style="height: 10px"></div>
-
-      <el-button v-if="fileType == 'All' || fileType == 'css'" size="small" type="primary" v-on:click="btnAddClick('css')">
-        新增样式文件
-      </el-button>
-      <el-button v-if="fileType == 'All' || fileType == 'js'" size="small" type="primary" v-on:click="btnAddClick('js')">
-        新增脚本文件
-      </el-button>
-      <el-button size="small" type="primary" v-on:click="btnConfigClick">
-        <i class="el-icon-setting"></i> 文件夹路径设置
-      </el-button>
     </el-main>
   </el-container>
 </el-container>
@@ -100,6 +160,9 @@
       ],
       jsDir: [
         { required: true, message: '请输入脚本文件文件夹路径', trigger: 'blur' }
+      ],
+      imagesDir: [
+        { required: true, message: '请输入图片文件文件夹路径', trigger: 'blur' }
       ]
     }">
     <el-form-item label="样式文件文件夹路径" prop="cssDir">
@@ -107,6 +170,9 @@
     </el-form-item>
     <el-form-item label="脚本文件文件夹路径" prop="jsDir">
       <el-input v-model="configForm.jsDir" placeholder="请输入脚本文件文件夹路径"></el-input>
+    </el-form-item>
+    <el-form-item label="图片文件文件夹路径" prop="imagesDir">
+      <el-input v-model="configForm.imagesDir" placeholder="请输入图片文件文件夹路径"></el-input>
     </el-form-item>
 
     <el-divider></el-divider>

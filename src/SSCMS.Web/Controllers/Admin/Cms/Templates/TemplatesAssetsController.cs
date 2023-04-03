@@ -20,9 +20,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string Route = "cms/templates/templatesAssets";
         private const string RouteDelete = "cms/templates/templatesAssets/actions/delete";
         private const string RouteConfig = "cms/templates/templatesAssets/actions/config";
+        private const string RouteUpload = "cms/templates/templatesAssets/actions/upload";
 
         private const string ExtCss = "css";
         private const string ExtJs = "js";
+        private const string ExtImages = "images";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
@@ -42,6 +44,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public string FileType { get; set; }
         }
 
+        public class UploadRequest : SiteRequest
+        {
+            public string FileType { get; set; }
+            public string Directories { get; set; }
+        }
+
         public class GetResult
         {
             public List<Cascade<string>> Directories { get; set; }
@@ -49,6 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public string SiteUrl { get; set; }
             public string CssDir { get; set; }
             public string JsDir { get; set; }
+            public string ImagesDir { get; set; }
         }
 
         public class FileRequest
@@ -65,6 +74,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public string FileType { get; set; }
             public string CssDir { get; set; }
             public string JsDir { get; set; }
+            public string ImagesDir { get; set; }
         }
 
         public class AssetFile
@@ -74,7 +84,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             public string FileType { get; set; }
         }
 
-        private async Task GetDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<AssetFile> files, Site site, string virtualPath, string fileType)
+        private async Task GetDirectoriesAndFilesByFileTypeAsync(List<Cascade<string>> directories, List<AssetFile> files, Site site, string virtualPath, string fileType)
         {
             var extName = "." + fileType;
             var directoryPath = await _pathManager.GetSitePathAsync(site, virtualPath);
@@ -103,7 +113,42 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             dir.Children = new List<Cascade<string>>();
             foreach (var directoryName in children)
             {
-                await GetDirectoriesAndFilesAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), fileType);
+                await GetDirectoriesAndFilesByFileTypeAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName), fileType);
+            }
+
+            directories.Add(dir);
+        }
+
+        private async Task GetImagesDirectoriesAndFilesAsync(List<Cascade<string>> directories, List<AssetFile> files, Site site, string virtualPath)
+        {
+            var directoryPath = await _pathManager.GetSitePathAsync(site, virtualPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+            var fileNames = DirectoryUtils.GetFileNames(directoryPath);
+            foreach (var fileName in fileNames)
+            {
+                var extName = PathUtils.GetExtension(fileName);
+                if (_pathManager.IsImageExtensionAllowed(site, extName))
+                {
+                    files.Add(new AssetFile
+                    {
+                        DirectoryPath = virtualPath,
+                        FileName = fileName,
+                        FileType = ExtImages
+                    });
+                }
+            }
+
+            var dir = new Cascade<string>
+            {
+                Label = PathUtils.GetDirectoryName(directoryPath, false),
+                Value = virtualPath
+            };
+
+            var children = DirectoryUtils.GetDirectoryNames(directoryPath);
+            dir.Children = new List<Cascade<string>>();
+            foreach (var directoryName in children)
+            {
+                await GetImagesDirectoriesAndFilesAsync(dir.Children, files, site, PageUtils.Combine(virtualPath, directoryName));
             }
 
             directories.Add(dir);
