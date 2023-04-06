@@ -27,11 +27,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var extName = PathUtils.GetExtension(fileName);
             if (!_pathManager.IsImageExtensionAllowed(site, extName))
             {
-                return this.Error(Constants.ErrorVideoExtensionAllowed);
+                return this.Error(Constants.ErrorImageExtensionAllowed);
             }
             if (!_pathManager.IsImageSizeAllowed(site, file.Length))
             {
-                return this.Error(Constants.ErrorVideoSizeAllowed);
+                return this.Error(Constants.ErrorImageSizeAllowed);
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.Image);
