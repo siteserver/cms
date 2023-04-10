@@ -18,11 +18,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
             var adminId = admin?.Id ?? 0;
 
-            var count = await _siteLogRepository.GetCountAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo);
-            var siteLogs = await _siteLogRepository.GetAllAsync(request.SiteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
-
             var siteIdList = await _siteRepository.GetSiteIdsAsync();
-            var logTasks = siteLogs.Where(x => siteIdList.Contains(x.SiteId)).Select(async x =>
+            var siteIds = request.SiteIds;
+            if (siteIds == null || siteIds.Count == 0)
+            {
+                siteIds = siteIdList;
+            }
+
+            var count = await _siteLogRepository.GetCountAsync(siteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo);
+            var siteLogs = await _siteLogRepository.GetAllAsync(siteIds, request.LogType, adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+
+            var logTasks = siteLogs.Select(async x =>
             {
                 var site = await _siteRepository.GetAsync(x.SiteId);
                 var administrator = await _administratorRepository.GetByUserIdAsync(x.AdminId);
