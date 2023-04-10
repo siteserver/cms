@@ -113,7 +113,6 @@ namespace SSCMS.Web.Controllers.V1
 
             if (channelId.HasValue)
             {
-                //query.Where(nameof(Abstractions.Content.ChannelId), channelId.Value);
                 var channelIds = await _channelRepository.GetChannelIdsAsync(siteId, channelId.Value, ScopeType.All);
 
                 query.WhereIn(nameof(Models.Content.ChannelId), channelIds);
@@ -121,23 +120,23 @@ namespace SSCMS.Web.Controllers.V1
 
             if (request.Checked.HasValue)
             {
-                query.Where(nameof(Models.Content.Checked), request.Checked.Value.ToString());
+                query.Where(nameof(Models.Content.Checked), request.Checked);
             }
             if (request.Top.HasValue)
             {
-                query.Where(nameof(Models.Content.Top), request.Top.Value.ToString());
+                query.Where(nameof(Models.Content.Top), request.Top);
             }
             if (request.Recommend.HasValue)
             {
-                query.Where(nameof(Models.Content.Recommend), request.Recommend.Value.ToString());
+                query.Where(nameof(Models.Content.Recommend), request.Recommend);
             }
             if (request.Color.HasValue)
             {
-                query.Where(nameof(Models.Content.Color), request.Color.Value.ToString());
+                query.Where(nameof(Models.Content.Color), request.Color);
             }
             if (request.Hot.HasValue)
             {
-                query.Where(nameof(Models.Content.Hot), request.Hot.Value.ToString());
+                query.Where(nameof(Models.Content.Hot), request.Hot);
             }
 
             if (request.GroupNames != null)
