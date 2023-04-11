@@ -98,9 +98,10 @@ var methods = {
   btnDefaultClick: function (template) {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '设置默认模板',
       text: '此操作将把模板 ' + template.templateName + ' 设为默认' + this.getTemplateType(template.templateType) + '，确认吗？',
+      button: '确 认',
       callback: function () {
         $this.apiDefault(template);
       }

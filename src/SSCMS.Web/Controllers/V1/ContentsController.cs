@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
@@ -221,7 +220,7 @@ namespace SSCMS.Web.Controllers.V1
             }
             else
             {
-                query.OrderByDesc(nameof(Models.Content.Top), 
+                query.OrderByDesc(nameof(Models.Content.Top),
                     nameof(Models.Content.ChannelId),
                     nameof(Models.Content.Taxis),
                     nameof(Models.Content.Id));
@@ -229,172 +228,5 @@ namespace SSCMS.Web.Controllers.V1
 
             return query;
         }
-
-        //[OpenApiOperation("获取站点内容API", "")]
-        //[HttpGet, Route(RouteSite)]
-        //public async Task<IHttpActionResult> GetSiteContents(int siteId)
-        //{
-        //    try
-        //    {
-        //        var request = await AuthenticatedRequest.GetAuthAsync();
-        //        var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-        //        bool isAuth;
-        //        if (sourceId == SourceManager.User)
-        //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthMenuUtils.ChannelPermissions.ContentView);
-        //        }
-        //        else
-        //        {
-        //            isAuth = request.IsApiAuthenticated && await
-        //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
-        //                     request.IsUserLoggin &&
-        //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         AuthMenuUtils.ChannelPermissions.ContentView) ||
-        //                     request.IsAdminLoggin &&
-        //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                         AuthMenuUtils.ChannelPermissions.ContentView);
-        //        }
-        //        if (!isAuth) return Unauthorized();
-
-        //        var site = await _siteRepository.GetAsync(siteId);
-        //        if (site == null) return this.Error("无法确定内容对应的站点");
-
-        //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //            AuthMenuUtils.ChannelPermissions.ContentView)) return Unauthorized();
-
-        //        var tableName = site.TableName;
-
-        //        var parameters = new ApiContentsParameters(request);
-
-        //        var (channelContentIds, count) = await _contentRepository.GetChannelContentIdListBySiteIdAsync(tableName, siteId, parameters);
-        //        var value = new List<IDictionary<string, object>>();
-        //        foreach (var channelContentId in channelContentIds)
-        //        {
-        //            var contentInfo = await _contentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
-        //            if (contentInfo != null)
-        //            {
-        //                value.Add(contentInfo.ToDictionary());
-        //            }
-        //        }
-
-        //        return new PageResponse(value, parameters.Top, parameters.Skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await LogUtils.AddErrorLogAsync(ex);
-        //        return InternalServerError(ex);
-        //    }
-        //}
-
-        //[OpenApiOperation("获取栏目内容API", "")]
-        //[HttpGet, Route(RouteChannel)]
-        //public async Task<IHttpActionResult> GetChannelContents(int siteId, int channelId)
-        //{
-        //    try
-        //    {
-        //        var request = await AuthenticatedRequest.GetAuthAsync();
-        //        var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-        //        bool isAuth;
-        //        if (sourceId == SourceManager.User)
-        //        {
-        //            isAuth = request.IsUserLoggin && await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId, AuthMenuUtils.ChannelPermissions.ContentView);
-        //        }
-        //        else
-        //        {
-        //            isAuth = request.IsApiAuthenticated && await
-        //                         DataProvider.AccessTokenRepository.IsScopeAsync(request.ApiToken, Constants.ScopeContents) ||
-        //                     request.IsUserLoggin &&
-        //                     await request.UserPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         AuthMenuUtils.ChannelPermissions.ContentView) ||
-        //                     request.IsAdminLoggin &&
-        //                     await request.AdminPermissions.HasChannelPermissionsAsync(siteId, channelId,
-        //                         AuthMenuUtils.ChannelPermissions.ContentView);
-        //        }
-        //        if (!isAuth) return Unauthorized();
-
-        //        var site = await _siteRepository.GetAsync(siteId);
-        //        if (site == null) return this.Error("无法确定内容对应的站点");
-
-        //        var channelInfo = await _channelRepository.GetAsync(siteId, channelId);
-        //        if (channelInfo == null) return this.Error("无法确定内容对应的栏目");
-
-        //        if (!await request.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, channelId,
-        //            AuthMenuUtils.ChannelPermissions.ContentView)) return Unauthorized();
-
-        //        var tableName = await _channelRepository.GetTableNameAsync(site, channelInfo);
-
-        //        var top = request.GetQueryInt("top", 20);
-        //        var skip = request.GetQueryInt("skip");
-        //        var like = request.GetQueryString("like");
-        //        var orderBy = request.GetQueryString("orderBy");
-
-        //        var (list, count) = await _contentRepository.ApiGetContentIdListByChannelIdAsync(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString);
-        //        var value = new List<IDictionary<string, object>>();
-        //        foreach(var (contentChannelId, contentId) in list)
-        //        {
-        //            var contentInfo = await _contentRepository.GetAsync(site, contentChannelId, contentId);
-        //            if (contentInfo != null)
-        //            {
-        //                value.Add(contentInfo.ToDictionary());
-        //            }
-        //        }
-
-        //        return new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await LogUtils.AddErrorLogAsync(ex);
-        //        return InternalServerError(ex);
-        //    }
-        //}
-
-        //[OpenApiOperation("获取内容API", "")]
-        //[HttpPost, Route(RouteSite)]
-        //public async Task<QueryResult> GetSiteContents([FromUri]int siteId, [FromBody] QueryRequest request)
-        //{
-        //    var req = await AuthenticatedRequest.GetAuthAsync();
-        //    var sourceId = req.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
-        //    bool isAuth;
-        //    if (sourceId == SourceManager.User)
-        //    {
-        //        isAuth = req.IsUserLoggin && await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId, AuthMenuUtils.ChannelPermissions.ContentView);
-        //    }
-        //    else
-        //    {
-        //        isAuth = req.IsApiAuthenticated && await
-        //                     DataProvider.AccessTokenRepository.IsScopeAsync(req.ApiToken, Constants.ScopeContents) ||
-        //                 req.IsUserLoggin &&
-        //                 await req.UserPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     AuthMenuUtils.ChannelPermissions.ContentView) ||
-        //                 req.IsAdminLoggin &&
-        //                 await req.AdminPermissions.HasChannelPermissionsAsync(siteId, siteId,
-        //                     AuthMenuUtils.ChannelPermissions.ContentView);
-        //    }
-        //    if (!isAuth) return Request.Unauthorized<QueryResult>();
-
-        //    var site = await _siteRepository.GetAsync(siteId);
-        //    if (site == null) return Request.BadRequest<QueryResult>("无法确定内容对应的站点");
-
-        //    if (!await req.AdminPermissionsImpl.HasChannelPermissionsAsync(siteId, siteId,
-        //        AuthMenuUtils.ChannelPermissions.ContentView)) return Request.Unauthorized<QueryResult>();
-
-        //    var tableName = site.TableName;
-        //    var query = GetQuery(siteId, null, request);
-        //    var totalCount = await _contentRepository.GetTotalCountAsync(tableName, query);
-        //    var channelContentIds = await _contentRepository.GetChannelContentIdListAsync(tableName, query);
-
-        //    var contents = new List<Content>();
-        //    foreach (var channelContentId in channelContentIds)
-        //    {
-        //        var content = await _contentRepository.GetAsync(site, channelContentId.ChannelId, channelContentId.Id);
-        //        contents.Add(content);
-        //    }
-
-        //    return new QueryResult
-        //    {
-        //        Contents = contents,
-        //        TotalCount = totalCount
-        //    };
-        //}
     }
 }

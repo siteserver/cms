@@ -138,9 +138,10 @@ var methods = {
   btnCheckClick: function(item) {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '审核用户',
       text: '此操作将设置用户 ' + item.userName + ' 的状态为审核通过，确定吗？',
+      button: '确 定',
       callback: function () {
         $this.apiCheck(item);
       }
@@ -167,9 +168,10 @@ var methods = {
   btnLockClick: function(item) {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '锁定用户',
       text: '此操作将锁定用户 ' + item.userName + '，确定吗？',
+      button: '确 定',
       callback: function () {
         $this.apiLock(item);
       }
@@ -196,9 +198,10 @@ var methods = {
   btnUnLockClick: function(item) {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '解锁用户',
       text: '此操作将解锁用户 ' + item.userName + '，确定吗？',
+      button: '确 定',
       callback: function () {
         $this.apiUnLock(item);
       }

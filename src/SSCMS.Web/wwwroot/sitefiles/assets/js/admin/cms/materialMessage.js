@@ -231,9 +231,10 @@ var methods = {
   btnPullClick: function() {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '拉取公众号图文消息素材',
-      text: '此操作将拉取公众号图文消息素材，确认吗？',
+      text: '此操作将拉取公众号图文消息素材，确定吗？',
+      button: '确 定',
       callback: function () {
         $this.apiPull();
       }

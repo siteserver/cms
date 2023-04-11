@@ -199,9 +199,10 @@ var methods = {
   btnLockClick: function(item) {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '锁定管理员',
       text: '此操作将锁定管理员 ' + item.userName + '，确定吗？',
+      button: '确 定',
       callback: function () {
         $this.apiLock(item);
       }
@@ -211,9 +212,10 @@ var methods = {
   btnUnLockClick: function(item) {
     var $this = this;
 
-    utils.alertWarning({
+    utils.alertDelete({
       title: '解锁管理员',
       text: '此操作将解锁管理员 ' + item.userName + '，确定吗？',
+      button: '确 定',
       callback: function () {
         $this.apiUnLock(item);
       }
