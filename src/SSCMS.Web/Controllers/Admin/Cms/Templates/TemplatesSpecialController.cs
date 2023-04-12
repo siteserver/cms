@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteDelete = "cms/templates/templatesSpecial/actions/delete";
         private const string RouteDownload = "cms/templates/templatesSpecial/actions/download";
         private const string RouteUpload = "cms/templates/templatesSpecial/actions/upload";
+        private const string RouteCreate = "cms/templates/templatesSpecial/actions/create";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

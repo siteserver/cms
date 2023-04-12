@@ -127,7 +127,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var templateInfo = await databaseManager.TemplateRepository.GetAsync(dynamicInfo.TemplateId);
             var siteInfo = await databaseManager.SiteRepository.GetAsync(dynamicInfo.SiteId);
 
-            await parseManager.InitAsync(EditMode.Default, siteInfo, dynamicInfo.ChannelId, dynamicInfo.ContentId, templateInfo);
+            await parseManager.InitAsync(EditMode.Default, siteInfo, dynamicInfo.ChannelId, dynamicInfo.ContentId, templateInfo, 0);
 
             parseManager.PageInfo.User = dynamicInfo.User;
 

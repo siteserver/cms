@@ -17,7 +17,7 @@ namespace SSCMS.Services
         ParsePage PageInfo { get; set; }
         ParseContext ContextInfo { get; set; }
 
-        Task InitAsync(EditMode editMode, Site site, int pageChannelId, int pageContentId, Template template);
+        Task InitAsync(EditMode editMode, Site site, int pageChannelId, int pageContentId, Template template, int specialId);
 
         Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic);
 

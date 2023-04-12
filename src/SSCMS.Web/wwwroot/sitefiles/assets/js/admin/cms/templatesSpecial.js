@@ -2,6 +2,7 @@
 var $urlUpload = $apiUrl + $url + '/actions/upload';
 var $urlDelete = $url + '/actions/delete';
 var $urlDownload = $url + '/actions/download';
+var $urlCreate = $url + '/actions/create';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -103,6 +104,24 @@ var methods = {
       utils.success($this.form.id === 0 ? '专题添加成功！' : '专题修改成功！');
       $this.form = null;
       $this.specials = res.specials;
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnCreateClick: function(special) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlCreate, {
+      siteId: this.siteId,
+      specialId: special.id
+    }).then(function (response) {
+      var res = response.data;
+
+      utils.addTab('生成进度查看', utils.getCmsUrl('createStatus', {siteId: $this.siteId}));
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

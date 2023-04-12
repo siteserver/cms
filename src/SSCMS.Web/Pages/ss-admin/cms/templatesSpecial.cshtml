@@ -20,12 +20,6 @@
       <el-link
         :underline="false"
         type="primary"
-        v-on:click="btnEditClick(scope.row)">
-        设置
-      </el-link>
-      <el-link
-        :underline="false"
-        type="primary"
         v-on:click="btnUploadClick(scope.row)">
         上传文件
       </el-link>
@@ -34,6 +28,18 @@
         type="primary"
         v-on:click="btnDownloadClick(scope.row)">
         下载压缩包
+      </el-link>
+      <el-link
+        :underline="false"
+        type="primary"
+        v-on:click="btnEditClick(scope.row)">
+        设置
+      </el-link>
+      <el-link
+        :underline="false"
+        type="primary"
+        v-on:click="btnCreateClick(scope.row)">
+        生成页面
       </el-link>
       <el-link
         :underline="false"
@@ -60,7 +66,7 @@
 <el-drawer
   id="form"
   v-if="form"
-  :title="form.id > 0 ? (form.isUploadOnly ? '上传文件' : '修改专题') : '添加专题'"
+  :title="form.id > 0 ? (form.isUploadOnly ? '上传文件' : '设置') : '新建专题'"
   :visible.sync="panel"
   destroy-on-close
   direction="rtl"

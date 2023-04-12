@@ -132,7 +132,7 @@ namespace SSCMS.Web.Controllers.V1
                 };
 
                 var config = await configRepository.GetAsync();
-                PageInfo = new ParsePage(pathManager, EditMode.Default, config, request.ChannelId, request.ContentId, Site, templateInfo,
+                PageInfo = new ParsePage(pathManager, EditMode.Default, config, request.ChannelId, request.ContentId, 0, Site, templateInfo,
                     new Dictionary<string, object>())
                 {
                     User = await Auth.GetUserAsync()

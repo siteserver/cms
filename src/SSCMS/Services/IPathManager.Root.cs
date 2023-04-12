@@ -56,7 +56,6 @@ namespace SSCMS.Services
         string GetPageContentsApiParameters(int siteId, int pageChannelId, int templateId, int totalNum, int pageCount,
             int currentPageIndex, string stlPageContentsElement);
 
-        string GetTriggerApiUrl(int siteId, int channelId, int contentId,
-            int fileTemplateId, bool isRedirect);
+        string GetTriggerApiUrl(int siteId, int channelId, int contentId, int fileTemplateId, int specialId, bool isRedirect);
     }
 }
