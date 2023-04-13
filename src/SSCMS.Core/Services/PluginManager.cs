@@ -127,7 +127,7 @@ namespace SSCMS.Core.Services
         private static bool IsEnabled(IPlugin plugin, int siteId, int channelId)
         {
             if (!IsEnabled(plugin, siteId)) return false;
-            if (plugin.ApplyToChannels && plugin.AllChannels) return true;
+            if (!plugin.ApplyToChannels) return false;
 
             var siteConfig = plugin.SiteConfigs?.FirstOrDefault(x => x.SiteId == siteId);
             if (siteConfig == null) return false;
