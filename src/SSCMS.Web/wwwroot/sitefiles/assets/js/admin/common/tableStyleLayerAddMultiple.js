@@ -84,7 +84,14 @@ var methods = {
       displayName: '',
       inputType: 'Text'
     });
-  }
+  },
+
+  validateAttributeName: function(rule, value, callback) {
+    if (!/^\+?[A-Za-z0-9]+$/.test(value)) {
+      return callback(new Error('字段名称只允许输入字母或者数字'));
+    }
+    callback();
+  },
 };
 
 var $vue = new Vue({

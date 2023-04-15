@@ -5,6 +5,7 @@ using Datory;
 using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Models;
+using System.Linq;
 
 namespace SSCMS.Core.Repositories
 {
@@ -17,7 +18,8 @@ namespace SSCMS.Core.Repositories
 
         public async Task<List<TableStyle>> GetTableStylesAsync(int formId)
         {
-            return await _tableStyleRepository.GetTableStylesAsync(FormDataRepository.TABLE_NAME, GetRelatedIdentities(formId), MetadataAttributes.Value);
+            var styles = await _tableStyleRepository.GetTableStylesAsync(FormDataRepository.TABLE_NAME, GetRelatedIdentities(formId), MetadataAttributes.Value);
+            return styles.Where(x => x.RelatedIdentity == formId).ToList();
         }
 
         public async Task DeleteTableStyleAsync(int formId, string attributeName)

@@ -121,6 +121,15 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
             {
                 style.CustomizeCode = request.CustomizeCode;
             }
+            else if (request.InputType == InputType.Number)
+            {
+                style.Rules = new List<InputStyleRule>{
+                  new InputStyleRule {
+                    Type = ValidateType.Decimal,
+                    Message = "字段必须是数字"
+                  }
+                };
+            }
 
             await _tableStyleRepository.InsertAsync(relatedIdentities, style);
 

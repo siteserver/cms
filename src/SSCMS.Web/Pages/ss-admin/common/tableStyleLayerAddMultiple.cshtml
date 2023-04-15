@@ -1,12 +1,12 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-form v-on:submit.native.prevent size="small" :model="form" ref="form" :inline="true" label-position="top" label-width="130px">
+<el-form v-on:submit.native.prevent size="small" :model="form" ref="form" :inline="true" label-position="top"
+  label-width="130px">
 
   <template v-for="(style, index) in form.styles">
-    <el-form-item :label="'字段名称（' + (index + 1) + '）'" :prop="'styles.' + index + '.attributeName'" :rules="{
-      required: true, message: '请输入字段名称'
-    }">
+    <el-form-item :label="'字段名称（' + (index + 1) + '）'" :prop="'styles.' + index + '.attributeName'"
+      :rules="[{required: true, message: '请输入字段名称'}, { validator: validateAttributeName }]">
       <el-input v-model="style.attributeName" placeholder="请输入字段名称"></el-input>
     </el-form-item>
     <el-form-item :label="'显示名称（' + (index + 1) + '）'" :prop="'styles.' + index + '.displayName'" :rules="{
@@ -18,15 +18,18 @@
       required: true, message: '请选择表单提交类型'
     }">
       <el-select v-model="style.inputType" placeholder="请选择表单提交类型">
-        <el-option v-for="inputType in inputTypes" :key="inputType.key" :label="inputType.value + '(' + inputType.key + ')'" :value="inputType.key"></el-option>
+        <el-option v-for="inputType in inputTypes" :key="inputType.key"
+          :label="inputType.value + '(' + inputType.key + ')'" :value="inputType.key"></el-option>
       </el-select>
-      <el-button size="mini" style="margin-left: 10px" v-if="index > 0" v-on:click="btnStyleRemoveClick(index)">删 除</el-button>
-      <el-button size="mini" style="margin-left: 10px" v-if="index + 1 === form.styles.length" v-on:click="btnStyleAddClick">新 增</el-button>
+      <el-button size="mini" style="margin-left: 10px" v-if="index > 0" v-on:click="btnStyleRemoveClick(index)">删
+        除</el-button>
+      <el-button size="mini" style="margin-left: 10px" v-if="index + 1 === form.styles.length"
+        v-on:click="btnStyleAddClick">新 增</el-button>
     </el-form-item>
     <br />
-  
+
   </template>
-  
+
 </el-form>
 
 
