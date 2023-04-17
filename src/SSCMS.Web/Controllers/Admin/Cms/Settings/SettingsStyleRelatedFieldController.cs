@@ -56,6 +56,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         {
             public int RelatedFieldId { get; set; }
             public int ParentId { get; set; }
+            public bool IsRapid { get; set; }
+            public string RapidValues { get; set; }
             public List<KeyValuePair<string, string>> Items { get; set; }
         }
 

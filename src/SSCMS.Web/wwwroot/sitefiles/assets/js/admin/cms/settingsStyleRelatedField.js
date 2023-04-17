@@ -18,10 +18,18 @@ var data = utils.init({
   itemsPanel: false,
   itemsRelatedField: null,
   itemsParentId: 0,
+  itemsParentName: null,
   itemsTree: null,
   itemsExpandedIds: [],
   itemsAddDialog: false,
-  itemsAddForm: null,
+  itemsAddForm: {
+    isRapid: true,
+    rapidValues: '',
+    items: [{
+      key: '',
+      value: ''
+    }]
+  },
   itemsEditDialog: false,
   itemsEditForm: null,
 
@@ -233,15 +241,16 @@ var methods = {
     });
   },
 
-  btnItemsAddClick: function(parentId) {
+  btnItemsAddClick: function(parentName, parentId) {
     this.itemsAddDialog = true;
+    this.itemsParentName = parentName;
     this.itemsParentId = parentId;
-    this.itemsAddForm = {
-      items: [{
-        key: '',
-        value: ''
-      }]
-    };
+    this.itemsAddForm.isRapid = true;
+    this.itemsAddForm.rapidValues = '';
+    this.itemsAddForm.items = [{
+      key: '',
+      value: ''
+    }];
   },
 
   btnItemRemoveClick: function (index) {
@@ -286,6 +295,8 @@ var methods = {
       siteId: this.siteId,
       relatedFieldId: this.itemsRelatedField.id,
       parentId: this.itemsParentId,
+      isRapid: this.itemsAddForm.isRapid,
+      rapidValues: this.itemsAddForm.rapidValues,
       items: this.itemsAddForm.items
     }).then(function (response) {
       var res = response.data;
@@ -347,9 +358,13 @@ var methods = {
   btnItemsAddSubmitClick: function () {
     var $this = this;
 
-    this.$refs.itemsAddForm.validate(function(valid) {
-      if (valid) {
-        $this.apiItemsAdd();
+    this.$refs.itemsAddForm1.validate(function(valid1) {
+      if (valid1) {
+        $this.$refs.itemsAddForm2.validate(function(valid2) {
+          if (valid2) {
+            $this.apiItemsAdd();
+          }
+        });
       }
     });
   },

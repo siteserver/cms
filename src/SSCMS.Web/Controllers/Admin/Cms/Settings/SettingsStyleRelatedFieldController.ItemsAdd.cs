@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -16,18 +17,39 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            foreach (var item in request.Items)
+            if (request.IsRapid)
             {
-                var itemInfo = new RelatedFieldItem
+                foreach (var rapidValue in ListUtils.GetStringListByReturnAndNewline(request.RapidValues))
                 {
-                    Id = 0,
-                    SiteId = request.SiteId,
-                    RelatedFieldId = request.RelatedFieldId,
-                    Label = item.Key,
-                    Value = item.Value,
-                    ParentId = request.ParentId
-                };
-                await _relatedFieldItemRepository.InsertAsync(itemInfo);
+                    if (string.IsNullOrWhiteSpace(rapidValue)) continue;
+
+                    var itemInfo = new RelatedFieldItem
+                    {
+                        Id = 0,
+                        SiteId = request.SiteId,
+                        RelatedFieldId = request.RelatedFieldId,
+                        Label = rapidValue,
+                        Value = rapidValue,
+                        ParentId = request.ParentId
+                    };
+                    await _relatedFieldItemRepository.InsertAsync(itemInfo);
+                }
+            }
+            else
+            {
+                foreach (var item in request.Items)
+                {
+                    var itemInfo = new RelatedFieldItem
+                    {
+                        Id = 0,
+                        SiteId = request.SiteId,
+                        RelatedFieldId = request.RelatedFieldId,
+                        Label = item.Key,
+                        Value = item.Value,
+                        ParentId = request.ParentId
+                    };
+                    await _relatedFieldItemRepository.InsertAsync(itemInfo);
+                }
             }
 
             await _authManager.AddAdminLogAsync("批量添加联动字段项");

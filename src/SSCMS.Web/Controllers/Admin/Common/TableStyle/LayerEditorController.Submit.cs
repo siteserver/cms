@@ -79,6 +79,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
                 {
                     foreach (var rapidValue in ListUtils.GetStringListByReturnAndNewline(request.RapidValues))
                     {
+                        if (string.IsNullOrWhiteSpace(rapidValue)) continue;
+                        
                         var itemInfo = new InputStyleItem
                         {
                             Label = rapidValue,
