@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Microsoft.AspNetCore.Mvc;
@@ -85,6 +86,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         relatedFields[style.RelatedFieldId] = items;
                     }
                     entity.Set(style.AttributeName, channel.Get(style.AttributeName));
+                }
+                else if (style.InputType == InputType.Date || style.InputType == InputType.DateTime)
+                {
+                    var date = TranslateUtils.ToDateTime(channel.Get<string>(style.AttributeName), DateTime.Now);
+                    entity.Set(style.AttributeName, date);
                 }
                 else
                 {

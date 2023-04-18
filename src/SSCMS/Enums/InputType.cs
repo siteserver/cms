@@ -34,7 +34,7 @@ namespace SSCMS.Enums
         DateTime,
         [DataEnum(DisplayName = "图片上传控件")]
         Image,
-        [DataEnum(DisplayName = "音视频上传控件")]
+        [DataEnum(DisplayName = "视频上传控件")]
         Video,
         [DataEnum(DisplayName = "文件上传控件")]
         File,

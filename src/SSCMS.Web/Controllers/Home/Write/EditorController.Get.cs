@@ -108,6 +108,11 @@ namespace SSCMS.Web.Controllers.Home.Write
                         relatedFields[style.RelatedFieldId] = items;
                     }
                 }
+                else if (style.InputType == InputType.Date || style.InputType == InputType.DateTime)
+                {
+                    var date = TranslateUtils.ToDateTime(content.Get<string>(style.AttributeName), DateTime.Now);
+                    content.Set(style.AttributeName, date);
+                }
             }
 
             //await ContentUtility.TextEditorContentDecodeAsync(parseManager.PathManager, pageInfo.Site, content.Get<string>(ContentAttribute.Content), pageInfo.IsLocal);

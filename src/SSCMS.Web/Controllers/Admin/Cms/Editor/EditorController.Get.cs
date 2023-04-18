@@ -111,6 +111,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                         relatedFields[style.RelatedFieldId] = items;
                     }
                 }
+                else if (style.InputType == InputType.Date || style.InputType == InputType.DateTime)
+                {
+                    var date = TranslateUtils.ToDateTime(content.Get<string>(style.AttributeName), DateTime.Now);
+                    content.Set(style.AttributeName, date);
+                }
             }
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
