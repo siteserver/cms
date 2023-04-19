@@ -46,6 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             public int UserLockLoginCount { get; set; }
             public string UserLockLoginType { get; set; }
             public int UserLockLoginHours { get; set; }
+            public bool IsUserCaptchaDisabled { get; set; }
         }
     }
 }

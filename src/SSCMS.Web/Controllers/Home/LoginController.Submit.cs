@@ -55,8 +55,7 @@ namespace SSCMS.Web.Controllers.Home
                 user = await _userRepository.GetByUserNameAsync(userName);
             }
 
-            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user
-            ); // 记录最后登录时间、失败次数清零
+            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(user); // 记录最后登录时间、失败次数清零
 
             await _statRepository.AddCountAsync(StatType.UserLogin);
             await _logRepository.AddUserLogAsync(user, ipAddress, Constants.ActionsLoginSuccess);

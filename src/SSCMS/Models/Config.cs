@@ -51,6 +51,7 @@ namespace SSCMS.Models
         public string UserLockLoginType { get; set; } = "Hours";
         public int UserLockLoginHours { get; set; } = 3;
         public string UserDefaultGroupAdminName { get; set; }
+        public bool IsUserCaptchaDisabled { get; set; }
         public bool IsCloudAdmin { get; set; }
         public string AdminTitle { get; set; } = Constants.AdminTitle;
         public string AdminFaviconUrl { get; set; }

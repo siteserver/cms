@@ -14,7 +14,8 @@ var data = utils.init({
     userLockLoginCount: null,
     userLockLoginType: null,
     userLockLoginHours: null,
-    userFindPasswordSmsTplId: null
+    userFindPasswordSmsTplId: null,
+    isUserCaptchaDisabled: null,
   }
 });
 
@@ -39,6 +40,7 @@ var methods = {
       $this.form.userLockLoginType = res.config.userLockLoginType;
       $this.form.userLockLoginHours = res.config.userLockLoginHours;
       $this.form.userFindPasswordSmsTplId = res.config.userFindPasswordSmsTplId;
+      $this.form.isUserCaptchaDisabled = res.config.isUserCaptchaDisabled;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -63,6 +65,7 @@ var methods = {
       userLockLoginType: this.form.userLockLoginType,
       userLockLoginHours: this.form.userLockLoginHours,
       userFindPasswordSmsTplId: this.form.userFindPasswordSmsTplId,
+      isUserCaptchaDisabled: this.form.isUserCaptchaDisabled,
     }).then(function (response) {
       var res = response.data;
 

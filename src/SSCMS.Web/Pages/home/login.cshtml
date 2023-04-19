@@ -58,7 +58,7 @@
         </el-input>
       </el-form-item>
 
-      <el-form-item prop="captchaValue" :rules="[{ required: true, message: '请输入验证码' }]">
+      <el-form-item v-if="!isUserCaptchaDisabled" prop="captchaValue" :rules="[{ required: true, message: '请输入验证码' }]">
         <el-input v-model="form.captchaValue" placeholder="请输入验证码" autocomplete="off" v-on:keyup.enter.native="btnSubmitClick">
           <template slot="prepend">
             <i class="el-icon-picture"></i>

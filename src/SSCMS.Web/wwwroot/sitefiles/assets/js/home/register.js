@@ -11,6 +11,7 @@ var data = utils.init({
   isUserRegistrationMobile: null,
   isUserRegistrationEmail: null,
   isUserRegistrationGroup: null,
+  isUserCaptchaDisabled: false,
   isHomeAgreement: null,
   homeAgreementHtml: null,
   styles: null,
@@ -82,6 +83,7 @@ var methods = {
       $this.isUserRegistrationMobile = res.isUserRegistrationMobile;
       $this.isUserRegistrationEmail = res.isUserRegistrationEmail;
       $this.isUserRegistrationGroup = res.isUserRegistrationGroup;
+      $this.isUserCaptchaDisabled = res.isUserCaptchaDisabled;
       $this.isHomeAgreement = res.isHomeAgreement;
       $this.homeAgreementHtml = res.homeAgreementHtml;
       $this.styles = res.styles;
@@ -318,6 +320,8 @@ var methods = {
       if (valid) {
         if ($this.isMobileCode) {
           $this.apiVerifyMobile();
+        } else if ($this.isUserCaptchaDisabled) {
+          $this.apiSubmit();
         } else {
           $this.apiCheckCaptcha();
         }

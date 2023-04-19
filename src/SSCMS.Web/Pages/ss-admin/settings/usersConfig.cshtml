@@ -68,6 +68,11 @@
   ]">
     <el-input v-model:number="form.userLockLoginHours"></el-input>
   </el-form-item>
+  <el-form-item label="是否禁用验证码">
+    <el-radio v-model="form.isUserCaptchaDisabled" :label="true">禁用</el-radio>
+    <el-radio v-model="form.isUserCaptchaDisabled" :label="false">启用</el-radio>
+    <div class="tips">控制用户中心登录界面是否启用验证码功能</div>
+  </el-form-item>
 </el-form>
 
 <el-divider></el-divider>

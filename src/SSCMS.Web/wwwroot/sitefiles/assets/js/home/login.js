@@ -11,6 +11,7 @@ var data = utils.init({
   version: null,
   homeTitle: null,
   isSmsEnabled: false,
+  isUserCaptchaDisabled: false,
   countdown: 0,
   form: {
     type: 'account',
@@ -42,7 +43,12 @@ var methods = {
       $this.version = res.version;
       $this.homeTitle = res.homeTitle;
       $this.isSmsEnabled = res.isSmsEnabled;
-      $this.apiCaptcha();
+      $this.isUserCaptchaDisabled = res.isUserCaptchaDisabled;
+      if ($this.isUserCaptchaDisabled) {
+        $this.btnTypeClick();
+      } else {
+        $this.apiCaptcha();
+      }
     }).catch(function (error) {
       utils.notifyError(error);
     }).then(function () {
@@ -69,18 +75,21 @@ var methods = {
 
   apiCaptchaCheck: function () {
     var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlCaptchaCheck, {
-      token: this.captchaToken,
-      value: this.form.captchaValue
-    }).then(function (response) {
+    if (this.isUserCaptchaDisabled) {
       $this.apiSubmit();
-    }).catch(function (error) {
-      $this.apiCaptcha();
-      utils.loading($this, false);
-      utils.notifyError(error);
-    });
+    } else {
+      utils.loading(this, true);
+      $api.post($urlCaptchaCheck, {
+        token: this.captchaToken,
+        value: this.form.captchaValue
+      }).then(function (response) {
+        $this.apiSubmit();
+      }).catch(function (error) {
+        $this.apiCaptcha();
+        utils.loading($this, false);
+        utils.notifyError(error);
+      });
+    }
   },
 
   apiSendSms: function () {
@@ -151,8 +160,8 @@ var methods = {
   btnTypeClick: function() {
     var $this = this;
 
-    this.$refs.formAccount.clearValidate();
-    this.$refs.formMobile.clearValidate();
+    this.$refs.formAccount && this.$refs.formAccount.clearValidate();
+    this.$refs.formMobile && this.$refs.formMobile.clearValidate();
     if (this.form.type == 'account') {
       setTimeout(function () {
         $this.$refs['account'].focus();

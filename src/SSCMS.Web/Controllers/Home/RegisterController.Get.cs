@@ -40,6 +40,7 @@ namespace SSCMS.Web.Controllers.Home
                 IsUserRegistrationMobile = config.IsUserRegistrationMobile,
                 IsUserRegistrationEmail = config.IsUserRegistrationEmail,
                 IsUserRegistrationGroup = config.IsUserRegistrationGroup,
+                IsUserCaptchaDisabled = config.IsUserCaptchaDisabled,
                 IsHomeAgreement = config.IsHomeAgreement,
                 HomeAgreementHtml = config.HomeAgreementHtml,
                 Styles = styles,

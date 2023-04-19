@@ -71,7 +71,7 @@
 
       @await Html.PartialAsync("_PartialForm")
 
-      <el-form-item v-if="!isMobileCode" label="验证码" prop="captchaValue" :rules="[{ required: true, message: '请输入验证码' }]">
+      <el-form-item v-if="!isMobileCode && !isUserCaptchaDisabled" label="验证码" prop="captchaValue" :rules="[{ required: true, message: '请输入验证码' }]">
         <el-input v-model="form.captchaValue" placeholder="请输入验证码"></el-input>
         <div style="margin-top: 5px;">
           <a href="javascript:;" v-on:click="apiCaptchaReload">
