@@ -25,18 +25,10 @@ namespace SSCMS.Enums
         AlphaNum,
         [DataEnum(DisplayName = "字段只能包含英文字母或空格")]
         AlphaSpaces,
-        [DataEnum(DisplayName = "字段必须是有效的信用卡")]
-        CreditCard,
-        [DataEnum(DisplayName = "字段必须有一个以最小值和最大值为界的数值")]
-        Between,
         [DataEnum(DisplayName = "字段必须是数字")]
         Decimal,
         [DataEnum(DisplayName = "字段必须是整数")]
         Digits,
-        [DataEnum(DisplayName = "字段必须具有指定列表中的值")]
-        Included,
-        [DataEnum(DisplayName = "字段不能具有指定列表中的值")]
-        Excluded,
         [DataEnum(DisplayName = "字段不能超过指定的长度")]
         Max,
         [DataEnum(DisplayName = "字段必须是数值，并且不能大于指定的值")]
@@ -49,8 +41,6 @@ namespace SSCMS.Enums
         Regex,
         [DataEnum(DisplayName = "字段必须是中文")]
         Chinese,
-        [DataEnum(DisplayName = "字段必须是货币格式")]
-        Currency,
         [DataEnum(DisplayName = "字段必须是邮政编码")]
         Zip,
         [DataEnum(DisplayName = "字段必须是身份证号码")]

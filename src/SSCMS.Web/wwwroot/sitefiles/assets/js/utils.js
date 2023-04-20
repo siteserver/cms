@@ -749,6 +749,18 @@ var utils = {
     }
   },
 
+  validateMaxValue: function (rule, value, callback) {
+    if (!value) {
+      callback();
+    } else if (!/^-?\d+(\.\d{1,2})?$/.test(value)) {
+      callback(new Error(rule.message || '字段必须是数值，并且不能大于指定的值'));
+    } else if (value && parseInt(value) > parseInt(rule.value)) {
+      callback(new Error(rule.message || '字段必须是数值，并且不能大于指定的值'));
+    } else {
+      callback()
+    }
+  },
+
   validateMin: function (rule, value, callback) {
     if (value && value.length < parseInt(rule.value)) {
       callback(new Error(rule.message || '字段不能低于指定的长度'));
@@ -757,9 +769,23 @@ var utils = {
     }
   },
 
+  validateMinValue: function (rule, value, callback) {
+    if (!value) {
+      callback();
+    } else if (!/^-?\d+(\.\d{1,2})?$/.test(value)) {
+      callback(new Error(rule.message || '字段必须是数值，并且不能小于指定的值'));
+    } else if (value && parseInt(value) < parseInt(rule.value)) {
+      callback(new Error(rule.message || '字段必须是数值，并且不能小于指定的值'));
+    } else {
+      callback()
+    }
+  },
+
   validateIdCard: function (rule, value, callback) {
     var reg = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
-    if (!value || !reg.test(value)) {
+    if (!value) {
+      callback();
+    } else if (!reg.test(value)) {
       callback(new Error(rule.message || '字段必须是身份证号码'));
     } else {
       callback()
@@ -768,7 +794,7 @@ var utils = {
 
   validateChinese: function (rule, value, callback) {
     if (!value) {
-      callback(new Error(rule.message || '字段必须是中文'));
+      callback();
     } else {
       var isAll = true;
       for(var i = 0; i < value.length; i++) {
@@ -877,19 +903,14 @@ var utils = {
       { alphaDash: "字段只能包含英文字母、数字、破折号或下划线" },
       { alphaNum: "字段只能包含英文字母或数字" },
       { alphaSpaces: "字段只能包含英文字母或空格" },
-      { creditCard: "字段必须是有效的信用卡" },
-      { between: "字段必须有一个以最小值和最大值为界的数值" },
       { decimal: "字段必须是数字" },
       { digits: "字段必须是整数" },
-      { included: "字段必须具有指定列表中的值" },
-      { excluded: "字段不能具有指定列表中的值" },
       { max: "字段不能超过指定的长度" },
       { maxValue: "字段必须是数值，并且不能大于指定的值" },
       { min: "字段不能低于指定的长度" },
       { minValue: "字段必须是数值，并且不能小于指定的值" },
       { regex: "字段必须匹配指定的正则表达式" },
       { chinese: "字段必须是中文" },
-      { currency: "字段必须是货币格式" },
       { zip: "字段必须是邮政编码" },
       { idCard: "字段必须是身份证号码" },
     ];
@@ -922,33 +943,27 @@ var utils = {
           });
         } else if (ruleType === "alpha") {
           array.push({
-            type: "alpha",
+            type: "string",
+            pattern: /^[a-zA-Z]+$/,
             message: rule.message || options.alpha
           });
         } else if (ruleType === "alphaDash") {
           array.push({
-            type: "alphaDash",
+            type: "string",
+            pattern: /^[a-zA-Z0-9_-]+$/,
             message: rule.message || options.alphaDash,
           });
         } else if (ruleType === "alphaNum") {
           array.push({
-            type: "alphaNum",
+            type: "string",
+            pattern: /^[a-zA-Z0-9]+$/,
             message: rule.message || options.alphaNum,
           });
         } else if (ruleType === "alphaSpaces") {
           array.push({
-            type: "alphaSpaces",
+            type: "string",
+            pattern: /^[a-zA-Z\s]+$/,
             message: rule.message || options.alphaSpaces,
-          });
-        } else if (ruleType === "creditCard") {
-          array.push({
-            type: "creditCard",
-            message: rule.message || options.creditCard,
-          });
-        } else if (ruleType === "between") {
-          array.push({
-            type: "between",
-            message: rule.message || options.between,
           });
         } else if (ruleType === "decimal") {
           array.push({
@@ -960,67 +975,47 @@ var utils = {
             validator: utils.validateDigits,
             message: rule.message || options.digits
           });
-        } else if (ruleType === "included") {
-          array.push({
-            type: "included",
-            message: rule.message || options.included,
-          });
-        } else if (ruleType === "excluded") {
-          array.push({
-            type: "excluded",
-            message: rule.message || options.excluded,
-          });
         } else if (ruleType === "max") {
           array.push({
             validator: utils.validateMax,
-            message: rule.message || options.mobile,
+            message: rule.message || options.max,
             value: rule.value
           });
         } else if (ruleType === "maxValue") {
           array.push({
-            type: "maxValue",
+            validator: utils.validateMaxValue,
             message: rule.message || options.maxValue,
+            value: rule.value
           });
         } else if (ruleType === "min") {
           array.push({
             validator: utils.validateMin,
-            message: rule.message || options.mobile,
+            message: rule.message || options.min,
             value: rule.value
           });
         } else if (ruleType === "minValue") {
           array.push({
-            type: "minValue",
+            validator: utils.validateMinValue,
             message: rule.message || options.minValue,
+            value: rule.value
           });
         } else if (ruleType === "regex" && rule.value) {
           var re = new RegExp(rule.value, "ig");
-          var message = rule.message || options.regex;
           array.push({
-            validator: function (rule, value, callback) {
-              if (!value){
-                callback();
-              } else if (!re.test(value)){
-                callback(new Error(message));
-              } else {
-                callback()
-              }
-            },
-            message: message
+            type: "string",
+            pattern: re,
+            message: rule.message || options.regex,
           });
         } else if (ruleType === "chinese") {
           array.push({
             validator: utils.validateChinese,
             message: rule.message || options.chinese,
           });
-        } else if (ruleType === "currency") {
-          array.push({
-            type: "currency",
-            message: rule.message || options.currency,
-          });
         } else if (ruleType === "zip") {
           array.push({
-            type: "zip",
-            message: rule.message || options.zip
+            type: "string",
+            pattern: /^[0-9]{6,6}$/,
+            message: rule.message || options.zip,
           });
         } else if (ruleType === "idCard") {
           array.push({

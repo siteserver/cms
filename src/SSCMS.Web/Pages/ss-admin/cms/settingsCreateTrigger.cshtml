@@ -61,9 +61,9 @@
         <tr class="el-table__row">
           <td rowspan="1" colspan="1" class="el-table_1_column_1">
           <div class="cell">
-            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+            <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
               <i class="el-icon-link"></i>
-            </a>
+            </el-link>
             {{ data.label }} ({{ data.count }})
             <el-tag size="mini" v-if="data.indexName">
               {{ data.indexName }}
@@ -123,9 +123,9 @@
           :expand-on-click-node="true"
           v-on:check-change="handleTreeChanged">
           <span class="custom-tree-node" slot-scope="{ node, data }">
-            <a :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+            <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
               <i class="el-icon-link"></i>
-            </a>
+            </el-link>
             {{ data.label }} ({{ data.count }})
             <el-tag size="mini" v-if="data.indexName">
               {{ data.indexName }}

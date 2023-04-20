@@ -35,7 +35,7 @@ namespace SSCMS.Core.StlParser.Utility
         public const string OrderHits = "Hits";	            //点击量
         public const string OrderRandom = "Random";            //随机
 
-        
+
 
         public static bool IsStlChannelElementWithTypePageContent(List<string> list)
         {
@@ -81,7 +81,7 @@ namespace SSCMS.Core.StlParser.Utility
             return stlPageContentElement;
         }
 
-        
+
 
         public static string GetNameFromEntity(string stlEntity)
         {
@@ -197,25 +197,28 @@ namespace SSCMS.Core.StlParser.Utility
         public static int GetItemIndex(ParseContext contextInfo)
         {
             var dbItemIndex = 0;
-            if (contextInfo.ContextType == ParseType.Channel)
+            if (contextInfo.ItemContainer != null)
             {
-                dbItemIndex = contextInfo.ItemContainer.ChannelItem.Key;
-            }
-            else if (contextInfo.ContextType == ParseType.Content)
-            {
-                dbItemIndex = contextInfo.ItemContainer.ContentItem.Key;
-            }
-            else if (contextInfo.ContextType == ParseType.SqlContent)
-            {
-                dbItemIndex = contextInfo.ItemContainer.SqlItem.Key;
-            }
-            else if (contextInfo.ContextType == ParseType.Site)
-            {
-                dbItemIndex = contextInfo.ItemContainer.SiteItem.Key;
-            }
-            else if (contextInfo.ContextType == ParseType.Each)
-            {
-                dbItemIndex = contextInfo.ItemContainer.EachItem.Key;
+                if (contextInfo.ContextType == ParseType.Channel)
+                {
+                    dbItemIndex = contextInfo.ItemContainer.ChannelItem.Key;
+                }
+                else if (contextInfo.ContextType == ParseType.Content)
+                {
+                    dbItemIndex = contextInfo.ItemContainer.ContentItem.Key;
+                }
+                else if (contextInfo.ContextType == ParseType.SqlContent)
+                {
+                    dbItemIndex = contextInfo.ItemContainer.SqlItem.Key;
+                }
+                else if (contextInfo.ContextType == ParseType.Site)
+                {
+                    dbItemIndex = contextInfo.ItemContainer.SiteItem.Key;
+                }
+                else if (contextInfo.ContextType == ParseType.Each)
+                {
+                    dbItemIndex = contextInfo.ItemContainer.EachItem.Key;
+                }
             }
 
             return contextInfo.PageItemIndex + dbItemIndex + 1;
