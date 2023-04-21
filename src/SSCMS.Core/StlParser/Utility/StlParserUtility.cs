@@ -235,8 +235,8 @@ namespace SSCMS.Core.StlParser.Utility
             {
                 if (content == null)
                 {
-                    var nodeInfo = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
-                    currentUrl = await parseManager.PathManager.GetContentUrlAsync(site, nodeInfo, contentId, isLocal);
+                    var channel = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
+                    currentUrl = await parseManager.PathManager.GetContentUrlAsync(site, channel, contentId, isLocal);
                 }
                 else
                 {
@@ -245,7 +245,8 @@ namespace SSCMS.Core.StlParser.Utility
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                currentUrl = await parseManager.PathManager.GetChannelUrlAsync(site, await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId), isLocal);
+                var channel = await parseManager.DatabaseManager.ChannelRepository.GetAsync(channelId);
+                currentUrl = await parseManager.PathManager.GetChannelUrlAsync(site, channel, isLocal);
             }
             else if (templateType == TemplateType.FileTemplate)
             {

@@ -53,7 +53,7 @@ namespace SSCMS.Core.Services
 
         public string GetHomeUrl(params string[] paths)
         {
-            return PageUtils.Combine($"/{Constants.HomeDirectory}", PageUtils.Combine(paths), PageUtils.Separator);
+            return PageUtils.Combine($"/{Constants.HomeDirectory}", PageUtils.Combine(paths));
         }
 
         //public string GetApiUrl(Site site, params string[] paths)

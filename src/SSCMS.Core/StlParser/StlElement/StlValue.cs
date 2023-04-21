@@ -229,8 +229,8 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(TypeCurrentUrl, type))//当前页地址
             {
-                var contentInfo = await parseManager.GetContentAsync();
-                parsedContent = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                var content = await parseManager.GetContentAsync();
+                parsedContent = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, content, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
             }
             else if (StringUtils.EqualsIgnoreCase(TypeChannelUrl, type))//栏目页地址
             {
@@ -242,20 +242,20 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(TypeLoginUrl, type))
             {
-                var contentInfo = await parseManager.GetContentAsync();
-                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                var content = await parseManager.GetContentAsync();
+                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, content, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                 parsedContent = parseManager.PathManager.GetHomeUrl($"login/?returnUrl={PageUtils.UrlEncode(returnUrl)}");
             }
             else if (StringUtils.EqualsIgnoreCase(TypeLogoutUrl, type))
             {
-                var contentInfo = await parseManager.GetContentAsync();
-                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                var content = await parseManager.GetContentAsync();
+                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, content, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                 parsedContent = parseManager.PathManager.GetHomeUrl($"logout/?returnUrl={PageUtils.UrlEncode(returnUrl)}");
             }
             else if (StringUtils.EqualsIgnoreCase(TypeRegisterUrl, type))
             {
-                var contentInfo = await parseManager.GetContentAsync();
-                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
+                var content = await parseManager.GetContentAsync();
+                var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, content, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                 parsedContent = parseManager.PathManager.GetHomeUrl($"register/?returnUrl={PageUtils.UrlEncode(returnUrl)}");
             }
             else if (StringUtils.StartsWithIgnoreCase(type, "TableFor"))//

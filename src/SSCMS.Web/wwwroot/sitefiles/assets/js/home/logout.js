@@ -1,6 +1,8 @@
 var $url = '/logout';
 
-var data = utils.init({});
+var data = utils.init({
+  returnUrl: utils.getQueryString('returnUrl')
+});
 
 var methods = {
   logout: function () {
@@ -9,7 +11,11 @@ var methods = {
   },
 
   redirect: function () {
-    window.top.location.href = utils.getRootUrl('login');
+    if (this.returnUrl) {
+      window.top.location.href = this.returnUrl;
+    } else {
+      window.top.location.href = utils.getRootUrl('login');
+    }
   }
 };
 
