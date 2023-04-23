@@ -654,7 +654,7 @@ var methods = {
   btnLayerClick: function(options) {
     var query = {
       siteId: this.siteId,
-      editorAttributeName: "Body",
+      editorAttributeName: "Content",
     };
 
     if (options.inputType) {
