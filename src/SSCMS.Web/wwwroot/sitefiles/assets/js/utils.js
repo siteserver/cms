@@ -301,6 +301,9 @@ var utils = {
   },
 
   getTabVue: function(name) {
+    if (!name) {
+      return window.$vue;
+    }
     var $this = utils.getRootVue();
     var tab = $this.tabs.find(function(tab) {
       return tab.name == name;
@@ -667,6 +670,12 @@ var utils = {
   },
 
   openDocs: function (url) {
+    var $this = utils.getRootVue();
+    var vue = utils.getTabVue($this.tabName);
+    if (vue && vue.homepage) {
+      window.open(vue.homepage, '_docs');
+      return;
+    }
     url = url.replace('.', '');
     url = url.replace('/', '');
     url = url.replace('ss-admin/', '');

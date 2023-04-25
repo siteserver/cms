@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsCreateRuleController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<GetResult>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.SettingsCreateRule))
@@ -19,12 +20,28 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            var channel = await _channelRepository.GetAsync(request.Id);
 
-            if (request.ChannelId != request.SiteId)
+            if (request.Id != request.SiteId)
             {
-                channel.LinkUrl = request.LinkUrl;
                 channel.LinkType = request.LinkType;
+
+                if (channel.LinkType == Enums.LinkType.None)
+                {
+                    channel.LinkUrl = request.LinkUrl;
+                }
+                else if (channel.LinkType == Enums.LinkType.LinkToChannel)
+                {
+                    channel.LinkUrl = ListUtils.ToString(request.ChannelIds);
+                }
+                else if (channel.LinkType == Enums.LinkType.LinkToContent)
+                {
+                    channel.LinkUrl = ListUtils.ToString(request.ChannelIds) + "_" + request.ContentId;
+                }
+                else
+                {
+                    channel.LinkUrl = string.Empty;
+                }
 
                 var filePath = channel.FilePath;
                 if (!string.IsNullOrEmpty(request.FilePath) && !StringUtils.EqualsIgnoreCase(filePath, request.FilePath))
@@ -78,40 +95,24 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 }
             }
 
-            if (request.ChannelFilePathRule != await _pathManager.GetChannelFilePathRuleAsync(site, request.ChannelId))
+            if (request.ChannelFilePathRule != await _pathManager.GetChannelFilePathRuleAsync(site, request.Id))
             {
                 channel.ChannelFilePathRule = request.ChannelFilePathRule;
             }
-            if (request.ContentFilePathRule != await _pathManager.GetContentFilePathRuleAsync(site, request.ChannelId))
+            if (request.ContentFilePathRule != await _pathManager.GetContentFilePathRuleAsync(site, request.Id))
             {
                 channel.ContentFilePathRule = request.ContentFilePathRule;
             }
 
             await _channelRepository.UpdateAsync(channel);
 
-            await _createManager.CreateChannelAsync(request.SiteId, request.ChannelId);
+            await _createManager.CreateChannelAsync(request.SiteId, request.Id);
 
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置页面生成规则", $"栏目：{channel.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, request.Id, 0, "设置页面生成规则", $"栏目：{channel.ChannelName}");
 
-            var cascade = await _channelRepository.GetCascadeAsync(site, channel, async (summary) =>
+            return new BoolResult
             {
-                var count = await _contentRepository.GetCountAsync(site, summary);
-                var entity = await _channelRepository.GetAsync(summary.Id);
-                var filePath = await _pathManager.GetInputChannelUrlAsync(site, entity, false);
-                var contentFilePathRule = string.IsNullOrEmpty(entity.ContentFilePathRule)
-                    ? await _pathManager.GetContentFilePathRuleAsync(site, summary.Id)
-                    : entity.ContentFilePathRule;
-                return new
-                {
-                    Count = count,
-                    FilePath = filePath,
-                    ContentFilePathRule = contentFilePathRule
-                };
-            });
-
-            return new GetResult
-            {
-                Channel = cascade
+                Value = true
             };
         }
     }

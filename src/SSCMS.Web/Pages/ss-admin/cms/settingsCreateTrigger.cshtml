@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <el-form v-on:submit.native.prevent :inline="true">
-  <el-form-item label="关键字">
+  <el-form-item label="关键字" style="margin-bottom: 0;">
     <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
   </el-form-item>
 </el-form>
@@ -89,6 +89,8 @@
     </table>
   </div>
 </el-tree>
+
+<el-divider></el-divider>
 
 <el-drawer
   id="editForm"

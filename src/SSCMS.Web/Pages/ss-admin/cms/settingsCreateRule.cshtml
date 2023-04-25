@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <el-form v-on:submit.native.prevent :inline="true">
-  <el-form-item label="关键字">
+  <el-form-item label="关键字" style="margin-bottom: 0;">
     <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
   </el-form-item>
 </el-form>
@@ -70,8 +70,14 @@
             <i class="el-icon-link"></i>
           </el-link>
           {{ data.label }} ({{ data.count }})
-          <el-tag size="mini" v-if="data.indexName">
-            {{ data.indexName }}
+
+          <!-- linkType && linkUrl -->
+          <el-tooltip v-if="data.channel.linkType != 'None' || data.channel.linkUrl" effect="light" content="指定链接" placement="top">
+            <i class="fa fa-external-link"></i>
+          </el-tooltip>
+
+          <el-tag size="mini" v-if="data.channel.indexName">
+            {{ data.channel.indexName }}
           </el-tag>
         </div>
         </td>
@@ -98,6 +104,8 @@
   </div>
 </el-tree>
 
+<el-divider></el-divider>
+
 <el-drawer
   id="editForm"
   v-if="editForm"
@@ -111,7 +119,54 @@
       <el-form-item label="栏目名称" prop="channelName">
         {{editForm.channelName}}
       </el-form-item>
-      <el-form-item v-if="editForm.channelId !== siteId" label="外部链接">
+
+      <el-form-item label="链接类型">
+        <el-tooltip effect="light" content="设置此栏目的链接与子栏目及内容的关系" placement="right">
+          <el-select v-model="editForm.linkType" placeholder="请选择链接类型" v-on:change="editForm.linkUrl = editForm.linkToChannel = '';">
+            <el-option v-for="linkType in editLinkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
+          </el-select>
+        </el-tooltip>
+      </el-form-item>
+      <el-form-item v-if="editForm.linkType == 'None'" label="外部链接">
+        <el-input v-model="editForm.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
+      </el-form-item>
+      <el-form-item
+        v-if="editForm.linkType == 'LinkToChannel' || editForm.linkType == 'LinkToContent'" 
+        label="指定栏目"
+        prop="channelIds"
+        :rules="[{ required: true, message: '请选择栏目' }]"
+        >
+        <el-cascader
+          v-model="editForm.channelIds"
+          filterable
+          :options="channels"
+          :props="{ checkStrictly: true }"
+          filterable 
+          v-on:change="editForm.contentId = 0; editForm.contentTitle = '';"
+          style="width: 100%;"
+          placeholder="请选择栏目">
+          <template slot-scope="{ node, data }">
+            <span>{{ data.label }}</span>
+            <span> ({{ data.count }}) </span>
+          </template>
+        </el-cascader>
+      </el-form-item>
+      <el-form-item 
+        v-if="editForm.linkType == 'LinkToContent' && editForm.channelIds && editForm.channelIds.length > 0" 
+        label="指定内容"
+        prop="contentTitle"
+        :rules="[{ required: true, message: '请选择内容' }]"
+        >
+        <template v-if="editForm.contentId > 0">
+          <el-link type="primary" :underline="false" :href="getContentUrl()" v-html="editForm.contentTitle" target="_blank"></el-link>
+          <div style="clear: both;"></div>
+        </template>
+        <el-button size="mini" icon="el-icon-circle-plus-outline" v-on:click="btnLinkToContentClick">
+          指定内容
+        </el-button>
+      </el-form-item>
+
+      <!-- <el-form-item v-if="editForm.channelId !== siteId" label="外部链接">
         <el-input v-model="editForm.linkUrl" placeholder="设置后栏目链接将转向此地址"></el-input>
       </el-form-item>
       <el-form-item v-if="editForm.channelId !== siteId" label="链接类型">
@@ -120,7 +175,7 @@
             <el-option v-for="linkType in editLinkTypes" :key="linkType.value" :label="linkType.label" :value="linkType.value"></el-option>
           </el-select>
         </el-tooltip>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item v-if="editForm.channelId !== siteId" label="生成页面路径">
         <el-input v-model="editForm.filePath" placeholder="在此设置栏目的生成页面地址"></el-input>
       </el-form-item>

@@ -63,6 +63,7 @@ var methods = {
     });
 
     var transSiteId = this.form.transSiteIds[this.form.transSiteIds.length - 1];
+    var transType = this.siteId !== transSiteId ? 'Copy' : this.form.transType;
 
     utils.loading(this, true);
     $api.post($url, {
@@ -70,7 +71,7 @@ var methods = {
       channelId: this.channelId,
       transSiteId: transSiteId,
       transChannelIds: transChannelIds,
-      transType: this.form.transType
+      transType: transType
     }).then(function (response) {
       var res = response.data;
 
@@ -79,7 +80,7 @@ var methods = {
         parent.$vue.addTranslation(
           transSiteId,
           channel.id,
-          $this.form.transType,
+          transType,
           channel.name
         );
       });
@@ -90,6 +91,11 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  isCopyType: function () {
+    var transSiteId = this.form.transSiteIds[this.form.transSiteIds.length - 1];
+    return this.siteId === transSiteId;
   },
 
   handleTransSiteIdChange: function() {

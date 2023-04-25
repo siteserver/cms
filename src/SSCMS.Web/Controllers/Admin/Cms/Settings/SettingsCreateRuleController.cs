@@ -41,6 +41,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public Cascade<int> Channel { get; set; }
         }
 
+        public class LinkTo
+        {
+            public List<int> ChannelIds { get; set; }
+
+            public int ContentId { get; set; }
+
+            public string ContentTitle { get; set; }
+        }
+
         public class ChannelResult
         {
             public Channel Channel { get; set; }
@@ -48,15 +57,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public string FilePath { get; set; }
             public string ChannelFilePathRule { get; set; }
             public string ContentFilePathRule { get; set; }
+            public LinkTo LinkTo { get; set; }
         }
 
-        public class SubmitRequest : ChannelRequest
+        public class SubmitRequest : Channel
         {
-            public string LinkUrl { get; set; }
-            public LinkType LinkType { get; set; }
-            public string FilePath { get; set; }
-            public string ChannelFilePathRule { get; set; }
-            public string ContentFilePathRule { get; set; }
+            public List<int> ChannelIds { get; set; }
+            public int ContentId { get; set; }
         }
     }
 }

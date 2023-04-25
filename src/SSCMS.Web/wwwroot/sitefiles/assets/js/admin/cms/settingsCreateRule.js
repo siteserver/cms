@@ -50,16 +50,12 @@ var methods = {
     $api.get($url + '/' + this.siteId + '/' + channelId).then(function (response) {
       var res = response.data;
 
-      $this.editForm = {
-        siteId: $this.siteId,
-        channelId: res.channel.id,
-        channelName: res.channel.channelName,
-        linkUrl: res.channel.linkUrl,
-        linkType: res.channel.linkType,
-        filePath: res.filePath,
-        channelFilePathRule: res.channelFilePathRule,
-        contentFilePathRule: res.contentFilePathRule,
-      };
+      $this.editForm = _.assign({}, res.channel, res.linkTo);
+
+      $this.editForm.filePath = res.filePath;
+      $this.editForm.channelFilePathRule = res.channelFilePathRule;
+      $this.editForm.contentFilePathRule = res.contentFilePathRule;
+
       $this.editLinkTypes = res.linkTypes;
       $this.editPanel = true;
     }).catch(function (error) {
@@ -89,6 +85,31 @@ var methods = {
     return utils.getRootUrl('redirect', {
       siteId: this.siteId,
       channelId: data.value
+    });
+  },
+
+  getContentUrl: function() {
+    return utils.getRootUrl('redirect', {
+      siteId: this.siteId,
+      channelId:  this.editForm.channelIds[this.editForm.channelIds.length - 1],
+      contentId: this.editForm.contentId
+    });
+  },
+
+  runLayerContentSelect: function (content) {
+    this.editForm.contentId = content.id;
+    this.editForm.contentTitle = content.title;
+  },
+
+  btnLinkToContentClick: function () {
+    var channelId = this.editForm.channelIds[this.editForm.channelIds.length - 1];
+    utils.openLayer({
+      title: "选择指定内容",
+      url: utils.getCmsUrl("layerContentSelect", {
+        siteId: this.siteId,
+        channelId: channelId,
+        contentId: 0,
+      }),
     });
   },
 

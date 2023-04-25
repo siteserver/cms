@@ -11,8 +11,10 @@
   </style>
 }
 
+<el-alert>在此设置当前站点下的栏目，如果栏目下新增内容，需要转移到指定的站点/栏目下</el-alert>
+
 <el-form v-on:submit.native.prevent :inline="true">
-  <el-form-item label="关键字">
+  <el-form-item label="关键字" style="margin-bottom: 0;">
     <el-input v-model="filterText" size="mini" placeholder="输入关键字进行过滤"></el-input>
   </el-form-item>
 </el-form>

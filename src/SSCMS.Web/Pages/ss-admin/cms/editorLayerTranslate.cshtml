@@ -21,7 +21,7 @@
       placeholder="请选择栏目">
     </el-cascader>
   </el-form-item>
-  <el-form-item label="复制方式" prop="transType" :rules="{ required: true, message: '请选择复制方式' }">
+  <el-form-item v-if="isCopyType()" label="复制方式" prop="transType" :rules="{ required: true, message: '请选择复制方式' }">
     <el-radio v-model="form.transType" label="Copy">完整复制</el-radio>
     <el-radio v-model="form.transType" label="Reference">引用地址</el-radio>
     <div v-if="form.transType === 'Copy'" class="tips">
