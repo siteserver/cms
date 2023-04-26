@@ -92,13 +92,9 @@ namespace SSCMS.Models
 
         public string AssetsDir { get; set; } = "upload";
 
-        public string ChannelFilePathRule { get; set; } = "/channels/{@ChannelID}.html";
+        public string ChannelFilePathRule { get; set; } = "/channels/{@channelId}.html";
 
-        public string ContentFilePathRule { get; set; } = "/contents/{@ChannelID}/{@ContentID}.html";
-
-        public bool IsCreateContentIfContentChanged { get; set; } = true;
-
-        public bool IsCreateChannelIfChannelChanged { get; set; } = true;
+        public string ContentFilePathRule { get; set; } = "/contents/{@channelId}/{@contentId}.html";
 
         public bool IsCreateShowPageInfo { get; set; }
 

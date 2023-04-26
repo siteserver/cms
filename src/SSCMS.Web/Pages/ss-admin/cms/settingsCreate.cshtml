@@ -10,18 +10,6 @@
     </el-radio-group>
     <div class="tips">此功能通常用于制作调试期间，网站正式上线后不建议启用</div>
   </el-form-item>
-  <el-form-item label="当内容变动时是否生成本页">
-    <el-radio-group v-model="form.isCreateContentIfContentChanged">
-      <el-radio :label="true">生成</el-radio>
-      <el-radio :label="false">不生成</el-radio>
-    </el-radio-group>
-  </el-form-item>
-  <el-form-item label="当栏目变动时是否生成本页">
-    <el-radio-group v-model="form.isCreateChannelIfChannelChanged">
-      <el-radio :label="true">生成</el-radio>
-      <el-radio :label="false">不生成</el-radio>
-    </el-radio-group>
-  </el-form-item>
   <el-form-item label="生成页面中是否显示模板信息">
     <el-radio-group v-model="form.isCreateShowPageInfo">
       <el-radio :label="true">显示</el-radio>

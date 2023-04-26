@@ -20,8 +20,6 @@ var methods = {
 
       $this.form = {
         siteId: $this.siteId,
-        isCreateContentIfContentChanged: res.value.isCreateContentIfContentChanged,
-        isCreateChannelIfChannelChanged: res.value.isCreateChannelIfChannelChanged,
         isCreateShowPageInfo: res.value.isCreateShowPageInfo,
         isCreateIe8Compatible: res.value.isCreateIe8Compatible,
         isCreateBrowserNoCache: res.value.isCreateBrowserNoCache,

@@ -18,8 +18,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             site.IsCreateDoubleClick = request.IsCreateDoubleClick;
-            site.IsCreateContentIfContentChanged = request.IsCreateContentIfContentChanged;
-            site.IsCreateChannelIfChannelChanged = request.IsCreateChannelIfChannelChanged;
             site.IsCreateShowPageInfo = request.IsCreateShowPageInfo;
             site.IsCreateIe8Compatible = request.IsCreateIe8Compatible;
             site.IsCreateBrowserNoCache = request.IsCreateBrowserNoCache;

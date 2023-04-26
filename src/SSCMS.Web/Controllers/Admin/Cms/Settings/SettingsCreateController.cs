@@ -28,8 +28,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public class SubmitRequest : SiteRequest
         {
             public bool IsCreateDoubleClick { get; set; }
-            public bool IsCreateContentIfContentChanged { get; set; }
-            public bool IsCreateChannelIfChannelChanged { get; set; }
             public bool IsCreateShowPageInfo { get; set; }
             public bool IsCreateIe8Compatible { get; set; }
             public bool IsCreateBrowserNoCache { get; set; }
