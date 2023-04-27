@@ -16,7 +16,7 @@
     </el-radio-group>
     <div class="tips">本设置只影响新上传的图片, 设置更改之前的图片仍存放在原来位置</div>
   </el-form-item>
-  <el-form-item label="是否按时间重命名上传的图片">
+  <el-form-item label="是否自动重命名上传的图片">
     <el-radio-group v-model="form.isImageUploadChangeFileName" :disabled="isSafeMode">
       <el-radio :label="true">自动修改文件名</el-radio>
       <el-radio :label="false">保持文件名不变</el-radio>
