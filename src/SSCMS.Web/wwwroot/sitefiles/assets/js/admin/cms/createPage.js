@@ -1,6 +1,7 @@
 ﻿var $url = '/cms/create/createPage';
 
 var data = utils.init({
+  homepage: '/cms/createChannels/',
   siteId: utils.getQueryInt('siteId'),
   type: utils.getQueryString('type'),
   isAllChecked: false,
@@ -195,11 +196,17 @@ var $vue = new Vue({
   created: function () {
     utils.keyPress(this.btnCreateClick, this.btnCloseClick);
     if (this.type === 'Index') {
+      this.homepage = '/cms/createIndex/';
       this.apiCreateIndex();
-    } else if (this.type === 'All') {
-      this.apiCreateAll();
-    } else {
+    } else if (this.type === 'Channel') {
+      this.homepage = '/cms/createChannels/';
       this.apiGet();
+    } else if (this.type === 'Content') {
+      this.homepage = '/cms/createContents/';
+      this.apiGet();
+    } else if (this.type === 'All') {
+      this.homepage = '/cms/createAll/';
+      this.apiCreateAll();
     }
   }
 });

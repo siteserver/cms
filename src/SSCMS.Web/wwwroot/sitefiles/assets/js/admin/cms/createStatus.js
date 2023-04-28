@@ -12,7 +12,7 @@ var data = utils.init({
 });
 
 var methods = {
-  load: function () {
+  apiGet: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -34,7 +34,7 @@ var methods = {
     })
     .then(function() {
       $this.timeoutId = setTimeout(function () {
-        $this.load();
+        $this.apiGet();
       }, 5000);
       utils.loading($this, false);
     });
@@ -73,7 +73,7 @@ var methods = {
       .then(function(response) {
         var res = response.data;
 
-        $this.load();
+        $this.apiGet();
       })
       .catch(function(error) {
         utils.error(error);
@@ -91,6 +91,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(null, this.btnCloseClick);
-    this.load();
+    this.apiGet();
   }
 });

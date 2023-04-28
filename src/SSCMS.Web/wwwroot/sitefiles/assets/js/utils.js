@@ -685,8 +685,8 @@ var utils = {
     if (url.indexOf('?') !== -1) {
       url = url.substring(0, url.indexOf('?'));
     }
-    // window.open('https://sscms.com/docs/v7/handbook/' + url, '_docs');
-    window.open('http://localhost:8080/docs/v7/handbook/' + url, '_docs');
+    window.open('https://sscms.com/docs/v7/handbook/' + url, '_docs');
+    // window.open('http://localhost:8080/docs/v7/handbook/' + url, '_docs');
   },
 
   keyPress: function (submitFn, cancelFn) {

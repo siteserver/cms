@@ -245,11 +245,11 @@
       :label="item.title"
       :name="item.name">
       <span slot="label">
-        <!-- <el-link v-if="!isCloudAdmin" :underline="false" v-on:click="openDocs(item)">
+        <el-link v-if="!isCloudAdmin" :underline="false" v-on:click="openDocs(item)">
           <el-tooltip class="item" effect="dark" content="操作手册" placement="bottom">
             <i class="el-icon-info"></i>
           </el-tooltip>
-        </el-link> -->
+        </el-link>
         {{item.title}}
       </span>
       <iframe :id="'frm-' + item.name" :src="item.url" style="width: 100%; height: 100%; border: none" :style="{height: (winHeight - 45 - 40) + 'px'}"></iframe>
