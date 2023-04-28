@@ -673,8 +673,11 @@ var utils = {
     var $this = utils.getRootVue();
     var vue = utils.getTabVue($this.tabName);
     if (vue && vue.homepage) {
-      window.open(vue.homepage, '_docs');
-      return;
+      if (vue.homepage.indexOf('://') !== -1) {
+        window.open(vue.homepage, '_docs');
+        return;
+      }
+      url = vue.homepage;
     }
     url = url.replace('.', '');
     url = url.replace('/', '');

@@ -2,6 +2,7 @@ var $url = "/dashboard";
 var $urlUnCheckedList = "/dashboard/actions/unCheckedList";
 
 var data = utils.init({
+  homepage: '/',
   version: null,
   lastActivityDate: null,
   updateDate: null,

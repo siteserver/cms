@@ -122,7 +122,7 @@ docker run -d \
 
 ## 贡献代码
 
-项目编译需要使用 Visual Studio 2019，你可以从这里下载 [Visual Studio Community 2019](https://www.visualstudio.com/downloads/)
+项目编译需要使用 Visual Studio 2022，你可以从这里下载 [Visual Studio Community 2022](https://www.visualstudio.com/downloads/)
 
 代码贡献有很多形式，从提交问题，撰写文档，到提交代码，我们欢迎任何形式的贡献！
 
