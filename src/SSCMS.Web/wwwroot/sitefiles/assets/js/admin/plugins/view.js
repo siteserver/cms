@@ -4,6 +4,7 @@ var $urlActionsDelete = $url + '/actions/delete';
 var $urlActionsRestart = $url + '/actions/restart';
 
 var data = utils.init({
+  homepage: '/plugins/add/',
   userName: utils.getQueryString('userName'),
   name: utils.getQueryString('name'),
   pluginId: utils.getQueryString('pluginId'),
