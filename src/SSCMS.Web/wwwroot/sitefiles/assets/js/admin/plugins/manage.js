@@ -137,7 +137,6 @@ var methods = {
       });
     }).catch(function (error) {
       utils.error(error);
-    }).then(function () {
       utils.loading($this, false);
     });
   },
