@@ -136,7 +136,8 @@ namespace SSCMS.Core.Repositories
             var styles = await GetTableStylesAsync(userTableName, relatedIdentities);
             return styles.Where(x =>
                 !StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(User.Mobile)) &&
-                !StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(User.Email))).ToList();
+                !StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(User.Email)) &&
+                !StringUtils.EqualsIgnoreCase(x.AttributeName, nameof(User.DisplayName))).ToList();
         }
 
         //relatedIdentities从大到小，最后是0

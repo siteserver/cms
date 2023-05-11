@@ -58,6 +58,9 @@
       <i class="el-icon-plus"></i>
     </el-upload>
   </el-form-item>
+  <el-form-item label="姓名" prop="displayName">
+    <el-input v-model="form.displayName"></el-input>
+  </el-form-item>
 
   @await Html.PartialAsync("_PartialForm")
   

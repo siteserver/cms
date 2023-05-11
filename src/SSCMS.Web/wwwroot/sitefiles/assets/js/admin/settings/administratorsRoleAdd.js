@@ -3,6 +3,7 @@ var $urlUpdate = $url + '/actions/update';
 var $urlSitePermission = $url + '/actions/sitePermission';
 
 var data = utils.init({
+  homepage: '/settings/administratorsRole/',
   roleId: utils.getQueryInt('roleId'),
   tabName: utils.getQueryString('tabName'),
   pageType: null,
