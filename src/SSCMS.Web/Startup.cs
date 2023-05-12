@@ -59,19 +59,35 @@ namespace SSCMS.Web
             var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath, entryAssembly);
             var pluginManager = services.AddPlugins(_config, settingsManager);
 
-            services.AddCors(options =>
+            if (settingsManager.CorsIsOrigins)
             {
-                options.AddPolicy(CorsPolicy,
-                    builder => builder
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .SetIsOriginAllowed(_ => true)
-                        .AllowCredentials()
-                );
-            });
+                services.AddCors(options =>
+                {
+                    options.AddPolicy(CorsPolicy,
+                        builder => builder
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .WithOrigins(settingsManager.CorsOrigins)
+                            .AllowCredentials()
+                    );
+                });
+            }
+            else
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy(CorsPolicy,
+                        builder => builder
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(x => true)
+                            .AllowCredentials()
+                    );
+                });
+            }
 
             services.AddHttpContextAccessor();
-            
+
             services.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -90,7 +106,8 @@ namespace SSCMS.Web
                     };
                     x.Events = new JwtBearerEvents
                     {
-                        OnMessageReceived = (context) => {
+                        OnMessageReceived = (context) =>
+                        {
                             if (!context.Request.Query.TryGetValue("access_token", out var values))
                             {
                                 return Task.CompletedTask;
@@ -119,7 +136,7 @@ namespace SSCMS.Web
 
             services.AddRazorPages()
                 .AddPluginApplicationParts(pluginManager);
-                // .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            // .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddCache(settingsManager.Redis.ConnectionString);
 
@@ -164,29 +181,29 @@ namespace SSCMS.Web
 
             if (!settingsManager.IsSafeMode)
             {
-              //http://localhost:5000/api/swagger/v1/swagger.json
-              //http://localhost:5000/api/swagger/
-              //http://localhost:5000/api/docs/
-              services.AddOpenApiDocument(config =>
-              {
-                  config.PostProcess = document =>
-                  {
-                      document.Info.Version = "v1";
-                      document.Info.Title = "SS CMS REST API";
-                      document.Info.Description = "SS CMS REST API 为 SS CMS 提供了一个基于HTTP的API调用，允许开发者通过发送和接收JSON对象来远程与站点进行交互。";
-                      document.Info.Contact = new NSwag.OpenApiContact
-                      {
-                          Name = "SS CMS",
-                          Email = string.Empty,
-                          Url = "https://sscms.com"
-                      };
-                      document.Info.License = new NSwag.OpenApiLicense
-                      {
-                          Name = "GPL-3.0",
-                          Url = "https://github.com/siteserver/cms/blob/staging/LICENSE"
-                      };
-                  };
-              });
+                //http://localhost:5000/api/swagger/v1/swagger.json
+                //http://localhost:5000/api/swagger/
+                //http://localhost:5000/api/docs/
+                services.AddOpenApiDocument(config =>
+                {
+                    config.PostProcess = document =>
+                    {
+                        document.Info.Version = "v1";
+                        document.Info.Title = "SS CMS REST API";
+                        document.Info.Description = "SS CMS REST API 为 SS CMS 提供了一个基于HTTP的API调用，允许开发者通过发送和接收JSON对象来远程与站点进行交互。";
+                        document.Info.Contact = new NSwag.OpenApiContact
+                        {
+                            Name = "SS CMS",
+                            Email = string.Empty,
+                            Url = "https://sscms.com"
+                        };
+                        document.Info.License = new NSwag.OpenApiLicense
+                        {
+                            Name = "GPL-3.0",
+                            Url = "https://github.com/siteserver/cms/blob/staging/LICENSE"
+                        };
+                    };
+                });
             }
         }
 

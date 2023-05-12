@@ -20,7 +20,7 @@
   <el-form-item label="强制验证用户手机号码">
     <el-radio :disabled="!isSmsEnabled" v-model="form.isUserForceVerifyMobile" :label="true">启用强制验证</el-radio>
     <el-radio :disabled="!isSmsEnabled" v-model="form.isUserForceVerifyMobile" :label="false">不启用</el-radio>
-    <small class="tips">开启强制验证后，系统将强制用户输入并验证手机号码（需要插件支持）</small>
+    <small class="tips">开启强制验证后，系统将强制用户输入并验证手机号码（需要安装短信插件或启用云助手短信功能）</small>
   </el-form-item>
   <el-form-item label="密码最小长度" prop="userPasswordMinLength" :rules="[
     { required: true, message: '请输入密码最小长度' },

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -20,7 +21,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             if (!string.IsNullOrEmpty(request.UserName))
             {
                 var user = await _userRepository.GetByUserNameAsync(request.UserName);
-                userId = user?.Id ?? 0;
+                if (user == null)
+                {
+                    return new PageResult<Log>
+                    {
+                        Items = new List<Log>(),
+                        Count = 0,
+                    };
+                }
+                userId = user.Id;
             }
 
             var count = await _logRepository.GetUserLogsCountAsync(userId, request.Keyword, request.DateFrom, request.DateTo);

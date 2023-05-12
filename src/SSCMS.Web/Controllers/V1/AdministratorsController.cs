@@ -21,6 +21,7 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteAdministratorUpdate = "administrators/{id:int}/actions/update";
         private const string RouteAdministratorDelete = "administrators/{id:int}/actions/delete";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IConfigRepository _configRepository;
         private readonly IAccessTokenRepository _accessTokenRepository;
@@ -29,8 +30,9 @@ namespace SSCMS.Web.Controllers.V1
         private readonly ILogRepository _logRepository;
         private readonly IStatRepository _statRepository;
 
-        public AdministratorsController(IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository, IStatRepository statRepository)
+        public AdministratorsController(ISettingsManager settingsManager, IAuthManager authManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, IDbCacheRepository dbCacheRepository, ILogRepository logRepository, IStatRepository statRepository)
         {
+            _settingsManager = settingsManager;
             _authManager = authManager;
             _configRepository = configRepository;
             _accessTokenRepository = accessTokenRepository;

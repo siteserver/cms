@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
@@ -15,8 +16,23 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
-            var adminId = admin?.Id ?? 0;
+            var siteOptions = await _siteRepository.GetSiteOptionsAsync(0);
+
+            var adminId = 0;
+            if (!string.IsNullOrEmpty(request.UserName))
+            {
+                var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
+                if (admin == null)
+                {
+                    return new SiteLogPageResult
+                    {
+                        Items = new List<SiteLogResult>(),
+                        Count = 0,
+                        SiteOptions = siteOptions
+                    };
+                }
+                adminId = admin.Id;
+            }
 
             var siteIdList = await _siteRepository.GetSiteIdsAsync();
             var siteIds = request.SiteIds;
@@ -51,8 +67,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 return log;
             });
             var logs = await Task.WhenAll(logTasks);
-
-            var siteOptions = await _siteRepository.GetSiteOptionsAsync(0);
 
             return new SiteLogPageResult
             {

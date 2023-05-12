@@ -246,9 +246,7 @@
       :name="item.name">
       <span slot="label">
         <el-link v-if="!isCloudAdmin" :underline="false" v-on:click="openDocs(item)">
-          <el-tooltip class="item" effect="dark" content="操作手册" placement="bottom">
-            <i class="el-icon-info"></i>
-          </el-tooltip>
+          <i class="el-icon-info"></i>
         </el-link>
         {{item.title}}
       </span>

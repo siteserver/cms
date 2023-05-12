@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Logs
 {
@@ -16,8 +17,20 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                 return Unauthorized();
             }
 
-            var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
-            var adminId = admin?.Id ?? 0;
+            var adminId = 0;
+            if (!string.IsNullOrEmpty(request.UserName))
+            {
+                var admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
+                if (admin == null)
+                {
+                    return new PageResult<Log>
+                    {
+                        Items = new List<Log>(),
+                        Count = 0,
+                    };
+                }
+                adminId = admin.Id;
+            }
 
             var count = await _logRepository.GetAdminLogsCountAsync(adminId, request.Keyword, request.DateFrom, request.DateTo);
             var logs = await _logRepository.GetAdminLogsAsync(adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);

@@ -94,6 +94,10 @@ namespace SSCMS.Core.Services
 
         public string[] AdminRestrictionBlockList => _config.GetSection("AdminRestriction:BlockList").Get<string[]>();
 
+        public bool CorsIsOrigins => _config.GetValue("Cors:IsOrigins", false);
+
+        public string[] CorsOrigins => _config.GetSection("Cors:Origins").Get<string[]>();
+
         public string Encrypt(string inputString, string securityKey = null)
         {
             return TranslateUtils.EncryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
@@ -104,7 +108,7 @@ namespace SSCMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
-        public void SaveSettings(bool isProtectData, bool isSafeMode, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList)
+        public void SaveSettings(bool isProtectData, bool isSafeMode, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList, bool corsIsOrigins, string[] corsOrigins)
         {
             var type = databaseType.GetValue();
             var databaseConnectionStringValue = databaseConnectionString;
@@ -116,7 +120,7 @@ namespace SSCMS.Core.Services
                 redisConnectionStringValue = Encrypt(redisConnectionString, SecurityKey);
             }
 
-            InstallUtils.SaveSettings(ContentRootPath, isProtectData, isSafeMode, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue, adminRestrictionHost, adminRestrictionAllowList, adminRestrictionBlockList);
+            InstallUtils.SaveSettings(ContentRootPath, isProtectData, isSafeMode, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue, adminRestrictionHost, adminRestrictionAllowList, adminRestrictionBlockList, corsIsOrigins, corsOrigins);
             Reload();
         }
     }
