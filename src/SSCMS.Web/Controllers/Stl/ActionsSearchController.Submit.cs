@@ -28,6 +28,7 @@ namespace SSCMS.Web.Controllers.Stl
                     };
                 }
 
+                var ajaxDivId = StringUtils.FilterXss(request.AjaxDivId);
                 var form = GetPostCollection(request);
 
                 template = _settingsManager.Decrypt(request.Template);
@@ -76,7 +77,7 @@ namespace SSCMS.Web.Controllers.Stl
                         var pageHtml = await stlPageContents.ParseAsync(totalNum, currentPageIndex, pageCount, false);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
-                        await _parseManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, stlLabelList, request.AjaxDivId, currentPageIndex, pageCount, totalNum);
+                        await _parseManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, stlLabelList, ajaxDivId, currentPageIndex, pageCount, totalNum);
 
                         if (request.IsHighlight && !string.IsNullOrEmpty(request.Word))
                         {
@@ -113,7 +114,7 @@ namespace SSCMS.Web.Controllers.Stl
                         var pageHtml = await stlPageSqlContents.ParseAsync(totalNum, currentPageIndex, pageCount);
                         var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElement, pageHtml));
 
-                        await _parseManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, stlLabelList, request.AjaxDivId, currentPageIndex, pageCount, totalNum);
+                        await _parseManager.ReplacePageElementsInSearchPageAsync(pagedBuilder, stlLabelList, ajaxDivId, currentPageIndex, pageCount, totalNum);
 
                         if (request.IsHighlight && !string.IsNullOrEmpty(request.Word))
                         {

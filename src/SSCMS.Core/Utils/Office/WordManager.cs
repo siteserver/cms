@@ -235,6 +235,13 @@ namespace SSCMS.Core.Utils.Office
                             try
                             {
                                 imageInfo.Bitmap.Save(imageFilePath, imageFormat);
+
+                                if (Site.IsImageAutoResize)
+                                {
+                                    ImageUtils.ResizeImageIfExceeding(imageFilePath, Site.ImageAutoResizeWidth);
+                                }
+
+                                // AddWaterMarkAsync(Site, filePath);
                             }
                             catch (System.Runtime.InteropServices.ExternalException)
                             {

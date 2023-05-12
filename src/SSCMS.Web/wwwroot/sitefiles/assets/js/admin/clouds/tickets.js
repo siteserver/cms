@@ -124,10 +124,22 @@ var methods = {
   },
 
   btnViewClick: function(ticket) {
+    ticket.isRead = true;
     utils.addTab('工单：' + ticket.ticketNo, utils.getCloudsUrl('ticketMessages', {
       ticketNo: ticket.ticketNo,
       tabName: utils.getTabName()
     }));
+  },
+
+  isUnread(ticket) {
+    return ticket.status === 'Waiting' && !ticket.isRead;
+  },
+
+  getClassName(ticket) {
+    if (ticket.status === 'Waiting' && !ticket.isRead) {
+      return 'unread';
+    }
+    return '';
   },
 
   btnAddClick: function() {
