@@ -135,7 +135,7 @@ namespace SSCMS.Cli.Jobs
             var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
 
             var isProtectData = console.GetYesNo("Protect settings in sscms.json?");
-            _settingsManager.SaveSettings(isProtectData, false, false, databaseType, databaseConnectionString, string.Empty, string.Empty, null, null);
+            _settingsManager.SaveSettings(isProtectData, false, false, databaseType, databaseConnectionString, string.Empty, string.Empty, null, null, false, null);
 
             await console.WriteSuccessAsync("SS CMS was download and ready for install, please run: sscms install database");
 
