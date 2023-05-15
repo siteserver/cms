@@ -242,20 +242,6 @@
         {{scope.row.templateName || '<默认>'}}
       </template>
 
-      <!-- Date -->
-      <template v-else-if="column.inputType === 'Date'">
-        <span>
-          {{ utils.getFriendlyDate(scope.row.getEntityValue(column.attributeName)) }}
-        </span>
-      </template>
-
-      <!-- DateTime -->
-      <template v-else-if="column.inputType === 'DateTime'">
-        <span>
-          {{ utils.getFriendlyDateTime(scope.row.getEntityValue(column.attributeName)) }}
-        </span>
-      </template>
-
       <!-- Others -->
       <template v-else>
         <span v-html="scope.row.getEntityValue(column.attributeName)"></span>

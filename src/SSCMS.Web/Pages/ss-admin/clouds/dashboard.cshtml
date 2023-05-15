@@ -228,21 +228,15 @@
                     </el-form-item>
                     <el-form-item label="购买时长" prop="periods" :rules="{ required: true, message: '请选择购买时长' }">
                       <el-radio-group v-model="buyForm.periods" v-on:change="btnChangeClick">
-                        <el-radio-button :label="'M1'">1月</el-radio-button>
                         <el-radio-button :label="'Y1'">1年</el-radio-button>
                         <el-radio-button :label="'Y2'">2年</el-radio-button>
                       </el-radio-group>
                     </el-form-item>
                     <el-form-item label="费用合计">
                       <div style="font-size: 16px;">
-                        <template v-if="buyForm.periods !== 'M1'">
-                          原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
-                          现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
-                          （节省：{{ buyForm.save }}%）
-                        </template>
-                        <template v-else>
-                          合计：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
-                        </template>
+                        原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
+                        现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        （节省：{{ buyForm.save }}%）
                       </div>
                     </el-form-item>
                     <el-divider></el-divider>
@@ -262,21 +256,15 @@
                     </el-form-item>
                     <el-form-item label="续费时长" prop="periods" :rules="{ required: true, message: '请选择续费时长' }">
                       <el-radio-group v-model="buyForm.periods" v-on:change="btnChangeClick">
-                        <el-radio-button :label="'M1'">1月</el-radio-button>
                         <el-radio-button :label="'Y1'">1年</el-radio-button>
                         <el-radio-button :label="'Y2'">2年</el-radio-button>
                       </el-radio-group>
                     </el-form-item>
                     <el-form-item label="费用合计">
                       <div style="font-size: 16px;">
-                        <template v-if="buyForm.periods !== 'M1'">
-                          原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
-                          现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
-                          （节省：{{ buyForm.save }}%）
-                        </template>
-                        <template v-else>
-                          合计：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
-                        </template>
+                        原价：<span style="text-decoration: line-through; margin-right: 10px;">￥{{ getOriginalAmount() }}</span>
+                        现价：<span style="color: #fa5300;">￥{{ buyForm.amount.toFixed(2) }}</span>
+                        （节省：{{ buyForm.save }}%）
                       </div>
                     </el-form-item>
                     <el-divider></el-divider>
