@@ -8,6 +8,8 @@ var data = utils.init({
   uploadUrl: null,
   dialogImageUrl: '',
   dialogVisible: false,
+  fileNames: [],
+  files: [],
   form: {
     userId: utils.getQueryInt('userId'),
     siteId: utils.getQueryInt('siteId'),
@@ -17,7 +19,7 @@ var data = utils.init({
     thumbWidth: 500,
     thumbHeight: 500,
     isLinkToOriginal: true,
-    filePaths: []
+    filePaths: [],
   }
 });
 
@@ -81,6 +83,18 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
+    this.form.filePaths = [];
+    for (var i = 0; i < this.fileNames.length; i++) {
+      var name = this.fileNames[i];
+      for (var j = 0; j < this.files.length; j++) {
+        var file = this.files[j];
+        if (file.name === name) {
+          this.form.filePaths.push(file.path);
+          continue;
+        }
+      }
+    }
+
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
 
@@ -102,7 +116,7 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    if (this.form.filePaths.length === 0) {
+    if (this.files.length === 0) {
       utils.error('请选择需要插入的图片文件！');
       return false;
     }
@@ -115,11 +129,7 @@ var methods = {
   },
 
   uploadBefore(file) {
-    var isLt10M = file.size / 1024 / 1024 < 10;
-    if (!isLt10M) {
-      utils.error('上传图片大小不能超过 10MB!');
-      return false;
-    }
+    this.fileNames.push(file.name);
     return true;
   },
 
@@ -128,7 +138,7 @@ var methods = {
   },
 
   uploadSuccess: function(res) {
-    this.form.filePaths.push(res.path);
+    this.files.push(res);
     utils.loading(this, false);
   },
 
@@ -140,7 +150,15 @@ var methods = {
 
   uploadRemove(file) {
     if (file.response) {
-      this.form.filePaths.splice(this.form.filePaths.indexOf(file.response.path), 1);
+      var index = 0;
+      for (var i = 0; i < this.files.length; i++) {
+        var f = this.files[i];
+        if (f.path === file.path) {
+          index = i;
+          break;
+        }
+      }
+      this.files.splice(index, 1);
     }
   },
 
