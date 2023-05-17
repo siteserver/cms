@@ -329,7 +329,7 @@ namespace SSCMS.Core.Services
         {
             var result = CommonApi.GetMenu(accessTokenOrAppId);
 
-            if (result == null) return;
+            if (result == null || result.menu == null || result.menu.button == null) return;
 
             await _wxMenuRepository.DeleteAllAsync(siteId);
 

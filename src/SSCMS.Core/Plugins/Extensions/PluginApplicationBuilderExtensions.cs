@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -76,24 +77,42 @@ namespace SSCMS.Core.Plugins.Extensions
                     columns = database.GetTableColumns(table.Columns);
                 }
 
-                if (columns == null || columns.Count == 0) continue;
+                await SyncPluginTableAsync(database, table.Id, columns, logger);
+            }
 
-                try
+            var assemblies = pluginManager.EnabledPlugins.Select(x => x.Assembly);
+            var entities = PluginUtils.GetImplementations<Entity>(assemblies);
+            foreach (var entity in entities)
+            {
+                var tableName = ReflectionUtils.GetTableName(entity);
+                if (tables.Exists(t => StringUtils.EqualsIgnoreCase(t.Id, tableName))) continue;
+
+                var tableColumns = ReflectionUtils.GetTableColumns(entity);
+                var columns = database.GetTableColumns(tableColumns);
+
+                await SyncPluginTableAsync(database, tableName, columns, logger);
+            }
+        }
+
+        private static async Task SyncPluginTableAsync(IDatabase database, string tableName, List<TableColumn> columns, ILogger<IApplicationBuilder> logger)
+        {
+            if (columns == null || columns.Count == 0) return;
+
+            try
+            {
+                logger.LogInformation("Sync Plugin Table '{0}'", tableName);
+                if (!await database.IsTableExistsAsync(tableName))
                 {
-                    logger.LogInformation("Sync Plugin Table '{0}'", table.Id);
-                    if (!await database.IsTableExistsAsync(table.Id))
-                    {
-                        await database.CreateTableAsync(table.Id, columns);
-                    }
-                    else
-                    {
-                        await database.AlterTableAsync(table.Id, columns);
-                    }
+                    await database.CreateTableAsync(tableName, columns);
                 }
-                catch
+                else
                 {
-                    // ignored
+                    await database.AlterTableAsync(tableName, columns);
                 }
+            }
+            catch
+            {
+                // ignored
             }
         }
     }
