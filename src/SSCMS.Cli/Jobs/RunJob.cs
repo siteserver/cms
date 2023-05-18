@@ -67,7 +67,7 @@ namespace SSCMS.Cli.Jobs
             }
             else
             {
-                await console.WriteLineAsync("Starting SS CMS...");
+                await console.WriteLineAsync("Starting SSCMS...");
                 Thread.Sleep(5000);
 
                 OpenUrl("http://localhost:5000/ss-admin/");

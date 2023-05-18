@@ -31,7 +31,7 @@ var methods = {
       $this.form.adminFaviconUrl = res.adminFaviconUrl;
       $this.form.adminLogoUrl = res.adminLogoUrl;
       $this.form.adminLogoLinkUrl = res.adminLogoLinkUrl;
-      $this.form.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SS CMS 管理后台';
+      $this.form.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SSCMS 管理后台';
 
       if ($this.form.adminFaviconUrl) {
         $this.uploadFaviconList.push({name: 'avatar', url: $this.form.adminFaviconUrl});

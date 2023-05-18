@@ -5,10 +5,10 @@
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
     <Version>7.2.1</Version>
-    <Authors>SS CMS</Authors>
-    <Company>SS CMS</Company>
-    <PackageDescription>SS CMS .NET Core abstractions for developers.</PackageDescription>
-    <Copyright>Copyright © SS CMS</Copyright>
+    <Authors>SSCMS</Authors>
+    <Company>SSCMS</Company>
+    <PackageDescription>SSCMS .NET Core abstractions for developers.</PackageDescription>
+    <Copyright>Copyright © SSCMS</Copyright>
     <RepositoryUrl>https://github.com/siteserver/cms/</RepositoryUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageIcon>logo.png</PackageIcon>

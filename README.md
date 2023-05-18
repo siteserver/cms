@@ -107,7 +107,7 @@ npm run copy-linux-arm64
 docker pull sscms/core:latest
 ```
 
-运行 SS CMS 容器
+运行 SSCMS 容器
 
 ```sh
 docker run -d \

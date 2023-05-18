@@ -4,19 +4,19 @@ SSCMS 官方镜像，跟随 SSCMS 版本同步更新。
 
 ## 获取 SSCMS 官方镜像
 
-拉取最新版本的 [SS CMS 镜像](https://hub.docker.com/r/sscms/core)，运行命令：
+拉取最新版本的 [SSCMS 镜像](https://hub.docker.com/r/sscms/core)，运行命令：
 
 ``` bash
 docker pull sscms/core:latest
 ```
 
-如果需要获取指定版本的 [SS CMS 镜像](https://hub.docker.com/r/sscms/core)，可以运行命令：
+如果需要获取指定版本的 [SSCMS 镜像](https://hub.docker.com/r/sscms/core)，可以运行命令：
 
 ``` bash
 docker pull sscms/core:<版本号>
 ```
 
-## 运行 SS CMS 容器
+## 运行 SSCMS 容器
 
 在当前文件夹下创建 `wwwroot` 目录：
 
@@ -41,8 +41,8 @@ docker run -d \
 - `-name` 参数将容器实例命名为 my-sscms，可以更换为其他名称
 - `-p` 参数映射容器的80端口到宿主机的80端口，如果希望使用8080端口访问可以设置 `-p 8080:80`
 - `-restart` 参数使得容器能够自动重启，必须使用 `always` 选项，否则容器将无法安装及升级插件
-- `-v` 参数将当前文件夹下的 `wwwroot` 目录作为网站跟目录，从而保存 SS CMS 站点数据，其中 `$(pwd)` 代表当前文件夹
-- `-e` 参数设置容器运行环境变量，SS CMS 系统将读取环境变量，作为容器运行的参数，在此我们设置 `SecurityKey` 为随机的 GUID 值，数据库类型为 SQLite
+- `-v` 参数将当前文件夹下的 `wwwroot` 目录作为网站跟目录，从而保存 SSCMS 站点数据，其中 `$(pwd)` 代表当前文件夹
+- `-e` 参数设置容器运行环境变量，SSCMS 系统将读取环境变量，作为容器运行的参数，在此我们设置 `SecurityKey` 为随机的 GUID 值，数据库类型为 SQLite
 - 最后我们将容器镜像设置为之前下载的 `sscms/core` 镜像
 
 上面命令将运行 SSCMS 镜像，，接下来，可以通过 http://localhost 获取 http://host-ip 访问 SSCMS 系统了。

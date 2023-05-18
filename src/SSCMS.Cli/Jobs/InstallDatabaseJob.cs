@@ -67,7 +67,7 @@ namespace SSCMS.Cli.Jobs
 
             if (!await _configRepository.IsNeedInstallAsync())
             {
-                await console.WriteErrorAsync($"SS CMS has been installed in {_settingsManager.ContentRootPath}");
+                await console.WriteErrorAsync($"SSCMS has been installed in {_settingsManager.ContentRootPath}");
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace SSCMS.Cli.Jobs
 
             await FileUtils.WriteTextAsync(_pathManager.GetRootPath("index.html"), Constants.Html5Empty);
 
-            await console.WriteSuccessAsync("Congratulations, SS CMS was installed successfully!");
+            await console.WriteSuccessAsync("Congratulations, SSCMS was installed successfully!");
         }
     }
 }

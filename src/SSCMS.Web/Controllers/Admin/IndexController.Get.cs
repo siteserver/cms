@@ -37,7 +37,7 @@ namespace SSCMS.Web.Controllers.Admin
                     envDatabaseHost, envDatabaseUser, envDatabasePassword, envDatabaseName);
                 if (!isEnvironment)
                 {
-                    return this.Error("系统启动失败，请检查 SS CMS 容器运行环境变量设置");
+                    return this.Error("系统启动失败，请检查 SSCMS 容器运行环境变量设置");
                 }
             }
 

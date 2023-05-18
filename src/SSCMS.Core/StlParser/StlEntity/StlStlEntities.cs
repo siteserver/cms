@@ -60,7 +60,7 @@ namespace SSCMS.Core.StlParser.StlEntity
 
                 if (StringUtils.EqualsIgnoreCase(PoweredBy, attributeName))//支持信息
                 {
-                    parsedContent = @$"Powered by <a href=""{CloudUtils.Www.Host}"" target=""_blank"">SS CMS</a>";
+                    parsedContent = @$"Powered by <a href=""{CloudUtils.Www.Host}"" target=""_blank"">SSCMS</a>";
                 }
                 else if (StringUtils.EqualsIgnoreCase(RootUrl, attributeName))//系统根目录地址
                 {

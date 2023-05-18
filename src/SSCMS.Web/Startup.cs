@@ -189,11 +189,11 @@ namespace SSCMS.Web
                     config.PostProcess = document =>
                     {
                         document.Info.Version = "v1";
-                        document.Info.Title = "SS CMS REST API";
-                        document.Info.Description = "SS CMS REST API 为 SS CMS 提供了一个基于HTTP的API调用，允许开发者通过发送和接收JSON对象来远程与站点进行交互。";
+                        document.Info.Title = "SSCMS REST API";
+                        document.Info.Description = "SSCMS REST API 为 SSCMS 提供了一个基于HTTP的API调用，允许开发者通过发送和接收JSON对象来远程与站点进行交互。";
                         document.Info.Contact = new NSwag.OpenApiContact
                         {
-                            Name = "SS CMS",
+                            Name = "SSCMS",
                             Email = string.Empty,
                             Url = "https://sscms.com"
                         };

@@ -1,6 +1,6 @@
-﻿# SS CMS 插件SDK开发包
+﻿# SSCMS 插件SDK开发包
 
-[SS CMS 插件开发参考手册](https://sscms.com/docs/v7/plugin/)
+[SSCMS 插件开发参考手册](https://sscms.com/docs/v7/plugin/)
 
 SDK 版本 ：
 
