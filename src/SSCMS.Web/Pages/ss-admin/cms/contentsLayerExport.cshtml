@@ -13,7 +13,13 @@
   </el-form-item>
   <el-form-item v-if="!form.isAllCheckedLevel" label="自定义状态">
     <el-checkbox-group v-model="form.checkedLevelKeys">
-      <el-checkbox v-for="level in checkedLevels" :key="level.key" :label="level.value" :value="level.key"></el-checkbox>
+      <el-checkbox
+        v-for="level in checkedLevels"
+        v-key="level.label"
+        :label="level.label"
+        >
+        {{ level.text }}
+      </el-checkbox>
     </el-checkbox-group>
   </el-form-item>
   <el-form-item label="内容添加时间">

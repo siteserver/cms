@@ -42,10 +42,7 @@ var methods = {
         }
       }
       $this.checkedLevels = res.checkedLevels;
-      for (var i = 0; i < $this.checkedLevels.length; i++) {
-        var checkedLevel = $this.checkedLevels[i];
-        $this.form.checkedLevelKeys.push(checkedLevel.key);
-      }
+      $this.form.checkedLevelKeys = _.map(res.checkedLevels, function(x) { return x.label; });
       $this.checkedLevel = res.checkedLevel;
     }).catch(function (error) {
       utils.error(error);
