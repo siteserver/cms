@@ -232,11 +232,11 @@ namespace SSCMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Order))
                 {
-                    listInfo.Order = value;
+                    listInfo.Order = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Where))
                 {
-                    listInfo.Where = value;
+                    listInfo.Where = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Group))
                 {
