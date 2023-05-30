@@ -17,7 +17,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function () {
+  apiGet: function () {
     var $this = this;
 
     utils.loading(this, true);
@@ -204,6 +204,6 @@ var $vue = new Vue({
         $this.btnCloseClick();
       }
     });
-    this.apiList();
+    this.apiGet();
   }
 });
