@@ -111,6 +111,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             public Cascade<int> Root { get; set; }
             public Settings Settings { get; set; }
             public List<Select<int>> BreadcrumbItems { get; set; }
+            public bool IsScheduled { get; set; }
+            public DateTime? ScheduledDate { get; set; }
         }
 
         public class PreviewRequest

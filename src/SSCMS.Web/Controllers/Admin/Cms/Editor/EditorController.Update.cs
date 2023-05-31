@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            var source = await _contentRepository.GetAsync(site, channel,  request.ContentId);
+            var source = await _contentRepository.GetAsync(site, channel, request.ContentId);
 
             var adminId = _authManager.AdminId;
             var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
@@ -95,7 +95,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             await _authManager.AddSiteLogAsync(content.SiteId, content.ChannelId, content.Id, "修改内容",
                 $"栏目：{channelNames}，内容标题：{content.Title}");
             await CloudManager.SendContentChangedMail(_pathManager, _mailManager, _errorLogRepository, site, content, channelNames, _authManager.AdminName, true);
-            
+
             await _contentTagRepository.UpdateTagsAsync(source.TagNames, content.TagNames, request.SiteId, content.Id);
 
             if (request.Translates != null && request.Translates.Count > 0)

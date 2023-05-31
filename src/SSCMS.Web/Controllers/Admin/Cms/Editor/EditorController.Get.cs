@@ -181,7 +181,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 {
                     var channelName = await _channelRepository.GetChannelNameAsync(request.SiteId, channelId);
                     if (string.IsNullOrEmpty(channelName)) continue;
-                    
+
                     breadcrumbItems.Add(new Select<int>
                     {
                         Value = channelId,
@@ -194,6 +194,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 Value = channel.Id,
                 Label = channel.ChannelName,
             });
+
+            var isScheduled = false;
+            DateTime? scheduledDate = DateTime.Now.AddDays(1);
+            if (!content.Checked && content.CheckedLevel == CheckManager.LevelInt.ScheduledPublish)
+            {
+                var task = await _scheduledTaskRepository.GetPublishAsync(content.SiteId, content.ChannelId, content.Id);
+                if (task != null)
+                {
+                    isScheduled = true;
+                    scheduledDate = task.ScheduledDate;
+                }
+            }
 
             return new GetResult
             {
@@ -214,6 +226,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 Root = root,
                 Settings = settings,
                 BreadcrumbItems = breadcrumbItems,
+                IsScheduled = isScheduled,
+                ScheduledDate = scheduledDate,
             };
         }
     }

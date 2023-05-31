@@ -159,10 +159,22 @@ namespace SSCMS.Core.Repositories
             return await _repository.InsertAsync(task, Q.CachingRemove(CacheKey));
         }
 
+        public async Task<ScheduledTask> GetPublishAsync(int siteId, int channelId, int contentId)
+        {
+            var tasks = await GetAllAsync();
+            return tasks.FirstOrDefault(t => t.PublishSiteId == siteId && t.PublishChannelId == channelId && t.PublishContentId == contentId);
+        }
+
         public async Task<int> InsertPublishAsync(Content content, DateTime scheduledDate)
         {
+            var task = await GetPublishAsync(content.SiteId, content.ChannelId, content.Id);
+            if (task != null)
+            {
+                await DeleteAsync(task.Id);
+            }
+
             var config = await _configRepository.GetAsync();
-            var task = new ScheduledTask
+            task = new ScheduledTask
             {
                 Title = TaskType.Publish.GetDisplayName(),
                 TaskType = TaskType.Publish,
@@ -189,7 +201,7 @@ namespace SSCMS.Core.Repositories
             var startDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
             startDate = startDate.AddHours(-1);
             var task = new ScheduledTask
-            {        
+            {
                 Title = TaskType.CloudSync.GetDisplayName(),
                 TaskType = TaskType.CloudSync,
                 TaskInterval = TaskInterval.EveryHour,
@@ -207,7 +219,7 @@ namespace SSCMS.Core.Repositories
             var startDate = new DateTime(now.Year, now.Month, now.Day, StringUtils.GetRandomInt(0, 6), StringUtils.GetRandomInt(0, 59), 0);
             startDate = startDate.AddDays(-1);
             var task = new ScheduledTask
-            {        
+            {
                 Title = TaskType.CloudBackup.GetDisplayName(),
                 TaskType = TaskType.CloudBackup,
                 TaskInterval = TaskInterval.EveryDay,

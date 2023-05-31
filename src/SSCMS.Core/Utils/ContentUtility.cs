@@ -138,18 +138,6 @@ namespace SSCMS.Core.Utils
                     }
                 }
 
-                //foreach (var plugin in oldPluginManager.GetPlugins())
-                //{
-                //    try
-                //    {
-                //        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, theContentId));
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
-                //    }
-                //}
-
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
             }
@@ -178,24 +166,7 @@ namespace SSCMS.Core.Utils
                     }
                 }
 
-                //foreach (var plugin in oldPluginManager.GetPlugins())
-                //{
-                //    try
-                //    {
-                //        plugin.OnContentTranslateCompleted(new ContentTranslateEventArgs(site.Id, channel.Id, contentId, targetSiteId, targetChannelId, newContentId));
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        await databaseManager.ErrorLogRepository.AddErrorLogAsync(plugin.PluginId, ex, nameof(plugin.OnContentTranslateCompleted));
-                //    }
-                //}
-
                 await databaseManager.ContentRepository.TrashContentAsync(site, channel, contentId, adminId);
-
-                //await databaseManager.ContentRepository.DeleteAsync(oldPluginManager, pluginManager, site, channel, contentId);
-
-                //GlobalSettings.ContentRepository.DeleteContents(site.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
-
                 await createManager.CreateContentAsync(targetSite.Id, contentInfo.ChannelId, newContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSite.Id, contentInfo.ChannelId);
             }

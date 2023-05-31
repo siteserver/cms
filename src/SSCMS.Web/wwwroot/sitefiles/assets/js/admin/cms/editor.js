@@ -151,6 +151,9 @@ var methods = {
         $this.form = _.assign({}, res.content);
         $this.breadcrumbItems = res.breadcrumbItems;
 
+        $this.scheduledForm.isScheduled = res.isScheduled;
+        $this.scheduledForm.scheduledDate = res.scheduledDate;
+
         if (!$this.form.addDate) {
           $this.form.addDate = new Date().Format("yyyy-MM-dd hh:mm:ss");
         } else {
@@ -900,9 +903,6 @@ var methods = {
   },
 
   btnSaveCommandClick: function (command) {
-    this.scheduledForm.isScheduled = true;
-    this.scheduledForm.scheduledDate = new Date();
-    this.scheduledForm.scheduledDate.setDate(this.scheduledForm.scheduledDate.getDate() + 1);
     this.isScheduledDialog = command === 'scheduled';
   },
 
