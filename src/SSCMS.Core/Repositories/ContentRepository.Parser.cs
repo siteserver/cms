@@ -244,21 +244,42 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(groupContent))
             {
-                query.Where(q => q
-                    .Where(nameof(Content.GroupNames), groupContent)
-                    .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent}")
-                    .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent},")
-                    .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContent},")
-                );
+                query.Where(q =>
+                {
+                    foreach (var group in ListUtils.GetStringList(groupContent))
+                    {
+                        q
+                        .OrWhere(nameof(Content.GroupNames), group)
+                        .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{group}")
+                        .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{group},")
+                        .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{group},");
+                    }
+                    return q;
+                });
+                // query.Where(q => q
+                //     .Where(nameof(Content.GroupNames), groupContent)
+                //     .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent}")
+                //     .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContent},")
+                //     .OrWhereInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContent},")
+                // );
             }
 
             if (!string.IsNullOrEmpty(groupContentNot))
             {
-                query
-                    .WhereNot(nameof(Content.GroupNames), groupContentNot)
-                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContentNot}")
-                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContentNot},")
-                    .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContentNot},");
+                foreach (var groupNot in ListUtils.GetStringList(groupContentNot))
+                {
+                    query
+                      .WhereNot(nameof(Content.GroupNames), groupNot)
+                      .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupNot}")
+                      .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupNot},")
+                      .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupNot},");
+                }
+
+                // query
+                //     .WhereNot(nameof(Content.GroupNames), groupContentNot)
+                //     .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContentNot}")
+                //     .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $",{groupContentNot},")
+                //     .WhereNotInStr(repository.Database.DatabaseType, nameof(Content.GroupNames), $"{groupContentNot},");
             }
 
             if (!string.IsNullOrEmpty(tags))
