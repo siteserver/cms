@@ -430,12 +430,10 @@ var utils = {
     alert({
       title: config.title,
       text: config.text,
-      type: "question",
-      confirmButtonText: config.button || "确 认",
-      confirmButtonClass: "el-button el-button--primary",
-      cancelButtonClass: "el-button el-button--default",
-      showCancelButton: true,
-      cancelButtonText: "取 消",
+      type: "warning",
+      confirmButtonText: config.button || "确 定",
+      confirmButtonClass: "el-button el-button--danger",
+      showCancelButton: false,
     }).then(function (result) {
       if (result.value) {
         config.callback();
