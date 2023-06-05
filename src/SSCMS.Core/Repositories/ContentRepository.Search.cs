@@ -295,22 +295,26 @@ namespace SSCMS.Core.Repositories
                 false, false, null, null, false, 0, false);
         }
 
-        public async Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearchAsync(Site site, int page, int? channelId, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
+        public async Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearchAsync(Site site, int page, List<int> channelIds, bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items, bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = await GetRepositoryAsync(site.TableName);
+
+            var idList = new List<int>(channelIds);
+            if (isAllContents)
+            {
+                foreach (var channelId in channelIds)
+                {
+                    idList.AddRange(await _channelRepository.GetChannelIdsAsync(site.Id, channelId, ScopeType.All));
+                }
+            }
 
             var query = Q
                 .Select(nameof(Content.ChannelId), nameof(Content.Id))
                 .Where(nameof(Content.SiteId), site.Id)
                 .WhereNot(nameof(Content.SourceId), SourceManager.Preview)
-                .Where(nameof(Content.ChannelId), ">", 0)
+                .WhereIn(nameof(Content.ChannelId), idList.Distinct())
                 .WhereNullOrFalse(nameof(Content.Checked))
                 .OrderByDesc(nameof(Content.AddDate));
-
-            if (channelId.HasValue)
-            {
-                query.Where(nameof(Content.ChannelId), channelId.Value);
-            }
 
             if (startDate.HasValue)
             {

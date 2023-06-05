@@ -316,7 +316,8 @@ var methods = {
       siteId: this.siteId,
       channelId: content.channelId,
       contentId: content.id,
-      page: this.page
+      page: this.page,
+      tabName: utils.getTabName()
     });
   },
 

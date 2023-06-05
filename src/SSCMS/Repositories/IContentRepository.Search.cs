@@ -21,8 +21,8 @@ namespace SSCMS.Repositories
         Task<(int Total, List<ContentSummary> PageSummaries)> AdvancedSearchAsync(Site site, int page, List<int> channelIds,
             bool isAllContents);
 
-        Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearchAsync(Site site, int page, int? channelId,
-            DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items,
+        Task<(int Total, List<ContentSummary> PageSummaries)> CheckSearchAsync(Site site, int page, List<int> channelIds,
+            bool isAllContents, DateTime? startDate, DateTime? endDate, IEnumerable<KeyValuePair<string, string>> items,
             bool isCheckedLevels, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor,
             List<string> groupNames, List<string> tagNames);
 

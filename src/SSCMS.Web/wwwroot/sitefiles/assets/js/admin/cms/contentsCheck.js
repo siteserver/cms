@@ -24,8 +24,9 @@ var data = utils.init({
   checkedColumns: [],
   searchColumns: [],
 
-  channelIds: [],
   searchForm: {
+    channelIds: [utils.getQueryInt("siteId")],
+    isAllContents: true,
     startDate: null,
     endDate: null,
     checkedLevels: [],
@@ -79,6 +80,16 @@ var methods = {
   apiList: function(useless, page, message) {
     var $this = this;
 
+    var channelIds = [];
+    for (var i = 0; i < this.searchForm.channelIds.length; i++) {
+      var obj = this.searchForm.channelIds[i];
+      if (Array.isArray(obj)) {
+        channelIds.push(obj[obj.length - 1]);
+      } else {
+        channelIds.push(obj);
+      }
+    }
+
     var items = [];
     for (var i = 0; i < this.searchColumns.length; i++) {
       var column = this.searchColumns[i];
@@ -90,16 +101,23 @@ var methods = {
       }
     }
 
-    var channelId = this.channelIds && this.channelIds.length > 0 ? this.channelIds[this.channelIds.length - 1] : null;
-
     utils.loading(this, true);
-    var request = _.assign({
+    $api.post($url + '/actions/list', {
       siteId: this.siteId,
-      channelId: channelId,
+      channelIds: channelIds,
+      isAllContents: this.searchForm.isAllContents,
       page: page,
-      items: items
-    }, this.searchForm);
-    $api.post($url + '/actions/list', request).then(function(response) {
+      items: items,
+      startDate: this.searchForm.startDate,
+      endDate: this.searchForm.endDate,
+      checkedLevels: this.searchForm.checkedLevels,
+      isTop: this.searchForm.isTop,
+      isRecommend: this.searchForm.isRecommend,
+      isHot: this.searchForm.isHot,
+      isColor: this.searchForm.isColor,
+      groupNames: this.searchForm.groupNames,
+      tagNames: this.searchForm.tagNames
+    }).then(function(response) {
       var res = response.data;
 
       $this.pageContents = res.pageContents;
@@ -131,6 +149,13 @@ var methods = {
     }).catch(function(error) {
       utils.error(error);
     });
+  },
+
+  getContentTarget: function (content) {
+    if (content.linkType == 'NoLink') {
+      return '';
+    }
+    return '_blank';
   },
 
   btnSelectColumnClick: function(column) {
@@ -188,12 +213,7 @@ var methods = {
   },
 
   btnEditClick: function(content) {
-    utils.openLayer({
-      title: "编辑内容",
-      url: this.getEditUrl(content),
-      full: true,
-      max: true
-    });
+    utils.addTab('编辑内容', this.getEditUrl(content));
   },
 
   btnAdminClick: function(adminId) {
@@ -209,7 +229,8 @@ var methods = {
       siteId: this.siteId,
       channelId: content.channelId,
       contentId: content.id,
-      page: this.page
+      page: this.page,
+      tabName: utils.getTabName()
     });
   },
 

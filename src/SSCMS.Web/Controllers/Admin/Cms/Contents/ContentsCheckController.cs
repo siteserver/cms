@@ -48,7 +48,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class ListRequest : SiteRequest
         {
-            public int? ChannelId { get; set; }
+            public List<int> ChannelIds { get; set; }
+            public bool IsAllContents { get; set; }
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
             public IEnumerable<KeyValuePair<string, string>> Items { get; set; }

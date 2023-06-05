@@ -30,17 +30,25 @@
     <el-row>
       <el-col :span="20">
         <el-form v-on:submit.native.prevent ref="searchForm" :model="searchForm" :inline="true" size="small" label-width="100px">
-          <el-form-item label="栏目" prop="channelIds">
+          <el-form-item label="栏目" prop="channelIds" :rules="{ required: true, message: '请选择栏目' }">
             <el-cascader
-              ref="channelIds"
-              v-model="channelIds"
-              :options="[root]"
-              :props="{ checkStrictly: true }"
-              filterable
-              clearable
-              placeholder="请选择栏目"
-            >
-            </el-cascader>
+                ref="channelIds"
+                v-model="searchForm.channelIds"
+                :options="[root]"
+                :props="{ multiple: true, checkStrictly: true }"
+                filterable
+                placeholder="请选择栏目"
+              >
+                <span slot-scope="{ node, data }">
+                  {{ node.label }}
+                </span>
+              </el-cascader>
+          </el-form-item>
+          <el-form-item>
+            <el-checkbox
+              v-model="searchForm.isAllContents"
+              label="包含子栏目"
+            ></el-checkbox>
           </el-form-item>
           <el-form-item>
             <el-popover placement="top" width="580" trigger="click">
@@ -254,9 +262,7 @@
     <el-divider></el-divider>
     <el-row align="center" style="margin-right: 5px; margin-top: 10px">
       <el-col :span="24" align="center">
-        <el-button size="small" type="primary" v-on:click="btnSearchClick"
-          >搜 索</el-button
-        >
+        <el-button size="small" type="primary" v-on:click="btnSearchClick">搜 索</el-button>
       </el-col>
     </el-row>
   </el-main>
