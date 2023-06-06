@@ -1030,6 +1030,11 @@ namespace SSCMS.Core.Services
                         await HttpClientUtils.DownloadAsync(originalImageSrc, filePath);
                         if (FileUtils.IsImage(PathUtils.GetExtension(fileName)))
                         {
+                            if (site.IsImageAutoResize)
+                            {
+                                ImageUtils.ResizeImageIfExceeding(filePath, site.ImageAutoResizeWidth);
+                            }
+                            
                             await AddWaterMarkAsync(site, filePath);
                         }
                     }

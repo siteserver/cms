@@ -253,11 +253,12 @@ namespace SSCMS.Core.Utils.Office
                                 ImageUrl = imageSource;
                             }
 
-                            var img = new XElement(Xhtml.img,
-                                new XAttribute(NoNamespace.src, imageSource),
-                                imageInfo.ImgStyleAttribute,
-                                imageInfo.AltText != null ?
-                                    new XAttribute(NoNamespace.alt, imageInfo.AltText) : null);
+                            var img = new XElement(
+                              Xhtml.img,
+                              new XAttribute(NoNamespace.src, imageSource),
+                              // imageInfo.ImgStyleAttribute,
+                              imageInfo.AltText != null ? new XAttribute(NoNamespace.alt, imageInfo.AltText) : null
+                            );
                             return img;
                         }
                     };
@@ -280,7 +281,7 @@ namespace SSCMS.Core.Utils.Office
                     var htmlString = html.ToString(SaveOptions.DisableFormatting);
                     var htmlDoc = new HtmlDocument();
                     htmlDoc.LoadHtml(htmlString);
-                    var style = htmlDoc.DocumentNode.SelectSingleNode("//style").OuterHtml;
+                    var style = IsClearFormat ? string.Empty : htmlDoc.DocumentNode.SelectSingleNode("//style").OuterHtml;
                     var body = htmlDoc.DocumentNode.SelectSingleNode("//body").InnerHtml;
 
                     Body = $"{style}{Environment.NewLine}{body}";
