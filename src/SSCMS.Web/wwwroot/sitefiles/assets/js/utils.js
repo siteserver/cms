@@ -397,7 +397,7 @@ var utils = {
       showCancelButton: true,
       cancelButtonText: "取 消",
     }).then(function (result) {
-      if (result.value) {
+      if (result.value && config.callback) {
         config.callback();
       }
     });
@@ -416,7 +416,7 @@ var utils = {
       confirmButtonClass: "el-button el-button--primary",
       showCancelButton: false
     }).then(function (result) {
-      if (result.value) {
+      if (result.value && config.callback) {
         config.callback();
       }
     });
@@ -435,7 +435,7 @@ var utils = {
       confirmButtonClass: "el-button el-button--danger",
       showCancelButton: false,
     }).then(function (result) {
-      if (result.value) {
+      if (result.value && config.callback) {
         config.callback();
       }
     });
@@ -531,8 +531,11 @@ var utils = {
         sessionStorage.setItem(uuid, JSON.stringify({
           message: error
         }));
-
-        top.location.href = utils.getRootUrl("error", { uuid: uuid });
+        if (options.current) {
+          location.href = utils.getRootUrl("error", { uuid: uuid });
+        } else {
+          top.location.href = utils.getRootUrl("error", { uuid: uuid });
+        }
       } else {
         utils.getRootVue().$message({
           type: "error",
