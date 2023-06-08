@@ -19,6 +19,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int siteId, int specialId);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<Special> GetSpecialAsync(int siteId, int specialId);
 
         Task<string> GetTitleAsync(int siteId, int specialId);

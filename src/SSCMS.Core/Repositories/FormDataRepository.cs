@@ -96,6 +96,13 @@ namespace SSCMS.Core.Repositories
             await _formRepository.UpdateAsync(form);
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(FormData.SiteId), siteId)
+            );
+        }
+
         public async Task<int> GetCountAsync(int formId)
         {
             return await _repository.CountAsync(Q.Where(Attr.FormId, formId));

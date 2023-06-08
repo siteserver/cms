@@ -11,6 +11,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int siteId, int channelId);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<List<Translate>> GetTranslatesAsync(int siteId, bool summary = false);
 
         Task<List<Translate>> GetTranslatesAsync(int siteId, int channelId, bool summary = false);

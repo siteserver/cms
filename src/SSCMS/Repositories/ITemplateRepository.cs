@@ -15,6 +15,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(IPathManager pathManager, Site site, int templateId);
 
+        Task DeleteAllAsync(int siteId);
+
         Task CreateDefaultTemplateAsync(int siteId);
     }
 }

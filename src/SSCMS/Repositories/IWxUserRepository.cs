@@ -13,6 +13,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAllAsync(int siteId, List<string> openIds);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<(int Total, int Count, List<string> Results)> GetPageOpenIds(int siteId, int tagId, string keyword, int page, int perPage);
 
         Task<List<string>> GetAllOpenIds(int siteId);

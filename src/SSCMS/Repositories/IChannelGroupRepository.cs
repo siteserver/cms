@@ -13,6 +13,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int siteId, string groupName);
 
+        Task DeleteAllAsync(int siteId);
+
         Task UpdateTaxisDownAsync(int siteId, int groupId, int taxis);
 
         Task UpdateTaxisUpAsync(int siteId, int groupId, int taxis);

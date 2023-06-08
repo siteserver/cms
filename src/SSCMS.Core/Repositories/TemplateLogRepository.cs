@@ -59,5 +59,12 @@ namespace SSCMS.Core.Repositories
         {
             await _repository.DeleteAsync(logId);
         }
+
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(TemplateLog.SiteId), siteId)
+            );
+        }
     }
 }

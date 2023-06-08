@@ -48,6 +48,14 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(Special.SiteId), siteId)
+                .CachingRemove(CacheKey(siteId))
+            );
+        }
+
         public async Task<bool> IsTitleExistsAsync(int siteId, string title)
         {
             var specials = await GetSpecialsAsync(siteId);

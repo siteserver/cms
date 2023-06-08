@@ -10,6 +10,8 @@ namespace SSCMS.Repositories
 
         Task InsertAsync(ContentCheck check);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<List<ContentCheck>> GetCheckListAsync(int siteId, int channelId, int contentId);
     }
 }

@@ -47,6 +47,13 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(SitePermissions.SiteId), siteId)
+            );
+        }
+
         public async Task<List<SitePermissions>> GetAllAsync(string roleName)
         {
             return await _repository.GetAllAsync(Q

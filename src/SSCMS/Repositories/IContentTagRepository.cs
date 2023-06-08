@@ -13,7 +13,7 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int siteId, string tagName);
 
-        Task DeleteAsync(int siteId);
+        Task DeleteAllAsync(int siteId);
 
         Task UpdateTagsAsync(List<string> previousTags, List<string> nowTags, int siteId, int contentId);
 

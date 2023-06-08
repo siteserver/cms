@@ -8,7 +8,7 @@ namespace SSCMS.Repositories
     {
         Task SetAsync(WxAccount account);
 
-        Task DeleteBySiteIdAsync(int siteId);
+        Task DeleteAllAsync(int siteId);
 
         Task<WxAccount> GetBySiteIdAsync(int siteId);
     }

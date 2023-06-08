@@ -39,6 +39,13 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(id);
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(RelatedField.SiteId), siteId)
+            );
+        }
+
         public async Task<RelatedField> GetAsync(int siteId, string title)
         {
             return await _repository.GetAsync(Q

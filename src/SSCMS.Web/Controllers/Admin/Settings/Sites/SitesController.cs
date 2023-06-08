@@ -27,10 +27,29 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly IChannelGroupRepository _channelGroupRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
+        private readonly IContentCheckRepository _contentCheckRepository;
+        private readonly IFormRepository _formRepository;
+        private readonly IFormDataRepository _formDataRepository;
+        private readonly IRelatedFieldRepository _relatedFieldRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
+        private readonly ISitePermissionsRepository _sitePermissionsRepository;
+        private readonly ISpecialRepository _specialRepository;
+        private readonly IStatRepository _statRepository;
+        private readonly ITemplateLogRepository _templateLogRepository;
+        private readonly ITemplateRepository _templateRepository;
+        private readonly ITranslateRepository _translateRepository;
+        private readonly IWxAccountRepository _wxAccountRepository;
+        private readonly IWxChatRepository _wxChatRepository;
+        private readonly IWxMenuRepository _wxMenuRepository;
+        private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
+        private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
+        private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
+        private readonly IWxUserRepository _wxUserRepository;
 
-        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository)
+        public SitesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository, IChannelGroupRepository channelGroupRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, IContentCheckRepository contentCheckRepository, IFormRepository formRepository, IFormDataRepository formDataRepository, IRelatedFieldRepository relatedFieldRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ISitePermissionsRepository sitePermissionsRepository, ISpecialRepository specialRepository, IStatRepository statRepository, ITemplateLogRepository templateLogRepository, ITemplateRepository templateRepository, ITranslateRepository translateRepository, IWxAccountRepository wxAccountRepository, IWxChatRepository wxChatRepository, IWxMenuRepository wxMenuRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository, IWxUserRepository wxUserRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -39,8 +58,27 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
             _tableStyleRepository = tableStyleRepository;
+            _channelGroupRepository = channelGroupRepository;
             _contentGroupRepository = contentGroupRepository;
             _contentTagRepository = contentTagRepository;
+            _contentCheckRepository = contentCheckRepository;
+            _formRepository = formRepository;
+            _formDataRepository = formDataRepository;
+            _relatedFieldRepository = relatedFieldRepository;
+            _relatedFieldItemRepository = relatedFieldItemRepository;
+            _sitePermissionsRepository = sitePermissionsRepository;
+            _specialRepository = specialRepository;
+            _statRepository = statRepository;
+            _templateLogRepository = templateLogRepository;
+            _templateRepository = templateRepository;
+            _translateRepository = translateRepository;
+            _wxAccountRepository = wxAccountRepository;
+            _wxChatRepository = wxChatRepository;
+            _wxMenuRepository = wxMenuRepository;
+            _wxReplyKeywordRepository = wxReplyKeywordRepository;
+            _wxReplyMessageRepository = wxReplyMessageRepository;
+            _wxReplyRuleRepository = wxReplyRuleRepository;
+            _wxUserRepository = wxUserRepository;
         }
 
         public class GetResult

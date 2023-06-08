@@ -14,5 +14,7 @@ namespace SSCMS.Repositories
         Task<List<KeyValuePair<int, string>>> GetLogIdWithNameListAsync(int siteId, int templateId);
 
         Task DeleteAsync(int logId);
+
+        Task DeleteAllAsync(int siteId);
     }
 }

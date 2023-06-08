@@ -64,6 +64,14 @@ namespace SSCMS.Core.Repositories
             await _repository.DeleteAsync(formId, Q.CachingRemove(GetCacheKey(siteId)));
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(Form.SiteId), siteId)
+                .CachingRemove(GetCacheKey(siteId))
+            );
+        }
+
         public async Task UpdateTaxisToDownAsync(int siteId, int formId)
         {
             var taxis = await _repository.GetAsync<int>(Q

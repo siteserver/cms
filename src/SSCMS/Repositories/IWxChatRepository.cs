@@ -15,6 +15,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int siteId, int chatId);
 
+        Task DeleteAllAsync(int siteId);
+
         Task DeleteAllAsync(int siteId, string openId);
 
         Task<List<WxChat>> GetChatsAsyncByOpenId(int siteId, string openId);

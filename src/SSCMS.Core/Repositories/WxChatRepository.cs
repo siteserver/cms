@@ -59,6 +59,13 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(WxChat.SiteId), siteId)
+            );
+        }
+
         public async Task DeleteAllAsync(int siteId, string openId)
         {
             await _repository.DeleteAsync(Q

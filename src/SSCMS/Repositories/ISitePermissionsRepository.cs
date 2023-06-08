@@ -11,6 +11,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(string roleName);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<List<SitePermissions>> GetAllAsync(string roleName);
 
         Task<SitePermissions> GetAsync(string roleName, int siteId);

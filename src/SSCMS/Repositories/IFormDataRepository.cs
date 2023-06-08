@@ -22,6 +22,8 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(Form form, FormData data);
 
+        Task DeleteAllAsync(int siteId);
+
         Task<int> GetCountAsync(int formId);
 
         Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize);

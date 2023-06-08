@@ -47,6 +47,14 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task DeleteAllAsync(int siteId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(ChannelGroup.SiteId), siteId)
+                .CachingRemove(GetCacheKey(siteId))
+            );
+        }
+
         public async Task UpdateTaxisDownAsync(int siteId, int groupId, int taxis)
         {
             var higherGroup = await _repository.GetAsync<ChannelGroup>(Q
