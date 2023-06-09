@@ -48,6 +48,23 @@ var methods = {
     return attributeName !== 'Sequence' && attributeName !== 'Title' && attributeName !== 'ChannelId';
   },
 
+  getLinkType: function (linkType) {
+    if (linkType === 'LinkToFirstChannel') {
+      return '链接到第一个子栏目';
+    } else if (linkType === 'LinkToChannel') {
+      return '链接到指定栏目';
+    } else if (linkType === 'LinkToContent') {
+      return '链接到指定内容';
+    } else if (linkType === 'LinkToFirstContent') {
+      return '链接到第一条内容';
+    } else if (linkType === 'LinkToOnlyOneContent') {
+      return '仅一条内容时链接到此内容';
+    } else if (linkType === 'NoLink') {
+      return '不可链接';
+    }
+    return '默认';
+  },
+
   getUrl: function(virtualUrl) {
     if (!virtualUrl) return '';
     return _.replace(virtualUrl, '@/', this.siteUrl + '/');
