@@ -377,11 +377,11 @@ namespace SSCMS.Core.Utils
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, CheckAdminId))
                 {
-                    var checkedId = source.Get<int?>(CheckAdminId);
-                    if (checkedId.HasValue)
+                    var checkedId = source.Get<int>(CheckAdminId);
+                    if (checkedId > 0)
                     {
                         var checkAdminName =
-                            await _databaseManager.AdministratorRepository.GetDisplayAsync(checkedId.Value);
+                            await _databaseManager.AdministratorRepository.GetDisplayAsync(checkedId);
                         content.Set(CheckAdminName, checkAdminName);
                     }
                 }
