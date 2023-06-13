@@ -220,9 +220,13 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 type = nameof(Content.Title);
             }
-            if (StringUtils.EqualsIgnoreCase(type, "Tags"))
+            else if (StringUtils.EqualsIgnoreCase(type, "Tags"))
             {
                 type = nameof(Content.TagNames);
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, "Groups"))
+            {
+                type = nameof(Content.GroupNames);
             }
 
             var isReturnToBr = false;
@@ -609,6 +613,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.TagNames)))
                 {
                     parsedContent = ListUtils.ToString(content.TagNames);
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.GroupNames)))
+                {
+                    parsedContent = ListUtils.ToString(content.GroupNames);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.Hits)))
                 {
