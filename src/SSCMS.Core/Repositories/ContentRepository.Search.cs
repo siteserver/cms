@@ -6,6 +6,7 @@ using Datory;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Repositories
 {
@@ -25,7 +26,14 @@ namespace SSCMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(searchType) && !string.IsNullOrEmpty(searchText))
             {
-                query.WhereLike(searchType, $"%{searchText}%");
+                if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
+                {
+                    query.WhereLike(searchType, $"%{searchText}%");
+                }
+                else
+                {
+                    query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
+                }
             }
 
             if (isAdvanced)
@@ -199,7 +207,17 @@ namespace SSCMS.Core.Repositories
                 {
                     if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
                     {
-                        query.WhereLike(item.Key, $"%{item.Value}%");
+                        var searchType = item.Key;
+                        var searchText = item.Value;
+
+                        if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
+                        {
+                            query.WhereLike(searchType, $"%{searchText}%");
+                        }
+                        else
+                        {
+                            query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
+                        }
                     }
                 }
             }
@@ -331,7 +349,17 @@ namespace SSCMS.Core.Repositories
                 {
                     if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
                     {
-                        query.WhereLike(item.Key, $"%{item.Value}%");
+                        var searchType = item.Key;
+                        var searchText = item.Value;
+
+                        if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
+                        {
+                            query.WhereLike(searchType, $"%{searchText}%");
+                        }
+                        else
+                        {
+                            query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
+                        }
                     }
                 }
             }
@@ -428,7 +456,17 @@ namespace SSCMS.Core.Repositories
                 {
                     if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
                     {
-                        query.WhereLike(item.Key, $"%{item.Value}%");
+                        var searchType = item.Key;
+                        var searchText = item.Value;
+
+                        if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
+                        {
+                            query.WhereLike(searchType, $"%{searchText}%");
+                        }
+                        else
+                        {
+                            query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
+                        }
                     }
                 }
             }

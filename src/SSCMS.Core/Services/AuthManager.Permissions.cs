@@ -389,7 +389,7 @@ namespace SSCMS.Core.Services
 
         private static KeyValuePair<int, int> ParsePermissionDictKey(string dictKey)
         {
-            if (string.IsNullOrEmpty(dictKey) || dictKey.IndexOf("_", StringComparison.Ordinal) == -1) return new KeyValuePair<int, int>(0, 0);
+            if (string.IsNullOrEmpty(dictKey) || !dictKey.Contains('_')) return new KeyValuePair<int, int>(0, 0);
 
             return new KeyValuePair<int, int>(TranslateUtils.ToInt(dictKey.Split('_')[0]), TranslateUtils.ToInt(dictKey.Split('_')[1]));
         }

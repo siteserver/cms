@@ -33,10 +33,10 @@ namespace SSCMS.Core.Utils
             return DateTime.UtcNow.Add(expiresAt);
         }
 
-        public static string GetRelatedDateTimeString(DateTime datetime)
+        public static string GetRelatedDateTimeString(DateTime dateTime)
         {
             string retrieval;
-            var interval = DateTime.Now - datetime;
+            var interval = DateTime.Now - dateTime;
             if (interval.Days > 0)
             {
                 if (interval.Days >= 7 && interval.Days < 35)
@@ -71,21 +71,21 @@ namespace SSCMS.Core.Utils
             return retrieval;
         }
 
-        private static string GetDateAndTimeString(DateTime datetime, DateFormatType dateFormat, TimeFormatType timeFormat)
+        private static string GetDateAndTimeString(DateTime dateTime, DateFormatType dateFormat, TimeFormatType timeFormat)
         {
-            return $"{GetDateString(datetime, dateFormat)} {GetTimeString(datetime, timeFormat)}";
+            return $"{GetDateString(dateTime, dateFormat)} {GetTimeString(dateTime, timeFormat)}";
         }
 
-        public static string GetDateAndTimeString(DateTime datetime)
+        public static string GetDateAndTimeString(DateTime dateTime)
         {
-            if (datetime == Constants.SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
-            return GetDateAndTimeString(datetime, DateFormatType.Day, TimeFormatType.ShortTime);
+            if (dateTime == Constants.SqlMinValue || dateTime == DateTime.MinValue) return string.Empty;
+            return GetDateAndTimeString(dateTime, DateFormatType.Day, TimeFormatType.ShortTime);
         }
 
-        public static string GetDateString(DateTime datetime)
+        public static string GetDateString(DateTime dateTime)
         {
-            if (datetime == Constants.SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
-            return GetDateString(datetime, DateFormatType.Day);
+            if (dateTime == Constants.SqlMinValue || dateTime == DateTime.MinValue) return string.Empty;
+            return GetDateString(dateTime, DateFormatType.Day);
         }
 
         public static string GetDateAndTimeString(DateTimeOffset? offset)
@@ -93,7 +93,7 @@ namespace SSCMS.Core.Utils
             return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
         }
 
-        public static string GetDateString(DateTime datetime, DateFormatType dateFormat)
+        public static string GetDateString(DateTime dateTime, DateFormatType dateFormat)
         {
             var format = string.Empty;
             if (dateFormat == DateFormatType.Year)
@@ -112,24 +112,24 @@ namespace SSCMS.Core.Utils
             {
                 format = "yyyy年M月d日";
             }
-            return datetime.ToString(format);
+            return dateTime.ToString(format);
         }
 
-        public static string GetTimeString(DateTime datetime)
+        public static string GetTimeString(DateTime dateTime)
         {
-            return GetTimeString(datetime, TimeFormatType.ShortTime);
+            return GetTimeString(dateTime, TimeFormatType.ShortTime);
         }
 
-        private static string GetTimeString(DateTime datetime, TimeFormatType timeFormat)
+        private static string GetTimeString(DateTime dateTime, TimeFormatType timeFormat)
         {
             var retVal = string.Empty;
             if (timeFormat == TimeFormatType.LongTime)
             {
-                retVal = datetime.ToLongTimeString();
+                retVal = dateTime.ToLongTimeString();
             }
             else if (timeFormat == TimeFormatType.ShortTime)
             {
-                retVal = datetime.ToShortTimeString();
+                retVal = dateTime.ToShortTimeString();
             }
             return retVal;
         }
@@ -182,16 +182,16 @@ namespace SSCMS.Core.Utils
             return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;
         }
 
-        public static string Format(DateTime datetime, string formatString)
+        public static string Format(DateTime dateTime, string formatString)
         {
             string retrieval;
             if (!string.IsNullOrEmpty(formatString))
             {
-                retrieval = formatString.IndexOf("{0:", StringComparison.Ordinal) != -1 ? string.Format(DateTimeFormatInfo.InvariantInfo, formatString, datetime) : datetime.ToString(formatString, DateTimeFormatInfo.InvariantInfo);
+                retrieval = formatString.IndexOf("{0:", StringComparison.Ordinal) != -1 ? string.Format(DateTimeFormatInfo.InvariantInfo, formatString, dateTime) : dateTime.ToString(formatString, DateTimeFormatInfo.InvariantInfo);
             }
             else
             {
-                retrieval = GetDateString(datetime);
+                retrieval = GetDateString(dateTime);
             }
             return retrieval;
         }

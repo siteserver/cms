@@ -39,7 +39,7 @@ namespace SSCMS.Core.Repositories
                             if (StringUtils.StartsWithIgnoreCase(value, "not:"))
                             {
                                 value = value.Substring("not:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     sqlWhereString += $" AND ({attributeName} <> '{value}')";
                                 }
@@ -55,7 +55,7 @@ namespace SSCMS.Core.Repositories
                             else if (StringUtils.StartsWithIgnoreCase(value, "contains:"))
                             {
                                 value = value.Substring("contains:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     sqlWhereString += $" AND ({attributeName} LIKE '%{value}%')";
                                 }
@@ -69,7 +69,7 @@ namespace SSCMS.Core.Repositories
                                     }
                                     builder.Length -= 3;
 
-                                    builder.Append(")");
+                                    builder.Append(')');
 
                                     sqlWhereString += builder.ToString();
                                 }
@@ -77,7 +77,7 @@ namespace SSCMS.Core.Repositories
                             else if (StringUtils.StartsWithIgnoreCase(value, "start:"))
                             {
                                 value = value.Substring("start:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     sqlWhereString += $" AND ({attributeName} LIKE '{value}%')";
                                 }
@@ -91,7 +91,7 @@ namespace SSCMS.Core.Repositories
                                     }
                                     builder.Length -= 3;
 
-                                    builder.Append(")");
+                                    builder.Append(')');
 
                                     sqlWhereString += builder.ToString();
                                 }
@@ -99,7 +99,7 @@ namespace SSCMS.Core.Repositories
                             else if (StringUtils.StartsWithIgnoreCase(value, "end:"))
                             {
                                 value = value.Substring("end:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     sqlWhereString += $" AND ({attributeName} LIKE '%{value}')";
                                 }
@@ -113,14 +113,14 @@ namespace SSCMS.Core.Repositories
                                     }
                                     builder.Length -= 3;
 
-                                    builder.Append(")");
+                                    builder.Append(')');
 
                                     sqlWhereString += builder.ToString();
                                 }
                             }
                             else
                             {
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     sqlWhereString += $" AND ({attributeName} = '{value}')";
                                 }
@@ -383,7 +383,7 @@ namespace SSCMS.Core.Repositories
                             if (StringUtils.StartsWithIgnoreCase(value, "not:"))
                             {
                                 value = value.Substring("not:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     query.WhereNot(attributeName, value);
                                 }
@@ -399,7 +399,7 @@ namespace SSCMS.Core.Repositories
                             else if (StringUtils.StartsWithIgnoreCase(value, "contains:"))
                             {
                                 value = value.Substring("contains:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     query.WhereLike(attributeName, $"%{value}%");
                                 }
@@ -419,7 +419,7 @@ namespace SSCMS.Core.Repositories
                             else if (StringUtils.StartsWithIgnoreCase(value, "start:"))
                             {
                                 value = value.Substring("start:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     query.WhereStarts(attributeName, value);
                                 }
@@ -439,7 +439,7 @@ namespace SSCMS.Core.Repositories
                             else if (StringUtils.StartsWithIgnoreCase(value, "end:"))
                             {
                                 value = value.Substring("end:".Length);
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     query.WhereEnds(attributeName, value);
                                 }
@@ -458,7 +458,7 @@ namespace SSCMS.Core.Repositories
                             }
                             else
                             {
-                                if (value.IndexOf(',') == -1)
+                                if (!value.Contains(','))
                                 {
                                     query.Where(attributeName, value);
                                 }
@@ -513,7 +513,7 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
-        private void ParserOrderQuery(DatabaseType databaseType, Query query, TaxisType taxisType)
+        private static void ParserOrderQuery(DatabaseType databaseType, Query query, TaxisType taxisType)
         {
             if (taxisType == TaxisType.OrderById)
             {
