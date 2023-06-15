@@ -505,6 +505,33 @@ namespace SSCMS.Core.Repositories
             return retVal;
         }
 
+        public async Task<List<string>> GetListColumnsRecursiveAsync(Channel channel)
+        {
+            if (!string.IsNullOrEmpty(channel.ListColumns))
+            {
+              return ListUtils.GetStringList(channel.ListColumns);
+            }
+
+            var channelIds = new List<int>();
+            channelIds.AddRange(channel.ParentsPath);
+            channelIds.Reverse();
+
+            foreach (var channelId in channelIds)
+            {
+              var node = await GetAsync(channelId);
+              if (node != null && !string.IsNullOrEmpty(node.ListColumns))
+              {
+                return ListUtils.GetStringList(node.ListColumns);
+              }
+            }
+
+            return new List<string>
+            {
+                nameof(Content.Title),
+                nameof(Content.AddDate)
+            };
+        }
+
         public async Task<string> GetChannelNameNavigationAsync(int siteId, int channelId)
         {
             return await GetChannelNameNavigationAsync(siteId, siteId, channelId);
