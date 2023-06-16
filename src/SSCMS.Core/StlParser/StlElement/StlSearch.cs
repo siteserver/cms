@@ -202,6 +202,12 @@ namespace SSCMS.Core.StlParser.StlElement
                 var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.LoadingTemplatePath);
                 loading = parseManager.PathManager.GetContentByFilePath(filePath);
             }
+            else
+            {
+                var innerBuilder = new StringBuilder(loading);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
+                loading = innerBuilder.ToString();
+            }
             if (string.IsNullOrEmpty(yes))
             {
                 var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.YesTemplatePath);
@@ -211,6 +217,12 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var filePath = parseManager.PathManager.GetSiteFilesPath(Resources.Search.NoTemplatePath);
                 no = parseManager.PathManager.GetContentByFilePath(filePath);
+            }
+            else
+            {
+                var innerBuilder = new StringBuilder(no);
+                await parseManager.ParseInnerContentAsync(innerBuilder);
+                no = innerBuilder.ToString();
             }
 
             await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
