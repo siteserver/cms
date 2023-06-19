@@ -613,10 +613,12 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.TagNames)))
                 {
                     parsedContent = ListUtils.ToString(content.TagNames);
+                    parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.GroupNames)))
                 {
                     parsedContent = ListUtils.ToString(content.GroupNames);
+                    parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.Hits)))
                 {
@@ -632,10 +634,10 @@ $(function(){{
     contentType: ""application/json"",
     data: JSON.stringify({TranslateUtils.JsonSerialize(new
                     {
-                        SiteId = pageInfo.SiteId,
-                        ChannelId = contextInfo.ChannelId,
-                        ContentId = contextInfo.ContentId,
-                        AutoIncrease = isAutoIncrease
+                      pageInfo.SiteId,
+                      contextInfo.ChannelId,
+                      contextInfo.ContentId,
+                      AutoIncrease = isAutoIncrease
                     })}),
     dataType: ""json"",
     success: function (result) {{ $(""#{elementId}"").before(result.value)  }}
