@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -30,11 +32,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _contentRepository = contentRepository;
         }
 
+        public class GetRequest : ChannelRequest
+        {
+            public string ChannelContentIds { get; set; }
+        }
+
+        public class GetResult
+        {
+            public IEnumerable<Content> Contents { get; set; }
+            public int TotalCount { get; set; }
+        }
+
         public class SubmitRequest : ChannelRequest
         {
             public string ChannelContentIds { get; set; }
-            public bool IsUp { get; set; }
-            public int Taxis { get; set; }
+            public string Type { get; set; }
+            public int Value { get; set; }
         }
     }
 }

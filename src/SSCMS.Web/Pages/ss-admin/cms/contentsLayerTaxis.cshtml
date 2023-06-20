@@ -1,15 +1,52 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
+<el-table
+  :data="contents"
+  style="width: 100%;"
+  size="small"
+  row-key="id"
+  stripe>
+  <el-table-column prop="id" label="内容Id" width="80"></el-table-column>
+  <el-table-column
+    label="内容标题"
+    show-overflow-tooltip>
+    <template slot-scope="scope">
+      <el-link type="primary" :underline="false" :href="getContentUrl(scope.row)" v-html="scope.row.title" target="_blank" v-on:click.stop.native></el-link>
+    </template>
+  </el-table-column>
+  <el-table-column prop="addDate" label="添加时间"  width="150"></el-table-column>
+  <el-table-column
+    fixed="right"
+    width="90"
+    align="center"
+    show-overflow-tooltip
+    label="状态">
+    <template slot-scope="scope">
+      <el-link size="mini" :underline="false" :type="(scope.row.checked ? 'primary' : 'danger')">
+        {{ scope.row.checked ? '已审核' : '待审核' }}
+      </el-link>
+    </template>
+  </el-table-column>
+</el-table>
+
+<el-divider></el-divider>
+<div style="height: 10px"></div>
+
 <el-form v-on:submit.native.prevent size="small" ref="form" :model="form" label-width="120px">
-  <el-form-item label="排序方向">
-    <el-radio-group v-model="form.isUp">
-      <el-radio-button :label="true">上升</el-radio-button>
-      <el-radio-button :label="false">下降</el-radio-button>
+  <el-form-item label="排序方式">
+    <el-radio-group v-model="form.type">
+      <el-radio-button label="to">调整至</el-radio-button>
+      <el-radio-button label="up">上升</el-radio-button>
+      <el-radio-button label="down">下降</el-radio-button>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="移动数目" prop="taxis" :rules="{ required: true, message: '请输入移动数目' }">
-    <el-input v-model="form.taxis"></el-input>
+  <el-form-item :label="getTypeName()" prop="value" :rules="[
+    { required: true, message: '请输入数目' },
+    { validator: utils.validateInt }
+  ]">
+    <el-input v-model.number="form.value" style="width: 120px" placeholder=""></el-input>
+    <span class="tips" v-if="totalCount">（总数为 <span style="color: #f00">{{ totalCount }}</span> ）</span>
   </el-form-item>
 </el-form>
 

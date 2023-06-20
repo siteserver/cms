@@ -2,30 +2,82 @@
 
 var data = utils.init({
   page: utils.getQueryInt('page'),
+  siteId: utils.getQueryInt('siteId'),
+  channelId: utils.getQueryInt('channelId'),
+  channelContentIds: utils.getQueryString('channelContentIds'),
+  contents: [],
+  totalCount: 0,
   form: {
-    siteId: utils.getQueryInt('siteId'),
-    channelId: utils.getQueryInt('channelId'),
-    channelContentIds: utils.getQueryString('channelContentIds'),
-    isUp: true,
-    taxis: 1
+    type: 'to',
+    value: 1
   }
 });
 
 var methods = {
+  apiGet: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.get($url, {
+      params: {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        channelContentIds: this.channelContentIds
+      }
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.contents = res.contents;
+      $this.totalCount = res.totalCount;
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   apiSubmit: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
+    $api.post($url, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      channelContentIds: this.channelContentIds,
+      type: this.form.type,
+      value: this.form.value,
+    }).then(function (response) {
       var res = response.data;
 
-      parent.$vue.apiList($this.form.channelId, $this.page, '内容排序成功!');
+      parent.$vue.apiList($this.channelId, $this.page, '内容排序成功!');
       utils.closeLayer();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  getTypeName: function () {
+    if (this.form.type === 'to') {
+      return '调整至';
+    } else if (this.form.type === 'up') {
+      return '上升数目';
+    } else if (this.form.type === 'down') {
+      return '下降数目';
+    }
+    return '';
+  },
+
+  getContentUrl: function (content) {
+    if (content.checked) {
+      return utils.getRootUrl('redirect', {
+        siteId: content.siteId,
+        channelId: content.channelId,
+        contentId: content.id
+      });
+    }
+    return $apiUrl + '/preview/' + content.siteId + '/' + content.channelId + '/' + content.id;
   },
 
   btnSubmitClick: function () {
@@ -48,6 +100,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
-    utils.loading(this, false);
+    this.apiGet();
   }
 });
