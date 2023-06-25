@@ -15,6 +15,8 @@ namespace SSCMS.Repositories
 
         Task UpdateArrangeTaxisAsync(Site site, Channel channel, string attributeName, bool isDesc);
 
+        Task SetTaxisAsync(Site site, Channel channel, int contentId, bool isTop, int order);
+
         Task<bool> SetTaxisToUpAsync(Site site, Channel channel, int contentId, bool isTop);
 
         Task<bool> SetTaxisToDownAsync(Site site, Channel channel, int contentId, bool isTop);

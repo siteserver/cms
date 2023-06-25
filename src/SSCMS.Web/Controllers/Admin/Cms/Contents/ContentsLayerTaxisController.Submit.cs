@@ -27,7 +27,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
       if (StringUtils.EqualsIgnoreCase(request.Type, "to"))
       {
-        
+          summaries.Reverse();
+          foreach (var summary in summaries)
+          {
+            var channel = await _channelRepository.GetAsync(summary.ChannelId);
+            var content = await _contentRepository.GetAsync(site, channel, summary.Id);
+            await _contentRepository.SetTaxisAsync(site, channel, content.Id, content.Top, request.Value);
+          }
       }
       else
       {
