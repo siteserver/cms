@@ -575,7 +575,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                 foreach (var str in stringList)
                 {
-                    if (!actualValues.Contains(str)) continue;
+                    if (!ListUtils.Contains(actualValues, str)) continue;
                     isSuccess = true;
                     break;
                 }
@@ -588,7 +588,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 var isIn = false;
                 foreach (var str in stringList)
                 {
-                    if (!actualValues.Contains(str)) continue;
+                    if (!ListUtils.Contains(actualValues, str)) continue;
                     isIn = true;
                     break;
                 }
@@ -596,6 +596,14 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     isSuccess = true;
                 }
+            }
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateEmpty))
+            {
+                isSuccess = actualValues == null || actualValues.Count == 0;
+            }
+            else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEmpty))
+            {
+                isSuccess = actualValues != null && actualValues.Count > 0;
             }
             return isSuccess;
         }
