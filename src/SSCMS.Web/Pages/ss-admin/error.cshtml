@@ -13,11 +13,11 @@
     <blockquote class="blockquote mb-0">
       <p v-if="message" v-html="message" style="word-wrap: break-word; font-size: 14px;"></p>
       <p v-if="stackTrace" v-html="stackTrace" style="word-wrap: break-word; font-size: 14px;"></p>
-      <p v-if="addDate" v-html="addDate" style="word-wrap: break-word; font-size: 14px;"></p>
+      <p v-if="createdDate" v-html="createdDate" style="word-wrap: break-word; font-size: 14px;"></p>
     </blockquote>
   </div>
   <div class="card-footer text-muted">
-    <span class="m-r-5">如需帮助，请点击链接向 SSCMS 官方 <a target="_blank" v-bind:href="'https://github.com/siteserver/cms/issues/new?title=' + message + '&body=' + stackTrace">提交问题</a></span>
+    <span class="m-r-5">如需帮助，请点击链接向 SSCMS 官方 <a target="_blank" v-bind:href="'https://gitee.com/siteserver/cms/issues/new?title=' + message + '&description=' + stackTrace">提交问题</a></span>
   </div>
 </div>
 
