@@ -5,7 +5,7 @@ var data = utils.init({
   uuid: utils.getQueryString('uuid'),
   message: utils.getQueryString('message'),
   stackTrace: null,
-  addDate: null
+  createdDate: null
 });
 
 var methods = {
@@ -20,9 +20,9 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.message = res.error.summary + ' ' + res.error.message;
-      $this.stackTrace = res.error.stackTrace;
-      $this.addDate = res.error.addDate;
+      $this.message = res.summary + ' ' + res.message;
+      $this.stackTrace = res.stackTrace;
+      $this.createdDate = res.createdDate;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -39,7 +39,10 @@ var $vue = new Vue({
     if (this.logId > 0) {
       this.apiGet();
     } else if (this.uuid) {
-      this.message = sessionStorage.getItem(this.uuid);
+      var error = JSON.parse(sessionStorage.getItem(this.uuid));
+      this.message = error.message;
+      this.stackTrace = error.stackTrace;
+      this.createdDate = error.createdDate;
       utils.loading(this, false);
     }
   },

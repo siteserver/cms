@@ -558,13 +558,13 @@ var utils = {
       } else if (error.response && error.response.status === 500 || options && options.redirect) {
         var uuid = utils.uuid();
 
-        if (typeof message === 'string') {
-          sessionStorage.setItem(uuid, JSON.stringify({
-            message: message
-          }));
-        } else {
+        // if (typeof message === 'string') {
+        //   sessionStorage.setItem(uuid, JSON.stringify({
+        //     message: message
+        //   }));
+        // } else {
           sessionStorage.setItem(uuid, message);
-        }
+        // }
 
         if (options && options.redirect) {
           top.location.href = utils.getRootUrl("error", { uuid: uuid })

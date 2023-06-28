@@ -233,7 +233,7 @@ namespace SSCMS.Web
                     {
                         exception.Message,
                         exception.StackTrace,
-                        AddDate = DateTime.Now
+                        CreatedDate = DateTime.Now
                     });
                 }
                 else
@@ -241,7 +241,7 @@ namespace SSCMS.Web
                     result = TranslateUtils.JsonSerialize(new
                     {
                         exception.Message,
-                        AddDate = DateTime.Now
+                        CreatedDate = DateTime.Now
                     });
                 }
                 context.Response.ContentType = "application/json";
