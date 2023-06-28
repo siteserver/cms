@@ -130,7 +130,12 @@ namespace SSCMS.Core.Services
             if (!plugin.ApplyToChannels) return false;
 
             var siteConfig = plugin.SiteConfigs?.FirstOrDefault(x => x.SiteId == siteId);
-            if (siteConfig == null) return false;
+            siteConfig ??= new SiteConfig
+            {
+                SiteId = siteId,
+                AllChannels = plugin.AllChannels,
+                ChannelIds = new List<int>()
+            };
             
             return siteConfig.AllChannels || ListUtils.Contains(siteConfig.ChannelIds, channelId);
         }

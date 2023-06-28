@@ -97,6 +97,7 @@ namespace SSCMS.Core.Plugins
         public bool ApplyToSites => Configuration.GetValue(nameof(ApplyToSites), false);
         public bool AllSites => Configuration.GetValue(nameof(AllSites), true);
         public bool ApplyToChannels => Configuration.GetValue(nameof(ApplyToChannels), false);
+        public bool AllChannels => Configuration.GetValue(nameof(AllChannels), true);
         public bool Disabled => Configuration.GetValue<bool>(nameof(Disabled));
         public IEnumerable<int> SiteIds => Configuration.GetSection(nameof(SiteIds)).Get<int[]>();
         public IEnumerable<SiteConfig> SiteConfigs => Configuration.GetSection(nameof(SiteConfigs)).Get<SiteConfig[]>();

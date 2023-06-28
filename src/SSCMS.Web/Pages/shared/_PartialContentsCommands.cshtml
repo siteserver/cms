@@ -49,7 +49,7 @@
   </el-button>
 
   <template v-if="typeof(contentsMenus) == 'object'">
-    <el-button v-for="menu in contentsMenus" :key="menu.id" size="mini" :icon="menu.iconClass" v-on:click.stop.native="btnCommandClick(menu)">
+    <el-button v-for="menu in contentsMenus" :key="menu.id" size="mini" style="margin-right: 5px" :icon="menu.iconClass" v-on:click.stop.native="btnCommandClick(menu)">
       {{ menu.text }}
     </el-button>
   </template>

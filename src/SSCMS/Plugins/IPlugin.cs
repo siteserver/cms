@@ -32,6 +32,7 @@ namespace SSCMS.Plugins
         bool ApplyToChannels { get; }
         bool Disabled { get; }
         bool AllSites { get; }
+        bool AllChannels { get; }
         IEnumerable<int> SiteIds { get; }
         IEnumerable<SiteConfig> SiteConfigs { get; }
         IEnumerable<Table> Tables { get; }
