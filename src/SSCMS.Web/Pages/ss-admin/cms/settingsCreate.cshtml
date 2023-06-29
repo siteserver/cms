@@ -74,11 +74,11 @@
   </el-form-item>
   <el-form-item label="生成内容添加日期限制" v-if="form.isCreateStaticContentByAddDate" prop="createStaticContentAddDate" :rules="{ required: true, message: '请输入生成内容添加日期限制' }">
     <el-date-picker
-      v-model="form.createStaticContentAddDate"
       type="date"
-      value-format="yyyy-MM-ddTHH:mm:ss.000Z"
-      placeholder="请选择生成内容添加日期限制">
-    </el-date-picker>
+      placeholder="请选择生成内容添加日期限制"
+      v-model="form.createStaticContentAddDate"
+      value-format="yyyy-MM-dd"
+    ></el-date-picker>
     <div class="tips">在此设置内容添加日期，此日期之前的内容页将不再生成</div>
   </el-form-item>
 
