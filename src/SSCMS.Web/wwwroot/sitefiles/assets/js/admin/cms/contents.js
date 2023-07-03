@@ -366,6 +366,24 @@ var methods = {
     });
   },
 
+  btnCommandsClick: function(command) {
+    if (!command || command.indexOf(',') === -1) return;
+
+    var first = command.split(',')[0];
+    var second = command.split(',')[1];
+    for (var menu of this.contentsMenus) {
+      if (first === menu.id) {
+        for (var child of menu.children) {
+          if (second === child.id) {
+            this.btnCommandClick(child);
+            break;
+          }
+        }
+        break;
+      }
+    }
+  },
+
   btnCommandClick: function(menu) {
     var args = {
       siteId: this.siteId,
