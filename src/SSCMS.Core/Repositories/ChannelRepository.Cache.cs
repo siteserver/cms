@@ -513,7 +513,10 @@ namespace SSCMS.Core.Repositories
             }
 
             var channelIds = new List<int>();
-            channelIds.AddRange(channel.ParentsPath);
+            if (channel.ParentsPath != null)
+            {
+              channelIds.AddRange(channel.ParentsPath);
+            }
             channelIds.Reverse();
 
             foreach (var channelId in channelIds)
