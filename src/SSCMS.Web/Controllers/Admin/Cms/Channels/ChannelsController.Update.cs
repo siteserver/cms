@@ -135,6 +135,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             channel.FilePath = request.FilePath;
             channel.ChannelFilePathRule = request.ChannelFilePathRule;
             channel.ContentFilePathRule = request.ContentFilePathRule;
+            channel.IsChangeBanned = request.IsChangeBanned;
+            channel.IsCreateBanned = request.IsCreateBanned;
             channel.Keywords = request.Keywords;
             channel.Description = request.Description;
 

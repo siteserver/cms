@@ -529,6 +529,10 @@
         <el-input style="width: 70%" v-model="form.contentFilePathRule" placeholder="设置此栏目下的内容页面命名规则"></el-input>
         <el-button v-on:click.prevent="btnSetClick(form.id, false, form.contentFilePathRule)">构造</el-button>
       </el-form-item>
+      <el-form-item label="栏目设置">
+        <el-switch v-model="form.isChangeBanned" active-text="禁止维护内容(添加/修改/删除)" style="margin-right: 20px"></el-switch>
+        <el-switch v-model="form.isCreateBanned" active-text="禁止生成内容"></el-switch>
+      </el-form-item>
       <el-form-item label="栏目关键字">
         <el-input v-model="form.keywords"></el-input>
       </el-form-item>
