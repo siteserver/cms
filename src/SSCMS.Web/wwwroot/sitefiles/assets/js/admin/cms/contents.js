@@ -26,6 +26,7 @@ var data = utils.init({
   multipleSelection: [],
   checkedColumns: [],
   breadcrumbItems: [],
+  isChangeBanned: false,
 
   searchForm: {
     searchType: 'Title',
@@ -102,6 +103,7 @@ var methods = {
       $this.contentsMenus = res.contentsMenus;
       $this.expendedChannelIds = [$this.siteId, channelId];
       $this.searchForm.isAllContents = res.isAllContents;
+      $this.isChangeBanned = res.isChangeBanned;
       $this.breadcrumbItems = res.breadcrumbItems;
 
       if (message) {
@@ -222,7 +224,14 @@ var methods = {
   },
 
   btnAddClick: function () {
-    utils.addTab('添加内容', this.getAddUrl());
+    if (this.isChangeBanned) {
+      utils.alertWarning({
+        title: '禁止添加内容',
+        text: '栏目已开启禁止维护内容(添加/修改/删除)功能，添加内容请先在栏目中关闭此功能！'
+      });
+    } else {
+      utils.addTab('添加内容', this.getAddUrl());
+    }
   },
 
   btnImportClick: function (command) {
@@ -255,7 +264,12 @@ var methods = {
 
   btnEditClick: function(content) {
     if (!this.permissions.isEdit) return;
-    if (content.referenceId > 0 && content.sourceId > 0) {
+    if (this.isChangeBanned) {
+      utils.alertWarning({
+        title: '禁止修改内容',
+        text: '栏目已开启禁止维护内容(添加/修改/删除)功能，修改内容请先在栏目中关闭此功能！'
+      });
+    } else if (content.referenceId > 0 && content.sourceId > 0) {
       utils.openLayer({
         title: "编辑引用内容",
         url: utils.getCmsUrl('contentsLayerReference', {
@@ -318,6 +332,24 @@ var methods = {
   },
 
   btnLayerClick: function(options) {
+    if (this.isChangeBanned) {
+      if (options.name === 'Delete') {
+        return utils.alertWarning({
+          title: '禁止删除内容',
+          text: '栏目已开启禁止维护内容(添加/修改/删除)功能，删除内容请先在栏目中关闭此功能！'
+        });
+      } else if (options.name === 'Word' || options.name === 'Import' || options.name === 'Add') {
+        return utils.alertWarning({
+          title: '禁止添加内容',
+          text: '栏目已开启禁止维护内容(添加/修改/删除)功能，添加内容请先在栏目中关闭此功能！'
+        });
+      } else if (options.name === 'Attributes' || options.name === 'Taxis' || options.name === 'Check' || options.name === 'Group' || options.name === 'Tag' || options.name === 'Arrange' || options.name === 'Hits') {
+        return utils.alertWarning({
+          title: '禁止修改内容',
+          text: '栏目已开启禁止维护内容(添加/修改/删除)功能，修改内容请先在栏目中关闭此功能！'
+        });
+      }
+    }
     var query = {
       siteId: this.siteId,
       page: this.page

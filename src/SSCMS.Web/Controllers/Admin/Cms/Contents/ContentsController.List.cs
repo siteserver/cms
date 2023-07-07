@@ -144,12 +144,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 PageSize = site.PageSize,
                 TitleColumn = titleColumn,
                 Columns = columns,
-                IsAllContents = channel.IsAllContents,
                 CheckedLevels = checkedLevels,
                 Permissions = permissions,
                 ContentMenus = contentMenus,
                 ContentsMenus = contentsMenus,
                 BreadcrumbItems = breadcrumbItems,
+                IsAllContents = channel.IsAllContents,
+                IsChangeBanned = channel.IsChangeBanned,
             };
         }
     }

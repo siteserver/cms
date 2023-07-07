@@ -95,12 +95,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public int PageSize { get; set; }
             public ContentColumn TitleColumn { get; set; }
             public List<ContentColumn> Columns { get; set; }
-            public bool IsAllContents { get; set; }
             public IEnumerable<CheckBox<int>> CheckedLevels { get; set; }
             public Permissions Permissions { get; set; }
             public List<Menu> ContentMenus { get; set; }
             public List<Menu> ContentsMenus { get; set; }
             public List<Select<int>> BreadcrumbItems { get; set; }
+            public bool IsAllContents { get; set; }
+            public bool IsChangeBanned { get; set; }
         }
 
         public class TreeRequest : SiteRequest
