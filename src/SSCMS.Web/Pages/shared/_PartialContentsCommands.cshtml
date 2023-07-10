@@ -48,22 +48,24 @@
     生成
   </el-button>
 
-  <template v-if="typeof(contentsMenus) == 'object'" v-for="menu in contentsMenus" :key="menu.id">
-    <el-dropdown v-if="menu.children && menu.children.length > 0" size="mini" v-on:command="btnCommandsClick">
-      <el-button size="mini" style="margin-right: 5px" :icon="menu.iconClass">
-        {{ menu.text }}
-        <i class="el-icon-arrow-down el-icon--right"></i>
-      </el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="childMenu in menu.children" :command="menu.id + ',' + childMenu.id">
-          <i v-if="childMenu.iconClass" :class="childMenu.iconClass"></i>
-          {{ childMenu.text }}
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-    <el-button v-else size="mini" style="margin-right: 5px" :icon="menu.iconClass" v-on:click.stop.native="btnCommandClick(menu)">
-      {{ menu.text }}
-    </el-button>
+  <template v-if="typeof(contentsMenus) == 'object'">
+    <template v-for="menu in contentsMenus" :key="menu.id">
+        <el-dropdown v-if="menu.children && menu.children.length > 0" size="mini" v-on:command="btnCommandsClick">
+          <el-button size="mini" style="margin-right: 5px" :icon="menu.iconClass">
+            {{ menu.text }}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="childMenu in menu.children" :command="menu.id + ',' + childMenu.id">
+              <i v-if="childMenu.iconClass" :class="childMenu.iconClass"></i>
+              {{ childMenu.text }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-button v-else size="mini" style="margin-right: 5px" :icon="menu.iconClass" v-on:click.stop.native="btnCommandClick(menu)">
+          {{ menu.text }}
+        </el-button>
+      </template>
   </template>
 
   <el-dropdown size="mini" v-on:command="btnMoreClick">
