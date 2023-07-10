@@ -12,6 +12,13 @@ namespace SSCMS.Core.Repositories
             return list.Any(group => group.GroupName == groupName);
         }
 
+        public async Task<int> GetGroupIdAsync(string groupName)
+        {
+            var list = await GetUserGroupsAsync();
+            var item = list.FirstOrDefault(group => group.GroupName == groupName);
+            return item == null ? 0 : item.Id;
+        }
+
         public async Task<UserGroup> GetUserGroupAsync(int groupId)
         {
             var list = await GetUserGroupsAsync();

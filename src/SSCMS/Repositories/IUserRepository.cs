@@ -11,6 +11,8 @@ namespace SSCMS.Repositories
     {
         Task<(User user, string errorMessage)> InsertAsync(User user, string password, string ipAddress);
 
+        Task<int> InsertWithoutValidationAsync(User user, string password);
+
         Task<(bool success, string errorMessage)> UpdateAsync(User user);
 
         Task UpdateLastActivityDateAndCountOfLoginAsync(User user);

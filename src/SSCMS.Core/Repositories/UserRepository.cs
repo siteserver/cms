@@ -64,7 +64,7 @@ namespace SSCMS.Core.Repositories
             {
                 return (false, "用户名包含不规则字符，请更换用户名");
             }
-            
+
             if (!string.IsNullOrEmpty(email) && await IsEmailExistsAsync(email))
             {
                 return (false, "电子邮件地址已被注册，请更换邮箱");
@@ -135,6 +135,21 @@ namespace SSCMS.Core.Repositories
             return (user, string.Empty);
         }
 
+        public async Task<int> InsertWithoutValidationAsync(User user, string password)
+        {
+            if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
+            {
+                user.Mobile = user.UserName;
+            }
+
+            var passwordSalt = GenerateSalt();
+            password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
+            user.LastActivityDate = DateTime.Now;
+            user.LastResetPasswordDate = DateTime.Now;
+
+            return await InsertWithoutValidationAsync(user, password, PasswordFormat.Encrypted, passwordSalt);
+        }
+
         private async Task<int> InsertWithoutValidationAsync(User user, string password, PasswordFormat passwordFormat, string passwordSalt)
         {
             user.LastActivityDate = DateTime.Now;
@@ -175,7 +190,7 @@ namespace SSCMS.Core.Repositories
             {
                 return (false, errorMessage);
             }
-            
+
             user.Set("ConfirmPassword", string.Empty);
             await _repository.UpdateAsync(user, Q.CachingRemove(GetCacheKeysToRemove(entity)));
             return (true, string.Empty);
@@ -700,7 +715,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
                         if (analysisType == AnalysisType.Day)
                         {
                             var year = rdr.GetValue(1);
-                            var month = rdr.GetValue( 2);
+                            var month = rdr.GetValue(2);
                             var day = rdr.GetValue(3);
                             var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-{day}");
                             dict.Add(dateTime, accessNum);
