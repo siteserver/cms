@@ -40,16 +40,19 @@ namespace SSCMS.Core.Repositories
             {
                 if (checkedLevels != null && checkedLevels.Count > 0)
                 {
-                    query.Where(q =>
+                    if (!checkedLevels.Contains(site.CheckContentLevel))
                     {
-                        if (checkedLevels.Contains(site.CheckContentLevel))
-                        {
-                            q.OrWhere(nameof(Content.Checked), true);
-                        }
-
-                        q.OrWhereIn(nameof(Content.CheckedLevel), checkedLevels);
-                        return q;
-                    });
+                        query.Where(nameof(Content.Checked), false);
+                        query.WhereIn(nameof(Content.CheckedLevel), checkedLevels);
+                    }
+                    else if (checkedLevels.Count == 1 && checkedLevels.Contains(site.CheckContentLevel))
+                    {
+                        query.Where(nameof(Content.Checked), true);
+                    }
+                    else
+                    {
+                        query.WhereIn(nameof(Content.CheckedLevel), checkedLevels);
+                    }
                 }
 
                 if (groupNames != null && groupNames.Count > 0)
@@ -226,16 +229,19 @@ namespace SSCMS.Core.Repositories
             {
                 if (checkedLevels != null && checkedLevels.Count > 0)
                 {
-                    query.Where(q =>
+                    if (!checkedLevels.Contains(site.CheckContentLevel))
                     {
-                        if (checkedLevels.Contains(site.CheckContentLevel))
-                        {
-                            q.OrWhere(nameof(Content.Checked), true);
-                        }
-
-                        q.OrWhereIn(nameof(Content.CheckedLevel), checkedLevels);
-                        return q;
-                    });
+                        query.Where(nameof(Content.Checked), false);
+                        query.WhereIn(nameof(Content.CheckedLevel), checkedLevels);
+                    }
+                    else if (checkedLevels.Count == 1 && checkedLevels.Contains(site.CheckContentLevel))
+                    {
+                        query.Where(nameof(Content.Checked), true);
+                    }
+                    else
+                    {
+                        query.WhereIn(nameof(Content.CheckedLevel), checkedLevels);
+                    }
                 }
             }
 
