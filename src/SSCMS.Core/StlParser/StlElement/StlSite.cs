@@ -105,7 +105,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var to = string.Empty;
             var isClearTags = false;
             var isClearBlank = false;
-            var isReturnToBr = false;
+            var isReturnToBrStr = string.Empty;
             var isLower = false;
             var isUpper = false;
             var attributes = new NameValueCollection();
@@ -172,7 +172,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsReturnToBr))
                 {
-                    isReturnToBr = TranslateUtils.ToBool(value, false);
+                    isReturnToBrStr = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsLower))
                 {
@@ -204,10 +204,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 return site;
             }
 
-            return await ParseAsync(parseManager, site, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, attributes);
+            return await ParseAsync(parseManager, site, type, format, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isClearBlank, isReturnToBrStr, isLower, isUpper, attributes);
         }
 
-        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper, NameValueCollection attributes)
+        private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string type, string format, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isClearBlank, string isReturnToBrStr, bool isLower, bool isUpper, NameValueCollection attributes)
         {
             var databaseManager = parseManager.DatabaseManager;
             var pageInfo = parseManager.PageInfo;
@@ -308,8 +308,6 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (pageInfo.Site.Get<string>(type) != null)
             {
-                
-
                 var num = TranslateUtils.ToInt(no);
                 if (num <= 1)
                 {
@@ -349,6 +347,19 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
+
+            var isReturnToBr = false;
+            if (string.IsNullOrEmpty(isReturnToBrStr))
+            {
+                if (inputType == InputType.TextArea)
+                {
+                    isReturnToBr = true;
+                }
+            }
+            else
+            {
+                isReturnToBr = TranslateUtils.ToBool(isReturnToBrStr, true);
+            }
 
             return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
         }
