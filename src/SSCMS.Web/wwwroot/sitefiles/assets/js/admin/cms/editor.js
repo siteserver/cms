@@ -125,12 +125,22 @@ var methods = {
       })
       .then(function (response) {
         var res = response.data;
+        if (res.channel.isChangeBanned) {
+          return utils.alertWarning({
+            title: '禁止修改内容',
+            text: '栏目已开启禁止维护内容(添加/修改/删除)功能，修改内容请先在栏目中关闭此功能！',
+            callback: function() {
+              utils.removeTab();
+            }
+          });
+        }
 
         $this.csrfToken = res.csrfToken;
 
         $this.site = res.site;
         $this.siteUrl = res.siteUrl;
         $this.channel = res.channel;
+
         $this.groupNames = res.groupNames;
         $this.tagNames = res.tagNames;
         $this.checkedLevels = res.checkedLevels;
