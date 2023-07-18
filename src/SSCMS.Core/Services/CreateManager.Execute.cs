@@ -29,8 +29,8 @@ namespace SSCMS.Core.Services
             else if (createType == CreateType.Content)
             {
                 var site = await _siteRepository.GetAsync(siteId);
-                var channelInfo = await _channelRepository.GetAsync(channelId);
-                await ExecuteContentAsync(site, channelInfo, contentId);
+                var channel = await _channelRepository.GetAsync(channelId);
+                await ExecuteContentAsync(site, channel, contentId);
             }
             else if (createType == CreateType.AllContent)
             {
@@ -72,27 +72,28 @@ namespace SSCMS.Core.Services
         private async Task ExecuteContentsAsync(int siteId, int channelId)
         {
             var site = await _siteRepository.GetAsync(siteId);
-            var channelInfo = await _channelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
+            if (channel.IsCreateBanned) return;
 
-            var contentIdList = await _contentRepository.GetContentIdsCheckedAsync(site, channelInfo);
+            var contentIdList = await _contentRepository.GetContentIdsCheckedAsync(site, channel);
 
             foreach (var contentId in contentIdList)
             {
-                await ExecuteContentAsync(site, channelInfo, contentId);
+                await ExecuteContentAsync(site, channel, contentId);
             }
         }
 
         private async Task ExecuteChannelAsync(int siteId, int channelId)
         {
             var site = await _siteRepository.GetAsync(siteId);
-            var channelInfo = await _channelRepository.GetAsync(channelId);
+            var channel = await _channelRepository.GetAsync(channelId);
 
-            var count = await _contentRepository.GetCountAsync(site, channelInfo);
-            if (!_channelRepository.IsCreatable(site, channelInfo, count)) return;
+            var count = await _contentRepository.GetCountAsync(site, channel);
+            if (!_channelRepository.IsCreatable(site, channel, count)) return;
 
             var template = channelId == siteId
                 ? await _templateRepository.GetIndexPageTemplateAsync(siteId)
-                : await _templateRepository.GetChannelTemplateAsync(siteId, channelInfo);
+                : await _templateRepository.GetChannelTemplateAsync(siteId, channel);
             var filePath = await _pathManager.GetChannelPageFilePathAsync(site, channelId);
 
             await _parseManager.InitAsync(EditMode.Default, site, channelId, 0, template, 0);
@@ -242,6 +243,8 @@ namespace SSCMS.Core.Services
 
         private async Task ExecuteContentAsync(Site site, Channel channel, int contentId)
         {
+            if (channel.IsCreateBanned) return;
+
             var contentInfo = await _contentRepository.GetAsync(site, channel, contentId);
 
             if (contentInfo == null)
