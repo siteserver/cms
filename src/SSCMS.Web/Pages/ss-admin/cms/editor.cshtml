@@ -108,7 +108,7 @@
   <el-main style="padding: 0; margin: 0">
     <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
       
-      <el-form v-on:submit.native.prevent style="margin: 10px 20px 20px 0" ref="form" :model="form" size="small" status-icon label-width="85px">
+      <el-form v-on:submit.native.prevent style="margin: 10px 20px 20px 0" ref="form" :model="form" size="small" status-icon label-width="100px">
         <el-form-item>
           <el-breadcrumb style="margin-top: 5px;">
             <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.value"><a :href="getChannelUrl(item)" target="_blank">{{ item.label }}</a></el-breadcrumb-item>
