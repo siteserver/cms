@@ -63,7 +63,7 @@ namespace SSCMS.Core.Services
                     {
                         var extendName = ColumnsManager.GetExtendName(style.AttributeName, i);
                         var value = content.Get<string>(extendName);
-                        value = await ParseSiteUrlAsync(site, value, false);
+                        value = await ParseSiteUrlAsync(site, value, true);
 
                         content.Set(extendName, value);
                     }
