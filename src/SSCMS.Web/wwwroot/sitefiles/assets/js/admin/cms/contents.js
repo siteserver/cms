@@ -138,9 +138,9 @@ var methods = {
       siteId: this.siteId,
       channelId: this.channelId,
       prevAttributeName: prevAttributeName || '',
-      prevWidth: prevWidth || 0,
+      prevWidth: parseInt(prevWidth || 0),
       nextAttributeName: nextAttributeName || '',
-      nextWidth: nextWidth || 0
+      nextWidth: parseInt(nextWidth || 0)
     }).then(function(response) {
       var res = response.data;
 
