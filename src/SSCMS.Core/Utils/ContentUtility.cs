@@ -114,6 +114,17 @@ namespace SSCMS.Core.Utils
 
             contentInfo = contentInfo.Clone<Content>();
 
+            if (targetSiteId != site.Id)
+            {
+                if (contentInfo.Checked)
+                {
+                    if (!targetSite.IsCrossSiteTransChecked)
+                    {
+                        contentInfo.Checked = false;
+                    }
+                }
+            }
+
             if (translateType == TranslateType.Copy)
             {
                 await pathManager.MoveFileByContentAsync(site, targetSite, contentInfo);

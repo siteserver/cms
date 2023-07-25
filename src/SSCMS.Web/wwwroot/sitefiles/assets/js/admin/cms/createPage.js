@@ -36,7 +36,8 @@ var methods = {
     $api.get($url, {
       params: {
         siteId: this.siteId,
-        parentId: this.siteId
+        parentId: this.siteId,
+        type: this.type
       }
     }).then(function (response) {
       var res = response.data;
