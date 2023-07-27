@@ -59,6 +59,7 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string IsUpper = nameof(IsUpper);
         
         public const string TypeItemIndex = "ItemIndex";
+        public const string TypeVersion = "Version";
         public const string TypeDate = "Date";
         public const string TypeDateOfTraditional = "DateOfTraditional";
         public const string TypeSiteId = "SiteId";
@@ -76,6 +77,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
+            {TypeVersion, "CMS版本"},
             {TypeDate, "当前日期"},
             {TypeDateOfTraditional, "带农历的当前日期"}
         };
@@ -176,6 +178,10 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var itemIndex = StlParserUtility.GetItemIndex(contextInfo);
                 parsedContent = itemIndex.ToString();
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, TypeVersion))
+            {
+                parsedContent = parseManager.SettingsManager.Version;
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
             {
