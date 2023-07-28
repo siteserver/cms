@@ -39,7 +39,7 @@
       </el-popover>
 
       <el-popover
-        v-if="newCms || newPlugins.length > 0"
+        v-if="!isAdminUpdateDisabled && (newCms || newPlugins.length > 0)"
         placement="bottom"
         width="480"
         trigger="hover">

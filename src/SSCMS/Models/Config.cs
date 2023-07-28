@@ -58,6 +58,7 @@ namespace SSCMS.Models
         public string AdminLogoUrl { get; set; }
         public string AdminLogoLinkUrl { get; set; } = "https://sscms.com";
         public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SSCMS 管理后台";
+        public bool IsAdminUpdateDisabled { get; set; }
         public bool IsHomeClosed { get; set; }
         public string HomeTitle { get; set; } = "用户中心";
         public bool IsHomeLogo { get; set; }

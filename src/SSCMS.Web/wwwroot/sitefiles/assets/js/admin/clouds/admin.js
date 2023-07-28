@@ -15,6 +15,7 @@ var data = utils.init({
     adminLogoUrl: null,
     adminLogoLinkUrl: null,
     adminWelcomeHtml: null,
+    isAdminUpdateDisabled: null,
   }
 });
 
@@ -32,6 +33,7 @@ var methods = {
       $this.form.adminLogoUrl = res.adminLogoUrl;
       $this.form.adminLogoLinkUrl = res.adminLogoLinkUrl;
       $this.form.adminWelcomeHtml = res.adminWelcomeHtml || '欢迎使用 SSCMS 管理后台';
+      $this.form.isAdminUpdateDisabled = res.isAdminUpdateDisabled;
 
       if ($this.form.adminFaviconUrl) {
         $this.uploadFaviconList.push({name: 'avatar', url: $this.form.adminFaviconUrl});
@@ -56,7 +58,8 @@ var methods = {
       adminFaviconUrl: $this.form.adminFaviconUrl,
       adminLogoUrl: $this.form.adminLogoUrl,
       adminLogoLinkUrl: $this.form.adminLogoLinkUrl,
-      adminWelcomeHtml: $this.form.adminWelcomeHtml
+      adminWelcomeHtml: $this.form.adminWelcomeHtml,
+      isAdminUpdateDisabled: $this.form.isAdminUpdateDisabled,
     }).then(function (response) {
       var res = response.data;
 

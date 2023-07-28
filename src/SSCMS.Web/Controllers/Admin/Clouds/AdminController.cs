@@ -33,6 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             public string AdminFaviconUrl { get; set; }
             public string AdminLogoUrl { get; set; }
             public string AdminWelcomeHtml { get; set; }
+            public bool IsAdminUpdateDisabled { get; set; }
         }
 
         public class SubmitRequest
@@ -43,6 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             public string AdminLogoUrl { get; set; }
             public string AdminLogoLinkUrl { get; set; }
             public string AdminWelcomeHtml { get; set; }
+            public bool IsAdminUpdateDisabled { get; set; }
         }
 
         public class UploadResult

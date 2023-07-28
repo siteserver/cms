@@ -87,6 +87,12 @@
               <el-input v-model="form.adminWelcomeHtml" type="textarea"></el-input>
               <small class="tips">请填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
             </el-form-item>
+            <el-form-item label="升级提示">
+              <el-switch v-model="form.isAdminUpdateDisabled" active-text="禁用升级提示"></el-switch>
+              <div class="tips">
+                勾选后，系统将不再显示后台右上角系统升级提示
+              </div>
+            </el-form-item>
           </template>
         </el-form>
 
