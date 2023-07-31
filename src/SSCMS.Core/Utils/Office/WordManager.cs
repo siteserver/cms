@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using HtmlAgilityPack;
 using OpenXmlPowerTools;
@@ -27,7 +28,6 @@ namespace SSCMS.Core.Utils.Office
         private bool IsClearImages { get; set; }
         private string DocsFilePath { get; set; }
         private string DocsFileTitle { get; set; }
-        private IPathManager PathManager { get; set; }
         private Site Site { get; set; }
 
         public string Title { get; set; }
@@ -60,7 +60,6 @@ namespace SSCMS.Core.Utils.Office
                 ImageDirectoryUrl = PathUtils.GetMaterialVirtualFilePath(UploadType.Image, fileName);
             }
 
-            PathManager = pathManager;
             Site = siteInfo;
         }
 
@@ -287,6 +286,23 @@ namespace SSCMS.Core.Utils.Office
                     Body = $"{style}{Environment.NewLine}{body}";
                 }
             }
+        }
+
+        public static void OpenAndAddTextToWordDocument(string filepath, string txt)
+        {
+            // Open a WordprocessingDocument for editing using the filepath.
+            var wordprocessingDocument = WordprocessingDocument.Open(filepath, true);
+
+            // Assign a reference to the existing document body.
+            var body = wordprocessingDocument.MainDocumentPart.Document.Body;
+            
+            // Add new text.
+            var para = body.AppendChild(new Paragraph());
+            var run = para.AppendChild(new Run());
+            run.AppendChild(new Text(txt));
+            
+            // Close the handle explicitly.
+            wordprocessingDocument.Close();
         }
     }
 }

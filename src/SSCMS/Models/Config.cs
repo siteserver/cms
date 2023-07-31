@@ -23,6 +23,7 @@ namespace SSCMS.Models
         public bool IsLogError { get; set; } = true;
         public bool IsTimeThreshold { get; set; }
         public int TimeThreshold { get; set; } = 60;
+        public bool IsMaterialSiteOnly { get; set; }
         public int AdminUserNameMinLength { get; set; }
         public int AdminPasswordMinLength { get; set; } = 6;
         public PasswordRestriction AdminPasswordRestriction { get; set; } = PasswordRestriction.LetterAndDigit;

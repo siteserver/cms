@@ -273,26 +273,33 @@
         ],
         "order": 138
       },
+      "app_settings_utilitiesConfig": {
+        "text": "系统设置",
+        "type": [
+          "app"
+        ],
+        "order": 139
+      },
       "app_settings_utilitiesCache": {
         "text": "系统缓存",
         "type": [
           "app"
         ],
-        "order": 139
+        "order": 140
       },
       "app_settings_utilitiesParameters": {
         "text": "系统参数",
         "type": [
           "app"
         ],
-        "order": 140
+        "order": 141
       },
       "app_settings_utilitiesEncrypt": {
         "text": "加密符串",
         "type": [
           "app"
         ],
-        "order": 141
+        "order": 142
       },
       "site_contents": {
         "text": "内容管理",
@@ -892,6 +899,7 @@
           "app_settings_logsError",
           "app_settings_logsConfig",
           "app_settings_configAdmin",
+          "app_settings_utilitiesConfig",
           "app_settings_utilitiesCache",
           "app_settings_utilitiesParameters",
           "app_settings_utilitiesEncrypt"
@@ -1296,6 +1304,7 @@
           "app_settings_utilities_all": {
             "text": "实用工具",
             "permissions": [
+              "app_settings_utilitiesConfig",
               "app_settings_utilitiesCache",
               "app_settings_utilitiesParameters",
               "app_settings_utilitiesEncrypt"
@@ -1303,13 +1312,21 @@
             "iconClass": "ion-briefcase",
             "order": 109,
             "menus": {
+              "app_settings_utilitiesConfig": {
+                "text": "系统设置",
+                "link": "./settings/utilitiesConfig/",
+                "permissions": [
+                  "app_settings_utilitiesConfig"
+                ],
+                "order": 101
+              },
               "app_settings_utilitiesCache": {
                 "text": "系统缓存",
                 "link": "./settings/utilitiesCache/",
                 "permissions": [
                   "app_settings_utilitiesCache"
                 ],
-                "order": 101
+                "order": 102
               },
               "app_settings_utilitiesParameters": {
                 "text": "系统参数",
@@ -1317,7 +1334,7 @@
                 "permissions": [
                   "app_settings_utilitiesParameters"
                 ],
-                "order": 102
+                "order": 103
               },
               "app_settings_utilitiesEncrypt": {
                 "text": "加密/解密字符串",
@@ -1325,7 +1342,7 @@
                 "permissions": [
                   "app_settings_utilitiesEncrypt"
                 ],
-                "order": 103
+                "order": 104
               }
             }
           }
