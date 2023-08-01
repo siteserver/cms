@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Enums;
 using SSCMS.Core.Utils;
+using SSCMS.Models;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
@@ -16,14 +18,32 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            IEnumerable<MaterialGroup> groups;
+            int count;
+            IEnumerable<MaterialImage> items;
 
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Image);
-            var count = await _materialImageRepository.GetCountAsync(request.GroupId, request.Keyword);
-            var items = await _materialImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var config = await _configRepository.GetAsync();
+            if (config.IsMaterialSiteOnly)
+            {
+                var group = await _materialGroupRepository.GetSiteGroupAsync(MaterialType.Image, request.SiteId);
+                groups = new List<MaterialGroup>
+                {
+                    group
+                };
+                count = await _materialImageRepository.GetCountAsync(group.Id, request.Keyword);
+                items = await _materialImageRepository.GetAllAsync(group.Id, request.Keyword, request.Page, request.PerPage);
+            }
+            else
+            {
+              groups = await _materialGroupRepository.GetAllAsync(MaterialType.Image);
+              count = await _materialImageRepository.GetCountAsync(request.GroupId, request.Keyword);
+              items = await _materialImageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
+            }
 
             return new QueryResult
             {
+                IsSiteOnly = config.IsMaterialSiteOnly,
                 Groups = groups,
                 Count = count,
                 Items = items,

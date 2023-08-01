@@ -16,6 +16,8 @@ namespace SSCMS.Repositories
 
         Task<List<MaterialGroup>> GetAllAsync(MaterialType type);
 
+        Task<MaterialGroup> GetSiteGroupAsync(MaterialType type, int siteId);
+
         Task<MaterialGroup> GetAsync(int groupId);
 
         Task<bool> IsExistsAsync(MaterialType type, string groupName);

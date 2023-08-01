@@ -55,7 +55,7 @@
   </el-col>
 </el-row>
 
-<el-form v-on:submit.native.prevent :inline="true" :model="form">
+<el-form v-if="!isSiteOnly" v-on:submit.native.prevent :inline="true" :model="form">
   <el-form-item label="分组">
 
     <el-tag
