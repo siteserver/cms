@@ -17,9 +17,9 @@ namespace SSCMS.Web.Controllers.Home.Common.Material
                 return this.Error("图片文件不存在，请重新选择");
             }
 
-            var virtualUrl = string.Empty;
-            var imageUrl = string.Empty;
-
+            string virtualUrl;
+            string imageUrl;
+            
             if (request.SiteId > 0)
             {
                 var site = await _siteRepository.GetAsync(request.SiteId);

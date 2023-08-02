@@ -42,7 +42,7 @@
     </el-dropdown>
   </el-col>
 </el-row>
-<el-row>
+<el-row v-if="!isSiteOnly">
   <el-tag
     v-for="group in groups"
     :key="group.id"

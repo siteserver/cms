@@ -7,6 +7,7 @@ var data = utils.init({
   no: utils.getQueryInt('no'),
   pageType: 'card',
 
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -43,6 +44,10 @@ var methods = {
     $api.post($url, this.form).then(function (response) {
       var res = response.data;
 
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = res.items;

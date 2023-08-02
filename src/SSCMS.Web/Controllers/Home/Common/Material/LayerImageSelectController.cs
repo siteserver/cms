@@ -20,20 +20,22 @@ namespace SSCMS.Web.Controllers.Home.Common.Material
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerImageSelectController(ISettingsManager settingsManager, IPathManager pathManager, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, ISiteRepository siteRepository)
+        public LayerImageSelectController(ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, ISiteRepository siteRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
+            _configRepository = configRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialImageRepository = materialImageRepository;
             _siteRepository = siteRepository;
         }
 
-        public class QueryRequest
+        public class QueryRequest : SiteRequest
         {
             public string Keyword { get; set; }
             public int GroupId { get; set; }
@@ -43,6 +45,7 @@ namespace SSCMS.Web.Controllers.Home.Common.Material
 
         public class QueryResult
         {
+            public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialImage> Items { get; set; }
