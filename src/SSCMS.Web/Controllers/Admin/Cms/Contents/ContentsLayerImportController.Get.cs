@@ -28,10 +28,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
             var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
 
+            var options = GetOptions(site);
+
             return new GetResult
             {
                 Value = checkedLevel,
-                CheckedLevels = checkedLevels
+                CheckedLevels = checkedLevels,
+                Options = options
             };
         }
     }

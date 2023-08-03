@@ -287,6 +287,49 @@ namespace SSCMS.Core.Utils.Serialization
             return contentInfoList.Select(x => x.Id).ToList();
         }
 
+        public async Task<List<int>> ImportContentsByImageFileAsync(Channel channel, string fileName, string fileUrl, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        {
+            var contentInfo = new Content
+            {
+                SiteId = channel.SiteId,
+                ChannelId = channel.Id,
+                Title = PathUtils.GetFileNameWithoutExtension(fileName),
+                ImageUrl = fileUrl,
+                Checked = isChecked,
+                CheckedLevel = checkedLevel,
+                AddDate = DateTime.Now,
+                AdminId = adminId,
+                UserId = userId,
+                SourceId = sourceId,
+            };
+
+            if (isOverride)
+            {
+                var existsIDs = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channel, contentInfo.Title);
+                if (existsIDs.Count > 0)
+                {
+                    foreach (var id in existsIDs)
+                    {
+                        contentInfo.Id = id;
+                        await _databaseManager.ContentRepository.UpdateAsync(_site, channel, contentInfo);
+                    }
+                }
+                else
+                {
+                    contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channel, contentInfo);
+                }
+            }
+            else
+            {
+                contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channel, contentInfo);
+            }
+
+            return new List<int>
+            {
+                contentInfo.Id
+            };
+        }
+
         public async Task<List<int>> ImportContentsByTxtFileAsync(Channel channel, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var contentInfo = new Content

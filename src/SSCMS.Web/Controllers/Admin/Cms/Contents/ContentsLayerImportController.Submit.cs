@@ -60,6 +60,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     contentIdList.AddRange(await importObject.ImportContentsByXlsxFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
                 }
             }
+            else if (request.ImportType == "image")
+            {
+                for(var i = 0; i < request.FileNames.Count; i++)
+                {
+                  var fileName = request.FileNames[i];
+                  var fileUrl = request.FileUrls[i];
+
+                  var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
+                    contentIdList.AddRange(await importObject.ImportContentsByImageFileAsync(channelInfo, fileName, fileUrl, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                }
+            }
             else if (request.ImportType == "txt")
             {
                 foreach (var fileName in request.FileNames)
@@ -80,6 +91,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             await _createManager.CreateChannelAsync(request.SiteId, channelInfo.Id);
 
             await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "导入内容", string.Empty);
+
+            var options = GetOptions(site);
+
+            options.ImportType = request.ImportType;
+            options.IsOverride = request.IsOverride;
+            
+            SetOptions(site, options);
+            await _siteRepository.UpdateAsync(site);
 
             return new BoolResult
             {

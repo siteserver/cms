@@ -8,7 +8,8 @@ var data = utils.init({
     importType: 'zip',
     checkedLevel: null,
     isOverride: false,
-    fileNames: []
+    fileNames: [],
+    fileUrls: [],
   },
   uploadUrl: null,
   uploadList: []
@@ -29,7 +30,10 @@ var methods = {
 
       $this.checkedLevels = res.checkedLevels;
       $this.form.checkedLevel = res.value;
-      $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&channelId=' + $this.form.channelId;
+      $this.form.importType = res.options.importType;
+      $this.form.isOverride = res.options.isOverride;
+
+      $this.btnRadioInput();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -53,6 +57,10 @@ var methods = {
     });
   },
 
+  btnRadioInput: function () {
+    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&channelId=' + this.form.channelId + '&importType=' + this.form.importType;
+  },
+
   btnSubmitClick: function () {
     if (this.form.fileNames.length === 0) {
       return utils.error('请选择需要导入的文件！');
@@ -67,15 +75,16 @@ var methods = {
 
   uploadBefore(file) {
     var re = /(\.zip|\.xlsx|\.txt)$/i;
-    if (this.importType === 'zip') {
+    if (this.form.importType === 'zip') {
       re = /(\.zip)$/i;
-    } else if (this.importType === 'xlsx') {
+    } else if (this.form.importType === 'xlsx') {
       re = /(\.xlsx)$/i;
-    } else if (this.importType === 'txt') {
+    } else if (this.form.importType === 'image') {
+      re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
+    } else if (this.form.importType === 'txt') {
       re = /(\.txt)$/i;
     }
-    if(!re.exec(file.name))
-    {
+    if(!re.exec(file.name)) {
       utils.error('请选择有效的文件上传!');
       return false;
     }
@@ -88,12 +97,15 @@ var methods = {
 
   uploadRemove(file) {
     if (file.response) {
-      this.form.fileNames.splice(this.form.fileNames.indexOf(file.response.name), 1);
+      var index = this.form.fileNames.indexOf(file.response.name);
+      this.form.fileNames.splice(index, 1);
+      this.form.fileUrls.splice(index, 1);
     }
   },
 
   uploadSuccess: function(res) {
     this.form.fileNames.push(res.name);
+    this.form.fileUrls.push(res.url);
     utils.loading(this, false);
   },
 

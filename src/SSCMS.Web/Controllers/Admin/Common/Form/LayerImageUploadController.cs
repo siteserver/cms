@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.Form
 {
@@ -29,16 +31,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             _materialImageRepository = materialImageRepository;
         }
 
-        public class Options
-        {
-            public bool IsEditor { get; set; }
-            public bool IsMaterial { get; set; }
-            public bool IsThumb { get; set; }
-            public int ThumbWidth { get; set; }
-            public int ThumbHeight { get; set; }
-            public bool IsLinkToOriginal { get; set; }
-        }
-
         public class SubmitRequest : Options
         {
             public int UserId { get; set; }
@@ -58,6 +50,34 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             public string ImageVirtualUrl { get; set; }
             public string PreviewUrl { get; set; }
             public string PreviewVirtualUrl { get; set; }
+        }
+
+        public class Options
+        {
+            public bool IsEditor { get; set; }
+            public bool IsMaterial { get; set; }
+            public bool IsThumb { get; set; }
+            public int ThumbWidth { get; set; }
+            public int ThumbHeight { get; set; }
+            public bool IsLinkToOriginal { get; set; }
+        }
+
+        private static Options GetOptions(Site site)
+        {
+            return TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageUploadController)), new Options
+            {
+                IsEditor = false,
+                IsMaterial = false,
+                IsThumb = false,
+                ThumbWidth = 1024,
+                ThumbHeight = 1024,
+                IsLinkToOriginal = true
+            });
+        }
+
+        private static void SetOptions(Site site, Options options)
+        {
+            site.Set(nameof(LayerImageUploadController), TranslateUtils.JsonSerialize(options));
         }
     }
 }

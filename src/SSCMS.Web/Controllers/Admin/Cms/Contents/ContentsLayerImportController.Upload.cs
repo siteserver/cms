@@ -7,6 +7,7 @@ using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -14,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUpload)]
-        public async Task<ActionResult<UploadResult>> Upload([FromQuery] ChannelRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
@@ -31,18 +32,42 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var fileName = Path.GetFileName(file.FileName);
-
-            var extendName = fileName.Substring(fileName.LastIndexOf(".", StringComparison.Ordinal));
-            if (!StringUtils.EqualsIgnoreCase(extendName, ".zip") && !StringUtils.EqualsIgnoreCase(extendName, ".xlsx") && !StringUtils.EqualsIgnoreCase(extendName, ".txt"))
-            {
-                return this.Error(Constants.ErrorUpload);
-            }
-
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
+            var url = string.Empty;
 
+            if (request.ImportType == "zip")
+            {
+                if (!FileUtils.IsFileType(FileType.Zip, PathUtils.GetExtension(fileName)))
+                {
+                  return this.Error(Constants.ErrorUpload);
+                }
+            }
+            else if (request.ImportType == "excel")
+            {
+                if (!FileUtils.IsFileType(FileType.Xlsx, PathUtils.GetExtension(fileName)))
+                {
+                  return this.Error(Constants.ErrorUpload);
+                }
+            }
+            else if (request.ImportType == "image")
+            {
+                if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
+                {
+                  return this.Error(Constants.ErrorUpload);
+                }
+
+                (_, filePath, _) = await _pathManager.UploadImageAsync(site, file);
+                url = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
+            }
+            else if (request.ImportType == "txt")
+            {
+                if (!FileUtils.IsFileType(FileType.Txt, PathUtils.GetExtension(fileName)))
+                {
+                  return this.Error(Constants.ErrorUpload);
+                }
+            }
+            
             await _pathManager.UploadAsync(file, filePath);
-
-            var url = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 
             return new UploadResult
             {

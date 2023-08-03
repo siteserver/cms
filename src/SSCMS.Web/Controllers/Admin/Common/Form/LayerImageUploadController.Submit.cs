@@ -111,15 +111,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                     }
                 }
 
-                var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerImageUploadController)), new Options
-                {
-                    IsEditor = true,
-                    IsMaterial = true,
-                    IsThumb = false,
-                    ThumbWidth = 1024,
-                    ThumbHeight = 1024,
-                    IsLinkToOriginal = true,
-                });
+                var options = GetOptions(site);
 
                 options.IsEditor = request.IsEditor;
                 options.IsMaterial = request.IsMaterial;
@@ -127,8 +119,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                 options.ThumbWidth = request.ThumbWidth;
                 options.ThumbHeight = request.ThumbHeight;
                 options.IsLinkToOriginal = request.IsLinkToOriginal;
-                site.Set(nameof(LayerImageUploadController), TranslateUtils.JsonSerialize(options));
 
+                SetOptions(site, options);
                 await _siteRepository.UpdateAsync(site);
             }
             else if (request.UserId > 0)
