@@ -7,6 +7,8 @@ namespace SSCMS.Repositories
 {
     public partial interface IContentRepository
     {
+        Task ClearAllListCacheAsync(Site site);
+
         Task CacheAllListAndCountAsync(Site site, List<ChannelSummary> channelSummaries);
 
         Task CacheAllEntityAsync(Site site, List<ChannelSummary> channelSummaries);

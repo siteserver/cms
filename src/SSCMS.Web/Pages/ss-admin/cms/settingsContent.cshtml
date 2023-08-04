@@ -11,13 +11,20 @@
     <div class="tips">自动保存外部图片功能将把编辑器内的外部图片保存为站点图片</div>
   </el-form-item>
 
-  <el-form-item label="默认每页显示内容数" prop="pageSize" :rules="[
-    { required: true, message: '请输入默认每页显示内容数' },
+  <el-form-item label="每页显示内容数" prop="pageSize" :rules="[
+    { required: true, message: '请输入每页显示内容数' },
     { validator: utils.validateInt }
   ]">
-    <el-input v-model.number="form.pageSize" style="width: 120px" placeholder="请输入默认每页显示内容数"></el-input>
+    <el-input v-model.number="form.pageSize" style="width: 120px" placeholder="请输入每页显示内容数"></el-input>
     <span class="tips">(篇/页)</span>
-    <div class="tips">设置管理默认每页显示内容数</div>
+    <div class="tips">在此设置后台每页显示的内容数</div>
+  </el-form-item>
+
+  <el-form-item label="内容排序规则">
+    <el-select v-model="form.taxisType" placeholder="请选择内容排序规则">
+      <el-option v-for="taxisType in taxisTypes" :key="taxisType.value" :label="taxisType.label" :value="taxisType.value"></el-option>
+    </el-select>
+    <div class="tips">设置后当前站点内容在后台将一直按照此排序规则显示</div>
   </el-form-item>
 
   <el-form-item label="内容编辑器分页方式">

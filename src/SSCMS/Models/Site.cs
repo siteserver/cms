@@ -43,6 +43,8 @@ namespace SSCMS.Models
         public IList<Site> Children { get; set; }
 
         public int PageSize { get; set; } = 30;
+        
+        public TaxisType TaxisType { get; set; } = TaxisType.OrderByTaxisDesc;
 
         public int CheckContentLevel { get; set; } = 1;
 

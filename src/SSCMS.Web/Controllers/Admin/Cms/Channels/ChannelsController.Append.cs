@@ -59,7 +59,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                         indexName = channelName.Trim();
                     }
 
-                    if (channelName.Contains('(') && channelName.Contains(')'))
+                    if (!channelName.StartsWith("(") && channelName.Contains('(') && channelName.Contains(')'))
                     {
                         var length = channelName.IndexOf(')') - channelName.IndexOf('(');
                         if (length > 0)
@@ -68,7 +68,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                             channelName = channelName.Substring(0, channelName.IndexOf('('));
                         }
                     }
+
                     channelName = channelName.Trim();
+                    
                     indexName = indexName.Trim(' ', '(', ')');
                     if (!string.IsNullOrEmpty(indexName))
                     {

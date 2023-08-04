@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -22,6 +23,21 @@ namespace SSCMS.Core.Repositories
             return CacheUtils.GetListKey(tableName ,siteId.ToString(), (Math.Abs(channelId)).ToString());
         }
 
+        public async Task ClearAllListCacheAsync(Site site)
+        {
+            var channelSummaries = await _channelRepository.GetSummariesAsync(site.Id);
+            foreach (var channel in channelSummaries)
+            {
+                var tableName = await _channelRepository.GetTableNameAsync(site, channel.Id);
+                var listKey = GetListKey(tableName, site.Id, channel.Id);
+
+                var repository = await GetRepositoryAsync(site, channel);
+                var cacheManager = await repository.GetCacheManagerAsync();
+
+                cacheManager.Remove(listKey);
+            }
+        }
+
         public async Task CacheAllListAndCountAsync(Site site, List<ChannelSummary> channelSummaries)
         {
             foreach (var channel in channelSummaries)
@@ -34,13 +50,8 @@ namespace SSCMS.Core.Repositories
 
                 if (!cacheManager.Exists(listKey))
                 {
-                    var summaries = await repository.GetAllAsync<ContentSummary>(Q
-                        .Select(nameof(Content.Id), nameof(Content.ChannelId), nameof(Content.Checked))
-                        .Where(nameof(Content.SiteId), site.Id)
-                        .Where(nameof(Content.ChannelId), channel.Id)
-                        .WhereNot(nameof(Content.SourceId), SourceManager.Preview)
-                        .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id))
-                    );
+                    var query = GetSummariesQuery(site, channel);
+                    var summaries = await repository.GetAllAsync<ContentSummary>(query);
 
                     cacheManager.Put(listKey, summaries);
                 }
@@ -202,20 +213,58 @@ namespace SSCMS.Core.Repositories
             if (site == null || channel == null) return new List<ContentSummary>();
 
             var repository = await GetRepositoryAsync(site, channel);
-            var query = Q.Select(
+            var query = GetSummariesQuery(site, channel);
+            query.CachingGet(GetListKey(repository.TableName, site.Id, channel.Id));
+
+            return await repository.GetAllAsync<ContentSummary>(query);
+        }
+
+        private static Query GetSummariesQuery(Site site, IChannelSummary channel)
+        {
+          var query = Q.Select(
               nameof(Content.Id), 
               nameof(Content.ChannelId), 
               nameof(Content.Checked), 
               nameof(Content.CheckedLevel)
             );
 
-            await QueryWhereAsync(query, site, channel.Id, false);
+            query
+              .Where(nameof(Content.SiteId), site.Id)
+              .Where(nameof(Content.ChannelId), channel.Id)
+              .WhereNot(nameof(Content.SourceId), SourceManager.Preview);
 
-            query.OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+            if (site.TaxisType == TaxisType.OrderByTitle)
+            {
+                query
+                  .Select(nameof(Content.Title))
+                  .OrderBy(nameof(Content.Title))
+                  .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+            }
+            else if (site.TaxisType == TaxisType.OrderByTitleDesc)
+            {
+                query
+                  .Select(nameof(Content.Title))
+                  .OrderByDesc(nameof(Content.Title), nameof(Content.Taxis), nameof(Content.Id));
+            }
+            else if (site.TaxisType == TaxisType.OrderByAddDate)
+            {
+                query
+                  .Select(nameof(Content.AddDate))
+                  .OrderBy(nameof(Content.AddDate))
+                  .OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+            }
+            else if (site.TaxisType == TaxisType.OrderByAddDateDesc)
+            {
+                query
+                  .Select(nameof(Content.AddDate))
+                  .OrderByDesc(nameof(Content.AddDate), nameof(Content.Taxis), nameof(Content.Id));
+            }
+            else
+            {
+                query.OrderByDesc(nameof(Content.Taxis), nameof(Content.Id));
+            }
 
-            query.CachingGet(GetListKey(repository.TableName, site.Id, channel.Id));
-
-            return await repository.GetAllAsync<ContentSummary>(query);
+            return query;
         }
     }
 }

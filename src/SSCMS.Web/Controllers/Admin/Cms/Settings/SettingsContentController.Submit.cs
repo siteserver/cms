@@ -32,7 +32,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 }
             }
 
+            var isClearCache = false;
+            if (site.TaxisType != request.TaxisType)
+            {
+                isClearCache = true;
+            }
+
             site.PageSize = request.PageSize;
+            site.TaxisType = request.TaxisType;
+
             site.IsAutoPageInTextEditor = request.IsAutoPageInTextEditor;
             site.AutoPageWordNum = request.AutoPageWordNum;
             site.IsContentTitleBreakLine = request.IsContentTitleBreakLine;
@@ -46,6 +54,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             if (isReCalculate)
             {
                 await _contentRepository.SetAutoPageContentToSiteAsync(site);
+            }
+
+            if (isClearCache)
+            {
+                await _contentRepository.ClearAllListCacheAsync(site);
             }
 
             await _authManager.AddSiteLogAsync(request.SiteId, "修改内容设置");

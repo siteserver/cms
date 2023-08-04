@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
@@ -16,13 +18,20 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            // var isCensorTextEnabled = await _censorManager.IsCensorTextAsync();
-            var isCensorTextEnabled = true;
+
+            var taxisTypes = new List<Select<string>>
+            {
+                new Select<string>(TaxisType.OrderByTaxisDesc),
+                new Select<string>(TaxisType.OrderByAddDate),
+                new Select<string>(TaxisType.OrderByAddDateDesc),
+                new Select<string>(TaxisType.OrderByTitle),
+                new Select<string>(TaxisType.OrderByTitleDesc),
+            };
 
             return new GetResult
             {
                 Site = site,
-                IsCensorTextEnabled = isCensorTextEnabled
+                TaxisTypes = taxisTypes,
             };
         }
     }
