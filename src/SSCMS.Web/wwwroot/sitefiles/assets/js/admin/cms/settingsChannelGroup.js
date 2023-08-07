@@ -88,15 +88,23 @@ var methods = {
     });
   },
 
-  btnOrderClick: function(group, isUp) {
+  onSort: function (event) {
+    var group = this.groups[event.oldIndex];
+    var groupId = group.id;
+    var isUp = event.oldIndex > event.newIndex;
+    var rows = Math.abs(event.oldIndex - event.newIndex);
+    this.btnOrderClick(groupId, isUp, rows);
+  },
+
+  btnOrderClick: function(groupId, isUp, rows) {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($url + '/actions/order', {
       siteId: this.siteId,
-      groupId: group.id,
-      taxis: group.taxis,
-      isUp: isUp
+      groupId: groupId,
+      isUp: isUp,
+      rows: rows,
     }).then(function (response) {
       var res = response.data;
 
@@ -116,6 +124,9 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
+  components: {
+    ElTableDraggable,
+  },
   data: data,
   methods: methods,
   created: function () {

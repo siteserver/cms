@@ -205,7 +205,7 @@ namespace SSCMS.Web
             }
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IAntiforgery antiforgery, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISettingsManager settingsManager, IPluginManager pluginManager, IErrorLogRepository errorLogRepository, IOptions<SenparcSetting> senparcSetting)
         {
             if (env.IsDevelopment())
             {
@@ -304,7 +304,7 @@ namespace SSCMS.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UsePluginsAsync(settingsManager, pluginManager, errorLogRepository).GetAwaiter().GetResult();
+            app.UsePluginsAsync(settingsManager, pluginManager).GetAwaiter().GetResult();
 
             app.UseEndpoints(endpoints =>
             {

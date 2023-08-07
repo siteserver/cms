@@ -15,13 +15,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 return Unauthorized();
             }
 
-            if (request.IsUp)
+            for (int i = 0; i < request.Rows; i++)
             {
-                await _contentGroupRepository.UpdateTaxisUpAsync(request.SiteId, request.GroupId, request.Taxis);
-            }
-            else
-            {
-                await _contentGroupRepository.UpdateTaxisDownAsync(request.SiteId, request.GroupId, request.Taxis);
+                var group = await _contentGroupRepository.GetAsync(request.SiteId, request.GroupId);
+                if (request.IsUp)
+                {
+                    await _contentGroupRepository.UpdateTaxisUpAsync(request.SiteId, group.Id, group.Taxis);
+                }
+                else
+                {
+                    await _contentGroupRepository.UpdateTaxisDownAsync(request.SiteId, group.Id, group.Taxis);
+                }
             }
 
             var groups = await _contentGroupRepository.GetContentGroupsAsync(request.SiteId);

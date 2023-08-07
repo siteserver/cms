@@ -19,7 +19,7 @@ namespace SSCMS.Core.Plugins.Extensions
     public static class PluginApplicationBuilderExtensions
     {
         public static async Task UsePluginsAsync(this IApplicationBuilder app, ISettingsManager settingsManager,
-            IPluginManager pluginManager, IErrorLogRepository errorLogRepository)
+            IPluginManager pluginManager)
         {
             var logger = app.ApplicationServices.GetService<ILoggerFactory>()
                 .CreateLogger<IApplicationBuilder>();

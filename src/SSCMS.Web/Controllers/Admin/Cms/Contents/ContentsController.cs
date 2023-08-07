@@ -20,6 +20,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteCreate = "cms/contents/contents/actions/create";
         private const string RouteColumns = "cms/contents/contents/actions/columns";
         private const string RouteWidth = "cms/contents/contents/actions/width";
+        private const string RouteOrder = "cms/contents/contents/actions/order";
         private const string RouteAll = "cms/contents/contents/actions/all";
 
         private readonly IAuthManager _authManager;
@@ -126,6 +127,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public int PrevWidth { get; set; }
             public string NextAttributeName { get; set; }
             public int NextWidth { get; set; }
+        }
+
+        public class OrderRequest : ChannelRequest
+        {
+            public int ContentId { get; set; }
+            public bool IsUp { get; set; }
+            public int Rows { get; set; }
         }
     }
 }

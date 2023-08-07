@@ -42,8 +42,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public class OrderRequest : SiteRequest
         {
             public int GroupId { get; set; }
-            public int Taxis { get; set; }
             public bool IsUp { get; set; }
+            public int Rows { get; set; }
         }
     }
 }

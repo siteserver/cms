@@ -196,7 +196,9 @@
 
       <div style="height: 10px;"></div>
 
-      @await Html.PartialAsync("_PartialContents")
+      <el-table-draggable v-on:sort="onSort">
+        @await Html.PartialAsync("_PartialContents")
+      </el-table-draggable>
 
       <el-row style="margin-top: 7px;">
         <el-col :span="12" align="left">

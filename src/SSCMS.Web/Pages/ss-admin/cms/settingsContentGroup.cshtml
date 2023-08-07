@@ -1,39 +1,41 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-table :data="groups">
-  <el-table-column label="内容组名称" prop="groupName"></el-table-column>
-  <el-table-column label="内容组说明" prop="description"></el-table-column>
-  <el-table-column label="操作" width="190">
-    <template slot-scope="scope">
-      <el-link
-        :underline="false"
-        v-on:click="btnEditClick(scope.row)"
-        type="primary">
-        编辑
-      </el-link>
-      <el-link
-        :underline="false"
-        v-on:click="btnOrderClick(scope.row, true)"
-        type="primary">
-        上升
-      </el-link>
-      <el-link
-        :underline="false"
-        v-on:click="btnOrderClick(scope.row, false)"
-        type="primary">
-        下降
-      </el-link>
-      <el-link
-        :underline="false"
-        v-if="scope.row.id > 0"
-        type="danger"
-        v-on:click="btnDeleteClick(scope.row)">
-        删除
-      </el-link>
-    </template>
-  </el-table-column>
-</el-table>
+<el-table-draggable v-on:sort="onSort">
+  <el-table row-key="id" highlight-current-row :data="groups">
+    <el-table-column label="内容组名称" prop="groupName"></el-table-column>
+    <el-table-column label="内容组说明" prop="description"></el-table-column>
+    <el-table-column label="操作" width="190">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-on:click="btnEditClick(scope.row)"
+          type="primary">
+          编辑
+        </el-link>
+        <el-link
+          :underline="false"
+          v-on:click="btnOrderClick(scope.row.id, true, 1)"
+          type="primary">
+          上升
+        </el-link>
+        <el-link
+          :underline="false"
+          v-on:click="btnOrderClick(scope.row.id, false, 1)"
+          type="primary">
+          下降
+        </el-link>
+        <el-link
+          :underline="false"
+          v-if="scope.row.id > 0"
+          type="danger"
+          v-on:click="btnDeleteClick(scope.row)">
+          删除
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+</el-table-draggable>
 
 <div style="height: 10px"></div>
 <el-divider></el-divider>

@@ -149,6 +149,27 @@ var methods = {
     });
   },
 
+  apiOrder: function(channelId, contentId, isUp, rows) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/order', {
+      siteId: this.siteId,
+      channelId: channelId,
+      contentId: contentId,
+      isUp: isUp,
+      rows: rows
+    }).then(function(response) {
+      var res = response.data;
+
+      $this.apiList($this.channelId, $this.page, '内容排序成功！');
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   handleAllChange: function() {
     var $this = this;
 
@@ -547,6 +568,13 @@ var methods = {
     this.apiColumns(attributeNames);
   },
 
+  onSort: function (event) {
+    var content = this.pageContents[event.oldIndex];
+    var isUp = event.oldIndex > event.newIndex;
+    var rows = Math.abs(event.oldIndex - event.newIndex);
+    this.apiOrder(content.channelId, content.id, isUp, rows);
+  },
+
   btnCloseClick: function() {
     utils.removeTab();
   },
@@ -554,6 +582,9 @@ var methods = {
 
 var $vue = new Vue({
   el: "#main",
+  components: {
+    ElTableDraggable,
+  },
   data: data,
   methods: methods,
   computed: {
