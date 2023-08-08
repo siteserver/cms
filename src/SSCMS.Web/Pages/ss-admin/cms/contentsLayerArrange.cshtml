@@ -5,6 +5,7 @@
   <el-form-item label="排序字段" prop="attributeName" :rules="{ required: true, message: '请选择排序字段' }">
     <el-radio-group v-model="form.attributeName">
       <el-radio-button label="Id">内容Id</el-radio-button>
+      <el-radio-button label="Title">内容标题</el-radio-button>
       <el-radio-button label="AddDate">添加日期</el-radio-button>
     </el-radio-group>
   </el-form-item>
