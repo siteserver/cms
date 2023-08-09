@@ -7,6 +7,7 @@ var $urlDownload = $url + '/actions/download';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -31,7 +32,7 @@ var methods = {
     this.groups = groups;
   },
 
-  apiList: function (page) {
+  apiGet: function (page) {
     var $this = this;
     this.form.page = page;
 
@@ -40,6 +41,11 @@ var methods = {
       params: this.form
     }).then(function (response) {
       var res = response.data;
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;
@@ -69,7 +75,7 @@ var methods = {
       var res = response.data;
 
       $this.form.groupId = 0;
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     });
@@ -86,7 +92,7 @@ var methods = {
       var res = response.data;
 
       utils.success('视频素材删除成功！');
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -105,7 +111,7 @@ var methods = {
       var res = response.data;
 
       utils.success('公众号视频素材拉取成功！');
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -288,12 +294,12 @@ var methods = {
 
   btnSearchClick() {
     utils.loading(this, true);
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnPageClick: function(val) {
     utils.loading(this, true);
-    this.apiList(val);
+    this.apiGet(val);
   },
 
   uploadProgress: function() {
@@ -323,6 +329,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSearchClick, this.btnCloseClick);
-    this.apiList(1);
+    this.apiGet(1);
   }
 });

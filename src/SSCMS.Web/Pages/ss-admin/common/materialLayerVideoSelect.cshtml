@@ -34,7 +34,7 @@
     
   </el-col>
 </el-row>
-<el-row>
+<el-row v-if="!isSiteOnly">
   <el-form v-on:submit.native.prevent :inline="true" :model="form" size="mini">
     <el-tag
       v-for="group in groups"

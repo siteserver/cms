@@ -6,6 +6,7 @@ var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
 
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -17,6 +18,7 @@ var data = utils.init({
   selectedGroupId: 0,
 
   form: {
+    siteId: utils.getQueryInt("siteId"),
     keyword: '',
     groupId: 0,
     page: 1,
@@ -51,6 +53,11 @@ var methods = {
           attributeName: $this.attributeName,
           no: $this.no,
         });
+      }
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
       }
 
       $this.groups = res.groups;

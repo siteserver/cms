@@ -21,21 +21,23 @@ namespace SSCMS.Web.Controllers.Home.Common.Material
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IVodManager _vodManager;
+        private readonly IConfigRepository _configRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoSelectController(ISettingsManager settingsManager, IPathManager pathManager, IVodManager vodManager, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, ISiteRepository siteRepository)
+        public LayerVideoSelectController(ISettingsManager settingsManager, IPathManager pathManager, IVodManager vodManager, IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, ISiteRepository siteRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _vodManager = vodManager;
+            _configRepository = configRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialVideoRepository = materialVideoRepository;
             _siteRepository = siteRepository;
         }
 
-        public class ListRequest
+        public class ListRequest : SiteRequest
         {
             public string Keyword { get; set; }
             public int GroupId { get; set; }
@@ -45,10 +47,11 @@ namespace SSCMS.Web.Controllers.Home.Common.Material
 
         public class ListResult
         {
+            public bool IsCloudVod { get; set; }
+            public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialVideo> Items { get; set; }
-            public bool IsCloudVod { get; set; }
         }
 
         public class SelectRequest : SiteRequest
