@@ -48,6 +48,7 @@ var methods = {
       if ($this.isSiteOnly) {
         $this.form.groupId = -$this.siteId;
       }
+
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = res.items;

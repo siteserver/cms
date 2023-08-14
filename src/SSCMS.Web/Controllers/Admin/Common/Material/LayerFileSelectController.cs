@@ -20,20 +20,22 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialFileRepository _materialFileRepository;
-        private readonly ISiteRepository _siteRepository;
 
-        public LayerFileSelectController(ISettingsManager settingsManager, IPathManager pathManager, IMaterialGroupRepository materialGroupRepository, IMaterialFileRepository materialFileRepository, ISiteRepository siteRepository)
+        public LayerFileSelectController(ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialFileRepository materialFileRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
+            _configRepository = configRepository;
+            _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialFileRepository = materialFileRepository;
-            _siteRepository = siteRepository;
         }
 
-        public class QueryRequest
+        public class QueryRequest : SiteRequest
         {
             public string Keyword { get; set; }
             public int GroupId { get; set; }
@@ -43,6 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
 
         public class QueryResult
         {
+            public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialFile> Items { get; set; }

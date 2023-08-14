@@ -24,15 +24,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialFileRepository _materialFileRepository;
 
-        public FileController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialFileRepository materialFileRepository)
+        public FileController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialFileRepository materialFileRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
+            _configRepository = configRepository;
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialFileRepository = materialFileRepository;
@@ -49,6 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
         public class QueryResult
         {
+            public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialFile> Items { get; set; }

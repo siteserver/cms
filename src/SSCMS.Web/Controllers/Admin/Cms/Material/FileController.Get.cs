@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Enums;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
@@ -16,12 +18,32 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.File);
-            var count = await _materialFileRepository.GetCountAsync(request.GroupId, request.Keyword);
-            var items = await _materialFileRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
+            IEnumerable<MaterialGroup> groups;
+            int count;
+            IEnumerable<MaterialFile> items;
+
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var config = await _configRepository.GetAsync();
+            if (config.IsMaterialSiteOnly)
+            {
+                var group = await _materialGroupRepository.GetSiteGroupAsync(MaterialType.File, request.SiteId);
+                groups = new List<MaterialGroup>
+                {
+                    group
+                };
+                count = await _materialFileRepository.GetCountAsync(group.Id, request.Keyword);
+                items = await _materialFileRepository.GetAllAsync(group.Id, request.Keyword, request.Page, request.PerPage);
+            }
+            else
+            {
+                groups = await _materialGroupRepository.GetAllAsync(MaterialType.File);
+                count = await _materialFileRepository.GetCountAsync(request.GroupId, request.Keyword);
+                items = await _materialFileRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
+            }
 
             return new QueryResult
             {
+                IsSiteOnly = config.IsMaterialSiteOnly,
                 Groups = groups,
                 Count = count,
                 Items = items

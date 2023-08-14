@@ -6,6 +6,7 @@ var $urlDownload = $url + '/actions/download';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -38,6 +39,11 @@ var methods = {
       params: this.form
     }).then(function (response) {
       var res = response.data;
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;
