@@ -31,6 +31,42 @@ namespace SSCMS.Utils
             return table;
         }
 
+        public static (List<string> columns, int rowIndex) GetColumns(DataTable sheet)
+        {
+            var columns = new List<string>();
+            var rowIndex = 0;
+
+            var row = sheet.Rows[rowIndex];
+            var isSuccess = true;
+            for (var i = 0; i < sheet.Columns.Count; i++)
+            {
+                var value = StringUtils.Trim(row[i].ToString());
+                if (string.IsNullOrEmpty(value))
+                {
+                    isSuccess = false;
+                    columns = new List<string>();
+                    break;
+                }
+                columns.Add(value);
+            }
+
+            if (!isSuccess)
+            {
+                rowIndex = 1;
+                row = sheet.Rows[rowIndex];
+                for (var i = 0; i < sheet.Columns.Count; i++)
+                {
+                    var value = StringUtils.Trim(row[i].ToString());
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        columns.Add(value);
+                    }
+                }
+            }
+
+            return (columns, rowIndex + 1);
+        }
+
         public static void Write(string filePath, List<string> head, List<List<string>> rows)
         {
             var memoryStream = new MemoryStream();

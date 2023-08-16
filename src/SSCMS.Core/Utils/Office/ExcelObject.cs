@@ -9,6 +9,9 @@ namespace SSCMS.Core.Utils.Office
 {
     public class ExcelObject
     {
+        public const string BelongsChannel1 = nameof(BelongsChannel1);
+        public const string BelongsChannel2 = nameof(BelongsChannel2);
+
         private readonly IDatabaseManager _databaseManager;
         private readonly IPathManager _pathManager;
 
@@ -138,62 +141,11 @@ namespace SSCMS.Core.Utils.Office
             ExcelUtils.Write(filePath, head, rows);
         }
 
-        public async Task<List<Content>> GetContentsByFileAsync(string filePath, Site site, Channel channel)
-        {
-            var contents = new List<Content>();
-            var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
+        // public List<Content> GetContentsByFile(string filePath, List<string> attributes, Site site, Channel channel)
+        // {
+            
 
-            var sheet = ExcelUtils.Read(filePath);
-            if (sheet != null)
-            {
-                var columns = new List<string>();
-
-                for (var i = 1; i < sheet.Rows.Count; i++) //行
-                {
-                    var row = sheet.Rows[i];
-
-                    if (i == 1)
-                    {
-                        for (var j = 0; j < sheet.Columns.Count; j++)
-                        {
-                            var value = row[j].ToString().Trim();
-                            columns.Add(value);
-                        }
-                        continue;
-                    }
-
-                    var dict = new Dictionary<string, object>();
-
-                    for (var j = 0; j < columns.Count; j++)
-                    {
-                        var columnName = columns[j];
-                        var value = row[j].ToString().Trim();
-
-                        var style = styles.FirstOrDefault(x =>
-                            StringUtils.EqualsIgnoreCase(x.AttributeName, columnName) ||
-                            StringUtils.EqualsIgnoreCase(x.DisplayName, columnName));
-                        var attributeName = style != null ? style.AttributeName : columnName;
-
-                        if (!string.IsNullOrEmpty(attributeName))
-                        {
-                            dict[attributeName] = value;
-                        }
-                    }
-
-                    var content = new Content();
-                    content.LoadDict(dict);
-
-                    if (!string.IsNullOrEmpty(content.Title))
-                    {
-                        content.SiteId = site.Id;
-                        content.ChannelId = channel.Id;
-
-                        contents.Add(content);
-                    }
-                }
-            }
-
-            return contents;
-        }
+        //     return contents;
+        // }
     }
 }

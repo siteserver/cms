@@ -1,23 +1,17 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 @section Styles{
-  <style>
-    .el-upload, .el-upload-dragger {width: 100%;}
-  </style>
+<style>
+  .el-upload,
+  .el-upload-dragger {
+    width: 100%;
+  }
+</style>
 }
 
-<el-upload
-  drag
-  :action="uploadUrl"
-  :auto-upload="true"
-  :headers="{Authorization: 'Bearer ' + $token}"
-  :file-list="uploadList"
-  :before-upload="uploadBefore"
-  :on-progress="uploadProgress"
-  :on-success="uploadSuccess"
-  :on-error="uploadError"
-  :on-remove="uploadRemove"
-  :multiple="true">
+<el-upload drag :action="uploadUrl" :auto-upload="true" :headers="{Authorization: 'Bearer ' + $token}"
+  :file-list="uploadList" :before-upload="uploadBefore" :on-progress="uploadProgress" :on-success="uploadSuccess"
+  :on-error="uploadError" :on-remove="uploadRemove" :multiple="form.importType != 'excel'">
   <i class="el-icon-upload"></i>
   <div class="el-upload__text">将文件拖到此处，或 <em>点击上传</em></div>
 </el-upload>
@@ -34,24 +28,35 @@
     <div v-if="form.importType === 'zip'" class="tips">请选择后台导出的压缩包，系统能够将内容以及内容相关的图片、附件等文件一并导入。</div>
     <div v-else-if="form.importType === 'excel'" class="tips">
       请选择Excel文件，系统将导入Excel文件对应的字段数据。
-      <el-link :underline="false" type="primary" :href="utils.getAssetsUrl('uploadtemplates/内容导入模版.xlsx')" target="_blank">
+      <!-- <el-link :underline="false" type="primary" :href="utils.getAssetsUrl('uploadtemplates/内容导入模版.xlsx')"
+        target="_blank">
         <i class="el-icon-download"></i>
         下载导入模版
-      </el-link>
+      </el-link> -->
     </div>
     <div v-else-if="form.importType === 'image'" class="tips">请选择图片文件（可多选），文件名将作为内容标题，图片文件将作为内容图片。</div>
     <div v-else-if="form.importType === 'txt'" class="tips">请选择以.txt结尾的纯文本文件（可多选），文件名将作为内容标题，文件内容将作为正文导入。</div>
+  </el-form-item>
+  <el-form-item v-if="form.importType === 'excel' && columns && columns.length > 0" label="字段设置">
+    <template v-for="column in columns" :key="column">
+      <el-row style="margin: 5px 0">
+        <el-col :span="4">
+          {{ columns.indexOf(column) + 1 }}，{{ column }}：
+        </el-col>
+        <el-col :span="20">
+          <el-select v-model="form.attributes[columns.indexOf(column)]" placeholder="请选择内容字段">
+            <el-option v-for="style in styles" :key="style.attributeName" :label="style.displayName" :value="style.attributeName"></el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+    </template>
   </el-form-item>
   <el-form-item label="导入设置">
     <el-checkbox label="覆盖同名标题" v-model="form.isOverride"></el-checkbox>
   </el-form-item>
   <el-form-item label="审核状态">
     <el-select v-model="form.checkedLevel">
-      <el-option
-        v-for="level in checkedLevels"
-        :key="level.key"
-        :label="level.value"
-        :value="level.key"></el-option>
+      <el-option v-for="level in checkedLevels" :key="level.key" :label="level.value" :value="level.key"></el-option>
     </el-select>
   </el-form-item>
 </el-form>

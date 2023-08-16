@@ -1,13 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
+using System.Collections.Generic;
+using SSCMS.Models;
+using SSCMS.Core.Utils.Office;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -34,6 +35,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var fileName = Path.GetFileName(file.FileName);
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var url = string.Empty;
+            var columns = new List<string>();
+            var styles = new List<TableStyle>();
 
             if (request.ImportType == "zip")
             {
@@ -69,10 +72,39 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             
             await _pathManager.UploadAsync(file, filePath);
 
+            if (request.ImportType == "excel")
+            {
+                var sheet = ExcelUtils.Read(filePath);
+                (columns, _) = ExcelUtils.GetColumns(sheet);
+                
+                var channel = await _channelRepository.GetAsync(request.ChannelId);
+                var tableName = _channelRepository.GetTableName(site, channel);
+                var relatedIdentities = _tableStyleRepository.GetRelatedIdentities(channel);
+                styles = await _tableStyleRepository.GetTableStylesAsync(tableName, relatedIdentities);
+
+                styles.Insert(0, new TableStyle
+                {
+                    AttributeName = ExcelObject.BelongsChannel2,
+                    DisplayName = "所属栏目2"
+                });
+                styles.Insert(0, new TableStyle
+                {
+                    AttributeName = ExcelObject.BelongsChannel1,
+                    DisplayName = "所属栏目1"
+                });
+                styles.Insert(0, new TableStyle
+                {
+                    AttributeName = "",
+                    DisplayName = "<不导入>"
+                });
+            }
+
             return new UploadResult
             {
                 Name = fileName,
-                Url = url
+                Url = url,
+                Columns = columns,
+                Styles = styles
             };
         }
     }

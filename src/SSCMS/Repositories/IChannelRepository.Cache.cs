@@ -44,6 +44,8 @@ namespace SSCMS.Repositories
 
         Task<List<Channel>> GetChannelsAsync(int siteId);
 
+        Task<List<Channel>> GetChannelsAsync(int siteId, int channelId);
+
         Task<List<int>> GetChannelIdsAsync(int siteId);
 
         Task<List<string>> GetChannelIndexNamesAsync(int siteId);

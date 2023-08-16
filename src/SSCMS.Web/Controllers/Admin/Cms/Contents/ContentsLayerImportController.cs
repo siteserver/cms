@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
@@ -28,8 +26,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IDatabaseManager _databaseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerImportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ContentsLayerImportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -38,6 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _databaseManager = databaseManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         public class GetResult
@@ -56,6 +56,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         {
             public string Name { get; set; }
             public string Url { get; set; }
+            public List<string> Columns { get; set; }
+            public List<TableStyle> Styles { get; set; }
         }
 
         public class SubmitRequest : ChannelRequest
@@ -65,6 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public bool IsOverride { get; set; }
             public List<string> FileNames { get; set; }
             public List<string> FileUrls { get; set; }
+            public List<string> Attributes { get; set; }
         }
 
         public class Options

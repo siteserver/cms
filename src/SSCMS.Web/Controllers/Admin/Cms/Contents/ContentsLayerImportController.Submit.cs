@@ -49,6 +49,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
             else if (request.ImportType == "excel")
             {
+                if (!ListUtils.ContainsIgnoreCase(request.Attributes, nameof(Models.Content.Title)))
+                {
+                    return this.Error("标题字段为必填项！");
+                }
+
                 foreach (var fileName in request.FileNames)
                 {
                     var localFilePath = _pathManager.GetTemporaryFilesPath(fileName);
@@ -57,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                         continue;
 
                     var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
-                    contentIdList.AddRange(await importObject.ImportContentsByXlsxFileAsync(channelInfo, localFilePath, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
+                    contentIdList.AddRange(await importObject.ImportContentsByXlsxFileAsync(channelInfo, localFilePath, request.Attributes, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
                 }
             }
             else if (request.ImportType == "image")

@@ -244,47 +244,140 @@ namespace SSCMS.Core.Utils.Serialization
             return await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
 
-        public async Task<List<int>> ImportContentsByXlsxFileAsync(Channel channel, string filePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public async Task<List<int>> ImportContentsByXlsxFileAsync(Channel channel, string filePath, List<string> attributes, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var excelObject = new ExcelObject(_databaseManager, _pathManager);
-            var contentInfoList = await excelObject.GetContentsByFileAsync(filePath, _site, channel);
-            contentInfoList.Reverse();
 
-            foreach (var contentInfo in contentInfoList)
+            var contents = new List<Content>();
+            // var styles = ColumnsManager.GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
+
+            var sheet = ExcelUtils.Read(filePath);
+            if (sheet != null)
             {
-                contentInfo.Checked = isChecked;
-                contentInfo.CheckedLevel = checkedLevel;
-                if (!contentInfo.AddDate.HasValue)
+                var (columns, rowIndex) = ExcelUtils.GetColumns(sheet);
+
+                for (var i = rowIndex; i < sheet.Rows.Count; i++) //行
                 {
-                    contentInfo.AddDate = DateTime.Now;
+                    var row = sheet.Rows[i];
+
+                    var dict = new Dictionary<string, object>();
+                    var channel1Title = string.Empty;
+                    var channel2Title = string.Empty;
+
+                    for (var j = 0; j < columns.Count; j++)
+                    {
+                        var columnName = columns[j];
+                        var value = row[j].ToString().Trim();
+
+                        var attributeName = attributes[j];
+
+                        if (StringUtils.EqualsIgnoreCase(ExcelObject.BelongsChannel1, attributeName))
+                        {
+                            channel1Title = value;
+                            continue;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(ExcelObject.BelongsChannel2, attributeName))
+                        {
+                            channel2Title = value;
+                            continue;
+                        }
+
+                        // var style = styles.FirstOrDefault(x =>
+                        //     StringUtils.EqualsIgnoreCase(x.AttributeName, columnName) ||
+                        //     StringUtils.EqualsIgnoreCase(x.DisplayName, columnName));
+                        // var attributeName = style != null ? style.AttributeName : columnName;
+
+                        if (!string.IsNullOrEmpty(attributeName))
+                        {
+                            dict[attributeName] = value;
+                        }
+                    }
+
+                    var content = new Content();
+                    content.LoadDict(dict);
+
+                    if (!string.IsNullOrEmpty(content.Title))
+                    {
+                        content.SiteId = _site.Id;
+                        content.ChannelId = channel.Id;
+                        
+                        if (!string.IsNullOrEmpty(channel1Title) && !string.IsNullOrEmpty(channel2Title))
+                        {
+                            var channels = await _databaseManager.ChannelRepository.GetChannelsAsync(_site.Id, channel.Id);
+                            var channel1 = channels.FirstOrDefault(c => c.ChannelName == channel1Title);
+                            if (channel1 == null)
+                            {
+                                var channel1Id = await _databaseManager.ChannelRepository.InsertAsync(_site.Id, channel.Id, channel1Title, string.Empty, channel.ContentModelPluginId, channel.ChannelTemplateId, channel.ContentTemplateId);
+                                channel1 = await _databaseManager.ChannelRepository.GetAsync(channel1Id);
+                            }
+                            channels = await _databaseManager.ChannelRepository.GetChannelsAsync(_site.Id, channel1.Id);
+                            var channel2 = channels.FirstOrDefault(c => c.ChannelName == channel2Title);
+                            if (channel2 == null)
+                            {
+                                var channel2Id = await _databaseManager.ChannelRepository.InsertAsync(_site.Id, channel1.Id, channel2Title, string.Empty, channel1.ContentModelPluginId, channel1.ChannelTemplateId, channel1.ContentTemplateId);
+                                channel2 = await _databaseManager.ChannelRepository.GetAsync(channel2Id);
+                            }
+                            
+                            content.ChannelId = channel2.Id;
+                        }
+                        else if (!string.IsNullOrEmpty(channel1Title))
+                        {
+                            var channels = await _databaseManager.ChannelRepository.GetChannelsAsync(_site.Id, channel.Id);
+                            var channel1 = channels.FirstOrDefault(c => c.ChannelName == channel1Title);
+                            if (channel1 == null)
+                            {
+                                var channel1Id = await _databaseManager.ChannelRepository.InsertAsync(_site.Id, channel.Id, channel1Title, string.Empty, channel.ContentModelPluginId, channel.ChannelTemplateId, channel.ContentTemplateId);
+                                channel1 = await _databaseManager.ChannelRepository.GetAsync(channel1Id);
+                            }
+
+                            content.ChannelId = channel1.Id;
+                        }
+
+                        contents.Add(content);
+                    }
                 }
-                contentInfo.AdminId = adminId;
-                contentInfo.UserId = userId;
-                contentInfo.SourceId = sourceId;
+            }
+
+            // var contentInfoList = excelObject.GetContentsByFile(filePath, attributes, _site, channel);
+            contents.Reverse();
+
+            foreach (var content in contents)
+            {
+                content.Checked = isChecked;
+                content.CheckedLevel = checkedLevel;
+                if (!content.AddDate.HasValue)
+                {
+                    content.AddDate = DateTime.Now;
+                }
+                content.AdminId = adminId;
+                content.UserId = userId;
+                content.SourceId = sourceId;
+                
+                var channelInfo = await _databaseManager.ChannelRepository.GetAsync(content.ChannelId);
 
                 if (isOverride)
                 {
-                    var existsIds = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channel, contentInfo.Title);
+                    var existsIds = await _databaseManager.ContentRepository.GetContentIdsBySameTitleAsync(_site, channelInfo, content.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
                         {
-                            contentInfo.Id = id;
-                            await _databaseManager.ContentRepository.UpdateAsync(_site, channel, contentInfo);
+                            content.Id = id;
+                            await _databaseManager.ContentRepository.UpdateAsync(_site, channelInfo, content);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channel, contentInfo);
+                        content.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channelInfo, content);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channel, contentInfo);
+                    content.Id = await _databaseManager.ContentRepository.InsertAsync(_site, channelInfo, content);
                 }
             }
 
-            return contentInfoList.Select(x => x.Id).ToList();
+            return contents.Select(x => x.Id).ToList();
         }
 
         public async Task<List<int>> ImportContentsByImageFileAsync(Channel channel, string fileName, string fileUrl, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)

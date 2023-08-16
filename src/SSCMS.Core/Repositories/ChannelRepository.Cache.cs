@@ -288,6 +288,22 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
+        public async Task<List<Channel>> GetChannelsAsync(int siteId, int channelId)
+        {
+            var summaries = await GetSummariesAsync(siteId);
+            var list = new List<Channel>();
+            foreach (var summary in summaries)
+            {
+                if (summary.ParentId == channelId)
+                {
+                    var channel = await GetAsync(summary.Id);
+                    list.Add(channel);
+                }
+            }
+
+            return list;
+        }
+
         public async Task<List<int>> GetChannelIdsAsync(int siteId)
         {
             var summaries = await GetSummariesAsync(siteId);

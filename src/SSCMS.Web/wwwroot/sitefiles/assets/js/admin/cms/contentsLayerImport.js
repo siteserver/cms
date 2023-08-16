@@ -10,9 +10,12 @@ var data = utils.init({
     isOverride: false,
     fileNames: [],
     fileUrls: [],
+    attributes: [],
   },
   uploadUrl: null,
-  uploadList: []
+  uploadList: [],
+  columns: [],
+  styles: [],
 });
 
 var methods = {
@@ -104,6 +107,16 @@ var methods = {
   },
 
   uploadSuccess: function(res) {
+    if (this.form.importType === 'excel') {
+      this.form.fileNames = [];
+      this.form.fileUrls = [];
+      this.columns = res.columns;
+      this.styles = res.styles;
+      this.form.attributes = [];
+      for (var i = 0; i < this.columns.length; i++) {
+        this.form.attributes[i] = '';
+      }
+    }
     this.form.fileNames.push(res.name);
     this.form.fileUrls.push(res.url);
     utils.loading(this, false);
