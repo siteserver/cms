@@ -27,7 +27,7 @@ namespace SSCMS.Core.Utils
     public const string CheckState = nameof(CheckState);
     public const string CheckAdminId = nameof(CheckAdminId);                    //审核人
     public const string CheckDate = nameof(CheckDate);                          //审核时间
-    public const string CheckReasons = nameof(CheckReasons);                    //审核原因
+    public const string CheckReasons = nameof(CheckReasons);                    //审核意见
 
     public const string Sequence = nameof(Sequence);                            //序号
     private const string ChannelName = nameof(ChannelName);
@@ -296,7 +296,7 @@ namespace SSCMS.Core.Utils
                 new TableStyle
                 {
                     AttributeName = CheckReasons,
-                    DisplayName = "审核原因",
+                    DisplayName = "审核意见",
                     Taxis = taxis
                 },
             });

@@ -194,18 +194,6 @@ var methods = {
     utils.openLayer(options);
   },
 
-  btnContentViewClick: function(contentId) {
-    utils.openLayer({
-      title: "查看内容",
-      url: utils.getRootUrl('write/contentsLayerView', {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: contentId
-      }),
-      full: true
-    });
-  },
-
   btnContentStateClick: function(content) {
     utils.openLayer({
       title: "查看审核状态",
