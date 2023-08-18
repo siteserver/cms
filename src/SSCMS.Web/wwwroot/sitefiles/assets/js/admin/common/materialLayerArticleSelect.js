@@ -3,6 +3,7 @@
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   itemId: utils.getQueryInt("itemId"),
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -19,7 +20,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function (page) {
+  apiGet: function (page) {
     var $this = this;
     this.form.page = page;
 
@@ -28,6 +29,11 @@ var methods = {
       params: this.form
     }).then(function (response) {
       var res = response.data;
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;
@@ -70,17 +76,17 @@ var methods = {
 
   btnGroupClick: function(groupId) {
     this.form.groupId = groupId;
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnSearchClick() {
     utils.loading(this, true);
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnPageClick: function(val) {
     utils.loading(this, true);
-    this.apiList(val);
+    this.apiGet(val);
   },
 
   btnSubmitClick: function () {
@@ -99,6 +105,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
-    this.apiList(1);
+    this.apiGet(1);
   }
 });

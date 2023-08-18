@@ -5,6 +5,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: 'card',
 
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -13,7 +14,7 @@ var data = utils.init({
   renameTitle: '',
   deleteId: 0,
   selectedGroupId: 0,
-  
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -31,24 +32,29 @@ var data = utils.init({
 
 var methods = {
   insert: function(result) {
-    var vueHtml = '' + 
-    '<el-popover' + 
-    '  width="600"' + 
-    '  trigger="click">' + 
+    var vueHtml = '' +
+    '<el-popover' +
+    '  width="600"' +
+    '  trigger="click">' +
     '   ' + result.content +
-    '  <el-button size="small" type="primary" slot="reference">' + result.linkText + '</el-button>' + 
+    '  <el-button size="small" type="primary" slot="reference">' + result.linkText + '</el-button>' +
     '</el-popover>'
     var html = '<a href="javascript:;" data-vue="' + encodeURIComponent(vueHtml) + '">' + result.linkText + '</a>';
     parent.$vue.insertEditor(this.attributeName, html);
   },
 
-  apiList: function (page) {
+  apiGet: function (page) {
     var $this = this;
     this.form.page = page;
 
     utils.loading(this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;
@@ -152,12 +158,12 @@ var methods = {
 
   btnSearchClick() {
     utils.loading(this, true);
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnPageClick: function(val) {
     utils.loading(this, true);
-    this.apiList(val);
+    this.apiGet(val);
   }
 };
 
@@ -166,6 +172,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    this.apiList(1);
+    this.apiGet(1);
   }
 });
+

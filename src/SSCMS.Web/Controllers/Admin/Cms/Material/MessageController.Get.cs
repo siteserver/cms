@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Enums;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
@@ -16,17 +18,35 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var site = await _siteRepository.GetAsync(request.SiteId);
+            IEnumerable<MaterialGroup> groups;
+            int count;
+            IEnumerable<MaterialMessage> items;
 
-            var groups = await _materialGroupRepository.GetAllAsync(MaterialType.Message);
-            var count = await _materialMessageRepository.GetCountAsync(request.GroupId, request.Keyword);
-            var messages = await _materialMessageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var config = await _configRepository.GetAsync();
+            if (config.IsMaterialSiteOnly)
+            {
+                var group = await _materialGroupRepository.GetSiteGroupAsync(MaterialType.Message, request.SiteId);
+                groups = new List<MaterialGroup>
+                {
+                    group
+                };
+                count = await _materialMessageRepository.GetCountAsync(group.Id, request.Keyword);
+                items = await _materialMessageRepository.GetAllAsync(group.Id, request.Keyword, request.Page, request.PerPage);
+            }
+            else
+            {
+                groups = await _materialGroupRepository.GetAllAsync(MaterialType.Message);
+                count = await _materialMessageRepository.GetCountAsync(request.GroupId, request.Keyword);
+                items = await _materialMessageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
+            }
 
             return new QueryResult
             {
+                IsSiteOnly = config.IsMaterialSiteOnly,
                 Groups = groups,
                 Count = count,
-                Messages = messages,
+                Messages = items,
                 SiteType = site.SiteType
             };
         }

@@ -124,7 +124,7 @@ var methods = {
       } else if ($this.action === 'send') {
         var vue = utils.getTabVue($this.tabName);
         if (vue) {
-          vue.apiList($this.page);
+          vue.apiGet($this.page);
         }
         utils.success('保存成功！');
         utils.removeTab();
@@ -133,13 +133,12 @@ var methods = {
           messageId: $this.messageId
         }));
       } else {
-        var vue = utils.getTabVue($this.tabName);
-        if (vue) {
-          vue.apiList($this.page);
-          utils.openTab($this.tabName);
-        }
         utils.success('创建图文消息成功！');
         utils.removeTab();
+        var vue = utils.getTabVue($this.tabName);
+        if (vue) {
+          vue.apiGet($this.page);
+        }
       }
     })
     .catch(function(error) {
@@ -167,7 +166,7 @@ var methods = {
       } else if ($this.action === 'send') {
         var vue = utils.getTabVue($this.tabName);
         if (vue) {
-          vue.apiList($this.page);
+          vue.apiGet($this.page);
         }
         utils.success('保存成功！');
         utils.removeTab();
@@ -176,13 +175,12 @@ var methods = {
           messageId: $this.messageId
         }));
       } else {
-        var vue = utils.getTabVue($this.tabName);
-        if (vue) {
-          vue.apiList($this.page);
-          utils.openTab($this.tabName);
-        }
         utils.success('修改图文消息成功！');
         utils.removeTab();
+        var vue = utils.getTabVue($this.tabName);
+        if (vue) {
+          vue.apiGet($this.page);
+        }
       }
     })
     .catch(function(error) {

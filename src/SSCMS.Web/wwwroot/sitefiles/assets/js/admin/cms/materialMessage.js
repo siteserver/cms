@@ -7,6 +7,7 @@ var $urlPull = $url + '/actions/pull';
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   showType: 'card',
+  isSiteOnly: false,
   groups: null,
   count: null,
   messages: null,
@@ -31,7 +32,7 @@ var methods = {
     this.groups = groups;
   },
 
-  apiList: function (page) {
+  apiGet: function (page) {
     var $this = this;
     this.form.page = page;
 
@@ -40,6 +41,11 @@ var methods = {
       params: this.form
     }).then(function (response) {
       var res = response.data;
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;
@@ -69,7 +75,7 @@ var methods = {
       var res = response.data;
 
       $this.form.groupId = 0;
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     });
@@ -86,7 +92,7 @@ var methods = {
       var res = response.data;
 
       utils.success('图文消息素材删除成功!');
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -105,7 +111,7 @@ var methods = {
       var res = response.data;
 
       utils.success('公众号图文消息素材拉取成功！');
-      $this.apiList(1);
+      $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -292,12 +298,12 @@ var methods = {
 
   btnSearchClick() {
     utils.loading(this, true);
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnPageClick: function(val) {
     utils.loading(this, true);
-    this.apiList(val);
+    this.apiGet(val);
   },
 
   uploadBefore(file) {
@@ -315,7 +321,7 @@ var methods = {
   },
 
   uploadSuccess: function(res) {
-    this.apiList(1);
+    this.apiGet(1);
     utils.loading(this, false);
   },
 
@@ -347,6 +353,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSearchClick, this.btnCloseClick);
-    this.apiList(1);
+    this.apiGet(1);
   }
 });

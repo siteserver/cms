@@ -173,6 +173,7 @@ namespace SSCMS.Core.StlParser.StlElement
   map{id}.enableScrollWheelZoom(); //启用滚轮放大缩小，默认禁用
   map{id}.enableContinuousZoom(); //启用地图惯性拖拽，默认禁用
   var marker{id} = new BMap.Marker(point{id});
+  marker{id}.setAnimation(BMAP_ANIMATION_BOUNCE);
   map{id}.addOverlay(marker{id});
   if (html{id}) {{
     map{id}.openInfoWindow(new BMap.InfoWindow(html{id}), point{id});

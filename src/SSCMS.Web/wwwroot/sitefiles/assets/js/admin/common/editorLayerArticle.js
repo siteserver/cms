@@ -5,6 +5,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   pageType: 'card',
 
+  isSiteOnly: false,
   groups: null,
   count: null,
   items: null,
@@ -42,13 +43,18 @@ var methods = {
     parent.$vue.insertEditor(this.attributeName, html);
   },
 
-  apiList: function (page) {
+  apiGet: function (page) {
     var $this = this;
     this.form.page = page;
 
     utils.loading(this, true);
     $api.post($url + '/list', this.form).then(function (response) {
       var res = response.data;
+
+      $this.isSiteOnly = res.isSiteOnly;
+      if ($this.isSiteOnly) {
+        $this.form.groupId = -$this.siteId;
+      }
 
       $this.groups = res.groups;
       $this.count = res.count;
@@ -152,12 +158,12 @@ var methods = {
 
   btnSearchClick() {
     utils.loading(this, true);
-    this.apiList(1);
+    this.apiGet(1);
   },
 
   btnPageClick: function(val) {
     utils.loading(this, true);
-    this.apiList(val);
+    this.apiGet(val);
   },
 
   btnCancelClick: function () {
@@ -182,6 +188,6 @@ var $vue = new Vue({
         $this.btnCancelClick();
       }
     });
-    this.apiList(1);
+    this.apiGet(1);
   }
 });

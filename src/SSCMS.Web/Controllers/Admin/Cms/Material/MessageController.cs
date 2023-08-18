@@ -21,30 +21,27 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private const string RouteDeleteGroup = "cms/material/message/actions/deleteGroup";
         private const string RoutePull = "cms/material/message/actions/pull";
 
-        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IWxManager _openManager;
+        private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
-        private readonly IWxAccountRepository _openAccountRepository;
 
-        public MessageController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager openManager, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialMessageRepository materialMessageRepository, IWxAccountRepository openAccountRepository)
+        public MessageController(IAuthManager authManager, IPathManager pathManager, IWxManager openManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialMessageRepository materialMessageRepository)
         {
-            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _openManager = openManager;
+            _configRepository = configRepository;
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialMessageRepository = materialMessageRepository;
-            _openAccountRepository = openAccountRepository;
         }
 
-        public class QueryRequest
+        public class QueryRequest : SiteRequest
         {
-            public int SiteId { get; set; }
             public string Keyword { get; set; }
             public int GroupId { get; set; }
             public int Page { get; set; }
@@ -53,6 +50,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
         public class QueryResult
         {
+            public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialMessage> Messages { get; set; }

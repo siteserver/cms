@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 
@@ -16,18 +17,19 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private const string RouteId = "common/editor/layerArticle/{id}";
         private const string RouteList = "common/editor/layerArticle/list";
 
+        private readonly IConfigRepository _configRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialArticleRepository _materialArticleRepository;
 
-        public LayerArticleController(IMaterialGroupRepository materialGroupRepository, IMaterialArticleRepository materialArticleRepository)
+        public LayerArticleController(IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialArticleRepository materialArticleRepository)
         {
+            _configRepository = configRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialArticleRepository = materialArticleRepository;
         }
 
-        public class QueryRequest
+        public class QueryRequest : SiteRequest
         {
-            public int SiteId { get; set; }
             public string Keyword { get; set; }
             public int GroupId { get; set; }
             public int Page { get; set; }
@@ -36,6 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
         public class QueryResult
         {
+            public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialArticle> Items { get; set; }
