@@ -246,6 +246,10 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             attributes["height"] = string.IsNullOrEmpty(height) ? "500" : height;
+            if (string.IsNullOrEmpty(attributes["controlsList"]))
+            {
+                attributes["controlsList"] = "nodownload";
+            }
             attributes["data-setup"] = "{}";
 
             // 如果是实体标签，则只返回url
