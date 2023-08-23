@@ -1,6 +1,5 @@
 ﻿var $url = '/cms/forms/formList';
-var $urlActionsUp = $url + '/actions/up';
-var $urlActionsDown = $url + '/actions/down';
+var $urlOrder = $url + '/actions/order';
 var $urlExport = $url + '/actions/export';
 var $urlImport = $url + '/actions/import';
 var $urlDelete = $url + '/actions/delete';
@@ -71,37 +70,28 @@ var methods = {
     return this.authFormIds.indexOf(form.id) === -1;
   },
 
-  btnUpClick: function (form) {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlActionsUp, {
-      siteId: this.siteId,
-      formId: form.id
-    }).then(function (response) {
-      var res = response.data;
-
-      utils.success('表单排序成功');
-      $this.forms = res.forms;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+  onSort: function (event) {
+    var form = this.forms[event.oldIndex];
+    var formId = form.id;
+    var isUp = event.oldIndex > event.newIndex;
+    var rows = Math.abs(event.oldIndex - event.newIndex);
+    this.btnOrderClick(formId, isUp, rows);
   },
 
-  btnDownClick: function (form) {
+  btnOrderClick: function(formId, isUp, rows) {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlActionsDown, {
+    $api.post($urlOrder, {
       siteId: this.siteId,
-      formId: form.id
+      formId: formId,
+      isUp: isUp,
+      rows: rows,
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('表单排序成功');
       $this.forms = res.forms;
+      utils.success('表单排序成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -202,6 +192,9 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
+  components: {
+    ElTableDraggable,
+  },
   data: data,
   methods: methods,
   created: function () {

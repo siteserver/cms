@@ -16,8 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
     public partial class FormListController : ControllerBase
     {
         private const string Route = "cms/forms/formList";
-        private const string RouteUp = "cms/forms/formList/actions/up";
-        private const string RouteDown = "cms/forms/formList/actions/down";
+        private const string RouteOrder = "cms/forms/formList/actions/order";
         private const string RouteExport = "cms/forms/formList/actions/export";
         private const string RouteImport = "cms/forms/formList/actions/import";
         private const string RouteDelete = "cms/forms/formList/actions/delete";
@@ -59,12 +58,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             public int FormId { get; set; }
         }
 
-        public class TaxisRequest : SiteRequest
+        public class OrderRequest : SiteRequest
         {
             public int FormId { get; set; }
+            public bool IsUp { get; set; }
+            public int Rows { get; set; }
         }
 
-        public class TaxisResult
+        public class OrderResult
         {
             public List<Form> Forms { get; set; }
         }
