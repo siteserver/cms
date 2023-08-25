@@ -1,11 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Plugins;
 using SSCMS.Utils;
 
@@ -34,6 +34,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: run sscms");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/run.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

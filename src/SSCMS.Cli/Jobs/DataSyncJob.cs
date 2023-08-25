@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Plugins;
 using SSCMS.Services;
@@ -74,6 +75,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: sync backup files to database");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/data-sync.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

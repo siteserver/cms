@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
-using SSCMS.Core.Plugins;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Repositories;
@@ -43,6 +42,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: download sscms and save settings");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/install-download.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

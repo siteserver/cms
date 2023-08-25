@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Plugins;
 using SSCMS.Services;
@@ -46,6 +46,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: restore backup files to database");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/data-restore.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

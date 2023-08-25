@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Enums;
 using SSCMS.Plugins;
 using SSCMS.Services;
@@ -11,9 +11,9 @@ using SSCMS.Utils;
 
 namespace SSCMS.Cli.Jobs
 {
-    public class CreateJob : IJobService
+    public class BuildJob : IJobService
     {
-        public string CommandName => "create";
+        public string CommandName => "build";
 
         private string _directory;
         private bool _isHelp;
@@ -23,7 +23,7 @@ namespace SSCMS.Cli.Jobs
         private readonly ICreateManager _createManager;
         private readonly OptionSet _options;
 
-        public CreateJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, ICreateManager createManager)
+        public BuildJob(ISettingsManager settingsManager, IDatabaseManager databaseManager, ICreateManager createManager)
         {
             _settingsManager = settingsManager;
             _databaseManager = databaseManager;
@@ -44,7 +44,8 @@ namespace SSCMS.Cli.Jobs
         public async Task WriteUsageAsync(IConsoleUtils console)
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
-            await console.WriteLineAsync("Summary: create static pages");
+            await console.WriteLineAsync("Summary: generate static pages for the site");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/build.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

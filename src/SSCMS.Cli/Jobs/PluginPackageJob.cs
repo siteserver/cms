@@ -38,6 +38,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: package plugin to zip file");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/plugin-package.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

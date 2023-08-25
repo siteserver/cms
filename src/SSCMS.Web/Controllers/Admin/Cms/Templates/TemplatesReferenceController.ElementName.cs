@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 new ListReference
                 {
                     Name = $"{elementName} {stlAttribute.Title}",
-                    Url = $"https://sscms.com/docs/v7/stl/{name}/"
+                    Url = $"{Constants.OfficialHost}/docs/v7/stl/{name}/"
                 }
             };
 

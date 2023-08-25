@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.AdditionalElements.DublinCore;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
@@ -315,7 +316,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             {
                 Title = new AtomContentConstruct("title", "siteserver channel"),
                 Author = new AtomPersonConstruct("author",
-                    "siteserver", new Uri("https://sscms.com")),
+                    "siteserver", new Uri(Constants.OfficialHost)),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
                     DateTimeOffset.UtcNow.Offset)
             };
@@ -327,7 +328,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
         {
             var entry = new AtomEntry
             {
-                Id = new Uri("https://sscms.com/"),
+                Id = new Uri(Constants.OfficialHost),
                 Title = new AtomContentConstruct("title", "title"),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
                     DateTimeOffset.UtcNow.Offset),

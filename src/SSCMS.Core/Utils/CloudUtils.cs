@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using SSCMS.Configuration;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -16,16 +17,14 @@ namespace SSCMS.Core.Utils
 
         public static class Www
         {
-            private const string Host = "https://sscms.com";
-
             public static string GetPluginUrl(string userName, string name)
             {
-                return PageUtils.Combine(Host, $"/plugins/plugin.html?userName={userName}&name={name}");
+                return PageUtils.Combine(Constants.OfficialHost, $"/plugins/plugin.html?userName={userName}&name={name}");
             }
 
             public static string GetThemeUrl(string userName, string name)
             {
-                return PageUtils.Combine(Host, $"/templates/template.html?userName={userName}&name={name}");
+                return PageUtils.Combine(Constants.OfficialHost, $"/templates/template.html?userName={userName}&name={name}");
             }
         }
 

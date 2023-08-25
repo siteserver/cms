@@ -47,6 +47,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: update database to latest schema");
+            await console.WriteLineAsync($"Docs: {SSCMS.Configuration.Constants.OfficialHost}/docs/v7/cli/commands/data-update.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

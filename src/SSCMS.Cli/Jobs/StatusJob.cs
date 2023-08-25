@@ -1,10 +1,10 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading.Tasks;
 using Datory;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Plugins;
 using SSCMS.Services;
@@ -41,6 +41,7 @@ namespace SSCMS.Cli.Jobs
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
             await console.WriteLineAsync("Summary: show user login status");
+            await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/status.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);
             await console.WriteLineAsync();

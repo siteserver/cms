@@ -57,7 +57,7 @@ namespace SSCMS.Models
         public string AdminTitle { get; set; } = Constants.AdminTitle;
         public string AdminFaviconUrl { get; set; }
         public string AdminLogoUrl { get; set; }
-        public string AdminLogoLinkUrl { get; set; } = "https://sscms.com";
+        public string AdminLogoLinkUrl { get; set; } = Constants.OfficialHost;
         public string AdminWelcomeHtml { get; set; } = @"欢迎使用 SSCMS 管理后台";
         public bool IsAdminUpdateDisabled { get; set; }
         public bool IsHomeClosed { get; set; }

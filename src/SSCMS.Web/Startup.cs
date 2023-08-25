@@ -26,6 +26,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Senparc.CO2NET;
 using Senparc.CO2NET.RegisterServices;
+using SSCMS.Configuration;
 using SSCMS.Core.Extensions;
 using SSCMS.Core.Plugins.Extensions;
 using SSCMS.Repositories;
@@ -193,7 +194,7 @@ namespace SSCMS.Web
                         {
                             Name = "SSCMS",
                             Email = string.Empty,
-                            Url = "https://sscms.com"
+                            Url = Constants.OfficialHost
                         };
                         document.Info.License = new NSwag.OpenApiLicense
                         {

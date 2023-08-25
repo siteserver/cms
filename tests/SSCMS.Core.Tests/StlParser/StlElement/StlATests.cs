@@ -7,6 +7,7 @@ using SS.CMS.StlParser.Model;
 using SS.CMS.StlParser.Utility;
 using Xunit;
 using Xunit.Abstractions;
+using SSCMS.Configuration;
 
 namespace SS.CMS.Tests.StlParser.StlElement
 {
@@ -32,7 +33,7 @@ namespace SS.CMS.Tests.StlParser.StlElement
 
             var contextInfo = new ParseContext(pageInfo);
 
-            var template = $@"<stl:a href=""https://sscms.com"">test</stl:a>";
+            var template = $@"<stl:a href=""{Constants.OfficialHost}"">test</stl:a>";
             var builder = new StringBuilder(template);
 
             await StlParserManager.ParseTemplateContentAsync(builder, pageInfo, contextInfo);
