@@ -142,11 +142,11 @@ var methods = {
       $this.permissionInfo = {
         adminId: row.id,
         allRoles: allRoles,
-        allSites: res.allSites,
+        allSites: res.allSites || [],
 
         adminLevel: res.adminLevel,
-        checkedSites: res.checkedSites,
-        checkedRoles: res.checkedRoles,
+        checkedSites: res.checkedSites || [],
+        checkedRoles: res.checkedRoles || [],
         loading: false
       };
 

@@ -549,6 +549,12 @@ var methods = {
   },
 
   handleColumnsChange: function() {
+    var cells = this.$refs.multipleTable.$el.getElementsByClassName('cell');
+    for (var i = 0; i < cells.length; i++) {
+      var cell = cells[i];
+      cell.style.removeProperty("width");
+    }
+
     var listColumns = _.filter(this.columns, function(o) { return o.isList; });
     var attributeNames = _.map(listColumns, function(column) {
       return column.attributeName;
