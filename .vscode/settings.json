@@ -1,0 +1,20 @@
+{
+  "cSpell.words": [
+    "Newtonsoft"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "src\\SSCMS.Web/plugins": true
+  },
+  "explorerExclude.backup": {},
+  "dotnetAcquisitionExtension.installTimeoutValue": 1800,
+  "dotnetAcquisitionExtension.existingDotnetPath": [
+    {"extensionId": "msazurermtools.azurerm-vscode-tools", "path": "C:\\Program Files\\dotnet\\dotnet.exe"}
+  ],
+  "dotnet.defaultSolution": "build.sln"
+}

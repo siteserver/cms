@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+        "type": "npm",
+        "script": "dotnet-build",
+        "group": "build",
+        "problemMatcher": [],
+        "label": "npm: dotnet-build",
+        "detail": "dotnet build build.sln"
+    }
+  ]
+}

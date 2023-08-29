@@ -114,6 +114,9 @@ namespace SSCMS.Core.Utils
             }
             else
             {
+                var wwwrootDirectory = PathUtils.Combine(contentRootPath, "wwwroot");
+                DirectoryUtils.CreateDirectoryIfNotExists(wwwrootDirectory);
+                
                 var filePath = PathUtils.Combine(contentRootPath, Constants.ConfigFileName);
                 if (FileUtils.IsFileExists(filePath))
                 {
