@@ -125,8 +125,8 @@ namespace SSCMS.Core.StlParser.StlElement
 
             pageInfo.HeadCodes[$"{nameof(StlMap)}_{ak}"] = $@"
             <script type=""text/javascript"" src =""https://api.map.baidu.com/api?v=2.0&ak={ak}""></script>
-            <script type=""text/javascript"" src=""http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js""></script>
-            <link rel=""stylesheet"" href=""http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"" />
+            <script type=""text/javascript"" src=""https://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js""></script>
+            <link rel=""stylesheet"" href=""https://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css"" />
             ";
 
             attributes["id"] = id;
