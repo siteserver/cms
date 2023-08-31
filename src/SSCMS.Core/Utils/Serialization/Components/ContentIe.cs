@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core.Collections;
 using SSCMS.Enums;
@@ -410,7 +411,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             return contentIdList;
         }
 
-        public async Task<bool> ExportContentsAsync(Site site, List<Content> contents)
+        public async Task<bool> ExportContentsAsync(Site site, List<Content> contents, List<TableStyle> tableStyles)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var feed = AtomUtility.GetEmptyFeed();
@@ -421,7 +422,7 @@ namespace SSCMS.Core.Utils.Serialization.Components
             {
                 try
                 {
-                    await _pathManager.PutImagePathsAsync(site, content, collection);
+                    await _pathManager.PutFilePathsAsync(site, content, collection, tableStyles);
                 }
                 catch
                 {

@@ -9,6 +9,7 @@ using SSCMS.Core.Utils.Serialization;
 using SSCMS.Models;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -32,6 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var styles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
 
             var contentInfoList = new List<Content>();
             var calculatedContentInfoList = new List<Content>();
@@ -131,7 +133,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     var caching = new CacheUtils(_cacheManager);
                     var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
                     contentInfoList.Reverse();
-                    if (await exportObject.ExportContentsAsync(filePath, contentInfoList))
+                    if (await exportObject.ExportContentsAsync(filePath, contentInfoList, styles))
                     {
                         downloadUrl = _pathManager.GetTemporaryFilesUrl(fileName);
                     }

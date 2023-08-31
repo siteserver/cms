@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils.Serialization.Atom.Atom.Core;
 using SSCMS.Core.Utils.Serialization.Components;
 using SSCMS.Enums;
@@ -330,7 +331,7 @@ namespace SSCMS.Core.Utils.Serialization
             return PathUtils.GetFileName(filePath);
         }
 
-        public async Task<bool> ExportContentsAsync(string filePath, List<Content> contentInfoList)
+        public async Task<bool> ExportContentsAsync(string filePath, List<Content> contentInfoList, List<TableStyle> tableStyles)
         {
             var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
 
@@ -339,7 +340,7 @@ namespace SSCMS.Core.Utils.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
             var contentIe = new ContentIe(_pathManager, _databaseManager, _caching, _site, siteContentDirectoryPath);
-            var isExport = await contentIe.ExportContentsAsync(_site, contentInfoList);
+            var isExport = await contentIe.ExportContentsAsync(_site, contentInfoList, tableStyles);
             if (isExport)
             {
                 _pathManager.CreateZip(filePath, siteContentDirectoryPath);

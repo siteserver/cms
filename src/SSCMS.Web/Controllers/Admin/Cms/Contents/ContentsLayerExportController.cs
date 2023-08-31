@@ -24,8 +24,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerExportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerExportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -34,6 +35,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
+            _tableStyleRepository = tableStyleRepository;
         }
 
         public class GetResult

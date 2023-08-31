@@ -1,6 +1,9 @@
 ﻿using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SSCMS.Models;
+using SSCMS.Configuration;
+using SSCMS.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Services
 {
@@ -16,6 +19,6 @@ namespace SSCMS.Services
 
         Task<string> DecodeTextEditorAsync(Site site, string content, bool isLocal);
 
-        Task PutImagePathsAsync(Site site, Content content, NameValueCollection collection);
+        Task PutFilePathsAsync(Site site, Content content, NameValueCollection collection, List<TableStyle> tableStyles);
     }
 }
