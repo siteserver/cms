@@ -16,5 +16,22 @@
   "dotnetAcquisitionExtension.existingDotnetPath": [
     {"extensionId": "msazurermtools.azurerm-vscode-tools", "path": "C:\\Program Files\\dotnet\\dotnet.exe"}
   ],
-  "dotnet.defaultSolution": "build.sln"
+  "dotnet.defaultSolution": "build.sln",
+
+  "editor.tabSize": 4,
+  "[csharp]": {
+    "editor.tabSize": 4
+  },
+  "[html]": {
+    "editor.tabSize": 2
+  },
+  "[javascript]": {
+    "editor.tabSize": 2
+  },
+  "[json]": {
+    "editor.tabSize": 2
+  },
+
+  // This one forces the tab to be **space**
+  "editor.insertSpaces": true
 }

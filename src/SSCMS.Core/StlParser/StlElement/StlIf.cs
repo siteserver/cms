@@ -88,6 +88,7 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypeLastModifiedDate = "LastModifiedDate";			                  //最后编辑时间（仅用于判断内容）
         private const string TypeItemIndex = "ItemIndex";			                                //当前项序号
         private const string TypeOddItem = "OddItem";			                                    //奇数项
+        private const string TypeFirst = "First";			                                        //第一项
 
         private const string OperateEmpty = "Empty";
         private const string OperateNotEmpty = "NotEmpty";			                              //值不为空
@@ -337,6 +338,11 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var itemIndex = StlParserUtility.GetItemIndex(contextInfo);
                 isSuccess = itemIndex % 2 == 1;
+            }
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeFirst))
+            {
+                var itemIndex = StlParserUtility.GetItemIndex(contextInfo);
+                isSuccess = itemIndex == 1;
             }
             else
             {
