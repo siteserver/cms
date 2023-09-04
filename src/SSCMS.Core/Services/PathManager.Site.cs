@@ -518,7 +518,7 @@ namespace SSCMS.Core.Services
                 else if (linkType == LinkType.LinkToFirstContent)
                 {
                     url = PageUtils.UnClickableUrl;
-                    var count = await _contentRepository.GetCountAsync(site, channel);
+                    var count = await _contentRepository.GetCountOfCheckedAsync(site, channel);
                     if (count >= 1)
                     {
                         var tableName = _channelRepository.GetTableName(site, channel);
@@ -528,7 +528,7 @@ namespace SSCMS.Core.Services
                 }
                 else if (linkType == LinkType.LinkToOnlyOneContent)
                 {
-                    var count = await _contentRepository.GetCountAsync(site, channel);
+                    var count = await _contentRepository.GetCountOfCheckedAsync(site, channel);
                     if (count == 1)
                     {
                         var tableName = _channelRepository.GetTableName(site, channel);

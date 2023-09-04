@@ -87,27 +87,6 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int adminId)
-        {
-            var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId, channelId, scope);
-            return await GetCountOfContentUpdateAsync(tableName, siteId, channelIdList, begin, end, adminId);
-        }
-
-        private async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, int adminId)
-        {
-            var repository = await GetRepositoryAsync(tableName);
-            var query = Q.Where(nameof(Content.SiteId), siteId);
-            query.WhereIn(nameof(Content.ChannelId), channelIdList);
-            query.WhereBetween(nameof(Content.LastModifiedDate), begin, end.AddDays(1));
-            query.WhereRaw($"{nameof(Content.LastModifiedDate)} != {nameof(Content.AddDate)}");
-            if (adminId > 0)
-            {
-                query.Where(nameof(Content.AdminId), adminId);
-            }
-
-            return await repository.CountAsync(query);
-        }
-
         public async Task<List<int>> GetContentIdsBySameTitleAsync(Site site, Channel channel, string title)
         {
             var repository = await GetRepositoryAsync(site, channel);
@@ -118,42 +97,10 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int adminId, bool? checkedState)
-        {
-            var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId, channelId, scope);
-            return await GetCountOfContentAddAsync(tableName, siteId, channelIdList, begin, end, adminId, checkedState);
-        }
-
-        private async Task<int> GetCountOfContentAddAsync(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, int adminId, bool? checkedState)
-        {
-            var repository = await GetRepositoryAsync(tableName);
-
-            var query = Q.Where(nameof(Content.SiteId), siteId);
-            query.WhereIn(nameof(Content.ChannelId), channelIdList);
-            query.WhereBetween(nameof(Content.AddDate), begin, end.AddDays(1));
-            if (adminId > 0)
-            {
-                query.Where(nameof(Content.AdminId), adminId);
-            }
-
-            if (checkedState.HasValue)
-            {
-                query.Where(nameof(Content.Checked), TranslateUtils.ToBool(checkedState.ToString()));
-            }
-
-            return await repository.CountAsync(query);
-        }
-
         public async Task<List<ContentSummary>> GetSummariesAsync(string tableName, Query query)
         {
             var repository = await GetRepositoryAsync(tableName);
             return await repository.GetAllAsync<ContentSummary>(query);
-        }
-
-        public async Task<int> GetCountAsync(string tableName, Query query)
-        {
-            var repository = await GetRepositoryAsync(tableName);
-            return await repository.CountAsync(query);
         }
 
         public async Task<Query> GetQueryByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)

@@ -180,7 +180,7 @@ namespace SSCMS.Core.Services
 
                 if (channelInfo != null)
                 {
-                    var count = await _contentRepository.GetCountAsync(site, channelInfo);
+                    var count = await _contentRepository.GetCountOfCheckedAsync(site, channelInfo);
                     if (count > 0)
                     {
                         pageCount = count;

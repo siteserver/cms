@@ -88,7 +88,7 @@ namespace SSCMS.Core.Services
             var site = await _siteRepository.GetAsync(siteId);
             var channel = await _channelRepository.GetAsync(channelId);
 
-            var count = await _contentRepository.GetCountAsync(site, channel);
+            var count = await _contentRepository.GetCountOfCheckedAsync(site, channel);
             if (!_channelRepository.IsCreatable(site, channel, count)) return;
 
             var template = channelId == siteId

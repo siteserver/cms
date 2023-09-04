@@ -399,16 +399,6 @@ namespace SSCMS.Core.Repositories
             return dataset;
         }
 
-        public async Task<int> GetCountCheckedImageAsync(Site site, Channel channel)
-        {
-            var repository = await GetRepositoryAsync(site, channel);
-
-            return await repository.CountAsync(GetQuery(site.Id, channel.Id)
-                       .WhereTrue(nameof(Content.Checked))
-                       .WhereNotNullOrEmpty(nameof(Content.ImageUrl))
-                   );
-        }
-
         public async Task RemoveListCacheAsync(Site site, Channel channel)
         {
             if (site == null || channel == null) return;

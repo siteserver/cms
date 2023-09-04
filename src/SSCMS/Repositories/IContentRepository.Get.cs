@@ -18,17 +18,9 @@ namespace SSCMS.Repositories
 
         Task<int> GetFirstContentIdAsync(Site site, IChannelSummary channel);
 
-        Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope,
-            DateTime begin, DateTime end, int adminId);
-
         Task<List<int>> GetContentIdsBySameTitleAsync(Site site, Channel channel, string title);
 
-        Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, ScopeType scope,
-            DateTime begin, DateTime end, int adminId, bool? checkedState);
-
         Task<List<ContentSummary>> GetSummariesAsync(string tableName, Query query);
-
-        Task<int> GetCountAsync(string tableName, Query query);
 
         Task<Query> GetQueryByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds,
             string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute,

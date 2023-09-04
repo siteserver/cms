@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using SqlKata;
 using SSCMS.Enums;
 using SSCMS.Models;
 
@@ -12,8 +14,6 @@ namespace SSCMS.Repositories
         Task CacheAllListAndCountAsync(Site site, List<ChannelSummary> channelSummaries);
 
         Task CacheAllEntityAsync(Site site, List<ChannelSummary> channelSummaries);
-
-        Task<int> GetCountAsync(Site site, IChannelSummary channel);
 
         Task<Content> GetAsync(int siteId, int channelId, int contentId);
 

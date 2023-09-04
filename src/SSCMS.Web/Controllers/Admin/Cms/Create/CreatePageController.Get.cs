@@ -44,7 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 allChannelIds.Add(summary.Id);
-                var count = await _contentRepository.GetCountAsync(site, summary);
+                var count = await _contentRepository.GetCountOfCheckedAsync(site, summary);
                 var entity = await _channelRepository.GetAsync(summary.Id);
                 return new
                 {

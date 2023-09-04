@@ -25,8 +25,6 @@ namespace SSCMS.Repositories
 
         Task<int> GetSequenceAsync(string tableName, int siteId, int channelId, int contentId);
 
-        Task<int> GetCountCheckedImageAsync(Site site, Channel channel);
-
         Task RemoveListCacheAsync(Site site, Channel channel);
     }
 }

@@ -89,12 +89,6 @@ namespace SSCMS.Core.Repositories
             }
         }
 
-        public async Task<int> GetCountAsync(Site site, IChannelSummary channel)
-        {
-            var summaries = await GetSummariesAsync(site, channel);
-            return summaries.Count;
-        }
-
         private async Task<Content> GetAsync(string tableName, int contentId)
         {
             if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;

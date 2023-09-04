@@ -937,12 +937,12 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(StlParserUtility.Contents, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfContents, testTypeStr))
             {
-                var count = await databaseManager.ContentRepository.GetCountAsync(pageInfo.Site, channel);
+                var count = await databaseManager.ContentRepository.GetCountOfCheckedAsync(pageInfo.Site, channel);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(StlParserUtility.ImageContents, testTypeStr) || StringUtils.EqualsIgnoreCase(StlParserUtility.CountOfImageContents, testTypeStr))
             {
-                var count = await databaseManager.ContentRepository.GetCountCheckedImageAsync(pageInfo.Site, channel);
+                var count = await databaseManager.ContentRepository.GetCountOfCheckedImagesAsync(pageInfo.Site, channel);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(nameof(Channel.LinkUrl), testTypeStr))

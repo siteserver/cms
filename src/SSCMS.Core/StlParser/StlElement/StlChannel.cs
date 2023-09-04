@@ -551,12 +551,12 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.Contents) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfContents))
             {
-                var count = await databaseManager.ContentRepository.GetCountAsync(pageInfo.Site, channel);
+                var count = await databaseManager.ContentRepository.GetCountOfCheckedAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(type, StlParserUtility.ImageContents) || StringUtils.EqualsIgnoreCase(type, StlParserUtility.CountOfImageContents))
             { 
-                var count = await databaseManager.ContentRepository.GetCountCheckedImageAsync(pageInfo.Site, channel);
+                var count = await databaseManager.ContentRepository.GetCountOfCheckedImagesAsync(pageInfo.Site, channel);
                 parsedContent = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(type, "Images"))
