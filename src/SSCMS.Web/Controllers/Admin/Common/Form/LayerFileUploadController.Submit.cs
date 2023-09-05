@@ -18,8 +18,9 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Files);
 
             var result = new List<SubmitResult>();
-            foreach (var filePath in request.FilePaths)
+            foreach (var path in request.FilePaths)
             {
+                var filePath = await _pathManager.ParseSitePathAsync(site, path);
                 if (string.IsNullOrEmpty(filePath)) continue;
 
                 var fileName = PathUtils.GetFileName(filePath);

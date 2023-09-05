@@ -71,6 +71,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     return this.Error(Constants.ErrorImageSizeAllowed);
                 }
             }
+            else
+            {
+                return this.Error(Constants.ErrorUpload);
+            }
 
             var directoryPath = await _pathManager.GetSitePathAsync(site, directories);
             var filePath = PathUtils.Combine(directoryPath, fileName);
