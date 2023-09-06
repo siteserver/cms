@@ -70,7 +70,10 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "动态请求失败后执行的JS代码")]
         private const string OnError = nameof(OnError);
 
-        public const string TypeIsUserLoggin = "IsUserLoggin";                                //用户是否已登录
+        public const string TypeIsUserLoggin = "IsUserLoggin";
+        public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";
+        public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";
+        public const string TypeUserGroup = "UserGroup";
         private const string TypeChannelName = "ChannelName";			                            //栏目名称
         private const string TypeChannelIndex = "ChannelIndex";			                          //栏目索引
         private const string TypeTemplateName = "TemplateName";			                          //模板名称
@@ -251,7 +254,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 no = attributeNo;
             }
 
-            if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin))
+            if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) 
+                || StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) 
+                || StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin) 
+                || StringUtils.EqualsIgnoreCase(testType, TypeUserGroup))
             {
                 return await ParseDynamicAsync(parseManager, testType, testValue, testOperate,
                     yes, no, onBeforeSend, onSuccess, onComplete, onError);

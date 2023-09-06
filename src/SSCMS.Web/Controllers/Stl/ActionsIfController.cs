@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Repositories;
 using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Stl
@@ -12,12 +13,14 @@ namespace SSCMS.Web.Controllers.Stl
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IParseManager _parseManager;
+        private readonly IUserGroupRepository _userGroupRepository;
 
-        public ActionsIfController(ISettingsManager settingsManager, IAuthManager authManager, IParseManager parseManager)
+        public ActionsIfController(ISettingsManager settingsManager, IAuthManager authManager, IParseManager parseManager, IUserGroupRepository userGroupRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _parseManager = parseManager;
+            _userGroupRepository = userGroupRepository;
         }
 
         public class GetRequest

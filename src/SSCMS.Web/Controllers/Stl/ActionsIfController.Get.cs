@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.StlParser.Models;
@@ -25,6 +26,26 @@ namespace SSCMS.Web.Controllers.Stl
                 if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserLoggin))
                 {
                     isSuccess = _authManager.IsUser;
+                }
+                else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeUserGroup))
+                {
+                    if (user != null)
+                    {
+                        var groups = await _userGroupRepository.GetUserGroupsAsync();
+                        var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
+                        if (group != null)
+                        {
+                            isSuccess = group.GroupName == ifInfo.Value;
+                        }
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))
+                {
+                    isSuccess = _authManager.IsAdmin;
+                }
+                else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsUserOrAdministratorLoggin))
+                {
+                    isSuccess = _authManager.IsUser || _authManager.IsAdmin;
                 }
 
                 var template = isSuccess ? dynamicInfo.YesTemplate : dynamicInfo.NoTemplate;
