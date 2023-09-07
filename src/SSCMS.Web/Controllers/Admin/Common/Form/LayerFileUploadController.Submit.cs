@@ -20,7 +20,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var result = new List<SubmitResult>();
             foreach (var path in request.FilePaths)
             {
-                var filePath = await _pathManager.ParseSitePathAsync(site, path);
+                // var filePath = await _pathManager.ParseSitePathAsync(site, path);
+                var filePath = _pathManager.ParsePath(path);
                 if (string.IsNullOrEmpty(filePath)) continue;
 
                 var fileName = PathUtils.GetFileName(filePath);

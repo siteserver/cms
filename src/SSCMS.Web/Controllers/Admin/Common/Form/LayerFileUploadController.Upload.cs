@@ -36,12 +36,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             await _pathManager.UploadAsync(file, filePath);
-            var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
+            // var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
+            var rootUrl = _pathManager.GetRootUrlByPath(filePath);
 
             return new UploadResult
             {
                 Name = localFileName,
-                Path = virtualUrl
+                Path = rootUrl
             };
         }
     }

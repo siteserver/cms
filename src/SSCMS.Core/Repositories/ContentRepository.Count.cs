@@ -24,6 +24,16 @@ namespace SSCMS.Core.Repositories
             return summaries.Where(x => x.Checked).ToList().Count;
         }
 
+        public async Task<int> GetCountCheckedImageAsync(Site site, Channel channel)
+        {
+            var repository = await GetRepositoryAsync(site, channel);
+
+            return await repository.CountAsync(GetQuery(site.Id, channel.Id)
+                       .WhereTrue(nameof(Content.Checked))
+                       .WhereNotNullOrEmpty(nameof(Content.ImageUrl))
+                   );
+        }
+
         public async Task<int> GetCountOfCheckedImagesAsync(Site site, IChannelSummary channel)
         {
             var repository = await GetRepositoryAsync(site, channel);

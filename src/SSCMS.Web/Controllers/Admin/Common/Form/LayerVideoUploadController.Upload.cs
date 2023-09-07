@@ -37,11 +37,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var filePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
             await _pathManager.UploadAsync(file, filePath);
+            var rootUrl = _pathManager.GetRootUrlByPath(filePath);
 
             return new UploadResult
             {
                 Name = localFileName,
-                Path = filePath
+                Path = rootUrl
             };
         }
     }

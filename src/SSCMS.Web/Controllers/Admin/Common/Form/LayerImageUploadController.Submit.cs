@@ -22,10 +22,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
 
                 var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Images);
 
-                foreach (var filePath in request.FilePaths)
+                foreach (var path in request.FilePaths)
                 {
-                    if (string.IsNullOrEmpty(filePath)) continue;
+                    if (string.IsNullOrEmpty(path)) continue;
 
+                    var filePath = _pathManager.ParsePath(path);
                     var fileName = PathUtils.GetFileName(filePath);
 
                     var fileExtName = StringUtils.ToLower(PathUtils.GetExtension(filePath));
