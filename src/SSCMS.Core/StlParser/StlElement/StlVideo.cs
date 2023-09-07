@@ -252,11 +252,11 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             attributes["data-setup"] = "{}";
 
-            // 如果是实体标签，则只返回url
-            if (contextInfo.IsStlEntity)
-            {
-                return videoUrl;
-            }
+            // 如果是实体标签，则只返回url {Content.Body}情况
+            // if (contextInfo.IsStlEntity)
+            // {
+            //     return videoUrl;
+            // }
 
             return $@"
             <style>{styles}</style>
