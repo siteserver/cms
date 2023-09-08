@@ -70,7 +70,7 @@ var methods = {
     var width = this.form.isWidth ? ' width="' + this.form.width + '"' : '';
     var height = this.form.isHeight ? ' height="' + this.form.height + '"' : '';
 
-    parent.$vue.insertEditor($this.attributeName, '<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px"' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" /><br/>');
+    parent.$vue.insertHtml('<img src="/sitefiles/assets/images/video-clip.png" style="width: 333px; height: 333px"' + imageUrl + isAutoPlay + width + height + ' playUrl="' + this.form.videoUrl + '" class="siteserver-stl-player" /><br/>');
     utils.closeLayer();
   },
 

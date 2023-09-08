@@ -28,12 +28,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
                 return this.Error(errorMessage);
             }
 
+            var rootUrl = _pathManager.GetRootUrlByPath(filePath);
             var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
 
             return new UploadResult
             {
                 Name = fileName,
-                Path = filePath,
+                Path = rootUrl,
                 Url = imageUrl
             };
         }

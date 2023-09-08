@@ -43,7 +43,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             return new UploadResult
             {
                 Name = fileName,
-                Path = filePath,
                 Url = imageUrl
             };
         }

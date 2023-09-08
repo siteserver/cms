@@ -50,7 +50,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             return new UploadResult
             {
                 Name = fileName,
-                Path = filePath,
                 Url = virtualUrl
             };
         }
