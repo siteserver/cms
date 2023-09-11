@@ -63,7 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                             DisplayName = displayName,
                             Mobile = mobile,
                             Email = email
-                        }, password, string.Empty);
+                        }, password, true, string.Empty);
                         if (user == null)
                         {
                             failure++;

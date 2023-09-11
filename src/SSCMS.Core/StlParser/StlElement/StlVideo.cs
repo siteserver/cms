@@ -203,14 +203,38 @@ namespace SSCMS.Core.StlParser.StlElement
 
             attributes["class"] = "video-js vjs-big-play-centered" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
 
-            var innerHtml = string.Empty;
-            if (FileUtils.IsFileType(FileType.Mp4, PageUtils.GetExtensionFromUrl(videoUrl)))
+            // https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Containers#browser_compatibility
+            var extName = StringUtils.ToLower(PageUtils.GetExtensionFromUrl(videoUrl, false));
+            var mimeType = string.Empty;
+            if (extName == "3gp")
             {
-                innerHtml = @$"<source src=""{videoUrl}"" type=""video/mp4"" />";
+                mimeType = "3gpp";
             }
-            else if (FileUtils.IsFileType(FileType.Webm, PageUtils.GetExtensionFromUrl(videoUrl)))
+            else if (extName == "mpg" || extName == "mpeg")
             {
-                innerHtml = @$"<source src=""{videoUrl}"" type=""video/webm"" />";
+                mimeType = "mpeg";
+            }
+            else if (extName == "mp4" || extName == "m4v" || extName == "m4p")
+            {
+                mimeType = "mp4";
+            }
+            else if (extName == "ogv" || extName == "ogg")
+            {
+                mimeType = "ogg";
+            }
+            else if (extName == "mov")
+            {
+                mimeType = "quicktime";
+            }
+            else if (extName == "webm")
+            {
+                mimeType = "webm";
+            }
+
+            var innerHtml = string.Empty;
+            if (!string.IsNullOrEmpty(mimeType))
+            {
+                innerHtml = @$"<source src=""{videoUrl}"" type=""video/{mimeType}"" />";
             }
             else
             {

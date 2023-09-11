@@ -256,9 +256,10 @@ var methods = {
     this.pageType = 'submit';
   },
 
-  btnCreateLocalClick: function (localDirectoryName) {
+  btnCreateLocalClick: function (localDirectoryName, siteTemplateName) {
     this.form.createType = 'local';
     this.form.localDirectoryName = localDirectoryName;
+    this.form.siteName = siteTemplateName;
     this.pageType = 'submit';
   },
 

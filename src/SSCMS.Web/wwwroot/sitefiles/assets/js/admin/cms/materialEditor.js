@@ -63,6 +63,12 @@ var methods = {
     this.insertHtml(html);
   },
 
+  insertEditor: function (attributeName, html) {
+    if (!attributeName) attributeName = "Body";
+    if (!html) return;
+    utils.getEditor(attributeName).execCommand("insertHTML", html);
+  },
+
   insertHtml: function(html) {
     if (!html) return;
     this.editor.execCommand('insertHTML', html);

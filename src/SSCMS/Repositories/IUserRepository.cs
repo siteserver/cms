@@ -9,7 +9,7 @@ namespace SSCMS.Repositories
 {
     public partial interface IUserRepository : IRepository
     {
-        Task<(User user, string errorMessage)> InsertAsync(User user, string password, string ipAddress);
+        Task<(User user, string errorMessage)> InsertAsync(User user, string password, bool isChecked, string ipAddress);
 
         Task<int> InsertWithoutValidationAsync(User user, string password);
 

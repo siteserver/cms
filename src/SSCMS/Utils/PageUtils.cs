@@ -278,7 +278,7 @@ namespace SSCMS.Utils
             return fileName;
         }
 
-        public static string GetExtensionFromUrl(string rawUrl)
+        public static string GetExtensionFromUrl(string rawUrl, bool includeDot = true)
         {
             var extension = string.Empty;
             if (!string.IsNullOrEmpty(rawUrl))
@@ -293,6 +293,10 @@ namespace SSCMS.Utils
                     {
                         extension = rawUrl.Substring(rawUrl.LastIndexOf('.'));
                     }
+                }
+                if (!includeDot)
+                {
+                    extension = StringUtils.Trim(extension, '.');
                 }
             }
             return extension;

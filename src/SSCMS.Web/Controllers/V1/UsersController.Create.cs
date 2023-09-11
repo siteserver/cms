@@ -21,7 +21,12 @@ namespace SSCMS.Web.Controllers.V1
             }
             var password = request.Password;
 
-            var (user, errorMessage) = await _userRepository.InsertAsync(request, password, string.Empty);
+            if (!config.IsUserRegistrationAllowed)
+            {
+                return this.Error("对不起，系统已禁止新用户注册！");
+            }
+
+            var (user, errorMessage) = await _userRepository.InsertAsync(request, password, config.IsUserRegistrationChecked, PageUtils.GetIpAddress(Request));
             if (user == null)
             {
                 return this.Error(errorMessage);

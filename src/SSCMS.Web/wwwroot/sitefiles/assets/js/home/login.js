@@ -12,6 +12,7 @@ var data = utils.init({
   homeTitle: null,
   isSmsEnabled: false,
   isUserCaptchaDisabled: false,
+  isUserRegistrationAllowed: true,
   countdown: 0,
   form: {
     type: 'account',
@@ -49,6 +50,7 @@ var methods = {
       } else {
         $this.apiCaptcha();
       }
+      $this.isUserRegistrationAllowed = res.isUserRegistrationAllowed;
     }).catch(function (error) {
       utils.notifyError(error);
     }).then(function () {

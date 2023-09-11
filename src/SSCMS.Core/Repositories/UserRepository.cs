@@ -103,15 +103,15 @@ namespace SSCMS.Core.Repositories
             return (entity, string.Empty);
         }
 
-        public async Task<(User user, string errorMessage)> InsertAsync(User user, string password, string ipAddress)
+        public async Task<(User user, string errorMessage)> InsertAsync(User user, string password, bool isChecked, string ipAddress)
         {
-            var config = await _configRepository.GetAsync();
-            if (!config.IsUserRegistrationAllowed)
-            {
-                return (null, "对不起，系统已禁止新用户注册！");
-            }
+            // var config = await _configRepository.GetAsync();
+            // if (!config.IsUserRegistrationAllowed)
+            // {
+            //     return (null, "对不起，系统已禁止新用户注册！");
+            // }
 
-            user.Checked = config.IsUserRegistrationChecked;
+            user.Checked = isChecked;
             if (StringUtils.IsMobile(user.UserName) && string.IsNullOrEmpty(user.Mobile))
             {
                 user.Mobile = user.UserName;

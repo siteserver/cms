@@ -107,7 +107,7 @@
     <div style="margin: 10px 0;">
       <el-button type="primary" style="width: 100%" v-on:click="btnSubmitClick">登 录</el-button>
     </div>
-    <div>
+    <div v-if="isUserRegistrationAllowed">
       <el-button type="default" style="width: 100%" v-on:click="btnRegisterClick">注 册</el-button>
     </div>
 

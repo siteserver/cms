@@ -28,7 +28,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                     }
                 }
 
-                var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, string.Empty);
+                var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, true, string.Empty);
                 if (user == null)
                 {
                     return this.Error($"用户添加失败：{errorMessage}");

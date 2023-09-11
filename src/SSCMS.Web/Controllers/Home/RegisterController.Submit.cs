@@ -25,7 +25,12 @@ namespace SSCMS.Web.Controllers.Home
                 request.MobileVerified = true;
             }
 
-            var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, PageUtils.GetIpAddress(Request));
+            if (!config.IsUserRegistrationAllowed)
+            {
+                return this.Error("对不起，系统已禁止新用户注册！");
+            }
+
+            var (user, errorMessage) = await _userRepository.InsertAsync(request, request.Password, config.IsUserRegistrationChecked, PageUtils.GetIpAddress(Request));
             if (user == null)
             {
                 return this.Error($"用户注册失败：{errorMessage}");

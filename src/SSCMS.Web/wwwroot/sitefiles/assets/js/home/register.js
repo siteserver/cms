@@ -97,7 +97,8 @@ var methods = {
 
       $this.apiCaptchaReload();
     }).catch(function (error) {
-      utils.notifyError(error, {redirect: true});
+      var message = utils.getErrorMessage(error);
+      utils.error(message, {redirect: true});
     }).then(function () {
       utils.loading($this, false);
     });

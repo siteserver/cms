@@ -43,6 +43,7 @@ namespace SSCMS.Web.Controllers.Home
             public string HomeTitle { get; set; }
             public bool IsSmsEnabled { get; set; }
             public bool IsUserCaptchaDisabled { get; set; }
+            public bool IsUserRegistrationAllowed { get; set; }
         }
 
         public class CheckRequest

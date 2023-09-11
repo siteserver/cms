@@ -14,13 +14,13 @@ namespace SSCMS.Web.Controllers.Home
 
             var smsSettings = await _smsManager.GetSmsSettingsAsync();
             var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;
-            var isUserCaptchaDisabled = config.IsUserCaptchaDisabled;
 
             return new GetResult
             {
                 HomeTitle = config.HomeTitle,
                 IsSmsEnabled = isSmsEnabled,
-                IsUserCaptchaDisabled = isUserCaptchaDisabled,
+                IsUserCaptchaDisabled = config.IsUserCaptchaDisabled,
+                IsUserRegistrationAllowed = config.IsUserRegistrationAllowed
             };
         }
     }
