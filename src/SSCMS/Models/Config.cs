@@ -41,6 +41,7 @@ namespace SSCMS.Models
         public bool IsUserRegistrationMobile { get; set; }
         public bool IsUserRegistrationEmail { get; set; }
         public bool IsUserRegistrationGroup { get; set; }
+        public bool IsUserRegistrationDisplayName { get; set; }
         public bool IsUserRegistrationChecked { get; set; } = true;
         public bool IsUserUnRegistrationAllowed { get; set; } = true;
         public bool IsUserForceVerifyMobile { get; set; }

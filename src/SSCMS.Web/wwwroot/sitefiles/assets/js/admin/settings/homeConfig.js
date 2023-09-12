@@ -21,6 +21,7 @@ var data = utils.init({
     isUserRegistrationMobile: null,
     isUserRegistrationEmail: null,
     isUserRegistrationGroup: null,
+    isUserRegistrationDisplayName: null,
     isHomeAgreement: null,
     homeAgreementHtml: null,
     homeWelcomeHtml: null,
@@ -48,6 +49,7 @@ var methods = {
       $this.form.isUserRegistrationMobile = res.config.isUserRegistrationMobile;
       $this.form.isUserRegistrationEmail = res.config.isUserRegistrationEmail;
       $this.form.isUserRegistrationGroup = res.config.isUserRegistrationGroup;
+      $this.form.isUserRegistrationDisplayName = res.config.isUserRegistrationDisplayName;
       $this.form.isHomeAgreement = res.config.isHomeAgreement;
       $this.form.homeAgreementHtml = res.config.homeAgreementHtml;
       $this.form.homeWelcomeHtml = res.homeWelcomeHtml || '欢迎使用用户中心';
@@ -80,6 +82,7 @@ var methods = {
       isUserRegistrationMobile: this.form.isUserRegistrationMobile,
       isUserRegistrationEmail: this.form.isUserRegistrationEmail,
       isUserRegistrationGroup: this.form.isUserRegistrationGroup,
+      isUserRegistrationDisplayName: this.form.isUserRegistrationDisplayName,
       isHomeAgreement: this.form.isHomeAgreement,
       homeAgreementHtml: this.form.homeAgreementHtml,
       homeWelcomeHtml: this.form.homeWelcomeHtml

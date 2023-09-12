@@ -11,6 +11,7 @@ var data = utils.init({
   isUserRegistrationMobile: null,
   isUserRegistrationEmail: null,
   isUserRegistrationGroup: null,
+  isUserRegistrationDisplayName: null,
   isUserCaptchaDisabled: false,
   isHomeAgreement: null,
   homeAgreementHtml: null,
@@ -83,6 +84,7 @@ var methods = {
       $this.isUserRegistrationMobile = res.isUserRegistrationMobile;
       $this.isUserRegistrationEmail = res.isUserRegistrationEmail;
       $this.isUserRegistrationGroup = res.isUserRegistrationGroup;
+      $this.isUserRegistrationDisplayName = res.isUserRegistrationDisplayName;
       $this.isUserCaptchaDisabled = res.isUserCaptchaDisabled;
       $this.isHomeAgreement = res.isHomeAgreement;
       $this.homeAgreementHtml = res.homeAgreementHtml;

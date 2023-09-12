@@ -57,9 +57,11 @@
     <el-form-item label="用户注册表单字段">
       <el-checkbox label="用户名" checked disabled></el-checkbox>
       <el-checkbox label="密码" checked disabled></el-checkbox>
+      <el-checkbox label="姓名" v-model="form.isUserRegistrationDisplayName"></el-checkbox>
       <el-checkbox label="手机号码" v-model="form.isUserRegistrationMobile"></el-checkbox>
       <el-checkbox label="电子邮箱" v-model="form.isUserRegistrationEmail"></el-checkbox>
       <el-checkbox label="用户组" v-model="form.isUserRegistrationGroup"></el-checkbox>
+      
       <el-checkbox-group v-model="form.userRegistrationAttributes">
         <el-checkbox v-for="style in styles" :key="style.attributeName" :label="style.attributeName">{{style.displayName}}</el-checkbox>
       </el-checkbox-group>

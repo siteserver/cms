@@ -26,6 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
             config.IsUserRegistrationMobile = request.IsUserRegistrationMobile;
             config.IsUserRegistrationEmail = request.IsUserRegistrationEmail;
             config.IsUserRegistrationGroup = request.IsUserRegistrationGroup;
+            config.IsUserRegistrationDisplayName = request.IsUserRegistrationDisplayName;
             config.IsHomeAgreement = request.IsHomeAgreement;
             config.HomeAgreementHtml = request.HomeAgreementHtml;
             config.HomeWelcomeHtml = request.HomeWelcomeHtml;
