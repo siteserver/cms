@@ -48,7 +48,9 @@
   </el-form-item>
   <el-form-item v-if="form.exportType === 'excel' && !form.isAllColumns" label="自定义字段">
     <el-checkbox-group v-model="form.columnNames">
-      <el-checkbox v-for="column in columns" :key="column.attributeName" :label="column.displayName" :value="column.attributeName"></el-checkbox>
+      <el-checkbox v-for="column in columns" :key="column.attributeName" :label="column.attributeName">
+        {{column.displayName}}
+      </el-checkbox>
     </el-checkbox-group>
   </el-form-item>
 </el-form>

@@ -143,8 +143,11 @@ namespace SSCMS.Core.Repositories
                 foreach (var theChannelId in ListUtils.GetIntList(channelIds))
                 {
                     var theChannel = await _channelRepository.GetAsync(theChannelId);
-                    channelIdList.AddRange(
-                        await _channelRepository.GetChannelIdsAsync(theChannel.SiteId, theChannel.Id, ScopeType.All));
+                    if (theChannel != null)
+                    {
+                        var theChannelIds = await _channelRepository.GetChannelIdsAsync(theChannel.SiteId, theChannel.Id, ScopeType.All);
+                        channelIdList.AddRange(theChannelIds);
+                    }
                 }
 
                 if (channelIdList.Count == 1)
