@@ -33,7 +33,7 @@ namespace SSCMS.Core.Tests.Repositories
 
             var userInfo = new User();
             string errorMessage;
-            var (entity, _) = await _userRepository.InsertAsync(userInfo, "admin888", string.Empty);
+            var (entity, _) = await _userRepository.InsertAsync(userInfo, "admin888", true, string.Empty);
 
             Assert.Null(entity);
 
@@ -42,7 +42,7 @@ namespace SSCMS.Core.Tests.Repositories
                 UserName = TestUserName
             };
 
-            (entity, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest", string.Empty);
+            (entity, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest", true, string.Empty);
             _output.WriteLine(errorMessage);
 
             Assert.Null(entity);
@@ -52,7 +52,7 @@ namespace SSCMS.Core.Tests.Repositories
                 UserName = TestUserName
             };
 
-            (entity, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest@2", string.Empty);
+            (entity, errorMessage) = await _userRepository.InsertAsync(userInfo, "InsertTest@2", true, string.Empty);
             if (entity == null)
             {
                 _output.WriteLine(errorMessage);

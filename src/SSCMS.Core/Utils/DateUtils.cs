@@ -177,6 +177,51 @@ namespace SSCMS.Core.Utils
             return hours;
         }
 
+        public static bool IsSinceMinutes(string since)
+        {
+            if (string.IsNullOrWhiteSpace(since)) return false;
+            if (StringUtils.IsNumber(since)
+            || since.EndsWith("y")
+            || since.EndsWith("m")
+            || since.EndsWith("d")
+            || since.EndsWith("h"))
+            {
+                var minutes = GetSinceMinutes(since);
+                return minutes > 0;
+            }
+            return false;
+        }
+
+        public static int GetSinceMinutes(string intWithUnitString)
+        {
+            var minutes = 0;
+            if (!string.IsNullOrEmpty(intWithUnitString))
+            {
+                intWithUnitString = StringUtils.TrimAndToLower(intWithUnitString);
+                if (intWithUnitString.EndsWith("y"))
+                {
+                    minutes = 8760 * 60 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('y'));
+                }
+                else if (intWithUnitString.EndsWith("m"))
+                {
+                    minutes = 720 * 60 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('m'));
+                }
+                else if (intWithUnitString.EndsWith("d"))
+                {
+                    minutes = 24 * 60 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('d'));
+                }
+                else if (intWithUnitString.EndsWith("h"))
+                {
+                    minutes = 60 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('h'));
+                }
+                else
+                {
+                    minutes = TranslateUtils.ToInt(intWithUnitString);
+                }
+            }
+            return minutes;
+        }
+
         public static string Format(DateTimeOffset? offset, string formatString)
         {
             return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;

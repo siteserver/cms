@@ -9,6 +9,7 @@ using Quartz;
 using Quartz.Impl;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -148,12 +149,29 @@ namespace SSCMS.Cli
                     .WithIdentity("job1", "group1")
                     .Build();
 
-                var trigger = TriggerBuilder.Create()
+                ITrigger trigger;
+
+                if (DateUtils.IsSinceMinutes(_repeat))
+                {
+                    var minutes = DateUtils.GetSinceMinutes(_repeat);
+                    trigger = TriggerBuilder.Create()
+                    .WithIdentity("trigger1", "group1")
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInMinutes(minutes)
+                        .RepeatForever())
+                    .WithPriority(1)
+                    .Build();
+                }
+                else
+                {
+                    trigger = TriggerBuilder.Create()
                     .WithIdentity("trigger1", "group1")
                     .StartNow()
                     .WithCronSchedule(_repeat)
                     .WithPriority(1)
                     .Build();
+                }
 
                 await scheduler.ScheduleJob(job, trigger);
                 await Task.Delay(-1);
