@@ -33,7 +33,7 @@ namespace SSCMS.Core.Services
                 {
                     os = "win";
                 }
-                else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     os = "osx";
                 }
@@ -122,6 +122,24 @@ namespace SSCMS.Core.Services
 
             InstallUtils.SaveSettings(ContentRootPath, isProtectData, isSafeMode, isDisablePlugins, SecurityKey, type, databaseConnectionStringValue, redisConnectionStringValue, adminRestrictionHost, adminRestrictionAllowList, adminRestrictionBlockList, corsIsOrigins, corsOrigins);
             Reload();
+        }
+
+        public void ChangeDatabase(string configFilePath)
+        {
+            var configurationBuilder = new ConfigurationBuilder().AddJsonFile(configFilePath);
+            var config = configurationBuilder.Build();
+
+            var isProtectData = config.GetValue(nameof(IsProtectData), false);
+            var securityKey = config.GetValue<string>(nameof(SecurityKey));
+            var databaseType = TranslateUtils.ToEnum(isProtectData
+                        ? Decrypt(config.GetValue<string>("Database:Type"), securityKey)
+                        : config.GetValue<string>("Database:Type"), DatabaseType.MySql);
+            var databaseConnectionString = isProtectData
+                        ? Decrypt(config.GetValue<string>("Database:ConnectionString"), securityKey)
+                        : config.GetValue<string>("Database:ConnectionString");
+
+            DatabaseType = databaseType;
+            DatabaseConnectionString = databaseConnectionString;
         }
     }
 }
