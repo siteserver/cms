@@ -451,27 +451,27 @@ namespace Datory
 
         public async Task<bool> IsTableExistsAsync(string tableName)
         {
-            bool exists;
+            var exists = false;
 
             if (DatabaseType == DatabaseType.MySql)
             {
-                exists = await MySqlImpl.Instance.IsTableExistsAsync(tableName);
+                exists = await MySqlImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
-                exists = await SqlServerImpl.Instance.IsTableExistsAsync(tableName);
+                exists = await SqlServerImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.PostgreSql)
             {
-                exists = await PostgreSqlImpl.Instance.IsTableExistsAsync(tableName);
+                exists = await PostgreSqlImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.SQLite)
             {
-                exists = await SQLiteImpl.Instance.IsTableExistsAsync(tableName);
+                exists = await SQLiteImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.Dm)
             {
-                exists = await DmImpl.Instance.IsTableExistsAsync(tableName);
+                exists = await DmImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
 
             return exists;

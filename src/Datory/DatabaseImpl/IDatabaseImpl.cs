@@ -17,6 +17,8 @@ namespace Datory.DatabaseImpl
 
         Task<List<string>> GetDatabaseNamesAsync(string connectionString);
 
+        Task<bool> IsTableExistsAsync(string connectionString, string tableName);
+
         Task<List<string>> GetTableNamesAsync(string connectionString);
 
         string ColumnIncrement(string columnName, int plusNum = 1);

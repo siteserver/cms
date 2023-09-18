@@ -59,10 +59,10 @@ namespace Datory.DatabaseImpl
             return databaseNames;
         }
 
-        public async Task<bool> IsTableExistsAsync(string tableName)
+        public async Task<bool> IsTableExistsAsync(string connectionString, string tableName)
         {
             bool exists;
-            var databaseName = DatabaseName;
+            var databaseName = Utilities.GetConnectionStringDatabase(connectionString);
             tableName = Utilities.FilterSql(tableName);
 
             try
@@ -70,7 +70,7 @@ namespace Datory.DatabaseImpl
                 // var sql = $"SELECT COUNT(*) FROM dba_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
                 var sql = $"SELECT COUNT(*) FROM user_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
 
-                using var connection = GetConnection();
+                using var connection = GetConnection(connectionString);
                 exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
             }
             catch
@@ -79,7 +79,7 @@ namespace Datory.DatabaseImpl
                 {
                     var sql = $"select 1 from {tableName} where 1 = 0";
 
-                    using var connection = GetConnection();
+                    using var connection = GetConnection(connectionString);
                     exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
                 }
                 catch

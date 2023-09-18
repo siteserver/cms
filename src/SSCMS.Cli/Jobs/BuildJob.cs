@@ -5,6 +5,7 @@ using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
 using SSCMS.Configuration;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -16,6 +17,7 @@ namespace SSCMS.Cli.Jobs
         public string CommandName => "build";
 
         private string _directory;
+        private bool _isAll;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
@@ -33,6 +35,10 @@ namespace SSCMS.Cli.Jobs
                 {
                     "d|directory=", "Site directory name",
                     v => _directory = v
+                },
+                {
+                    "a|all", "Build all sites",
+                    v => _isAll = v != null
                 },
                 {
                     "h|help", "Display help",
@@ -62,12 +68,6 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var directory = _directory;
-            if (string.IsNullOrEmpty(directory))
-            {
-                directory = string.Empty;
-            }
-
             var configPath = CliUtils.GetConfigPath(_settingsManager);
             if (!FileUtils.IsFileExists(configPath))
             {
@@ -85,17 +85,41 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var site = await _databaseManager.SiteRepository.GetSiteByDirectoryAsync(directory);
-            if (site == null)
+            if (_isAll)
             {
-                await console.WriteErrorAsync($"Unable to find the site, directory: {directory}");
-                return;
+                var siteIds = await _databaseManager.SiteRepository.GetSiteIdsAsync();
+                foreach (var siteId in siteIds)
+                {
+                    var site = await _databaseManager.SiteRepository.GetAsync(siteId);
+                    await CreateSiteAsync(console, site);
+                }
             }
-            await console.WriteLineAsync($"site: {site.SiteName}");
+            else
+            {
+                var directory = _directory;
+                if (string.IsNullOrEmpty(directory))
+                {
+                    directory = string.Empty;
+                }
 
-            await _createManager.ExecuteAsync(site.Id, CreateType.All, 0, 0, 0, 0);
+                var site = await _databaseManager.SiteRepository.GetSiteByDirectoryAsync(directory);
+                if (site == null)
+                {
+                    await console.WriteErrorAsync($"Unable to find the site, directory: {directory}");
+                    return;
+                }
+                await CreateSiteAsync(console, site);
+            }
+        }
 
-            await console.WriteSuccessAsync("create pages successfully!");
+        private async Task CreateSiteAsync(ConsoleUtils console, Site site)
+        {
+            if (site != null)
+            {
+                await console.WriteLineAsync($"site: {site.SiteName}");
+                await _createManager.ExecuteAsync(site.Id, CreateType.All, 0, 0, 0, 0);
+                await console.WriteSuccessAsync("create pages successfully!");
+            }
         }
     }
 }

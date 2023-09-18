@@ -46,17 +46,16 @@ namespace Datory.DatabaseImpl
             return await Task.FromResult(new List<string>());
         }
 
-        public async Task<bool> IsTableExistsAsync(string tableName)
+        public async Task<bool> IsTableExistsAsync(string connectionString, string tableName)
         {
             bool exists;
-            var databaseName = DatabaseName;
             tableName = Utilities.FilterSql(tableName);
 
             try
             {
-                ivar sql = $"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{tableName}'";
+                var sql = $"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{tableName}'";
 
-                using var connection = GetConnection();
+                using var connection = GetConnection(connectionString);
                 exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
             }
             catch
@@ -65,7 +64,7 @@ namespace Datory.DatabaseImpl
                 {
                     var sql = $"select 1 from {tableName} where 1 = 0";
 
-                    using var connection = GetConnection();
+                    using var connection = GetConnection(connectionString);
                     exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
                 }
                 catch
