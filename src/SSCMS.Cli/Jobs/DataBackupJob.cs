@@ -17,6 +17,7 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "data backup";
 
+        private string _config;
         private string _directory;
         private List<string> _includes;
         private List<string> _excludes;
@@ -34,6 +35,10 @@ namespace SSCMS.Cli.Jobs
             _databaseManager = databaseManager;
             _options = new OptionSet
             {
+                {
+                    "c|config=", "Specify the file name of sscms.json configuration file that you want to backup",
+                    v => _config = v
+                },
                 {
                     "d|directory=", "Backup folder name",
                     v => _directory = v
@@ -91,12 +96,18 @@ namespace SSCMS.Cli.Jobs
             var tree = new Tree(_settingsManager, directory);
             DirectoryUtils.CreateDirectoryIfNotExists(tree.DirectoryPath);
 
-            var configPath = CliUtils.GetConfigPath(_settingsManager);
+            var config = _config;
+            if (string.IsNullOrEmpty(config))
+            {
+                config = Constants.ConfigFileName;
+            }
+            var configPath = PathUtils.Combine(_settingsManager.ContentRootPath, config);
             if (!FileUtils.IsFileExists(configPath))
             {
                 await console.WriteErrorAsync($"The sscms.json file does not exist: {configPath}");
                 return;
             }
+            _settingsManager.ChangeDatabase(configPath);
 
             await console.WriteLineAsync($"Database type: {_settingsManager.DatabaseType.GetDisplayName()}");
             await console.WriteLineAsync($"Database connection string: {_settingsManager.DatabaseConnectionString}");

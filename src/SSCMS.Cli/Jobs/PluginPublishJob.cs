@@ -16,6 +16,7 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "plugin publish";
 
+        private string _directory;
         private string _version;
         private bool _isHelp;
 
@@ -31,7 +32,11 @@ namespace SSCMS.Cli.Jobs
             _cliApiService = cliApiService;
             _options = new OptionSet
             {
-                { "v|version=", "发布版本",
+                {
+                    "d|directory=", "plugin folder name",
+                    v => _directory = v
+                },
+                { "v|version=", "plugin version",
                     v => _version = v },
                 {
                     "h|help", "Display help",
@@ -68,15 +73,9 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var pluginId = string.Empty;
-            if (context.Extras != null && context.Extras.Length > 0)
-            {
-                pluginId = context.Extras[0];
-            }
-
-            var pluginPath = string.IsNullOrEmpty(pluginId)
+            var pluginPath = string.IsNullOrEmpty(_directory)
                 ? _settingsManager.ContentRootPath
-                : PathUtils.Combine(_pathManager.GetPluginPath(pluginId));
+                : PathUtils.Combine(_pathManager.GetPluginPath(_directory));
 
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
             if (plugin == null)

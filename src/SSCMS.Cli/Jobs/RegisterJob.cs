@@ -25,14 +25,22 @@ namespace SSCMS.Cli.Jobs
         {
             _options = new OptionSet
             {
-                { "u|username=", "用户名",
-                    v => _userName = v },
-                { "mobile=", "手机号",
-                    v => _mobile = v },
-                { "email=", "邮箱",
-                    v => _email = v },
-                { "p|password=", "登录密码",
-                    v => _password = v },
+                {
+                    "u|username=", "Login username",
+                    v => _userName = v
+                },
+                {
+                    "mobile=", "Login mobile",
+                    v => _mobile = v
+                },
+                {
+                    "email=", "Login email",
+                    v => _email = v
+                },
+                {
+                    "p|password=", "Login password",
+                    v => _password = v
+                },
                 {
                     "h|help", "Display help",
                     v => _isHelp = v != null
@@ -65,20 +73,28 @@ namespace SSCMS.Cli.Jobs
 
             if (string.IsNullOrEmpty(_userName))
             {
-                await console.WriteErrorAsync("missing required options '--username'");
-                return;
+                _userName = console.GetString("Username:");
+            }
+
+            if (string.IsNullOrEmpty(_mobile))
+            {
+                _mobile = console.GetStringAllowEmpty("Mobile:");
+            }
+
+            if (string.IsNullOrEmpty(_email))
+            {
+                _email = console.GetStringAllowEmpty("Email:");
+            }
+
+            if (string.IsNullOrEmpty(_password))
+            {
+                _password = console.GetPassword("Password:");
             }
 
             if (!StringUtils.IsStrictName(_userName))
             {
                 await console.WriteErrorAsync(
                     $@"Invalid username: ""{_userName}"", string does not match the pattern of ""{StringUtils.StrictNameRegex}""");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(_password))
-            {
-                await console.WriteErrorAsync("missing required options '--password'");
                 return;
             }
 

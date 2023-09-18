@@ -85,12 +85,18 @@ namespace SSCMS.Cli.Jobs
             var pluginId = PluginUtils.GetPluginId(publisher, name);
             var pluginPath = PathUtils.Combine(pluginsPath, pluginId);
 
-            var dict = new Dictionary<string, object>
-            {
-                ["name"] = name,
-                ["publisher"] = publisher
-            };
-            var json = TranslateUtils.JsonSerialize(dict);
+            var json = $$"""
+{
+  "name": "{{name}}",
+  "displayName": "{{name}}",
+  "description": "",
+  "version": "1.0.0",
+  "publisher": "{{publisher}}",
+  "engines": {
+    "sscms": "^{{_settingsManager.Version}}"
+  }
+}
+""";
             await FileUtils.WriteTextAsync(PathUtils.Combine(pluginPath, Constants.PackageFileName), json);
 
             await console.WriteSuccessAsync($@"The plugin ""{pluginId}"" was created successfully.");

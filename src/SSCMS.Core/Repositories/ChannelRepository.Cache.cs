@@ -93,7 +93,7 @@ namespace SSCMS.Core.Repositories
         public async Task<Cascade<int>> GetCascadeAsync(Site site, IChannelSummary summary, Func<IChannelSummary, Task<object>> func)
         {
             object extra = null;
-            if (func != null)
+            if (func != null && summary != null)
             {
                 extra = await func(summary);
             }

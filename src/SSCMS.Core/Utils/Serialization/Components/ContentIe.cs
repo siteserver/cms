@@ -413,7 +413,9 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
         public async Task<bool> ExportContentsAsync(Site site, List<Content> contents, List<TableStyle> tableStyles)
         {
-            var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
+            var filePath = PathUtils.Combine(_siteContentDirectoryPath, "contents.xml");
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+            
             var feed = AtomUtility.GetEmptyFeed();
 
             var collection = new NameValueCollection();

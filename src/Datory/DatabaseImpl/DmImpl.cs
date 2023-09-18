@@ -59,6 +59,38 @@ namespace Datory.DatabaseImpl
             return databaseNames;
         }
 
+        public async Task<bool> IsTableExistsAsync(string tableName)
+        {
+            bool exists;
+            var databaseName = DatabaseName;
+            tableName = Utilities.FilterSql(tableName);
+
+            try
+            {
+                // var sql = $"SELECT COUNT(*) FROM dba_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
+                var sql = $"SELECT COUNT(*) FROM user_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
+
+                using var connection = GetConnection();
+                exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+            }
+            catch
+            {
+                try
+                {
+                    var sql = $"select 1 from {tableName} where 1 = 0";
+
+                    using var connection = GetConnection();
+                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+                }
+                catch
+                {
+                    exists = false;
+                }
+            }
+
+            return exists;
+        }
+
         public async Task<List<string>> GetTableNamesAsync(string connectionString)
         {
             IEnumerable<string> tableNames;
@@ -66,7 +98,8 @@ namespace Datory.DatabaseImpl
             var owner = Utilities.GetConnectionStringDatabase(connectionString);
             using (var connection = GetConnection(connectionString))
             {
-                var sqlString = $"SELECT table_name FROM dba_tables WHERE OWNER = '{owner}'";
+                // var sqlString = $"SELECT table_name FROM dba_tables WHERE OWNER = '{owner}'";
+                var sqlString = $"SELECT table_name FROM user_tables WHERE OWNER = '{owner}'";
 
                 tableNames = await connection.QueryAsync<string>(sqlString);
             }
@@ -141,7 +174,7 @@ namespace Datory.DatabaseImpl
             {
                 return value;
             }
-            
+
             if (Utilities.EqualsIgnoreCase(value, "Id"))
             {
                 value = "ID";

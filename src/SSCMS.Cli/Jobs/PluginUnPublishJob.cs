@@ -12,6 +12,7 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "plugin unpublish";
 
+        private string _directory;
         private bool _isHelp;
 
         private readonly ICliApiService _cliApiService;
@@ -22,6 +23,10 @@ namespace SSCMS.Cli.Jobs
             _cliApiService = cliApiService;
             _options = new OptionSet
             {
+                {
+                    "d|directory=", "plugin folder name",
+                    v => _directory = v
+                },
                 {
                     "h|help", "Display help",
                     v => _isHelp = v != null
@@ -50,7 +55,7 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            if (context.Extras == null || context.Extras.Length == 0)
+            if (string.IsNullOrEmpty(_directory))
             {
                 await console.WriteErrorAsync("missing required pluginId");
                 return;
@@ -64,10 +69,10 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = await _cliApiService.PluginUnPublishAsync(context.Extras[0]);
+            (success, failureMessage) = await _cliApiService.PluginUnPublishAsync(_directory);
             if (success)
             {
-                await console.WriteSuccessAsync($"Plugin {context.Extras[0]} unpublished.");
+                await console.WriteSuccessAsync($"Plugin {_directory} unpublished.");
             }
             else
             {

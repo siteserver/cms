@@ -38,11 +38,11 @@ namespace SSCMS.Cli.Jobs
             _options = new OptionSet
             {
                 {
-                    "from=", "Specify the path or file name of sscms.json configuration file that you want to backup",
+                    "from=", "Specify the file name of sscms.json configuration file that you want to backup",
                     v => _from = v
                 },
                 {
-                    "to=", "Specify the path or file name of sscms.json configuration file that you want to restore",
+                    "to=", "Specify the file name of sscms.json configuration file that you want to restore",
                     v => _to = v
                 },
                 {

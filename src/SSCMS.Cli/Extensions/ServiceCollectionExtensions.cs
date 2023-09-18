@@ -31,8 +31,6 @@ namespace SSCMS.Cli.Extensions
             services.AddScoped<IJobService, PluginNewJob>();
             services.AddScoped<IJobService, PluginPackageJob>();
             services.AddScoped<IJobService, PluginPublishJob>();
-            services.AddScoped<IJobService, PluginSearchJob>();
-            services.AddScoped<IJobService, PluginShowJob>();
             services.AddScoped<IJobService, PluginUnPublishJob>();
             services.AddScoped<IJobService, RegisterJob>();
             services.AddScoped<IJobService, RunJob>();

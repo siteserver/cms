@@ -12,7 +12,7 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "theme unpublish";
 
-        private string _name;
+        private string _directory;
         private bool _isHelp;
         private readonly OptionSet _options;
 
@@ -22,8 +22,8 @@ namespace SSCMS.Cli.Jobs
         {
             _options = new OptionSet
             {
-                { "n|name=", "theme name",
-                    v => _name = v },
+                { "d|directory=", "theme name",
+                    v => _directory = v },
                 {
                     "h|help", "Display help",
                     v => _isHelp = v != null
@@ -54,16 +54,9 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(_directory))
             {
-                if (context.Extras != null && context.Extras.Length > 0)
-                {
-                    _name = context.Extras[0];
-                }
-            }
-            if (string.IsNullOrEmpty(_name))
-            {
-                await console.WriteErrorAsync("missing required name");
+                await console.WriteErrorAsync("missing required theme name");
                 return;
             }
 
@@ -75,10 +68,10 @@ namespace SSCMS.Cli.Jobs
             }
 
             bool success;
-            (success, failureMessage) = await _cliApiService.ThemeUnPublishAsync(_name);
+            (success, failureMessage) = await _cliApiService.ThemeUnPublishAsync(_directory);
             if (success)
             {
-                await console.WriteSuccessAsync($"Theme {_name} unpublished .");
+                await console.WriteSuccessAsync($"Theme {_directory} unpublished.");
             }
             else
             {

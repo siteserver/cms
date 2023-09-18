@@ -37,7 +37,7 @@ namespace SSCMS.Cli.Jobs
             _options = new OptionSet {
                 { "u|userName",  "Super administrator username",
                     v => _userName = v },
-                { "p|password",  "Super administrator username",
+                { "p|password",  "Super administrator password",
                     v => _password = v },
                 { "h|help",  "Display help",
                     v => _isHelp = v != null }

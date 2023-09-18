@@ -40,7 +40,7 @@ namespace SSCMS.Cli.Jobs
         public async Task WriteUsageAsync(IConsoleUtils console)
         {
             await console.WriteLineAsync($"Usage: sscms {CommandName}");
-            await console.WriteLineAsync("Summary: show user login status");
+            await console.WriteLineAsync("Summary: show status");
             await console.WriteLineAsync($"Docs: {Constants.OfficialHost}/docs/v7/cli/commands/status.html");
             await console.WriteLineAsync("Options:");
             _options.WriteOptionDescriptions(console.Out);

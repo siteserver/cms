@@ -183,6 +183,11 @@ namespace SSCMS.Cli.Core
             return !string.IsNullOrEmpty(value) ? value : GetString(text);
         }
 
+        public string GetStringAllowEmpty(string text)
+        {
+            return Prompt.GetString(text);
+        }
+
         public List<string> GetStringList(string text)
         {
             var value = Prompt.GetString(text);

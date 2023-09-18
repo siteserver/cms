@@ -67,6 +67,37 @@ namespace Datory.DatabaseImpl
             return databaseNames;
         }
 
+        public async Task<bool> IsTableExistsAsync(string tableName)
+        {
+            bool exists;
+            var databaseName = DatabaseName;
+            tableName = Utilities.FilterSql(tableName);
+
+            try
+            {
+                var sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema = '{databaseName}') AND table_name  = '{tableName}'";
+
+                using var connection = GetConnection();
+                exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+            }
+            catch
+            {
+                try
+                {
+                    var sql = $"select 1 from {tableName} where 1 = 0";
+
+                    using var connection = GetConnection();
+                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+                }
+                catch
+                {
+                    exists = false;
+                }
+            }
+
+            return exists;
+        }
+
         public async Task<List<string>> GetTableNamesAsync(string connectionString)
         {
             IEnumerable<string> tableNames;

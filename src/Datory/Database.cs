@@ -116,61 +116,6 @@ namespace Datory
             return DbUtils.GetQuotedIdentifier(DatabaseType, identifier);
         }
 
-        public async Task<bool> IsTableExistsAsync(string tableName)
-        {
-            bool exists;
-            var databaseName = DatabaseName;
-            tableName = Utilities.FilterSql(tableName);
-
-            try
-            {
-                if (DatabaseType == DatabaseType.SQLite)
-                {
-                    var sql = $"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{tableName}'";
-
-                    using var connection = GetConnection();
-                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
-                }
-                else if (DatabaseType == DatabaseType.PostgreSql || DatabaseType == DatabaseType.SqlServer)
-                {
-                    var sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_name = '{tableName}'";
-
-                    using var connection = GetConnection();
-                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
-                }
-                else if (DatabaseType == DatabaseType.Dm)
-                {
-                    var sql = $"SELECT COUNT(*) FROM dba_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
-
-                    using var connection = GetConnection();
-                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
-                }
-                else
-                {
-                    var sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema = '{databaseName}') AND table_name  = '{tableName}'";
-
-                    using var connection = GetConnection();
-                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
-                }
-            }
-            catch
-            {
-                try
-                {
-                    var sql = $"select 1 from {tableName} where 1 = 0";
-
-                    using var connection = GetConnection();
-                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
-                }
-                catch
-                {
-                    exists = false;
-                }
-            }
-
-            return exists;
-        }
-
         public async Task<string> AddIdentityColumnIdIfNotExistsAsync(string tableName, List<TableColumn> columns)
         {
             var identityColumnName = string.Empty;
@@ -502,6 +447,34 @@ namespace Datory
             }
 
             return tableNames;
+        }
+
+        public async Task<bool> IsTableExistsAsync(string tableName)
+        {
+            bool exists;
+
+            if (DatabaseType == DatabaseType.MySql)
+            {
+                exists = await MySqlImpl.Instance.IsTableExistsAsync(tableName);
+            }
+            else if (DatabaseType == DatabaseType.SqlServer)
+            {
+                exists = await SqlServerImpl.Instance.IsTableExistsAsync(tableName);
+            }
+            else if (DatabaseType == DatabaseType.PostgreSql)
+            {
+                exists = await PostgreSqlImpl.Instance.IsTableExistsAsync(tableName);
+            }
+            else if (DatabaseType == DatabaseType.SQLite)
+            {
+                exists = await SQLiteImpl.Instance.IsTableExistsAsync(tableName);
+            }
+            else if (DatabaseType == DatabaseType.Dm)
+            {
+                exists = await DmImpl.Instance.IsTableExistsAsync(tableName);
+            }
+
+            return exists;
         }
 
         public async Task<List<string>> GetTableNamesAsync()

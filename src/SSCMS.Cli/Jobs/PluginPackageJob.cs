@@ -15,6 +15,7 @@ namespace SSCMS.Cli.Jobs
     {
         public string CommandName => "plugin package";
 
+        private string _directory;
         private bool _isHelp;
 
         private readonly ISettingsManager _settingsManager;
@@ -27,6 +28,10 @@ namespace SSCMS.Cli.Jobs
             _pathManager = pathManager;
             _options = new OptionSet
             {
+                {
+                    "d|directory=", "plugin folder name",
+                    v => _directory = v
+                },
                 {
                     "h|help", "Display help",
                     v => _isHelp = v != null
@@ -55,15 +60,9 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var pluginId = string.Empty;
-            if (context.Extras != null && context.Extras.Length > 0)
-            {
-                pluginId = context.Extras[0];
-            }
-
-            var pluginPath = string.IsNullOrEmpty(pluginId)
+            var pluginPath = string.IsNullOrEmpty(_directory)
                 ? _settingsManager.ContentRootPath
-                : PathUtils.Combine(_pathManager.GetPluginPath(pluginId));
+                : PathUtils.Combine(_pathManager.GetPluginPath(_directory));
 
             var (plugin, errorMessage) = await PluginUtils.ValidateManifestAsync(pluginPath);
             if (plugin == null)

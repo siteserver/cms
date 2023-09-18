@@ -12,8 +12,6 @@ namespace SSCMS.Cli.Services
         private const string RestUrlRegister = "/register";
         private const string RestUrlPluginPublish = "/plugin-publish";
         private const string RestUrlPluginUnPublish = "/plugin-unpublish";
-        private const string RestUrlPluginSearch = "/plugin-search";
-        private const string RestUrlPluginShow = "/plugin-show";
         private const string RestUrlReleases = "/releases";
         private const string RestUrlThemePublish = "/theme-publish";
         private const string RestUrlThemeUnPublish = "/theme-unpublish";
@@ -56,19 +54,6 @@ namespace SSCMS.Cli.Services
             public string Password { get; set; }
         }
 
-        public class PublishRequest
-        {
-            public string Account { get; set; }
-            public string Password { get; set; }
-            public bool IsPersistent { get; set; }
-        }
-
-        public class PublishResult
-        {
-            public string UserName { get; set; }
-            public string AccessToken { get; set; }
-        }
-
         public class PluginUnPublishRequest
         {
             public string PluginId { get; set; }
@@ -77,16 +62,6 @@ namespace SSCMS.Cli.Services
         public class ThemeUnPublishRequest
         {
             public string Name { get; set; }
-        }
-
-        public class SearchRequest
-        {
-            public string Word { get; set; }
-        }
-
-        public class ShowRequest
-        {
-            public string PluginId { get; set; }
         }
 
         public class PluginAndUser
