@@ -1,0 +1,263 @@
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Dapper;
+using SqlKata.Compilers;
+using Datory.Utils;
+using Kdbndp;
+
+// https://freesql.net/guide/freesql-provider-custom.html
+// https://www.donet5.com/Home/Doc
+// https://help.kingbase.com.cn/v8/development/client-interfaces/ado-net/ado-net-13.html#kdbndpconnection
+
+[assembly: InternalsVisibleTo("Datory.Tests")]
+
+namespace Datory.DatabaseImpl
+{
+    internal class KingbaseESImpl : IDatabaseImpl
+    {
+        private static IDatabaseImpl _instance;
+        public static IDatabaseImpl Instance
+        {
+            get
+            {
+                if (_instance != null) return _instance;
+                _instance = new KingbaseESImpl();
+                return _instance;
+            }
+        }
+
+        public DbConnection GetConnection(string connectionString)
+        {
+             return new KdbndpConnection(connectionString);
+        }
+
+        public Compiler GetCompiler(string connectionString)
+        {
+            return new KingbaseESCompiler();
+        }
+
+        public bool IsUseLegacyPagination(string connectionString)
+        {
+            return false;
+        }
+
+        public async Task<List<string>> GetDatabaseNamesAsync(string connectionString)
+        {
+            var databaseNames = new List<string>();
+
+            using (var connection = GetConnection(connectionString))
+            {
+                using var rdr = await connection.ExecuteReaderAsync("SELECT DISTINCT object_name FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'SCH'");
+                while (rdr.Read())
+                {
+                    var dbName = rdr.GetString(0);
+                    if (dbName == null) continue;
+                    databaseNames.Add(dbName);
+                }
+            }
+
+            return databaseNames;
+        }
+
+        public async Task<bool> IsTableExistsAsync(string connectionString, string tableName)
+        {
+            bool exists;
+            var databaseName = Utilities.GetConnectionStringDatabase(connectionString);
+            tableName = Utilities.FilterSql(tableName);
+
+            try
+            {
+                // var sql = $"SELECT COUNT(*) FROM dba_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
+                var sql = $"SELECT COUNT(*) FROM user_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
+
+                using var connection = GetConnection(connectionString);
+                exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+            }
+            catch
+            {
+                try
+                {
+                    var sql = $"select 1 from {tableName} where 1 = 0";
+
+                    using var connection = GetConnection(connectionString);
+                    exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
+                }
+                catch
+                {
+                    exists = false;
+                }
+            }
+
+            return exists;
+        }
+
+        public async Task<List<string>> GetTableNamesAsync(string connectionString)
+        {
+            IEnumerable<string> tableNames;
+
+            var owner = Utilities.GetConnectionStringDatabase(connectionString);
+            using (var connection = GetConnection(connectionString))
+            {
+                // var sqlString = $"SELECT table_name FROM dba_tables WHERE OWNER = '{owner}'";
+                var sqlString = $"SELECT table_name FROM user_tables WHERE OWNER = '{owner}'";
+
+                tableNames = await connection.QueryAsync<string>(sqlString);
+            }
+
+            return tableNames != null ? tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList() : new List<string>();
+        }
+
+        public string ColumnIncrement(string columnName, int plusNum = 1)
+        {
+            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) + {plusNum}";
+        }
+
+        public string ColumnDecrement(string columnName, int minusNum = 1)
+        {
+            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) - {minusNum}";
+        }
+
+        public string GetAutoIncrementDataType(bool alterTable = false)
+        {
+            return alterTable ? "INT IDENTITY UNIQUE KEY" : "INT IDENTITY";
+        }
+
+        private string ToColumnString(DataType type, string columnName, int length)
+        {
+            if (type == DataType.Boolean)
+            {
+                return $"{columnName} boolean";
+            }
+            if (type == DataType.DateTime)
+            {
+                return $"{columnName} time";
+            }
+            if (type == DataType.Decimal)
+            {
+                return $"{columnName} dec(18, 2)";
+            }
+            if (type == DataType.Integer)
+            {
+                return $"{columnName} integer";
+            }
+            if (type == DataType.Text)
+            {
+                return $"{columnName} text";
+            }
+            return $"{columnName} varchar({length})";
+        }
+
+        public string GetColumnSqlString(TableColumn tableColumn)
+        {
+            var columnName = GetQuotedIdentifier(tableColumn.AttributeName);
+            if (tableColumn.IsIdentity)
+            {
+                return $@"{columnName} {GetAutoIncrementDataType()}";
+            }
+
+            return ToColumnString(tableColumn.DataType, columnName, tableColumn.DataLength);
+        }
+
+        public string GetPrimaryKeySqlString(string tableName, string attributeName)
+        {
+            return $@"PRIMARY KEY ({attributeName})";
+        }
+
+        public string GetQuotedIdentifier(string identifier)
+        {
+            return Wrap(identifier);
+        }
+
+        public static string Wrap(string value)
+        {
+            if (string.IsNullOrEmpty(value) || value == "*")
+            {
+                return value;
+            }
+
+            if (Utilities.EqualsIgnoreCase(value, "Id"))
+            {
+                value = "ID";
+            }
+            return string.Format($@"""{value}""");
+        }
+
+        private DataType ToDataType(string dataTypeStr)
+        {
+            if (string.IsNullOrEmpty(dataTypeStr)) return DataType.VarChar;
+
+            var dataType = DataType.VarChar;
+
+            dataTypeStr = Utilities.TrimAndToLower(dataTypeStr);
+            switch (dataTypeStr)
+            {
+                case "boolean":
+                    dataType = DataType.Boolean;
+                    break;
+                case "time":
+                    dataType = DataType.DateTime;
+                    break;
+                case "dec":
+                    dataType = DataType.Decimal;
+                    break;
+                case "integer":
+                    dataType = DataType.Integer;
+                    break;
+                case "text":
+                    dataType = DataType.Text;
+                    break;
+                case "varchar":
+                    dataType = DataType.VarChar;
+                    break;
+            }
+
+            return dataType;
+        }
+
+        public async Task<List<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
+        {
+            var list = new List<TableColumn>();
+            var owner = Utilities.GetConnectionStringDatabase(connectionString);
+            tableName = Utilities.FilterSql(tableName);
+
+            using (var connection = new KdbndpConnection(connectionString))
+            {
+                var sqlString =
+                    $"SELECT COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType, DATA_Length AS DataLength FROM all_tab_columns WHERE OWNER = '{owner}' AND Table_Name = '{tableName}'";
+
+                using var rdr = await connection.ExecuteReaderAsync(sqlString);
+                while (rdr.Read())
+                {
+                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+                    var dataType = ToDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+                    var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
+                    var isPrimaryKey = Utilities.EqualsIgnoreCase(columnName, "id");
+                    var isIdentity = isPrimaryKey && tableName.ToLower() != "siteserver_site";
+
+                    var info = new TableColumn
+                    {
+                        AttributeName = columnName,
+                        DataType = dataType,
+                        DataLength = length,
+                        IsPrimaryKey = isPrimaryKey,
+                        IsIdentity = isIdentity
+                    };
+                    list.Add(info);
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
+
+        public string GetAddColumnsSqlString(string tableName, string columnsSqlString)
+        {
+            tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
+            return $"ALTER TABLE {tableName} ADD ({columnsSqlString})";
+        }
+    }
+}

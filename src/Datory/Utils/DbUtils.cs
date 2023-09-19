@@ -31,6 +31,10 @@ namespace Datory.Utils
             {
                 compiler = DmImpl.Instance.GetCompiler(connectionString);
             }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                compiler = KingbaseESImpl.Instance.GetCompiler(connectionString);
+            }
 
             return compiler;
         }
@@ -58,6 +62,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.ColumnIncrement(columnName, plusNum);
+            }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.ColumnIncrement(columnName, plusNum);
             }
 
             return retVal;
@@ -87,6 +95,10 @@ namespace Datory.Utils
             {
                 retVal = DmImpl.Instance.ColumnDecrement(columnName, minusNum);
             }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.ColumnDecrement(columnName, minusNum);
+            }
 
             return retVal;
         }
@@ -114,6 +126,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetAutoIncrementDataType(alterTable);
+            }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.GetAutoIncrementDataType(alterTable);
             }
 
             return retVal;
@@ -143,6 +159,10 @@ namespace Datory.Utils
             {
                 retVal = DmImpl.Instance.GetColumnSqlString(tableColumn);
             }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.GetColumnSqlString(tableColumn);
+            }
 
             return retVal;
         }
@@ -170,6 +190,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
+            }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
             }
 
             return retVal;
@@ -199,6 +223,10 @@ namespace Datory.Utils
             {
                 retVal = DmImpl.Instance.GetQuotedIdentifier(identifier);
             }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.GetQuotedIdentifier(identifier);
+            }
 
             return retVal;
         }
@@ -226,6 +254,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
+            }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                retVal = KingbaseESImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
             }
 
             return retVal;

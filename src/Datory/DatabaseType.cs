@@ -11,6 +11,7 @@ namespace Datory
         [DataEnum(DisplayName = "SqlServer")] SqlServer,
         [DataEnum(DisplayName = "PostgreSql")] PostgreSql,
         [DataEnum(DisplayName = "SQLite")] SQLite,
-        [DataEnum(DisplayName = "达梦数据库")] Dm,
+        [DataEnum(DisplayName = "达梦")] Dm,
+        [DataEnum(DisplayName = "人大金仓")] KingbaseES,
     }
 }
