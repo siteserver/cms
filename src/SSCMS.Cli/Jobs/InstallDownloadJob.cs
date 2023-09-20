@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using Mono.Options;
 using SSCMS.Cli.Abstractions;
 using SSCMS.Cli.Core;
@@ -89,13 +91,9 @@ namespace SSCMS.Cli.Jobs
                 return;
             }
 
-            var databaseTypeInput = console.GetSelect("Database type", new List<string>
-            {
-                DatabaseType.MySql.GetValue().ToLower(),
-                DatabaseType.SqlServer.GetValue().ToLower(),
-                DatabaseType.PostgreSql.GetValue().ToLower(),
-                DatabaseType.SQLite.GetValue().ToLower()
-            });
+            var databaseValues = ListUtils.GetEnums<DatabaseType>().Select(x => x.GetValue().ToLower()).ToList();
+
+            var databaseTypeInput = console.GetSelect("Database type", databaseValues);
 
             var databaseType = TranslateUtils.ToEnum(databaseTypeInput, DatabaseType.MySql);
             var databaseName = string.Empty;
@@ -117,7 +115,7 @@ namespace SSCMS.Cli.Jobs
                 databaseUserName = console.GetString("Database userName:");
                 databasePassword = console.GetPassword("Database password:");
 
-                var connectionStringWithoutDatabaseName = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, string.Empty);
+                var connectionStringWithoutDatabaseName = DbUtils.GetConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, string.Empty);
 
                 var db = new Database(databaseType, connectionStringWithoutDatabaseName);
 
@@ -132,7 +130,7 @@ namespace SSCMS.Cli.Jobs
                 databaseName = console.GetSelect("Database name", databaseNames);
             }
 
-            var databaseConnectionString = InstallUtils.GetDatabaseConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
+            var databaseConnectionString = DbUtils.GetConnectionString(databaseType, databaseHost, isDatabaseDefaultPort, databasePort, databaseUserName, databasePassword, databaseName);
 
             var isProtectData = console.GetYesNo("Protect settings in sscms.json?");
             _settingsManager.SaveSettings(isProtectData, false, false, databaseType, databaseConnectionString, string.Empty, string.Empty, null, null, false, null);

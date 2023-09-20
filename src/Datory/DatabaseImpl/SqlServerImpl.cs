@@ -27,6 +27,23 @@ namespace Datory.DatabaseImpl
             }
         }
 
+        public string GetConnectionString(string server, bool isDefaultPort, int port, string userName, string password, string databaseName)
+        {
+            var connectionString = $"Server={server};";
+
+            if (!isDefaultPort && port > 0)
+            {
+                connectionString = $"Server={server},{port};";
+            }
+            connectionString += $"Uid={userName};Pwd={password};";
+            if (!string.IsNullOrEmpty(databaseName))
+            {
+                connectionString += $"Database={databaseName};";
+            }
+
+            return connectionString;
+        }
+
         public DbConnection GetConnection(string connectionString)
         {
             return new SqlConnection(connectionString);

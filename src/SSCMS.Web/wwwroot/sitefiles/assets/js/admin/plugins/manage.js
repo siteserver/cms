@@ -94,7 +94,8 @@ var methods = {
   },
 
   apiRestart: function (callback) {
-    utils.loading(this, true);
+    utils.loading(this, true, '插件重新加载中，请稍后...');
+
     $api.post($urlActionsRestart).then(function (response) {
       setTimeout(function() {
         if (callback) {
@@ -245,7 +246,12 @@ var methods = {
   },
 
   btnRestartClick: function () {
-    this.apiRestart();
+    utils.alertDelete({
+      title: '重新加载所有插件',
+      text: '此操作将重启系统并重新加载所有插件，确定吗？',
+      button: '确 定',
+      callback: this.apiRestart
+    });
   },
 
   btnViewClick: function(displayName, userName, name) {

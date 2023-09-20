@@ -42,6 +42,13 @@ namespace Datory
                     connectionString = connectionString.TrimEnd(';') + ";Version=3;";
                 }
             }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                if (!Utilities.ContainsIgnoreCase(connectionString, "No Reset On Close="))
+                {
+                    connectionString = connectionString.TrimEnd(';') + ";No Reset On Close=true;";
+                }
+            }
             else if (databaseType == DatabaseType.Dm)
             {
                 if (!Utilities.ContainsIgnoreCase(connectionString, "encoding="))
@@ -81,9 +88,17 @@ namespace Datory
             {
                 conn = SQLiteImpl.Instance.GetConnection(ConnectionString);
             }
+            else if (DatabaseType == DatabaseType.Gauss)
+            {
+                conn = GaussImpl.Instance.GetConnection(ConnectionString);
+            }
             else if (DatabaseType == DatabaseType.Dm)
             {
                 conn = DmImpl.Instance.GetConnection(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.KingbaseES)
+            {
+                conn = KingbaseESImpl.Instance.GetConnection(ConnectionString);
             }
 
             return conn;
@@ -263,7 +278,7 @@ namespace Datory
                 }
             }
 
-            if (DatabaseType != DatabaseType.SQLite)
+            if (DatabaseType != DatabaseType.SQLite && DatabaseType != DatabaseType.KingbaseES)
             {
                 if (identityColumn != null)
                 {
@@ -406,9 +421,17 @@ namespace Datory
             {
                 list = await SQLiteImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
+            else if (DatabaseType == DatabaseType.Gauss)
+            {
+                list = await GaussImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
+            }
             else if (DatabaseType == DatabaseType.Dm)
             {
                 list = await DmImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
+            }
+            else if (DatabaseType == DatabaseType.KingbaseES)
+            {
+                list = await KingbaseESImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
 
             return list;
@@ -441,9 +464,17 @@ namespace Datory
             {
                 tableNames = await SQLiteImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
+            else if (DatabaseType == DatabaseType.Gauss)
+            {
+                tableNames = await GaussImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
+            }
             else if (DatabaseType == DatabaseType.Dm)
             {
                 tableNames = await DmImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.KingbaseES)
+            {
+                tableNames = await KingbaseESImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
 
             return tableNames;
@@ -469,9 +500,17 @@ namespace Datory
             {
                 exists = await SQLiteImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
+            else if (DatabaseType == DatabaseType.Gauss)
+            {
+                exists = await GaussImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
+            }
             else if (DatabaseType == DatabaseType.Dm)
             {
                 exists = await DmImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
+            }
+            else if (DatabaseType == DatabaseType.KingbaseES)
+            {
+                exists = await KingbaseESImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
 
             return exists;
@@ -497,9 +536,17 @@ namespace Datory
             {
                 tableNames = await SQLiteImpl.Instance.GetTableNamesAsync(ConnectionString);
             }
+            else if (DatabaseType == DatabaseType.Gauss)
+            {
+                tableNames = await GaussImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
             else if (DatabaseType == DatabaseType.Dm)
             {
                 tableNames = await DmImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.KingbaseES)
+            {
+                tableNames = await KingbaseESImpl.Instance.GetTableNamesAsync(ConnectionString);
             }
 
             return tableNames;

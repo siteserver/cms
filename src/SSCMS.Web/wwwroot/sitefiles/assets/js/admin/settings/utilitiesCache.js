@@ -36,7 +36,7 @@ var methods = {
     $api.post($urlClearCache).then(function (response) {
       var res = response.data;
 
-      utils.success('成功清空缓存！');
+      utils.success('缓存清空成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -44,16 +44,14 @@ var methods = {
     });
   },
 
-  btnRestartClick: function() {
-    var $this = this;
-
-    utils.loading(this, true);
+  apiRestart: function () {
+    utils.loading(this, true, '系统重启中，请稍后...');
     $api.post($urlRestart).then(function (response) {
       var res = response.data;
 
       setTimeout(function () {
         utils.alertSuccess({
-          title: '成功重启系统',
+          title: '系统重启成功',
           callback: function() {
             window.top.location.reload(true);
           }
@@ -61,6 +59,15 @@ var methods = {
       }, 30000);
     }).catch(function (error) {
       utils.error(error);
+    });
+  },
+
+  btnRestartClick: function() {
+    utils.alertDelete({
+      title: '重启系统',
+      text: '此操作将重启系统，确定吗？',
+      button: '确 定',
+      callback: this.apiRestart
     });
   },
 

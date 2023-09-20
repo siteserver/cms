@@ -1,5 +1,6 @@
 ﻿using System;
 using Datory;
+using Datory.Utils;
 using Microsoft.Extensions.Configuration;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
@@ -54,12 +55,12 @@ namespace SSCMS.Core.Services
                 SecurityKey = envSecurityKey;
                 DatabaseType = TranslateUtils.ToEnum(envDatabaseType, DatabaseType.MySql);
                 DatabaseConnectionString = DatabaseType == DatabaseType.SQLite
-                    ? $"Data Source={Constants.LocalDbContainerVirtualPath};Version=3;"
+                    ? $"Data Source={DbUtils.LocalDbContainerVirtualPath};Version=3;"
                     : envDatabaseConnectionString;
                 if (string.IsNullOrEmpty(DatabaseConnectionString))
                 {
                     var port = TranslateUtils.ToInt(envDatabasePort);
-                    DatabaseConnectionString = InstallUtils.GetDatabaseConnectionString(DatabaseType, envDatabaseHost,
+                    DatabaseConnectionString = DbUtils.GetConnectionString(DatabaseType, envDatabaseHost,
                         port == 0, port,
                         envDatabaseUser, envDatabasePassword, envDatabaseName);
                 }
@@ -83,7 +84,7 @@ namespace SSCMS.Core.Services
                         ? Decrypt(_config.GetValue<string>("Database:Type"))
                         : _config.GetValue<string>("Database:Type"), DatabaseType.MySql);
                 DatabaseConnectionString = DatabaseType == DatabaseType.SQLite
-                    ? $"Data Source={Constants.LocalDbHostVirtualPath};Version=3;"
+                    ? $"Data Source={DbUtils.LocalDbHostVirtualPath};Version=3;"
                     : IsProtectData
                         ? Decrypt(_config.GetValue<string>("Database:ConnectionString"))
                         : _config.GetValue<string>("Database:ConnectionString");

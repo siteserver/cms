@@ -45,8 +45,6 @@ namespace SSCMS.Repositories
 
         Task<(bool success, string errorMessage)> ValidateStateAsync(User user);
 
-        Dictionary<DateTime, int> GetTrackingDictionary(DateTime dateFrom, DateTime dateTo, string xType);
-
         Task<int> GetCountAsync();
 
         Task<int> GetCountAsync(bool? state, int groupId, int dayOfLastActivity, string keyword);

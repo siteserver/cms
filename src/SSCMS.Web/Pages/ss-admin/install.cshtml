@@ -134,6 +134,9 @@
           <el-form-item label="数据库密码" prop="databasePassword" :rules="{ required: true, message: '请输入数据库密码' }">
             <el-input v-model="databaseForm.databasePassword" type="password" placeholder="连接数据库的密码"></el-input>
           </el-form-item>
+          <el-form-item v-if="databaseForm.databaseType === $dm || databaseForm.databaseType === $kingbaseES" label="数据库实例" prop="databaseName" :rules="{ required: true, message: '请输入数据库实例' }">
+            <el-input v-model="databaseForm.databaseName" placeholder="连接的数据库实例"></el-input>
+          </el-form-item>
         </template>
         <template v-else>
           <el-form-item label="选择数据库实例" prop="databaseName" :rules="{ required: true, message: '请选择需要安装的数据库实例' }">

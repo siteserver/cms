@@ -7,6 +7,8 @@ namespace Datory.DatabaseImpl
 {
     public interface IDatabaseImpl
     {
+        string GetConnectionString(string server, bool isDefaultPort, int port, string userName, string password, string databaseName);
+        
         DbConnection GetConnection(string connectionString);
 
         Compiler GetCompiler(string connectionString);

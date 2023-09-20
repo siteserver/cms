@@ -26,6 +26,23 @@ namespace Datory.DatabaseImpl
             }
         }
 
+        public string GetConnectionString(string server, bool isDefaultPort, int port, string userName, string password, string databaseName)
+        {
+            var connectionString = $"Server={server};";
+
+            if (!isDefaultPort && port > 0)
+            {
+                connectionString += $"Port={port};";
+            }
+            connectionString += $"User Id={userName};Password={password};";
+            if (!string.IsNullOrEmpty(databaseName))
+            {
+                connectionString += $"Database={databaseName};";
+            }
+
+            return connectionString;
+        }
+
         public DbConnection GetConnection(string connectionString)
         {
             return new NpgsqlConnection(connectionString);

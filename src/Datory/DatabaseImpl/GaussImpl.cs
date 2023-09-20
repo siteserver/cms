@@ -1,19 +1,22 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dapper;
+using Npgsql;
 using SqlKata.Compilers;
 using Datory.Utils;
-using Kdbndp;
+using MySql.Data.Common;
+
+// https://www.donet5.com/Home/Doc?typeId=2438
+// https://opengauss.org/
 
 [assembly: InternalsVisibleTo("Datory.Tests")]
 
 namespace Datory.DatabaseImpl
 {
-    internal class KingbaseESImpl : IDatabaseImpl
+    internal class GaussImpl : IDatabaseImpl
     {
         private static IDatabaseImpl _instance;
         public static IDatabaseImpl Instance
@@ -21,7 +24,7 @@ namespace Datory.DatabaseImpl
             get
             {
                 if (_instance != null) return _instance;
-                _instance = new KingbaseESImpl();
+                _instance = new GaussImpl();
                 return _instance;
             }
         }
@@ -36,17 +39,21 @@ namespace Datory.DatabaseImpl
             }
             else
             {
-                connectionString += "Port=54321;";
+                connectionString += "Port=5432;";
             }
             connectionString += $"User Id={userName};Password={password};";
-            connectionString += $"Database={databaseName};";
+            if (!string.IsNullOrEmpty(databaseName))
+            {
+                connectionString += $"Database={databaseName};";
+            }
+            connectionString += "No Reset On Close=true;";
 
             return connectionString;
         }
 
         public DbConnection GetConnection(string connectionString)
         {
-            return new KdbndpConnection(connectionString);
+            return new NpgsqlConnection(connectionString);
         }
 
         public Compiler GetCompiler(string connectionString)
@@ -126,67 +133,63 @@ namespace Datory.DatabaseImpl
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
         {
-            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) + {plusNum}";
+            return $"COALESCE({GetQuotedIdentifier(columnName)}, 0) + {plusNum}";
         }
 
         public string ColumnDecrement(string columnName, int minusNum = 1)
         {
-            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) - {minusNum}";
+            return $"COALESCE({GetQuotedIdentifier(columnName)}, 0) - {minusNum}";
         }
 
         public string GetAutoIncrementDataType(bool alterTable = false)
         {
-            return "integer AUTO_INCREMENT";
+            return "SERIAL";
         }
 
-        private string ToColumnString(DataType type, string columnName, int length)
+        private string ToColumnString(DataType type, string attributeName, int length)
         {
+            attributeName = GetQuotedIdentifier(attributeName);
             if (type == DataType.Boolean)
             {
-                return $"{columnName} boolean";
+                return $"{attributeName} bool";
             }
             if (type == DataType.DateTime)
             {
-                return $"{columnName} timestamptz";
+                return $"{attributeName} timestamptz";
             }
             if (type == DataType.Decimal)
             {
-                return $"{columnName} dec(18, 2)";
+                return $"{attributeName} numeric(18, 2)";
             }
             if (type == DataType.Integer)
             {
-                return $"{columnName} integer";
+                return $"{attributeName} int4";
             }
             if (type == DataType.Text)
             {
-                return $"{columnName} text";
+                return $"{attributeName} text";
             }
-            return $"{columnName} varchar({length})";
+            return $"{attributeName} varchar({length})";
         }
 
         public string GetColumnSqlString(TableColumn tableColumn)
         {
-            var columnName = GetQuotedIdentifier(tableColumn.AttributeName);
             if (tableColumn.IsIdentity)
             {
-                return $@"{columnName} {GetAutoIncrementDataType()}";
+                return $@"{GetQuotedIdentifier(tableColumn.AttributeName)} {GetAutoIncrementDataType()}";
             }
 
-            return ToColumnString(tableColumn.DataType, columnName, tableColumn.DataLength);
+            return ToColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
         }
 
         public string GetPrimaryKeySqlString(string tableName, string attributeName)
         {
-            return $@"PRIMARY KEY ({attributeName})";
+            var pkName = GetQuotedIdentifier($"PK_{tableName}_{attributeName}");
+            return $@"CONSTRAINT {pkName} PRIMARY KEY ({GetQuotedIdentifier(attributeName)})";
         }
 
         public string GetQuotedIdentifier(string identifier)
         {
-            if (string.IsNullOrEmpty(identifier) || identifier == "*")
-            {
-                return identifier;
-            }
-
             return $@"""{identifier}""";
         }
 
@@ -199,23 +202,23 @@ namespace Datory.DatabaseImpl
             dataTypeStr = Utilities.TrimAndToLower(dataTypeStr);
             switch (dataTypeStr)
             {
-                case "boolean":
+                case "varchar":
+                    dataType = DataType.VarChar;
+                    break;
+                case "bool":
                     dataType = DataType.Boolean;
                     break;
                 case "timestamptz":
                     dataType = DataType.DateTime;
                     break;
-                case "dec":
+                case "numeric":
                     dataType = DataType.Decimal;
                     break;
-                case "integer":
+                case "int4":
                     dataType = DataType.Integer;
                     break;
                 case "text":
                     dataType = DataType.Text;
-                    break;
-                case "varchar":
-                    dataType = DataType.VarChar;
                     break;
             }
 

@@ -6,6 +6,44 @@ namespace Datory.Utils
     public static class DbUtils
     {
         public const int VarCharDefaultLength = 500;
+        public const string LocalDbHostVirtualPath = "~/database.sqlite";
+        public const string LocalDbContainerVirtualPath = "~/wwwroot/sitefiles/database.sqlite";
+
+        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string databaseName)
+        {
+            var connectionString = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                connectionString = MySqlImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                connectionString = SqlServerImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                connectionString = PostgreSqlImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+                connectionString = SQLiteImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                connectionString = GaussImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                connectionString = DmImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                connectionString = KingbaseESImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+            }
+
+            return connectionString;
+        }
 
         internal static Compiler GetCompiler(DatabaseType databaseType, string connectionString)
         {
@@ -26,6 +64,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 compiler = SQLiteImpl.Instance.GetCompiler(connectionString);
+            }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                compiler = GaussImpl.Instance.GetCompiler(connectionString);
             }
             else if (databaseType == DatabaseType.Dm)
             {
@@ -59,6 +101,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.ColumnIncrement(columnName, plusNum);
             }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.ColumnIncrement(columnName, plusNum);
+            }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.ColumnIncrement(columnName, plusNum);
@@ -90,6 +136,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.ColumnDecrement(columnName, minusNum);
+            }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.ColumnDecrement(columnName, minusNum);
             }
             else if (databaseType == DatabaseType.Dm)
             {
@@ -123,6 +173,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetAutoIncrementDataType(alterTable);
             }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.GetAutoIncrementDataType(alterTable);
+            }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetAutoIncrementDataType(alterTable);
@@ -154,6 +208,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.GetColumnSqlString(tableColumn);
+            }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.GetColumnSqlString(tableColumn);
             }
             else if (databaseType == DatabaseType.Dm)
             {
@@ -187,6 +245,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
             }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
+            }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
@@ -218,6 +280,10 @@ namespace Datory.Utils
             else if (databaseType == DatabaseType.SQLite)
             {
                 retVal = SQLiteImpl.Instance.GetQuotedIdentifier(identifier);
+            }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.GetQuotedIdentifier(identifier);
             }
             else if (databaseType == DatabaseType.Dm)
             {
@@ -251,6 +317,10 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
             }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                retVal = GaussImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
+            }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
@@ -268,6 +338,146 @@ namespace Datory.Utils
             return databaseType == DatabaseType.SQLite
                 ? string.Empty
                 : $"ALTER TABLE {GetQuotedIdentifier(databaseType, tableName)} DROP COLUMN {GetQuotedIdentifier(databaseType, columnName)}";
+        }
+
+        public static string GetOrderByRandomString(DatabaseType databaseType)
+        {
+            var orderBy = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                orderBy = "RAND()";
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                orderBy = "NEWID()";
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                orderBy = "random()";
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+                orderBy = "RANDOM()";
+            }
+            else if (databaseType == DatabaseType.Gauss)
+            {
+                orderBy = "random()";
+            }
+            else if (databaseType == DatabaseType.Dm)
+            {
+                orderBy = "RAND()";
+            }
+            else if (databaseType == DatabaseType.KingbaseES)
+            {
+                orderBy = "random()";
+            }
+
+            return orderBy;
+        }
+
+        public static string GetInStr(IDatabase database, string columnName, string inStr)
+        {
+            var retVal = string.Empty;
+            inStr = Utilities.FilterSql(inStr);
+            columnName = database.GetQuotedIdentifier(columnName);
+
+            if (database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"INSTR({columnName}, '{inStr}') > 0";
+            }
+            else if (database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"CHARINDEX('{inStr}', {columnName}) > 0";
+            }
+            else if (database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
+            }
+            else if (database.DatabaseType == DatabaseType.SQLite)
+            {
+                retVal = $"INSTR({columnName}, '{inStr}') > 0";
+            }
+            else if (database.DatabaseType == DatabaseType.Gauss)
+            {
+                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
+            }
+            else if (database.DatabaseType == DatabaseType.Dm)
+            {
+                retVal = $"INSTR({columnName}, '{inStr}') > 0";
+            }
+            else if (database.DatabaseType == DatabaseType.KingbaseES)
+            {
+                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
+            }
+
+            return retVal;
+        }
+
+        public static string GetNotInStr(IDatabase database, string columnName, string inStr)
+        {
+            var retVal = string.Empty;
+            columnName = database.GetQuotedIdentifier(columnName);
+
+            if (database.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $"INSTR({columnName}, '{inStr}') = 0";
+            }
+            else if (database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"CHARINDEX('{inStr}', {columnName}) = 0";
+            }
+            else if (database.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
+            }
+            else if (database.DatabaseType == DatabaseType.SQLite)
+            {
+                retVal = $"INSTR({columnName}, '{inStr}') = 0";
+            }
+            else if (database.DatabaseType == DatabaseType.Gauss)
+            {
+                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
+            }
+            else if (database.DatabaseType == DatabaseType.Dm)
+            {
+                retVal = $"INSTR({columnName}, '{inStr}') = 0";
+            }
+            else if (database.DatabaseType == DatabaseType.KingbaseES)
+            {
+                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
+            }
+
+            return retVal;
+        }
+
+        public static string ToTopSqlString(IDatabase database, string tableName, string columns, string whereString, string orderString, int topN)
+        {
+            tableName = database.GetQuotedIdentifier(tableName);
+
+            var retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
+            if (topN <= 0) return retVal;
+
+            if (database.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
+            }
+            else
+            {
+                retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+            }
+
+            return retVal;
+        }
+
+        public static string ToSqlBool(DatabaseType databaseType, bool val)
+        {
+            if (databaseType == DatabaseType.SqlServer || databaseType == DatabaseType.Dm)
+            {
+                return val ? "1" : "0";
+            }
+
+            return val.ToString().ToLower();
         }
     }
 }

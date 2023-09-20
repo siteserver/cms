@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
+using Datory.Utils;
 using SqlKata;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -124,21 +125,10 @@ namespace SSCMS.Core.Services
             }
             else if (taxisType == TaxisType.OrderByRandom)
             {
-                if (_settingsManager.DatabaseType == DatabaseType.SQLite)
+                var orderBy = DbUtils.GetOrderByRandomString(_settingsManager.DatabaseType);
+                if (!string.IsNullOrEmpty(orderBy))
                 {
-                    retVal = "ORDER BY RANDOM()";
-                }
-                else if (_settingsManager.DatabaseType == DatabaseType.MySql)
-                {
-                    retVal = "ORDER BY RAND()";
-                }
-                else if (_settingsManager.DatabaseType == DatabaseType.PostgreSql)
-                {
-                    retVal = "ORDER BY random()";
-                }
-                else if (_settingsManager.DatabaseType == DatabaseType.SqlServer)
-                {
-                    retVal = "ORDER BY NEWID()";
+                    retVal = $"ORDER BY {orderBy}";
                 }
             }
 

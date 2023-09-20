@@ -600,10 +600,10 @@ var utils = {
     }
   },
 
-  loading: function (app, isLoading) {
+  loading: function (app, isLoading, text) {
     if (isLoading) {
       if (app.pageLoad) {
-        app.loading = app.$loading({ text: '页面加载中' });
+        app.loading = app.$loading({ text: text || '页面加载中...' });
       }
     } else {
       app.loading ? app.loading.close() : (app.pageLoad = true);

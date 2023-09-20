@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Datory;
+using Datory.Utils;
 using SSCMS.Core.Utils;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -367,15 +368,6 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
             }
-            else if (_settingsManager.Database.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retVal = $@"
-SELECT * FROM (
-    SELECT * FROM (
-        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
-    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
-) AS t2 {orderString}";
-            }
             else
             {
                 retVal = $@"
@@ -385,25 +377,6 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-
-            //            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            //            {
-            //                return $@"
-            //SELECT * FROM (
-            //    SELECT * FROM (
-            //        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
-            //    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
-            //) AS t2 {orderString}";
-            //            }
-            //            else
-            //            {
-            //                return $@"
-            //SELECT * FROM (
-            //    SELECT TOP {recsToRetrieve} * FROM (
-            //        SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
-            //    ) AS t1 {orderStringReverse}
-            //) AS t2 {orderString}";
-            //            }
 
             return retVal;
         }
@@ -429,7 +402,7 @@ SELECT * FROM (
                 whereString = joinString + " " + whereString;
             }
 
-            return DatabaseUtils.ToTopSqlString(_settingsManager.Database, tableName, columns, whereString, orderByString, totalNum);
+            return DbUtils.ToTopSqlString(_settingsManager.Database, tableName, columns, whereString, orderByString, totalNum);
         }
 
         public int GetCount(string tableName)
@@ -549,7 +522,7 @@ SELECT * FROM (
 ) as T {rowWhere}";
                 }
             }
-            else if (_settingsManager.Database.DatabaseType == DatabaseType.PostgreSql)
+            else
             {
                 retVal = limit == 0
                     ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"

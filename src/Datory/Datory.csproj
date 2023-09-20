@@ -31,7 +31,7 @@
     <PackageReference Include="SqlKata" Version="2.4.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="dmdbms.DmProvider" Version="1.1.3" />
-    <PackageReference Include="Kdbndp.EntityFrameworkCore6.KingbaseES" Version="6.0.6.1" />
+    <PackageReference Include="KingbaseES.EntityFrameworkCore" Version="6.0.7" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
@@ -569,21 +570,10 @@ namespace SSCMS.Core.Repositories
             }
             else if (taxisType == TaxisType.OrderByRandom)
             {
-                if (databaseType == DatabaseType.SQLite)
+                var orderBy = DbUtils.GetOrderByRandomString(databaseType);
+                if (!string.IsNullOrEmpty(orderBy))
                 {
-                    query.OrderByRaw("RANDOM()");
-                }
-                else if (databaseType == DatabaseType.MySql)
-                {
-                    query.OrderByRaw("RAND()");
-                }
-                else if (databaseType == DatabaseType.PostgreSql)
-                {
-                    query.OrderByRaw("random()");
-                }
-                else if (databaseType == DatabaseType.SqlServer)
-                {
-                    query.OrderByRaw("NEWID()");
+                    query.OrderByRaw(orderBy);
                 }
             }
         }

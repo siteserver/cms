@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Datory;
+using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin
                 if (_settingsManager.DatabaseType == DatabaseType.SQLite)
                 {
                     var filePath = PathUtils.Combine(_settingsManager.ContentRootPath,
-                        Constants.LocalDbContainerVirtualPath.Substring(1));
+                        DbUtils.LocalDbContainerVirtualPath.Substring(1));
                     if (!FileUtils.IsFileExists(filePath))
                     {
                         await FileUtils.WriteTextAsync(filePath, string.Empty);

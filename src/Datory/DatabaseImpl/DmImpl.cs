@@ -26,6 +26,28 @@ namespace Datory.DatabaseImpl
             }
         }
 
+        public string GetConnectionString(string server, bool isDefaultPort, int port, string userName, string password, string databaseName)
+        {
+            var connectionString = $"Server={server};";
+
+            if (!isDefaultPort && port > 0)
+            {
+                connectionString += $"Port={port};";
+            }
+            else
+            {
+                connectionString += "Port=5236;";
+            }
+            connectionString += $"UserId={userName};Pwd={password};";
+            if (!string.IsNullOrEmpty(databaseName))
+            {
+                connectionString += $"Database={databaseName};";
+            }
+            connectionString += "encoding=utf-8;";
+
+            return connectionString;
+        }
+
         public DbConnection GetConnection(string connectionString)
         {
             return new DmConnection(connectionString);
@@ -179,7 +201,7 @@ namespace Datory.DatabaseImpl
             {
                 value = "ID";
             }
-            return string.Format($@"""{value}""");
+            return $@"""{value}""";
         }
 
         private DataType ToDataType(string dataTypeStr)
@@ -278,6 +300,24 @@ namespace Datory.DatabaseImpl
         {
             tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
             return $"ALTER TABLE {tableName} ADD ({columnsSqlString})";
+        }
+    }
+
+    internal class DmCompiler : OracleCompiler
+    {
+        public override string Wrap(string value)
+        {
+            return DmImpl.Wrap(value);
+        }
+
+        public override string CompileTrue()
+        {
+            return "1";
+        }
+
+        public override string CompileFalse()
+        {
+            return "0";
         }
     }
 }

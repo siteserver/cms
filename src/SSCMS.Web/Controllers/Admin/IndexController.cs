@@ -143,9 +143,5 @@ namespace SSCMS.Web.Controllers.Admin
 
             return (redirect, redirectUrl);
         }
-
-
-
-
     }
 }

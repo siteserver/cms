@@ -1,6 +1,8 @@
 var $url = "/install";
 var $routeUnCheckedList = "unCheckedList";
 var $sqlite = 'SQLite';
+var $dm = 'Dm';
+var $kingbaseES = 'KingbaseES';
 
 var data = utils.init({
   forbidden: false,
@@ -91,7 +93,7 @@ var methods = {
     $api.post($url + '/actions/databaseConnect', this.databaseForm).then(function (response) {
       var res = response.data;
 
-      if ($this.containerized) {
+      if ($this.containerized || $this.databaseForm.databaseType === $dm || $this.databaseForm.databaseType === $kingbaseES) {
         $this.pageIndex++;
         return;
       }

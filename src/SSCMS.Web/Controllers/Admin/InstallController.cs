@@ -60,6 +60,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string DatabasePort { get; set; }
             public string DatabaseUserName { get; set; }
             public string DatabasePassword { get; set; }
+            public string DatabaseName { get; set; }
         }
 
         public class DatabaseConnectResult

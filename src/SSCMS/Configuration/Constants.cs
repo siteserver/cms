@@ -18,9 +18,6 @@ namespace SSCMS.Configuration
         public const string DefaultLanguage = "en";
         public const string EncryptStingIndicator = "0secret0";
 
-        public const string LocalDbHostVirtualPath = "~/database.sqlite";
-        public const string LocalDbContainerVirtualPath = "~/wwwroot/sitefiles/database.sqlite";
-
         public const int AccessTokenExpireDays = 7;
 
         public const string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页占位符
