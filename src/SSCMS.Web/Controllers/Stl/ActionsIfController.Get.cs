@@ -33,10 +33,12 @@ namespace SSCMS.Web.Controllers.Stl
                     {
                         var groups = await _userGroupRepository.GetUserGroupsAsync();
                         var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
-                        if (group != null)
-                        {
-                            isSuccess = group.GroupName == ifInfo.Value;
-                        }
+                        isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
+                        
+                        // if (group != null)
+                        // {
+                        //     isSuccess = group.GroupName == ifInfo.Value;
+                        // }
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))

@@ -747,7 +747,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return isSuccess;
         }
 
-        private static bool TestTypeValue(string testOperate, string testValue, string actualValue)
+        public static bool TestTypeValue(string testOperate, string testValue, string actualValue)
         {
             var isSuccess = false;
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
