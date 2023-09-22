@@ -318,7 +318,7 @@ function stlRedirect{elementId}(page)
             }}
         }}
         parameters += 'page=' + page;
-        location.href = location.protocol + '//' + location.host + location.pathname + location.hash + '?' + parameters;
+        location.href = location.protocol + '//' + location.host + location.pathname + '?' + parameters + location.hash;
     }}
 }}
 </script>
