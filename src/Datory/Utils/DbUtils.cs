@@ -29,17 +29,13 @@ namespace Datory.Utils
             {
                 connectionString = SQLiteImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                connectionString = GaussImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                connectionString = KingbaseESImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 connectionString = DmImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                connectionString = KingbaseESImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
             }
 
             return connectionString;
@@ -65,17 +61,13 @@ namespace Datory.Utils
             {
                 compiler = SQLiteImpl.Instance.GetCompiler(connectionString);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                compiler = GaussImpl.Instance.GetCompiler(connectionString);
+                compiler = KingbaseESImpl.Instance.GetCompiler(connectionString);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 compiler = DmImpl.Instance.GetCompiler(connectionString);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                compiler = KingbaseESImpl.Instance.GetCompiler(connectionString);
             }
 
             return compiler;
@@ -101,17 +93,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.ColumnIncrement(columnName, plusNum);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.ColumnIncrement(columnName, plusNum);
+                retVal = KingbaseESImpl.Instance.ColumnIncrement(columnName, plusNum);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.ColumnIncrement(columnName, plusNum);
             }
 
             return retVal;
@@ -137,17 +125,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.ColumnDecrement(columnName, minusNum);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.ColumnDecrement(columnName, minusNum);
+                retVal = KingbaseESImpl.Instance.ColumnDecrement(columnName, minusNum);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.ColumnDecrement(columnName, minusNum);
             }
 
             return retVal;
@@ -173,17 +157,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetAutoIncrementDataType(alterTable);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.GetAutoIncrementDataType(alterTable);
+                retVal = KingbaseESImpl.Instance.GetAutoIncrementDataType(alterTable);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetAutoIncrementDataType(alterTable);
             }
 
             return retVal;
@@ -209,17 +189,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetColumnSqlString(tableColumn);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.GetColumnSqlString(tableColumn);
+                retVal = KingbaseESImpl.Instance.GetColumnSqlString(tableColumn);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetColumnSqlString(tableColumn);
             }
 
             return retVal;
@@ -245,17 +221,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
+                retVal = KingbaseESImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
             }
 
             return retVal;
@@ -281,17 +253,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetQuotedIdentifier(identifier);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.GetQuotedIdentifier(identifier);
+                retVal = KingbaseESImpl.Instance.GetQuotedIdentifier(identifier);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetQuotedIdentifier(identifier);
             }
 
             return retVal;
@@ -317,17 +285,13 @@ namespace Datory.Utils
             {
                 retVal = SQLiteImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
-                retVal = GaussImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
+                retVal = KingbaseESImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 retVal = DmImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
             }
 
             return retVal;
@@ -360,17 +324,13 @@ namespace Datory.Utils
             {
                 orderBy = "RANDOM()";
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
                 orderBy = "random()";
             }
             else if (databaseType == DatabaseType.Dm)
             {
                 orderBy = "RAND()";
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                orderBy = "random()";
             }
 
             return orderBy;
@@ -398,17 +358,13 @@ namespace Datory.Utils
             {
                 retVal = $"INSTR({columnName}, '{inStr}') > 0";
             }
-            else if (database.DatabaseType == DatabaseType.Gauss)
+            else if (database.DatabaseType == DatabaseType.KingbaseES)
             {
                 retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
             }
             else if (database.DatabaseType == DatabaseType.Dm)
             {
                 retVal = $"INSTR({columnName}, '{inStr}') > 0";
-            }
-            else if (database.DatabaseType == DatabaseType.KingbaseES)
-            {
-                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
             }
 
             return retVal;
@@ -435,17 +391,13 @@ namespace Datory.Utils
             {
                 retVal = $"INSTR({columnName}, '{inStr}') = 0";
             }
-            else if (database.DatabaseType == DatabaseType.Gauss)
+            else if (database.DatabaseType == DatabaseType.KingbaseES)
             {
                 retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
             }
             else if (database.DatabaseType == DatabaseType.Dm)
             {
                 retVal = $"INSTR({columnName}, '{inStr}') = 0";
-            }
-            else if (database.DatabaseType == DatabaseType.KingbaseES)
-            {
-                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
             }
 
             return retVal;

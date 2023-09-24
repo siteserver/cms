@@ -518,6 +518,7 @@ namespace Datory
         private static string GetInStrWhere(DatabaseType databaseType, string columnName)
         {
             var where = string.Empty;
+            
             if (databaseType == DatabaseType.MySql)
             {
                 where = $"INSTR([{columnName}], ?) > 0";
@@ -534,7 +535,7 @@ namespace Datory
             {
                 where = $"INSTR([{columnName}], ?) > 0";
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
                 where = $"POSITION(? IN [{columnName}]) > 0";
             }
@@ -542,10 +543,7 @@ namespace Datory
             {
                 where = $"INSTR([{columnName}], ?) > 0";
             }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                where = $"POSITION(? IN [{columnName}]) > 0";
-            }
+
             return where;
         }
 
@@ -574,6 +572,7 @@ namespace Datory
         private static string GetInStrReverseWhere(DatabaseType databaseType, string columnName)
         {
             var where = string.Empty;
+
             if (databaseType == DatabaseType.MySql)
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
@@ -590,7 +589,7 @@ namespace Datory
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
                 where = $"POSITION([{columnName}] IN ?) > 0";
             }
@@ -598,10 +597,7 @@ namespace Datory
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
             }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                where = $"POSITION([{columnName}] IN ?) > 0";
-            }
+
             return where;
         }
 
@@ -630,6 +626,7 @@ namespace Datory
         private static string GetNotInStrWhere(DatabaseType databaseType, string columnName)
         {
             var where = string.Empty;
+
             if (databaseType == DatabaseType.MySql)
             {
                 where = $"INSTR([{columnName}], ?) = 0";
@@ -646,7 +643,7 @@ namespace Datory
             {
                 where = $"INSTR([{columnName}], ?) = 0";
             }
-            else if (databaseType == DatabaseType.Gauss)
+            else if (databaseType == DatabaseType.KingbaseES)
             {
                 where = $"POSITION(? IN [{columnName}]) = 0";
             }
@@ -654,10 +651,7 @@ namespace Datory
             {
                 where = $"INSTR([{columnName}], ?) = 0";
             }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                where = $"POSITION(? IN [{columnName}]) = 0";
-            }
+
             return where;
         }
 
