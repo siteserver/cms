@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Configuration;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 {
@@ -17,7 +18,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return this.Error("无法确定内容对应的站点");
+            if (site == null) return this.Error(Constants.ErrorNotFound);
+
+            var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
 
             var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
@@ -27,6 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
                 return new
                 {
+                    Disabled = !channelIdList.Contains(summary.Id),
                     summary.IndexName,
                     Count = count
                 };

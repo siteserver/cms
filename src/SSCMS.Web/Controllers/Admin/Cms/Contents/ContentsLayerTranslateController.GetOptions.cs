@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            //var channelIdList = await _authManager.GetChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
+            var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.TransSiteId, MenuUtils.ContentPermissions.Add);
 
             var transChannels = await _channelRepository.GetAsync(request.TransSiteId);
             var transSite = await _siteRepository.GetAsync(request.TransSiteId);
@@ -31,7 +31,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
                 return new
                 {
-                    //Disabled = !channelIdList.Contains(summary.Id),
+                    Disabled = !channelIdList.Contains(summary.Id),
                     summary.IndexName,
                     Count = count
                 };

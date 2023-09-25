@@ -21,18 +21,24 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
+            var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.SiteId, MenuUtils.ContentPermissions.View);
+
             var channel = await _channelRepository.GetAsync(request.SiteId);
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 var count = await _contentRepository.GetCountAsync(site, summary);
+
                 return new
                 {
                     Count = count,
-                    summary.IndexName
+                    summary.IndexName,
+                    Disabled = !channelIdList.Contains(summary.Id),
                 };
             });
 
-            var transSites = await _siteRepository.GetSelectsAsync();
+            var siteIdList = await _authManager.GetSiteIdsAsync();
+            var transSites = await _siteRepository.GetSelectsAsync(siteIdList);
+
             var transChannels = await _channelRepository.GetAsync(request.SiteId);
             var transCascade = await _channelRepository.GetCascadeAsync(site, transChannels, async summary =>
             {
@@ -40,8 +46,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
                 return new
                 {
+                    Count = count,
                     summary.IndexName,
-                    Count = count
+                    Disabled = !channelIdList.Contains(summary.Id),
                 };
             });
             var translateTypes = ListUtils.GetEnums<ChannelTranslateType>().Select(x => new Select<string>(x));
