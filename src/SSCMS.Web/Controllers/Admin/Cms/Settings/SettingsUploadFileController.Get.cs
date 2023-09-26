@@ -19,11 +19,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var site = await _siteRepository.GetAsync(request.SiteId);
 
             var fileUploadExtensions = site.FileUploadExtensions;
+            var fileDownloadExtensions = site.FileDownloadExtensions;
+            var fileUploadTypeMaxSize = site.FileUploadTypeMaxSize / 1024;
+            
             if (_settingsManager.IsSafeMode)
             {
                 fileUploadExtensions = Constants.DefaultFileUploadExtensions;
+                fileDownloadExtensions = Constants.DefaultFileDownloadExtensions;
             }
-            var fileUploadTypeMaxSize = site.FileUploadTypeMaxSize / 1024;
 
             return new GetResult
             {
@@ -33,7 +36,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 FileUploadDateFormatString = site.FileUploadDateFormatString,
                 IsFileUploadChangeFileName = site.IsFileUploadChangeFileName,
                 FileUploadExtensions = fileUploadExtensions,
-                FileUploadTypeMaxSize = fileUploadTypeMaxSize
+                FileUploadTypeMaxSize = fileUploadTypeMaxSize,
+                FileDownloadExtensions = fileDownloadExtensions,
             };
         }
     }

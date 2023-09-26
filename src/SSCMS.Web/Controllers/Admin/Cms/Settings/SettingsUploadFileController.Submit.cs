@@ -23,10 +23,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             site.IsFileUploadChangeFileName = request.IsFileUploadChangeFileName;
             site.FileUploadExtensions = request.FileUploadExtensions.Replace("|", ",");
             site.FileUploadTypeMaxSize = request.FileUploadTypeMaxSize * 1024;
+            site.FileDownloadExtensions = request.FileDownloadExtensions.Replace("|", ",");
 
             if (_settingsManager.IsSafeMode)
             {
                 site.FileUploadExtensions = Constants.DefaultFileUploadExtensions;
+                site.FileDownloadExtensions = Constants.DefaultFileDownloadExtensions;
             }
 
             await _siteRepository.UpdateAsync(site);

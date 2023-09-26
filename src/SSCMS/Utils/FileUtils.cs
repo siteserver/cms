@@ -357,20 +357,6 @@ namespace SSCMS.Utils
             return false;
         }
 
-        public static bool IsDownload(FileType type)
-        {
-            var download = false;
-            if (IsTextEditable(type) || IsImageOrPlayer(type.GetValue()))
-            {
-                download = true;
-            }
-            else if (type == FileType.Pdf || type == FileType.Doc || type == FileType.Docx || type == FileType.Ppt || type == FileType.Pptx || type == FileType.Xls || type == FileType.Xlsx || type == FileType.Mdb || type == FileType.Mp3 || type == FileType.Mp4)
-            {
-                download = true;
-            }
-            return download;
-        }
-
         public static string ContentMd5(string filePath)
         {
             string output;

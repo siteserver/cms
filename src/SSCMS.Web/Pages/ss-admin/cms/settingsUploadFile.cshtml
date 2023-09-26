@@ -34,6 +34,10 @@
     <el-input v-model.number="form.fileUploadTypeMaxSize" style="width: 120px" placeholder="请输入上传附件最大大小"></el-input>
     <span class="tips">(MB)</span>
   </el-form-item>
+  <el-form-item label="下载附件类型" prop="fileDownloadExtensions" :rules="{ required: true, message: '请输入下载附件类型' }">
+    <el-input v-model="form.fileDownloadExtensions" :disabled="isSafeMode" placeholder="请输入下载附件类型"></el-input>
+    <div class="tips">点击下载以上类型文件时，系统将弹出下载保存框强制下载文件，类型之间用“,”分割</div>
+  </el-form-item>
 
   <el-form-item>
     <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>

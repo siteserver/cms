@@ -92,6 +92,9 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypeItemIndex = "ItemIndex";			                                //当前项序号
         private const string TypeOddItem = "OddItem";			                                    //奇数项
         private const string TypeFirst = "First";			                                        //第一项
+        private const string TypeImages = "Images";			                                        //图片数目
+        private const string TypeVideos = "Videos";			                                        //视频数目
+        private const string TypeFiles = "Files";			                                        //文件数目
 
         private const string OperateEmpty = "Empty";
         private const string OperateNotEmpty = "NotEmpty";			                              //值不为空
@@ -955,7 +958,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 theValue = channel.LinkUrl;
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "Images"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, TypeImages))
             {
                 var countName = ColumnsManager.GetCountName(nameof(Channel.ImageUrl));
                 theValue = channel.Get<int>(countName).ToString();
@@ -1007,7 +1010,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     theValue = true.ToString();
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "Images"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, TypeImages))
             {
                 if (!string.IsNullOrEmpty(content.ImageUrl))
                 {
@@ -1019,7 +1022,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     theValue = "0";
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "Videos"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, TypeVideos))
             {
                 if (!string.IsNullOrEmpty(content.VideoUrl))
                 {
@@ -1031,7 +1034,7 @@ namespace SSCMS.Core.StlParser.StlElement
                     theValue = "0";
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(testTypeStr, "Files"))
+            else if (StringUtils.EqualsIgnoreCase(testTypeStr, TypeFiles))
             {
                 if (!string.IsNullOrEmpty(content.FileUrl))
                 {

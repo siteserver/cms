@@ -142,6 +142,8 @@ namespace SSCMS.Services
 
         bool IsFileSizeAllowed(Site site, long contentLength);
 
+        bool IsFileDownload(Site site, string fileExtension);
+
         string GetBinDirectoryPath(string relatedPath);
 
         string PhysicalSiteFilesPath { get; }

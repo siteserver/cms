@@ -238,6 +238,8 @@ namespace SSCMS.Models
 
         public long FileUploadTypeMaxSize { get; set; } = 307200;
 
+        public string FileDownloadExtensions { get; set; } = Constants.DefaultFileDownloadExtensions;
+
         public string TemplatesAssetsIncludeDir { get; set; } = "include";
 
         public string TemplatesAssetsCssDir { get; set; } = "css";

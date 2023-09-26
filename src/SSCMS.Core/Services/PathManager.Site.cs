@@ -1233,6 +1233,12 @@ namespace SSCMS.Core.Services
             return contentLength <= site.FileUploadTypeMaxSize * 1024;
         }
 
+        public bool IsFileDownload(Site site, string fileExtension)
+        {
+            var typeCollection = site.FileDownloadExtensions;
+            return PathUtils.IsFileExtensionAllowed(typeCollection, fileExtension);
+        }
+
         public string GetBinDirectoryPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);

@@ -29,6 +29,7 @@ var methods = {
         isFileUploadChangeFileName: res.isFileUploadChangeFileName,
         fileUploadExtensions: res.fileUploadExtensions,
         fileUploadTypeMaxSize: res.fileUploadTypeMaxSize,
+        fileDownloadExtensions: res.fileDownloadExtensions,
       };
     }).catch(function (error) {
       utils.error(error);

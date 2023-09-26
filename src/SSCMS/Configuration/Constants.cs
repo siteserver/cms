@@ -101,5 +101,6 @@ namespace SSCMS.Configuration
         public const string DefaultAudioUploadExtensions = ".mp3,.wma,.wav,.amr,.m4a";
         public const string DefaultVideoUploadExtensions = ".asf,.asx,.avi,.flv,.mid,.midi,.mov,.mp3,.mp4,.mpg,.mpeg,.ogg,.ra,.rm,.rmb,.rmvb,.rp,.rt,.smi,.swf,.wav,.webm,.wma,.wmv,.viv,.f4v,.m4v,.3gp,.3g2";
         public const string DefaultFileUploadExtensions = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.md,.xml,.css";
+        public const string DefaultFileDownloadExtensions = ".zip,.rar,.7z,.tar,.gz,.bz2,.cab,.iso,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.mp3,.mp4,.webm,.apk";
     }
 }

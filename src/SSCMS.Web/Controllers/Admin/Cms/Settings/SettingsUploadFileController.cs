@@ -37,6 +37,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public bool IsFileUploadChangeFileName { get; set; }
             public string FileUploadExtensions { get; set; }
             public long FileUploadTypeMaxSize { get; set; }
+            public string FileDownloadExtensions { get; set; }
         }
 
         public class SubmitRequest : SiteRequest
@@ -46,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             public bool IsFileUploadChangeFileName { get; set; }
             public string FileUploadExtensions { get; set; }
             public long FileUploadTypeMaxSize { get; set; }
+            public string FileDownloadExtensions { get; set; }
         }
     }
 }
