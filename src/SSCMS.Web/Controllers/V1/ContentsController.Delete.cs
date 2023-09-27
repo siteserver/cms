@@ -25,7 +25,10 @@ namespace SSCMS.Web.Controllers.V1
             var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return this.Error(Constants.ErrorNotFound);
 
-            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.Delete)) return Unauthorized();
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.Delete))
+            {
+                return Unauthorized();
+            }
 
             var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return this.Error(Constants.ErrorNotFound);

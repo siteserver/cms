@@ -33,6 +33,11 @@ namespace SSCMS.Web.Controllers.V1
                 var content = await _contentRepository.GetAsync(site, channel, channelContentId.Id);
                 if (content == null) continue;
 
+                if (!await _authManager.HasContentPermissionsAsync(content.SiteId, content.ChannelId, MenuUtils.ContentPermissions.CheckLevel1, MenuUtils.ContentPermissions.CheckLevel2, MenuUtils.ContentPermissions.CheckLevel3, MenuUtils.ContentPermissions.CheckLevel4, MenuUtils.ContentPermissions.CheckLevel5))
+                {
+                    return Unauthorized();
+                }
+
                 content.Set(ColumnsManager.CheckAdminId, adminId);
                 content.Set(ColumnsManager.CheckDate, DateTime.Now);
                 content.Set(ColumnsManager.CheckReasons, request.Reasons);

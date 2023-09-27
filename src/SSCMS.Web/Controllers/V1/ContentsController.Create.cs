@@ -25,6 +25,11 @@ namespace SSCMS.Web.Controllers.V1
             var channel = await _channelRepository.GetAsync(channelId);
             if (channel == null) return this.Error(Constants.ErrorNotFound);
 
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.Create))
+            {
+                return Unauthorized();
+            }
+
             var checkedLevel = request.Checked ? site.CheckContentLevel : request.CheckedLevel;
             var isChecked = checkedLevel >= site.CheckContentLevel;
             if (isChecked)

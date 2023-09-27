@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -26,6 +27,11 @@ namespace SSCMS.Web.Controllers.V1
 
             var content = await _contentRepository.GetAsync(site, channelInfo, id);
             if (content == null) return this.Error(Constants.ErrorNotFound);
+
+            if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.Edit))
+            {
+                return Unauthorized();
+            }
 
             content.LoadDict(request.ToDictionary());
 

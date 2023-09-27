@@ -23,6 +23,17 @@ namespace SSCMS.Web.Controllers.V1
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
+            var siteIds = await _authManager.GetSiteIdsAsync();
+            if (!siteIds.Contains(request.SiteId))
+            {
+                return Unauthorized();
+            }
+            var channelIds = await _authManager.GetContentPermissionsChannelIdsAsync(site.Id, MenuUtils.ContentPermissions.View);
+            if (!channelIds.Contains(request.ChannelId ?? request.SiteId))
+            {
+                return Unauthorized();
+            }
+
             var tableName = site.TableName;
             var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
             var totalCount = await _contentRepository.GetCountAsync(tableName, query);
