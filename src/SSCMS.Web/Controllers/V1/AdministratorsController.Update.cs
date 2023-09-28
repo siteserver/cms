@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -9,11 +10,15 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class AdministratorsController
     {
-        [OpenApiOperation("修改管理员 API", "修改管理员属性，使用PUT发起请求，请求地址为/api/v1/administrators/{id}")]
+        [OpenApiOperation("修改管理员 API", "修改管理员属性，使用POST发起请求，请求地址为/api/v1/administrators/{id}")]
         [HttpPost, Route(RouteAdministratorUpdate)]
         public async Task<ActionResult<Administrator>> Update([FromRoute] int id, [FromBody] Administrator administrator)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeAdministrators))
+            {
+                return Unauthorized();
+            }
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
             {
                 return Unauthorized();
             }

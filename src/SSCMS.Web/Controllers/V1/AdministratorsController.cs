@@ -44,8 +44,8 @@ namespace SSCMS.Web.Controllers.V1
 
         public class ListRequest
         {
-            public int Top { get; set; }
-            public int Skip { get; set; }
+            public int Page { get; set; }
+            public int PerPage { get; set; }
         }
 
         public class ListResult

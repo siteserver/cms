@@ -20,7 +20,15 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return this.Error(Constants.ErrorNotFound);
+            if (site == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
+            if (!await _authManager.HasSitePermissionsAsync(siteId, MenuUtils.SitePermissions.Channels))
+            {
+                return Unauthorized();
+            }
 
             var channels = await _channelRepository.GetChannelsAsync(siteId);
 

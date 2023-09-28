@@ -21,9 +21,12 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return Unauthorized();
             }
-
+            
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return this.Error(Constants.ErrorNotFound);
+            if (site == null) 
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
 
             var adminId = _authManager.AdminId;
             var contents = new List<Content>();

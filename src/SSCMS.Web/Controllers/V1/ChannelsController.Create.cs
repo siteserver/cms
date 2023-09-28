@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -21,6 +22,11 @@ namespace SSCMS.Web.Controllers.V1
 
             var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
+
+            if (!await _authManager.HasSitePermissionsAsync(siteId, MenuUtils.SitePermissions.Channels))
+            {
+                return Unauthorized();
+            }
 
             var channelInfo = new Channel
             {

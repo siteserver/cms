@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -13,6 +15,15 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(Route)]
         public async Task<ActionResult<User>> Create([FromBody]User request)
         {
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeUsers))
+            {
+                return Unauthorized();
+            }
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsers))
+            {
+                return Unauthorized();
+            }
+
             var config = await _configRepository.GetAsync();
 
             if (!config.IsUserRegistrationGroup)

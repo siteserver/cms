@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -10,7 +11,7 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ChannelsController
     {
-        [OpenApiOperation("修改栏目 API", "修改栏目，使用PUT发起请求，请求地址为/api/v1/channels/{siteId}/{channelId}")]
+        [OpenApiOperation("修改栏目 API", "修改栏目，使用POST发起请求，请求地址为/api/v1/channels/{siteId}/{channelId}")]
         [HttpPost, Route(RouteChannelUpdate)]
         public async Task<ActionResult<Channel>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromBody] UpdateRequest request)
         {
@@ -20,10 +21,20 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var site = await _siteRepository.GetAsync(siteId);
-            if (site == null) return this.Error(Constants.ErrorNotFound);
-
+            if (site == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
             var channel = await _channelRepository.GetAsync(channelId);
-            if (channel == null) return this.Error(Constants.ErrorNotFound);
+            if (channel == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+
+            if (!await _authManager.HasSitePermissionsAsync(siteId, MenuUtils.SitePermissions.Channels))
+            {
+                return Unauthorized();
+            }
 
             foreach (var (key, value) in request)
             {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -15,12 +16,25 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return Unauthorized();
             }
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministrators))
+            {
+                return Unauthorized();
+            }
 
-            var top = request.Top;
-            if (top <= 0) top = 20;
-            var skip = request.Skip;
+            var page = request.Page;
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            var perPage = request.Page;
+            if (perPage <= 0)
+            {
+                perPage = 20;
+            }
+            var offset = (page - 1) * perPage;
+            var limit = perPage;
 
-            var administrators = await _administratorRepository.GetAdministratorsAsync(skip, top);
+            var administrators = await _administratorRepository.GetAdministratorsAsync(offset, limit);
             var count = await _administratorRepository.GetCountAsync();
 
             return new ListResult

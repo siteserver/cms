@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.V1
 {
     public partial class ContentsController
     {
-        [OpenApiOperation("修改内容 API", "修改内容，使用PUT发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
+        [OpenApiOperation("修改内容 API", "修改内容，使用POST发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
         [HttpPost, Route(RouteContentUpdate)]
         public async Task<ActionResult<Content>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id, [FromBody]Content request)
         {
