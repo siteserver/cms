@@ -8,10 +8,10 @@
     <el-radio v-model="form.isUserRegistrationAllowed" :label="false">禁止</el-radio>
     <small class="tips">选择否将禁止新用户注册, 但不影响过去已注册的会员的使用</small>
   </el-form-item>
-  <el-form-item label="允许用户销注">
+  <el-form-item label="允许用户注销">
     <el-radio v-model="form.isUserUnRegistrationAllowed" :label="true">允许</el-radio>
     <el-radio v-model="form.isUserUnRegistrationAllowed" :label="false">禁止</el-radio>
-    <small class="tips">用户销注将永久删除此用户账户以及帐户中的所有数据</small>
+    <small class="tips">用户注销将永久删除此用户账户以及帐户中的所有数据</small>
   </el-form-item>
   <el-form-item label="新注册用户需要管理员审核">
     <el-radio v-model="form.isUserRegistrationChecked" :label="true">不需要审核</el-radio>

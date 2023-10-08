@@ -80,6 +80,7 @@ namespace SSCMS.Web.Controllers.V1
             public bool? Recommend { get; set; }
             public bool? Color { get; set; }
             public bool? Hot { get; set; }
+            public string Index { get; set; }
             public List<string> GroupNames { get; set; }
             public List<string> TagNames { get; set; }
             public List<ClauseWhere> Wheres { get; set; }

@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.V1
     {
         [OpenApiOperation("获取内容列表 API", "获取内容列表使用 POST 发起请求，请求地址为 /api/v1/contents，系统将根据 POST Body 传递过来的筛选参数获取到内容列表并返回")]
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<QueryResult>> GetContents([FromBody] QueryRequest request)
+        public async Task<ActionResult<QueryResult>> List([FromBody] QueryRequest request)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
             {
@@ -28,14 +28,31 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return Unauthorized();
             }
+
+            var channelId = request.SiteId;
+            if (request.ChannelId.HasValue)
+            {
+                channelId = request.ChannelId.Value;
+            }
+            else if (!string.IsNullOrEmpty(request.Index))
+            {
+                channelId = await _channelRepository.GetChannelIdByIndexNameAsync(request.SiteId, request.Index);
+            }
+            if (channelId <= 0)
+            {
+                channelId = request.SiteId;
+            }
+            var channel = await _channelRepository.GetAsync(channelId);
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
+
             var channelIds = await _authManager.GetContentPermissionsChannelIdsAsync(site.Id, MenuUtils.ContentPermissions.View);
-            if (!channelIds.Contains(request.ChannelId ?? request.SiteId))
+            if (!channelIds.Contains(channel.Id))
             {
                 return Unauthorized();
             }
 
             var tableName = site.TableName;
-            var query = await GetQueryAsync(request.SiteId, request.ChannelId, request);
+            var query = await GetQueryAsync(request.SiteId, channel.Id, request);
             var totalCount = await _contentRepository.GetCountAsync(tableName, query);
 
             var page = request.Page > 0 ? request.Page : 1;
@@ -44,9 +61,7 @@ namespace SSCMS.Web.Controllers.V1
 
             var summaries = await _contentRepository.GetSummariesAsync(tableName, query);
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
-            var channel = request.ChannelId.HasValue && request.ChannelId.Value > 0
-                ? await _channelRepository.GetAsync(request.ChannelId.Value)
-                : await _channelRepository.GetAsync(request.SiteId);
+            
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
             var sequence = page * perPage + 1;
 
