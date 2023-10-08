@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using Datory.Utils;
-using Ganss.XSS;
+using Ganss.Xss;
 using SSCMS.Configuration;
 
 namespace SSCMS.Utils
