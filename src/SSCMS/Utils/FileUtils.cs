@@ -246,7 +246,7 @@ namespace SSCMS.Utils
                 {
                     fileExtName = "." + fileExtName;
                 }
-                if (fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".gif" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".bmp"  || fileExtName == ".webp" || fileExtName == ".svg" || fileExtName == ".ico" || fileExtName == ".jfif")
+                if (fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".gif" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".bmp"  || fileExtName == ".webp" || fileExtName == ".ico" || fileExtName == ".jfif")
                 {
                     retVal = true;
                 }

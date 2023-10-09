@@ -14,7 +14,10 @@ namespace SSCMS.Web.Controllers.Home
             if (request.Id != _authManager.UserId) return Unauthorized();
 
             var user = await _authManager.GetUserAsync();
-            user.AvatarUrl = request.AvatarUrl;
+            if (!PageUtils.IsProtocolUrl(request.AvatarUrl))
+            {
+                user.AvatarUrl = request.AvatarUrl;
+            }
             user.Mobile = request.Mobile;
             user.Email = request.Email;
 
