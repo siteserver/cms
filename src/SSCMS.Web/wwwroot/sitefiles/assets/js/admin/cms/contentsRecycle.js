@@ -5,6 +5,7 @@ var $defaultWidth = 160;
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   root: null,
+  channelId: null,
   siteUrl: null,
   groupNames: null,
   tagNames: null,
@@ -51,6 +52,7 @@ var methods = {
       var res = response.data;
 
       $this.root = res.root;
+      $this.channelId = res.channelId;
       $this.siteUrl = res.siteUrl;
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
@@ -91,7 +93,7 @@ var methods = {
       }
     }
 
-    var channelId = this.channelIds && this.channelIds.length > 0 ? this.channelIds[this.channelIds.length - 1] : null;
+    var channelId = this.channelIds && this.channelIds.length > 0 ? this.channelIds[this.channelIds.length - 1] : this.channelId;
 
     utils.loading(this, true);
     var request = _.assign({

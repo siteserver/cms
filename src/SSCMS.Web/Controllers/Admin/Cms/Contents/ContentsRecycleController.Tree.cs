@@ -25,7 +25,26 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
-            var root = await _channelRepository.GetCascadeAsync(site, channel);
+
+            var channelId = 0;
+
+            var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.SiteId, MenuUtils.ContentPermissions.Add);
+            var channels = await _channelRepository.GetAsync(request.SiteId);
+            var root = await _channelRepository.GetCascadeAsync(site, channels, async summary =>
+            {
+                var count = await _contentRepository.GetCountAsync(site, summary);
+                var disabled = !channelIdList.Contains(summary.Id);
+                if (channelId == 0 && !disabled)
+                {
+                    channelId = summary.Id;
+                }
+
+                return new
+                {
+                    Disabled = disabled,
+                    Count = count
+                };
+            });
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
@@ -48,6 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             return new TreeResult
             {
                 Root = root,
+                ChannelId = channelId,
                 SiteUrl = siteUrl,
                 GroupNames = groupNames,
                 TagNames = tagNames,

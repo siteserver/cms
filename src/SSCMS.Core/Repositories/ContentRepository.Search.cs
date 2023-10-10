@@ -442,7 +442,7 @@ namespace SSCMS.Core.Repositories
                 .Where(nameof(Content.ChannelId), "<", 0)
                 .OrderByDesc(nameof(Content.LastModifiedDate));
 
-            if (channelId.HasValue)
+            if (channelId.HasValue && channelId != site.Id)
             {
                 query.Where(nameof(Content.ChannelId), -channelId.Value);
             }
