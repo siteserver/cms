@@ -21,12 +21,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
+            var channelIdList = await _authManager.GetContentPermissionsChannelIdsAsync(request.SiteId, MenuUtils.ContentPermissions.Edit);
+
             var channel = await _channelRepository.GetAsync(request.SiteId);
             var cascade = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
                 var count = await _contentRepository.GetCountAsync(site, summary);
                 return new
                 {
+                    Disabled = !channelIdList.Contains(summary.Id),
                     Count = count,
                     summary.IndexName
                 };
