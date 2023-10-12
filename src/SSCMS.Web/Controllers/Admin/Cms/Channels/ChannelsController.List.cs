@@ -33,7 +33,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
                 var node = await _channelRepository.GetAsync(summary.Id);
                 var imageUrl = string.Empty;
-                if (!string.IsNullOrEmpty(node.ImageUrl))
+                if (node != null && !string.IsNullOrEmpty(node.ImageUrl))
                 {
                     imageUrl = await _pathManager.ParseSiteUrlAsync(site, node.ImageUrl, true);
                 }
