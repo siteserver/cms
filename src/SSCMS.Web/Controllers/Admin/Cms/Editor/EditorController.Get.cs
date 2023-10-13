@@ -164,11 +164,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 }
             }
 
+            var isCloudCensor = _censorManager is ICloudManager;
+            var isCloudSpell = _spellManager is ICloudManager;
             var settings = new Settings
             {
-                IsCloudCensor = _censorManager is ICloudManager,
+                IsCloudCensor = isCloudCensor,
                 CensorSettings = await _censorManager.GetCensorSettingsAsync(),
-                IsCloudSpell = _spellManager is ICloudManager,
+                IsCloudSpell = isCloudSpell,
                 SpellSettings = await _spellManager.GetSpellSettingsAsync(),
                 IsCloudImages = await _cloudManager.IsImagesAsync(),
                 CloudType = await _cloudManager.GetCloudTypeAsync(),
