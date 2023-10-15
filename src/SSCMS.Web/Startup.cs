@@ -88,47 +88,51 @@ namespace SSCMS.Web
             services.AddHttpContextAccessor();
 
             services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(x =>
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(settingsManager.SecurityKey)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+                x.Events = new JwtBearerEvents
                 {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters
+                    OnMessageReceived = (context) =>
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(settingsManager.SecurityKey)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                    x.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = (context) =>
+                        if (!context.Request.Query.TryGetValue("access_token", out var values))
                         {
-                            if (!context.Request.Query.TryGetValue("access_token", out var values))
-                            {
-                                return Task.CompletedTask;
-                            }
-                            if (values.Count > 1)
-                            {
-                                return Task.CompletedTask;
-                            }
-                            var token = values.Single();
-                            if (string.IsNullOrWhiteSpace(token))
-                            {
-                                return Task.CompletedTask;
-                            }
-                            context.Token = token;
                             return Task.CompletedTask;
                         }
-                    };
-                });
+                        if (values.Count > 1)
+                        {
+                            return Task.CompletedTask;
+                        }
+                        var token = values.Single();
+                        if (string.IsNullOrWhiteSpace(token))
+                        {
+                            return Task.CompletedTask;
+                        }
+                        context.Token = token;
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
-            services.Configure<FormOptions>(options =>
-            {
-                options.MultipartBodyLengthLimit = 524288000;//500MB
+            // services.Configure<FormOptions>(options =>
+            // {
+            //     options.MultipartBodyLengthLimit = 524288000;//500MB
+            // });
+            services.Configure<FormOptions>(x => {
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = long.MaxValue; // In case of multipart
             });
 
             services.AddHealthChecks();
