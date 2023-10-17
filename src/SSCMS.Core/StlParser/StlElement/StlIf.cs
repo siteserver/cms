@@ -73,6 +73,7 @@ namespace SSCMS.Core.StlParser.StlElement
         public const string TypeIsUserLoggin = "IsUserLoggin";
         public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";
         public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";
+        public const string TypeUserName = "UserName";
         public const string TypeUserGroup = "UserGroup";
         private const string TypeChannelName = "ChannelName";			                            //栏目名称
         private const string TypeChannelIndex = "ChannelIndex";			                          //栏目索引
@@ -260,6 +261,7 @@ namespace SSCMS.Core.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) 
                 || StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) 
                 || StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin) 
+                || StringUtils.EqualsIgnoreCase(testType, TypeUserName)
                 || StringUtils.EqualsIgnoreCase(testType, TypeUserGroup))
             {
                 return await ParseDynamicAsync(parseManager, testType, testValue, testOperate,

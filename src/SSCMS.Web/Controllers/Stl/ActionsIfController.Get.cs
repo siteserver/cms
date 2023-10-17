@@ -27,6 +27,13 @@ namespace SSCMS.Web.Controllers.Stl
                 {
                     isSuccess = _authManager.IsUser;
                 }
+                else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeUserName))
+                {
+                    if (user != null)
+                    {
+                        isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, user.UserName);
+                    }
+                }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeUserGroup))
                 {
                     if (user != null)
@@ -34,11 +41,6 @@ namespace SSCMS.Web.Controllers.Stl
                         var groups = await _userGroupRepository.GetUserGroupsAsync();
                         var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
                         isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
-                        
-                        // if (group != null)
-                        // {
-                        //     isSuccess = group.GroupName == ifInfo.Value;
-                        // }
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))
