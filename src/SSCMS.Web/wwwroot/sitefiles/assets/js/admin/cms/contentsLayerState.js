@@ -6,7 +6,8 @@ var data = utils.init({
   contentId: utils.getQueryInt('contentId'),
   contentChecks: null,
   content: null,
-  state: null
+  state: null,
+  isCheckable: null,
 });
 
 var methods = {
@@ -26,6 +27,7 @@ var methods = {
       $this.contentChecks = res.contentChecks;
       $this.content = res.content;
       $this.state = res.state;
+      $this.isCheckable = res.isCheckable;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

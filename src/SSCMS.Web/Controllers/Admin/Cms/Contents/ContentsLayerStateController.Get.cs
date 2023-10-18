@@ -12,8 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.View) ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
+                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.View))
             {
                 return Unauthorized();
             }
@@ -34,11 +33,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 x.Set("AdminName", await _administratorRepository.GetDisplayAsync(x.AdminId));
             });
 
+            var isCheckable = await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck);
+
             return new GetResult
             {
                 ContentChecks = contentChecks,
                 Content = content,
-                State = CheckManager.GetCheckState(site, content)
+                State = CheckManager.GetCheckState(site, content),
+                IsCheckable = isCheckable,
             };
         }
     }

@@ -39,7 +39,7 @@
 <el-divider></el-divider>
 <el-row align="right" style="margin-right: 5px; margin-top: 10px;">
   <el-col :span="24" align="right">
-    <el-button size="small" type="primary" v-on:click="btnSubmitClick">审 核</el-button>
+    <el-button v-if="isCheckable" size="small" type="primary" v-on:click="btnSubmitClick">审 核</el-button>
     <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
   </el-col>
 </el-row>
