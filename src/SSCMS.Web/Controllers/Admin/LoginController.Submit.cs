@@ -52,7 +52,7 @@ namespace SSCMS.Web.Controllers.Admin
                         return this.Error("验证码已超时，请点击刷新验证码！");
                     }
 
-                    if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value))
+                    if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value) || CaptchaUtils.IsAlreadyUsed(captcha, _cacheManager))
                     {
                         return this.Error("验证码不正确，请重新输入！");
                     }

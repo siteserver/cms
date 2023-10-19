@@ -20,7 +20,7 @@ namespace SSCMS.Web.Controllers.V1
                 return this.Error("验证码已超时，请点击刷新验证码！");
             }
 
-            if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Captcha))
+            if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Captcha) || CaptchaUtils.IsAlreadyUsed(captcha, _cacheManager))
             {
                 return this.Error("验证码不正确，请重新输入！");
             }

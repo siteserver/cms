@@ -14,10 +14,12 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteActionsCheck = "captcha/actions/check";
 
         private readonly ISettingsManager _settingsManager;
+        private readonly ICacheManager _cacheManager;
 
-        public CaptchaController(ISettingsManager settingsManager)
+        public CaptchaController(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
             _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
         }
 
         public class CheckRequest

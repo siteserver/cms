@@ -6,6 +6,8 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SSCMS.Services;
+using SSCMS.Utils;
 
 namespace SSCMS.Core.Utils
 {
@@ -19,6 +21,22 @@ namespace SSCMS.Core.Utils
         {
             public string Value { get; set; }
             public DateTime ExpireAt { get; set; }
+        }
+
+        public static bool IsAlreadyUsed(Captcha captcha, ICacheManager cacheManager)
+        {
+            if (captcha == null) return false;
+
+            var cacheKey = CacheUtils.GetClassKey(typeof(CaptchaUtils), nameof(IsAlreadyUsed), AuthUtils.Md5ByString(TranslateUtils.JsonSerialize(captcha)));
+            if (cacheManager.Exists(cacheKey) || captcha.ExpireAt < DateTime.Now)
+            {
+                return true;
+            }
+
+            var minutes = (captcha.ExpireAt - DateTime.Now).TotalMinutes;
+            cacheManager.AddOrUpdateAbsolute(cacheKey, true, (int)minutes);
+
+            return false;
         }
 
         public static string GetCode()
