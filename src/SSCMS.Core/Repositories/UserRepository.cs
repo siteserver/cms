@@ -605,6 +605,24 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAllAsync(query);
         }
 
+        public async Task<List<int>> GetUserIdsAsync(string keyword)
+        {
+            var query = Q.Select(nameof(User.Id));
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                var like = $"%{keyword}%";
+                query.Where(q => q
+                    .WhereLike(nameof(User.UserName), like)
+                    .OrWhereLike(nameof(User.Email), like)
+                    .OrWhereLike(nameof(User.Mobile), like)
+                    .OrWhereLike(nameof(User.DisplayName), like)
+                );
+            }
+
+            return await _repository.GetAllAsync<int>(query);
+        }
+
         public async Task<bool> IsExistsAsync(int id)
         {
             return await _repository.ExistsAsync(id);

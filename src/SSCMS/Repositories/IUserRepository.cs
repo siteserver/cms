@@ -52,6 +52,8 @@ namespace SSCMS.Repositories
         Task<List<User>> GetUsersAsync(bool? state, int groupId, int dayOfLastActivity, string keyword, string order,
             int offset, int limit);
 
+        Task<List<int>> GetUserIdsAsync(string keyword);
+
         Task<bool> IsExistsAsync(int id);
 
         Task<User> DeleteAsync(int userId);

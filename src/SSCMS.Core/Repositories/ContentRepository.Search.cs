@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
+using SqlKata;
 using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
@@ -12,6 +13,57 @@ namespace SSCMS.Core.Repositories
 {
     public partial class ContentRepository
     {
+        public async Task QueryWhereAsync(Query query, Repository<Content> repository, string searchType, string searchText)
+        {
+            if (!string.IsNullOrEmpty(searchType) && !string.IsNullOrEmpty(searchText))
+            {
+                if (StringUtils.EqualsIgnoreCase(nameof(Content.AdminId), searchType))
+                {
+                    var adminIds = await _administratorRepository.GetAdministratorIdsAsync(searchText);
+                    if (adminIds == null || adminIds.Count == 0)
+                    {
+                        query.Where(nameof(Content.LastEditAdminId), -1);
+                    }
+                    else
+                    {
+                        query.WhereIn(nameof(Content.AdminId), adminIds);
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(nameof(Content.LastEditAdminId), searchType))
+                {
+                    var adminIds = await _administratorRepository.GetAdministratorIdsAsync(searchText);
+                    if (adminIds == null || adminIds.Count == 0)
+                    {
+                        query.Where(nameof(Content.LastEditAdminId), -1);
+                    }
+                    else
+                    {
+                        query.WhereIn(nameof(Content.LastEditAdminId), adminIds);
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(nameof(Content.UserId), searchType))
+                {
+                    var userIds = await _userRepository.GetUserIdsAsync(searchText);
+                    if (userIds == null || userIds.Count == 0)
+                    {
+                        query.Where(nameof(Content.UserId), -1);
+                    }
+                    else
+                    {
+                        query.WhereIn(nameof(Content.UserId), userIds);
+                    }
+                }
+                else if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
+                {
+                    query.WhereLike(searchType, $"%{searchText}%");
+                }
+                else
+                {
+                    query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
+                }
+            }
+        }
+
         public async Task<List<ContentSummary>> SearchAsync(Site site, Channel channel, bool isAllContents, string searchType, string searchText, bool isAdvanced, List<int> checkedLevels, bool isTop, bool isRecommend, bool isHot, bool isColor, List<string> groupNames, List<string> tagNames)
         {
             var repository = await GetRepositoryAsync(site, channel);
@@ -23,18 +75,7 @@ namespace SSCMS.Core.Repositories
             );
 
             await QueryWhereAsync(query, site, channel.Id, isAllContents);
-
-            if (!string.IsNullOrEmpty(searchType) && !string.IsNullOrEmpty(searchText))
-            {
-                if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
-                {
-                    query.WhereLike(searchType, $"%{searchText}%");
-                }
-                else
-                {
-                    query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
-                }
-            }
+            await QueryWhereAsync(query, repository, searchType, searchText);
 
             if (isAdvanced)
             {
@@ -208,20 +249,7 @@ namespace SSCMS.Core.Repositories
             {
                 foreach (var item in items)
                 {
-                    if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
-                    {
-                        var searchType = item.Key;
-                        var searchText = item.Value;
-
-                        if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
-                        {
-                            query.WhereLike(searchType, $"%{searchText}%");
-                        }
-                        else
-                        {
-                            query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
-                        }
-                    }
+                    await QueryWhereAsync(query, repository, item.Key, item.Value);
                 }
             }
 
@@ -353,20 +381,7 @@ namespace SSCMS.Core.Repositories
             {
                 foreach (var item in items)
                 {
-                    if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
-                    {
-                        var searchType = item.Key;
-                        var searchText = item.Value;
-
-                        if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
-                        {
-                            query.WhereLike(searchType, $"%{searchText}%");
-                        }
-                        else
-                        {
-                            query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
-                        }
-                    }
+                    await QueryWhereAsync(query, repository, item.Key, item.Value);
                 }
             }
 
@@ -460,20 +475,7 @@ namespace SSCMS.Core.Repositories
             {
                 foreach (var item in items)
                 {
-                    if (!string.IsNullOrEmpty(item.Key) && !string.IsNullOrEmpty(item.Value))
-                    {
-                        var searchType = item.Key;
-                        var searchText = item.Value;
-
-                        if (repository.TableColumns.Exists(x => StringUtils.EqualsIgnoreCase(x.AttributeName, searchType)))
-                        {
-                            query.WhereLike(searchType, $"%{searchText}%");
-                        }
-                        else
-                        {
-                            query.WhereLike(AttrExtendValues, $@"%""{searchType}"":""%{searchText}%""%");
-                        }
-                    }
+                    await QueryWhereAsync(query, repository, item.Key, item.Value);
                 }
             }
 

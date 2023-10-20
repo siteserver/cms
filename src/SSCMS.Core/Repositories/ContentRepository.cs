@@ -15,15 +15,20 @@ namespace SSCMS.Core.Repositories
         private readonly ISiteRepository _siteRepository;
         private readonly IErrorLogRepository _errorLogRepository;
         private readonly IStatRepository _statRepository;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserRepository _userRepository;
         private readonly Repository<Content> _repository;
 
-        public ContentRepository(ISettingsManager settingsManager, IChannelRepository channelRepository, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, IStatRepository statRepository)
+        public ContentRepository(ISettingsManager settingsManager, IChannelRepository channelRepository, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, IStatRepository statRepository, IAdministratorRepository administratorRepository, IUserRepository userRepository)
         {
             _settingsManager = settingsManager;
             _channelRepository = channelRepository;
             _siteRepository = siteRepository;
             _errorLogRepository = errorLogRepository;
             _statRepository = statRepository;
+            _administratorRepository = administratorRepository;
+            _userRepository = userRepository;
+
             _repository = new Repository<Content>(settingsManager.Database, settingsManager.Redis);
         }
 

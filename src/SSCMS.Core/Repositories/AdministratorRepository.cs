@@ -279,6 +279,23 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
+        public async Task<List<int>> GetAdministratorIdsAsync(string keyword)
+        {
+            var query = Q.Select(nameof(Administrator.Id));
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                var like = $"%{keyword}%";
+                query.Where(q => q
+                    .WhereLike(nameof(Administrator.UserName), like)
+                    .OrWhereLike(nameof(Administrator.Mobile), like)
+                    .OrWhereLike(nameof(Administrator.Email), like)
+                    .OrWhereLike(nameof(Administrator.DisplayName), like)
+                );
+            }
+            
+            return await _repository.GetAllAsync<int>(query);
+        }
+
         public async Task<bool> IsUserNameExistsAsync(string adminName)
         {
             return await _repository.ExistsAsync(Q.Where(nameof(Administrator.UserName), adminName));

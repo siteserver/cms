@@ -26,6 +26,8 @@ namespace SSCMS.Repositories
         Task<List<Administrator>> GetAdministratorsAsync(string creatorUserName, string role, string order,
             int lastActivityDate, string keyword, int offset, int limit);
 
+        Task<List<int>> GetAdministratorIdsAsync(string keyword);
+
         Task<bool> IsUserNameExistsAsync(string adminName);
 
         Task<bool> IsEmailExistsAsync(string email);
