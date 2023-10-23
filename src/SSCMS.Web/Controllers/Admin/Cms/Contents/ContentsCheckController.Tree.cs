@@ -34,7 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var levels = new List<KeyValuePair<int, string>>();
             foreach (var level in allLevels)
             {
-                if (level.Key == CheckManager.LevelInt.CaoGao || level.Key > 0)
+                if (level.Key == CheckManager.LevelInt.CaoGao)
                 {
                     continue;
                 }
