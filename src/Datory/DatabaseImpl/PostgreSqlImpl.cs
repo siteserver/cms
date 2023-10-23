@@ -176,6 +176,7 @@ namespace Datory.DatabaseImpl
 
         public string GetPrimaryKeySqlString(string tableName, string attributeName)
         {
+            tableName = tableName.Replace("\"", "");
             var pkName = GetQuotedIdentifier($"PK_{tableName}_{attributeName}");
             return $@"CONSTRAINT {pkName} PRIMARY KEY ({GetQuotedIdentifier(attributeName)})";
         }
