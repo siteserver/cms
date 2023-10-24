@@ -1501,6 +1501,13 @@ namespace SSCMS.Core.Services
                         fileUrls.Add(url);
                     }
                 }
+                foreach (var url in RegexUtils.GetPlayUrls(content.Body))
+                {
+                    if (!fileUrls.Contains(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
 
                 foreach (var fileUrl in fileUrls)
                 {
@@ -1549,6 +1556,13 @@ namespace SSCMS.Core.Services
                 foreach (var url in RegexUtils.GetOriginalLinkHrefs(channel.Content))
                 {
                     if (!fileUrls.Contains(url) && IsVirtualUrl(url))
+                    {
+                        fileUrls.Add(url);
+                    }
+                }
+                foreach (var url in RegexUtils.GetPlayUrls(channel.Content))
+                {
+                    if (!fileUrls.Contains(url))
                     {
                         fileUrls.Add(url);
                     }
