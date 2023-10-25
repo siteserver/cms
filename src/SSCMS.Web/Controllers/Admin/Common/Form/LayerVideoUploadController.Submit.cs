@@ -76,7 +76,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
                     await _materialVideoRepository.InsertAsync(video);
                 }
 
-
                 result.Add(new SubmitResult
                 {
                     PlayUrl = playUrl,

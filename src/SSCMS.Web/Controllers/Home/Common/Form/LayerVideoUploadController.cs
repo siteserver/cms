@@ -62,8 +62,11 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
 
         public class SubmitResult
         {
-            public string FileUrl { get; set; }
-            public string FileVirtualUrl { get; set; }
+            // public string FileUrl { get; set; }
+            // public string FileVirtualUrl { get; set; }
+            public string CoverUrl { get; set; }
+            public string PlayUrl { get; set; }
+            public string VirtualUrl { get; set; }
         }
     }
 }

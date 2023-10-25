@@ -20,25 +20,31 @@ namespace SSCMS.Web.Controllers.Home.Common.Form
             var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Videos);
 
             var result = new List<SubmitResult>();
-            foreach (var filePath in request.FilePaths)
+            foreach (var path in request.FilePaths)
             {
-                if (string.IsNullOrEmpty(filePath)) continue;
+                if (string.IsNullOrEmpty(path)) continue;
+
+                var filePath = _pathManager.ParsePath(path);
+                var fileName = PathUtils.GetFileName(filePath);
 
                 var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
-                var fileUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                var playUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+                var coverUrl = string.Empty;
+
                 if (isAutoStorage)
                 {
                     var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
                     if (success)
                     {
-                        virtualUrl = fileUrl = url;
+                        virtualUrl = playUrl = url;
                     }
                 }
 
                 result.Add(new SubmitResult
                 {
-                    FileUrl = fileUrl,
-                    FileVirtualUrl = virtualUrl
+                    PlayUrl = playUrl,
+                    VirtualUrl = virtualUrl,
+                    CoverUrl = coverUrl
                 });
             }
 
