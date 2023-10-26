@@ -66,6 +66,7 @@ var methods = {
       var res = response.data;
 
       $this.captchaToken = res.value;
+      // $this.form.captchaValue = null;
       $this.captchaUrl = $apiUrl + $urlCaptcha + '?token=' + $this.captchaToken;
       $this.btnTypeClick();
     }).catch(function (error) {

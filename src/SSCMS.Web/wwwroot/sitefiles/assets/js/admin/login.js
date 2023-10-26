@@ -161,8 +161,6 @@ var methods = {
         }
       }
     }).catch(function (error) {
-      $this.apiCaptcha();
-      utils.loading($this, false);
       utils.error(error);
     }).then(function () {
       $this.apiCaptcha();
@@ -217,9 +215,9 @@ var methods = {
 
   btnSubmitClick: function (e) {
     e && e.preventDefault();
-
     this.pageSubmit = true;
     this.pageAlert = null;
+
     if (this.isSmsLogin) {
       if (!this.mobile || !this.code) return;
       this.apiSubmit(false);
