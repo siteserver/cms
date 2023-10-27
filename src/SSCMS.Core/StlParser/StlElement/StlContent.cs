@@ -77,6 +77,13 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否自增长")]
         private const string IsAutoIncrease = nameof(IsAutoIncrease);
 
+        private const string TypeImages = "Images";
+        private const string TypeVideos = "Videos";
+        private const string TypeFiles = "Files";
+        private const string TypeNavigationUrl = "NavigationUrl";
+        private const string TypeUserName = "UserName";
+        private const string TypeUserDisplayName = "UserDisplayName";
+
         public static async Task<object> ParseAsync(IParseManager parseManager)
         {
             var pageInfo = parseManager.PageInfo;
@@ -336,6 +343,19 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     parsedContent = DateUtils.Format(content.LastModifiedDate, format);
                 }
+                else if (StringUtils.EqualsIgnoreCase(type, TypeUserName))
+                {
+                    var admin = await parseManager.DatabaseManager.AdministratorRepository.GetByUserIdAsync(content.AdminId);
+                    parsedContent = admin != null ? admin.UserName : string.Empty;
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, TypeUserDisplayName))
+                {
+                    var admin = await parseManager.DatabaseManager.AdministratorRepository.GetByUserIdAsync(content.AdminId);
+                    if (admin != null)
+                    {
+                        parsedContent = !string.IsNullOrEmpty(admin.DisplayName) ? admin.DisplayName : admin.UserName;
+                    }
+                }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.ImageUrl)))
                 {
                     var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
@@ -562,7 +582,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         }
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, "Images"))
+                else if (StringUtils.EqualsIgnoreCase(type, TypeImages))
                 {
                     if (!string.IsNullOrEmpty(content.ImageUrl))
                     {
@@ -574,7 +594,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         parsedContent = "0";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, "Videos"))
+                else if (StringUtils.EqualsIgnoreCase(type, TypeVideos))
                 {
                     if (!string.IsNullOrEmpty(content.VideoUrl))
                     {
@@ -586,7 +606,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         parsedContent = "0";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, "Files"))
+                else if (StringUtils.EqualsIgnoreCase(type, TypeFiles))
                 {
                     if (!string.IsNullOrEmpty(content.FileUrl))
                     {
@@ -598,7 +618,7 @@ namespace SSCMS.Core.StlParser.StlElement
                         parsedContent = "0";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, nameof(ColumnsManager.NavigationUrl)))
+                else if (StringUtils.EqualsIgnoreCase(type, TypeNavigationUrl))
                 {
                     if (contextInfo.Content != null)
                     {

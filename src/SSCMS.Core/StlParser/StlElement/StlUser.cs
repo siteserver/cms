@@ -64,6 +64,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     parsedContent = pageInfo.User.UserName;
                 }
+                else if (StringUtils.EqualsIgnoreCase(nameof(User.DisplayName), type))
+                {
+                    parsedContent = pageInfo.User.DisplayName;
+                }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.CreatedDate), type))
                 {
                     parsedContent = DateUtils.Format(pageInfo.User.CreatedDate, string.Empty);
@@ -75,10 +79,6 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.CountOfLogin), type))
                 {
                     parsedContent = pageInfo.User.CountOfLogin.ToString();
-                }
-                else if (StringUtils.EqualsIgnoreCase(nameof(User.DisplayName), type))
-                {
-                    parsedContent = pageInfo.User.DisplayName;
                 }
                 else if (StringUtils.EqualsIgnoreCase(nameof(User.Email), type))
                 {
