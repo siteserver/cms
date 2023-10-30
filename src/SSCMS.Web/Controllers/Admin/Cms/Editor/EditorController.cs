@@ -21,6 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private const string Route = "cms/editor";
         private const string RouteInsert = "cms/editor/actions/insert";
         private const string RouteUpdate = "cms/editor/actions/update";
+        private const string RouteUploadImage = "cms/editor/actions/uploadImage";
         private const string RoutePreview = "cms/editor/actions/preview";
         private const string RouteCensor = "cms/editor/actions/censor";
         private const string RouteCensorAddWords = "cms/editor/actions/censorAddWords";
@@ -38,6 +39,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly ICensorManager _censorManager;
         private readonly ISpellManager _spellManager;
         private readonly IMailManager _mailManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -51,7 +53,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, IMailManager mailManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IScheduledTaskRepository scheduledTaskRepository, IErrorLogRepository errorLogRepository)
+        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, IMailManager mailManager, IStorageManager storageManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IScheduledTaskRepository scheduledTaskRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -63,6 +65,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             _censorManager = censorManager;
             _spellManager = spellManager;
             _mailManager = mailManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;

@@ -1,6 +1,7 @@
 ﻿var $url = "/cms/editor";
 var $urlInsert = $url + "/actions/insert";
 var $urlUpdate = $url + "/actions/update";
+var $urlUploadImage = $url + "/actions/uploadImage";
 var $urlPreview = $url + "/actions/preview";
 var $urlTags = $url + "/actions/tags";
 var $urlCensor = $url + "/actions/censor";
@@ -699,6 +700,24 @@ var methods = {
       });
   },
 
+  apiUploadImage: function (file) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api
+      .csrfPost(this.csrfToken, $urlUploadImage + '?siteId=' + this.siteId, file)
+      .then(function (response) {
+        var res = response.data;
+        $this.insertLatestText('ImageUrl', res.value);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
+  },
+
   apiSave: function () {
     if (
       !this.censorSettings.isCensorPassed &&
@@ -776,6 +795,16 @@ var methods = {
     }
     this.form[utils.getExtendName(attributeName, no)] = text;
     this.form = _.assign({}, this.form);
+  },
+
+  insertLatestText: function (attributeName, text) {
+    var count = this.form[utils.getCountName(attributeName)] || 0;
+    var value = this.form[utils.getExtendName(attributeName, count)];
+    if (value) {
+      this.insertText(attributeName, count + 1, text);
+    } else {
+      this.insertText(attributeName, count, text);
+    }
   },
 
   insertEditor: function (attributeName, html) {
@@ -1074,5 +1103,18 @@ var $vue = new Vue({
   created: function () {
     utils.keyPress(this.btnSaveClick, this.btnCloseClick);
     this.apiGet();
+    var $this = this;
+    document.onpaste = function (event) {
+      var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (var index in items) {
+        var item = items[index];
+        if (item.kind === 'file' && item.type && item.type.indexOf('image/') !== -1) {
+          var blob = item.getAsFile();
+          var formData = new FormData();
+          formData.append('file', blob, item.type.replace('/', '.'));
+          $this.apiUploadImage(formData);
+        }
+      }
+    };
   },
 });
