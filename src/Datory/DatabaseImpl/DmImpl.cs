@@ -90,7 +90,8 @@ namespace Datory.DatabaseImpl
             try
             {
                 // var sql = $"SELECT COUNT(*) FROM dba_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
-                var sql = $"SELECT COUNT(*) FROM user_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
+                // var sql = $"SELECT COUNT(*) FROM user_tables WHERE owner = '{databaseName}' AND table_name = '{tableName}'";
+                var sql = $"SELECT COUNT(*) FROM user_tables WHERE table_name = '{tableName}'";
 
                 using var connection = GetConnection(connectionString);
                 exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
@@ -121,7 +122,8 @@ namespace Datory.DatabaseImpl
             using (var connection = GetConnection(connectionString))
             {
                 // var sqlString = $"SELECT table_name FROM dba_tables WHERE OWNER = '{owner}'";
-                var sqlString = $"SELECT table_name FROM user_tables WHERE OWNER = '{owner}'";
+                // var sqlString = $"SELECT table_name FROM user_tables WHERE OWNER = '{owner}'";
+                var sqlString = "SELECT table_name FROM user_tables";
 
                 tableNames = await connection.QueryAsync<string>(sqlString);
             }
@@ -244,8 +246,10 @@ namespace Datory.DatabaseImpl
 
             using (var connection = new DmConnection(connectionString))
             {
+                // var sqlString =
+                //     $"SELECT COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType, DATA_Length AS DataLength FROM all_tab_columns WHERE OWNER = '{owner}' AND Table_Name = '{tableName}'";
                 var sqlString =
-                    $"SELECT COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType, DATA_Length AS DataLength FROM all_tab_columns WHERE OWNER = '{owner}' AND Table_Name = '{tableName}'";
+                    $"SELECT COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType, DATA_Length AS DataLength FROM user_tab_columns WHERE Table_Name = '{tableName}'";
 
                 using var rdr = await connection.ExecuteReaderAsync(sqlString);
                 while (rdr.Read())
