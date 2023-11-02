@@ -93,7 +93,6 @@
   }
   .el-collapse-item__header {font-size: 14px;}
   .el-link {font-size:12px; margin-right: 5px;}
-  /* .el-loading-mask.is-fullscreen, .el-loading-mask {z-index: 2001 !important;} */
   .el-breadcrumb__inner a, .el-breadcrumb__inner.is-link {
     font-weight: normal;
     color: #999;
@@ -101,14 +100,20 @@
   .el-breadcrumb__item:last-child .el-breadcrumb__inner, .el-breadcrumb__item:last-child .el-breadcrumb__inner a, .el-breadcrumb__item:last-child .el-breadcrumb__inner a:hover {
     cursor: pointer;
   }
+  .editor-container {
+    padding-top: 0; padding-bottom: 0; overflow:hidden;
+  }
+  .editor-form {
+    margin: 10px 20px 20px 0
+  }
   </style>
 }
 
-<el-container style="padding-top: 0; padding-bottom: 0; overflow:hidden;" :style="{height: mainHeight}">
+<el-container class="editor-container" :style="{height: mainHeight}">
   <el-main style="padding: 0; margin: 0">
     <el-scrollbar class="scrollbar" :style="{height: mainHeight}">
       
-      <el-form v-on:submit.native.prevent style="margin: 10px 20px 20px 0" ref="form" :model="form" size="small" status-icon label-width="100px">
+      <el-form v-on:submit.native.prevent class="editor-form" ref="form" :model="form" size="small" status-icon label-width="100px">
         <el-form-item>
           <el-breadcrumb style="margin-top: 5px;">
             <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.value"><a :href="getChannelUrl(item)" target="_blank">{{ item.label }}</a></el-breadcrumb-item>

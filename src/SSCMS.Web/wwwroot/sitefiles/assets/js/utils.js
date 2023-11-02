@@ -514,16 +514,20 @@ var utils = {
     });
   },
 
-  success: function (message) {
-    utils.getRootVue().$message({
+  success: function (message, options) {
+    var vue = (options && options.layer) ? utils.getTabVue() : utils.getRootVue();
+
+    vue.$message({
       type: "success",
       message: message,
-      showIcon: true
+      showIcon: true,
+      showClose: true,
     });
   },
 
   error: function (error, options) {
     if (!error) return;
+    var vue = (options && options.layer) ? utils.getTabVue() : utils.getRootVue();
 
     if (typeof error === 'string') {
       if (options && options.redirect) {
@@ -537,10 +541,11 @@ var utils = {
           top.location.href = utils.getRootUrl("error", { uuid: uuid });
         }
       } else {
-        utils.getRootVue().$message({
+        vue.$message({
           type: "error",
           message: error,
-          showIcon: true
+          showIcon: true,
+          showClose: true,
         });
       }
     } else if (error.response) {
@@ -586,16 +591,18 @@ var utils = {
         }
       }
 
-      utils.getRootVue().$message({
+      vue.$message({
         type: "error",
         message: message,
-        showIcon: true
+        showIcon: true,
+        showClose: true,
       });
     } else if (typeof error === 'object') {
-      utils.getRootVue().$message({
+      vue.$message({
         type: "error",
         message: error + '',
-        showIcon: true
+        showIcon: true,
+        showClose: true,
       });
     }
   },

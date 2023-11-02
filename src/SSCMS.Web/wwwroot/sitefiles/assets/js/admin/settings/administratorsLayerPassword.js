@@ -4,7 +4,9 @@ var data = utils.init({
   userName: utils.getQueryString('userName'),
   isEnforcePasswordChange: utils.getQueryBoolean('isEnforcePasswordChange'),
   administrator: null,
+  oldPassword: false,
   form: {
+    oldPassword: null,
     password: null,
     confirmPassword: null
   }
@@ -22,6 +24,7 @@ var methods = {
       var res = response.data;
 
       $this.administrator = res.administrator;
+      $this.oldPassword = res.oldPassword;
 
       if (!$this.userName) {
         $this.$message({
@@ -32,7 +35,7 @@ var methods = {
         });
       }
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {layer: true});
     }).then(function () {
       utils.loading($this, false);
     });
@@ -50,11 +53,12 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, {
       userName: this.userName,
+      oldPassword: this.form.oldPassword ? this.toBase64(this.form.oldPassword) : '',
       password: this.form.password ? this.toBase64(this.form.password) : '',
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('密码更改成功！');
+      utils.success('密码更改成功！', {layer: true});
 
       setTimeout(function () {
         if ($this.isEnforcePasswordChange) {
@@ -64,7 +68,7 @@ var methods = {
         }
       }, 1000);
     }).catch(function (error) {
-      utils.error(error);
+      utils.error(error, {layer: true});
     }).then(function () {
       utils.loading($this, false);
     });

@@ -1,7 +1,7 @@
 ﻿var $url = "/cms/editor";
 var $urlInsert = $url + "/actions/insert";
 var $urlUpdate = $url + "/actions/update";
-var $urlUploadImage = $url + "/actions/uploadImage";
+var $urlUpload = $url + "/actions/upload";
 var $urlPreview = $url + "/actions/preview";
 var $urlTags = $url + "/actions/tags";
 var $urlCensor = $url + "/actions/censor";
@@ -700,15 +700,15 @@ var methods = {
       });
   },
 
-  apiUploadImage: function (file) {
+  apiUpload: function (type, file) {
     var $this = this;
 
     utils.loading(this, true);
     $api
-      .csrfPost(this.csrfToken, $urlUploadImage + '?siteId=' + this.siteId, file)
+      .csrfPost(this.csrfToken, $urlUpload + '?siteId=' + this.siteId + '&type=' + type, file)
       .then(function (response) {
         var res = response.data;
-        $this.insertLatestText('ImageUrl', res.value);
+        $this.insertLatestText(type, res.value);
       })
       .catch(function (error) {
         utils.error(error);
@@ -1106,13 +1106,32 @@ var $vue = new Vue({
     var $this = this;
     document.onpaste = function (event) {
       var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-      for (var index in items) {
-        var item = items[index];
-        if (item.kind === 'file' && item.type && item.type.indexOf('image/') !== -1) {
+      for (var i = items.length; i > 0; i--) {
+        var item = items[i - 1];
+        if (item.kind !== 'file') continue;
+        var type = item.type;
+        if (!type || type.indexOf('/') === -1) continue;
+        if (type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+          type = 'file.docx';
+        } else if (type === 'application/msword') {
+          type = 'file.doc';
+        }
+
+        if (type.indexOf('image/') !== -1) {
           var blob = item.getAsFile();
           var formData = new FormData();
-          formData.append('file', blob, item.type.replace('/', '.'));
-          $this.apiUploadImage(formData);
+          formData.append('file', blob, type.replace('/', '.'));
+          $this.apiUpload('ImageUrl', formData);
+        } else if (type.indexOf('video/') !== -1) {
+          var blob = item.getAsFile();
+          var formData = new FormData();
+          formData.append('file', blob, type.replace('/', '.'));
+          $this.apiUpload('VideoUrl', formData);
+        } else {
+          var blob = item.getAsFile();
+          var formData = new FormData();
+          formData.append('file', blob, type.replace('/', '.'));
+          $this.apiUpload('FileUrl', formData);
         }
       }
     };

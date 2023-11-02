@@ -25,7 +25,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 
             return new GetResult
             {
-                Administrator = administrator
+                Administrator = administrator,
+                OldPassword = request.UserName == _authManager.AdminName,
             };
         }
     }

@@ -21,7 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private const string Route = "cms/editor";
         private const string RouteInsert = "cms/editor/actions/insert";
         private const string RouteUpdate = "cms/editor/actions/update";
-        private const string RouteUploadImage = "cms/editor/actions/uploadImage";
+        private const string RouteUpload = "cms/editor/actions/upload";
         private const string RoutePreview = "cms/editor/actions/preview";
         private const string RouteCensor = "cms/editor/actions/censor";
         private const string RouteCensorAddWords = "cms/editor/actions/censorAddWords";
@@ -186,6 +186,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         public class SpellAddWordsRequest : ChannelRequest
         {
             public string Word { get; set; }
+        }
+
+        public class UploadRequest : SiteRequest
+        {
+            public string Type { get; set; }
         }
     }
 }

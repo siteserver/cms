@@ -381,7 +381,7 @@ var methods = {
         title: '更改密码',
         url: utils.getSettingsUrl('administratorsLayerPassword', {userName: this.local.userName}),
         width: 550,
-        height: 300
+        height: 350
       });
     } else if (command === 'logout') {
       location.href = utils.getRootUrl('logout')
