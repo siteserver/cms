@@ -157,7 +157,7 @@ namespace SSCMS.Core.Repositories
             return await _repository.GetAllAsync(Q
                 .Where(nameof(ContentTag.SiteId), siteId)
                 .WhereNotNull(nameof(ContentTag.TagName))
-                .WhereNot(nameof(ContentTag.TagName), string.Empty)
+                // .WhereNot(nameof(ContentTag.TagName), string.Empty)
                 .OrderByDesc(nameof(ContentTag.UseNum))
                 .CachingGet(GetCacheKey(siteId))
             );

@@ -39,7 +39,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 }
             }
 
-
             var (isValid, errorMessage) = await _administratorRepository.ChangePasswordAsync(adminInfo, password);
             if (!isValid)
             {
