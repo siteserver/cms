@@ -64,12 +64,5 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
             public bool IsContentPage { get; set; }
             public string Scope { get; set; }
         }
-
-        
-        
-
-        
-
-        
     }
 }

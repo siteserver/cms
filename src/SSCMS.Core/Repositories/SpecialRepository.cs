@@ -96,5 +96,12 @@ namespace SSCMS.Core.Repositories
             var specials = await GetSpecialsAsync(siteId);
             return specials.Select(x => x.Id).ToList();
         }
+
+        public async Task<int> GetSpecialIdByTitleAsync(int siteId, string title)
+        {
+            var specials = await GetSpecialsAsync(siteId);
+            var special = specials.FirstOrDefault(x => x.Title == title);
+            return special?.Id ?? 0;
+        }
     }
 }
