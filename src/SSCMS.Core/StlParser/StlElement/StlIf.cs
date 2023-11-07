@@ -75,38 +75,40 @@ namespace SSCMS.Core.StlParser.StlElement
         public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";
         public const string TypeUserName = "UserName";
         public const string TypeUserGroup = "UserGroup";
-        private const string TypeChannelName = "ChannelName";			                            //栏目名称
+        private const string TypeChannelName = "ChannelName";			                          //栏目名称
         private const string TypeChannelIndex = "ChannelIndex";			                          //栏目索引
+        private const string TypeKeywords = "Keywords";			                                  //栏目关键字
+        private const string TypeDescription = "Description";			                          //栏目描述
         private const string TypeTemplateName = "TemplateName";			                          //模板名称
         private const string TypeTemplateType = "TemplateType";			                          //模板类型
         private const string TypeTopLevel = "TopLevel";			                                  //栏目级别
-        private const string TypeUpChannel = "UpChannel";			                                //上级栏目
+        private const string TypeUpChannel = "UpChannel";			                              //上级栏目
         private const string TypeSelf = "Self";			                                          //当前栏目
-        private const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                    //当前栏目或上级栏目
-        private const string TypeCurrent = "Current";			                                    //当前栏目或上级栏目
-        private const string TypeIndex = "Index";			                                        //当前页面为首页
-        private const string TypeHasChildren = "HasChildren";			                            //是否下级栏目
+        private const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                  //当前栏目或上级栏目
+        private const string TypeCurrent = "Current";			                                  //当前栏目或上级栏目
+        private const string TypeIndex = "Index";			                                      //当前页面为首页
+        private const string TypeHasChildren = "HasChildren";			                          //是否下级栏目
         private const string TypeGroupChannel = "GroupChannel";			                          //栏目组名称
         private const string TypeGroupContent = "GroupContent";			                          //内容组名称
-        private const string TypeAddDate = "AddDate";			                                    //添加时间
+        private const string TypeAddDate = "AddDate";			                                  //添加时间
         private const string TypeLastModifiedDate = "LastModifiedDate";			                  //最后编辑时间（仅用于判断内容）
-        private const string TypeItemIndex = "ItemIndex";			                                //当前项序号
-        private const string TypeOddItem = "OddItem";			                                    //奇数项
-        private const string TypeFirst = "First";			                                        //第一项
-        private const string TypeImages = "Images";			                                        //图片数目
-        private const string TypeVideos = "Videos";			                                        //视频数目
-        private const string TypeFiles = "Files";			                                        //文件数目
+        private const string TypeItemIndex = "ItemIndex";			                              //当前项序号
+        private const string TypeOddItem = "OddItem";			                                  //奇数项
+        private const string TypeFirst = "First";			                                      //第一项
+        private const string TypeImages = "Images";			                                      //图片数目
+        private const string TypeVideos = "Videos";			                                      //视频数目
+        private const string TypeFiles = "Files";			                                      //文件数目
 
         private const string OperateEmpty = "Empty";
         private const string OperateNotEmpty = "NotEmpty";			                              //值不为空
         private const string OperateEquals = "Equals";			                                  //值等于
-        private const string OperateNotEquals = "NotEquals";			                            //值不等于
-        private const string OperateGreatThan = "GreatThan";			                            //值大于
+        private const string OperateNotEquals = "NotEquals";			                          //值不等于
+        private const string OperateGreatThan = "GreatThan";			                          //值大于
         private const string OperateLessThan = "LessThan";			                              //值小于
         private const string OperateIn = "In";			                                          //值属于
-        private const string OperateNotIn = "NotIn";                                          //值不属于
+        private const string OperateNotIn = "NotIn";                                              //值不属于
         private const string OperateContains = "Contains";			                              //值包含
-        private const string OperateNotContains = "NotContains";                              //值不包含
+        private const string OperateNotContains = "NotContains";                                  //值不包含
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
@@ -278,6 +280,16 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 var channelIndex = await databaseManager.ChannelRepository.GetIndexNameAsync(pageInfo.SiteId, contextInfo.ChannelId);
                 isSuccess = TestTypeValue(testOperate, testValue, channelIndex);
+            }
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeKeywords))
+            {
+                var channel = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                isSuccess = TestTypeValue(testOperate, testValue, channel != null ? channel.Keywords : string.Empty);
+            }
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeDescription))
+            {
+                var channel = await databaseManager.ChannelRepository.GetAsync(contextInfo.ChannelId);
+                isSuccess = TestTypeValue(testOperate, testValue, channel != null ? channel.Description : string.Empty);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTemplateName))
             {
