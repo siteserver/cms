@@ -31,7 +31,7 @@
 
   </el-tab-pane>
   <el-tab-pane label="解析结果" name="second">
-    <div id="parsedContent" style="width:99%; height: 450px; border: 1px solid #d7dae2;"></div>
+    <div v-if="activeName === 'second'" id="parsedContent" style="width:99%; height: 450px; border: 1px solid #d7dae2;"></div>
   </el-tab-pane>
   <el-tab-pane label="界面预览" name="third">
     <div id="preview" v-html="parsedContent" style="width:99%; min-height: 450px; border: 1px solid #d7dae2;"></div>
