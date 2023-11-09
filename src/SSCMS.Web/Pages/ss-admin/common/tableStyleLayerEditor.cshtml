@@ -19,7 +19,7 @@
   <el-form-item label="排序" prop="taxis" :rules="{ required: true, message: '请输入排序' }">
     <el-input v-model="form.taxis" placeholder="请输入排序"></el-input>
   </el-form-item>
-  <el-form-item label="默认值">
+  <el-form-item label="默认值" v-if="!isSelect">
     <el-input v-model="form.defaultValue" placeholder="请输入默认值"></el-input>
   </el-form-item>
   <el-form-item label="高度" prop="height" v-if="form.inputType === 'TextArea' || form.inputType === 'TextEditor'" :rules="{ required: true, message: '请输入高度' }">
