@@ -108,6 +108,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         public class TreeResult
         {
             public Cascade<int> Root { get; set; }
+            public List<int> ChannelIds { get; set; }
             public string SiteUrl { get; set; }
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }

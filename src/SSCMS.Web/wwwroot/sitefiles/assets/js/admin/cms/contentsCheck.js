@@ -1,4 +1,8 @@
 ﻿var $url = "/cms/contents/contentsCheck";
+var $urlTree = $url + "/actions/tree";
+var $urlList = $url + "/actions/list";
+var $urlColumns = $url + "/actions/columns";
+
 var $defaultWidth = 160;
 
 var data = utils.init({
@@ -43,12 +47,13 @@ var methods = {
   apiTree: function() {
     var $this = this;
 
-    $api.post($url + '/actions/tree', {
+    $api.post($urlTree, {
       siteId: this.siteId
     }).then(function(response) {
       var res = response.data;
 
       $this.root = res.root;
+      $this.searchForm.channelIds = [res.channelIds];
       $this.siteUrl = res.siteUrl;
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
@@ -102,7 +107,7 @@ var methods = {
     }
 
     utils.loading(this, true);
-    $api.post($url + '/actions/list', {
+    $api.post($urlList, {
       siteId: this.siteId,
       channelIds: channelIds,
       isAllContents: this.searchForm.isAllContents,
@@ -138,9 +143,7 @@ var methods = {
   },
 
   apiColumns: function(attributeNames) {
-    var $this = this;
-
-    $api.post($url + '/actions/columns', {
+    $api.post($urlColumns, {
       siteId: this.siteId,
       attributeNames: attributeNames
     }).then(function(response) {

@@ -40,7 +40,7 @@
                 placeholder="请选择栏目"
               >
                 <span slot-scope="{ node, data }">
-                  {{ node.label }}
+                  {{ node.label }} ({{ data.count }})
                 </span>
               </el-cascader>
           </el-form-item>

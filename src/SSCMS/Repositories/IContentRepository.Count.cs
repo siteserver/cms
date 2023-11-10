@@ -14,6 +14,8 @@ namespace SSCMS.Repositories
 
         Task<int> GetCountOfCheckedAsync(Site site, IChannelSummary channel);
 
+        Task<int> GetCountOfUnCheckedAsync(Site site, IChannelSummary channel);
+
         Task<int> GetCountCheckedImageAsync(Site site, Channel channel);
 
         Task<int> GetCountOfCheckedImagesAsync(Site site, IChannelSummary channel);

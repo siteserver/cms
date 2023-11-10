@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
@@ -23,17 +24,40 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.SiteId);
+            
+            var enabledChannelIds = await _authManager.GetContentPermissionsChannelIdsAsync(site.Id);
+            var visibleChannelIds = await _authManager.GetVisibleChannelIdsAsync(enabledChannelIds);
+
+            var firstEnabledChannelId = 0;
             var root = await _channelRepository.GetCascadeAsync(site, channel, async summary =>
             {
+                var visible = visibleChannelIds.Contains(summary.Id);
+                if (!visible) return null;
+
                 var count = await _contentRepository.GetCountAsync(site, summary);
+                var disabled = !enabledChannelIds.Contains(summary.Id);
+                if (firstEnabledChannelId == 0 && !disabled)
+                {
+                    firstEnabledChannelId = summary.Id;
+                }
+
                 return new
                 {
-                    Count = count
+                    Count = count,
+                    Disabled = disabled
                 };
             });
 
             if (!request.Reload)
             {
+                var channelIds = new List<int>();
+                var firstChannel = await _channelRepository.GetAsync(firstEnabledChannelId);
+                if (firstChannel.ParentsPath != null && firstChannel.ParentsPath.Count > 0)
+                {
+                    channelIds.AddRange(firstChannel.ParentsPath);
+                }
+                channelIds.Add(firstChannel.Id);
+
                 var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
                 var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
                 var tagNames = await _contentTagRepository.GetTagNamesAsync(request.SiteId);
@@ -43,12 +67,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.SearchContents);
                 var permissions = new Permissions
                 {
-                    IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Add),
-                    IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Delete),
-                    IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Edit),
-                    IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Arrange),
-                    IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Translate),
-                    IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.CheckLevel1),
+                    IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Add),
+                    IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Delete),
+                    IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Edit),
+                    IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Arrange),
+                    IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Translate),
+                    IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.CheckLevel1),
                     IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, MenuUtils.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Create),
                 };
 
@@ -67,6 +91,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 return new TreeResult
                 {
                     Root = root,
+                    ChannelIds = channelIds,
                     SiteUrl = siteUrl,
                     GroupNames = groupNames,
                     TagNames = tagNames,
@@ -80,7 +105,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             return new TreeResult
             {
-                Root = root
+                Root = root,
             };
         }
     }
