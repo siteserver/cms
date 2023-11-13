@@ -4,12 +4,16 @@ var data = utils.init({
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
   uploadUrl: null,
+  uploadErrorMessage: null,
+  uploadProgressPercent: null,
+  uploadProgressInterval: null,
   form: {
     siteId: utils.getQueryInt('siteId'),
     isChangeFileName: true,
     isLibrary: true,
-    filePaths: []
-  }
+  },
+  reExtensions: null,
+  showExtensions: null,
 });
 
 var methods = {
@@ -17,6 +21,50 @@ var methods = {
     if (parent.$vue.runFormLayerVideoUpload) {
       parent.$vue.runFormLayerVideoUpload(this.attributeName, no, result.virtualUrl, result.coverUrl);
     }
+  },
+
+  uploadBefore: function(file) {
+    if(!this.reExtensions.exec(file.name))
+    {
+      this.uploadErrorMessage = '请选择有效的文件上传!';
+      return false;
+    }
+    return true;
+  },
+
+  uploadRequest: function(data) {
+    this.uploadUrl = $url + '?siteId=' + this.form.siteId + '&isChangeFileName=' + this.form.isChangeFileName + '&isLibrary=' + this.form.isLibrary;
+
+    var $this = this;
+    var formData = new FormData()
+    formData.append('file', data.file)
+    var config = {
+      onUploadProgress: function(progressEvent) {
+        $this.uploadProgressPercent = Number((progressEvent.loaded / progressEvent.total * 30).toFixed(2));
+        if (progressEvent.loaded === progressEvent.total) {
+          $this.uploadProgressInterval = setInterval(function() {
+            $this.uploadProgressPercent += 1;
+            if ($this.uploadProgressPercent === 99) {
+              clearInterval($this.uploadProgressInterval);
+            }
+          }, 1000);
+        }
+      }
+    };
+    $api.post(this.uploadUrl, formData, config)
+    .then(function (response) {
+      var res = response.data;
+
+      $this.insert($this.no, res);
+      utils.closeLayer();
+    })
+    .catch(function (error) {
+      $this.uploadProgressPercent = null;
+      $this.uploadErrorMessage = utils.getErrorMessage(error);
+    })
+    .then(function () {
+      clearInterval($this.uploadProgressInterval);
+    });
   },
 
   apiGet: function() {
@@ -39,7 +87,8 @@ var methods = {
 
       $this.form.isChangeFileName = res.isChangeFileName;
       $this.form.isLibrary = res.isLibrary;
-      $this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + $this.form.siteId + '&isChangeFileName=' + $this.form.isChangeFileName;
+      $this.reExtensions = new RegExp('(' + res.videoUploadExtensions.replace(/,/g, '|').replace(/\./g, '\\.') + ')$', 'i');
+      $this.showExtensions = res.videoUploadExtensions.replace(/,/g, '、').toUpperCase();
     })
     .catch(function(error) {
       utils.error(error);
@@ -47,70 +96,11 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
-  },
-
-  apiSubmit: function() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, this.form).then(function(response) {
-      var res = response.data;
-
-      if (res && res.length > 0) {
-        for (var i = 0; i < res.length; i++) {
-          var result = res[i];
-          $this.insert($this.no + i, result);
-        }
-      }
-
-      utils.closeLayer();
-    })
-    .catch(function(error) {
-      utils.error(error);
-    })
-    .then(function() {
-      utils.loading($this, false);
-    });
-  },
-
-  btnSubmitClick: function () {
-    if (this.form.filePaths.length === 0) {
-      utils.error('请上传需要插入的视频文件！');
-      return false;
-    }
-
-    this.apiSubmit();
   },
 
   btnCancelClick: function () {
     utils.closeLayer();
   },
-
-  btnChangeClick: function() {
-    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId + '&isChangeFileName=' + this.form.isChangeFileName;
-  },
-
-  uploadProgress: function() {
-    utils.loading(this, true);
-  },
-
-  uploadFileSuccess: function(res) {
-    this.form.filePaths.push(res.path);
-
-    utils.loading(this, false);
-  },
-
-  uploadError: function(err) {
-    utils.loading(this, false);
-    var error = JSON.parse(err.message);
-    utils.error(error.message);
-  },
-
-  uploadRemove(file) {
-    if (file.response) {
-      this.form.filePaths.splice(this.form.filePaths.indexOf(file.response.path), 1);
-    }
-  }
 };
 
 var $vue = new Vue({
@@ -118,7 +108,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
+    utils.keyPress(null, this.btnCancelClick);
     this.apiGet();
   }
 });

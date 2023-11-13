@@ -14,8 +14,16 @@
 <el-alert type="error" v-if="uploadErrorMessage" :title="uploadErrorMessage"></el-alert>
 <el-form style="margin: 20px 10px;" label-position="top">
   <el-form-item>
-    <el-upload :disabled="uploadProgressPercent" :drag="true" :action="uploadUrl" :auto-upload="true"
-      :headers="{ Authorization: 'Bearer ' + uploadToken }" :show-file-list="false" :before-upload="uploadBefore" :http-request="uploadRequest" :multiple="false">
+    <el-upload 
+      :disabled="uploadProgressPercent"
+      :drag="true"
+      :action="uploadUrl"
+      :auto-upload="true"
+      :headers="{ Authorization: 'Bearer ' + uploadToken }"
+      :show-file-list="false"
+      :before-upload="uploadBefore"
+      :http-request="uploadRequest"
+      :multiple="false">
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">
         <strong>

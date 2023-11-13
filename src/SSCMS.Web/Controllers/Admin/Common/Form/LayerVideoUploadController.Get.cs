@@ -27,7 +27,8 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             {
                 IsChangeFileName = options.IsChangeFileName,
                 IsLibrary = options.IsLibrary,
-                IsCloudVod = isCloudVod
+                IsCloudVod = isCloudVod,
+                VideoUploadExtensions = site.VideoUploadExtensions
             };
         }
     }

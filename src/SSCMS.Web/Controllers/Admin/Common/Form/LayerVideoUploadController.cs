@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -15,7 +14,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
     public partial class LayerVideoUploadController : ControllerBase
     {
         private const string Route = "common/form/layerVideoUpload";
-        private const string RouteUpload = "common/form/layerVideoUpload/actions/upload";
 
         private readonly IPathManager _pathManager;
         private readonly IVodManager _vodManager;
@@ -41,27 +39,18 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
         public class GetResult : Options
         {
             public bool IsCloudVod { get; set; }
-        }
-
-        public class UploadRequest : SiteRequest
-        {
-            public bool IsChangeFileName { get; set; }
-        }
-
-        public class UploadResult
-        {
-            public string Name { get; set; }
-            public string Path { get; set; }
+            public string VideoUploadExtensions { get; set; }
         }
 
         public class SubmitRequest : Options
         {
             public int SiteId { get; set; }
-            public List<string> FilePaths { get; set; }
         }
 
         public class SubmitResult
         {
+            public bool Success { get; set; }
+            public string ErrorMessage { get; set; }
             public string CoverUrl { get; set; }
             public string PlayUrl { get; set; }
             public string VirtualUrl { get; set; }
