@@ -25,6 +25,8 @@ namespace SSCMS.Services
         [Obsolete]
         SyncTaskSummary GetTaskSummary(int siteId);
 
+        Task<string> GetStorageUrlAsync(int siteId);
+
         Task<bool> IsStorageAsync(int siteId, SyncType syncType);
 
         Task<bool> IsAutoStorageAsync(int siteId, SyncType syncType);

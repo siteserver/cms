@@ -26,6 +26,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
@@ -35,7 +36,7 @@ namespace SSCMS.Web.Controllers.Home.Write
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public EditorController(IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IContentCheckRepository contentCheckRepository)
+        public EditorController(IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, IStorageManager storageManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IContentCheckRepository contentCheckRepository)
         {
             _authManager = authManager;
             _cloudManager = cloudManager;
@@ -43,6 +44,7 @@ namespace SSCMS.Web.Controllers.Home.Write
             _pathManager = pathManager;
             _databaseManager = databaseManager;
             _pluginManager = pluginManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;

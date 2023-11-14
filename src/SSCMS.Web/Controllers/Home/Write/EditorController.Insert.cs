@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Home.Write
@@ -24,7 +25,13 @@ namespace SSCMS.Web.Controllers.Home.Write
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
             
-            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
+            string excludeUrlPrefix = null;
+            var isStorageImages = await _storageManager.IsStorageAsync(request.SiteId, SyncType.Images);
+            if (isStorageImages)
+            {
+                excludeUrlPrefix = await _storageManager.GetStorageUrlAsync(request.SiteId);
+            }
+            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content, excludeUrlPrefix);
 
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;

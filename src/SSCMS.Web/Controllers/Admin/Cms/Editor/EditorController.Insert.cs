@@ -5,6 +5,7 @@ using SSCMS.Dto;
 using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Core.Services;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 {
@@ -26,7 +27,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
 
-            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content);
+            string excludeUrlPrefix = null;
+            var isStorageImages = await _storageManager.IsStorageAsync(request.SiteId, SyncType.Images);
+            if (isStorageImages)
+            {
+                excludeUrlPrefix = await _storageManager.GetStorageUrlAsync(request.SiteId);
+            }
+            var content = await _pathManager.EncodeContentAsync(site, channel, request.Content, excludeUrlPrefix);
 
             content.SiteId = site.Id;
             content.ChannelId = channel.Id;

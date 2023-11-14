@@ -12,7 +12,7 @@ namespace SSCMS.Core.Services
 {
     public partial class PathManager
     {
-        public async Task<Content> EncodeContentAsync(Site site, Channel channel, Content content)
+        public async Task<Content> EncodeContentAsync(Site site, Channel channel, Content content, string excludeUrlPrefix = null)
         {
             content = content.Clone<Content>();
 
@@ -34,7 +34,7 @@ namespace SSCMS.Core.Services
                 else if (style.InputType == InputType.TextEditor)
                 {
                     var value = content.Get<string>(style.AttributeName);
-                    value = await EncodeTextEditorAsync(site, value);
+                    value = await EncodeTextEditorAsync(site, value, excludeUrlPrefix);
                     value = UEditorUtils.TranslateToStlElement(value);
                     value = StringUtils.TrimEnd(value, @"<p><br/></p>");
                     content.Set(style.AttributeName, value);
@@ -42,6 +42,42 @@ namespace SSCMS.Core.Services
             }
 
             return content;
+        }
+
+        public async Task<string> EncodeTextEditorAsync(Site site, string content, string excludeUrlPrefix = null)
+        {
+            if (site == null) return content;
+
+            if (site.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
+            {
+                content = await SaveImageAsync(site, content, excludeUrlPrefix);
+            }
+
+            var builder = new StringBuilder(content);
+
+            var webUrl = await GetWebUrlAsync(site);
+            if (!string.IsNullOrEmpty(webUrl) && webUrl != "/")
+            {
+                StringUtils.ReplaceHrefOrSrc(builder, webUrl, "@");
+            }
+            //if (!string.IsNullOrEmpty(url))
+            //{
+            //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+            //}
+
+            var localUrl = await GetSiteUrlAsync(site, true);
+            if (!string.IsNullOrEmpty(localUrl) && localUrl != "/")
+            {
+                StringUtils.ReplaceHrefOrSrc(builder, localUrl, "@");
+            }
+
+            var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
+            StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
+
+            builder.Replace("@'@", "'@");
+            builder.Replace("@\"@", "\"@");
+
+            return builder.ToString();
         }
 
         public async Task<Content> DecodeContentAsync(Site site, Channel channel, int contentId)
@@ -81,42 +117,6 @@ namespace SSCMS.Core.Services
             }
 
             return content;
-        }
-
-        public async Task<string> EncodeTextEditorAsync(Site site, string content)
-        {
-            if (site == null) return content;
-
-            if (site.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
-            {
-                content = await SaveImageAsync(site, content);
-            }
-
-            var builder = new StringBuilder(content);
-
-            var webUrl = await GetWebUrlAsync(site);
-            if (!string.IsNullOrEmpty(webUrl) && webUrl != "/")
-            {
-                StringUtils.ReplaceHrefOrSrc(builder, webUrl, "@");
-            }
-            //if (!string.IsNullOrEmpty(url))
-            //{
-            //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
-            //}
-
-            var localUrl = await GetSiteUrlAsync(site, true);
-            if (!string.IsNullOrEmpty(localUrl) && localUrl != "/")
-            {
-                StringUtils.ReplaceHrefOrSrc(builder, localUrl, "@");
-            }
-
-            var relatedSiteUrl = ParseUrl($"~/{site.SiteDir}");
-            StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
-
-            builder.Replace("@'@", "'@");
-            builder.Replace("@\"@", "\"@");
-
-            return builder.ToString();
         }
 
         public async Task<string> DecodeTextEditorAsync(Site site, string content, bool isLocal)

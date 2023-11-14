@@ -102,7 +102,7 @@ namespace SSCMS.Services
         string AddVirtualToPath(string path);
 
         //将编辑器中图片上传至本机
-        Task<string> SaveImageAsync(Site site, string content);
+        Task<string> SaveImageAsync(Site site, string content, string excludePrefix = null);
 
         string GetTemporaryFilesPath(string relatedPath);
 

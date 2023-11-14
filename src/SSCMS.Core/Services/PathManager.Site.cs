@@ -1000,7 +1000,7 @@ namespace SSCMS.Core.Services
         }
 
         //将编辑器中图片上传至本机
-        public async Task<string> SaveImageAsync(Site site, string content)
+        public async Task<string> SaveImageAsync(Site site, string content, string excludePrefix = null)
         {
             var originalImageSrcs = RegexUtils.GetOriginalImageSrcs(content);
             foreach (var originalImageSrc in originalImageSrcs)
@@ -1008,7 +1008,15 @@ namespace SSCMS.Core.Services
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, "/") ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, await GetWebUrlAsync(site)))
+                {
                     continue;
+                }
+
+                if (!string.IsNullOrEmpty(excludePrefix) && StringUtils.StartsWithIgnoreCase(originalImageSrc, excludePrefix))
+                {
+                    continue;
+                }
+
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
                 if (!FileUtils.IsImageOrPlayer(fileExtName))
                 {
@@ -1034,7 +1042,7 @@ namespace SSCMS.Core.Services
                             {
                                 ImageUtils.ResizeImageIfExceeding(filePath, site.ImageAutoResizeWidth);
                             }
-                            
+
                             await AddWaterMarkAsync(site, filePath);
                         }
                     }

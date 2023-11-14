@@ -7,22 +7,16 @@ namespace SSCMS.Core.Services
 {
     public partial class CloudManager
     {
-        // [Obsolete]
-        // public Task<bool> IsEnabledAsync()
-        // {
-        //     return Task.FromResult(false);
-        // }
-
         [Obsolete]
         public void ClearAllTask(int siteId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Obsolete]
         public SyncTaskSummary GetTaskSummary(int siteId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Obsolete]
@@ -40,7 +34,7 @@ namespace SSCMS.Core.Services
         [Obsolete]
         public Task SyncAllAsync(int siteId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Obsolete]
@@ -56,12 +50,17 @@ namespace SSCMS.Core.Services
 
         public void ClearStorageTasks(int siteId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public SyncTaskSummary GetStorageTasks(int siteId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetStorageUrlAsync(int siteId)
+        {
+            return Task.FromResult(string.Empty);
         }
 
         public Task<bool> IsStorageAsync(int siteId, SyncType syncType)
@@ -76,7 +75,7 @@ namespace SSCMS.Core.Services
 
         public Task StorageAllAsync(int siteId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public Task<(bool, string)> StorageAsync(int siteId, string filePath)
