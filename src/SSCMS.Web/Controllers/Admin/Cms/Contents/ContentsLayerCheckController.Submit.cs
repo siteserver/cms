@@ -16,8 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(Route)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.CheckLevel1) ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
             {
                 return Unauthorized();
             }
@@ -38,23 +37,28 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             foreach (var summary in summaries)
             {
                 var contentChannelInfo = await _channelRepository.GetAsync(summary.ChannelId);
-                var contentInfo = await _contentRepository.GetAsync(site, contentChannelInfo, summary.Id);
-                if (contentInfo == null) continue;
+                var content = await _contentRepository.GetAsync(site, contentChannelInfo, summary.Id);
+                if (content == null) continue;
 
-                contentInfo.Set(ColumnsManager.CheckAdminId, adminId);
-                contentInfo.Set(ColumnsManager.CheckDate, DateTime.Now);
-                contentInfo.Set(ColumnsManager.CheckReasons, request.Reasons);
+                if (!await _authManager.HasContentPermissionsAsync(request.SiteId, content.ChannelId, MenuUtils.ContentPermissions.CheckLevel1))
+                {
+                    return Unauthorized();
+                }
 
-                contentInfo.Checked = isChecked;
-                contentInfo.CheckedLevel = request.CheckedLevel;
+                content.Set(ColumnsManager.CheckAdminId, adminId);
+                content.Set(ColumnsManager.CheckDate, DateTime.Now);
+                content.Set(ColumnsManager.CheckReasons, request.Reasons);
 
-                await _contentRepository.UpdateAsync(site, contentChannelInfo, contentInfo);
+                content.Checked = isChecked;
+                content.CheckedLevel = request.CheckedLevel;
+
+                await _contentRepository.UpdateAsync(site, contentChannelInfo, content);
 
                 await _contentCheckRepository.InsertAsync(new ContentCheck
                 {
                     SiteId = request.SiteId,
-                    ChannelId = contentInfo.ChannelId,
-                    ContentId = contentInfo.Id,
+                    ChannelId = content.ChannelId,
+                    ContentId = content.Id,
                     AdminId = adminId,
                     Checked = isChecked,
                     CheckedLevel = request.CheckedLevel,

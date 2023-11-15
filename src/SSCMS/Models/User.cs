@@ -59,5 +59,8 @@ namespace SSCMS.Models
 
         [DataColumn]
         public string AvatarUrl { get; set; }
+
+        [DataColumn]
+        public string OpenId { get; set; }
     }
 }

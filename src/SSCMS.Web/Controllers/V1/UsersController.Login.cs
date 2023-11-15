@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
@@ -11,9 +12,20 @@ namespace SSCMS.Web.Controllers.V1
     {
         [OpenApiOperation("用户登录 API", "用户登录，使用POST发起请求，请求地址为/api/v1/users/actions/login，此接口可以直接访问，无需身份验证")]
         [HttpPost, Route(RouteActionsLogin)]
-        public async Task<ActionResult<LoginResult>> Login([FromBody]LoginRequest request)
+        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
-            var (user, _, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
+            User user = null;
+            var errorMessage = Constants.ErrorNotFound;
+
+            if (!string.IsNullOrEmpty(request.OpenId))
+            {
+                user = await _userRepository.GetByOpenIdAsync(request.OpenId);
+            }
+            else if (!string.IsNullOrEmpty(request.Account) && !string.IsNullOrEmpty(request.Password))
+            {
+                (user, _, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
+            }
+            
             if (user == null)
             {
                 return this.Error(errorMessage);

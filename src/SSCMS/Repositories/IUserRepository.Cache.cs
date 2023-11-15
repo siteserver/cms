@@ -15,6 +15,8 @@ namespace SSCMS.Repositories
 
         Task<User> GetByEmailAsync(string email);
 
+        Task<User> GetByOpenIdAsync(string openId);
+
         Task<string> GetDisplayAsync(int userId);
     }
 }

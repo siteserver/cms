@@ -35,6 +35,8 @@ namespace SSCMS.Repositories
 
         Task<bool> IsMobileExistsAsync(string mobile);
 
+        Task<bool> IsOpenIdExistsAsync(string openId);
+
         Task<List<int>> GetUserIdsAsync(bool isChecked);
 
         bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, PasswordFormat passwordFormat,

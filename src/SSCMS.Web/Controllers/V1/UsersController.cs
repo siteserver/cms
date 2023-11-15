@@ -68,6 +68,11 @@ namespace SSCMS.Web.Controllers.V1
             public string Password { get; set; }
 
             /// <summary>
+            /// OpenId
+            /// </summary>
+            public string OpenId { get; set; }
+
+            /// <summary>
             /// 下次自动登录
             /// </summary>
             public bool IsPersistent { get; set; }

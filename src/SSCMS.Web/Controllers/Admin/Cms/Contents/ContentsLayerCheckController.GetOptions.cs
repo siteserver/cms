@@ -11,8 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(RouteOptions)]
         public async Task<ActionResult<GetOptionsResult>> GetOptions([FromBody] GetOptionsRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.CheckLevel1) ||
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
             {
                 return Unauthorized();
             }

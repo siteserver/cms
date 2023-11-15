@@ -415,6 +415,16 @@ namespace SSCMS.Core.Repositories
             return DirectoryUtils.IsDirectoryNameCompliant(userName);
         }
 
+        public async Task<bool> IsMobileExistsAsync(string mobile)
+        {
+            if (string.IsNullOrEmpty(mobile)) return false;
+
+            var exists = await IsUserNameExistsAsync(mobile);
+            if (exists) return true;
+
+            return await _repository.ExistsAsync(Q.Where(nameof(User.Mobile), mobile));
+        }
+
         public async Task<bool> IsEmailExistsAsync(string email)
         {
             if (string.IsNullOrEmpty(email)) return false;
@@ -425,14 +435,14 @@ namespace SSCMS.Core.Repositories
             return await _repository.ExistsAsync(Q.Where(nameof(User.Email), email));
         }
 
-        public async Task<bool> IsMobileExistsAsync(string mobile)
+        public async Task<bool> IsOpenIdExistsAsync(string openId)
         {
-            if (string.IsNullOrEmpty(mobile)) return false;
+            if (string.IsNullOrEmpty(openId)) return false;
 
-            var exists = await IsUserNameExistsAsync(mobile);
+            var exists = await IsUserNameExistsAsync(openId);
             if (exists) return true;
 
-            return await _repository.ExistsAsync(Q.Where(nameof(User.Mobile), mobile));
+            return await _repository.ExistsAsync(Q.Where(nameof(User.OpenId), openId));
         }
 
         public async Task<List<int>> GetUserIdsAsync(bool isChecked)

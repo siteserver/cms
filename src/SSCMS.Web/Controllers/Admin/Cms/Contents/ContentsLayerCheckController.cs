@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _contentCheckRepository = contentCheckRepository;
         }
 
-        public class GetRequest : ChannelRequest
+        public class GetRequest : SiteRequest
         {
             public string ChannelContentIds { get; set; }
         }
@@ -54,7 +54,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public IEnumerable<Select<int>> TransSites { get; set; }
         }
 
-        public class GetOptionsRequest : ChannelRequest
+        public class GetOptionsRequest : SiteRequest
         {
             public int TransSiteId { get; set; }
         }
@@ -64,7 +64,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public Cascade<int> TransChannels { get; set; }
         }
 
-        public class SubmitRequest : ChannelRequest
+        public class SubmitRequest : SiteRequest
         {
             public string ChannelContentIds { get; set; }
             public int CheckedLevel { get; set; }

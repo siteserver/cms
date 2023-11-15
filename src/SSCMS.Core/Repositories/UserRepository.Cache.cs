@@ -30,6 +30,11 @@ namespace SSCMS.Core.Repositories
             return CacheUtils.GetEntityKey(TableName, "email", email);
         }
 
+        private string GetCacheKeyByOpenId(string openId)
+        {
+            return CacheUtils.GetEntityKey(TableName, "openId", openId);
+        }
+
         private string[] GetCacheKeysToRemove(User user)
         {
             if (user == null) return null;
@@ -50,18 +55,35 @@ namespace SSCMS.Core.Repositories
                 list.Add(GetCacheKeyByEmail(user.Email));
             }
 
+            if (!string.IsNullOrEmpty(user.OpenId))
+            {
+                list.Add(GetCacheKeyByOpenId(user.OpenId));
+            }
+
             return list.ToArray();
         }
 
         public async Task<User> GetByAccountAsync(string account)
         {
-            var user = await GetByUserNameAsync(account);
-            if (user != null) return user;
-            if (StringUtils.IsMobile(account)) return await GetByMobileAsync(account);
-            if (StringUtils.IsEmail(account)) return await GetByEmailAsync(account);
+            if (string.IsNullOrEmpty(account)) return null;
 
-            return null;
+            var user = await GetByUserNameAsync(account);
+            if (user != null)
+            {
+                return user;
+            }
+            if (StringUtils.IsMobile(account))
+            {
+                return await GetByMobileAsync(account);
+            }
+            if (StringUtils.IsEmail(account))
+            {
+                return await GetByEmailAsync(account);
+            }
+            
+            return await GetByOpenIdAsync(account);
         }
+        
         private async Task<User> GetAsync(Query query)
         {
             var user = await _repository.GetAsync(query);
@@ -111,6 +133,16 @@ namespace SSCMS.Core.Repositories
             return await GetAsync(Q
                 .Where(nameof(User.Email), email)
                 .CachingGet(GetCacheKeyByEmail(email))
+            );
+        }
+
+        public async Task<User> GetByOpenIdAsync(string openId)
+        {
+            if (string.IsNullOrWhiteSpace(openId)) return null;
+
+            return await GetAsync(Q
+                .Where(nameof(User.OpenId), openId)
+                .CachingGet(GetCacheKeyByOpenId(openId))
             );
         }
 

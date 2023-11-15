@@ -13,9 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    MenuUtils.SitePermissions.Contents) ||
-                !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Delete))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Contents))
             {
                 return Unauthorized();
             }
@@ -31,6 +29,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var channel = await _channelRepository.GetAsync(summary.ChannelId);
                 var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
+
+                if (!await _authManager.HasContentPermissionsAsync(request.SiteId, content.ChannelId, MenuUtils.ContentPermissions.Delete))
+                {
+                    return Unauthorized();
+                }
 
                 var pageContent = content.Clone<Content>();
                 pageContent.Set(ColumnsManager.CheckState, CheckManager.GetCheckState(site, content));

@@ -13,8 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.CheckLevel1) || 
-                !await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck))
             {
                 return Unauthorized();
             }
@@ -31,6 +30,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var content = await _contentRepository.GetAsync(site, channel, summary.Id);
                 if (content == null) continue;
 
+                if (!await _authManager.HasContentPermissionsAsync(request.SiteId, content.ChannelId, MenuUtils.ContentPermissions.CheckLevel1))
+                {
+                    return Unauthorized();
+                }
+
                 var pageContent = content.Clone<Content>();
                 pageContent.Set(ColumnsManager.CheckState, CheckManager.GetCheckState(site, content));
                 contents.Add(pageContent);
@@ -39,7 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var siteIdList = await _authManager.GetSiteIdsAsync();
             var transSites = await _siteRepository.GetSelectsAsync(siteIdList);
 
-            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.ChannelId);
+            var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, contents[0].ChannelId);
             var checkedLevels = ElementUtils.GetSelects(CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true));
 
             return new GetResult
