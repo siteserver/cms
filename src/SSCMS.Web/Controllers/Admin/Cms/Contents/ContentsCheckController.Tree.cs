@@ -36,8 +36,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 if (!visible) return null;
 
                 var count = await _contentRepository.GetCountOfUnCheckedAsync(site, summary);
-                var disabled = !enabledChannelIds.Contains(summary.Id);
-                if (firstEnabledChannelId == 0 && !disabled)
+                var disabled = !enabledChannelIds.Contains(summary.Id) && summary.Id != site.Id;
+                if (firstEnabledChannelId == 0 && !disabled && summary.Id != site.Id)
                 {
                     firstEnabledChannelId = summary.Id;
                 }
@@ -48,14 +48,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     Disabled = disabled
                 };
             });
-
-            var channelIds = new List<int>();
-            var firstChannel = await _channelRepository.GetAsync(firstEnabledChannelId);
-            if (firstChannel.ParentsPath != null && firstChannel.ParentsPath.Count > 0)
-            {
-                channelIds.AddRange(firstChannel.ParentsPath);
-            }
-            channelIds.Add(firstChannel.Id);
 
             var siteUrl = await _pathManager.GetSiteUrlAsync(site, true);
             var groupNames = await _contentGroupRepository.GetGroupNamesAsync(request.SiteId);
@@ -88,19 +80,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var permissions = new Permissions
             {
-                IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Add),
-                IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Delete),
-                IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Edit),
-                IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Arrange),
-                IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.Translate),
-                IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, firstChannel.Id, MenuUtils.ContentPermissions.CheckLevel1),
+                IsAdd = await _authManager.HasContentPermissionsAsync(site.Id, firstEnabledChannelId, MenuUtils.ContentPermissions.Add),
+                IsDelete = await _authManager.HasContentPermissionsAsync(site.Id, firstEnabledChannelId, MenuUtils.ContentPermissions.Delete),
+                IsEdit = await _authManager.HasContentPermissionsAsync(site.Id, firstEnabledChannelId, MenuUtils.ContentPermissions.Edit),
+                IsArrange = await _authManager.HasContentPermissionsAsync(site.Id, firstEnabledChannelId, MenuUtils.ContentPermissions.Arrange),
+                IsTranslate = await _authManager.HasContentPermissionsAsync(site.Id, firstEnabledChannelId, MenuUtils.ContentPermissions.Translate),
+                IsCheck = await _authManager.HasContentPermissionsAsync(site.Id, firstEnabledChannelId, MenuUtils.ContentPermissions.CheckLevel1),
                 IsCreate = await _authManager.HasSitePermissionsAsync(site.Id, MenuUtils.SitePermissions.CreateContents) || await _authManager.HasContentPermissionsAsync(site.Id, channel.Id, MenuUtils.ContentPermissions.Create),
             };
 
             return new TreeResult
             {
                 Root = root,
-                ChannelIds = channelIds,
                 SiteUrl = siteUrl,
                 GroupNames = groupNames,
                 TagNames = tagNames,

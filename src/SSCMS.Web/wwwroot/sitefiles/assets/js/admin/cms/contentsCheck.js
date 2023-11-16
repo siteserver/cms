@@ -53,7 +53,6 @@ var methods = {
       var res = response.data;
 
       $this.root = res.root;
-      $this.searchForm.channelIds = [res.channelIds];
       $this.siteUrl = res.siteUrl;
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;

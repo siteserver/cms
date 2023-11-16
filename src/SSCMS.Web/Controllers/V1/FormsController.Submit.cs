@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Utils;
 
@@ -11,18 +12,24 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(Route)]
         public async Task<ActionResult<FormData>> Submit([FromQuery] SubmitRequest request, [FromBody] FormData formData)
         {
-            formData.SiteId = request.SiteId;
-            formData.ChannelId = request.ChannelId;
-            formData.ContentId = request.ContentId;
-            formData.FormId = request.FormId;
-            
-            var form = await _formRepository.GetAsync(formData.SiteId, formData.FormId);
-            if (form == null) return NotFound();
+            Form form = null;
+            if (request.FormId > 0)
+            {
+                form = await _formRepository.GetAsync(request.SiteId, request.FormId);
+            }
+            else if (!string.IsNullOrEmpty(request.FormName))
+            {
+                form = await _formRepository.GetByTitleAsync(request.SiteId, request.FormName);
+            }
+
+            if (form == null) 
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
             if (form.IsClosed)
             {
                 return this.Error("对不起，表单已被禁用");
             }
-
             if (form.IsTimeout && (form.TimeToStart > DateTime.Now || form.TimeToEnd < DateTime.Now))
             {
                 return this.Error("对不起，表单只允许在规定的时间内提交");
@@ -40,6 +47,11 @@ namespace SSCMS.Web.Controllers.V1
             }
 
             var styles = await _formRepository.GetTableStylesAsync(form.Id);
+
+            formData.SiteId = request.SiteId;
+            formData.ChannelId = request.ChannelId;
+            formData.ContentId = request.ContentId;
+            formData.FormId = form.Id;
 
             formData.Id = await _formDataRepository.InsertAsync(form, formData);
             await _formManager.SendNotifyAsync(form, styles, formData);

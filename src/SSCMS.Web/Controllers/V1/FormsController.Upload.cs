@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
@@ -13,11 +15,26 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
-            var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return NotFound();
+            Form form = null;
+            if (request.FormId > 0)
+            {
+                form = await _formRepository.GetAsync(request.SiteId, request.FormId);
+            }
+            else if (!string.IsNullOrEmpty(request.FormName))
+            {
+                form = await _formRepository.GetByTitleAsync(request.SiteId, request.FormName);
+            }
 
-            var form = await _formRepository.GetAsync(request.SiteId, request.FormId);
-            if (form == null) return NotFound();
+            if (form == null) 
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
+            
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            if (site == null)
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
 
             var styles = await _formRepository.GetTableStylesAsync(form.Id);
             var style = styles.FirstOrDefault(x => x.AttributeName == request.AttributeName);

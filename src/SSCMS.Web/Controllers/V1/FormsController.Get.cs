@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Configuration;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
@@ -9,8 +11,20 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            var form = await _formRepository.GetAsync(request.SiteId, request.FormId);
-            if (form == null) return NotFound();
+            Form form = null;
+            if (request.FormId > 0)
+            {
+                form = await _formRepository.GetAsync(request.SiteId, request.FormId);
+            }
+            else if (!string.IsNullOrEmpty(request.FormName))
+            {
+                form = await _formRepository.GetByTitleAsync(request.SiteId, request.FormName);
+            }
+
+            if (form == null) 
+            {
+                return this.Error(Constants.ErrorNotFound);
+            }
 
             var styles = await _formRepository.GetTableStylesAsync(form.Id);
 

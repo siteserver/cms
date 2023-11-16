@@ -37,9 +37,10 @@ namespace SSCMS.Web.Controllers.V1
             _formDataRepository = formDataRepository;
         }
 
-        public class StylesRequest : SiteRequest
+        public class FormRequest : SiteRequest
         {
             public int FormId { get; set; }
+            public string FormName { get; set; }
         }
 
         public class StylesResult
@@ -55,16 +56,14 @@ namespace SSCMS.Web.Controllers.V1
             public FormData FormData { get; set; }
         }
 
-        public class GetRequest : SiteRequest
+        public class GetRequest : FormRequest
         {
-            public int FormId { get; set; }
             public int Page { get; set; }
             public string Word { get; set; }
         }
 
-        public class UploadRequest : SiteRequest
+        public class UploadRequest : FormRequest
         {
-            public int FormId { get; set; }
             public string AttributeName { get; set; }
         }
 
@@ -92,17 +91,10 @@ namespace SSCMS.Web.Controllers.V1
             public string Mobile { get; set; }
         }
 
-        public class SubmitRequest
+        public class SubmitRequest : FormRequest
         {
-            public int SiteId { get; set; }
             public int ChannelId { get; set; }
             public int ContentId { get; set; }
-            public int FormId { get; set; }
-        }
-
-        private static string GetUploadTokenCacheKey(int formId)
-        {
-            return $"SSCMS.Web.Controllers.V1.FormsController.Actions.Upload.{formId}";
         }
 
         private string GetSmsCodeCacheKey(int formId, string mobile)

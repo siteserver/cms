@@ -27,8 +27,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.CheckContents);
 
+            var channelIds = request.ChannelIds;
+            if (!await _authManager.IsSuperAdminAsync() && !await _authManager.IsSiteAdminAsync(request.SiteId))
+            {
+                if (request.ChannelIds.Count == 1 && request.ChannelIds[0] == request.SiteId)
+                {
+                    channelIds = await _authManager.GetContentPermissionsChannelIdsAsync(site.Id);
+                }
+            }
+
             var pageContents = new List<Content>();
-            var (total, pageSummaries) = await _contentRepository.CheckSearchAsync(site, request.Page, request.ChannelIds, request.IsAllContents, request.StartDate, request.EndDate, request.Items, true, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
+            var (total, pageSummaries) = await _contentRepository.CheckSearchAsync(site, request.Page, channelIds, request.IsAllContents, request.StartDate, request.EndDate, request.Items, true, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
 
             if (total > 0)
             {
