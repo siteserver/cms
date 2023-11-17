@@ -59,6 +59,7 @@ namespace SSCMS.Web.Controllers.V1
         public class GetRequest : FormRequest
         {
             public int Page { get; set; }
+            public int PerPage { get; set; }
             public string Word { get; set; }
         }
 

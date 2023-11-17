@@ -26,14 +26,6 @@ namespace SSCMS.Web.Controllers.V1
             {
                 return this.Error(Constants.ErrorNotFound);
             }
-            if (form.IsClosed)
-            {
-                return this.Error("对不起，表单已被禁用");
-            }
-            if (form.IsTimeout && (form.TimeToStart > DateTime.Now || form.TimeToEnd < DateTime.Now))
-            {
-                return this.Error("对不起，表单只允许在规定的时间内提交");
-            }
 
             var styles = await _formRepository.GetTableStylesAsync(form.Id);
 

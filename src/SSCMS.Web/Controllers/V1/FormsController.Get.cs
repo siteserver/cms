@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.V1
 
             var listAttributeNames = ListUtils.GetStringList(form.ListAttributeNames);
             var allAttributeNames = _formRepository.GetAllAttributeNames(styles);
-            var pageSize = _formRepository.GetPageSize(form);
+            var pageSize = request.PerPage > 0 ? request.PerPage : _formRepository.GetPageSize(form);
 
             var isRepliedOnly = form.IsReply && !form.IsReplyListAll;
             var (total, items) = await _formDataRepository.GetListAsync(form, isRepliedOnly, null, null, request.Word, request.Page, pageSize);

@@ -114,15 +114,9 @@ namespace SSCMS.Core.Utils
 
             contentInfo = contentInfo.Clone<Content>();
 
-            if (targetSiteId != site.Id)
+            if (targetSiteId != site.Id && contentInfo.Checked && targetSite.IsCrossSiteTransChecked)
             {
-                if (contentInfo.Checked)
-                {
-                    if (!targetSite.IsCrossSiteTransChecked)
-                    {
-                        contentInfo.Checked = false;
-                    }
-                }
+                contentInfo.Checked = false;
             }
 
             if (translateType == TranslateType.Copy)
