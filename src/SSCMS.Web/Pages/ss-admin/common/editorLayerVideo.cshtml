@@ -12,13 +12,17 @@
       padding: 20px;
       line-height: 22px;
     }
+    .el-upload__tip {
+      word-wrap: break-word;
+    }
   </style>
 }
 
-<el-form v-on:submit.native.prevent ref="form" :model="form" size="small">
+<el-alert type="error" v-if="uploadErrorMessage" :title="uploadErrorMessage"></el-alert>
+<el-form style="margin: 20px 10px;" v-on:submit.native.prevent ref="form" :model="form" size="small">
 
   <el-form-item>
-    <el-radio-group v-model="form.type">
+    <el-radio-group v-model="form.type" v-on:change="btnChangeClick">
       <el-radio-button label="upload">上传视频</el-radio-button>
       <el-radio-button label="url">视频地址</el-radio-button>
       <el-radio-button label="preview">预览视频</el-radio-button>
@@ -27,53 +31,54 @@
   <el-form-item v-if="form.type === 'upload'">
 
     <template v-if="isCloudVod">
-      <el-alert type="error" v-if="cloudUploadErrorMessage" :title="cloudUploadErrorMessage"></el-alert>
-      <el-form style="margin: 20px 10px;" label-position="top">
-        <el-form-item>
-          <el-upload :disabled="cloudUploadProgressPercent" :drag="true" :action="cloudUploadUrl" :auto-upload="true"
-            :headers="{ Authorization: 'Bearer ' + cloudUploadToken }" :show-file-list="false" :before-upload="cloudUploadBefore" :http-request="cloudUploadRequest" :multiple="false">
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">
-              <strong>
-                将文件拖到此处，或
-                <em>点击上传</em>
-              </strong>
-            </div>
-            <div class="el-upload__tip">
-              支持3GP、ASF、AVI、DAT、DV、FLV、F4V、GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、SWF、TS、VOB、WMV、WEBM
-              等视频格式上传
-            </div>
-          </el-upload>
-          <el-progress v-if="cloudUploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="cloudUploadProgressPercent"></el-progress>
-        </el-form-item>
-      </el-form>
+      <el-upload
+        :disabled="cloudUploadProgressPercent"
+        :drag="true"
+        :action="cloudUploadUrl"
+        :auto-upload="true"
+        :headers="{ Authorization: 'Bearer ' + cloudUploadToken }"
+        :show-file-list="false"
+        :before-upload="cloudUploadBefore"
+        :http-request="cloudUploadRequest"
+        :multiple="false">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">
+            <strong>
+              将文件拖到此处，或
+              <em>点击上传</em>
+            </strong>
+          </div>
+          <div class="el-upload__tip">
+            支持3GP、ASF、AVI、DAT、DV、FLV、F4V、GIF、M2T、M4V、MJ2、MJPEG、MKV、MOV、MP4、MPE、MPG、MPEG、MTS、OGG、QT、RM、RMVB、SWF、TS、VOB、WMV、WEBM
+            等视频格式上传
+          </div>
+        </el-upload>
+        <el-progress v-if="cloudUploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="cloudUploadProgressPercent"></el-progress>
     </template>
 
     <template v-else>
-      <el-upload
-        drag
-        :action="uploadVideoUrl"
+      <el-upload 
+        :disabled="uploadProgressPercent"
+        :drag="true"
+        :action="uploadUrl"
         :auto-upload="true"
         :headers="{Authorization: 'Bearer ' + $token}"
         :show-file-list="false"
-        :before-upload="uploadVideoBefore"
-        :on-progress="uploadProgress"
-        :on-success="uploadVideoSuccess"
-        :on-error="uploadError"
+        :before-upload="uploadBefore"
+        :http-request="uploadRequest"
         :multiple="false">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">
-          将视频文件拖到此处或点击上传，支持主流
-          <el-popover
-            placement="bottom"
-            title="视频格式"
-            width="200"
-            trigger="hover"
-            content="mp4、flv、f4v、webm、m4v、mov、3gp、3g2">
-            <em slot="reference">视频格式</em>
-          </el-popover>
+          <strong>
+            将文件拖到此处，或
+            <em>点击上传</em>
+          </strong>
+        </div>
+        <div class="el-upload__tip">
+          支持视频格式：{{ showExtensions }}
         </div>
       </el-upload>
+      <el-progress v-if="uploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="uploadProgressPercent"></el-progress>
     </template>
 
   </el-form-item>
@@ -96,6 +101,8 @@
   </el-form-item>
 
   <el-form-item>
+    <el-checkbox v-if="form.type === 'upload'" label="重命名文件" v-model="form.isChangeFileName"></el-checkbox>
+    <el-checkbox v-if="form.type === 'upload'" label="添加至视频素材库" v-model="form.isLibrary"></el-checkbox>
     <el-checkbox label="设置封面" v-model="form.isPoster"></el-checkbox>
     <el-checkbox label="自动播放" v-model="form.isAutoPlay"></el-checkbox>
     <el-checkbox label="设置宽度" v-model="form.isWidth"></el-checkbox>

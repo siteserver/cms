@@ -15,21 +15,90 @@ var data = utils.init({
     isWidth: false,
     isHeight: false,
     imageUrl: '',
+    imageVirtualUrl: '',
     width: '100%',
     height: '500px',
     isLinkToOriginal: true,
+    isChangeFileName: true,
+    isLibrary: true,
   },
-  uploadVideoUrl: null,
-  uploadImageUrl: null,
 
+  uploadUrl: null,
+  uploadErrorMessage: null,
+  uploadProgressPercent: null,
+  uploadProgressInterval: null,
+
+  uploadImageUrl: null,
   cloudUploadToken: null,
   cloudUploadUrl: null,
-  cloudUploadErrorMessage: null,
   cloudUploadProgressPercent: null,
   cloudUploadProgressInterval: null,
+  reExtensions: null,
+  showExtensions: null,
 });
 
 var methods = {
+  uploadBefore: function(file) {
+    this.uploadErrorMessage = '';
+    if(!this.reExtensions.exec(file.name))
+    {
+      this.uploadErrorMessage = '请选择有效的文件上传!';
+      return false;
+    }
+    return true;
+  },
+
+  cloudUploadBefore: function(file) {
+    this.uploadErrorMessage = '';
+    var re = /(\.3gp|\.asf|\.avi|\.dat|\.dv|\.flv|\.f4v|\.gif|\.m2t|\.m4v|\.mj2|\.mjpeg|\.mkv|\.mov|\.mp4|\.mpe|\.mpg|\.mpeg|\.mts|\.ogg|\.qt|\.rm|\.rmvb|\.swf|\.ts|\.vob|\.wmv|\.webm)$/i;
+    if(!re.exec(file.name))
+    {
+      this.uploadErrorMessage = '请选择有效的文件上传!';
+      return false;
+    }
+    return true;
+  },
+
+  uploadRequest: function(data) {
+    this.uploadUrl = $url + '/actions/uploadVideo?siteId=' + this.form.siteId + '&isChangeFileName=' + this.form.isChangeFileName + '&isLibrary=' + this.form.isLibrary;
+
+    var $this = this;
+    var formData = new FormData()
+    formData.append('file', data.file)
+    var config = {
+      onUploadProgress: function(progressEvent) {
+        $this.uploadProgressPercent = Number((progressEvent.loaded / progressEvent.total * 30).toFixed(2));
+        if (progressEvent.loaded === progressEvent.total) {
+          $this.uploadProgressInterval = setInterval(function() {
+            $this.uploadProgressPercent += 1;
+            if ($this.uploadProgressPercent === 99) {
+              clearInterval($this.uploadProgressInterval);
+            }
+          }, 1000);
+        }
+      }
+    };
+    $api.post(this.uploadUrl, formData, config)
+    .then(function (response) {
+      var res = response.data;
+
+      $this.form.videoUrl = res.virtualUrl;
+      if (res.coverUrl) {
+        $this.form.isPoster = true;
+        $this.form.imageUrl = $this.form.imageVirtualUrl = res.coverUrl;
+      }
+      $this.form.type = 'url';
+      utils.loading($this, false);
+    })
+    .catch(function (error) {
+      $this.uploadProgressPercent = null;
+      $this.uploadErrorMessage = utils.getErrorMessage(error);
+    })
+    .then(function () {
+      clearInterval($this.uploadProgressInterval);
+    });
+  },
+
   apiGet: function() {
     var $this = this;
 
@@ -44,6 +113,12 @@ var methods = {
       $this.rootUrl = res.rootUrl;
       $this.siteUrl = res.siteUrl;
       $this.isCloudVod = res.isCloudVod;
+
+      $this.form.isChangeFileName = res.isChangeFileName;
+      $this.form.isLibrary = res.isLibrary;
+
+      $this.reExtensions = new RegExp('(' + res.videoUploadExtensions.replace(/,/g, '|').replace(/\./g, '\\.') + ')$', 'i');
+      $this.showExtensions = res.videoUploadExtensions.replace(/,/g, '、').toUpperCase();
     })
     .catch(function(error) {
       utils.error(error);
@@ -65,7 +140,7 @@ var methods = {
       return false;
     }
 
-    var imageUrl = this.form.isPoster && this.form.imageUrl ? ' imageUrl="' + this.form.imageUrl + '"' : '';
+    var imageUrl = this.form.isPoster && this.form.imageVirtualUrl ? ' imageUrl="' + this.form.imageVirtualUrl + '"' : '';
     var isAutoPlay = ' isAutoPlay="' + this.form.isAutoPlay + '"';
     var width = this.form.isWidth ? ' width="' + this.form.width + '"' : '';
     var height = this.form.isHeight ? ' height="' + this.form.height + '"' : '';
@@ -76,16 +151,6 @@ var methods = {
 
   btnCancelClick: function () {
     utils.closeLayer();
-  },
-
-  uploadVideoBefore(file) {
-    var re = /(\.mp4|\.flv|\.f4v|\.webm|\.m4v|\.mov|\.3gp|\.3g2)$/i;
-    if(!re.exec(file.name))
-    {
-      utils.error('文件只能是视频格式，请选择有效的文件上传!');
-      return false;
-    }
-    return true;
   },
 
   uploadImageBefore(file) {
@@ -108,18 +173,9 @@ var methods = {
     utils.loading(this, true);
   },
 
-  uploadVideoSuccess: function(res) {
-    this.form.videoUrl = res.url;
-    if (res.coverUrl) {
-      this.form.isPoster = true;
-      this.form.imageUrl = res.coverUrl;
-    }
-    this.form.type = 'url';
-    utils.loading(this, false);
-  },
-
   uploadImageSuccess: function(res) {
-    this.form.imageUrl = res.url;
+    this.form.imageUrl = res.imageUrl;
+    this.form.imageVirtualUrl = res.virtualUrl;
     utils.loading(this, false);
   },
 
@@ -127,17 +183,6 @@ var methods = {
     utils.loading(this, false);
     var error = JSON.parse(err.message);
     utils.error(error.message);
-  },
-
-  cloudUploadBefore: function(file) {
-    this.cloudUploadErrorMessage = '';
-    var re = /(\.3gp|\.asf|\.avi|\.dat|\.dv|\.flv|\.f4v|\.gif|\.m2t|\.m4v|\.mj2|\.mjpeg|\.mkv|\.mov|\.mp4|\.mpe|\.mpg|\.mpeg|\.mts|\.ogg|\.qt|\.rm|\.rmvb|\.swf|\.ts|\.vob|\.wmv|\.webm)$/i;
-    if(!re.exec(file.name))
-    {
-      this.cloudUploadErrorMessage = '请选择有效的文件上传!';
-      return false;
-    }
-    return true;
   },
 
   cloudUploadRequest: function(data) {
@@ -170,11 +215,16 @@ var methods = {
     })
     .catch(function (error) {
       $this.cloudUploadProgressPercent = null;
-      $this.cloudUploadErrorMessage = utils.getErrorMessage(error);
+      $this.uploadErrorMessage = utils.getErrorMessage(error);
     })
     .then(function () {
       clearInterval($this.cloudUploadProgressInterval);
     });
+  },
+
+  btnChangeClick: function() {
+    this.uploadProgressPercent = null;
+    this.cloudUploadProgressPercent = null;
   },
 };
 
@@ -184,7 +234,6 @@ var $vue = new Vue({
   methods: methods,
   created: function () {
     utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
-    this.uploadVideoUrl = $apiUrl + $url + '/actions/uploadVideo?siteId=' + this.form.siteId;
     this.uploadImageUrl = $apiUrl + $url + '/actions/uploadImage?siteId=' + this.form.siteId;
     this.cloudUploadToken = $cloudToken;
     this.cloudUploadUrl = cloud.defaults.baseURL + '/' + $urlCloud;

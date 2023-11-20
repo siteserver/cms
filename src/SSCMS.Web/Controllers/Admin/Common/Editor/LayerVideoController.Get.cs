@@ -20,11 +20,20 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
             var vodSettings = await _vodManager.GetVodSettingsAsync();
             var isCloudVod = _vodManager is ICloudManager && vodSettings.IsVod;
 
+            var options = TranslateUtils.JsonDeserialize(site.Get<string>(nameof(LayerVideoController)), new Options
+            {
+                IsChangeFileName = true,
+                IsLibrary = false,
+            });
+
             return new GetResult
             {
                 RootUrl = rootUrl,
                 SiteUrl = siteUrl,
-                IsCloudVod = isCloudVod
+                IsChangeFileName = options.IsChangeFileName,
+                IsLibrary = options.IsLibrary,
+                IsCloudVod = isCloudVod,
+                VideoUploadExtensions = site.VideoUploadExtensions
             };
         }
     }

@@ -18,7 +18,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             var result = new SubmitResult();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (site == null) return this.Error("无法确定内容对应的站点");
+            if (site == null) return this.Error(Constants.ErrorNotFound);
 
             if (file == null)
             {
@@ -28,7 +28,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             }
 
             var fileName = Path.GetFileName(file.FileName);
-
             if (!_pathManager.IsVideoExtensionAllowed(site, PathUtils.GetExtension(fileName)))
             {
                 result.Success = false;

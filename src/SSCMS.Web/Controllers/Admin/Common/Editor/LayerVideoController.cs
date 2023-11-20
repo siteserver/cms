@@ -21,27 +21,49 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly IVodManager _vodManager;
         private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public LayerVideoController(IPathManager pathManager, IVodManager vodManager, IStorageManager storageManager, ISiteRepository siteRepository)
+        public LayerVideoController(IPathManager pathManager, IVodManager vodManager, IStorageManager storageManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _pathManager = pathManager;
             _vodManager = vodManager;
             _storageManager = storageManager;
             _siteRepository = siteRepository;
+            _materialVideoRepository = materialVideoRepository;
         }
 
-        public class GetResult
+        public class Options
+        {
+            public bool IsChangeFileName { get; set; }
+            public bool IsLibrary { get; set; }
+        }
+
+        public class GetResult : Options
         {
             public string RootUrl { get; set; }
             public string SiteUrl { get; set; }
             public bool IsCloudVod { get; set; }
+            public string VideoUploadExtensions { get; set; }
         }
 
-        public class UploadResult
+        public class UploadRequest : Options
         {
-            public string Name { get; set; }
-            public string Url { get; set; }
+            public int SiteId { get; set; }
+        }
+
+        public class UploadImageResult
+        {
+            public string ImageUrl { get; set; }
+            public string VirtualUrl { get; set; }
+        }
+
+        public class UploadVideoResult
+        {
+            public bool Success { get; set; }
+            public string ErrorMessage { get; set; }
             public string CoverUrl { get; set; }
+            public string PlayUrl { get; set; }
+            public string VirtualUrl { get; set; }
         }
     }
 }

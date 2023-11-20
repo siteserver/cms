@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteUploadImage)]
-        public async Task<ActionResult<UploadResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<UploadImageResult>> UploadImage([FromQuery] SiteRequest request, [FromForm] IFormFile file)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);
 
@@ -39,21 +39,24 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
 
             await _pathManager.UploadAsync(file, filePath);
 
-            var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
+            var virtualUrl = await _pathManager.GetVirtualUrlByPhysicalPathAsync(site, filePath);
+            var imageUrl = await _pathManager.ParseSiteUrlAsync(site, virtualUrl, true);
+
+            // var imageUrl = await _pathManager.GetSiteUrlByPhysicalPathAsync(site, filePath, true);
             var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Images);
             if (isAutoStorage)
             {
                 var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
                 if (success)
                 {
-                    imageUrl = url;
+                    virtualUrl = imageUrl = url;
                 }
             }
 
-            return new UploadResult
+            return new UploadImageResult
             {
-                Name = fileName,
-                Url = imageUrl
+                VirtualUrl = virtualUrl,
+                ImageUrl = imageUrl
             };
         }
     }
