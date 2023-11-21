@@ -318,6 +318,17 @@ var methods = {
     utils.error(error.message);
   },
 
+  btnUploadClick: function () {
+    utils.openLayer({
+      title: '上传视频',
+      url: utils.getCmsUrl('materialLayerVideoUpload', {
+        siteId: this.siteId
+      }),
+      width: 750,
+      height: 550,
+    });
+  },
+
   btnCloseClick: function() {
     utils.removeTab();
   },

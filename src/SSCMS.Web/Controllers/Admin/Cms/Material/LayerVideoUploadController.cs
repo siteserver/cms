@@ -11,20 +11,20 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class LayerVideoUploadController : ControllerBase
+    public partial class LayerImageUploadController : ControllerBase
     {
-        private const string Route = "cms/material/layerVideoUpload";
-        private const string RouteUpload = "cms/material/layerVideoUpload/actions/upload";
+        private const string Route = "cms/material/layerImageUpload";
+        private const string RouteUpload = "cms/material/layerImageUpload/actions/upload";
 
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
-        private readonly IMaterialVideoRepository _materialVideoRepository;
+        private readonly IMaterialImageRepository _materialImageRepository;
 
-        public LayerVideoUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
+        public LayerImageUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
         {
             _pathManager = pathManager;
             _siteRepository = siteRepository;
-            _materialVideoRepository = materialVideoRepository;
+            _materialImageRepository = materialImageRepository;
         }
 
         public class Options
