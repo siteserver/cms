@@ -2,54 +2,50 @@
 @{ Layout = "_Layout"; }
 @section Styles{
   <style>
-    .el-upload, .el-upload-dragger {
-        width: 150px;
+    .el-upload, .el-upload-dragger {width: 100%;}
+    .el-upload-dragger {
+      height: 240px;
+      padding: 20px;
+      line-height: 22px;
+    }
+    .el-upload__tip {
+      word-wrap: break-word;
     }
   </style>
 }
 
-<el-upload
-  :action="uploadUrl"
-  :headers="{Authorization: 'Bearer ' + $token}"
-  list-type="picture-card"
-  :before-upload="uploadBefore"
-  :on-preview="uploadPictureCardPreview"
-  :on-progress="uploadProgress"
-  :on-success="uploadSuccess"
-  :on-error="uploadError"
-  :on-remove="uploadRemove"
-  :multiple="true">
-  <i class="el-icon-plus"></i>
-</el-upload>
-
-<el-dialog :visible.sync="dialogVisible">
-  <img width="100%" :src="dialogImageUrl" alt="">
-</el-dialog>
-
-<div style="height: 10px"></div>
-
-<el-form v-on:submit.native.prevent ref="form" :model="form" size="mini">
+<el-alert type="error" v-if="uploadErrorMessage" :title="uploadErrorMessage"></el-alert>
+<el-form style="margin: 20px 10px;" label-position="top">
   <el-form-item>
-    <el-checkbox label="将图片显示在内容编辑器中" v-model="form.isEditor"></el-checkbox>
-    <el-checkbox label="添加至图片素材库" v-model="form.isLibrary"></el-checkbox>
-    <el-checkbox label="生成缩略图" v-model="form.isThumb"></el-checkbox>
-  </el-form-item>
-  <el-form-item v-if="form.isThumb" label="缩略图最大宽度">
-    <el-input  v-model="form.thumbWidth"></el-input>
-  </el-form-item>
-  <el-form-item v-if="form.isThumb" label="缩略图最大高度">
-    <el-input  v-model="form.thumbHeight"></el-input>
-  </el-form-item>
-  <el-form-item v-if="form.isThumb">
-    <el-checkbox label="点击缩略图显示原图" v-model="form.isLinkToOriginal"></el-checkbox>
+    <el-upload 
+      :disabled="uploadProgressPercent"
+      :drag="true"
+      :action="uploadUrl"
+      :auto-upload="true"
+      :headers="{Authorization: 'Bearer ' + $token}"
+      :show-file-list="false"
+      :before-upload="uploadBefore"
+      :http-request="uploadRequest"
+      :multiple="false">
+      <i class="el-icon-upload"></i>
+      <div class="el-upload__text">
+        <strong>
+          将文件拖到此处，或
+          <em>点击上传</em>
+        </strong>
+      </div>
+      <div class="el-upload__tip">
+        支持视频格式：{{ showExtensions }}
+      </div>
+    </el-upload>
+    <el-progress v-if="uploadProgressPercent" :text-inside="true" :stroke-width="26" :percentage="uploadProgressPercent"></el-progress>
   </el-form-item>
 </el-form>
 
 <el-divider></el-divider>
 <el-row align="right" style="margin-right: 5px; margin-top: 10px;">
   <el-col :span="24" align="right">
-    <el-button size="small" type="primary" v-on:click="btnSubmitClick">确 定</el-button>
-    <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+    <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
   </el-col>
 </el-row>
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
@@ -27,11 +28,17 @@ namespace SSCMS.Web.Controllers.V1
             _specialRepository = specialRepository;
         }
 
+        public class ChannelContentId
+        {
+            public int ChannelId { get; set; }
+            public int ContentId { get; set; }
+        }
+
         public class CreateRequest : SiteRequest
         {
             public CreateType Type { get; set; }
-            public int ChannelId { get; set; }
-            public int ContentId { get; set; }
+            public List<int> ChannelIds { get; set; }
+            public List<ChannelContentId> ChannelContentIds { get; set; }
             public string Name { get; set; }
         }
     }

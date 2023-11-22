@@ -4,7 +4,6 @@ using NSwag.Annotations;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
-using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.V1
 {
@@ -35,9 +34,14 @@ namespace SSCMS.Web.Controllers.V1
                     return Unauthorized();
                 }
 
-                if (request.ChannelId > 0)
+                foreach (var channelId in request.ChannelIds)
                 {
-                    await _createManager.CreateChannelAsync(request.SiteId, request.ChannelId);
+                    if (channelId <= 0)
+                    {
+                        continue;
+                    }
+
+                    await _createManager.CreateChannelAsync(request.SiteId, channelId);
                     created = true;
                 }
             }
@@ -49,9 +53,14 @@ namespace SSCMS.Web.Controllers.V1
                     return Unauthorized();
                 }
 
-                if (request.ChannelId > 0 && request.ContentId > 0)
+                foreach (var channelContentId in request.ChannelContentIds)
                 {
-                    await _createManager.CreateContentAsync(request.SiteId, request.ChannelId, request.ContentId);
+                    if (channelContentId.ChannelId <= 0 || channelContentId.ContentId <= 0)
+                    {
+                        continue;
+                    }
+
+                    await _createManager.CreateContentAsync(request.SiteId, channelContentId.ChannelId, channelContentId.ContentId);
                     created = true;
                 }
             }
@@ -63,9 +72,14 @@ namespace SSCMS.Web.Controllers.V1
                     return Unauthorized();
                 }
 
-                if (request.ChannelId > 0)
+                foreach (var channelId in request.ChannelIds)
                 {
-                    await _createManager.CreateAllContentAsync(request.SiteId, request.ChannelId);
+                    if (channelId <= 0)
+                    {
+                        continue;
+                    }
+                    
+                    await _createManager.CreateAllContentAsync(request.SiteId, channelId);
                     created = true;
                 }
             }

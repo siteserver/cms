@@ -27,25 +27,10 @@
     </el-form>
   </el-col>
   <el-col class="commands" align="right" :span="12">
-
-    <el-upload
-      :action="getUploadUrl()"
-      :headers="{Authorization: 'Bearer ' + $token}"
-      :on-progress="uploadProgress"
-      :on-success="uploadSuccess"
-      :on-error="uploadError"
-      :multiple="true"
-      :show-file-list="false">
-      <el-button size="small" plain type="primary">
-        <i class="el-icon-upload"></i>
-        点击上传
-      </el-button>
-    </el-upload>
-
-    <!-- <el-button v-on:click="btnUploadClick" size="small" plain type="primary">
+    <el-button v-on:click="btnUploadClick" size="small" plain type="primary">
       <i class="el-icon-upload"></i>
       上传视频
-    </el-button> -->
+    </el-button>
 
     <el-button v-if="siteType === 'wx'" v-on:click="btnPullClick" size="small" plain type="primary">
       <i class="el-icon-download"></i>
@@ -96,7 +81,7 @@
   <el-table-column label="标题">
     <template slot-scope="scope">
       <el-input v-if="renameId === scope.row.id" size="small" :ref="'renameInput' + scope.row.id" v-model="renameTitle" v-on:blur="btnRenameClick(scope.row)" v-on:keyup.enter.native="btnRenameClick(scope.row)" placeholder="标题"></el-input>
-      <el-link :underline="false" v-else v-on:click="btnTitleClick(scope.row)" style="cursor: pointer; height: 22px; overflow: hidden; font-size: 14px;" type="primary">{{ scope.row.title }}</el-link>
+      <el-link :underline="false" v-else v-on:click="btnPreviewVideoClick(scope.row.url)" style="cursor: pointer; height: 22px; overflow: hidden; font-size: 14px;" type="primary">{{ scope.row.title }}</el-link>
     </template>
   </el-table-column>
   <el-table-column

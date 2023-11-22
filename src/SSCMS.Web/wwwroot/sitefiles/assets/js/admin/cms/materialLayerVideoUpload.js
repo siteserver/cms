@@ -2,34 +2,61 @@
 
 var data = utils.init({
   uploadUrl: null,
-  dialogImageUrl: '',
-  dialogVisible: false,
+  uploadErrorMessage: null,
+  uploadProgressPercent: null,
+  uploadProgressInterval: null,
   form: {
     siteId: utils.getQueryInt('siteId'),
-    isEditor: false,
-    isLibrary: true,
-    isThumb: false,
-    thumbWidth: 500,
-    thumbHeight: 500,
-    isLinkToOriginal: true,
-    filePaths: []
-  }
+    groupId: utils.getQueryInt('groupId'),
+  },
+  reExtensions: null,
+  showExtensions: null,
 });
 
 var methods = {
-  parentInsert: function(no, result) {
-    var vue = parent.$vue;
-    if (vue.runMaterialLayerImageUploadText) {
-      vue.runMaterialLayerImageUploadText(result.imageUrl);
+  uploadBefore: function(file) {
+    if(!this.reExtensions.exec(file.name))
+    {
+      this.uploadErrorMessage = '请选择有效的文件上传!';
+      return false;
     }
-    if (vue.runMaterialLayerImageUploadEditor && this.form.isEditor) {
-      var html = '<img src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
-      if (result.previewUrl) {
-        var vueHtml = '<el-image src="' + result.imageUrl + '" style="border: 0; max-width: 100%"></el-image>';
-        html = '<img data-vue="' + encodeURIComponent(vueHtml) + '" src="' + result.imageUrl + '" style="border: 0; max-width: 100%" />';
+    return true;
+  },
+
+  uploadRequest: function(data) {
+    this.uploadUrl = $url + '?siteId=' + this.form.siteId + '&groupId=' + this.form.groupId;
+
+    var $this = this;
+    var formData = new FormData()
+    formData.append('file', data.file)
+    var config = {
+      onUploadProgress: function(progressEvent) {
+        $this.uploadProgressPercent = Number((progressEvent.loaded / progressEvent.total * 30).toFixed(2));
+        if (progressEvent.loaded === progressEvent.total) {
+          $this.uploadProgressInterval = setInterval(function() {
+            $this.uploadProgressPercent += 1;
+            if ($this.uploadProgressPercent === 99) {
+              clearInterval($this.uploadProgressInterval);
+            }
+          }, 1000);
+        }
       }
-      vue.runMaterialLayerImageUploadEditor(html);
-    }
+    };
+    $api.post(this.uploadUrl, formData, config)
+    .then(function (response) {
+      var res = response.data;
+
+      utils.success('视频上传成功！');
+      parent.$vue.apiGet(1);
+      utils.closeLayer();
+    })
+    .catch(function (error) {
+      $this.uploadProgressPercent = null;
+      $this.uploadErrorMessage = utils.getErrorMessage(error);
+    })
+    .then(function () {
+      clearInterval($this.uploadProgressInterval);
+    });
   },
 
   apiGet: function() {
@@ -43,12 +70,8 @@ var methods = {
     }).then(function(response) {
       var res = response.data;
 
-      $this.form.isEditor = res.isEditor;
-      $this.form.isLibrary = res.isLibrary;
-      $this.form.isThumb = res.isThumb;
-      $this.form.thumbWidth = res.thumbWidth;
-      $this.form.thumbHeight = res.thumbHeight;
-      $this.form.isLinkToOriginal = res.isLinkToOriginal;
+      $this.reExtensions = new RegExp('(' + res.videoUploadExtensions.replace(/,/g, '|').replace(/\./g, '\\.') + ')$', 'i');
+      $this.showExtensions = res.videoUploadExtensions.replace(/,/g, '、').toUpperCase();
     })
     .catch(function(error) {
       utils.error(error);
@@ -56,79 +79,11 @@ var methods = {
     .then(function() {
       utils.loading($this, false);
     });
-  },
-
-  apiSubmit: function() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url, this.form).then(function(response) {
-      var res = response.data;
-
-      if (res && res.length > 0) {
-        for (var i = 0; i < res.length; i++) {
-          var result = res[i];
-          $this.parentInsert($this.no + i, result);
-        }
-      }
-
-      utils.closeLayer();
-    })
-    .catch(function(error) {
-      utils.error(error);
-    })
-    .then(function() {
-      utils.loading($this, false);
-    });
-  },
-
-  btnSubmitClick: function () {
-    if (this.form.filePaths.length === 0) {
-      utils.error('请选择需要插入的图片文件！');
-      return false;
-    }
-
-    this.apiSubmit();
   },
 
   btnCancelClick: function () {
     utils.closeLayer();
   },
-
-  uploadBefore(file) {
-    var isLt10M = file.size / 1024 / 1024 < 10;
-    if (!isLt10M) {
-      utils.error('上传图片大小不能超过 10MB!');
-      return false;
-    }
-    return true;
-  },
-
-  uploadProgress: function() {
-    utils.loading(this, true);
-  },
-
-  uploadSuccess: function(res) {
-    this.form.filePaths.push(res.path);
-    utils.loading(this, false);
-  },
-
-  uploadError: function(err) {
-    utils.loading(this, false);
-    var error = JSON.parse(err.message);
-    utils.error(error.message);
-  },
-
-  uploadRemove(file) {
-    if (file.response) {
-      this.form.filePaths.splice(this.form.filePaths.indexOf(file.response.path), 1);
-    }
-  },
-
-  uploadPictureCardPreview(file) {
-    this.dialogImageUrl = file.url;
-    this.dialogVisible = true;
-  }
 };
 
 var $vue = new Vue({
@@ -136,8 +91,7 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   created: function () {
-    utils.keyPress(this.btnSubmitClick, this.btnCancelClick);
-    this.uploadUrl = $apiUrl + $url + '/actions/upload?siteId=' + this.form.siteId;
+    utils.keyPress(null, this.btnCancelClick);
     this.apiGet();
   }
 });

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -11,48 +13,38 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class LayerImageUploadController : ControllerBase
+    public partial class LayerVideoUploadController : ControllerBase
     {
-        private const string Route = "cms/material/layerImageUpload";
-        private const string RouteUpload = "cms/material/layerImageUpload/actions/upload";
+        private const string Route = "cms/material/layerVideoUpload";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
-        private readonly IMaterialImageRepository _materialImageRepository;
+        private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public LayerImageUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
+        public LayerVideoUploadController(ISettingsManager settingsManager, IPathManager pathManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
         {
+            _settingsManager = settingsManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
-            _materialImageRepository = materialImageRepository;
+            _materialVideoRepository = materialVideoRepository;
         }
 
-        public class Options
+        public class GetResult
         {
-            public bool IsEditor { get; set; }
-            public bool IsLibrary { get; set; }
-            public bool IsThumb { get; set; }
-            public int ThumbWidth { get; set; }
-            public int ThumbHeight { get; set; }
-            public bool IsLinkToOriginal { get; set; }
+            public string VideoUploadExtensions { get; set; }
         }
 
-        public class SubmitRequest : Options
+        public class SubmitRequest : SiteRequest
         {
-            public int SiteId { get; set; }
-            public List<string> FilePaths { get; set; }
-        }
-
-        public class UploadResult
-        {
-            public string Name { get; set; }
-            public string Path { get; set; }
+            public int GroupId { get; set; }
         }
 
         public class SubmitResult
         {
-            public string ImageUrl { get; set; }
-            public string PreviewUrl { get; set; }
+            public bool Success { get; set; }
+            public string ErrorMessage { get; set; }
+            public MaterialVideo Video { get; set; }
         }
     }
 }

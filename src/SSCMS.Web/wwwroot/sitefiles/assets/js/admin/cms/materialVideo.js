@@ -123,10 +123,6 @@ var methods = {
     return utils.getCmsUrl('material' + materialType, {siteId: this.siteId})
   },
 
-  getUploadUrl: function() {
-    return $apiUrl + $url + '?siteId=' + this.siteId + '&groupId=' + this.form.groupId
-  },
-
   btnTitleClick: function(material) {
     var $this = this;
     this.renameId = material.id;
@@ -302,31 +298,30 @@ var methods = {
     this.apiGet(val);
   },
 
-  uploadProgress: function() {
-    utils.loading(this, true);
-  },
-
-  uploadSuccess: function(res) {
-    this.items.splice(0, 0, res);
-    this.count++;
-    utils.loading(this, false);
-  },
-
-  uploadError: function(err) {
-    utils.loading(this, false);
-    var error = JSON.parse(err.message);
-    utils.error(error.message);
-  },
-
   btnUploadClick: function () {
     utils.openLayer({
       title: '上传视频',
       url: utils.getCmsUrl('materialLayerVideoUpload', {
-        siteId: this.siteId
+        siteId: this.siteId,
+        groupId: this.form.groupId,
       }),
       width: 750,
-      height: 550,
+      height: 400,
     });
+  },
+
+  btnPreviewVideoClick: function (videoUrl) {
+    if (videoUrl) {
+      utils.openLayer({
+        title: "预览视频",
+        url: utils.getCommonUrl("editorLayerPreviewVideo", {
+          siteId: this.siteId,
+          videoUrl: videoUrl,
+        }),
+        width: 600,
+        height: 500,
+      });
+    }
   },
 
   btnCloseClick: function() {
