@@ -13,7 +13,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.Contents) ||
                 !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.View))
@@ -25,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
             var channel = await _channelRepository.GetAsync(request.ChannelId);
-            var content = await _contentRepository.GetAsync(site, channel, request.ContentId);
+            var content = await _pathManager.DecodeContentAsync(site, channel, request.ContentId);
             if (content == null) return this.Error(Constants.ErrorNotFound);
 
             var channelName = await _channelRepository.GetChannelNameNavigationAsync(request.SiteId, request.ChannelId);
@@ -47,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var styles = await _tableStyleRepository.GetContentStylesAsync(site, channel);
             foreach (var tableStyle in styles)
             {
-                if (tableStyle.InputType != InputType.TextEditor) continue;
+                if (tableStyle.InputType != InputType.TextEditor || tableStyle.AttributeName == nameof(Models.Content.Body)) continue;
 
                 editorColumns.Add(new ContentColumn
                 {
@@ -55,6 +54,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     DisplayName = tableStyle.DisplayName
                 });
             }
+
+            var isCheckable = await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.ContentsCheck);
 
             return new GetResult
             {
@@ -65,7 +66,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 SiteUrl = siteUrl,
                 GroupNames = groupNames,
                 TagNames = tagNames,
-                EditorColumns = editorColumns
+                EditorColumns = editorColumns,
+                IsCheckable = isCheckable,
             };
         }
     }

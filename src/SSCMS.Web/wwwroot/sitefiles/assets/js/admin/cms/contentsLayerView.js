@@ -1,4 +1,5 @@
 ﻿var $url = '/cms/contents/contentsLayerView';
+var $urlPreview = $url + '/actions/preview';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
@@ -12,7 +13,8 @@ var data = utils.init({
   groupNames: null,
   tagNames: null,
   editorColumns: null,
-  activeName: 'attributes'
+  isCheckable: false,
+  activeName: 'titleBody',
 });
 
 var methods = {
@@ -37,11 +39,34 @@ var methods = {
       $this.groupNames = res.groupNames;
       $this.tagNames = res.tagNames;
       $this.editorColumns = res.editorColumns;
+      $this.isCheckable = !res.content.checked && res.isCheckable;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  apiPreview: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlPreview, {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        contentId: this.contentId,
+      })
+      .then(function (response) {
+        var res = response.data;
+
+        window.open(res.url);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
   },
 
   isDisplay: function (attributeName) {
@@ -87,6 +112,23 @@ var methods = {
       url: utils.getCommonUrl('adminLayerView', {adminId: adminId}),
       full: true
     });
+  },
+
+  btnCheckClick: function () {
+    window.parent.layer.closeAll()
+    window.parent.utils.openLayer({
+      title: "审核内容",
+      url: utils.getCmsUrl('contentsLayerCheck', {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        channelContentIds: this.channelId + "_" + this.contentId
+      }),
+      full: true
+    });
+  },
+
+  btnPreviewClick: function () {
+    this.apiPreview();
   },
 
   btnCancelClick: function () {

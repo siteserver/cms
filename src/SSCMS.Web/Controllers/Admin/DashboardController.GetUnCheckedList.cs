@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SSCMS.Core.Utils;
 using SSCMS.Dto;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -29,13 +30,16 @@ namespace SSCMS.Web.Controllers.Admin
                     }
                 }
             }
-            else if (await _authManager.IsSiteAdminAsync())
+            else
             {
-                var admin = await _authManager.GetAdminAsync();
-                if (admin.SiteIds != null)
+                var siteIdListWithPermissions = await _authManager.GetSiteIdsAsync();
+                if (siteIdListWithPermissions != null)
                 {
-                    foreach (var siteId in admin.SiteIds)
+                    foreach (var siteId in siteIdListWithPermissions)
                     {
+                        var isCheckable = await _authManager.HasSitePermissionsAsync(siteId, MenuUtils.SitePermissions.ContentsCheck);
+                        if (!isCheckable) continue;
+
                         var site = await _siteRepository.GetAsync(siteId);
                         if (site == null) continue;
 

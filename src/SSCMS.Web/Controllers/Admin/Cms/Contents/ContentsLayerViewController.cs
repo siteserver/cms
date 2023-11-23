@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
     public partial class ContentsLayerViewController : ControllerBase
     {
         private const string Route = "cms/contents/contentsLayerView";
+        private const string RoutePreview = "cms/contents/contentsLayerView/actions/preview";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -55,6 +56,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public IEnumerable<string> GroupNames { get; set; }
             public IEnumerable<string> TagNames { get; set; }
             public List<ContentColumn> EditorColumns { get; set; }
+            public bool IsCheckable { get; set; }
+        }
+
+        public class PreviewRequest
+        {
+            public int SiteId { get; set; }
+            public int ChannelId { get; set; }
+            public int ContentId { get; set; }
+        }
+
+        public class PreviewResult
+        {
+            public string Url { get; set; }
         }
     }
 }

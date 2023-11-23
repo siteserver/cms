@@ -9,12 +9,17 @@
 }
 
 <el-tabs v-model="activeName">
+  <el-tab-pane label="标题/正文" name="titleBody">
+    <el-link v-if="content.checked && content.channelId > 0" type="primary" :underline="false" :href="getContentUrl(content)" target="_blank" v-html="content.title" v-on:click.stop.native></el-link>
+    <h4 v-else style="text-align: center;" v-html="content.title"></h4>
+    <el-divider></el-divider>
+    <div v-html="content.body"></div>
+  </el-tab-pane>
+  <el-tab-pane v-for="editorColumn in editorColumns" :key="editorColumn.attributeName" :label="editorColumn.displayName" :name="editorColumn.attributeName">
+    <div v-html="content.getEntityValue(editorColumn.attributeName)"></div>
+  </el-tab-pane>
   <el-tab-pane label="属性" name="attributes">
     <el-form v-on:submit.native.prevent label-width="120px" size="mini">
-      <el-form-item label="内容标题">
-        <el-link v-if="content.checked && content.channelId > 0" type="primary" :underline="false" :href="getContentUrl(content)" target="_blank" v-html="content.title" v-on:click.stop.native></el-link>
-        <span v-else v-html="content.title"></span>
-      </el-form-item>
       <el-form-item label="审核状态">
         <el-link size="mini" :underline="false" style="top: -2px" :type="(content.checked ? 'primary' : 'danger')">
           {{ state }}
@@ -97,14 +102,13 @@
       </el-form-item>
     </el-form>
   </el-tab-pane>
-  <el-tab-pane v-for="editorColumn in editorColumns" :key="editorColumn.attributeName" :label="editorColumn.displayName" :name="editorColumn.attributeName">
-    <div v-html="content.getEntityValue(editorColumn.attributeName)"></div>
-  </el-tab-pane>
 </el-tabs>
 
 <el-divider></el-divider>
 <el-row align="right" style="margin-right: 5px; margin-top: 10px;">
   <el-col :span="24" align="right">
+    <el-button v-if="isCheckable" size="small" v-on:click="btnCheckClick" type="primary">审 核</el-button>
+    <el-button size="small" v-on:click="btnPreviewClick" type="info">预 览</el-button>
     <el-button size="small" v-on:click="btnCancelClick">关 闭</el-button>
   </el-col>
 </el-row>
