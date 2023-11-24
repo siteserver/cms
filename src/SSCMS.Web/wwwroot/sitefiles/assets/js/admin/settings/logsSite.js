@@ -88,10 +88,10 @@ var methods = {
     });
   },
 
-  btnAdminClick: function(userName) {
+  btnAdminClick: function(guid) {
     utils.openLayer({
       title: "管理员查看",
-      url: utils.getCommonUrl('adminLayerView', {userName: userName}),
+      url: utils.getCommonUrl('adminLayerView', {guid: guid}),
       full: true
     });
   },

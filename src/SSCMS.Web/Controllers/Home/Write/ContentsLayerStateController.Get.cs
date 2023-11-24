@@ -29,7 +29,12 @@ namespace SSCMS.Web.Controllers.Home.Write
             contentChecks.ForEach(async x =>
             {
                 x.Set("State", CheckManager.GetCheckState(site, x.Checked, x.CheckedLevel));
-                x.Set("AdminName", await _administratorRepository.GetDisplayAsync(x.AdminId));
+                var admin = await _administratorRepository.GetByUserIdAsync(x.AdminId);
+                if (admin != null)
+                {
+                    x.Set("AdminName", _administratorRepository.GetDisplay(admin));
+                    x.Set("AdminGuid", admin.Guid);
+                }
             });
 
             return new GetResult

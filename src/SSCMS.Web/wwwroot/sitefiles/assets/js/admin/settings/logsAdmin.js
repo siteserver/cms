@@ -46,10 +46,10 @@ var methods = {
     });
   },
 
-  btnAdminView: function(adminId) {
+  btnAdminView: function(guid) {
     utils.openLayer({
       title: '管理员查看',
-      url: utils.getCommonUrl('adminLayerView', { adminId: adminId}),
+      url: utils.getCommonUrl('adminLayerView', { guid: guid}),
       full: true
     })
   },

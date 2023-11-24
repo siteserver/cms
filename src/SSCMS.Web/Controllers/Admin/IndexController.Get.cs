@@ -307,6 +307,7 @@ namespace SSCMS.Web.Controllers.Admin
                 Local = new Local
                 {
                     UserId = admin.Id,
+                    Guid = admin.Guid,
                     UserName = admin.UserName,
                     AvatarUrl = admin.AvatarUrl,
                     Level = await _authManager.GetAdminLevelAsync()

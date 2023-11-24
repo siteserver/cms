@@ -17,6 +17,10 @@ namespace SSCMS.Repositories
 
         Task<User> GetByOpenIdAsync(string openId);
 
+        Task<User> GetByGuidAsync(string guid);
+
         Task<string> GetDisplayAsync(int userId);
+
+        string GetDisplay(User user);
     }
 }

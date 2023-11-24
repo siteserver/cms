@@ -1,8 +1,7 @@
 ﻿var $url = '/common/userLayerView';
 
 var data = utils.init({
-  userId: utils.getQueryInt('userId'),
-  userName: utils.getQueryString('userName'),
+  guid: utils.getQueryString('guid'),
   user: null,
   groupName: null
 });
@@ -14,8 +13,7 @@ var methods = {
     utils.loading(this, true);
     $api.get($url, {
       params: {
-        userId: this.userId,
-        userName: this.userName
+        guid: this.guid
       }
     }).then(function (response) {
       var res = response.data;

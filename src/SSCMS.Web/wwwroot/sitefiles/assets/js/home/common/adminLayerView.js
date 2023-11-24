@@ -1,8 +1,7 @@
 ﻿var $url = '/common/adminLayerView';
 
 var data = utils.init({
-  adminId: utils.getQueryInt('adminId'),
-  userName: utils.getQueryString('userName'),
+  guid: utils.getQueryString('guid'),
   administrator: null,
   level: null,
   siteNames: null,
@@ -16,8 +15,7 @@ var methods = {
     utils.loading(this, true);
     $api.get($url, {
       params: {
-        adminId: this.adminId,
-        userName: this.userName
+        guid: this.guid
       }
     }).then(function (response) {
       var res = response.data;

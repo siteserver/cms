@@ -9,6 +9,8 @@ namespace SSCMS.Repositories
 
         Task<Administrator> GetByUserIdAsync(int userId);
 
+        Task<Administrator> GetByGuidAsync(string guid);
+
         Task<Administrator> GetByUserNameAsync(string userName);
 
         Task<Administrator> GetByMobileAsync(string mobile);
@@ -18,5 +20,7 @@ namespace SSCMS.Repositories
         string GetUserUploadFileName(string filePath);
 
         Task<string> GetDisplayAsync(int userId);
+
+        string GetDisplay(Administrator admin);
     }
 }

@@ -47,8 +47,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             var logTasks = siteLogs.Select(async x =>
             {
                 var site = await _siteRepository.GetAsync(x.SiteId);
-                var administrator = await _administratorRepository.GetByUserIdAsync(x.AdminId);
-                var adminName = administrator == null ? string.Empty : administrator.UserName;
+                var admin = await _administratorRepository.GetByUserIdAsync(x.AdminId);
+                var adminName = admin != null ? _administratorRepository.GetDisplay(admin) : string.Empty;
+                var adminGuid = admin != null ? admin.Guid : string.Empty;
                 var log = new SiteLogResult
                 {
                     Id = x.Id,
@@ -62,6 +63,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
                     SiteName = site.SiteName,
                     CreatedDate = x.CreatedDate,
                     AdminName = adminName,
+                    AdminGuid = adminGuid,
                     WebUrl = await _pathManager.GetWebUrlAsync(site)
                 };
                 return log;

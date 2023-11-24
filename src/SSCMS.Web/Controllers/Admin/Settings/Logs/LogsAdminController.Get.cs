@@ -33,12 +33,18 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
             }
 
             var count = await _logRepository.GetAdminLogsCountAsync(adminId, request.Keyword, request.DateFrom, request.DateTo);
-            var logs = await _logRepository.GetAdminLogsAsync(adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var allLogs = await _logRepository.GetAdminLogsAsync(adminId, request.Keyword, request.DateFrom, request.DateTo, request.Offset, request.Limit);
+            var logs = new List<Log>();
 
-            foreach (var log in logs)
+            foreach (var log in allLogs)
             {
-                var adminName = await _administratorRepository.GetDisplayAsync(log.AdminId);
-                log.Set("adminName", adminName);
+                var admin = await _administratorRepository.GetByUserIdAsync(log.AdminId);
+                if (admin != null)
+                {
+                    log.Set("adminName", _administratorRepository.GetDisplay(admin));
+                    log.Set("adminGuid", admin.Guid);
+                    logs.Add(log);
+                }
             }
 
             return new PageResult<Log>

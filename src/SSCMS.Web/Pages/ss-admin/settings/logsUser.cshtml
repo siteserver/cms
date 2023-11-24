@@ -37,7 +37,7 @@
   <el-table-column
     label="用户">
     <template slot-scope="scope">
-      <el-link :underline="false" type="primary" v-on:click="btnUserView(scope.row.userId)">{{scope.row.userName}}</el-link>
+      <el-link :underline="false" type="primary" v-on:click="btnUserView(scope.row)">{{scope.row.userName}}</el-link>
     </template>
   </el-table-column>
   <el-table-column

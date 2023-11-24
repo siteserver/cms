@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using Datory.Caching;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
@@ -15,8 +16,9 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
                 return Unauthorized();
             }
 
-            _cacheManager.Clear();
             await _dbCacheRepository.ClearAsync();
+            var cacheManager = await CachingUtils.GetCacheManagerAsync(_settingsManager.Redis);
+            cacheManager.Clear();
             _cacheManager.Clear();
 
             return new BoolResult

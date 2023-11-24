@@ -4,6 +4,7 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Repositories;
+using SSCMS.Services;
 
 namespace SSCMS.Web.Controllers.Admin.Common
 {
@@ -14,19 +15,20 @@ namespace SSCMS.Web.Controllers.Admin.Common
     {
         private const string Route = "common/userLayerView";
 
+        private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;
         private readonly IUserGroupRepository _userGroupRepository;
 
-        public UserLayerViewController(IUserRepository userRepository, IUserGroupRepository userGroupRepository)
+        public UserLayerViewController(IAuthManager authManager, IUserRepository userRepository, IUserGroupRepository userGroupRepository)
         {
+            _authManager = authManager;
             _userRepository = userRepository;
             _userGroupRepository = userGroupRepository;
         }
 
         public class GetRequest
         {
-            public int UserId { get; set; }
-            public string UserName { get; set; }
+            public string Guid { get; set; }
         }
 
         public class GetResult

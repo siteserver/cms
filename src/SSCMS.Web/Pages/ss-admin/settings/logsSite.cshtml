@@ -57,11 +57,11 @@
   </el-table-column>
   <el-table-column
     label="管理员"
-    width="120">
+    width="200">
     <template slot-scope="scope">
       <el-link
         :underline="false"
-        v-on:click="btnAdminClick(scope.row.adminName)"
+        v-on:click="btnAdminClick(scope.row.adminGuid)"
         type="primary">
         {{ scope.row.adminName }}
       </el-link>

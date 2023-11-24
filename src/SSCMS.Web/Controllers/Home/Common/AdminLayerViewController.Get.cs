@@ -14,16 +14,14 @@ namespace SSCMS.Web.Controllers.Home.Common
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
             Administrator admin = null;
-            if (request.AdminId > 0)
+            if (!string.IsNullOrEmpty(request.Guid))
             {
-                admin = await _administratorRepository.GetByUserIdAsync(request.AdminId);
-            }
-            else if (!string.IsNullOrEmpty(request.UserName))
-            {
-                admin = await _administratorRepository.GetByUserNameAsync(request.UserName);
+                admin = await _administratorRepository.GetByGuidAsync(request.Guid);
             }
 
             if (admin == null) return this.Error(Constants.ErrorNotFound);
+
+            admin.Remove("confirmPassword");
 
             var permissions = new AuthManager(_context, _antiforgery, _cacheManager, _settingsManager, _databaseManager);
             await permissions.InitAsync(admin);

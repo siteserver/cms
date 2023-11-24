@@ -38,8 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Common
 
         public class GetRequest
         {
-            public int AdminId { get; set; }
-            public string UserName { get; set; }
+            public string Guid { get; set; }
         }
 
         public class GetResult

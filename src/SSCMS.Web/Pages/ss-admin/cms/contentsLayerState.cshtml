@@ -26,7 +26,7 @@
       stripe>
       <el-table-column prop="userName" label="审核人" width="150">
         <template slot-scope="scope">
-          <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+          <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminGuid)">{{scope.row.adminName}}</el-link>
         </template>
       </el-table-column>
       <el-table-column prop="state" label="状态" width="150"></el-table-column>

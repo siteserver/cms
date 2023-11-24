@@ -33,8 +33,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentRepository _contentRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ContentsController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository)
+        public ContentsController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, IAdministratorRepository administratorRepository, IUserRepository userRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -46,6 +48,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             _contentRepository = contentRepository;
             _contentGroupRepository = contentGroupRepository;
             _contentTagRepository = contentTagRepository;
+            _administratorRepository = administratorRepository;
+            _userRepository = userRepository;
         }
 
         public class AllRequest : ChannelRequest

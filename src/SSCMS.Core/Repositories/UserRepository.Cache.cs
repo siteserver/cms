@@ -15,6 +15,11 @@ namespace SSCMS.Core.Repositories
             return CacheUtils.GetEntityKey(TableName, "userId", userId.ToString());
         }
 
+        private string GetCacheKeyByGuid(string guid)
+        {
+            return CacheUtils.GetEntityKey(TableName, "guid", guid);
+        }
+
         private string GetCacheKeyByUserName(string userName)
         {
             return CacheUtils.GetEntityKey(TableName, "userName", userName);
@@ -41,8 +46,9 @@ namespace SSCMS.Core.Repositories
 
             var list = new List<string>
             {
-                GetCacheKeyByUserId(user.Id), 
-                GetCacheKeyByUserName(user.UserName)
+                GetCacheKeyByUserId(user.Id),
+                GetCacheKeyByGuid(user.Guid),
+                GetCacheKeyByUserName(user.UserName),
             };
 
             if (!string.IsNullOrEmpty(user.Mobile))
@@ -103,6 +109,16 @@ namespace SSCMS.Core.Repositories
             return await GetAsync(Q
                 .Where(nameof(User.Id), userId)
                 .CachingGet(GetCacheKeyByUserId(userId))
+            );
+        }
+
+        public async Task<User> GetByGuidAsync(string guid)
+        {
+            if (string.IsNullOrWhiteSpace(guid)) return null;
+
+            return await GetAsync(Q
+                .Where(nameof(User.Guid), guid)
+                .CachingGet(GetCacheKeyByGuid(guid))
             );
         }
 
@@ -171,18 +187,19 @@ namespace SSCMS.Core.Repositories
             }
         }
 
-
         public async Task<string> GetDisplayAsync(int userId)
         {
             if (userId <= 0) return string.Empty;
 
             var user = await GetByUserIdAsync(userId);
-            if (user != null)
-            {
-                return string.IsNullOrEmpty(user.DisplayName) || user.UserName == user.DisplayName ? user.UserName : $"{user.DisplayName}({user.UserName})";
-            }
+            return GetDisplay(user);
+        }
 
-            return string.Empty;
+        public string GetDisplay(User user)
+        {
+            if (user == null) return string.Empty;
+
+            return string.IsNullOrEmpty(user.DisplayName) || user.UserName == user.DisplayName ? user.UserName : $"{user.DisplayName}({user.UserName})";
         }
     }
 }

@@ -84,7 +84,7 @@ var methods = {
   btnAdminViewClick: function(row) {
     utils.openLayer({
       title: '查看资料',
-      url: utils.getCommonUrl('adminLayerView', {adminId: row.id}),
+      url: utils.getCommonUrl('adminLayerView', {guid: row.adminGuid}),
       full: true
     });
   },

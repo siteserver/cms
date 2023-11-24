@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using SSCMS.Core.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common
 {
@@ -11,17 +12,21 @@ namespace SSCMS.Web.Controllers.Admin.Common
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            User user = null;
-            if (request.UserId > 0)
+            if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsLogsUser) &&
+                !await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsers))
             {
-                user = await _userRepository.GetByUserIdAsync(request.UserId);
+                return Unauthorized();
             }
-            else if (!string.IsNullOrEmpty(request.UserName))
+            
+            User user = null;
+            if (!string.IsNullOrEmpty(request.Guid))
             {
-                user = await _userRepository.GetByUserNameAsync(request.UserName);
+                user = await _userRepository.GetByGuidAsync(request.Guid);
             }
 
             if (user == null) return this.Error(Constants.ErrorNotFound);
+
+            user.Remove("confirmPassword");
 
             var groupName = await _userGroupRepository.GetUserGroupNameAsync(user.GroupId);
 

@@ -58,22 +58,22 @@
 
           <!-- AdminId -->
           <template v-else-if="column.attributeName === 'AdminId'">
-            <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+            <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminGuid)">{{scope.row.adminName}}</el-link>
           </template>
 
           <!-- LastEditAdminId -->
           <template v-else-if="column.attributeName === 'LastEditAdminId'">
-            <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)">{{scope.row.lastEditAdminName}}</el-link>
+            <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminGuid)">{{scope.row.lastEditAdminName}}</el-link>
           </template>
 
           <!-- UserId -->
           <template v-else-if="column.attributeName === 'UserId'">
-            <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userId)">{{scope.row.userName}}</el-link>
+            <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userGuid)">{{scope.row.userName}}</el-link>
           </template>
 
           <!-- CheckAdminId -->
           <template v-else-if="column.attributeName === 'CheckAdminId'">
-            <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)">{{scope.row.checkAdminName}}</el-link>
+            <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminGuid)">{{scope.row.checkAdminName}}</el-link>
           </template>
 
           <!-- SourceId -->
@@ -214,22 +214,22 @@
 
       <!-- AdminId -->
       <template v-else-if="column.attributeName === 'AdminId'">
-        <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+        <el-link v-if="scope.row.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.adminGuid)">{{scope.row.adminName}}</el-link>
       </template>
 
       <!-- LastEditAdminId -->
       <template v-else-if="column.attributeName === 'LastEditAdminId'">
-        <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)">{{scope.row.lastEditAdminName}}</el-link>
+        <el-link v-if="scope.row.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminGuid)">{{scope.row.lastEditAdminName}}</el-link>
       </template>
 
       <!-- UserId -->
       <template v-else-if="column.attributeName === 'UserId'">
-        <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userId)">{{scope.row.userName}}</el-link>
+        <el-link v-if="scope.row.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(scope.row.userGuid)">{{scope.row.userName}}</el-link>
       </template>
 
       <!-- CheckAdminId -->
       <template v-else-if="column.attributeName === 'CheckAdminId'">
-        <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)">{{scope.row.checkAdminName}}</el-link>
+        <el-link v-if="scope.row.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(scope.row.checkAdminGuid)">{{scope.row.checkAdminName}}</el-link>
       </template>
 
       <!-- SourceId -->

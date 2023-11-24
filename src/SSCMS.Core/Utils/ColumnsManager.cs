@@ -32,9 +32,13 @@ namespace SSCMS.Core.Utils
         public const string Sequence = nameof(Sequence);                            //序号
         private const string ChannelName = nameof(ChannelName);
         private const string AdminName = nameof(AdminName);
+        private const string AdminGuid = nameof(AdminGuid);
         private const string LastEditAdminName = nameof(LastEditAdminName);
+        private const string LastEditAdminGuid = nameof(LastEditAdminGuid);
         private const string UserName = nameof(UserName);
+        private const string UserGuid = nameof(UserGuid);
         private const string CheckAdminName = nameof(CheckAdminName);
+        private const string CheckAdminGuid = nameof(CheckAdminGuid);
         private const string SourceName = nameof(SourceName);
         private const string TemplateName = nameof(TemplateName);
         private const string State = nameof(State);
@@ -361,28 +365,46 @@ namespace SSCMS.Core.Utils
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.AdminId)))
                 {
-                    var adminName = await _databaseManager.AdministratorRepository.GetDisplayAsync(source.AdminId);
-                    content.Set(AdminName, adminName);
+                    var admin = await _databaseManager.AdministratorRepository.GetByUserIdAsync(source.AdminId);
+                    if (admin != null)
+                    {
+                        var adminName = _databaseManager.AdministratorRepository.GetDisplay(admin);
+                        content.Set(AdminName, adminName);
+                        content.Set(AdminGuid, admin.Guid);
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.LastEditAdminId)))
                 {
-                    var lastEditAdminName =
-                        await _databaseManager.AdministratorRepository.GetDisplayAsync(source.LastEditAdminId);
-                    content.Set(LastEditAdminName, lastEditAdminName);
-                }
-                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.UserId)))
-                {
-                    var userName = await _databaseManager.UserRepository.GetDisplayAsync(source.UserId);
-                    content.Set(UserName, userName);
+                    var admin = await _databaseManager.AdministratorRepository.GetByUserIdAsync(source.LastEditAdminId);
+                    if (admin != null)
+                    {
+                        var adminName = _databaseManager.AdministratorRepository.GetDisplay(admin);
+                        content.Set(LastEditAdminName, adminName);
+                        content.Set(LastEditAdminGuid, admin.Guid);
+                    }
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, CheckAdminId))
                 {
-                    var checkedId = source.Get<int>(CheckAdminId);
-                    if (checkedId > 0)
+                    var checkAdminId = source.Get<int>(CheckAdminId);
+                    if (checkAdminId > 0)
                     {
-                        var checkAdminName =
-                            await _databaseManager.AdministratorRepository.GetDisplayAsync(checkedId);
-                        content.Set(CheckAdminName, checkAdminName);
+                        var admin = await _databaseManager.AdministratorRepository.GetByUserIdAsync(checkAdminId);
+                        if (admin != null)
+                        {
+                            var adminName = _databaseManager.AdministratorRepository.GetDisplay(admin);
+                            content.Set(CheckAdminName, adminName);
+                            content.Set(CheckAdminGuid, admin.Guid);
+                        }
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.UserId)))
+                {
+                    var user = await _databaseManager.UserRepository.GetByUserIdAsync(source.UserId);
+                    if (user != null)
+                    {
+                        var userName = _databaseManager.UserRepository.GetDisplay(user);
+                        content.Set(UserName, userName);
+                        content.Set(UserGuid, user.Guid);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, nameof(Content.SourceId)))

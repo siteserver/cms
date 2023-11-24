@@ -47,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         public class GetAdminStat
         {
             public int AdminId { get; set; }
+            public string Guid { get; set; }
             public string AdminName { get; set; }
             public int Add { get; set; }
             public int Edit { get; set; }

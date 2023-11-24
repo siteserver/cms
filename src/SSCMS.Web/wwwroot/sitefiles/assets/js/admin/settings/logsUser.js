@@ -58,11 +58,11 @@ var methods = {
     });
   },
 
-  btnUserView: function(userId) {
+  btnUserView: function(log) {
     utils.openLayer({
       title: '用户查看',
       url: utils.getCommonUrl('userLayerView', {
-        userId: userId
+        guid: log.userGuid
       })
     })
   },

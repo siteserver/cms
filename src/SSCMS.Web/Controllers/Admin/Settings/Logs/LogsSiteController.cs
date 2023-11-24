@@ -46,8 +46,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Logs
         public class SiteLogResult : SiteLog
         {
             public string AdminName { get; set; }
+            public string AdminGuid { get; set; }
             public string WebUrl { get; set; }
-
             public string SiteName { get; set; }
         }
 

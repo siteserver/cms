@@ -36,7 +36,7 @@
   <el-table-column
     label="管理员">
     <template slot-scope="scope">
-      <el-link :underline="false" type="primary" v-on:click="btnAdminView(scope.row.adminId)">{{scope.row.adminName}}</el-link>
+      <el-link :underline="false" type="primary" v-on:click="btnAdminView(scope.row.adminGuid)">{{scope.row.adminName}}</el-link>
     </template>
   </el-table-column>
   <el-table-column

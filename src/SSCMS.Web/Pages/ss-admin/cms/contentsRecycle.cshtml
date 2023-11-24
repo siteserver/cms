@@ -403,7 +403,7 @@
                   v-if="scope.row.adminId"
                   :underline="false"
                   type="primary"
-                  v-on:click.stop.native="btnAdminClick(scope.row.adminId)"
+                  v-on:click.stop.native="btnAdminClick(scope.row.adminGuid)"
                   >{{ scope.row.adminName }}</el-link
                 >
               </template>
@@ -414,7 +414,7 @@
                   v-if="scope.row.lastEditAdminId"
                   :underline="false"
                   type="primary"
-                  v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)"
+                  v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminGuid)"
                   >{{ scope.row.lastEditAdminName }}</el-link
                 >
               </template>
@@ -425,7 +425,7 @@
                   v-if="scope.row.userId"
                   :underline="false"
                   type="primary"
-                  v-on:click.stop.native="btnUserClick(scope.row.userId)"
+                  v-on:click.stop.native="btnUserClick(scope.row.userGuid)"
                   >{{ scope.row.userName }}</el-link
                 >
               </template>
@@ -436,7 +436,7 @@
                   v-if="scope.row.checkAdminId"
                   :underline="false"
                   type="primary"
-                  v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)"
+                  v-on:click.stop.native="btnAdminClick(scope.row.checkAdminGuid)"
                   >{{ scope.row.checkAdminName }}</el-link
                 >
               </template>
@@ -669,7 +669,7 @@
               v-if="scope.row.adminId"
               :underline="false"
               type="primary"
-              v-on:click.stop.native="btnAdminClick(scope.row.adminId)"
+              v-on:click.stop.native="btnAdminClick(scope.row.adminGuid)"
               >{{ scope.row.adminName }}</el-link
             >
           </template>
@@ -680,7 +680,7 @@
               v-if="scope.row.lastEditAdminId"
               :underline="false"
               type="primary"
-              v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminId)"
+              v-on:click.stop.native="btnAdminClick(scope.row.lastEditAdminGuid)"
               >{{ scope.row.lastEditAdminName }}</el-link
             >
           </template>
@@ -691,7 +691,7 @@
               v-if="scope.row.userId"
               :underline="false"
               type="primary"
-              v-on:click.stop.native="btnUserClick(scope.row.userId)"
+              v-on:click.stop.native="btnUserClick(scope.row.userGuid)"
               >{{ scope.row.userName }}</el-link
             >
           </template>
@@ -702,7 +702,7 @@
               v-if="scope.row.checkAdminId"
               :underline="false"
               type="primary"
-              v-on:click.stop.native="btnAdminClick(scope.row.checkAdminId)"
+              v-on:click.stop.native="btnAdminClick(scope.row.checkAdminGuid)"
               >{{ scope.row.checkAdminName }}</el-link
             >
           </template>

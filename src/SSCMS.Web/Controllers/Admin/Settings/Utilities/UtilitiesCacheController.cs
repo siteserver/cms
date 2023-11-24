@@ -19,13 +19,15 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
         private const string RouteRestart = "settings/utilitiesCache/actions/restart";
 
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly ISettingsManager _settingsManager;
         private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public UtilitiesCacheController(IHostApplicationLifetime hostApplicationLifetime, ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
+        public UtilitiesCacheController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
+            _settingsManager = settingsManager;
             _cacheManager = cacheManager;
             _authManager = authManager;
             _dbCacheRepository = dbCacheRepository;

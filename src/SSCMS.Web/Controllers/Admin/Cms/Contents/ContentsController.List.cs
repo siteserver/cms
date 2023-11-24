@@ -46,14 +46,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
             var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var searchText = StringUtils.Trim(request.SearchText);
 
             var pageContents = new List<Content>();
             List<ContentSummary> summaries;
             if (!string.IsNullOrEmpty(request.SearchType) &&
-                !string.IsNullOrEmpty(request.SearchText) ||
+                !string.IsNullOrEmpty(searchText) ||
                 request.IsAdvanced)
             {
-                summaries = await _contentRepository.SearchAsync(site, channel, channel.IsAllContents, request.SearchType, request.SearchText, request.IsAdvanced, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
+                summaries = await _contentRepository.SearchAsync(site, channel, channel.IsAllContents, request.SearchType, searchText, request.IsAdvanced, request.CheckedLevels, request.IsTop, request.IsRecommend, request.IsHot, request.IsColor, request.GroupNames, request.TagNames);
             }
             else
             {

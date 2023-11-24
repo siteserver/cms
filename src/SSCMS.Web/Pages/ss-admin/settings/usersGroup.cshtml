@@ -9,7 +9,7 @@
     <template slot-scope="scope">
       <el-link
         :underline="false"
-        v-on:click="btnAdminClick(scope.row.adminName)"
+        v-on:click="btnAdminClick(scope.row.adminGuid)"
         type="primary">
         {{ scope.row.adminName }}
       </el-link>

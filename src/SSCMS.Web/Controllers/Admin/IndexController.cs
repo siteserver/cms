@@ -53,6 +53,7 @@ namespace SSCMS.Web.Controllers.Admin
         public class Local
         {
             public int UserId { get; set; }
+            public string Guid { get; set; }
             public string UserName { get; set; }
             public string AvatarUrl { get; set; }
             public string Level { get; set; }

@@ -366,7 +366,7 @@ var methods = {
     if (command === 'view') {
       utils.openLayer({
         title: '查看资料',
-        url: utils.getCommonUrl('adminLayerView', {adminId: this.local.userId}),
+        url: utils.getCommonUrl('adminLayerView', {guid: this.local.guid}),
         full: true
       });
     } else if (command === 'profile') {

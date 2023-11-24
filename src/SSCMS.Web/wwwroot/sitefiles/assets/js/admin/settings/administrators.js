@@ -98,9 +98,10 @@ var methods = {
   },
 
   btnViewClick: function(row) {
+    console.log(row);
     utils.openLayer({
       title: '查看资料',
-      url: utils.getCommonUrl('adminLayerView', {adminId: row.id}),
+      url: utils.getCommonUrl('adminLayerView', {guid: row.guid}),
       full: true
     });
   },

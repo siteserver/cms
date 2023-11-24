@@ -38,10 +38,10 @@ var methods = {
     });
   },
 
-  btnAdminViewClick: function(userName) {
+  btnAdminViewClick: function(guid) {
     utils.openLayer({
       title: '查看资料',
-      url: utils.getCommonUrl('adminLayerView', { userName: userName }),
+      url: utils.getCommonUrl('adminLayerView', { guid: guid }),
       full: true
     });
   },

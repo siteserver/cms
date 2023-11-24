@@ -16,6 +16,11 @@ namespace SSCMS.Core.Repositories
             return CacheUtils.GetEntityKey(TableName, "userId", userId.ToString());
         }
 
+        private string GetCacheKeyByGuid(string guid)
+        {
+            return CacheUtils.GetEntityKey(TableName, "guid", guid);
+        }
+
         private string GetCacheKeyByUserName(string userName)
         {
             return CacheUtils.GetEntityKey(TableName, "userName", userName);
@@ -37,7 +42,8 @@ namespace SSCMS.Core.Repositories
 
             var keys = new List<string>
             {
-                GetCacheKeyByUserId(admin.Id), 
+                GetCacheKeyByUserId(admin.Id),
+                GetCacheKeyByGuid(admin.Guid),
                 GetCacheKeyByUserName(admin.UserName)
             };
 
@@ -86,6 +92,16 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task<Administrator> GetByGuidAsync(string guid)
+        {
+            if (string.IsNullOrWhiteSpace(guid)) return null;
+
+            return await GetAsync(Q
+                .Where(nameof(Administrator.Guid), guid)
+                .CachingGet(GetCacheKeyByGuid(guid))
+            );
+        }
+
         public async Task<Administrator> GetByUserNameAsync(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName)) return null;
@@ -117,29 +133,25 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        
-
         public string GetUserUploadFileName(string filePath)
         {
             var dt = DateTime.Now;
             return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(filePath)}";
         }
 
-        
-
-        
-
         public async Task<string> GetDisplayAsync(int userId)
         {
             if (userId <= 0) return string.Empty;
 
             var admin = await GetByUserIdAsync(userId);
-            if (admin != null)
-            {
-                return string.IsNullOrEmpty(admin.DisplayName) || admin.UserName == admin.DisplayName ? admin.UserName : $"{admin.DisplayName}({admin.UserName})";
-            }
+            return GetDisplay(admin);
+        }
 
-            return string.Empty;
+        public string GetDisplay(Administrator admin)
+        {
+            if (admin == null) return string.Empty;
+
+            return string.IsNullOrEmpty(admin.DisplayName) || admin.UserName == admin.DisplayName ? admin.UserName : $"{admin.DisplayName}({admin.UserName})";
         }
     }
 }

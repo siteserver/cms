@@ -71,22 +71,22 @@
     
         <!-- AdminId -->
         <template v-else-if="column.attributeName === 'AdminId'">
-          <el-link v-if="content.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.adminId)">{{content.adminName}}</el-link>
+          <el-link v-if="content.adminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.adminGuid)">{{content.adminName}}</el-link>
         </template>
     
         <!-- LastEditAdminId -->
         <template v-else-if="column.attributeName === 'LastEditAdminId'">
-          <el-link v-if="content.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.lastEditAdminId)">{{content.lastEditAdminName}}</el-link>
+          <el-link v-if="content.lastEditAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.lastEditAdminGuid)">{{content.lastEditAdminName}}</el-link>
         </template>
     
         <!-- UserId -->
         <template v-else-if="column.attributeName === 'UserId'">
-          <el-link v-if="content.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(content.userId)">{{content.userName}}</el-link>
+          <el-link v-if="content.userId" :underline="false" type="primary" v-on:click.stop.native="btnUserClick(content.userGuid)">{{content.userName}}</el-link>
         </template>
     
         <!-- CheckAdminId -->
         <template v-else-if="column.attributeName === 'CheckAdminId'">
-          <el-link v-if="content.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.checkAdminId)">{{content.checkAdminName}}</el-link>
+          <el-link v-if="content.checkAdminId" :underline="false" type="primary" v-on:click.stop.native="btnAdminClick(content.checkAdminGuid)">{{content.checkAdminName}}</el-link>
         </template>
     
         <!-- SourceId -->

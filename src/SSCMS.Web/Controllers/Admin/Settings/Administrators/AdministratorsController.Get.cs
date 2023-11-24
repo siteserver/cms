@@ -47,6 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 admins.Add(new Admin
                 {
                     Id = administratorInfo.Id,
+                    Guid = administratorInfo.Guid,
                     AvatarUrl = administratorInfo.AvatarUrl,
                     UserName = administratorInfo.UserName,
                     DisplayName = string.IsNullOrEmpty(administratorInfo.DisplayName)

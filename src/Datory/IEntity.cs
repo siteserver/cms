@@ -11,5 +11,7 @@ namespace Datory
         DateTime? CreatedDate { get; set; }
 
         DateTime? LastModifiedDate { get; set; }
+
+        void Remove(string name);
     }
 }

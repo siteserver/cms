@@ -57,6 +57,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         public class Admin
         {
             public int Id { get; set; }
+            public string Guid { get; set; }
             public string AvatarUrl { get; set; }
             public string UserName { get; set; }
             public string DisplayName { get; set; }

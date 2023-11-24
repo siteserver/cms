@@ -46,10 +46,10 @@ var methods = {
     return group ? group.groupName :'默认用户组';
   },
 
-  btnViewClick: function(userId) {
+  btnViewClick: function(user) {
     utils.openLayer({
       title: '查看资料',
-      url: utils.getCommonUrl('userLayerView', {userId: userId})
+      url: utils.getCommonUrl('userLayerView', {guid: user.guid})
     });
   },
 

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
 {
@@ -37,12 +38,18 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                 Constants.ScopeStl
             };
 
-            //foreach (var plugin in _pluginManager.EnabledPlugins)
-            //{
-            //    scopes.Add(plugin.PluginId);
-            //}
-
-            var tokens = await _accessTokenRepository.GetAccessTokensAsync();
+            var accessTokens = await _accessTokenRepository.GetAccessTokensAsync();
+            var tokens = new List<AccessToken>();
+            foreach (var token in accessTokens)
+            {
+               var admin = await _administratorRepository.GetByUserNameAsync(token.AdminName);
+               if (admin != null)
+               {
+                    token.Set("AdminDisplay", _administratorRepository.GetDisplay(admin));
+                    token.Set("AdminGuid", admin.Guid);
+                    tokens.Add(token);
+               }
+            }
 
             return new ListResult
             {

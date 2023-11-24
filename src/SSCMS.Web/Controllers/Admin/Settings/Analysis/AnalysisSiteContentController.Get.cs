@@ -71,7 +71,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
                     stat = new GetAdminStat
                     {
                         AdminId = adminAddStat.AdminId,
-                        AdminName = admin.UserName,
+                        Guid = admin.Guid,
+                        AdminName = _administratorRepository.GetDisplay(admin),
                         Add = 0,
                         Edit = 0
                     };
@@ -92,7 +93,8 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
                     stat = new GetAdminStat
                     {
                         AdminId = adminEditStat.AdminId,
-                        AdminName = admin.UserName,
+                        Guid = admin.Guid,
+                        AdminName = _administratorRepository.GetDisplay(admin),
                         Add = 0,
                         Edit = 0
                     };

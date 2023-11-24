@@ -64,10 +64,10 @@ var methods = {
     });
   },
 
-  btnAdminClick: function(adminName) {
+  btnAdminClick: function(guid) {
     utils.openLayer({
       title: "管理员查看",
-      url: utils.getCommonUrl('adminLayerView', {userName: adminName}),
+      url: utils.getCommonUrl('adminLayerView', {guid: guid}),
       full: true
     });
   },

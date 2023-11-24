@@ -183,6 +183,20 @@ namespace Datory
             return false;
         }
 
+        public void Remove(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return;
+
+            if (ContainsIgnoreCase(_propertyNames, name, out var realName))
+            {
+                ValueUtils.SetValue(this, realName, null);
+            }
+            else
+            {
+                _extendDictionary.Remove(name);
+            }
+        }
+
         public void Set(string name, object value)
         {
             if (string.IsNullOrEmpty(name)) return;
