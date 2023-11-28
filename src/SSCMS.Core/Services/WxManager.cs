@@ -1,20 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Senparc.Weixin;
-using Senparc.Weixin.Exceptions;
-using Senparc.Weixin.MP;
-using Senparc.Weixin.MP.Containers;
-using Senparc.Weixin.MP.Helpers;
-using SSCMS.Core.Utils;
-using SSCMS.Enums;
-using SSCMS.Repositories;
+﻿using SSCMS.Repositories;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
     public partial class WxManager : IWxManager
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly ITaskManager _taskManager;
@@ -29,13 +20,15 @@ namespace SSCMS.Core.Services
         private readonly IMaterialImageRepository _materialImageRepository;
         private readonly IMaterialAudioRepository _materialAudioRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public WxManager(ISettingsManager settingsManager, IPathManager pathManager, ITaskManager taskManager, IWxAccountRepository wxAccountRepository,
+        public WxManager(ICacheManager cacheManager, ISettingsManager settingsManager, IPathManager pathManager, ITaskManager taskManager, IWxAccountRepository wxAccountRepository,
             IWxMenuRepository wxMenuRepository, IWxChatRepository wxChatRepository, IWxReplyRuleRepository wxReplyRuleRepository,
             IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository,
             IMaterialMessageRepository materialMessageRepository, IMaterialArticleRepository materialArticleRepository, IMaterialImageRepository materialImageRepository,
-            IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
+            IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository, IErrorLogRepository errorLogRepository)
         {
+            _cacheManager = cacheManager;
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _taskManager = taskManager;
@@ -50,137 +43,80 @@ namespace SSCMS.Core.Services
             _materialImageRepository = materialImageRepository;
             _materialAudioRepository = materialAudioRepository;
             _materialVideoRepository = materialVideoRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
-        public string GetNonceStr()
+        public class AccessToken
         {
-            return JSSDKHelper.GetNoncestr();
+            public string access_token { get; set; }
+            public int expires_in { get; set; }
         }
 
-        public string GetTimestamp()
+        public class JsonResult
         {
-            return JSSDKHelper.GetTimestamp();
+            public int errcode { get; set; }
+            public string errmsg { get; set; }
         }
 
-        public async Task<(bool Success, string AccessToken, string ErrorMessage)> GetAccessTokenAsync(int siteId)
+        public class JsonMediaId
         {
-            var account = await _wxAccountRepository.GetBySiteIdAsync(siteId);
-            if (string.IsNullOrEmpty(account.MpAppId) || string.IsNullOrEmpty(account.MpAppSecret))
-            {
-                return (false, null, "微信公众号AppId及AppSecret未设置，请到平台账号配置中设置");
-            }
-
-            return await GetAccessTokenAsync(account.MpAppId, account.MpAppSecret);
+            public string media_id { get; set; }
         }
 
-        public async Task<(bool Success, string AccessToken, string ErrorMessage)> GetAccessTokenAsync(string mpAppId, string mpAppSecret)
+        public class FreePublishSubmitResult
         {
-            var success = false;
-            var errorMessage = string.Empty;
-            string token = null;
-
-            try
-            {
-                token = await AccessTokenContainer.TryGetAccessTokenAsync(mpAppId, mpAppSecret);
-                success = true;
-            }
-            catch (ErrorJsonResultException ex)
-            {
-                if (ex.JsonResult.errcode == ReturnCode.调用接口的IP地址不在白名单中)
-                {
-                    var startIndex = ex.JsonResult.errmsg.IndexOf("invalid ip ", StringComparison.Ordinal) + 11;
-                    var endIndex = ex.JsonResult.errmsg.IndexOf(" ipv6", StringComparison.Ordinal);
-                    var ip = ex.JsonResult.errmsg.Substring(startIndex, endIndex - startIndex);
-                    errorMessage = $"调用接口的IP地址不在白名单中，请进入微信公众平台，将本服务器的IP地址 {ip} 添加至白名单，如果已配置，请等待 10 分钟左右再试。";
-                }
-                else
-                {
-                    errorMessage = $"API 调用发生错误：{ex.JsonResult.errmsg}";
-                }
-            }
-            catch (Exception ex)
-            {
-                errorMessage = $"执行过程发生错误：{ex.Message}";
-            }
-
-            return (success, token, errorMessage);
+            public int errcode { get; set; }
+            public string errmsg { get; set; }
+            public string publish_id { get; set; }
         }
 
-        public async Task<(bool Success, string Ticket, string ErrorMessage)> GetJsApiTicketAsync(string mpAppId, string mpAppSecret)
+        public class JsonPreviewRequest
         {
-            var success = false;
-            var errorMessage = string.Empty;
-            string ticket = null;
-
-            try
-            {
-                ticket = await JsApiTicketContainer.TryGetJsApiTicketAsync(mpAppId, mpAppSecret);
-                success = true;
-            }
-            catch (ErrorJsonResultException ex)
-            {
-                if (ex.JsonResult.errcode == ReturnCode.调用接口的IP地址不在白名单中)
-                {
-                    var startIndex = ex.JsonResult.errmsg.IndexOf("invalid ip ", StringComparison.Ordinal) + 11;
-                    var endIndex = ex.JsonResult.errmsg.IndexOf(" ipv6", StringComparison.Ordinal);
-                    var ip = ex.JsonResult.errmsg.Substring(startIndex, endIndex - startIndex);
-                    errorMessage = $"调用接口的IP地址不在白名单中，请进入微信公众平台，将本服务器的IP地址 {ip} 添加至白名单";
-                }
-                else
-                {
-                    errorMessage = $"API 调用发生错误：{ex.JsonResult.errmsg}";
-                }
-            }
-            catch (Exception ex)
-            {
-                errorMessage = $"执行过程发生错误：{ex.Message}";
-            }
-
-            return (success, ticket, errorMessage);
+            public string touser { get; set; }
+            public JsonMediaId mpnews { get; set; }
+            public string msgtype { get; set; }
         }
 
-        public string GetJsApiSignature(string ticket, string nonceStr, string timestamp, string url)
+        public class DraftArticle
         {
-            return JSSDKHelper.GetSignature(ticket, nonceStr, timestamp, url);
-        }
+            /// <summary>
+            /// 图文消息的标题
+            /// </summary>
+            public string title { get; set; }
 
-        private GroupMessageType GetGroupMessageType(MaterialType materialType)
-        {
-            if (materialType == MaterialType.Message) return GroupMessageType.mpnews;
-            if (materialType == MaterialType.Text) return GroupMessageType.text;
-            if (materialType == MaterialType.Image) return GroupMessageType.image;
-            if (materialType == MaterialType.Audio) return GroupMessageType.voice;
-            if (materialType == MaterialType.Video) return GroupMessageType.video;
-            return GroupMessageType.mpnews;
-        }
+            /// <summary>
+            /// 图文消息的作者
+            /// </summary>
+            public string author { get; set; }
 
-        private async Task<string> SaveImagesAsync(string content)
-        {
-            var originalImageSrcs = RegexUtils.GetOriginalImageSrcs(content);
-            foreach (var originalImageSrc in originalImageSrcs)
-            {
-                if (!PageUtils.IsProtocolUrl(originalImageSrc)) continue;
+            /// <summary>
+            /// 图文消息的描述
+            /// </summary>
+            public string digest { get; set; }
 
-                var extName = "png";
-                if (StringUtils.Contains(originalImageSrc, "wx_fmt="))
-                {
-                    extName = originalImageSrc.Substring(originalImageSrc.LastIndexOf("=", StringComparison.Ordinal) + 1);
-                }
+            /// <summary>
+            /// 图文消息页面的内容，支持HTML标签
+            /// </summary>
+            public string content { get; set; }
 
-                var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
-                var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
+            /// <summary>
+            /// 在图文消息页面点击“阅读原文”后的页面
+            /// </summary>
+            public string content_source_url { get; set; }
 
-                var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                var filePath = PathUtils.Combine(directoryPath, materialFileName);
+            /// <summary>
+            /// 图文消息缩略图的media_id，可以在基础支持上传多媒体文件接口中获得
+            /// </summary>
+            public string thumb_media_id { get; set; }
 
-                await HttpClientUtils.DownloadAsync(originalImageSrc, filePath);
-
-                var imageUrl = PageUtils.Combine(virtualDirectoryPath, materialFileName);
-
-                content = content.Replace(" data-src=", "src=");
-                content = content.Replace(originalImageSrc, imageUrl);
-            }
-            return content;
+            /// <summary>
+            /// 是否打开评论，0不打开，1打开
+            /// </summary>
+            public int need_open_comment { get; set; }
+            /// <summary>
+            /// 是否粉丝才可评论，0所有人可评论，1粉丝才可评论
+            /// </summary>
+            public int only_fans_can_comment { get; set; }
         }
     }
 }
