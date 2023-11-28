@@ -16,7 +16,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            await _materialImageRepository.DeleteAsync(request.Id);
+            if (request.Id > 0)
+            {
+                await _materialImageRepository.DeleteAsync(request.Id);
+            }
+            else if (request.DataIds != null && request.DataIds.Count > 0)
+            {
+                foreach (var dataId in request.DataIds)
+                {
+                    await _materialImageRepository.DeleteAsync(dataId);
+                }
+            }
 
             return new BoolResult
             {

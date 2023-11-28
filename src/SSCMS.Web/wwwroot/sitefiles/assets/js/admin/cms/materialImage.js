@@ -18,7 +18,7 @@ var data = utils.init({
   renameTitle: '',
   deleteId: 0,
   selectedGroupId: 0,
-
+  multipleSelection: [],
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -81,13 +81,14 @@ var methods = {
     });
   },
 
-  apiDelete: function (material) {
+  apiDelete: function (material, dataIds) {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($urlDelete, {
       siteId: this.siteId,
-      id: material.id
+      id: (material ? material.id : 0),
+      dataIds: dataIds
     }).then(function (response) {
       var res = response.data;
 
@@ -296,7 +297,7 @@ var methods = {
       title: '删除素材',
       text: '确定删除此素材吗？',
       callback: function () {
-        $this.apiDelete(material);
+        $this.apiDelete(material, []);
       }
     });
   },
@@ -343,6 +344,33 @@ var methods = {
     utils.error(error.message);
   },
 
+  handleSelectionChange: function(val) {
+    this.multipleSelection = val;
+  },
+
+  toggleSelection: function(row) {
+    this.$refs.multipleTable.toggleRowSelection(row);
+  },
+
+  tableRowClassName: function(scope) {
+    if (this.multipleSelection.indexOf(scope.row) !== -1) {
+      return 'current-row';
+    }
+    return '';
+  },
+
+  btnDeleteSelectedClick: function () {
+    var $this = this;
+
+    utils.alertDelete({
+      title: '删除所选图片',
+      text: '此操作将删除所选图片，确定吗？',
+      callback: function () {
+        $this.apiDelete(null, $this.dataIds);
+      }
+    });
+  },
+
   btnCloseClick: function() {
     utils.removeTab();
   },
@@ -352,6 +380,20 @@ var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
+  computed: {
+    isChecked: function() {
+      return this.multipleSelection.length > 0;
+    },
+
+    dataIds: function() {
+      var retVal = [];
+      for (var i = 0; i < this.multipleSelection.length; i++) {
+        var item = this.multipleSelection[i];
+        retVal.push(item.id);
+      }
+      return retVal;
+    },
+  },
   created: function () {
     utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiGet(1);

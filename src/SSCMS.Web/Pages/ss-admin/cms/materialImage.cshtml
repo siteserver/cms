@@ -12,6 +12,9 @@
       margin: 80px 0;
       color: #c0c4cc;
     }
+    .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td {
+      background: rgb(230, 247, 245) !important;
+    }
   </style>
 }
 
@@ -46,6 +49,11 @@
     <el-button v-if="siteType === 'wx'" v-on:click="btnPullClick" size="small" plain type="primary">
       <i class="el-icon-download"></i>
       拉 取
+    </el-button>
+
+    <el-button v-if="showType !== 'card'" size="small" plain type="primary" icon="el-icon-delete" :disabled="!isChecked" 
+      v-on:click="btnDeleteSelectedClick">
+      删除
     </el-button>
 
     <el-radio-group v-model="showType" plain size="small">
@@ -141,9 +149,16 @@
   </el-row>
 </template>
 <template v-else>
+
   <el-table
+    ref="multipleTable"
     :data="items"
-    style="width: 100%">
+    stripe
+    style="width: 100%"
+    :row-class-name="tableRowClassName"
+    v-on:selection-change="handleSelectionChange"
+    v-on:row-click="toggleSelection">
+    <el-table-column type="selection" width="45" align="center"></el-table-column>
     <el-table-column
       label="图片"
       width="150">

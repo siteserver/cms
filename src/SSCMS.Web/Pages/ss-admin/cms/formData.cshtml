@@ -3,6 +3,9 @@
 @section Styles{
   <style>
     .el-alert {padding: 2px}
+    .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td {
+      background: rgb(230, 247, 245) !important;
+    }
   </style>
 }
 
@@ -83,7 +86,14 @@
       
       <el-divider></el-divider>
       
-      <el-table :data="items" stripe style="width: 100%" v-on:selection-change="handleSelectionChange">
+      <el-table
+        ref="multipleTable"
+        :data="items"
+        stripe
+        style="width: 100%"
+        :row-class-name="tableRowClassName"
+        v-on:selection-change="handleSelectionChange"
+        v-on:row-click="toggleSelection">
         <el-table-column type="selection" width="45" align="center"></el-table-column>
         <el-table-column
           v-for="attributeName in allAttributeNames" 

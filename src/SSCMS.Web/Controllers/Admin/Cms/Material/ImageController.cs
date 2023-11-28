@@ -78,6 +78,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public class DeleteRequest : SiteRequest
         {
             public int Id { get; set; }
+            public List<int> DataIds { get; set; }
         }
 
         public class DeleteGroupRequest : SiteRequest

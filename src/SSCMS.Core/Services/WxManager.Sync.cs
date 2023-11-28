@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Datory;
@@ -10,7 +9,6 @@ using Senparc.Weixin.MP.AdvancedAPIs;
 using Senparc.Weixin.MP.AdvancedAPIs.GroupMessage;
 using Senparc.Weixin.MP.CommonAPIs;
 using Senparc.Weixin.MP.Entities.Menu;
-using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -26,85 +24,82 @@ namespace SSCMS.Core.Services
             {
                 if (count.news_count > 0)
                 {
-                    var newsList = await MediaApi.GetNewsMediaListAsync(accessTokenOrAppId, 0, count.news_count);
-                    newsList.item.Reverse();
+                    var materials = new List<MaterialMessage>();
+                    var limit = 20;
 
-                    foreach (var message in newsList.item)
+                    for (var i = 0; i < count.news_count; i += limit)
                     {
-                        if (await _materialMessageRepository.IsExistsAsync(message.media_id)) continue;
+                        var list = await MediaApi.GetNewsMediaListAsync(accessTokenOrAppId, i, limit);
 
-                        //var news = await MediaApi.GetForeverNewsAsync(accessTokenOrAppId, message.media_id);
-                        var messageItems = new List<MaterialMessageItem>();
-                        foreach (var item in message.content.news_item)
+                        foreach (var message in list.item)
                         {
-                            var imageUrl = string.Empty;
-                            if (!string.IsNullOrEmpty(item.thumb_media_id) && !string.IsNullOrEmpty(item.thumb_url))
+                            if (await _materialMessageRepository.IsExistsAsync(message.media_id))
                             {
-                                await using var ms = new MemoryStream();
-                                await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, item.thumb_media_id, ms);
-                                ms.Seek(0, SeekOrigin.Begin);
+                                continue;
+                            }
 
-                                var extName = "png";
-                                if (StringUtils.Contains(item.thumb_url, "wx_fmt="))
+                            var messageItems = new List<MaterialMessageItem>();
+                            foreach (var item in message.content.news_item)
+                            {
+                                var imageUrl = string.Empty;
+
+                                if (!string.IsNullOrEmpty(item.thumb_url))
                                 {
-                                    extName = item.thumb_url.Substring(item.thumb_url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                                    var extName = "png";
+                                    if (StringUtils.Contains(item.thumb_url, "wx_fmt="))
+                                    {
+                                        extName = item.thumb_url.Substring(item.thumb_url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                                    }
+
+                                    var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
+                                    var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
+
+                                    var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
+                                    var filePath = PathUtils.Combine(directoryPath, materialFileName);
+
+                                    await RestUtils.DownloadAsync(item.thumb_url, filePath);
+
+                                    imageUrl = PageUtils.Combine(virtualDirectoryPath, materialFileName);
                                 }
 
-                                var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
-                                var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
-
-                                var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                                var filePath = PathUtils.Combine(directoryPath, materialFileName);
-
-                                await FileUtils.WriteStreamAsync(filePath, ms);
-
-                                imageUrl = PageUtils.Combine(virtualDirectoryPath, materialFileName);
-                            }
-                            else if (!string.IsNullOrEmpty(item.thumb_url))
-                            {
-                                var extName = "png";
-                                if (StringUtils.Contains(item.thumb_url, "wx_fmt="))
+                                var commentType = CommentType.Block;
+                                if (item.need_open_comment == 1)
                                 {
-                                    extName = item.thumb_url.Substring(item.thumb_url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                                    commentType = item.only_fans_can_comment == 1 ? CommentType.OnlyFans : CommentType.Everyone;
                                 }
 
-                                var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
-                                var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
-
-                                var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                                var filePath = PathUtils.Combine(directoryPath, materialFileName);
-
-                                await HttpClientUtils.DownloadAsync(item.thumb_url, filePath);
-
-                                imageUrl = PageUtils.Combine(virtualDirectoryPath, materialFileName);
+                                messageItems.Add(new MaterialMessageItem
+                                {
+                                    MessageId = 0,
+                                    MaterialType = MaterialType.Article,
+                                    MaterialId = 0,
+                                    Taxis = 0,
+                                    ThumbMediaId = item.thumb_media_id,
+                                    Author = item.author,
+                                    Title = item.title,
+                                    ContentSourceUrl = item.content_source_url,
+                                    Content = await SaveImagesAsync(item.content),
+                                    Digest = item.digest,
+                                    ShowCoverPic = item.show_cover_pic == "1",
+                                    ThumbUrl = imageUrl,
+                                    Url = item.url,
+                                    CommentType = commentType
+                                });
                             }
 
-                            var commentType = CommentType.Block;
-                            if (item.need_open_comment == 1)
+                            materials.Add(new MaterialMessage
                             {
-                                commentType = item.only_fans_can_comment == 1 ? CommentType.OnlyFans : CommentType.Everyone;
-                            }
-
-                            messageItems.Add(new MaterialMessageItem
-                            {
-                                MessageId = 0,
-                                MaterialType = MaterialType.Article,
-                                MaterialId = 0,
-                                Taxis = 0,
-                                ThumbMediaId = item.thumb_media_id,
-                                Author = item.author,
-                                Title = item.title,
-                                ContentSourceUrl = item.content_source_url,
-                                Content = await SaveImagesAsync(item.content),
-                                Digest = item.digest,
-                                ShowCoverPic = item.show_cover_pic == "1",
-                                ThumbUrl = imageUrl,
-                                Url = item.url,
-                                CommentType = commentType
+                                MediaId = message.media_id,
+                                GroupId = groupId,
+                                Items = messageItems
                             });
                         }
+                    }
 
-                        await _materialMessageRepository.InsertAsync(groupId, message.media_id, messageItems);
+                    materials.Reverse();
+                    foreach (var material in materials)
+                    {
+                        await _materialMessageRepository.InsertAsync(material.GroupId, material.MediaId, material.Items);
                     }
                 }
             }
@@ -112,34 +107,44 @@ namespace SSCMS.Core.Services
             {
                 if (count.image_count > 0)
                 {
-                    var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.image, 0, count.image_count);
+                    var materials = new List<MaterialImage>();
+                    var limit = 20;
 
-                    foreach (var image in list.item)
+                    for (var i = 0; i < count.image_count; i += limit)
                     {
-                        if (await _materialImageRepository.IsExistsAsync(image.media_id)) continue;
+                        var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.image, i, limit);
 
-                        await using var ms = new MemoryStream();
-                        await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, image.media_id, ms);
-                        ms.Seek(0, SeekOrigin.Begin);
-
-                        var extName = image.url.Substring(image.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
-
-                        var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
-                        var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
-
-                        var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                        var filePath = PathUtils.Combine(directoryPath, materialFileName);
-
-                        await FileUtils.WriteStreamAsync(filePath, ms);
-
-                        var material = new MaterialImage
+                        foreach (var image in list.item)
                         {
-                            GroupId = groupId,
-                            Title = image.name,
-                            Url = PageUtils.Combine(virtualDirectoryPath, materialFileName),
-                            MediaId = image.media_id
-                        };
+                            if (string.IsNullOrWhiteSpace(image.url) || await _materialImageRepository.IsExistsAsync(image.media_id))
+                            {
+                                continue;
+                            }
 
+                            var extName = image.url.Substring(image.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                            if (string.IsNullOrWhiteSpace(extName)) continue;
+
+                            var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
+                            var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Image);
+
+                            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
+                            var filePath = PathUtils.Combine(directoryPath, materialFileName);
+
+                            await RestUtils.DownloadAsync(image.url, filePath);
+
+                            materials.Add(new MaterialImage
+                            {
+                                GroupId = groupId,
+                                Title = image.name,
+                                Url = PageUtils.Combine(virtualDirectoryPath, materialFileName),
+                                MediaId = image.media_id
+                            });
+                        }
+                    }
+
+                    materials.Reverse();
+                    foreach (var material in materials)
+                    {
                         await _materialImageRepository.InsertAsync(material);
                     }
                 }
@@ -148,36 +153,46 @@ namespace SSCMS.Core.Services
             {
                 if (count.voice_count > 0)
                 {
-                    var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.voice, 0, count.voice_count);
+                    var materials = new List<MaterialAudio>();
+                    var limit = 20;
 
-                    foreach (var voice in list.item)
+                    for (var i = 0; i < count.voice_count; i += limit)
                     {
-                        if (await _materialAudioRepository.IsExistsAsync(voice.media_id)) continue;
+                        var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.voice, i, limit);
 
-                        await using var ms = new MemoryStream();
-                        await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, voice.media_id, ms);
-                        ms.Seek(0, SeekOrigin.Begin);
-
-                        var extName = voice.url.Substring(voice.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
-
-                        var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
-                        var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Audio);
-
-                        var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                        var filePath = PathUtils.Combine(directoryPath, materialFileName);
-
-                        await FileUtils.WriteStreamAsync(filePath, ms);
-
-                        var audio = new MaterialAudio
+                        foreach (var voice in list.item)
                         {
-                            GroupId = groupId,
-                            Title = voice.name,
-                            FileType = extName.ToUpper().Replace(".", string.Empty),
-                            Url = PageUtils.Combine(virtualDirectoryPath, materialFileName),
-                            MediaId = voice.media_id
-                        };
+                            if (string.IsNullOrWhiteSpace(voice.url) || await _materialAudioRepository.IsExistsAsync(voice.media_id))
+                            {
+                                continue;
+                            }
 
-                        await _materialAudioRepository.InsertAsync(audio);
+                            var extName = voice.url.Substring(voice.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                            if (string.IsNullOrWhiteSpace(extName)) continue;
+
+                            var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
+                            var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Audio);
+
+                            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
+                            var filePath = PathUtils.Combine(directoryPath, materialFileName);
+
+                            await RestUtils.DownloadAsync(voice.url, filePath);
+
+                            materials.Add(new MaterialAudio
+                            {
+                                GroupId = groupId,
+                                Title = voice.name,
+                                FileType = extName.ToUpper().Replace(".", string.Empty),
+                                Url = PageUtils.Combine(virtualDirectoryPath, materialFileName),
+                                MediaId = voice.media_id
+                            });
+                        }
+                    }
+
+                    materials.Reverse();
+                    foreach (var material in materials)
+                    {
+                        await _materialAudioRepository.InsertAsync(material);
                     }
                 }
             }
@@ -185,40 +200,49 @@ namespace SSCMS.Core.Services
             {
                 if (count.video_count > 0)
                 {
-                    var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.video, 0, count.video_count);
+                    var materials = new List<MaterialVideo>();
+                    var limit = 20;
 
-                    foreach (var video in list.item)
+                    for (var i = 0; i < count.video_count; i += limit)
                     {
-                        if (await _materialVideoRepository.IsExistsAsync(video.media_id)) continue;
+                        var list = await MediaApi.GetOthersMediaListAsync(accessTokenOrAppId, UploadMediaFileType.video, i, limit);
 
-                        await using var ms = new MemoryStream();
-                        await MediaApi.GetForeverMediaAsync(accessTokenOrAppId, video.media_id, ms);
-                        ms.Seek(0, SeekOrigin.Begin);
-
-                        var extName = "mp4";
-
-                        if (!string.IsNullOrEmpty(video.url))
+                        foreach (var video in list.item)
                         {
-                            extName = video.url.Substring(video.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                            if (string.IsNullOrWhiteSpace(video.url) || await _materialVideoRepository.IsExistsAsync(video.media_id))
+                            {
+                                continue;
+                            }
+
+                            var extName = "mp4";
+
+                            if (!string.IsNullOrEmpty(video.url))
+                            {
+                                extName = video.url.Substring(video.url.LastIndexOf("=", StringComparison.Ordinal) + 1);
+                            }
+
+                            var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
+                            var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Video);
+
+                            var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
+                            var filePath = PathUtils.Combine(directoryPath, materialFileName);
+
+                            await RestUtils.DownloadAsync(video.url, filePath);
+
+                            materials.Add(new MaterialVideo
+                            {
+                                GroupId = groupId,
+                                Title = video.name,
+                                FileType = extName.ToUpper().Replace(".", string.Empty),
+                                Url = PageUtils.Combine(virtualDirectoryPath, materialFileName),
+                                MediaId = video.media_id
+                            });
                         }
+                    }
 
-                        var materialFileName = PathUtils.GetMaterialFileNameByExtName(extName);
-                        var virtualDirectoryPath = PathUtils.GetMaterialVirtualDirectoryPath(UploadType.Video);
-
-                        var directoryPath = PathUtils.Combine(_settingsManager.WebRootPath, virtualDirectoryPath);
-                        var filePath = PathUtils.Combine(directoryPath, materialFileName);
-
-                        await FileUtils.WriteStreamAsync(filePath, ms);
-
-                        var material = new MaterialVideo
-                        {
-                            GroupId = groupId,
-                            Title = video.name,
-                            FileType = extName.ToUpper().Replace(".", string.Empty),
-                            Url = PageUtils.Combine(virtualDirectoryPath, materialFileName),
-                            MediaId = video.media_id
-                        };
-
+                    materials.Reverse();
+                    foreach (var material in materials)
+                    {
                         await _materialVideoRepository.InsertAsync(material);
                     }
                 }

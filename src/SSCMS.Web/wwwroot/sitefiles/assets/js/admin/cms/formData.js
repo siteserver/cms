@@ -112,6 +112,17 @@ var methods = {
     this.apiColumns(attributeNames);
   },
 
+  toggleSelection: function(row) {
+    this.$refs.multipleTable.toggleRowSelection(row);
+  },
+
+  tableRowClassName: function(scope) {
+    if (this.multipleSelection.indexOf(scope.row) !== -1) {
+      return 'current-row';
+    }
+    return '';
+  },
+
   btnEditClick: function (dataId) {
     location.href = utils.getCmsUrl('formDataAdd', {
       siteId: this.siteId,
