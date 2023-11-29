@@ -6,6 +6,8 @@ using Datory;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.AdvancedAPIs;
+using Senparc.Weixin.MP.AdvancedAPIs.Draft;
+using Senparc.Weixin.MP.AdvancedAPIs.Draft.DraftJson;
 using Senparc.Weixin.MP.AdvancedAPIs.GroupMessage;
 using Senparc.Weixin.MP.CommonAPIs;
 using Senparc.Weixin.MP.Entities.Menu;
@@ -276,29 +278,51 @@ namespace SSCMS.Core.Services
                     newsList.Add(news);
                 }
 
-                mediaId = message.MediaId;
-                if (string.IsNullOrEmpty(mediaId))
+                var drafts = new List<DraftModel>();
+                foreach (var item in message.Items)
                 {
-                    var result = await MediaApi.UploadNewsAsync(accessTokenOrAppId, 10000, newsList.ToArray());
-                    mediaId = result.media_id;
-                    await _materialMessageRepository.UpdateMediaIdAsync(materialId, mediaId);
-                }
-                else
-                {
-                    var index = 0;
-                    foreach (var news in newsList)
+                    var draft = new DraftModel
                     {
-                        await MediaApi.UpdateForeverNewsAsync(accessTokenOrAppId, message.MediaId, index++, news);
-                    }
+                        thumb_media_id = item.ThumbMediaId,
+                        author = item.Author,
+                        title = item.Title,
+                        content_source_url = item.ContentSourceUrl,
+                        content = item.Content,
+                        digest = item.Digest,
+                        show_cover_pic = item.ShowCoverPic ? "1" : "0",
+                        // thumb_url = item.ThumbUrl,
+                        need_open_comment = item.CommentType == CommentType.Block ? 0 : 1,
+                        only_fans_can_comment = item.CommentType == CommentType.OnlyFans ? 1 : 0
+                    };
+                    drafts.Add(draft);
                 }
 
-                // sync article url
-                var media = await MediaApi.GetForeverNewsAsync(accessTokenOrAppId, mediaId);
-                for (var i = 0; i < message.Items.Count; i++)
-                {
-                    var item = media.news_item[i];
-                    await _materialArticleRepository.UpdateUrlAsync(message.Items[i].MaterialId, item.url);
-                }
+                var result = DraftApi.AddDraft(accessTokenOrAppId, 10000, drafts.ToArray());
+                mediaId = result.media_id;
+
+                // mediaId = message.MediaId;
+                // if (string.IsNullOrEmpty(mediaId))
+                // {
+                //     var result = await MediaApi.UploadNewsAsync(accessTokenOrAppId, 10000, newsList.ToArray());
+                //     mediaId = result.media_id;
+                //     await _materialMessageRepository.UpdateMediaIdAsync(materialId, mediaId);
+                // }
+                // else
+                // {
+                //     var index = 0;
+                //     foreach (var news in newsList)
+                //     {
+                //         await MediaApi.UpdateForeverNewsAsync(accessTokenOrAppId, message.MediaId, index++, news);
+                //     }
+                // }
+
+                // // sync article url
+                // var media = await MediaApi.GetForeverNewsAsync(accessTokenOrAppId, mediaId);
+                // for (var i = 0; i < message.Items.Count; i++)
+                // {
+                //     var item = media.news_item[i];
+                //     await _materialArticleRepository.UpdateUrlAsync(message.Items[i].MaterialId, item.url);
+                // }
             }
             else if (materialType == MaterialType.Image)
             {

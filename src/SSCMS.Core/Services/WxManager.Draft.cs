@@ -50,7 +50,7 @@ namespace SSCMS.Core.Services
 
             var mediaId = string.Empty;
             var url = $"https://api.weixin.qq.com/cgi-bin/draft/add?access_token={accessToken}";
-            var (success, result, errorMessage) = await RestUtils.PostAsync<List<DraftArticle>, string>(url, articles);
+            var (success, result, errorMessage) = await RestUtils.PostStringAsync(url, TranslateUtils.JsonSerialize(articles));
 
             if (success)
             {

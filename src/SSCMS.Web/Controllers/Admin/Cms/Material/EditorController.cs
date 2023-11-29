@@ -67,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
         public class PreviewRequest : SiteRequest
         {
-            public int MaterialId { get; set; }
+            public int MessageId { get; set; }
 
             public string WxNames { get; set; }
         }

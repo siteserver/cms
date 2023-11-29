@@ -10,8 +10,7 @@ namespace SSCMS.Core.Services
     {
         public async Task<(bool success, string errorMessage)> PreviewAsync(string accessToken, string mediaId, string wxName)
         {
-            var url = $"https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token={accessToken}";
-            var (success, result, errorMessage) = await RestUtils.PostAsync<JsonPreviewRequest, JsonResult>(url, new JsonPreviewRequest
+            var body = new JsonPreviewRequest
             {
                 towxname = wxName,
                 mpnews = new JsonMediaId
@@ -19,16 +18,19 @@ namespace SSCMS.Core.Services
                     media_id = mediaId,
                 },
                 msgtype = "mpnews"
-            });
+            };
+            var url = $"https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token={accessToken}";
+            var (success, result, errorMessage) = await RestUtils.PostStringAsync(url, TranslateUtils.JsonSerialize(body));
 
             if (success)
             {
-                if (result.errcode != 0)
+                var json = TranslateUtils.JsonDeserialize<JsonResult>(result);
+                if (json.errcode != 0)
                 {
                     success = false;
-                    errorMessage = $"API 调用发生错误：{result.errmsg}";
+                    errorMessage = $"API 调用发生错误：{json.errmsg}";
 
-                    await _errorLogRepository.AddErrorLogAsync(new Exception(TranslateUtils.JsonSerialize(result)), "WxManager.PreviewAsync");
+                    await _errorLogRepository.AddErrorLogAsync(new Exception(result), "WxManager.PreviewAsync");
                 }
             }
             else
