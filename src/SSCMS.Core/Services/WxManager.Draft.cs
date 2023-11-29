@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SSCMS.Enums;
 using SSCMS.Utils;
 
 // https://developers.weixin.qq.com/doc/offiaccount/Draft_Box/Add_draft.html
@@ -9,8 +10,44 @@ namespace SSCMS.Core.Services
 {
     public partial class WxManager
     {
-        public async Task<(bool success, string mediaId, string errorMessage)> DraftAddAsync(string accessToken, List<DraftArticle> articles)
+        public async Task<(bool success, string mediaId, string errorMessage)> DraftAddAsync(string accessToken, int messageId)
         {
+            var message = await _materialMessageRepository.GetAsync(messageId);
+            var articles = new List<DraftArticle>();
+            foreach (var item in message.Items)
+            {
+                var article = new DraftArticle
+                {
+                    thumb_media_id = item.ThumbMediaId,
+                    author = item.Author,
+                    title = item.Title,
+                    content_source_url = item.ContentSourceUrl,
+                    content = item.Content,
+                    digest = item.Digest,
+                    // show_cover_pic = item.ShowCoverPic ? "1" : "0",
+                    // thumb_url = item.ThumbUrl,
+                    need_open_comment = item.CommentType == CommentType.Block ? 0 : 1,
+                    only_fans_can_comment = item.CommentType == CommentType.OnlyFans ? 1 : 0
+                };
+                articles.Add(article);
+            }
+
+            // var mediaId = message.MediaId;
+            // if (string.IsNullOrEmpty(mediaId))
+            // {
+            //     var result = await MediaApi.UploadNewsAsync(accessTokenOrAppId, 10000, newsList.ToArray());
+            //     mediaId = result.media_id;
+            //     await _materialMessageRepository.UpdateMediaIdAsync(materialId, mediaId);
+            // }
+            // else
+            // {
+            //     var index = 0;
+            //     foreach (var news in newsList)
+            //     {
+            //         await MediaApi.UpdateForeverNewsAsync(accessTokenOrAppId, message.MediaId, index++, news);
+            //     }
+            // }
+
             var mediaId = string.Empty;
             var url = $"https://api.weixin.qq.com/cgi-bin/draft/add?access_token={accessToken}";
             var (success, result, errorMessage) = await RestUtils.PostAsync<List<DraftArticle>, string>(url, articles);

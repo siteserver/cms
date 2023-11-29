@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
 using SSCMS.Core.Utils;
-using SSCMS.Enums;
+using SSCMS.Dto;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     public partial class EditorController
     {
         [HttpPost, Route(RoutePreview)]
-        public async Task<ActionResult<PreviewResult>> Preview([FromBody] PreviewRequest request)
+        public async Task<ActionResult<BoolResult>> Preview([FromBody] PreviewRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 MenuUtils.SitePermissions.MaterialMessage))
@@ -21,21 +21,32 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
             if (success)
             {
-                foreach (var wxName in ListUtils.GetStringList(request.WxNames, Constants.Newline))
+                string mediaId;
+                (success, mediaId, errorMessage) = await _wxManager.DraftAddAsync(token, request.MaterialId);
+                if (success)
                 {
-                    var mediaId = await _wxManager.PushMaterialAsync(token, MaterialType.Message, request.MaterialId);
-                    if (string.IsNullOrEmpty(mediaId))
+                    foreach (var wxName in ListUtils.GetStringList(request.WxNames, Constants.Newline))
                     {
-                        return this.Error("操作失败，素材未能上传");
+                        (success, errorMessage) = await _wxManager.PreviewAsync(token, mediaId, StringUtils.Trim(wxName));
+
+                        // var mediaId = await _wxManager.PushMaterialAsync(token, MaterialType.Message, request.MaterialId);
+                        // if (string.IsNullOrEmpty(mediaId))
+                        // {
+                        //     return this.Error("操作失败，素材未能上传");
+                        // }
+                        // await _wxManager.PreviewSendAsync(token, MaterialType.Message, mediaId, wxName);
                     }
-                    await _wxManager.PreviewSendAsync(token, MaterialType.Message, mediaId, wxName);
                 }
             }
 
-            return new PreviewResult
+            if (!success)
             {
-                Success = success,
-                ErrorMessage = errorMessage
+                return this.Error(errorMessage);
+            }
+
+            return new BoolResult
+            {
+                Value = success
             };
         }
     }

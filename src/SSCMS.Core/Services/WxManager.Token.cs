@@ -25,11 +25,11 @@ namespace SSCMS.Core.Services
 
         public async Task<(bool success, string accessToken, string errorMessage)> GetAccessTokenAsync(string mpAppId, string mpAppSecret)
         {
-            var success = false;
+            bool success;
             var errorMessage = string.Empty;
-
             var cacheKey = GetCacheKey(mpAppId);
             var token = _cacheManager.Get<string>(cacheKey);
+
             if (string.IsNullOrEmpty(token))
             {
                 var url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={mpAppId}&secret={mpAppSecret}";
@@ -39,6 +39,7 @@ namespace SSCMS.Core.Services
                 {
                     if (StringUtils.Contains(result, "errcode"))
                     {
+                        success = false;
                         var jsonError = TranslateUtils.JsonDeserialize<JsonResult>(result);
                         // https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html
                         if (jsonError.errcode == 40164)
@@ -70,6 +71,10 @@ namespace SSCMS.Core.Services
                 {
                     await _errorLogRepository.AddErrorLogAsync(new Exception(errorMessage), "WxManager.GetAccessTokenAsync");
                 }
+            }
+            else
+            {
+                success = true;
             }
 
             return (success, token, errorMessage);

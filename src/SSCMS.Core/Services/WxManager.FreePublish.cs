@@ -38,36 +38,5 @@ namespace SSCMS.Core.Services
 
             return (success, publishId, errorMessage);
         }
-
-        public async Task<(bool success, string errorMessage)> PreviewAsync(string accessToken, string mediaId, string touser)
-        {
-            var url = $"https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token={accessToken}";
-            var (success, result, errorMessage) = await RestUtils.PostAsync<JsonPreviewRequest, JsonResult>(url, new JsonPreviewRequest
-            {
-                touser = touser,
-                mpnews = new JsonMediaId
-                {
-                    media_id = mediaId,
-                },
-                msgtype = "mpnews"
-            });
-
-            if (success)
-            {
-                if (result.errcode != 0)
-                {
-                    success = false;
-                    errorMessage = $"API 调用发生错误：{result.errmsg}";
-
-                    await _errorLogRepository.AddErrorLogAsync(new Exception(TranslateUtils.JsonSerialize(result)), "WxManager.PreviewAsync");
-                }
-            }
-            else
-            {
-                await _errorLogRepository.AddErrorLogAsync(new Exception(errorMessage), "WxManager.PreviewAsync");
-            }
-
-            return (success, errorMessage);
-        }
     }
 }

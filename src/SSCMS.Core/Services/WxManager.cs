@@ -81,7 +81,7 @@ namespace SSCMS.Core.Services
 
         public class JsonPreviewRequest
         {
-            public string touser { get; set; }
+            public string towxname { get; set; }
             public JsonMediaId mpnews { get; set; }
             public string msgtype { get; set; }
         }

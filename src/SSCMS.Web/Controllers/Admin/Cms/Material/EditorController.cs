@@ -71,11 +71,5 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
             public string WxNames { get; set; }
         }
-
-        public class PreviewResult
-        {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
-        }
     }
 }
