@@ -128,6 +128,14 @@ namespace SSCMS.Core.Services
             public int only_fans_can_comment { get; set; }
         }
 
+        public class StableTokenBody
+        {
+            public string grant_type {get;set;}
+            public string appid {get;set;}
+            public string secret {get;set;}
+            public bool force_refresh {get;set;}
+        }
+
         public string GetNonceStr()
         {
             return JSSDKHelper.GetNoncestr();
