@@ -8,6 +8,7 @@ var data = utils.init({
   defaultTenPayAuthorizeUrl: null,
   defaultTenPayNotifyUrl: null,
   account: null,
+  mpTypes: null,
   mpForm: null,
   tenPayForm: null,
   mpResult: null
@@ -31,6 +32,7 @@ var methods = {
       $this.account = res.account;
       $this.mpForm = Object.assign({}, res.account);
       $this.tenPayForm = Object.assign({}, res.account);
+      $this.mpTypes = res.mpTypes;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -55,7 +57,7 @@ var methods = {
         errorMessage: res.errorMessage
       };
       $this.account = res.account;
-      
+
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -95,7 +97,7 @@ var methods = {
       this.tenPayForm.tenPayNotifyUrl = this.defaultTenPayNotifyUrl;
     }
   },
-  
+
   btnMpSubmitClick: function () {
     var $this = this;
 

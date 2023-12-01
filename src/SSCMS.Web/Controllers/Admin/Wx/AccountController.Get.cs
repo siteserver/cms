@@ -4,6 +4,7 @@ using SSCMS.Configuration;
 using SSCMS.Utils;
 using SSCMS.Web.Controllers.Wx;
 using SSCMS.Core.Utils;
+using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -33,12 +34,15 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             var mpUrl = Request.Scheme + "://" + PageUtils.Combine(Request.Host.Host, Constants.ApiWxPrefix, Controllers.Wx.IndexController.Route.Replace("{siteId}", siteId.ToString()));
 
+            var mpTypes = ListUtils.GetSelects<WxMpType>();
+
             return new GetResult
             {
                 MpUrl = mpUrl,
                 DefaultTenPayAuthorizeUrl = defaultTenPayAuthorizeUrl,
                 DefaultTenPayNotifyUrl = defaultTenPayNotifyUrl,
-                Account = account
+                Account = account,
+                MpTypes = mpTypes
             };
         }
     }

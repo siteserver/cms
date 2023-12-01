@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using SSCMS.Core.Utils;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -22,17 +24,22 @@ namespace SSCMS.Core.Repositories
 
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
+        private string GetCacheKey(int siteId)
+        {
+            return CacheUtils.GetEntityKey(TableName, "siteId", siteId.ToString());
+        }
+
         public async Task SetAsync(WxAccount account)
         {
             if (account.SiteId <= 0) return;
 
             if (account.Id > 0)
             {
-                await _repository.UpdateAsync(account);
+                await _repository.UpdateAsync(account, Q.CachingRemove(GetCacheKey(account.SiteId)));
             }
             else
             {
-                await _repository.InsertAsync(account);
+                await _repository.InsertAsync(account, Q.CachingRemove(GetCacheKey(account.SiteId)));
             }
         }
 
@@ -40,6 +47,7 @@ namespace SSCMS.Core.Repositories
         {
             await _repository.DeleteAsync(Q
                 .Where(nameof(WxAccount.SiteId), siteId)
+                .CachingRemove(GetCacheKey(siteId))
             );
         }
 
@@ -47,10 +55,17 @@ namespace SSCMS.Core.Repositories
         {
             var account = await _repository.GetAsync(Q
                 .Where(nameof(WxAccount.SiteId), siteId)
-            ) ?? new WxAccount
+                .CachingGet(GetCacheKey(siteId))
+            );
+
+            if (account == null)
             {
-                SiteId = siteId
-            };
+                account = new WxAccount
+                {
+                    SiteId = siteId,
+                    MpType = WxMpType.Subscription
+                };
+            }
 
             return account;
         }

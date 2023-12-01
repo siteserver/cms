@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
+using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -34,6 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             public string DefaultTenPayAuthorizeUrl { get; set; }
             public string DefaultTenPayNotifyUrl { get; set; }
             public WxAccount Account { get; set; }
+            public List<Select<string>> MpTypes { get; set; }
         }
 
         public class MpSubmitRequest

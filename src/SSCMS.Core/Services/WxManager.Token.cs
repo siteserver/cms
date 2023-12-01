@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Datory;
+using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -14,19 +16,34 @@ namespace SSCMS.Core.Services
             return $"{nameof(WxManager)}.{mpAppId}";
         }
 
+        public string GetErrorUnAuthenticated(WxAccount account)
+        {
+            return $@"您的公众号类型为{account.MpType.GetDisplayName()}，未获得微信接口授权，可以访问 <a href=""https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Explanation_of_interface_privileges.html"" target=""_blank"" class=""el-link el-link--primary"">微信官方文档</a> 查看接口权限!";
+        }
+
+        public async Task<WxAccount> GetAccountAsync(int siteId)
+        {
+            return await _wxAccountRepository.GetBySiteIdAsync(siteId);
+        }
+
         public async Task<(bool success, string accessToken, string errorMessage)> GetAccessTokenAsync(int siteId)
         {
-            var account = await _wxAccountRepository.GetBySiteIdAsync(siteId);
-            if (string.IsNullOrEmpty(account.MpAppId) || string.IsNullOrEmpty(account.MpAppSecret))
-            {
-                return (false, null, "微信公众号AppId及AppSecret未设置，请到平台账号配置中设置");
-            }
+            var account = await GetAccountAsync(siteId);
+            return await GetAccessTokenAsync(account);
+        }
 
+        public async Task<(bool success, string accessToken, string errorMessage)> GetAccessTokenAsync(WxAccount account)
+        {
             return await GetAccessTokenAsync(account.MpAppId, account.MpAppSecret);
         }
 
         public async Task<(bool success, string accessToken, string errorMessage)> GetAccessTokenAsync(string mpAppId, string mpAppSecret)
         {
+            if (string.IsNullOrEmpty(mpAppId) || string.IsNullOrEmpty(mpAppSecret))
+            {
+                return (false, null, "微信公众号 AppId 及 AppSecret 未设置，请到平台账号配置中设置！");
+            }
+
             bool success;
             string result;
             var errorMessage = string.Empty;

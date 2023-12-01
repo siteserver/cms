@@ -10,6 +10,19 @@
     <div style="height: 10px"></div>
 
     <el-form v-on:submit.native.prevent size="small" ref="mpForm" label-width="260px" status-icon :model="mpForm">
+      <el-form-item label="公众号名称" prop="mpName" :rules="{ required: true, message: '请输入公众号名称' }">
+        <el-input v-model="mpForm.mpName" placeholder="请输入公众号名称"></el-input>
+      </el-form-item>
+      <el-form-item label="公众号类型" prop="mpType" :rules="{ required: true, message: '请选择公众号类型' }">
+        <el-select v-model="mpForm.mpType" placeholder="请选择公众号类型">
+          <el-option
+            v-for="item in mpTypes"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="AppId" prop="mpAppId" :rules="{ required: true, message: '请输入AppId' }">
         <el-input v-model="mpForm.mpAppId" placeholder="请输入AppId"></el-input>
       </el-form-item>

@@ -10,11 +10,9 @@
 
 <div style="height: 10px"></div>
 
-<div v-if="!success">
-  <div role="alert" class="el-alert el-alert--error is-light" style="padding: 30px">
-    <div class="el-alert__content">
-      <p class="el-alert__description" style="font-size: 14px;">{{ errorMessage }}</p>
-    </div>
+<div v-if="!success" role="alert" class="el-alert el-alert--error is-light">
+  <div class="el-alert__content">
+    <span class="el-alert__title" v-html="errorMessage"></span>
   </div>
 </div>
 <div v-else>

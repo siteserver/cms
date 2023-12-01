@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Models;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
+using SSCMS.Enums;
+using SSCMS.Core.Services;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -18,28 +19,35 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            IEnumerable<WxUserTag> tags = null;
-            MaterialMessage message = null;
-
-            //var success = true;
-            //var errorMessage = string.Empty;
-            var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
-            if (success)
+            var results = new GetResult
             {
-                tags = await _wxManager.GetUserTagsAsync(token);
-                if (request.MessageId > 0)
-                {
-                    message = await _materialMessageRepository.GetAsync(request.MessageId);
-                }
+                Success = false,
+                ErrorMessage = string.Empty,
+                Tags = new List<WxUserTag>(),
+                Message = null,
+            };
+
+            var account = await _wxManager.GetAccountAsync(request.SiteId);
+            string token;
+            (results.Success, token, results.ErrorMessage) = await _wxManager.GetAccessTokenAsync(account);
+            if (!results.Success)
+            {
+                return results;
+            }
+            if (account.MpType == WxMpType.Subscription || account.MpType == WxMpType.Service)
+            {
+                results.Success = false;
+                results.ErrorMessage = _wxManager.GetErrorUnAuthenticated(account);
+                return results;
             }
 
-            return new GetResult
+            results.Tags = await _wxManager.GetUserTagsAsync(token);
+            if (request.MessageId > 0)
             {
-                Success = success,
-                ErrorMessage = errorMessage,
-                Tags = tags,
-                Message = message
-            };
+                results.Message = await _materialMessageRepository.GetAsync(request.MessageId);
+            }
+
+            return results;
         }
     }
 }

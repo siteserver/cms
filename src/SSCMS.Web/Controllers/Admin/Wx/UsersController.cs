@@ -48,10 +48,10 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         {
             public bool Success { get; set; }
             public string ErrorMessage { get; set; }
-            public IEnumerable<WxUserTag> Tags { get; set; }
+            public List<WxUserTag> Tags { get; set; }
             public int Total { get; set; }
             public int Count { get; set; }
-            public IEnumerable<WxUser> Users { get; set; }
+            public List<WxUser> Users { get; set; }
         }
 
         public class AddTagRequest : SiteRequest

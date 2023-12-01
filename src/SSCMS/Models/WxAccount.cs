@@ -1,5 +1,6 @@
 ﻿using Datory;
 using Datory.Annotations;
+using SSCMS.Enums;
 
 namespace SSCMS.Models
 {
@@ -8,6 +9,12 @@ namespace SSCMS.Models
     {
         [DataColumn]
         public int SiteId { get; set; }
+
+        [DataColumn]
+        public string MpName { get; set; }
+
+        [DataColumn]
+        public WxMpType MpType { get; set; }
 
         [DataColumn]
         public string MpAppId { get; set; }
