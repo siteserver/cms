@@ -96,7 +96,24 @@ var methods = {
       $this.form.channelFilePathRule = res.channelFilePathRule;
       $this.form.contentFilePathRule = res.contentFilePathRule;
       $this.editPanel = true;
-      utils.loadEditors($this.styles, $this.form);
+      // utils.loadEditors($this.styles, $this.form);
+
+      setTimeout(function () {
+        for (var i = 0; i < $this.styles.length; i++) {
+          var style = $this.styles[i];
+          if (style.inputType === "TextEditor") {
+            UE.delEditor(style.attributeName);
+            var editor = utils.getEditor(style.attributeName, style.height);
+            editor.styleIndex = i;
+            editor.ready(function () {
+              this.addListener("contentChange", function () {
+                var style = $this.styles[this.styleIndex];
+                $this.form[utils.toCamelCase(style.attributeName)] = this.getContent();
+              });
+            });
+          }
+        }
+      }, 100);
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -487,8 +504,23 @@ var methods = {
     this.apiGet(row.value);
   },
 
+  syncEditors: function () {
+    var $this = this;
+    if (UE) {
+      $.each(UE.instants, function (index, editor) {
+        if (editor && editor.key) {
+          editor.sync();
+          var style = $this.styles[editor.styleIndex];
+          var text = editor.getContent();
+          $this.form[utils.toCamelCase(style.attributeName)] = text;
+        }
+      });
+    }
+  },
+
   btnSaveClick: function() {
     var $this = this;
+    this.syncEditors();
     this.$refs.editForm.validate(function(valid) {
       if (valid) {
         $this.apiUpdate();

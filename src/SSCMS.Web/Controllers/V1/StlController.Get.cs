@@ -12,7 +12,7 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromRoute] string elementName, [FromQuery]GetRequest request)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeStl))
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeSTL))
             {
                 return Unauthorized();
             }

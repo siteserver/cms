@@ -23394,6 +23394,7 @@ UE.plugins['catchremoteimage'] = function () {
         }
 
         function catchremoteimage(imgs, callbacks) {
+            return;
             var params = utils.serializeParam(me.queryCommandValue('serverparam')) || '',
                 url = utils.formatUrl(catcherActionUrl + (catcherActionUrl.indexOf('?') == -1 ? '?':'&') + params),
                 isJsonp = utils.isCrossDomainUrl(url),

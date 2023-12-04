@@ -90,6 +90,7 @@ var utils = {
         if (style.inputType === 'TextEditor') {
           UE.delEditor(style.attributeName);
           var editor = utils.getEditor(style.attributeName);
+          editor.styleIndex = i;
           editor.attributeName = style.attributeName;
           editor.ready(function () {
             this.addListener("contentChange", function () {

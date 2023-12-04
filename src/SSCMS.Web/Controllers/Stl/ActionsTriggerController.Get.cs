@@ -56,8 +56,14 @@ namespace SSCMS.Web.Controllers.Stl
                 }
                 else if (request.ContentId != 0)
                 {
-                    var contentInfo = await _contentRepository.GetAsync(site, channelInfo, request.ContentId);
-                    redirectUrl = await _pathManager.GetContentUrlAsync(site, contentInfo, false);
+                    if (channelInfo != null)
+                    {
+                        var contentInfo = await _contentRepository.GetAsync(site, channelInfo, request.ContentId);
+                        if (contentInfo != null)
+                        {
+                            redirectUrl = await _pathManager.GetContentUrlAsync(site, contentInfo, false);
+                        }
+                    }
                 }
                 else if (channelId != 0)
                 {

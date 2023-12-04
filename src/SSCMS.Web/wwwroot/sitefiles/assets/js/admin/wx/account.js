@@ -47,6 +47,8 @@ var methods = {
     utils.loading(this, true);
     $api.post($urlMp, {
       siteId: this.siteId,
+      mpName: this.mpForm.mpName,
+      mpType: this.mpForm.mpType,
       mpAppId: this.mpForm.mpAppId,
       mpAppSecret: this.mpForm.mpAppSecret
     }).then(function (response) {

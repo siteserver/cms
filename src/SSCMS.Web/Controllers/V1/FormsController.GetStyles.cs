@@ -12,6 +12,11 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(RouteStyles)]
         public async Task<ActionResult<StylesResult>> GetStyles([FromQuery] FormRequest request)
         {
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeForms))
+            {
+                return Unauthorized();
+            }
+            
             Form form = null;
             if (request.FormId > 0)
             {

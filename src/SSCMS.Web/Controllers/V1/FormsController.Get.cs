@@ -11,6 +11,11 @@ namespace SSCMS.Web.Controllers.V1
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeForms))
+            {
+                return Unauthorized();
+            }
+
             Form form = null;
             if (request.FormId > 0)
             {

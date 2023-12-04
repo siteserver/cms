@@ -1,5 +1,5 @@
-﻿var $url = '/settings/administratorsAccessTokens';
-var $urlDelete = $url + '/actions/delete';
+﻿var $url = "/settings/administratorsAccessTokens";
+var $urlDelete = $url + "/actions/delete";
 
 var data = utils.init({
   tokens: null,
@@ -16,83 +16,114 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.get($url).then(function (response) {
-      var res = response.data;
+    $api
+      .get($url)
+      .then(function (response) {
+        var res = response.data;
 
-      $this.tokens = res.tokens;
-      $this.adminNames = res.adminNames;
-      $this.scopes = res.scopes;
-      $this.adminName = res.adminName;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+        $this.tokens = res.tokens;
+        $this.adminNames = res.adminNames;
+        $this.scopes = res.scopes;
+        $this.adminName = res.adminName;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
   },
 
   apiDelete: function (item) {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($urlDelete, {
-      id: item.id
-    }).then(function (response) {
-      var res = response.data;
+    $api
+      .post($urlDelete, {
+        id: item.id,
+      })
+      .then(function (response) {
+        var res = response.data;
 
-      $this.tokens = res.tokens;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+        $this.tokens = res.tokens;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
   },
 
   apiSubmit: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
-      var res = response.data;
+    $api
+      .post($url, this.form)
+      .then(function (response) {
+        var res = response.data;
 
-      $this.tokens = res.tokens;
-      utils.success($this.form.id > 0 ? 'API密钥修改成功！' : 'API密钥添加成功！');
-      $this.panel = false;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+        $this.tokens = res.tokens;
+        utils.success($this.form.id > 0 ? "API密钥修改成功！" : "API密钥添加成功！");
+        $this.panel = false;
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
   },
 
   getDocsUrl: function (url) {
     return cloud.getDocsUrl(url);
   },
 
+  getScopeName: function (scope) {
+    if (scope === "Channels") {
+      return "Channels 栏目API";
+    } else if (scope === "Contents") {
+      return "Contents 内容API";
+    } else if (scope === "STL") {
+      return "STL 模板语言API";
+    } else if (scope === "Forms") {
+      return "Forms 表单API";
+    } else if (scope === "Administrators") {
+      return "Administrators 管理员API";
+    } else if (scope === "Users") {
+      return "Users 用户API";
+    } else if (scope === "Others") {
+      return "Others 其他API";
+    }
+    return "";
+  },
+
   getItemScopes: function (item) {
-    if (!item.scopes) return '';
+    if (!item.scopes) return "";
     var itemScopes = item.scopes;
     var list = [];
     for (var i = 0; i < this.scopes.length; i++) {
       if (itemScopes.indexOf(this.scopes[i]) !== -1) {
-        list.push(this.scopes[i]);
+        list.push(this.getScopeName(this.scopes[i]));
       }
     }
 
-    return list.join(',');
+    return list.join(",");
   },
 
-  btnAdminViewClick: function(row) {
+  btnAdminViewClick: function (row) {
     utils.openLayer({
-      title: '查看资料',
-      url: utils.getCommonUrl('adminLayerView', {guid: row.adminGuid}),
-      full: true
+      title: "查看资料",
+      url: utils.getCommonUrl("adminLayerView", { guid: row.adminGuid }),
+      full: true,
     });
   },
 
   btnSubmitClick: function () {
     var $this = this;
 
-    this.$refs.form.validate(function(valid) {
+    this.$refs.form.validate(function (valid) {
       if (valid) {
         $this.apiSubmit();
       }
@@ -101,10 +132,10 @@ var methods = {
 
   btnViewClick: function (item) {
     utils.openLayer({
-      title: '获取密钥',
-      url: utils.getSettingsUrl('administratorsAccessTokensLayerView', {id: item.id}),
+      title: "获取密钥",
+      url: utils.getSettingsUrl("administratorsAccessTokensLayerView", { id: item.id }),
       width: 550,
-      height: 410
+      height: 410,
     });
   },
 
@@ -112,59 +143,63 @@ var methods = {
     var $this = this;
 
     utils.alertDelete({
-      title: '删除API密钥',
-      text: '此操作将删除API密钥 ' + item.title + '，确定吗？',
+      title: "删除API密钥",
+      text: "此操作将删除API密钥 " + item.title + "，确定吗？",
       callback: function () {
         $this.apiDelete(item);
-      }
+      },
     });
   },
 
-  btnEditClick: function(item) {
+  btnEditClick: function (item) {
     this.form = {
       id: item.id,
       title: item.title,
       adminName: item.adminName ? item.adminName : this.adminName,
-      scopes: item.scopes
+      scopes: item.scopes,
     };
     this.panel = true;
   },
 
-  btnCancelClick: function() {
+  btnCancelClick: function () {
     this.panel = false;
   },
 
-  btnAddClick: function() {
+  btnAddClick: function () {
     this.form = {
       id: 0,
-      title: '',
-      adminName: '',
-      scopes: []
+      title: "",
+      adminName: "",
+      scopes: [],
     };
     this.panel = true;
   },
 
-  btnCloseClick: function() {
+  btnCloseClick: function () {
     utils.removeTab();
   },
 };
 
 var $vue = new Vue({
-  el: '#main',
+  el: "#main",
   data: data,
   methods: methods,
-  created: function () {var $this = this;
-    utils.keyPress(function() {
-      if ($this.panel) {
-        $this.btnSubmitClick();
+  created: function () {
+    var $this = this;
+    utils.keyPress(
+      function () {
+        if ($this.panel) {
+          $this.btnSubmitClick();
+        }
+      },
+      function () {
+        if ($this.panel) {
+          $this.btnCancelClick();
+        } else {
+          $this.btnCloseClick();
+        }
       }
-    }, function() {
-      if ($this.panel) {
-        $this.btnCancelClick();
-      } else {
-        $this.btnCloseClick();
-      }
-    });
+    );
     this.apiGet();
-  }
+  },
 });

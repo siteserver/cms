@@ -21,6 +21,8 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             var account = await _wxAccountRepository.GetBySiteIdAsync(request.SiteId);
             if (success)
             {
+                account.MpName = request.MpName;
+                account.MpType = request.MpType;
                 account.MpAppId = request.MpAppId;
                 account.MpAppSecret = request.MpAppSecret;
 

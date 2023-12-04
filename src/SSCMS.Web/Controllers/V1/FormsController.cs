@@ -18,6 +18,7 @@ namespace SSCMS.Web.Controllers.V1
         private const string RouteSendSms = "forms/actions/sendSms";
         private const string RouteUpload = "forms/actions/upload";
 
+        private readonly IAuthManager _authManager;
         private readonly ICacheManager _cacheManager;
         private readonly IPathManager _pathManager;
         private readonly ISmsManager _smsManager;
@@ -25,9 +26,11 @@ namespace SSCMS.Web.Controllers.V1
         private readonly ISiteRepository _siteRepository;
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
+        private readonly IAccessTokenRepository _accessTokenRepository;
 
-        public FormsController(ICacheManager cacheManager, IPathManager pathManager, ISmsManager smsManager, IFormManager formManager, ISiteRepository siteRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormsController(IAuthManager authManager, ICacheManager cacheManager, IPathManager pathManager, ISmsManager smsManager, IFormManager formManager, ISiteRepository siteRepository, IFormRepository formRepository, IFormDataRepository formDataRepository, IAccessTokenRepository accessTokenRepository)
         {
+            _authManager = authManager;
             _cacheManager = cacheManager;
             _pathManager = pathManager;
             _smsManager = smsManager;
@@ -35,6 +38,7 @@ namespace SSCMS.Web.Controllers.V1
             _siteRepository = siteRepository;
             _formRepository = formRepository;
             _formDataRepository = formDataRepository;
+            _accessTokenRepository = accessTokenRepository;
         }
 
         public class FormRequest : SiteRequest

@@ -1,18 +1,24 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using SSCMS.Configuration;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
 
 namespace SSCMS.Web.Controllers.V1
 {
-    public partial class CreateController
+    public partial class ActionsController
     {
-        [OpenApiOperation("生成页面 API", "生成页面，使用POST发起请求，请求地址为/api/v1/create。")]
-        [HttpPost, Route(Route)]
+        [OpenApiOperation("生成页面 API", "生成页面，使用POST发起请求，请求地址为/api/v1/actions/create。")]
+        [HttpPost, Route(RouteCreate)]
         public async Task<ActionResult<BoolResult>> Submit([FromBody] CreateRequest request)
         {
+            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeOthers))
+            {
+                return Unauthorized();
+            }
+            
             var created = false;
 
             if (request.Type == CreateType.Index)

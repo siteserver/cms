@@ -243,7 +243,7 @@ namespace SSCMS.Core.Services
 
         private async Task ExecuteContentAsync(Site site, Channel channel, int contentId)
         {
-            if (channel.IsCreateBanned) return;
+            if (channel == null || channel.IsCreateBanned) return;
 
             var contentInfo = await _contentRepository.GetAsync(site, channel, contentId);
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
+using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -42,6 +43,8 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public class MpSubmitRequest
         {
             public int SiteId { get; set; }
+            public string MpName { get; set; }
+            public WxMpType MpType { get; set; }
             public string MpAppId { get; set; }
             public string MpAppSecret { get; set; }
         }

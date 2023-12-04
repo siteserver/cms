@@ -33,9 +33,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
             {
                 Constants.ScopeChannels,
                 Constants.ScopeContents,
+                Constants.ScopeSTL,
+                Constants.ScopeForms,
                 Constants.ScopeAdministrators,
                 Constants.ScopeUsers,
-                Constants.ScopeStl
+                Constants.ScopeOthers,
             };
 
             var accessTokens = await _accessTokenRepository.GetAccessTokensAsync();

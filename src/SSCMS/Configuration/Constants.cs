@@ -45,9 +45,11 @@ namespace SSCMS.Configuration
 
         public const string ScopeChannels = "Channels";
         public const string ScopeContents = "Contents";
+        public const string ScopeSTL = "STL";
+        public const string ScopeForms = "Forms";
         public const string ScopeAdministrators = "Administrators";
         public const string ScopeUsers = "Users";
-        public const string ScopeStl = "STL";
+        public const string ScopeOthers = "Others";
         public const string OfficialHost = "https://sscms.com";
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);

@@ -71,7 +71,9 @@ style="width: 100%">
       <el-form-item label="授权范围" prop="scopes" :rules="{ required: true, message: '请选择授权范围' }">
 
         <el-checkbox-group v-model="form.scopes">
-          <el-checkbox v-for="scope in scopes" :key="scope" :label="scope"></el-checkbox>
+          <el-checkbox v-for="scope in scopes" :key="scope" :label="scope">
+            {{ getScopeName(scope) }}
+          </el-checkbox>
         </el-checkbox-group>
 
         <div class="tips">

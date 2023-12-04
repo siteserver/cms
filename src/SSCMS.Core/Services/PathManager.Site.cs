@@ -1122,7 +1122,7 @@ namespace SSCMS.Core.Services
 
         public async Task<string> GetContentFilePathRuleAsync(int siteId, int channelId)
         {
-            if (channelId == 0) return string.Empty;
+            if (channelId <= 0) return string.Empty;
             var nodeInfo = await _channelRepository.GetAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
