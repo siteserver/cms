@@ -12,11 +12,6 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(Route)]
         public async Task<ActionResult<FormData>> Submit([FromQuery] SubmitRequest request, [FromBody] FormData formData)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeForms))
-            {
-                return Unauthorized();
-            }
-            
             Form form = null;
             if (request.FormId > 0)
             {

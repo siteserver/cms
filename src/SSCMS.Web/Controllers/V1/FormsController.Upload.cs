@@ -15,11 +15,6 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeForms))
-            {
-                return Unauthorized();
-            }
-            
             Form form = null;
             if (request.FormId > 0)
             {

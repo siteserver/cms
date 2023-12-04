@@ -46,7 +46,6 @@ namespace SSCMS.Configuration
         public const string ScopeChannels = "Channels";
         public const string ScopeContents = "Contents";
         public const string ScopeSTL = "STL";
-        public const string ScopeForms = "Forms";
         public const string ScopeAdministrators = "Administrators";
         public const string ScopeUsers = "Users";
         public const string ScopeOthers = "Others";

@@ -13,7 +13,7 @@ namespace SSCMS.Utils
     {
         public static bool IsMobile(string val)
         {
-            return !string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
+            return !string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^1\d{10}$", RegexOptions.IgnoreCase);
         }
 
         public static bool IsEmail(string val)

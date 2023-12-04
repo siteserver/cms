@@ -14,11 +14,6 @@ namespace SSCMS.Web.Controllers.V1
         [HttpPost, Route(RouteSendSms)]
         public async Task<ActionResult<BoolResult>> SendSms([FromQuery] FormRequest formRequest, [FromBody] SendSmsRequest request)
         {
-            if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeForms))
-            {
-                return Unauthorized();
-            }
-            
             Form form = null;
             if (formRequest.FormId > 0)
             {
