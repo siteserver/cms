@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Clouds
 {
@@ -25,7 +27,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             task.Title = request.Title;
             task.Description = request.Description;
             task.AdminId = _authManager.AdminId;
-            task.TaskType = request.TaskType;
+            task.TaskType = request.TaskType.GetValue();
             task.TaskInterval = request.TaskInterval;
             task.Every = request.Every;
             task.Weeks = request.Weeks;
@@ -40,12 +42,12 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             task.IsDisabled = request.IsDisabled;
             task.Timeout = request.Timeout;
 
-            if (task.TaskType == TaskType.Create)
+            if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.Create.GetValue()))
             {
                 task.CreateSiteIds = request.CreateSiteIds;
                 task.CreateType = request.CreateType;
             }
-            else if (task.TaskType == TaskType.Ping)
+            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.Ping.GetValue()))
             {
                 task.PingHost = request.PingHost;
             }

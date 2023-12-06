@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
-using Aliyun.OSS;
+using Datory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SSCMS.Core.Utils;
-using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Models;
-using SSCMS.Repositories;
+using SSCMS.Plugins;
 using SSCMS.Services;
 using SSCMS.Utils;
 
@@ -27,6 +26,7 @@ namespace SSCMS.Core.Services
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
         private readonly IDatabaseManager _databaseManager;
+        private readonly IPluginManager _pluginManager;
 
         public ScheduledHostedService(ILogger<ScheduledHostedService> logger, IServiceProvider serviceProvider)
         {
@@ -38,6 +38,7 @@ namespace SSCMS.Core.Services
             _createManager = serviceProvider.GetRequiredService<ICreateManager>();
             _pathManager = serviceProvider.GetRequiredService<IPathManager>();
             _databaseManager = serviceProvider.GetRequiredService<IDatabaseManager>();
+            _pluginManager = serviceProvider.GetRequiredService<IPluginManager>();
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -51,6 +52,12 @@ namespace SSCMS.Core.Services
                 ScheduledTask task = null;
                 try
                 {
+                    var config = await _databaseManager.ConfigRepository.GetAsync();
+                    if (config.CloudType == CloudType.Free || string.IsNullOrEmpty(config.CloudUserName) || string.IsNullOrEmpty(config.CloudToken) || config.CloudUserId == 0)
+                    {
+                        continue;
+                    }
+
                     task = await _databaseManager.ScheduledTaskRepository.GetNextAsync();
                 }
                 catch (Exception ex)
@@ -59,7 +66,7 @@ namespace SSCMS.Core.Services
                 }
 
                 if (task == null) continue;
-                
+
                 await ExecuteTaskAsync(task, stoppingToken);
             }
         }
@@ -123,25 +130,39 @@ namespace SSCMS.Core.Services
 
         private async Task RunTaskAsync(ScheduledTask task)
         {
-            if (task.TaskType == TaskType.Create)
+            if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.Create.GetValue()))
             {
                 await CreateAsync(task);
             }
-            else if (task.TaskType == TaskType.Ping)
+            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.Ping.GetValue()))
             {
                 await PingAsync(task);
             }
-            else if (task.TaskType == TaskType.Publish)
+            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.Publish.GetValue()))
             {
                 await PublishAsync(task);
             }
-            else if (task.TaskType == TaskType.CloudSync)
+            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudSync.GetValue()))
             {
                 await CloudSyncAsync(task);
             }
-            else if (task.TaskType == TaskType.CloudBackup)
+            else if (StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudBackup.GetValue()))
             {
                 await CloudBackupAsync(task);
+            }
+            else if (!string.IsNullOrEmpty(task.TaskType))
+            {
+                var plugins = _pluginManager.GetExtensions<IPluginScheduledTask>();
+                if (plugins != null)
+                {
+                    foreach (var plugin in plugins)
+                    {
+                        if (StringUtils.EqualsIgnoreCase(task.TaskType, plugin.TaskType))
+                        {
+                            await plugin.ExecuteAsync(task.Settings);
+                        }
+                    }
+                }
             }
         }
 
@@ -160,18 +181,22 @@ namespace SSCMS.Core.Services
                 {
                     if (task.IsNoticeMobile && StringUtils.IsMobile(task.NoticeMobile))
                     {
-                        var parameters = new Dictionary<string, string>();
-                        parameters.Add("name", task.Title);
-                        parameters.Add("time", DateUtils.GetTimeString(task.LatestEndDate.Value));
+                        var parameters = new Dictionary<string, string>
+                        {
+                            { "name", task.Title },
+                            { "time", DateUtils.GetTimeString(task.LatestEndDate.Value) }
+                        };
 
                         await _cloudManager.SendSmsAsync(task.NoticeMobile, SmsCodeType.TaskSuccess, parameters);
                     }
                     if (task.IsNoticeMail && StringUtils.IsEmail(task.NoticeMail))
                     {
-                        var items = new List<KeyValuePair<string, string>>();
-                        items.Add(new KeyValuePair<string, string>("任务名称", task.Title));
-                        items.Add(new KeyValuePair<string, string>("开始时间", DateUtils.GetDateAndTimeString(task.LatestStartDate.Value)));
-                        items.Add(new KeyValuePair<string, string>("完成时间", DateUtils.GetDateAndTimeString(task.LatestEndDate.Value)));
+                        var items = new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("任务名称", task.Title),
+                            new KeyValuePair<string, string>("开始时间", DateUtils.GetDateAndTimeString(task.LatestStartDate.Value)),
+                            new KeyValuePair<string, string>("完成时间", DateUtils.GetDateAndTimeString(task.LatestEndDate.Value))
+                        };
 
                         await _cloudManager.SendMailAsync(task.NoticeMail, "任务执行成功", string.Empty, items);
                     }
@@ -183,18 +208,22 @@ namespace SSCMS.Core.Services
                 {
                     if (task.IsNoticeMobile && StringUtils.IsMobile(task.NoticeMobile))
                     {
-                        var parameters = new Dictionary<string, string>();
-                        parameters.Add("name", task.Title);
-                        parameters.Add("time", DateUtils.GetTimeString(task.LatestEndDate.Value));
+                        var parameters = new Dictionary<string, string>
+                        {
+                            { "name", task.Title },
+                            { "time", DateUtils.GetTimeString(task.LatestEndDate.Value) }
+                        };
 
                         await _cloudManager.SendSmsAsync(task.NoticeMobile, SmsCodeType.TaskFailure, parameters);
                     }
                     if (task.IsNoticeMail && StringUtils.IsEmail(task.NoticeMail))
                     {
-                        var items = new List<KeyValuePair<string, string>>();
-                        items.Add(new KeyValuePair<string, string>("任务名称", task.Title));
-                        items.Add(new KeyValuePair<string, string>("执行时间", DateUtils.GetDateAndTimeString(task.LatestEndDate.Value)));
-                        items.Add(new KeyValuePair<string, string>("失败原因", task.LatestErrorMessage));
+                        var items = new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("任务名称", task.Title),
+                            new KeyValuePair<string, string>("执行时间", DateUtils.GetDateAndTimeString(task.LatestEndDate.Value)),
+                            new KeyValuePair<string, string>("失败原因", task.LatestErrorMessage)
+                        };
 
                         await _cloudManager.SendMailAsync(task.NoticeMail, "任务执行失败", string.Empty, items);
                     }

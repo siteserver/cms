@@ -52,7 +52,7 @@ namespace SSCMS.Core.Repositories
             return nextTask;
         }
 
-        private DateTime? CalcScheduledDate(ScheduledTask task)
+        private static DateTime? CalcScheduledDate(ScheduledTask task)
         {
             var now = DateTime.Now;
             if (task.IsDisabled) return null;
@@ -177,7 +177,7 @@ namespace SSCMS.Core.Repositories
             task = new ScheduledTask
             {
                 Title = TaskType.Publish.GetDisplayName(),
-                TaskType = TaskType.Publish,
+                TaskType = TaskType.Publish.GetValue(),
                 TaskInterval = TaskInterval.Once,
                 StartDate = DateTime.Now,
                 IsNoticeSuccess = true,
@@ -203,7 +203,7 @@ namespace SSCMS.Core.Repositories
             var task = new ScheduledTask
             {
                 Title = TaskType.CloudSync.GetDisplayName(),
-                TaskType = TaskType.CloudSync,
+                TaskType = TaskType.CloudSync.GetValue(),
                 TaskInterval = TaskInterval.EveryHour,
                 Every = 1,
                 StartDate = startDate,
@@ -221,7 +221,7 @@ namespace SSCMS.Core.Repositories
             var task = new ScheduledTask
             {
                 Title = TaskType.CloudBackup.GetDisplayName(),
-                TaskType = TaskType.CloudBackup,
+                TaskType = TaskType.CloudBackup.GetValue(),
                 TaskInterval = TaskInterval.EveryDay,
                 Every = 1,
                 StartDate = startDate,

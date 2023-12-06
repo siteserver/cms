@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Datory;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Clouds
 {
@@ -17,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             }
 
             var tasks = await _scheduledTaskRepository.GetAllAsync();
-            var cloudBackups = tasks.Where(task => task.TaskType == TaskType.CloudBackup).ToList();
+            var cloudBackups = tasks.Where(task => StringUtils.EqualsIgnoreCase(task.TaskType, TaskType.CloudBackup.GetValue())).ToList();
             if (request.IsCloudBackup)
             {
                 if (cloudBackups.Count >= 1)

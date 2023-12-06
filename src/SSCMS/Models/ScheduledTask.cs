@@ -19,7 +19,7 @@ namespace SSCMS.Models
         public int AdminId { get; set; }
 
         [DataColumn]
-        public TaskType TaskType { get; set; }
+        public string TaskType { get; set; }
 
         [DataColumn]
         public TaskInterval TaskInterval { get; set; }
@@ -80,6 +80,9 @@ namespace SSCMS.Models
 
         [DataColumn]
         public DateTime? ScheduledDate { get; set; }
+
+        [DataColumn(Text = true)]
+        public string Settings { get; set; }
 
         public List<int> CreateSiteIds { get; set; }
         public CreateType CreateType { get; set; }
