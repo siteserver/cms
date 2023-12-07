@@ -92,7 +92,7 @@
             {{ getTemplateType(scope.row.templateType) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="270">
+        <el-table-column label="操作" width="310">
           <template slot-scope="scope">
             <el-link
               :underline="false"
@@ -117,6 +117,12 @@
             <el-link
               :underline="false"
               type="primary"
+              v-on:click="btnExportClick(scope.row)">
+              导出
+            </el-link>
+            <el-link
+              :underline="false"
+              type="primary"
               v-on:click="btnCreateClick(scope.row)">
               生成页面
             </el-link>
@@ -137,40 +143,66 @@
 
       <el-link
         type="primary"
+        v-if="templateType === 'All' || templateType === 'IndexPageTemplate'"
         :underline="false"
         class="el-button el-button--primary el-button--small"
-        style="color: #fff"
+        style="color: #fff; margin-left: 0;"
         target="_blank"
         :href="getEditorUrl('IndexPageTemplate', 0)">
         新增首页模板
       </el-link>
       <el-link
         type="primary"
+        v-if="templateType === 'All' || templateType === 'ChannelTemplate'"
         :underline="false"
         class="el-button el-button--primary el-button--small"
-        style="color: #fff"
+        style="color: #fff; margin-left: 0;"
         target="_blank"
         :href="getEditorUrl('ChannelTemplate', 0)">
         新增栏目模板
       </el-link>
       <el-link
         type="primary"
+        v-if="templateType === 'All' || templateType === 'ContentTemplate'"
         :underline="false"
         class="el-button el-button--primary el-button--small"
-        style="color: #fff"
+        style="color: #fff; margin-left: 0;"
         target="_blank"
         :href="getEditorUrl('ContentTemplate', 0)">
         新增内容模板
       </el-link>
       <el-link
         type="primary"
+        v-if="templateType === 'All' || templateType === 'FileTemplate'"
         :underline="false"
         class="el-button el-button--primary el-button--small"
-        style="color: #fff"
+        style="color: #fff; margin-left: 0;"
         target="_blank"
         :href="getEditorUrl('FileTemplate', 0)">
         新增单页模板
       </el-link>
+      <el-upload
+        v-if="templateType !== 'All'"
+        style="display: inline-block;"
+        class="uploader"
+        :action="getImportUrl()"
+        :headers="{Authorization: 'Bearer ' + $token}"
+        :show-file-list="false"
+        :drag="false"
+        :limit="1"
+        :before-upload="uploadBefore"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :multiple="false">
+        <el-button
+          size="small"
+          plain
+          icon="el-icon-upload2"
+          type="primary">
+          导 入
+        </el-button>
+      </el-upload>
     </el-main>
   </el-container>
 </el-container>

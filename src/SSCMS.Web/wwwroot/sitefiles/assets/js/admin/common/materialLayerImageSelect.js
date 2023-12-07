@@ -2,7 +2,7 @@
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
-  inputType: utils.getQueryString('inputType'),
+  inputType: utils.getQueryString('inputType') || 'Image',
   attributeName: utils.getQueryString('attributeName'),
   no: utils.getQueryInt('no'),
   pageType: 'card',

@@ -1,6 +1,7 @@
 ﻿var $url = '/cms/templates/templates';
 var $urlDelete = $url + '/actions/delete';
 var $urlDefault = $url + '/actions/default';
+var $urlImport = $url + '/actions/import';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -9,7 +10,8 @@ var data = utils.init({
   templates: null,
   templateType: 'All',
   channelIds: [],
-  keyword: ''
+  keyword: '',
+  urlUpload: null,
 });
 
 var methods = {
@@ -129,6 +131,10 @@ var methods = {
     });
   },
 
+  btnExportClick: function(template) {
+    window.open($apiUrl + $url + '/actions/export' + '?siteId=' + this.siteId + '&templateId=' + template.id + '&access_token=' + $token);
+  },
+
   btnCreateClick: function(template) {
     var $this = this;
 
@@ -212,6 +218,39 @@ var methods = {
   btnCloseClick: function() {
     utils.removeTab();
   },
+
+  getImportUrl: function() {
+    return $apiUrl + $urlImport + '?siteId=' + this.siteId + '&templateType=' + this.templateType;
+  },
+
+  uploadBefore(file) {
+    var re = /(\.html)$/i;
+    if(!re.exec(file.name)) {
+      utils.error('上传格式错误，请上传html文件!');
+      return false;
+    }
+
+    return true;
+  },
+
+  uploadProgress: function() {
+    utils.loading(this, true);
+  },
+
+  uploadSuccess: function(res, file) {
+    utils.loading(this, false);
+
+    this.channels = res.channels;
+    this.allTemplates = res.templates;
+    this.reload();
+    utils.success('模板文件导入成功');
+  },
+
+  uploadError: function(err) {
+    utils.loading(this, false);
+    var error = JSON.parse(err.message);
+    utils.error(error.message);
+  }
 };
 
 var $vue = new Vue({

@@ -22,6 +22,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private const string RouteCreate = "cms/templates/templates/actions/create";
         private const string RouteCopy = "cms/templates/templates/actions/copy";
         private const string RouteDefault = "cms/templates/templates/actions/default";
+        private const string RouteExport = "cms/templates/templates/actions/export";
+        private const string RouteImport = "cms/templates/templates/actions/import";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
@@ -52,6 +54,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         {
             public int SiteId { get; set; }
             public int TemplateId { get; set; }
+        }
+
+        public class ImportRequest
+        {
+            public int SiteId { get; set; }
+            public TemplateType TemplateType { get; set; }
         }
 
         private async Task<ActionResult<GetResult>> GetResultAsync(Site site)
