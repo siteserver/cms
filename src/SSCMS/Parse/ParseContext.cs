@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using SSCMS.Enums;
 using SSCMS.Models;
 
 namespace SSCMS.Parse
@@ -10,6 +11,17 @@ namespace SSCMS.Parse
             Site = page.Site;
             ChannelId = page.PageChannelId;
             ContentId = page.PageContentId;
+            if (page.Template != null)
+            {
+                if (page.Template.TemplateType == TemplateType.IndexPageTemplate || page.Template.TemplateType == TemplateType.ChannelTemplate)
+                {
+                    ContextType = ParseType.Channel;
+                }
+                else if (page.Template.TemplateType == TemplateType.ContentTemplate)
+                {
+                    ContextType = ParseType.Content;
+                }
+            }
         }
 
         //用于clone

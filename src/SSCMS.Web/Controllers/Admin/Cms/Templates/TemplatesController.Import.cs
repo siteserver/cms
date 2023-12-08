@@ -1,7 +1,5 @@
 ﻿using System.IO;
-using System.Net.Mime;
 using System.Threading.Tasks;
-using Datory;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
@@ -17,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
     {
         [RequestSizeLimit(long.MaxValue)]
         [HttpPost, Route(RouteImport)]
-        public async Task<ActionResult<GetResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
+        public async Task<ActionResult<BoolResult>> Import([FromQuery] ImportRequest request, [FromForm] IFormFile file)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Templates))
             {
@@ -81,11 +79,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             templateInfo.Id = await _templateRepository.InsertAsync(templateInfo);
             await _pathManager.WriteContentToTemplateFileAsync(site, templateInfo, content, adminId);
 
-            // Create
-
             FileUtils.DeleteFileIfExists(filePath);
 
-            return await GetResultAsync(site);
+            return new BoolResult
+            {
+                Value = true
+            };
         }
     }
 }

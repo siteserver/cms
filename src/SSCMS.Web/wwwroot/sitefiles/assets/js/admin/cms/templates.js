@@ -5,10 +5,10 @@ var $urlImport = $url + '/actions/import';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
+  templateType: utils.getQueryString("templateType") || 'All',
   channels: null,
   allTemplates: null,
   templates: null,
-  templateType: 'All',
   channelIds: [],
   keyword: '',
   urlUpload: null,
@@ -28,6 +28,7 @@ var methods = {
 
       $this.channels = res.channels;
       $this.allTemplates = $this.templates = res.templates;
+      $this.reload();
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -240,10 +241,11 @@ var methods = {
   uploadSuccess: function(res, file) {
     utils.loading(this, false);
 
-    this.channels = res.channels;
-    this.allTemplates = res.templates;
-    this.reload();
     utils.success('模板文件导入成功');
+    location.href = utils.getCmsUrl('templates', {
+      siteId: this.siteId,
+      templateType: this.templateType
+    });
   },
 
   uploadError: function(err) {
