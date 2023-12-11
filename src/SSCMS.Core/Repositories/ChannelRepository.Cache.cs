@@ -103,9 +103,14 @@ namespace SSCMS.Core.Repositories
             var cascade = new Cascade<int>
             {
                 Value = summary.Id,
-                Label = summary.ChannelName,
-                Children = await GetCascadeChildrenAsync(site, summary.Id, func)
+                Label = summary.ChannelName
             };
+
+            var children = await GetCascadeChildrenAsync(site, summary.Id, func);
+            if (children != null && children.Count > 0) 
+            {
+                cascade.Children = children;
+            }
 
             var dict = TranslateUtils.ToDictionary(extra);
             foreach (var o in dict)
@@ -139,12 +144,19 @@ namespace SSCMS.Core.Repositories
 
         public async Task<Cascade<int>> GetCascadeAsync(Site site, IChannelSummary summary)
         {
-            return new Cascade<int>
+            var cascade = new Cascade<int>
             {
                 Value = summary.Id,
                 Label = summary.ChannelName,
-                Children = await GetCascadeChildrenAsync(site, summary.Id)
             };
+
+            var children = await GetCascadeChildrenAsync(site, summary.Id);
+            if (children != null && children.Count > 0) 
+            {
+                cascade.Children = children;
+            }
+
+            return cascade;
         }
 
         private async Task<List<Cascade<int>>> GetCascadeChildrenAsync(Site site, int parentId)
