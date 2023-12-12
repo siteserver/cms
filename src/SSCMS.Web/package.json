@@ -775,54 +775,47 @@
         ],
         "order": 106
       },
-      "content_check": {
-        "text": "审核内容",
-        "type": [
-          "content"
-        ],
-        "order": 107
-      },
       "content_checkLevel1": {
         "text": "一级内容审核权",
         "type": [
           "content"
         ],
-        "order": 108
+        "order": 107
       },
       "content_checkLevel2": {
         "text": "二级内容审核权",
         "type": [
           "content"
         ],
-        "order": 109
+        "order": 108
       },
       "content_checkLevel3": {
         "text": "三级内容审核权",
         "type": [
           "content"
         ],
-        "order": 110
+        "order": 109
       },
       "content_checkLevel4": {
         "text": "四级内容审核权",
         "type": [
           "content"
         ],
-        "order": 111
+        "order": 110
       },
       "content_checkLevel5": {
         "text": "五级内容审核权",
         "type": [
           "content"
         ],
-        "order": 112
+        "order": 111
       },
       "content_create": {
         "text": "生成内容页面",
         "type": [
           "content"
         ],
-        "order": 113
+        "order": 112
       }
     },
     "menus": {

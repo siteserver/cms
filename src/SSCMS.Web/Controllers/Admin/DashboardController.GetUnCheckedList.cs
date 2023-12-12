@@ -43,7 +43,17 @@ namespace SSCMS.Web.Controllers.Admin
                         var site = await _siteRepository.GetAsync(siteId);
                         if (site == null) continue;
 
-                        var count = await _contentRepository.GetCountCheckingAsync(site);
+                        var count = 0;
+                        if (await _authManager.IsSiteAdminAsync(siteId))
+                        {
+                            count = await _contentRepository.GetCountCheckingAsync(site);
+                        }
+                        else
+                        {
+                            var channelIds = await _authManager.GetContentPermissionsChannelIdsAsync(siteId, MenuUtils.ContentPermissions.CheckLevel1, MenuUtils.ContentPermissions.CheckLevel2, MenuUtils.ContentPermissions.CheckLevel3, MenuUtils.ContentPermissions.CheckLevel4, MenuUtils.ContentPermissions.CheckLevel5);
+                            count = await _contentRepository.GetCountCheckingAsync(site, channelIds);
+                        }
+
                         if (count > 0)
                         {
                             unCheckedList.Add(new UnChecked

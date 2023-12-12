@@ -118,5 +118,48 @@ namespace SSCMS.Core.Repositories
 
             return count;
         }
+
+        public async Task<int> GetCountCheckingAsync(Site site, List<int> channelIds)
+        {
+            if (channelIds == null || channelIds.Count == 0)
+            {
+                return 0;
+            }
+            else if (channelIds.Contains(site.Id))
+            {
+                return await GetCountCheckingAsync(site);
+            }
+
+            var channels = await _channelRepository.GetSummariesAsync(site.Id);
+            var count = 0;
+            foreach (var channel in channels)
+            {
+                var isSelfOrChildren = false;
+                if (channelIds.Contains(channel.Id))
+                {
+                    isSelfOrChildren = true;
+                }
+                else
+                {
+                    foreach (var channelId in channelIds)
+                    {
+                        if (ListUtils.Contains(channel.ParentsPath, channelId))
+                        {
+                            isSelfOrChildren = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isSelfOrChildren) continue;
+
+                var summaries = await GetSummariesAsync(site, channel);
+                count += summaries.Count(summary =>
+                {
+                    return !summary.Checked && summary.CheckedLevel == 0;
+                });
+            }
+
+            return count;
+        }
     }
 }

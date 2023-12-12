@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SqlKata;
 using SSCMS.Models;
 using SSCMS.Enums;
+using System.Collections.Generic;
 
 namespace SSCMS.Repositories
 {
@@ -27,5 +28,7 @@ namespace SSCMS.Repositories
             DateTime begin, DateTime end, int adminId, bool? checkedState);
         
         Task<int> GetCountCheckingAsync(Site site);
+
+        Task<int> GetCountCheckingAsync(Site site, List<int> channelIds);
     }
 }
