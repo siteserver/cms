@@ -6,9 +6,6 @@ using Datory;
 using Senparc.CO2NET.Extensions;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.AdvancedAPIs;
-using Senparc.Weixin.MP.AdvancedAPIs.Draft;
-using Senparc.Weixin.MP.AdvancedAPIs.Draft.DraftJson;
-using Senparc.Weixin.MP.AdvancedAPIs.GroupMessage;
 using Senparc.Weixin.MP.CommonAPIs;
 using Senparc.Weixin.MP.Entities.Menu;
 using SSCMS.Enums;
@@ -259,70 +256,50 @@ namespace SSCMS.Core.Services
             {
                 var message = await _materialMessageRepository.GetAsync(materialId);
 
-                var newsList = new List<NewsModel>();
+                var drafts = new List<DraftArticle>();
                 foreach (var item in message.Items)
                 {
-                    var news = new NewsModel
+                    var filePath = _pathManager.ParsePath(item.ThumbUrl);
+                    var results = await MediaApi.UploadForeverMediaAsync(accessTokenOrAppId, filePath, UploadForeverMediaType.image);
+                    var draft = new DraftArticle
                     {
-                        thumb_media_id = item.ThumbMediaId,
+                        thumb_media_id = results.media_id,
                         author = item.Author,
                         title = item.Title,
                         content_source_url = item.ContentSourceUrl,
                         content = item.Content,
                         digest = item.Digest,
-                        show_cover_pic = item.ShowCoverPic ? "1" : "0",
-                        thumb_url = item.ThumbUrl,
-                        need_open_comment = item.CommentType == CommentType.Block ? 0 : 1,
-                        only_fans_can_comment = item.CommentType == CommentType.OnlyFans ? 1 : 0
-                    };
-                    newsList.Add(news);
-                }
-
-                var drafts = new List<DraftModel>();
-                foreach (var item in message.Items)
-                {
-                    var draft = new DraftModel
-                    {
-                        thumb_media_id = item.ThumbMediaId,
-                        author = item.Author,
-                        title = item.Title,
-                        content_source_url = item.ContentSourceUrl,
-                        content = item.Content,
-                        digest = item.Digest,
-                        show_cover_pic = item.ShowCoverPic ? "1" : "0",
+                        // show_cover_pic = item.ShowCoverPic ? "1" : "0",
                         // thumb_url = item.ThumbUrl,
-                        need_open_comment = item.CommentType == CommentType.Block ? 0 : 1,
-                        only_fans_can_comment = item.CommentType == CommentType.OnlyFans ? 1 : 0
+                        need_open_comment = 0,
+                        only_fans_can_comment = 0
                     };
                     drafts.Add(draft);
                 }
 
-                var result = DraftApi.AddDraft(accessTokenOrAppId, 10000, drafts.ToArray());
-                mediaId = result.media_id;
+                var url = $"https://api.weixin.qq.com/cgi-bin/draft/add?access_token={accessTokenOrAppId}";
+                var (success, result, errorMessage) = await RestUtils.PostStringAsync(url, @"{""articles"":" + TranslateUtils.JsonSerialize(drafts) + "}");
 
-                // mediaId = message.MediaId;
-                // if (string.IsNullOrEmpty(mediaId))
-                // {
-                //     var result = await MediaApi.UploadNewsAsync(accessTokenOrAppId, 10000, newsList.ToArray());
-                //     mediaId = result.media_id;
-                //     await _materialMessageRepository.UpdateMediaIdAsync(materialId, mediaId);
-                // }
-                // else
-                // {
-                //     var index = 0;
-                //     foreach (var news in newsList)
-                //     {
-                //         await MediaApi.UpdateForeverNewsAsync(accessTokenOrAppId, message.MediaId, index++, news);
-                //     }
-                // }
+                if (success)
+                {
+                    if (StringUtils.Contains(result, "errcode"))
+                    {
+                        success = false;
+                        var jsonError = TranslateUtils.JsonDeserialize<JsonResult>(result);
+                        errorMessage = $"API 调用发生错误：{jsonError.errmsg}";
 
-                // // sync article url
-                // var media = await MediaApi.GetForeverNewsAsync(accessTokenOrAppId, mediaId);
-                // for (var i = 0; i < message.Items.Count; i++)
-                // {
-                //     var item = media.news_item[i];
-                //     await _materialArticleRepository.UpdateUrlAsync(message.Items[i].MaterialId, item.url);
-                // }
+                        await _errorLogRepository.AddErrorLogAsync(new Exception(result), "WxManager.DraftAddAsync");
+                    }
+                    else
+                    {
+                        var jsonMediaId = TranslateUtils.JsonDeserialize<JsonMediaId>(result);
+                        mediaId = jsonMediaId.media_id;
+                    }
+                }
+                else
+                {
+                    await _errorLogRepository.AddErrorLogAsync(new Exception(errorMessage), "WxManager.DraftAddAsync");
+                }
             }
             else if (materialType == MaterialType.Image)
             {

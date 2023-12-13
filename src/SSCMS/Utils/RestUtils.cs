@@ -261,6 +261,37 @@ namespace SSCMS.Utils
             return (false, GetErrorMessage(response));
         }
 
+        public static async Task<(bool success, string results, string failureMessage)> UploadStringAsync(string url,
+            string filePath, string accessToken = null)
+
+        {
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, errors) => true;
+
+            var client = new RestClient(url);
+            var request = new RestRequest
+            {
+                Method = Method.Post,
+                Timeout = -1,
+            };
+            //request.AddHeader("Content-Type", "application/json");
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+            }
+
+            request.AddFile("file", filePath);
+
+            var response = await client.ExecuteAsync(request);
+
+            if (response.IsSuccessful && string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return (true, response.Content, null);
+            }
+
+            return (false, null, GetErrorMessage(response));
+        }
+
         public static async Task DownloadAsync(string url, string filePath)
         {
             ServicePointManager.ServerCertificateValidationCallback +=
