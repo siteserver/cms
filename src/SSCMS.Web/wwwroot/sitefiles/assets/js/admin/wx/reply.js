@@ -2,8 +2,6 @@ var $url = '/wx/reply';
 var $urlDelete = $url + '/wx/reply/actions/delete';
 
 var data = utils.init({
-  success: false,
-  errorMessage: null,
   rules: null,
   count: null,
   multipleSelection: [],
@@ -26,10 +24,14 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
       $this.rules = res.rules;
       $this.count = res.count;
+
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.siteId,
+        });
+      }
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

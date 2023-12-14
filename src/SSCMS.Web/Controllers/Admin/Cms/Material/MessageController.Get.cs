@@ -4,6 +4,8 @@ using SSCMS.Enums;
 using SSCMS.Core.Utils;
 using System.Collections.Generic;
 using SSCMS.Models;
+using SSCMS.Configuration;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Material
 {
@@ -41,13 +43,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 items = await _materialMessageRepository.GetAllAsync(request.GroupId, request.Keyword, request.Page, request.PerPage);
             }
 
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+
             return new QueryResult
             {
                 IsSiteOnly = config.IsMaterialSiteOnly,
+                IsWxEnabled = isWxEnabled,
                 Groups = groups,
                 Count = count,
                 Messages = items,
-                SiteType = site.SiteType
             };
         }
     }

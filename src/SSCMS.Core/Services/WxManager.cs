@@ -6,6 +6,7 @@ using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.Containers;
 using Senparc.Weixin.MP.Helpers;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 using SSCMS.Utils;
@@ -221,6 +222,16 @@ namespace SSCMS.Core.Services
                 content = content.Replace(originalImageSrc, imageUrl);
             }
             return content;
+        }
+
+        public async Task<bool> IsEnabledAsync(Site site)
+        {
+            if (!StringUtils.EqualsIgnoreCase(site.SiteType, Configuration.Types.SiteTypes.Wx))
+            {
+                return false;
+            }
+            var account = await GetAccountAsync(site.Id);
+            return account != null && account.IsEnabled && !string.IsNullOrEmpty(account.MpAppId) && !string.IsNullOrEmpty(account.MpAppSecret);
         }
     }
 }

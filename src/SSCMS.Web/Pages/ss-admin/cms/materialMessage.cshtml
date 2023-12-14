@@ -93,7 +93,7 @@
       新建图文
     </el-button>
 
-    <el-button v-if="siteType === 'wx'" v-on:click="btnPullClick" size="small" plain type="primary" style="margin-left: 0px;">
+    <el-button v-if="isWxEnabled" v-on:click="btnPullClick" size="small" plain type="primary" style="margin-left: 0px;">
       <i class="el-icon-download"></i>
       拉 取
     </el-button>

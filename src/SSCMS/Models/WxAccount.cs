@@ -11,6 +11,9 @@ namespace SSCMS.Models
         public int SiteId { get; set; }
 
         [DataColumn]
+        public bool IsEnabled { get; set; }
+
+        [DataColumn]
         public string MpName { get; set; }
 
         [DataColumn]

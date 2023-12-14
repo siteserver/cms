@@ -290,8 +290,8 @@
 
 <el-row align="center" style="text-align: center; padding-top:4px">
   <el-button size="medium" v-on:click="btnSubmitClick" type="primary">保 存</el-button>
-  <el-button v-if="siteType === 'wx'" size="medium" v-on:click="btnPreviewClick" type="default">预 览</el-button>
-  <el-button v-if="siteType === 'wx'" size="medium" v-on:click="btnSendClick" type="default">保存并群发</el-button>
+  <el-button v-if="isWxEnabled" size="medium" v-on:click="btnPreviewClick" type="default">预 览</el-button>
+  <el-button v-if="isWxEnabled" size="medium" v-on:click="btnSendClick" type="default">保存并群发</el-button>
   <el-button size="medium" v-on:click="btnCloseClick" type="default">关 闭</el-button>
 </el-row>
 
@@ -315,6 +315,39 @@
   <span slot="footer" class="dialog-footer">
     <el-button size="small" type="primary" v-on:click="btnPreviewSubmitClick">确 定</el-button>
     <el-button size="small" v-on:click="previewDialog = false">取 消</el-button>
+  </span>
+</el-dialog>
+
+<el-dialog
+  title="发表"
+  :visible.sync="sendDialog"
+  width="60%"
+  center>
+
+  <el-form v-on:submit.native.prevent ref="sendForm" :model="sendForm" label-position="top" size="small">
+    <el-form-item label="">
+      <el-switch
+        v-model="sendForm.isScheduled"
+        active-text="定时发表">
+      </el-switch>
+    </el-form-item>
+    <el-form-item v-if="sendForm.isScheduled" label="">
+      <el-select v-model="sendForm.isToday">
+        <el-option label="今天" :value="true"></el-option>
+        <el-option label="明天" :value="false"></el-option>
+      </el-select>
+
+      <el-time-picker
+        v-model="sendForm.time"
+        placeholder="发送时间">
+      </el-time-picker>
+    </el-form-item>
+  </el-form>
+  <div class="tips">你可以选择5分钟后的今、明两天内任意时刻定时发表，成功设置后不支持修改。</div>
+
+  <span slot="footer" class="dialog-footer">
+    <el-button size="small" type="primary" v-on:click="btnSendSubmitClick">确 定</el-button>
+    <el-button size="small" v-on:click="sendDialog = false">取 消</el-button>
   </span>
 </el-dialog>
 

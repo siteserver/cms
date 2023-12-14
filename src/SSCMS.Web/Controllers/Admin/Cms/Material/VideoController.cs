@@ -25,24 +25,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IWxManager _openManager;
+        private readonly IWxManager _wxManager;
         private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
-        private readonly IWxAccountRepository _openAccountRepository;
 
-        public VideoController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager openManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, IWxAccountRepository openAccountRepository)
+        public VideoController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager wxManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository)
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
-            _openManager = openManager;
+            _wxManager = wxManager;
             _configRepository = configRepository;
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialVideoRepository = materialVideoRepository;
-            _openAccountRepository = openAccountRepository;
         }
 
         public class QueryRequest

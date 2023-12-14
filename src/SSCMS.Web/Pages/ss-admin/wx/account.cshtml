@@ -10,10 +10,13 @@
     <div style="height: 10px"></div>
 
     <el-form v-on:submit.native.prevent size="small" ref="mpForm" label-width="260px" status-icon :model="mpForm">
-      <el-form-item label="公众号名称" prop="mpName" :rules="{ required: true, message: '请输入公众号名称' }">
+      <el-form-item label="状态">
+        <el-switch v-model="mpForm.isEnabled" active-text="启用微信公众号"></el-switch>
+      </el-form-item>
+      <el-form-item v-if="mpForm.isEnabled" label="公众号名称" prop="mpName" :rules="{ required: true, message: '请输入公众号名称' }">
         <el-input v-model="mpForm.mpName" placeholder="请输入公众号名称"></el-input>
       </el-form-item>
-      <el-form-item label="公众号类型" prop="mpType" :rules="{ required: true, message: '请选择公众号类型' }">
+      <el-form-item v-if="mpForm.isEnabled" label="公众号类型" prop="mpType" :rules="{ required: true, message: '请选择公众号类型' }">
         <el-select v-model="mpForm.mpType" placeholder="请选择公众号类型">
           <el-option
             v-for="item in mpTypes"
@@ -23,34 +26,36 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="AppId" prop="mpAppId" :rules="{ required: true, message: '请输入AppId' }">
+      <el-form-item v-if="mpForm.isEnabled" label="AppId" prop="mpAppId" :rules="{ required: true, message: '请输入AppId' }">
         <el-input v-model="mpForm.mpAppId" placeholder="请输入AppId"></el-input>
       </el-form-item>
-      <el-form-item label="AppSecret" prop="mpAppSecret" :rules="{ required: true, message: '请输入AppSecret' }">
+      <el-form-item v-if="mpForm.isEnabled" label="AppSecret" prop="mpAppSecret" :rules="{ required: true, message: '请输入AppSecret' }">
         <el-input v-model="mpForm.mpAppSecret" placeholder="请输入AppSecret"></el-input>
       </el-form-item>
     </el-form>
 
-    <div style="height: 10px"></div>
-    <el-alert type="info">
-      请进入微信公众平台，进入<strong>开发 -> 基本配置 -> 服务器配置</strong>，将以下信息填入并启用。
-    </el-alert>
-    <div style="height: 10px"></div>
+    <template v-if="mpForm.isEnabled">
+      <div style="height: 10px"></div>
+      <el-alert type="info">
+        请进入微信公众平台，进入<strong>开发 -> 基本配置 -> 服务器配置</strong>，将以下信息填入并启用。
+      </el-alert>
+      <div style="height: 10px"></div>
 
-    <el-form v-on:submit.native.prevent size="small" label-width="260px" status-icon>
-      <el-form-item label="服务器地址(URL)">
-        {{mpUrl}}
-      </el-form-item>
-      <el-form-item label="令牌(Token)">
-        {{account.mpToken}}
-      </el-form-item>
-      <el-form-item label="消息加解密密钥(EncodingAESKey)">
-        {{account.mpEncodingAESKey}}
-      </el-form-item>
-      <el-form-item label="消息加解密方式">
-        安全模式（推荐）
-      </el-form-item>
-    </el-form>
+      <el-form v-on:submit.native.prevent size="small" label-width="260px" status-icon>
+        <el-form-item label="服务器地址(URL)">
+          {{mpUrl}}
+        </el-form-item>
+        <el-form-item label="令牌(Token)">
+          {{account.mpToken}}
+        </el-form-item>
+        <el-form-item label="消息加解密密钥(EncodingAESKey)">
+          {{account.mpEncodingAESKey}}
+        </el-form-item>
+        <el-form-item label="消息加解密方式">
+          安全模式（推荐）
+        </el-form-item>
+      </el-form>
+    </template>
 
     <el-divider></el-divider>
     <div style="height: 10px"></div>

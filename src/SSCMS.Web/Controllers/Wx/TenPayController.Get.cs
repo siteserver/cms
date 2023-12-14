@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Wx
         [HttpGet, Route(Route)]
         public async Task<ActionResult<RedirectResult>> Get([FromRoute] int siteId, [FromQuery] GetRequest request)
         {
-            var account = await _openAccountRepository.GetBySiteIdAsync(siteId);
+            var account = await _wxAccountRepository.GetBySiteIdAsync(siteId);
 
             var returnUrl = $"{account.TenPayAuthorizeUrl}/authorize?productId={request.ProductId}&returnUrl={request.ReturnUrl}";
             var state = $"{request.ProductId}";

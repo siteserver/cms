@@ -13,13 +13,13 @@ namespace SSCMS.Web.Controllers.Wx
         public const string Route = "tenPay/{siteId}";
         public const string RouteAuthorize = "tenPay/{siteId}/authorize";
 
-        private readonly IWxAccountRepository _openAccountRepository;
-        private readonly IWxManager _openManager;
+        private readonly IWxAccountRepository _wxAccountRepository;
+        private readonly IWxManager _wxManager;
 
-        public TenPayController(IWxAccountRepository openAccountRepository, IWxManager openManager)
+        public TenPayController(IWxAccountRepository wxAccountRepository, IWxManager wxManager)
         {
-            _openAccountRepository = openAccountRepository;
-            _openManager = openManager;
+            _wxAccountRepository = wxAccountRepository;
+            _wxManager = wxManager;
         }
 
         public class GetRequest

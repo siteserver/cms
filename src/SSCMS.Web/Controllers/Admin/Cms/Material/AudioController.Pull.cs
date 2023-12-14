@@ -16,11 +16,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var (success, token, errorMessage) = await _openManager.GetAccessTokenAsync(request.SiteId);
+            var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
 
             if (success)
             {
-                await _openManager.PullMaterialAsync(token, MaterialType.Audio, request.GroupId);
+                await _wxManager.PullMaterialAsync(token, MaterialType.Audio, request.GroupId);
             }
 
             return new PullResult

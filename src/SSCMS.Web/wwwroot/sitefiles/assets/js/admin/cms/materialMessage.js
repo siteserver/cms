@@ -11,7 +11,7 @@ var data = utils.init({
   groups: null,
   count: null,
   messages: null,
-  siteType: null,
+  isWxEnabled: null,
   urlList: null,
   renameId: 0,
   renameTitle: '',
@@ -53,7 +53,7 @@ var methods = {
       for (var message of res.messages) {
         $this.messages.push(_.assign({isSelectGroups: false}, message));
       }
-      $this.siteType = res.siteType;
+      $this.isWxEnabled = res.isWxEnabled;
       $this.urlList = _.map($this.messages, function (item) {
         return item.thumbUrl;
       });

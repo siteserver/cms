@@ -43,6 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public class MpSubmitRequest
         {
             public int SiteId { get; set; }
+            public bool IsEnabled { get; set; }
             public string MpName { get; set; }
             public WxMpType MpType { get; set; }
             public string MpAppId { get; set; }

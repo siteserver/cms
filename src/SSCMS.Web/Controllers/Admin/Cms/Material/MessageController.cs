@@ -23,17 +23,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
-        private readonly IWxManager _openManager;
+        private readonly IWxManager _wxManager;
         private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public MessageController(IAuthManager authManager, IPathManager pathManager, IWxManager openManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialMessageRepository materialMessageRepository)
+        public MessageController(IAuthManager authManager, IPathManager pathManager, IWxManager wxManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialMessageRepository materialMessageRepository)
         {
             _authManager = authManager;
             _pathManager = pathManager;
-            _openManager = openManager;
+            _wxManager = wxManager;
             _configRepository = configRepository;
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
@@ -51,10 +51,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public class QueryResult
         {
             public bool IsSiteOnly { get; set; }
+            public bool IsWxEnabled { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
             public IEnumerable<MaterialMessage> Messages { get; set; }
-            public string SiteType { get; set; }
         }
 
         public class CreateRequest : SiteRequest

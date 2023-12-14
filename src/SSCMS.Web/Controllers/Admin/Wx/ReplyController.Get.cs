@@ -19,8 +19,10 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             List<WxReplyRule> rules = null;
             var count = 0;
 
-            var (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
-            if (success)
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+
+            if (isWxEnabled)
             {
                 count = await _wxReplyRuleRepository.GetCount(request.SiteId, request.Keyword);
                 rules = await _wxReplyRuleRepository.GetRulesAsync(request.SiteId, request.Keyword, request.Page, request.PerPage);
@@ -34,8 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             return new GetResult
             {
-                Success = success,
-                ErrorMessage = errorMessage,
+                IsWxEnabled = isWxEnabled,
                 Rules = rules,
                 Count = count
             };

@@ -48,6 +48,8 @@ namespace SSCMS.Repositories
 
         Task<List<Site>> GetSitesWithChildrenAsync(int parentId, Func<Site, Task<object>> func = null);
 
+        Task<List<Site>> GetPureSitesWithChildrenAsync(int parentId, Func<Site, Task<object>> func = null);
+
         Task<List<Cascade<int>>> GetCascadeChildrenAsync(int parentId, Func<SiteSummary, Task<object>> func = null);
 
         Task<List<Cascade<int>>> GetCascadeChildrenAsync(int parentId, Func<SiteSummary, object> func);

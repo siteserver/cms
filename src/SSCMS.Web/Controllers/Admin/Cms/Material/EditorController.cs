@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         {
             public List<MaterialMessageItem> Items { get; set; }
             public IEnumerable<Select<string>> CommentTypes { get; set; }
-            public string SiteType { get; set; }
+            public bool IsWxEnabled { get; set; }
         }
 
         public class CreateRequest : SiteRequest

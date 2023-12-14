@@ -456,6 +456,52 @@ namespace SSCMS.Core.Repositories
             return list;
         }
 
+        private async Task<Site> GetPureWithChildrenAsync(int siteId, Func<Site, Task<object>> func = null)
+        {
+            var entity = await GetAsync(siteId);
+            if (entity == null) return null;
+
+            object extra = null;
+            if (func != null)
+            {
+                extra = await func(entity);
+            }
+
+            var site = new Site
+            {
+                Children = await GetPureSitesWithChildrenAsync(siteId, func)
+            };
+
+            if (extra == null) return site;
+
+            var dict = TranslateUtils.ToDictionary(extra);
+            foreach (var o in dict)
+            {
+                site.Set(o.Key, o.Value);
+            }
+
+            return site;
+        }
+
+        public async Task<List<Site>> GetPureSitesWithChildrenAsync(int parentId, Func<Site, Task<object>> func = null)
+        {
+            var list = new List<Site>();
+
+            var summaries = await GetSummariesAsync(parentId);
+            foreach (var summary in summaries)
+            {
+                if (summary == null || summary.Id == 0) continue;
+
+                var site = await GetPureWithChildrenAsync(summary.Id, func);
+                if (site != null)
+                {
+                    list.Add(site);
+                }
+            }
+
+            return list;
+        }
+
         private async Task<Cascade<int>> GetCascadeAsync(SiteSummary summary, Func<SiteSummary, object> func = null)
         {
             object extra = null;

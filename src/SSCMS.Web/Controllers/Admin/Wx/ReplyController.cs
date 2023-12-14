@@ -20,14 +20,16 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
         private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
         private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
 
-        public ReplyController(IAuthManager authManager, IWxManager wxManager, IWxReplyRuleRepository wxReplyRuleRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository)
+        public ReplyController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IWxReplyRuleRepository wxReplyRuleRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
+            _siteRepository = siteRepository;
             _wxReplyRuleRepository = wxReplyRuleRepository;
             _wxReplyKeywordRepository = wxReplyKeywordRepository;
             _wxReplyMessageRepository = wxReplyMessageRepository;
@@ -42,8 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
+            public bool IsWxEnabled { get; set; }
             public IEnumerable<WxReplyRule> Rules { get; set; }
             public int Count { get; set; }
         }

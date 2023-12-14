@@ -32,11 +32,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             }
             var commentTypes = ListUtils.GetSelects<CommentType>();
 
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+
             return new GetResult
             {
                 Items = items,
                 CommentTypes = commentTypes,
-                SiteType = site.SiteType
+                IsWxEnabled = isWxEnabled
             };
         }
     }

@@ -16,13 +16,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
     {
         public const string Route = "settings/sitesLayerSelect";
 
-        private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SitesLayerSelectController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public SitesLayerSelectController(IPathManager pathManager, ISiteRepository siteRepository)
         {
-            _authManager = authManager;
             _pathManager = pathManager;
             _siteRepository = siteRepository;
         }
@@ -30,8 +28,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
         public class GetResult
         {
             public List<Site> Sites { get; set; }
-            public int RootSiteId { get; set; }
-            public List<string> TableNames { get; set; }
         }
     }
 }

@@ -7,7 +7,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 {
     public partial class AccountController
     {
-
         [HttpPost, Route(RouteMp)]
         public async Task<ActionResult<MpSubmitResult>> MpSubmit([FromBody] MpSubmitRequest request)
         {
@@ -16,28 +15,39 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            var (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(request.MpAppId, request.MpAppSecret);
-
             var account = await _wxAccountRepository.GetBySiteIdAsync(request.SiteId);
-            if (success)
+            var success = true;
+            var errorMessage = string.Empty;
+
+            if (request.IsEnabled)
             {
-                account.MpName = request.MpName;
-                account.MpType = request.MpType;
-                account.MpAppId = request.MpAppId;
-                account.MpAppSecret = request.MpAppSecret;
-
-                if (string.IsNullOrEmpty(account.MpToken))
+                (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(request.MpAppId, request.MpAppSecret);
+                if (success)
                 {
-                    account.MpToken = StringUtils.GetRandomString(32);
-                }
-                if (string.IsNullOrEmpty(account.MpEncodingAESKey))
-                {
-                    account.MpIsEncrypt = true;
-                    account.MpEncodingAESKey = StringUtils.GetRandomString(43);
-                }
+                    account.IsEnabled = true;
+                    account.MpName = request.MpName;
+                    account.MpType = request.MpType;
+                    account.MpAppId = request.MpAppId;
+                    account.MpAppSecret = request.MpAppSecret;
 
+                    if (string.IsNullOrEmpty(account.MpToken))
+                    {
+                        account.MpToken = StringUtils.GetRandomString(32);
+                    }
+                    if (string.IsNullOrEmpty(account.MpEncodingAESKey))
+                    {
+                        account.MpIsEncrypt = true;
+                        account.MpEncodingAESKey = StringUtils.GetRandomString(43);
+                    }
+
+                    await _wxAccountRepository.SetAsync(account);
+                    await _authManager.AddSiteLogAsync(request.SiteId, "修改微信公众号设置");
+                }
+            }
+            else
+            {
+                account.IsEnabled = false;
                 await _wxAccountRepository.SetAsync(account);
-                await _authManager.AddSiteLogAsync(request.SiteId, "修改微信公众号设置");
             }
 
             return new MpSubmitResult

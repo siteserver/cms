@@ -10,16 +10,23 @@ var data = utils.init({
   groupId: utils.getQueryInt("groupId"),
   mainHeight: '',
   editor: null,
+  items: null,
+  commentTypes: null,
+  isWxEnabled: null,
+  form: null,
+  action: null,
+
   previewDialog: false,
   previewForm: {
     wxNames: null
   },
 
-  items: null,
-  commentTypes: null,
-  siteType: null,
-  form: null,
-  action: null
+  sendDialog: false,
+  sendForm: {
+    isScheduled: false,
+    isToday: true,
+    time: null,
+  },
 });
 
 var methods = {
@@ -88,7 +95,7 @@ var methods = {
 
       $this.items = res.items;
       $this.commentTypes = res.commentTypes;
-      $this.siteType = res.siteType;
+      $this.isWxEnabled = res.isWxEnabled;
       $this.form = $this.items[0];
 
       setTimeout(function () {
@@ -113,7 +120,7 @@ var methods = {
     });
   },
 
-  apiCreate: function() {
+  apiCreate: function(callback) {
     var $this = this;
 
     utils.loading(this, true);
@@ -123,23 +130,12 @@ var methods = {
     })
     .then(function(response) {
       var res = response.data;
-      $this.messageId = res.messageId;
 
-      if ($this.action === 'preview') {
-        $this.apiPreview();
-      } else if ($this.action === 'send') {
-        var vue = utils.getTabVue($this.tabName);
-        if (vue) {
-          vue.apiGet($this.page);
-        }
-        utils.success('保存成功！');
-        utils.removeTab();
-        utils.addTab('新建群发', utils.getCmsUrl('openSend', {
-          siteId: $this.siteId,
-          messageId: $this.messageId
-        }));
+      $this.messageId = res.messageId;
+      utils.success('保存成功！');
+      if (typeof callback === 'function') {
+        callback();
       } else {
-        utils.success('创建图文消息成功！');
         utils.removeTab();
         var vue = utils.getTabVue($this.tabName);
         if (vue) {
@@ -155,7 +151,7 @@ var methods = {
     });
   },
 
-  apiUpdate: function() {
+  apiUpdate: function(callback) {
     var $this = this;
 
     utils.loading(this, true);
@@ -166,22 +162,10 @@ var methods = {
     })
     .then(function(response) {
       var res = response.data;
-
-      if ($this.action === 'preview') {
-        $this.apiPreview();
-      } else if ($this.action === 'send') {
-        var vue = utils.getTabVue($this.tabName);
-        if (vue) {
-          vue.apiGet($this.page);
-        }
-        utils.success('保存成功！');
-        utils.removeTab();
-        utils.addTab('新建群发', utils.getCmsUrl('openSend', {
-          siteId: $this.siteId,
-          messageId: $this.messageId
-        }));
+      utils.success('保存成功！');
+      if (typeof callback === 'function') {
+        callback();
       } else {
-        utils.success('修改图文消息成功！');
         utils.removeTab();
         var vue = utils.getTabVue($this.tabName);
         if (vue) {
@@ -306,7 +290,7 @@ var methods = {
     });
   },
 
-  btnSubmitClick: function () {
+  btnSubmitClick: function (callback) {
     var $this = this;
 
     this.$refs.form.validate(function(valid) {
@@ -320,27 +304,23 @@ var methods = {
         }
 
         if ($this.messageId === 0) {
-          $this.apiCreate();
+          $this.apiCreate(callback);
         } else {
-          $this.apiUpdate();
+          $this.apiUpdate(callback);
         }
-      } else {
-        return utils.error('标题及内容为必填项，请填写后提交保存！');
       }
     });
   },
 
-  btnPreviewClick: function() {
-    this.previewDialog = true;
-  },
-
-  btnSendClick: function() {
-    this.action = 'send';
-    this.btnSubmitClick();
-  },
-
   btnCloseClick: function() {
     utils.removeTab();
+  },
+
+  btnPreviewClick: function() {
+    var $this = this;
+    this.btnSubmitClick(function() {
+      $this.previewDialog = true;
+    });
   },
 
   btnPreviewSubmitClick: function() {
@@ -348,11 +328,36 @@ var methods = {
 
     this.$refs.previewForm.validate(function(valid) {
       if (valid) {
-        $this.action = 'preview';
-        $this.btnSubmitClick();
+        $this.apiPreview();
       }
     });
-  }
+  },
+
+  btnSendClick: function() {
+    var $this = this;
+    this.btnSubmitClick(function() {
+      $this.sendDialog = true;
+    });
+  },
+
+  btnSendSubmitClick: function() {
+    var $this = this;
+
+    this.$refs.sendForm.validate(function(valid) {
+      if (valid) {
+        var vue = utils.getTabVue($this.tabName);
+        if (vue) {
+          vue.apiGet($this.page);
+        }
+
+        utils.removeTab();
+        utils.addTab('新建群发', utils.getCmsUrl('openSend', {
+          siteId: $this.siteId,
+          messageId: $this.messageId
+        }));
+      }
+    });
+  },
 };
 
 var $vue = new Vue({

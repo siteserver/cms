@@ -2,9 +2,6 @@
 
 var data = utils.init({
   sites: null,
-  rootSiteId: null,
-  tableNames: null,
-  site: null
 });
 
 var methods = {
@@ -15,8 +12,6 @@ var methods = {
       var res = response.data;
 
       $this.sites = res.sites;
-      $this.rootSiteId = res.rootSiteId;
-      $this.tableNames = res.tableNames;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
