@@ -263,7 +263,7 @@ var methods = {
 
   btnUploadClick: function () {
     utils.openLayer({
-      title: '离线升级插件',
+      title: '离线安装/更新插件',
       url: utils.getPluginsUrl('addLayerUpload'),
       width: 550,
       height: 350

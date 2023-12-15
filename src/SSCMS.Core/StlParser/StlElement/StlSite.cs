@@ -73,6 +73,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private const string TypeId = nameof(Site.Id);
         private const string TypeSiteName = nameof(Site.SiteName);
+        private const string TypeTableName = nameof(Site.TableName);
         private const string TypeImageUrl = nameof(Site.ImageUrl);
         private const string TypeKeywords = nameof(Site.Keywords);
         private const string TypeDescription = nameof(Site.Description);
@@ -82,6 +83,7 @@ namespace SSCMS.Core.StlParser.StlElement
         {
             {TypeId, "站点Id"},
             {TypeSiteName, "站点名称"},
+            {TypeTableName, "站点内容表名称"},
             {TypeImageUrl, "站点图片/LOGO"},
             {TypeKeywords, "站点关键字"},
             {TypeDescription, "站点描述"},
@@ -239,6 +241,10 @@ namespace SSCMS.Core.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(type, TypeSiteName))
             {
                 parsedContent = site.SiteName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(type, TypeTableName))
+            {
+                parsedContent = site.TableName;
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeId))
             {

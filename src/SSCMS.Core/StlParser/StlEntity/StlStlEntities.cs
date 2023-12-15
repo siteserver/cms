@@ -28,6 +28,7 @@ namespace SSCMS.Core.StlParser.StlEntity
         public static string LoginUrl = "LoginUrl";
         public static string RegisterUrl = "RegisterUrl";
         public static string LogoutUrl = "LogoutUrl";
+        public static string TableName = "TableName";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -43,7 +44,8 @@ namespace SSCMS.Core.StlParser.StlEntity
             {HomeUrl, "用户中心地址"},
             {LoginUrl, "用户中心登录页地址"},
             {RegisterUrl, "用户中心注册页地址"},
-            {LogoutUrl, "退出登录页地址"}
+            {LogoutUrl, "退出登录页地址"},
+            {TableName, "站点内容表名称"},
         };
 
         internal static async Task<string> ParseAsync(string stlEntity, IParseManager parseManager)
@@ -121,12 +123,9 @@ namespace SSCMS.Core.StlParser.StlEntity
                     var returnUrl = await StlParserUtility.GetStlCurrentUrlAsync(parseManager, pageInfo.Site, contextInfo.ChannelId, contextInfo.ContentId, contentInfo, pageInfo.Template.TemplateType, pageInfo.Template.Id, pageInfo.IsLocal);
                     parsedContent = parseManager.PathManager.GetHomeUrl($"register/?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
-                else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
+                else if (StringUtils.EqualsIgnoreCase(TableName, attributeName) || StringUtils.EqualsIgnoreCase(attributeName, "TableForContent"))//内容表名称
                 {
-                    if (StringUtils.EqualsIgnoreCase(attributeName, "TableForContent"))
-                    {
-                        parsedContent = pageInfo.Site.TableName;
-                    }
+                    parsedContent = pageInfo.Site.TableName;
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))//
                 {
