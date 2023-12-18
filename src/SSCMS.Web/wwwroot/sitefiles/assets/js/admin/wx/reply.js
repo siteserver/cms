@@ -24,14 +24,15 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.rules = res.rules;
-      $this.count = res.count;
-
       if (!res.isWxEnabled) {
         location.href = utils.getWxUrl('account', {
-          siteId: $this.siteId,
+          siteId: $this.form.siteId,
         });
+        return;
       }
+
+      $this.rules = res.rules;
+      $this.count = res.count;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

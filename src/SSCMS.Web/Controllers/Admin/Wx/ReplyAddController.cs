@@ -19,25 +19,19 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IWxReplyKeywordRepository _wxReplyKeywordRepository;
         private readonly IWxReplyMessageRepository _wxReplyMessageRepository;
         private readonly IWxReplyRuleRepository _wxReplyRuleRepository;
-        private readonly IMaterialMessageRepository _materialMessageRepository;
-        private readonly IMaterialImageRepository _materialImageRepository;
-        private readonly IMaterialAudioRepository _materialAudioRepository;
-        private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public ReplyAddController(IAuthManager authManager, IWxManager wxManager, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository, IMaterialMessageRepository materialMessageRepository, IMaterialImageRepository materialImageRepository, IMaterialAudioRepository materialAudioRepository, IMaterialVideoRepository materialVideoRepository)
+        public ReplyAddController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IWxReplyKeywordRepository wxReplyKeywordRepository, IWxReplyMessageRepository wxReplyMessageRepository, IWxReplyRuleRepository wxReplyRuleRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
+            _siteRepository = siteRepository;
             _wxReplyKeywordRepository = wxReplyKeywordRepository;
             _wxReplyMessageRepository = wxReplyMessageRepository;
             _wxReplyRuleRepository = wxReplyRuleRepository;
-            _materialMessageRepository = materialMessageRepository;
-            _materialImageRepository = materialImageRepository;
-            _materialAudioRepository = materialAudioRepository;
-            _materialVideoRepository = materialVideoRepository;
         }
 
         public class GetRequest : SiteRequest
@@ -47,8 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
+            public bool IsWxEnabled { get; set; }
             public string RuleName { get; set; }
             public bool Random { get; set; }
             public List<WxReplyKeyword> Keywords { get; set; }

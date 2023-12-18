@@ -20,18 +20,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             var account = await _wxAccountRepository.GetBySiteIdAsync(siteId);
 
-            var defaultTenPayAuthorizeUrl = Request.Scheme + "://" + PageUtils.Combine(Request.Host.Host, Constants.ApiWxPrefix, TenPayController.Route.Replace("{siteId}", siteId.ToString()));
-            var defaultTenPayNotifyUrl = Request.Scheme + "://" + PageUtils.Combine(Request.Host.Host, Constants.ApiWxPrefix, TenPayController.Route.Replace("{siteId}", siteId.ToString()));
-
-            if (string.IsNullOrEmpty(account.TenPayAuthorizeUrl))
-            {
-                account.TenPayAuthorizeUrl = defaultTenPayAuthorizeUrl;
-            }
-            if (string.IsNullOrEmpty(account.TenPayNotifyUrl))
-            {
-                account.TenPayNotifyUrl = defaultTenPayNotifyUrl;
-            }
-
             var mpUrl = Request.Scheme + "://" + PageUtils.Combine(Request.Host.Host, Constants.ApiWxPrefix, Controllers.Wx.IndexController.Route.Replace("{siteId}", siteId.ToString()));
 
             var mpTypes = ListUtils.GetSelects<WxMpType>();
@@ -39,8 +27,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             return new GetResult
             {
                 MpUrl = mpUrl,
-                DefaultTenPayAuthorizeUrl = defaultTenPayAuthorizeUrl,
-                DefaultTenPayNotifyUrl = defaultTenPayNotifyUrl,
                 Account = account,
                 MpTypes = mpTypes
             };

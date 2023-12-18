@@ -6,6 +6,8 @@ using SSCMS.Dto;
 using SSCMS.Enums;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using SSCMS.Models;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -19,15 +21,25 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            var wxMenus = await _wxMenuRepository.GetMenusAsync(request.SiteId);
-            var menuTypes = ListUtils.GetEnums<WxMenuType>().Select(x => new Select<string>
+            var wxMenus = new List<WxMenu>();
+            var menuTypes = new List<Select<string>>();
+
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+            
+            if (isWxEnabled)
             {
-                Label = x.GetDisplayName(),
-                Value = x.GetValue()
-            });
+                wxMenus = await _wxMenuRepository.GetMenusAsync(request.SiteId);
+                menuTypes = ListUtils.GetEnums<WxMenuType>().Select(x => new Select<string>
+                {
+                    Label = x.GetDisplayName(),
+                    Value = x.GetValue()
+                }).ToList();
+            }
 
             return new GetResult
             {
+                IsWxEnabled = isWxEnabled,
                 WxMenus = wxMenus,
                 MenuTypes = menuTypes
             };

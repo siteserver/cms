@@ -2,8 +2,6 @@
 var $urlUpload = "/wx/chatSend/actions/upload";
 
 var data = utils.init({
-  success: false,
-  errorMessage: null,
   user: null,
   chats: null,
   message: null,
@@ -39,7 +37,7 @@ var methods = {
     this.form.materialId = video.id;
     this.video = video;
   },
-  
+
   apiGet: function() {
     var $this = this;
 
@@ -51,9 +49,14 @@ var methods = {
       }
     }).then(function(response) {
       var res = response.data;
-      
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
+
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.form.siteId,
+        });
+        return;
+      }
+
       $this.user = res.user;
       $this.chats = res.chats;
     })
@@ -71,7 +74,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
-      
+
       $this.form.materialType = 'Text';
       $this.form.materialId = 0;
       $this.form.text = null;
@@ -121,7 +124,7 @@ var methods = {
       utils.error('请选择或输入需要发送的消息!');
       return;
     }
-    
+
     this.apiSubmit();
   },
 

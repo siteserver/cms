@@ -25,12 +25,14 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IWxUserRepository _wxUserRepository;
 
-        public UsersController(IAuthManager authManager, IWxManager wxManager, IWxUserRepository wxUserRepository)
+        public UsersController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IWxUserRepository wxUserRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
+            _siteRepository = siteRepository;
             _wxUserRepository = wxUserRepository;
         }
 
@@ -46,8 +48,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
+            public bool IsWxEnabled { get; set; }
             public List<WxUserTag> Tags { get; set; }
             public int Total { get; set; }
             public int Count { get; set; }

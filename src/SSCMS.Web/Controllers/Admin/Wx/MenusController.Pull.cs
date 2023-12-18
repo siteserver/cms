@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -17,17 +18,17 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
 
-            if (success)
+            if (!success)
             {
-                await _wxManager.PullMenuAsync(token, request.SiteId);
+                return this.Error(errorMessage);
             }
+
+            await _wxManager.PullMenuAsync(token, request.SiteId);
 
             var wxMenus = await _wxMenuRepository.GetMenusAsync(request.SiteId);
 
             return new WxMenusResult
             {
-                Success = success,
-                ErrorMessage = errorMessage,
                 WxMenus = wxMenus
             };
         }

@@ -22,25 +22,26 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         private const string RoutePush = "wx/menus/actions/push";
 
         private readonly IAuthManager _authManager;
-        private readonly IWxMenuRepository _wxMenuRepository;
         private readonly IWxManager _wxManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IWxMenuRepository _wxMenuRepository;
 
-        public MenusController(IAuthManager authManager, IWxMenuRepository wxMenuRepository, IWxManager wxManager)
+        public MenusController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IWxMenuRepository wxMenuRepository)
         {
             _authManager = authManager;
-            _wxMenuRepository = wxMenuRepository;
             _wxManager = wxManager;
+            _siteRepository = siteRepository;
+            _wxMenuRepository = wxMenuRepository;
         }
 
         public class WxMenusResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
             public List<WxMenu> WxMenus { get; set; }
         }
 
         public class GetResult : WxMenusResult
         {
+            public bool IsWxEnabled { get; set; }
             public IEnumerable<Select<string>> MenuTypes { get; set; }
         }
 
@@ -61,12 +62,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             public string AppId { get; set; }
             public string PagePath { get; set; }
             public string MediaId { get; set; }
-        }
-
-        public class PushResult
-        {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
         }
     }
 }

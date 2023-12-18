@@ -18,7 +18,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
     {
         private const string Route = "wx/account";
         private const string RouteMp = "wx/account/mp";
-        private const string RouteTenPay = "wx/account/tenPay";
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
@@ -34,8 +33,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public class GetResult
         {
             public string MpUrl { get; set; }
-            public string DefaultTenPayAuthorizeUrl { get; set; }
-            public string DefaultTenPayNotifyUrl { get; set; }
             public WxAccount Account { get; set; }
             public List<Select<string>> MpTypes { get; set; }
         }
@@ -55,17 +52,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             public bool Success { get; set; }
             public string ErrorMessage { get; set; }
             public WxAccount Account { get; set; }
-        }
-
-        public class TenPaySubmitRequest
-        {
-            public int SiteId { get; set; }
-            public string TenPayAppId { get; set; }
-            public string TenPayAppSecret { get; set; }
-            public string TenPayMchId { get; set; }
-            public string TenPayKey { get; set; }
-            public string TenPayAuthorizeUrl { get; set; }
-            public string TenPayNotifyUrl { get; set; }
         }
     }
 }

@@ -15,47 +15,6 @@ var data = utils.init({
 });
 
 var methods = {
-  btnSideMenuOpen: function(index) {
-    var wxMenu = _.find(this.wxMenus, function(x){
-      return x.id == index;
-    });
-    this.wxMenu = _.assign({}, wxMenu);
-    this.defaultActive = index;
-  },
-
-  btnSideMenuClick: function(val) {
-    var sideMenuIds = val + '';
-    var ids = sideMenuIds.split('/');
-    var menus = this.wxMenus;
-    var menu = null;
-    var defaultOpeneds = [];
-
-    for (var i = 0; i < ids.length; i++) {
-      menu = _.find(menus, function(x){
-        return x.id == ids[i];
-      });
-      menus = menu.children;
-      defaultOpeneds.push(menu.id);
-    }
-    this.defaultOpeneds = defaultOpeneds;
-
-    if (menu) {
-      this.btnMenuClick(menu);
-    }
-  },
-
-  btnMenuClick: function(menu) {
-    this.defaultActive = this.defaultOpeneds.join('/');
-    this.wxMenu = _.assign({}, menu);
-  },
-
-  getIndex: function (level1, level2, level3) {
-    if (level3) return level1.id + '/' + level2.id + '/' + level3.id;
-    else if (level2) return level1.id + '/' + level2.id;
-    else if (level1) return level1.id;
-    return '';
-  },
-
   apiGet: function () {
     var $this = this;
 
@@ -66,6 +25,13 @@ var methods = {
       }
     }).then(function (response) {
       var res = response.data;
+
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.siteId,
+        });
+        return;
+      }
 
       $this.menuTypes = res.menuTypes;
       $this.wxMenus = $this.getItems(res.wxMenus);
@@ -159,6 +125,47 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
+  },
+
+  btnSideMenuOpen: function(index) {
+    var wxMenu = _.find(this.wxMenus, function(x){
+      return x.id == index;
+    });
+    this.wxMenu = _.assign({}, wxMenu);
+    this.defaultActive = index;
+  },
+
+  btnSideMenuClick: function(val) {
+    var sideMenuIds = val + '';
+    var ids = sideMenuIds.split('/');
+    var menus = this.wxMenus;
+    var menu = null;
+    var defaultOpeneds = [];
+
+    for (var i = 0; i < ids.length; i++) {
+      menu = _.find(menus, function(x){
+        return x.id == ids[i];
+      });
+      menus = menu.children;
+      defaultOpeneds.push(menu.id);
+    }
+    this.defaultOpeneds = defaultOpeneds;
+
+    if (menu) {
+      this.btnMenuClick(menu);
+    }
+  },
+
+  btnMenuClick: function(menu) {
+    this.defaultActive = this.defaultOpeneds.join('/');
+    this.wxMenu = _.assign({}, menu);
+  },
+
+  getIndex: function (level1, level2, level3) {
+    if (level3) return level1.id + '/' + level2.id + '/' + level3.id;
+    else if (level2) return level1.id + '/' + level2.id;
+    else if (level1) return level1.id;
+    return '';
   },
 
   getItems: function (menus) {

@@ -20,13 +20,15 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
+        private readonly ISiteRepository _siteRepository;
         private readonly IWxUserRepository _wxUserRepository;
         private readonly IWxChatRepository _wxChatRepository;
 
-        public ChatController(IAuthManager authManager, IWxManager wxManager, IWxUserRepository wxUserRepository, IWxChatRepository wxChatRepository)
+        public ChatController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IWxUserRepository wxUserRepository, IWxChatRepository wxChatRepository)
         {
             _authManager = authManager;
             _wxManager = wxManager;
+            _siteRepository = siteRepository;
             _wxUserRepository = wxUserRepository;
             _wxChatRepository = wxChatRepository;
         }
@@ -41,8 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
+            public bool IsWxEnabled { get; set; }
             public IEnumerable<WxChat> Chats { get; set; }
             public int Count { get; set; }
             public IEnumerable<WxUser> Users { get; set; }

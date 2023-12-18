@@ -47,8 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
+            public bool IsWxEnabled { get; set; }
             public WxUser User { get; set; }
             public List<WxChat> Chats { get; set; }
         }

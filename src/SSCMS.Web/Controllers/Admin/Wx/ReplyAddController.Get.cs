@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -11,8 +12,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         [HttpGet, Route(Route)]
         public async Task<ActionResult<GetResult>> Get([FromQuery] GetRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                MenuUtils.SitePermissions.WxReply))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.WxReply))
             {
                 return Unauthorized();
             }
@@ -22,9 +22,17 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             List<WxReplyKeyword> keywords = null;
             List<WxReplyMessage> messages = null;
 
-            var (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
-            if (success)
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+
+            if (isWxEnabled)
             {
+                var (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
+
                 if (request.RuleId > 0)
                 {
                     var rule = await _wxReplyRuleRepository.GetAsync(request.RuleId);
@@ -37,8 +45,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             return new GetResult
             {
-                Success = success,
-                ErrorMessage = errorMessage,
+                IsWxEnabled = isWxEnabled,
                 RuleName = ruleName,
                 Random = random,
                 Keywords = keywords,

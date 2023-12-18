@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Models;
 using SSCMS.Core.Utils;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -21,9 +22,17 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             var count = 0;
             var users = new List<WxUser>();
 
-            var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
-            if (success)
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+
+            if (isWxEnabled)
             {
+                var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
+                
                 count = await _wxChatRepository.GetCountAsync(request.SiteId, request.Star, request.Keyword);
                 chats = await _wxChatRepository.GetChatsAsync(request.SiteId, request.Star, request.Keyword, request.Page, request.PerPage);
 
@@ -42,8 +51,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             return new GetResult
             {
-                Success = success,
-                ErrorMessage = errorMessage,
+                IsWxEnabled = isWxEnabled,
                 Chats = chats,
                 Count = count,
                 Users = users

@@ -9,8 +9,6 @@ var data = utils.init({
   previewForm: {
     wxNames: null
   },
-  success: false,
-  errorMessage: null,
   tags: null,
   message: null,
   image: null,
@@ -54,7 +52,7 @@ var methods = {
     this.form.materialId = video.id;
     this.video = video;
   },
-  
+
   apiGet: function() {
     var $this = this;
 
@@ -66,9 +64,14 @@ var methods = {
       }
     }).then(function(response) {
       var res = response.data;
-      
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
+
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.form.siteId,
+        });
+        return;
+      }
+
       $this.tags = res.tags;
       $this.message = res.message;
       $this.form.materialId = $this.messageId;
@@ -87,7 +90,7 @@ var methods = {
     utils.loading(this, true);
     $api.post($url, this.form).then(function(response) {
       var res = response.data;
-      
+
       $this.sended = true;
     })
     .catch(function(error) {
@@ -228,7 +231,7 @@ var methods = {
       utils.error('请选择或输入需要发送的消息!');
       return;
     }
-    
+
     var $this = this;
 
     this.$refs.form.validate(function(valid) {

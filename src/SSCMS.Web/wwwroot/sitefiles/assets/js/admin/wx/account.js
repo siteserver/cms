@@ -1,16 +1,12 @@
 var $url = '/wx/account';
 var $urlMp = '/wx/account/mp';
-var $urlTenPay = '/wx/account/tenPay';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   mpUrl: null,
-  defaultTenPayAuthorizeUrl: null,
-  defaultTenPayNotifyUrl: null,
   account: null,
   mpTypes: null,
   mpForm: null,
-  tenPayForm: null,
   mpResult: null
 });
 
@@ -27,11 +23,8 @@ var methods = {
       var res = response.data;
 
       $this.mpUrl = res.mpUrl;
-      $this.defaultTenPayAuthorizeUrl = res.defaultTenPayAuthorizeUrl;
-      $this.defaultTenPayNotifyUrl = res.defaultTenPayNotifyUrl;
       $this.account = res.account;
       $this.mpForm = Object.assign({}, res.account);
-      $this.tenPayForm = Object.assign({}, res.account);
       $this.mpTypes = res.mpTypes;
     }).catch(function (error) {
       utils.error(error);
@@ -68,39 +61,6 @@ var methods = {
     });
   },
 
-  apiTenPaySubmit: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlTenPay, {
-      siteId: this.siteId,
-      tenPayAppId: this.tenPayForm.tenPayAppId,
-      tenPayAppSecret: this.tenPayForm.tenPayAppSecret,
-      tenPayMchId: this.tenPayForm.tenPayMchId,
-      tenPayKey: this.tenPayForm.tenPayKey,
-      tenPayAuthorizeUrl: this.tenPayForm.tenPayAuthorizeUrl,
-      tenPayNotifyUrl: this.tenPayForm.tenPayNotifyUrl
-    }).then(function (response) {
-      var res = response.data;
-
-      utils.success('微信支付设置保存成功！');
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  btnResetClick: function (type) {
-    if (type === 'mpUrl') {
-      this.mpForm.mpUrl = this.mpUrl;
-    } else if (type === 'tenPayAuthorizeUrl') {
-      this.tenPayForm.tenPayAuthorizeUrl = this.defaultTenPayAuthorizeUrl;
-    } else if (type === 'tenPayNotifyUrl') {
-      this.tenPayForm.tenPayNotifyUrl = this.defaultTenPayNotifyUrl;
-    }
-  },
-
   btnMpSubmitClick: function () {
     var $this = this;
 
@@ -110,16 +70,6 @@ var methods = {
       }
     });
   },
-
-  btnTenPaySubmitClick: function () {
-    var $this = this;
-
-    this.$refs.tenPayForm.validate(function(valid) {
-      if (valid) {
-        $this.apiTenPaySubmit();
-      }
-    });
-  }
 };
 
 var $vue = new Vue({

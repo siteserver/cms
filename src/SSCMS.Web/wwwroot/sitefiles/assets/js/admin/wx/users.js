@@ -7,8 +7,6 @@ var $urlUnBlock = '/wx/users/actions/unBlock';
 var $urlRemark = '/wx/users/actions/remark';
 
 var data = utils.init({
-  success: false,
-  errorMessage: null,
   tags: null,
   total: null,
   count: null,
@@ -51,9 +49,14 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.form.siteId,
+        });
+        return;
+      }
+
       $this.form.init = false;
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
       $this.tags = res.tags;
       $this.total = res.total;
       $this.count = res.count;

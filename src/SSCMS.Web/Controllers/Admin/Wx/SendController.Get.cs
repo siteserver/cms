@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Enums;
-using SSCMS.Core.Services;
+using SSCMS.Utils;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Wx
 {
@@ -19,35 +20,39 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            var results = new GetResult
+            var tags = new List<WxUserTag>();
+            MaterialMessage message = null;
+
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+            
+            if (isWxEnabled)
             {
-                Success = false,
-                ErrorMessage = string.Empty,
-                Tags = new List<WxUserTag>(),
-                Message = null,
+                var account = await _wxManager.GetAccountAsync(request.SiteId);
+                var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(account);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
+
+                if (account.MpType == WxMpType.Subscription || account.MpType == WxMpType.Service)
+                {
+                    return this.Error(_wxManager.GetErrorUnAuthenticated(account));
+                }
+
+                tags = await _wxManager.GetUserTagsAsync(token);
+                if (request.MessageId > 0)
+                {
+                    message = await _materialMessageRepository.GetAsync(request.MessageId);
+                }
+            }
+
+            return new GetResult
+            {
+                IsWxEnabled = isWxEnabled,
+                Tags = tags,
+                Message = message,
             };
-
-            var account = await _wxManager.GetAccountAsync(request.SiteId);
-            string token;
-            (results.Success, token, results.ErrorMessage) = await _wxManager.GetAccessTokenAsync(account);
-            if (!results.Success)
-            {
-                return results;
-            }
-            if (account.MpType == WxMpType.Subscription || account.MpType == WxMpType.Service)
-            {
-                results.Success = false;
-                results.ErrorMessage = _wxManager.GetErrorUnAuthenticated(account);
-                return results;
-            }
-
-            results.Tags = await _wxManager.GetUserTagsAsync(token);
-            if (request.MessageId > 0)
-            {
-                results.Message = await _materialMessageRepository.GetAsync(request.MessageId);
-            }
-
-            return results;
         }
     }
 }

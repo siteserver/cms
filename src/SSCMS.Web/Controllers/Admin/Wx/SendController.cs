@@ -48,8 +48,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
         public class GetResult
         {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
+            public bool IsWxEnabled { get; set; }
             public IEnumerable<WxUserTag> Tags { get; set; }
             public MaterialMessage Message { get; set; }
         }

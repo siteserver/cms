@@ -2,8 +2,6 @@ var $url = '/wx/chat';
 var $urlStar = '/wx/chat/actions/star';
 
 var data = utils.init({
-  success: false,
-  errorMessage: null,
   count: null,
   chats: null,
   users: null,
@@ -27,8 +25,13 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.form.siteId,
+        });
+        return;
+      }
+
       $this.count = res.count;
       $this.chats = res.chats;
       $this.users = res.users;

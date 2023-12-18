@@ -4,8 +4,6 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   ruleId: utils.getQueryInt("ruleId"),
   tabName: utils.getQueryString("tabName"),
-  success: false,
-  errorMessage: null,
   form: {
     ruleName: null,
     random: true,
@@ -35,7 +33,7 @@ var methods = {
         text: text
       });
     }
-    
+
     this.form.messages = true;
   },
 
@@ -65,7 +63,7 @@ var methods = {
     });
     this.form.messages = true;
   },
-  
+
   apiGet: function() {
     var $this = this;
 
@@ -77,9 +75,14 @@ var methods = {
       }
     }).then(function(response) {
       var res = response.data;
-      
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
+
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.siteId,
+        });
+        return;
+      }
+
       $this.form.ruleName = res.ruleName;
       $this.form.random = res.random;
       $this.keywords = res.keywords || [{
@@ -109,7 +112,7 @@ var methods = {
       messages: this.messages
     }).then(function(response) {
       var res = response.data;
-      
+
       var vue = utils.getTabVue($this.tabName);
       if (vue) {
         vue.apiGet(1);

@@ -19,10 +19,18 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             WxReplyMessage message = null;
 
-            var account = await _wxAccountRepository.GetBySiteIdAsync(request.SiteId);
-            var (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(account.MpAppId, account.MpAppSecret);
-            if (success)
+            var site = await _siteRepository.GetAsync(request.SiteId);
+            var isWxEnabled = await _wxManager.IsEnabledAsync(site);
+            
+            if (isWxEnabled)
             {
+                var account = await _wxAccountRepository.GetBySiteIdAsync(request.SiteId);
+                var (success, _, errorMessage) = await _wxManager.GetAccessTokenAsync(account.MpAppId, account.MpAppSecret);
+                if (!success)
+                {
+                    return this.Error(errorMessage);
+                }
+
                 if (StringUtils.EqualsIgnoreCase(request.ActiveName, "replyAuto"))
                 {
                     if (account.MpReplyAutoMessageId > 0)
@@ -41,8 +49,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             return new GetResult
             {
-                Success = success,
-                ErrorMessage = errorMessage,
+                IsWxEnabled = isWxEnabled,
                 Message = message
             };
         }

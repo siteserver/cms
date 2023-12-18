@@ -5,8 +5,6 @@ var $urlUpload = $url + '/actions/upload';
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
   activeName: utils.getQueryString('activeName'),
-  success: false,
-  errorMessage: null,
   form: {
     id: 0,
     materialType: 'Text',
@@ -65,8 +63,13 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      $this.success = res.success;
-      $this.errorMessage = res.errorMessage;
+      if (!res.isWxEnabled) {
+        location.href = utils.getWxUrl('account', {
+          siteId: $this.siteId,
+        });
+        return;
+      }
+
       if (res.message) {
         $this.form = res.message;
         $this.items = res.message.items;
@@ -74,7 +77,6 @@ var methods = {
         $this.audio = res.message.audio;
         $this.video = res.message.video;
       }
-
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

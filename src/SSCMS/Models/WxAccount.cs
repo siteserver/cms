@@ -39,26 +39,5 @@ namespace SSCMS.Models
 
         [DataColumn]
         public int MpReplyAutoMessageId { get; set; }
-
-        [DataColumn]
-        public bool TenPayConnected { get; set; }
-
-        [DataColumn]
-        public string TenPayAppId { get; set; }
-
-        [DataColumn]
-        public string TenPayAppSecret { get; set; }
-
-        [DataColumn]
-        public string TenPayMchId { get; set; }
-
-        [DataColumn]
-        public string TenPayKey { get; set; }
-
-        [DataColumn]
-        public string TenPayAuthorizeUrl { get; set; }
-
-        [DataColumn]
-        public string TenPayNotifyUrl { get; set; }
     }
 }

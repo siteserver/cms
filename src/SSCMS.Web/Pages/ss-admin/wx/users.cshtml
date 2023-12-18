@@ -13,15 +13,7 @@
   </style>
 }
 
-<div style="height: 10px"></div>
-
-<div v-if="!success" role="alert" class="el-alert el-alert--error is-light">
-  <div class="el-alert__content">
-    <span class="el-alert__title" v-html="errorMessage"></span>
-  </div>
-</div>
-
-<el-tabs v-else v-model="form.isBlock" v-on:tab-click="btnTabClick" type="border-card">
+<el-tabs v-model="form.isBlock" v-on:tab-click="btnTabClick" type="border-card">
   <el-tab-pane :name="false" label="已关注">
 
     <el-row>
