@@ -1,4 +1,5 @@
 ﻿var $url = '/settings/logsError';
+var $urlExport = $url + '/actions/export';
 var $urlDelete = $url + '/actions/delete';
 
 var data = utils.init({
@@ -68,6 +69,26 @@ var methods = {
   btnLogView: function(logId) {
     utils.openLayer({
       url: utils.getRootUrl('error', {logId: logId})
+    });
+  },
+
+  btnExportClick() {
+    var $this = this;
+
+    var body = _.assign({}, this.formInline);
+    body.currentPage = 1;
+    body.offset = 0;
+    body.limit = 0;
+
+    utils.loading(this, true);
+    $api.post($urlExport, body).then(function (response) {
+      var res = response.data;
+
+      window.open(res.value);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
     });
   },
 

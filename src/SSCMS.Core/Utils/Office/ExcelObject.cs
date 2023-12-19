@@ -140,12 +140,5 @@ namespace SSCMS.Core.Utils.Office
 
             ExcelUtils.Write(filePath, head, rows);
         }
-
-        // public List<Content> GetContentsByFile(string filePath, List<string> attributes, Site site, Channel channel)
-        // {
-            
-
-        //     return contents;
-        // }
     }
 }

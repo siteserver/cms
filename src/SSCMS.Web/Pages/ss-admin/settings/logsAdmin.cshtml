@@ -73,9 +73,10 @@
 <el-divider></el-divider>
 <div style="height: 10px"></div>
 
-<el-button size="small" type="primary" style="margin-left: 0px;" v-on:click="btnDeleteClick">
-  清空日志
-</el-button>
+<el-button type="primary" size="small" v-on:click="btnExportClick">导出日志</el-button>
+<el-button type="primary" size="small" v-on:click="btnDeleteClick">清空日志</el-button>
+
+<div style="height: 10px"></div>
 
 @section Scripts{
 <script src="/sitefiles/assets/js/admin/settings/logsAdmin.js" type="text/javascript"></script> }
