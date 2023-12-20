@@ -140,14 +140,21 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 formTemplate = await parseManager.FormManager.GetFormTemplateAsync(site, "submit");
             }
-            var pageUrl = string.Empty;
+
+            var pathWithQuery = $"forms/{type}/index.html?siteId={site.Id}&channelId={context.ChannelId}&contentId={context.ContentId}&formId={form.Id}&apiUrl={HttpUtility.UrlEncode(apiUrl)}";
+            string pageUrl;
             if (formTemplate.IsSystem)
             {
-                pageUrl = parseManager.PathManager.GetApiHostUrl(site, $"sitefiles/assets/forms/{type}/index.html?siteId={site.Id}&channelId={context.ChannelId}&contentId={context.ContentId}&formId={form.Id}&apiUrl={HttpUtility.UrlEncode(apiUrl)}");
+                pageUrl = parseManager.PathManager.GetApiHostUrl(site, $"sitefiles/assets/{pathWithQuery}");
+            }
+            else if (site.IsSeparatedApi)
+            {
+                var dirs = await parseManager.DatabaseManager.SiteRepository.GetSiteDirCascadingAsync(site.Id);
+                pageUrl = parseManager.PathManager.GetApiHostUrl(site, dirs, pathWithQuery);
             }
             else
             {
-                pageUrl = await parseManager.PathManager.GetSiteUrlAsync(site, $"forms/{type}/index.html?siteId={site.Id}&channelId={context.ChannelId}&contentId={context.ContentId}&formId={form.Id}&apiUrl={HttpUtility.UrlEncode(apiUrl)}", false);
+                pageUrl = await parseManager.PathManager.GetSiteUrlAsync(site, pathWithQuery, false);
             }
 
             var heightStyle = !string.IsNullOrEmpty(height) ? $"height: {height}" : string.Empty;
