@@ -184,15 +184,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 parsedContent = parseManager.SettingsManager.Version;
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
-            {
-                if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
-                {
-                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.DateString.Js);
-
-                    pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
-                }
-
-                parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
+            {               
+                parsedContent = DateUtils.Format(System.DateTime.Now, format);
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDateOfTraditional))
             {
