@@ -699,7 +699,9 @@ var utils = {
 
   keyPress: function (submitFn, cancelFn) {
     $(document).keydown(function (e) {
-      if ((e.ctrlKey && e.which == 13 || e.which == 10) || (e.shiftKey && e.which == 13 || e.which == 10)) {
+      if ((e.ctrlKey && e.key !== "Control" && (e.keyCode || e.which) == 83) ||
+          (e.ctrlKey && e.which == 13 || e.which == 10) ||
+          (e.shiftKey && e.which == 13 || e.which == 10)) {
         submitFn && submitFn();
       } else if (e.key === 'Escape') {
         cancelFn && cancelFn();

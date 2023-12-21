@@ -8,6 +8,7 @@ using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Services;
 using SSCMS.Utils;
+using System;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -185,14 +186,21 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDate))
             {
-                if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
+                if (!string.IsNullOrEmpty(format))
                 {
-                    var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.DateString.Js);
-
-                    pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
+                    parsedContent = DateUtils.Format(DateTime.Now, format);
                 }
+                else
+                {
+                    if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
+                    {
+                        var jsUrl = parseManager.PathManager.GetSiteFilesUrl(pageInfo.Site, Resources.DateString.Js);
 
-                parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
+                        pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{Resources.DateString.Charset}"" src=""{jsUrl}"" type=""text/javascript""></script>");
+                    }
+
+                    parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
+                }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDateOfTraditional))
             {
