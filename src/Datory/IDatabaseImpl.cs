@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using SqlKata.Compilers;
 
-namespace Datory.DatabaseImpl
+namespace Datory
 {
     public interface IDatabaseImpl
     {
@@ -36,5 +36,11 @@ namespace Datory.DatabaseImpl
         string GetQuotedIdentifier(string identifier);
 
         string GetAddColumnsSqlString(string tableName, string columnsSqlString);
+
+        string GetOrderByRandomString();
+
+        public string GetInStr(string columnName, string inStr);
+
+        public string GetNotInStr(string columnName, string inStr);
     }
 }

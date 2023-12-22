@@ -305,23 +305,26 @@ namespace Datory.DatabaseImpl
             tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
             return $"ALTER TABLE {tableName} ADD ({columnsSqlString})";
         }
-    }
 
-    internal class DmCompiler : OracleCompiler
-    {
-        public override string Wrap(string value)
+        public string GetOrderByRandomString()
         {
-            return DmImpl.Wrap(value);
+            return "RAND()";
         }
 
-        public override string CompileTrue()
+        public string GetInStr(string columnName, string inStr)
         {
-            return "1";
+            inStr = Utilities.FilterSql(inStr);
+            columnName = GetQuotedIdentifier(columnName);
+            
+            return $"INSTR({columnName}, '{inStr}') > 0";
         }
 
-        public override string CompileFalse()
+        public string GetNotInStr(string columnName, string inStr)
         {
-            return "0";
+            inStr = Utilities.FilterSql(inStr);
+            columnName = GetQuotedIdentifier(columnName);
+            
+            return $"INSTR({columnName}, '{inStr}') = 0";
         }
     }
 }

@@ -348,5 +348,26 @@ namespace Datory.DatabaseImpl
             tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
             return $"ALTER TABLE {tableName} ADD {columnsSqlString}";
         }
+
+        public string GetOrderByRandomString()
+        {
+            return "NEWID()";
+        }
+
+        public string GetInStr(string columnName, string inStr)
+        {
+            inStr = Utilities.FilterSql(inStr);
+            columnName = GetQuotedIdentifier(columnName);
+            
+            return $"CHARINDEX('{inStr}', {columnName}) > 0";
+        }
+
+        public string GetNotInStr(string columnName, string inStr)
+        {
+            inStr = Utilities.FilterSql(inStr);
+            columnName = GetQuotedIdentifier(columnName);
+
+            return $"CHARINDEX('{inStr}', {columnName}) = 0";
+        }
     }
 }

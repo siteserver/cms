@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Datory;
 using Datory.Utils;
 using Microsoft.AspNetCore.Mvc;
-using SSCMS.Core.Utils;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin
@@ -16,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin
             if (!await _configRepository.IsNeedInstallAsync()) return Unauthorized();
 
             var databaseType = _settingsManager.Containerized ? _settingsManager.DatabaseType : request.DatabaseType;
-            var databaseName = (databaseType == DatabaseType.Dm || databaseType == DatabaseType.KingbaseES) ? request.DatabaseName : string.Empty;
+            var databaseName = (databaseType == DatabaseType.Dm || databaseType == DatabaseType.KingbaseES || databaseType == DatabaseType.Hg) ? request.DatabaseName : string.Empty;
             var connectionString = _settingsManager.Containerized
                 ? _settingsManager.DatabaseConnectionString
                 : DbUtils.GetConnectionString(request.DatabaseType, request.DatabaseHost,

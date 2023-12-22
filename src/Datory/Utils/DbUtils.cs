@@ -9,292 +9,100 @@ namespace Datory.Utils
         public const string LocalDbHostVirtualPath = "~/database.sqlite";
         public const string LocalDbContainerVirtualPath = "~/wwwroot/sitefiles/database.sqlite";
 
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string databaseName)
+        public static IDatabaseImpl GetInstance(DatabaseType databaseType)
         {
-            var connectionString = string.Empty;
+            IDatabaseImpl instance = null;
 
             if (databaseType == DatabaseType.MySql)
             {
-                connectionString = MySqlImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                instance = MySqlImpl.Instance;
             }
             else if (databaseType == DatabaseType.SqlServer)
             {
-                connectionString = SqlServerImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                instance = SqlServerImpl.Instance;
             }
             else if (databaseType == DatabaseType.PostgreSql)
             {
-                connectionString = PostgreSqlImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                instance = PostgreSqlImpl.Instance;
             }
             else if (databaseType == DatabaseType.SQLite)
             {
-                connectionString = SQLiteImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                instance = SQLiteImpl.Instance;
             }
             else if (databaseType == DatabaseType.KingbaseES)
             {
-                connectionString = KingbaseESImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                instance = KingbaseESImpl.Instance;
             }
             else if (databaseType == DatabaseType.Dm)
             {
-                connectionString = DmImpl.Instance.GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
+                instance = DmImpl.Instance;
+            }
+            else if (databaseType == DatabaseType.Hg)
+            {
+                instance = HgImpl.Instance;
             }
 
-            return connectionString;
+            return instance;
+        }
+
+        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string databaseName)
+        {
+            return GetInstance(databaseType).GetConnectionString(server, isDefaultPort, port, userName, password, databaseName);
         }
 
         internal static Compiler GetCompiler(DatabaseType databaseType, string connectionString)
         {
-            Compiler compiler = null;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                compiler = MySqlImpl.Instance.GetCompiler(connectionString);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                compiler = SqlServerImpl.Instance.GetCompiler(connectionString);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                compiler = PostgreSqlImpl.Instance.GetCompiler(connectionString);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                compiler = SQLiteImpl.Instance.GetCompiler(connectionString);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                compiler = KingbaseESImpl.Instance.GetCompiler(connectionString);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                compiler = DmImpl.Instance.GetCompiler(connectionString);
-            }
-
-            return compiler;
+            return GetInstance(databaseType).GetCompiler(connectionString);
         }
 
         internal static string ColumnIncrement(DatabaseType databaseType, string columnName, int plusNum = 1)
         {
-            var retVal = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.ColumnIncrement(columnName, plusNum);
-            }
-
-            return retVal;
+            return GetInstance(databaseType).ColumnIncrement(columnName, plusNum);
         }
 
         internal static string ColumnDecrement(DatabaseType databaseType, string columnName, int minusNum = 1)
         {
-            var retVal = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.ColumnDecrement(columnName, minusNum);
-            }
-
-            return retVal;
+            return GetInstance(databaseType).ColumnDecrement(columnName, minusNum);
         }
 
         internal static string GetAutoIncrementDataType(DatabaseType databaseType, bool alterTable = false)
         {
-            var retVal = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.GetAutoIncrementDataType(alterTable);
-            }
-
-            return retVal;
+            return GetInstance(databaseType).GetAutoIncrementDataType(alterTable);
         }
 
         internal static string GetColumnSqlString(DatabaseType databaseType, TableColumn tableColumn)
         {
-            var retVal = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.GetColumnSqlString(tableColumn);
-            }
-
-            return retVal;
+            return GetInstance(databaseType).GetColumnSqlString(tableColumn);
         }
 
         internal static string GetPrimaryKeySqlString(DatabaseType databaseType, string tableName, string attributeName)
         {
-            var retVal = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.GetPrimaryKeySqlString(tableName, attributeName);
-            }
-
-            return retVal;
+            return GetInstance(databaseType).GetPrimaryKeySqlString(tableName, attributeName);
         }
 
         internal static string GetQuotedIdentifier(DatabaseType databaseType, string identifier)
         {
-            var retVal = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.GetQuotedIdentifier(identifier);
-            }
-
-            return retVal;
+            return GetInstance(databaseType).GetQuotedIdentifier(identifier);
         }
 
         internal static string GetAddColumnsSqlString(DatabaseType databaseType, string tableName, string columnsSqlString)
         {
-            var retVal = string.Empty;
+            return GetInstance(databaseType).GetAddColumnsSqlString(tableName, columnsSqlString);
+        }
 
-            if (databaseType == DatabaseType.MySql)
-            {
-                retVal = MySqlImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                retVal = SqlServerImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                retVal = PostgreSqlImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                retVal = SQLiteImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                retVal = KingbaseESImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                retVal = DmImpl.Instance.GetAddColumnsSqlString(tableName, columnsSqlString);
-            }
+        public static string GetOrderByRandomString(DatabaseType databaseType)
+        {
+            return GetInstance(databaseType).GetOrderByRandomString();
+        }
 
-            return retVal;
+        public static string GetInStr(DatabaseType databaseType, string columnName, string inStr)
+        {
+            return GetInstance(databaseType).GetInStr(columnName, inStr);
+        }
+
+        public static string GetNotInStr(DatabaseType databaseType, string columnName, string inStr)
+        {
+            return GetInstance(databaseType).GetNotInStr(columnName, inStr);
         }
 
         internal static string GetDropColumnsSqlString(DatabaseType databaseType, string tableName, string columnName)
@@ -302,105 +110,6 @@ namespace Datory.Utils
             return databaseType == DatabaseType.SQLite
                 ? string.Empty
                 : $"ALTER TABLE {GetQuotedIdentifier(databaseType, tableName)} DROP COLUMN {GetQuotedIdentifier(databaseType, columnName)}";
-        }
-
-        public static string GetOrderByRandomString(DatabaseType databaseType)
-        {
-            var orderBy = string.Empty;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                orderBy = "RAND()";
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                orderBy = "NEWID()";
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                orderBy = "random()";
-            }
-            else if (databaseType == DatabaseType.SQLite)
-            {
-                orderBy = "RANDOM()";
-            }
-            else if (databaseType == DatabaseType.KingbaseES)
-            {
-                orderBy = "random()";
-            }
-            else if (databaseType == DatabaseType.Dm)
-            {
-                orderBy = "RAND()";
-            }
-
-            return orderBy;
-        }
-
-        public static string GetInStr(IDatabase database, string columnName, string inStr)
-        {
-            var retVal = string.Empty;
-            inStr = Utilities.FilterSql(inStr);
-            columnName = database.GetQuotedIdentifier(columnName);
-
-            if (database.DatabaseType == DatabaseType.MySql)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') > 0";
-            }
-            else if (database.DatabaseType == DatabaseType.SqlServer)
-            {
-                retVal = $"CHARINDEX('{inStr}', {columnName}) > 0";
-            }
-            else if (database.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
-            }
-            else if (database.DatabaseType == DatabaseType.SQLite)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') > 0";
-            }
-            else if (database.DatabaseType == DatabaseType.KingbaseES)
-            {
-                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
-            }
-            else if (database.DatabaseType == DatabaseType.Dm)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') > 0";
-            }
-
-            return retVal;
-        }
-
-        public static string GetNotInStr(IDatabase database, string columnName, string inStr)
-        {
-            var retVal = string.Empty;
-            columnName = database.GetQuotedIdentifier(columnName);
-
-            if (database.DatabaseType == DatabaseType.MySql)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') = 0";
-            }
-            else if (database.DatabaseType == DatabaseType.SqlServer)
-            {
-                retVal = $"CHARINDEX('{inStr}', {columnName}) = 0";
-            }
-            else if (database.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
-            }
-            else if (database.DatabaseType == DatabaseType.SQLite)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') = 0";
-            }
-            else if (database.DatabaseType == DatabaseType.KingbaseES)
-            {
-                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
-            }
-            else if (database.DatabaseType == DatabaseType.Dm)
-            {
-                retVal = $"INSTR({columnName}, '{inStr}') = 0";
-            }
-
-            return retVal;
         }
 
         public static string ToTopSqlString(IDatabase database, string tableName, string columns, string whereString, string orderString, int topN)

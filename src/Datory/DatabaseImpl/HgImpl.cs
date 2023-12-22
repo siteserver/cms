@@ -1,19 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dapper;
-using MySql.Data.MySqlClient;
 using SqlKata.Compilers;
 using Datory.Utils;
+using Nhgdb;
+
+// http://sheco.highgo.com/document/zh-cn/application/NET.html
 
 [assembly: InternalsVisibleTo("Datory.Tests")]
 
 namespace Datory.DatabaseImpl
 {
-    internal class MySqlImpl : IDatabaseImpl
+    internal class HgImpl : IDatabaseImpl
     {
         private static IDatabaseImpl _instance;
         public static IDatabaseImpl Instance
@@ -21,7 +23,7 @@ namespace Datory.DatabaseImpl
             get
             {
                 if (_instance != null) return _instance;
-                _instance = new MySqlImpl();
+                _instance = new HgImpl();
                 return _instance;
             }
         }
@@ -34,24 +36,24 @@ namespace Datory.DatabaseImpl
             {
                 connectionString += $"Port={port};";
             }
-            connectionString += $"Uid={userName};Pwd={password};";
-            if (!string.IsNullOrEmpty(databaseName))
+            else
             {
-                connectionString += $"Database={databaseName};";
+                connectionString += "Port=5866;";
             }
-            connectionString += "SslMode=Preferred;CharSet=utf8;";
+            connectionString += $"User Id={userName};Password={password};";
+            connectionString += $"Database={databaseName};";
 
             return connectionString;
         }
 
         public DbConnection GetConnection(string connectionString)
         {
-            return new MySqlConnection(connectionString);
+            return new NhgdbConnection(connectionString);
         }
 
         public Compiler GetCompiler(string connectionString)
         {
-            return new MySqlCompiler();
+            return new PostgresCompiler();
         }
 
         public bool IsUseLegacyPagination(string connectionString)
@@ -65,20 +67,13 @@ namespace Datory.DatabaseImpl
 
             using (var connection = GetConnection(connectionString))
             {
-                using var rdr = await connection.ExecuteReaderAsync("show databases");
+                using var rdr = await connection.ExecuteReaderAsync("select datname from pg_database where datistemplate = false order by datname asc");
                 while (rdr.Read())
                 {
-                    var dbName = rdr.GetString(0);
+                    var dbName = rdr["datname"] as string;
                     if (dbName == null) continue;
-                    if (dbName != "information_schema" &&
-                        dbName != "mysql" &&
-                        dbName != "performance_schema" &&
-                        dbName != "sakila" &&
-                        dbName != "sys" &&
-                        dbName != "world")
-                    {
-                        databaseNames.Add(dbName);
-                    }
+
+                    databaseNames.Add(dbName);
                 }
             }
 
@@ -93,7 +88,7 @@ namespace Datory.DatabaseImpl
 
             try
             {
-                var sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE (table_schema = '{databaseName}') AND table_name  = '{tableName}'";
+                var sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_name = '{tableName}'";
 
                 using var connection = GetConnection(connectionString);
                 exists = await connection.ExecuteScalarAsync<int>(sql) == 1;
@@ -122,7 +117,8 @@ namespace Datory.DatabaseImpl
 
             using (var connection = GetConnection(connectionString))
             {
-                var sqlString = $"SELECT table_name FROM information_schema.tables WHERE table_schema='{connection.Database}' ORDER BY table_name";
+                var sqlString =
+                    $"SELECT table_name FROM information_schema.tables WHERE table_catalog = '{connection.Database}' AND table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
 
                 tableNames = await connection.QueryAsync<string>(sqlString);
             }
@@ -132,52 +128,53 @@ namespace Datory.DatabaseImpl
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
         {
-            return $"IFNULL({columnName}, 0) + {plusNum}";
+            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) + {plusNum}";
         }
 
         public string ColumnDecrement(string columnName, int minusNum = 1)
         {
-            return $"IFNULL({columnName}, 0) - {minusNum}";
+            return $"IFNULL({GetQuotedIdentifier(columnName)}, 0) - {minusNum}";
         }
 
         public string GetAutoIncrementDataType(bool alterTable = false)
         {
-            return alterTable ? "INT AUTO_INCREMENT UNIQUE KEY" : "INT AUTO_INCREMENT";
+            return "integer AUTO_INCREMENT";
         }
 
-        private string ToColumnString(DataType type, string attributeName, int length)
+        private string ToColumnString(DataType type, string columnName, int length)
         {
             if (type == DataType.Boolean)
             {
-                return $"`{attributeName}` tinyint(1)";
+                return $"{columnName} boolean";
             }
             if (type == DataType.DateTime)
             {
-                return $"`{attributeName}` datetime";
+                return $"{columnName} timestamptz";
             }
             if (type == DataType.Decimal)
             {
-                return $"`{attributeName}` decimal(18, 2)";
+                return $"{columnName} dec(18, 2)";
             }
             if (type == DataType.Integer)
             {
-                return $"`{attributeName}` int";
+                return $"{columnName} integer";
             }
             if (type == DataType.Text)
             {
-                return $"`{attributeName}` longtext";
+                return $"{columnName} text";
             }
-            return $"`{attributeName}` varchar({length})";
+            return $"{columnName} varchar({length})";
         }
 
         public string GetColumnSqlString(TableColumn tableColumn)
         {
+            var columnName = GetQuotedIdentifier(tableColumn.AttributeName);
             if (tableColumn.IsIdentity)
             {
-                return $@"{tableColumn.AttributeName} {GetAutoIncrementDataType()}";
+                return $@"{columnName} {GetAutoIncrementDataType()}";
             }
 
-            return ToColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+            return ToColumnString(tableColumn.DataType, columnName, tableColumn.DataLength);
         }
 
         public string GetPrimaryKeySqlString(string tableName, string attributeName)
@@ -187,7 +184,12 @@ namespace Datory.DatabaseImpl
 
         public string GetQuotedIdentifier(string identifier)
         {
-            return $"`{identifier}`";
+            if (string.IsNullOrEmpty(identifier) || identifier == "*")
+            {
+                return identifier;
+            }
+
+            return $@"""{identifier}""";
         }
 
         private DataType ToDataType(string dataTypeStr)
@@ -199,32 +201,23 @@ namespace Datory.DatabaseImpl
             dataTypeStr = Utilities.TrimAndToLower(dataTypeStr);
             switch (dataTypeStr)
             {
-                case "bit":
+                case "boolean":
                     dataType = DataType.Boolean;
                     break;
-                case "datetime":
+                case "timestamptz":
                     dataType = DataType.DateTime;
                     break;
-                case "decimal":
+                case "dec":
                     dataType = DataType.Decimal;
                     break;
-                case "int":
+                case "integer":
                     dataType = DataType.Integer;
-                    break;
-                case "longtext":
-                    dataType = DataType.Text;
-                    break;
-                case "nvarchar":
-                    dataType = DataType.VarChar;
                     break;
                 case "text":
                     dataType = DataType.Text;
                     break;
                 case "varchar":
                     dataType = DataType.VarChar;
-                    break;
-                case "tinyint":
-                    dataType = DataType.Boolean;
                     break;
             }
 
@@ -236,56 +229,62 @@ namespace Datory.DatabaseImpl
             var list = new List<TableColumn>();
             tableName = Utilities.FilterSql(tableName);
 
-            using (var connection = new MySqlConnection(connectionString))
+            using (var connection = GetConnection(connectionString))
             {
                 var sqlString =
-                    $"select COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType, CHARACTER_MAXIMUM_LENGTH AS DataLength, COLUMN_KEY AS ColumnKey, EXTRA AS Extra from information_schema.columns where table_schema = '{connection.Database}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
+                   $@"SELECT COLUMN_NAME AS ""ColumnName"", UDT_NAME AS ""UdtName"", CHARACTER_MAXIMUM_LENGTH AS ""CharacterMaximumLength"", COLUMN_DEFAULT AS ""ColumnDefault"" FROM information_schema.columns WHERE table_catalog = '{connection.Database}' AND table_name = '{tableName}' ORDER BY ordinal_position";
 
-                using var rdr = await connection.ExecuteReaderAsync(sqlString);
-                while (rdr.Read())
+                var columns = await connection.QueryAsync<dynamic>(sqlString);
+                foreach (var column in columns)
                 {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = ToDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
-                    var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
-                    var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
-                    var isIdentity = Convert.ToString(rdr.GetValue(4)) == "auto_increment";
+                    var columnName = column.ColumnName;
+                    var udtName = column.UdtName;
+                    var characterMaximumLength = column.CharacterMaximumLength;
+                    var columnDefault = column.ColumnDefault;
+
+                    var dataType = ToDataType(udtName);
+                    var length = characterMaximumLength;
+
+                    var isIdentity = columnDefault != null && columnDefault.StartsWith("nextval(");
 
                     var info = new TableColumn
                     {
                         AttributeName = columnName,
                         DataType = dataType,
-                        DataLength = length,
-                        IsPrimaryKey = isPrimaryKey,
+                        IsPrimaryKey = false,
                         IsIdentity = isIdentity
                     };
+                    if (length != null)
+                    {
+                        info.DataLength = length;
+                    }
                     list.Add(info);
                 }
-                rdr.Close();
+
+                sqlString =
+                    $@"select column_name AS ""ColumnName"", constraint_name AS ""ConstraintName"" from information_schema.key_column_usage where table_catalog = '{connection.Database}' and table_name = '{tableName}';";
+
+                var rows = connection.Query<dynamic>(sqlString);
+                foreach (var row in rows)
+                {
+                    var columnName = row.ColumnName;
+                    var constraintName = row.ConstraintName;
+
+                    var isPrimary = constraintName.StartsWith("pk");
+
+                    if (isPrimary)
+                    {
+                        foreach (var tableColumnInfo in list)
+                        {
+                            if (columnName == tableColumnInfo.AttributeName)
+                            {
+                                tableColumnInfo.IsPrimaryKey = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
-
-            //var columns = database.Connection.Query<dynamic>(sqlString);
-            //foreach (var column in columns)
-            //{
-            //    var columnName = column.ColumnName;
-            //    var dataType = ToMySqlDataType(column.DataType);
-            //    var dataLength = column.DataLength;
-
-            //    var length = dataLength == null || dataType == DataType.Text ? 0 : dataLength;
-
-            //    var isPrimaryKey = Convert.ToString(column.ColumnKey) == "PRI";
-            //    var isIdentity = Convert.ToString(column.Extra) == "auto_increment";
-
-            //    var info = new TableColumn
-            //    {
-            //        AttributeName = columnName,
-            //        DataType = dataType,
-            //        DataLength = length,
-            //        IsPrimaryKey = isPrimaryKey,
-            //        IsIdentity = isIdentity
-            //    };
-            //    list.Add(info);
-
-            //}
 
             return list;
         }
@@ -293,12 +292,12 @@ namespace Datory.DatabaseImpl
         public string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
             tableName = GetQuotedIdentifier(Utilities.FilterSql(tableName));
-            return $"ALTER TABLE {tableName} ADD ({columnsSqlString})";
+            return $"ALTER TABLE {tableName} ADD {columnsSqlString}";
         }
 
         public string GetOrderByRandomString()
         {
-            return "RAND()";
+            return "random()";
         }
 
         public string GetInStr(string columnName, string inStr)
@@ -306,7 +305,7 @@ namespace Datory.DatabaseImpl
             inStr = Utilities.FilterSql(inStr);
             columnName = GetQuotedIdentifier(columnName);
             
-            return $"INSTR({columnName}, '{inStr}') > 0";
+            return $"POSITION('{inStr}' IN {columnName}) > 0";
         }
 
         public string GetNotInStr(string columnName, string inStr)
@@ -314,7 +313,7 @@ namespace Datory.DatabaseImpl
             inStr = Utilities.FilterSql(inStr);
             columnName = GetQuotedIdentifier(columnName);
             
-            return $"INSTR({columnName}, '{inStr}') = 0";
+            return $"POSITION('{inStr}' IN {columnName}) = 0";
         }
     }
 }

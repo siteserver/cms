@@ -233,7 +233,7 @@ namespace SSCMS.Core.Repositories
                         var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {DbUtils.GetInStr(Database, "siteserver_Channel.GroupNames", trimGroup + ",")} OR {DbUtils.GetInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {DbUtils.GetInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");
+                                $" (siteserver_Channel.GroupNames = '{trimGroup}' OR {DbUtils.GetInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", trimGroup + ",")} OR {DbUtils.GetInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", "," + trimGroup + ",")} OR {DbUtils.GetInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -257,7 +257,7 @@ namespace SSCMS.Core.Repositories
                         //    $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND CHARINDEX('{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot},',siteserver_Channel.GroupNames) = 0 AND CHARINDEX(',{trimGroupNot}',siteserver_Channel.GroupNames) = 0) AND ");
 
                         whereStringBuilder.Append(
-                                $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND {DbUtils.GetNotInStr(Database, "siteserver_Channel.GroupNames", trimGroupNot + ",")} AND {DbUtils.GetNotInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroupNot + ",")} AND {DbUtils.GetNotInStr(Database, "siteserver_Channel.GroupNames", "," + trimGroupNot)}) AND ");
+                                $" (siteserver_Channel.GroupNames <> '{trimGroupNot}' AND {DbUtils.GetNotInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", trimGroupNot + ",")} AND {DbUtils.GetNotInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", "," + trimGroupNot + ",")} AND {DbUtils.GetNotInStr(_settingsManager.DatabaseType, "siteserver_Channel.GroupNames", "," + trimGroupNot)}) AND ");
                     }
                     if (groupNotArr.Length > 0)
                     {
