@@ -115,6 +115,8 @@ namespace SSCMS.Core.Services
                 ? await UserApi.GetBlackListAsync(accessTokenOrAppId, nextOpenId)
                 : await UserApi.GetAsync(accessTokenOrAppId, nextOpenId);
 
+            // UserApi.BatchGetUserInfoAsync(accessTokenOrAppId, 
+
             if (openIdResult.data != null)
             {
                 openIds.AddRange(openIdResult.data.openid);

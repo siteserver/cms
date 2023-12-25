@@ -233,5 +233,49 @@ namespace SSCMS.Core.Services
             var account = await GetAccountAsync(site.Id);
             return account != null && account.IsEnabled && !string.IsNullOrEmpty(account.MpAppId) && !string.IsNullOrEmpty(account.MpAppSecret);
         }
+
+        private async Task<(bool success, string errorMessage)> GetErrorMessageAsync(string result)
+        {
+            bool success = true;
+            string errorMessage = string.Empty;
+
+            if (StringUtils.Contains(result, "errcode"))
+            {
+                success = false;
+                var jsonError = TranslateUtils.JsonDeserialize<JsonResult>(result);
+
+                if (jsonError.errcode == 40013)
+                {
+                    errorMessage = "不合法的 AppID ，请检查 AppID 的正确性，避免异常字符，注意大小写。";
+                }
+                else if (jsonError.errcode == 40125)
+                {
+                    errorMessage = "无效的appsecret，请检查appsecret的正确性。";
+                }
+                else if (jsonError.errcode == 40164)
+                {
+                    var startIndex = jsonError.errmsg.IndexOf("invalid ip ", StringComparison.Ordinal) + 11;
+                    var endIndex = jsonError.errmsg.IndexOf(" ipv6", StringComparison.Ordinal);
+                    var ip = jsonError.errmsg.Substring(startIndex, endIndex - startIndex);
+                    errorMessage = $"调用接口的IP地址不在白名单中，请进入微信公众平台，将本服务器的IP地址 {ip} 添加至白名单，如果已配置，请等待 10 分钟左右再试。";
+                }
+                else if (jsonError.errcode == 45009)
+                {
+                    errorMessage = "调用超过天级别频率限制。可调用clear_quota接口恢复调用额度。";
+                }
+                else if (jsonError.errcode == 45011)
+                {
+                    errorMessage = "API 调用太频繁，请稍候再试。";
+                }
+                else
+                {
+                    errorMessage = $"API 调用发生错误：{jsonError.errmsg}";
+                }
+
+                await _errorLogRepository.AddErrorLogAsync(new Exception(result), "WxManager.GetAccessTokenAsync");
+            }
+
+            return (success, errorMessage);
+        }
     }
 }

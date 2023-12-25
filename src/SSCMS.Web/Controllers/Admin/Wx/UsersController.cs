@@ -19,8 +19,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         private const string RouteActionsAddTag = "wx/users/actions/addTag";
         private const string RouteActionsEditTag = "wx/users/actions/editTag";
         private const string RouteActionsDeleteTag = "wx/users/actions/deleteTag";
-        private const string RouteActionsBlock = "wx/users/actions/block";
-        private const string RouteActionsUnBlock = "wx/users/actions/unBlock";
         private const string RouteActionsRemark = "wx/users/actions/remark";
 
         private readonly IAuthManager _authManager;
@@ -39,7 +37,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public class GetRequest : SiteRequest
         {
             public bool Init { get; set; }
-            public bool IsBlock { get; set; }
             public int TagId { get; set; }
             public string Keyword { get; set; }
             public int Page { get; set; }
@@ -84,11 +81,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public class DeleteTagResult
         {
             public IEnumerable<WxUserTag> Tags { get; set; }
-        }
-
-        public class BlockRequest : SiteRequest
-        {
-            public List<string> OpenIds { get; set; }
         }
 
         public class RemarkRequest : SiteRequest

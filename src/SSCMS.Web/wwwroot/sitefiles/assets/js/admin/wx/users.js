@@ -2,8 +2,6 @@ var $url = '/wx/users';
 var $urlAddTag = '/wx/users/actions/addTag';
 var $urlEditTag = '/wx/users/actions/editTag';
 var $urlDeleteTag = '/wx/users/actions/deleteTag';
-var $urlBlock = '/wx/users/actions/block';
-var $urlUnBlock = '/wx/users/actions/unBlock';
 var $urlRemark = '/wx/users/actions/remark';
 
 var data = utils.init({
@@ -29,7 +27,6 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt('siteId'),
     init: true,
-    isBlock: false,
     tagId: 0,
     keyword: null,
     page: 1,
@@ -135,44 +132,6 @@ var methods = {
     });
   },
 
-  apiBlock: function() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlBlock, {
-      siteId: this.form.siteId,
-      openIds: this.openIds
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.apiGet(1);
-      utils.success('成功将用户加入黑名单！');
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiUnBlock: function() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlUnBlock, {
-      siteId: this.form.siteId,
-      openIds: this.openIds
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.apiGet(1);
-      utils.success('成功将用户移出黑名单！');
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
   apiRemark: function() {
     var $this = this;
 
@@ -226,10 +185,6 @@ var methods = {
   },
 
   btnTabClick: function() {
-    if (this.form.isBlock) {
-      this.form.tagId = 0;
-      this.form.keyword = null;
-    }
     this.apiGet(1);
   },
 
@@ -299,32 +254,6 @@ var methods = {
 
   btnTagClick: function() {
 
-  },
-
-  btnBlockClick: function() {
-    var $this = this;
-
-    utils.alertDelete({
-      title: '加入黑名单',
-      text: '确定将选中用户加入黑名单吗？',
-      button: '加入黑名单',
-      callback: function () {
-        $this.apiBlock();
-      }
-    });
-  },
-
-  btnUnBlockClick: function() {
-    var $this = this;
-
-    utils.alertDelete({
-      title: '移出黑名单',
-      text: '确定将选中用户移出黑名单吗？',
-      button: '移出黑名单',
-      callback: function () {
-        $this.apiUnBlock();
-      }
-    });
   },
 
   formatSubscribeScene: function(subscribeScene) {
