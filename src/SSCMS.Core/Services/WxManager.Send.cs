@@ -19,20 +19,20 @@ namespace SSCMS.Core.Services
                 null, StringUtils.Trim(wxName));
         }
 
-        public async Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? runOnceAt)
+        public async Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, DateTime? runOnceAt)
         {
             if (runOnceAt.HasValue)
             {
                 _taskManager.RunOnceAt(async () =>
                 {
-                    await GroupMessageApi.SendGroupMessageByTagIdAsync(accessTokenOrAppId, tagId, value,
-                        GetGroupMessageType(materialType), isToAll);
+                    await GroupMessageApi.SendGroupMessageByTagIdAsync(accessTokenOrAppId, string.Empty, value,
+                        GetGroupMessageType(materialType), true);
                 }, runOnceAt.Value);
             }
             else
             {
-                await GroupMessageApi.SendGroupMessageByTagIdAsync(accessTokenOrAppId, tagId, value,
-                    GetGroupMessageType(materialType), isToAll);
+                await GroupMessageApi.SendGroupMessageByTagIdAsync(accessTokenOrAppId, string.Empty, value,
+                    GetGroupMessageType(materialType), true);
             }
         }
 

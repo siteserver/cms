@@ -104,7 +104,6 @@
             public const string WxReplyBeAdded = "site_wxReplyBeAdded";
             public const string WxMenus = "site_wxMenus";
             public const string WxChat = "site_wxChat";
-            public const string WxUsers = "site_wxUsers";
             public const string WxSend = "site_wxSend";
         }
 

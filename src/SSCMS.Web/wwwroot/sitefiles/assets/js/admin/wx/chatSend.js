@@ -2,7 +2,6 @@
 var $urlUpload = "/wx/chatSend/actions/upload";
 
 var data = utils.init({
-  user: null,
   chats: null,
   message: null,
   image: null,
@@ -57,7 +56,6 @@ var methods = {
         return;
       }
 
-      $this.user = res.user;
       $this.chats = res.chats;
     })
     .catch(function(error) {
@@ -107,11 +105,6 @@ var methods = {
       return 'reply-row';
     }
     return '';
-  },
-
-  getUserTitle: function() {
-    if (this.user.remark) return this.user.remark + '(' + this.user.nickname + ')';
-    return this.user.nickname;
   },
 
   isSubmit: function() {

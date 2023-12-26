@@ -318,23 +318,6 @@
   <div style="height: 25px"></div>
   
   <el-form v-on:submit.native.prevent ref="form" :inline="true" status-icon :model="form" size="small">
-    <el-form-item label="群发对象">
-      <el-select  v-model="form.isToAll" placeholder="请选择">
-        <el-option label="全部用户" :value="true"></el-option>
-        <el-option label="按标签选择" :value="false"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item v-if="!form.isToAll" label="标签" prop="tagId" :rules="{ required: true, message: '请选择标签' }">
-      <el-select v-model="form.tagId" placeholder="请选择">
-        <el-option
-          v-for="tag in tags"
-          :key="tag.id"
-          :label="tag.name + '(' + tag.count + ')'"
-          :value="tag.id">
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <div></div>
     <el-form-item label="发送时间">
       <el-select v-model="form.isTiming" v-on:change="loadTiming" placeholder="请选择">
         <el-option label="立即发送" :value="false"></el-option>

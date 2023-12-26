@@ -61,7 +61,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             await _wxReplyKeywordRepository.DeleteAllAsync(request.SiteId);
             await _wxReplyMessageRepository.DeleteAllAsync(request.SiteId);
             await _wxReplyRuleRepository.DeleteAllAsync(request.SiteId);
-            await _wxUserRepository.DeleteAllAsync(request.SiteId);
 
             await _channelRepository.DeleteAllAsync(request.SiteId);
             await _siteRepository.DeleteAsync(request.SiteId);

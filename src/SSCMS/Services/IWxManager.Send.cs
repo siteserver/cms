@@ -9,7 +9,7 @@ namespace SSCMS.Services
     {
         Task PreviewSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, string wxName);
 
-        Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, bool isToAll, string tagId, DateTime? sendAt = null);
+        Task MassSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, DateTime? sendAt = null);
 
         Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message);
 

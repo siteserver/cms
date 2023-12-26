@@ -9,7 +9,6 @@ var data = utils.init({
   previewForm: {
     wxNames: null
   },
-  tags: null,
   message: null,
   image: null,
   audio: null,
@@ -20,7 +19,6 @@ var data = utils.init({
     materialId: 0,
     text: null,
     isToAll: true,
-    tagId: 0,
     isTiming: false,
     isToday: true,
     hour: 0,
@@ -72,7 +70,6 @@ var methods = {
         return;
       }
 
-      $this.tags = res.tags;
       $this.message = res.message;
       $this.form.materialId = $this.messageId;
     })

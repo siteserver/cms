@@ -20,41 +20,21 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             List<WxChat> chats = null;
             var count = 0;
-            var users = new List<WxUser>();
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             var isWxEnabled = await _wxManager.IsEnabledAsync(site);
 
             if (isWxEnabled)
             {
-                var (success, token, errorMessage) = await _wxManager.GetAccessTokenAsync(request.SiteId);
-                if (!success)
-                {
-                    return this.Error(errorMessage);
-                }
-                
                 count = await _wxChatRepository.GetCountAsync(request.SiteId, request.Star, request.Keyword);
                 chats = await _wxChatRepository.GetChatsAsync(request.SiteId, request.Star, request.Keyword, request.Page, request.PerPage);
-
-                var openIds = chats.Select(x => x.OpenId).Distinct().ToList();
-                var dbOpenIds = await _wxUserRepository.GetAllOpenIds(request.SiteId);
-
-                var inserts = openIds.Where(openId => !dbOpenIds.Contains(openId)).ToList();
-                foreach (var wxUser in await _wxManager.GetUsersAsync(token, inserts))
-                {
-                    await _wxUserRepository.InsertAsync(request.SiteId, wxUser);
-                }
-
-                users = await _wxManager.GetUsersAsync(token, openIds);
-                await _wxUserRepository.UpdateAllAsync(request.SiteId, users);
             }
 
             return new GetResult
             {
                 IsWxEnabled = isWxEnabled,
                 Chats = chats,
-                Count = count,
-                Users = users
+                Count = count
             };
         }
     }

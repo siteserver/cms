@@ -434,6 +434,13 @@ namespace SSCMS.Utils
             }
         }
 
+        public static dynamic JsonDeserialize(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
         public static T JsonDeserialize<T>(string json, T defaultValue = default)
         {
             if (string.IsNullOrEmpty(json)) return defaultValue;

@@ -19,7 +19,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            WxUser user = null;
             List<WxChat> chats = null;
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -33,14 +32,12 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                     return this.Error(errorMessage);
                 }
 
-                user = await _wxManager.GetUserAsync(token, request.OpenId);
                 chats = await _wxChatRepository.GetChatsAsyncByOpenId(request.SiteId, request.OpenId);
             }
 
             return new GetResult
             {
                 IsWxEnabled = isWxEnabled,
-                User = user,
                 Chats = chats
             };
         }

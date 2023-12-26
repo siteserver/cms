@@ -712,26 +712,19 @@
         ],
         "order": 152
       },
-      "site_wxUsers": {
-        "text": "用户管理",
-        "type": [
-          "wx"
-        ],
-        "order": 153
-      },
       "site_wxChat": {
         "text": "消息管理",
         "type": [
           "wx"
         ],
-        "order": 154
+        "order": 153
       },
       "site_wxSend": {
         "text": "群发消息",
         "type": [
           "wx"
         ],
-        "order": 155
+        "order": 154
       },
       "content_view": {
         "text": "浏览内容",
@@ -1537,7 +1530,6 @@
           "site_wxReplyAuto",
           "site_wxReplyBeAdded",
           "site_wxMenus",
-          "site_wxUsers",
           "site_wxChat",
           "site_wxSend"
         ],
@@ -1616,17 +1608,6 @@
             ],
             "order": 104
           },
-          "site_wxUsers": {
-            "text": "用户管理",
-            "type": [
-              "wx"
-            ],
-            "link": "./wx/users/",
-            "permissions": [
-              "site_wxUsers"
-            ],
-            "order": 105
-          },
           "site_wxSend": {
             "text": "群发消息",
             "type": [
@@ -1636,7 +1617,7 @@
             "permissions": [
               "site_wxSend"
             ],
-            "order": 106
+            "order": 105
           }
         }
       },

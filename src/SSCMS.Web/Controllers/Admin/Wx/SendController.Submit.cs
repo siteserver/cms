@@ -38,8 +38,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
 
             if (request.MaterialType == MaterialType.Text)
             {
-                await _wxManager.MassSendAsync(token, request.MaterialType, request.Text, request.IsToAll,
-                    request.TagId.ToString(), runOnceAt);
+                await _wxManager.MassSendAsync(token, request.MaterialType, request.Text, runOnceAt);
             }
             else
             {
@@ -48,8 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 {
                     return this.Error("操作失败，素材未能上传");
                 }
-                await _wxManager.MassSendAsync(token, request.MaterialType, mediaId, request.IsToAll,
-                    request.TagId.ToString(), runOnceAt);
+                await _wxManager.MassSendAsync(token, request.MaterialType, mediaId, runOnceAt);
             }
 
             return new BoolResult

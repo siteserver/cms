@@ -20,7 +20,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                 return Unauthorized();
             }
 
-            var tags = new List<WxUserTag>();
             MaterialMessage message = null;
 
             var site = await _siteRepository.GetAsync(request.SiteId);
@@ -40,7 +39,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
                     return this.Error(_wxManager.GetErrorUnAuthenticated(account));
                 }
 
-                tags = await _wxManager.GetUserTagsAsync(token);
                 if (request.MessageId > 0)
                 {
                     message = await _materialMessageRepository.GetAsync(request.MessageId);
@@ -50,7 +48,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             return new GetResult
             {
                 IsWxEnabled = isWxEnabled,
-                Tags = tags,
                 Message = message,
             };
         }

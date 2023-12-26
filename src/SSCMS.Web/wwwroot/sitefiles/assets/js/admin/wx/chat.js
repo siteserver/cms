@@ -4,7 +4,6 @@ var $urlStar = '/wx/chat/actions/star';
 var data = utils.init({
   count: null,
   chats: null,
-  users: null,
   form: {
     siteId: utils.getQueryInt('siteId'),
     star: false,
@@ -34,7 +33,6 @@ var methods = {
 
       $this.count = res.count;
       $this.chats = res.chats;
-      $this.users = res.users;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -60,22 +58,6 @@ var methods = {
     }).then(function () {
       utils.loading($this, false);
     });
-  },
-
-  getUser: function (chat) {
-    var user = this.users.find(function (x) { return x.openId === chat.openId; });
-    return user || {};
-  },
-
-  getUserAvatarUrl: function(chat) {
-    var user = this.getUser(chat);
-    return user.headImgUrl;
-  },
-
-  getUserTitle: function(chat) {
-    var user = this.getUser(chat);
-    if (user.remark) return user.remark + '(' + user.nickname + ')';
-    return user.nickname;
   },
 
   btnSearchClick() {

@@ -49,7 +49,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
         public class GetResult
         {
             public bool IsWxEnabled { get; set; }
-            public IEnumerable<WxUserTag> Tags { get; set; }
             public MaterialMessage Message { get; set; }
         }
 
@@ -58,8 +57,6 @@ namespace SSCMS.Web.Controllers.Admin.Wx
             public MaterialType MaterialType { get; set; }
             public int MaterialId { get; set; }
             public string Text { get; set; }
-            public bool IsToAll { get; set; }
-            public int TagId { get; set; }
             public bool IsTiming { get; set; }
             public bool IsToday { get; set; }
             public int Hour { get; set; }

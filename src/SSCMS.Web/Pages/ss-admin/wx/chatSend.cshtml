@@ -325,7 +325,7 @@
     label="头像" width="80">
     <template slot-scope="scope">
       <el-image v-if="scope.row.isReply" style="height: 36px;width: 36px;" src="/sitefiles/assets/images/wx-logo-mp.ico"></el-image>
-      <el-avatar v-else :size="36" :src="user.headImgUrl"></el-avatar>
+      <el-image v-else style="height: 36px;width: 36px;" src="/sitefiles/assets/images/default_avatar.png"></el-image>
     </template>
   </el-table-column>
   <el-table-column
@@ -336,7 +336,7 @@
         公众号
       </el-link>
       <el-link v-else :underline="false" type="primary">
-        {{getUserTitle()}}
+        {{scope.row.openId}}
       </el-link>
     </template>
   </el-table-column>
