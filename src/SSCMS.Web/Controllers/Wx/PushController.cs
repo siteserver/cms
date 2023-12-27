@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Repositories;
@@ -8,17 +8,19 @@ namespace SSCMS.Web.Controllers.Wx
 {
     [OpenApiIgnore]
     [Route(Constants.ApiWxPrefix)]
-    public partial class IndexController : ControllerBase
+    public partial class PushController : ControllerBase
     {
-        public const string Route = "index/{siteId}";
+        private const string Route = "{siteId}";
 
+        private readonly ICacheManager _cacheManager;
         private readonly IWxManager _wxManager;
         private readonly IWxAccountRepository _wxAccountRepository;
         private readonly IWxChatRepository _wxChatRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public IndexController(IWxManager wxManager, IWxAccountRepository wxAccountRepository, IWxChatRepository wxChatRepository, IErrorLogRepository errorLogRepository)
+        public PushController(ICacheManager cacheManager, IWxManager wxManager, IWxAccountRepository wxAccountRepository, IWxChatRepository wxChatRepository, IErrorLogRepository errorLogRepository)
         {
+            _cacheManager = cacheManager;
             _wxManager = wxManager;
             _wxAccountRepository = wxAccountRepository;
             _wxChatRepository = wxChatRepository;

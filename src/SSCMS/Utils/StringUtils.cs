@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Xml;
 using Datory.Utils;
 using Ganss.Xss;
 using SSCMS.Configuration;
@@ -254,6 +255,11 @@ namespace SSCMS.Utils
             {
                 contentBuilder.Insert(startIndex + insertAfter.Length, insertContent);
             }
+        }
+
+        public static string GetInnerText(XmlElement element)
+        {
+            return element != null ? element.InnerText : string.Empty;
         }
 
         public static string ToXmlContent(string inputString)
