@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Wx
         public async Task<string> Submit([FromRoute] int siteId, [FromQuery] string signature, [FromQuery] string timestamp, [FromQuery] string nonce)
         {
             var account = await _wxAccountRepository.GetBySiteIdAsync(siteId);
-            
+
             var wxcpt = new WXBizMsgCrypt(account.MpToken, account.MpEncodingAESKey, account.MpAppId);
             var sReqData = string.Empty;
             using (Stream stream = Request.Body)
@@ -87,32 +87,9 @@ namespace SSCMS.Web.Controllers.Wx
             var message = string.Empty;
             if (replyMessage != null)
             {
-                if (replyMessage.MaterialType == MaterialType.Text)
-                {
-                    message = await _wxManager.ReplyTextAsync(account, fromUserName, toUserName, message, timestamp, nonce);
-                }
+                message = await _wxManager.ReplyAsync(account, fromUserName, toUserName, replyMessage, timestamp, nonce);
             }
             return message;
-
-            // if (!string.IsNullOrEmpty(message))
-            // {
-            //     var start = new DateTime(1970, 1, 1);
-            //     var createTime = (long)(DateTime.Now - start).TotalSeconds;
-            //     var sRespData = $"<xml><ToUserName><![CDATA[{fromUserName}]]></ToUserName><FromUserName><![CDATA[{toUserName}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[{message}]]></Content><MsgId>1234567890123456</MsgId></xml>";
-            //     var sEncryptMsg = "";
-            //     ret = wxcpt.EncryptMsg(sRespData, timestamp, nonce, ref sEncryptMsg);
-            //     if (ret != 0 || string.IsNullOrEmpty(sEncryptMsg))
-            //     {
-            //         await _errorLogRepository.AddErrorLogAsync(new Exception(sRespData), "WXBizMsgCrypt.EncryptMsg");
-            //         message = string.Empty;
-            //     }
-            //     else
-            //     {
-            //         message = sEncryptMsg;
-            //     }
-            // }
-
-            // return message;
         }
     }
 }
