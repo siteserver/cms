@@ -270,6 +270,7 @@ var methods = {
       mediaId: ''
     };
 
+    this.defaultOpeneds = [];
     this.defaultActive = null;
   },
 

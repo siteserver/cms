@@ -8,7 +8,8 @@ using SSCMS.Utils;
 
 namespace SSCMS.Core.Services
 {
-    ////群发媒体文件时传入mediaId,群发文本消息时传入content,群发卡券时传入cardId
+    // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Service_Center_messages.html#%E5%AE%A2%E6%9C%8D%E6%8E%A5%E5%8F%A3-%E5%8F%91%E6%B6%88%E6%81%AF
+
     public partial class WxManager
     {
         public async Task PreviewSendAsync(string accessTokenOrAppId, MaterialType materialType, string value, string wxName)
@@ -58,21 +59,6 @@ namespace SSCMS.Core.Services
             {
                 await CustomSendVideoAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
-        }
-
-        public async Task CustomSendTextAsync(string accessTokenOrAppId, string openId, int siteId, string text)
-        {
-            await _wxChatRepository.ReplyAdd(new WxChat
-            {
-                SiteId = siteId,
-                OpenId = openId,
-                IsReply = true,
-                MaterialType = MaterialType.Text,
-                MaterialId = 0,
-                Text = text
-            });
-
-            await CustomApi.SendTextAsync(accessTokenOrAppId, openId, text);
         }
 
         public async Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
@@ -155,6 +141,55 @@ namespace SSCMS.Core.Services
             });
 
             await CustomApi.SendVideoAsync(accessTokenOrAppId, openId, mediaId, video.Title, video.Description);
+        }
+
+        public async Task CustomSendTextAsync(string accessTokenOrAppId, string openId, int siteId, string text)
+        {
+            await _wxChatRepository.ReplyAdd(new WxChat
+            {
+                SiteId = siteId,
+                OpenId = openId,
+                IsReply = true,
+                MaterialType = MaterialType.Text,
+                MaterialId = 0,
+                Text = text
+            });
+
+            await SendTextAsync(accessTokenOrAppId, openId, text);
+        }
+
+        // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Service_Center_messages.html#%E5%AE%A2%E6%9C%8D%E6%8E%A5%E5%8F%A3-%E5%8F%91%E6%B6%88%E6%81%AF
+        public async Task<(bool success, string errorMessage)> SendTextAsync(string accessToken, string openId, string text)
+        {
+            var body = $@"
+{{
+    ""touser"":""{openId}"",
+    ""msgtype"":""text"",
+    ""text"":
+    {{
+         ""content"":""{text}""
+    }}
+}}";
+            var url = $"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={accessToken}";
+            var (success, result, errorMessage) = await RestUtils.PostStringAsync(url, body);
+
+            if (success)
+            {
+                var json = TranslateUtils.JsonDeserialize<JsonResult>(result);
+                if (json.errcode != 0)
+                {
+                    success = false;
+                    errorMessage = $"API 调用发生错误：{json.errmsg}";
+
+                    await _errorLogRepository.AddErrorLogAsync(new Exception(result), "WxManager.SendTextAsync");
+                }
+            }
+            else
+            {
+                await _errorLogRepository.AddErrorLogAsync(new Exception(errorMessage), "WxManager.SendTextAsync");
+            }
+
+            return (success, errorMessage);
         }
     }
 }

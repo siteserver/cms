@@ -77,28 +77,30 @@
             <el-input v-model="wxMenu.text"></el-input>
             <div class="tips">字数最多：主菜单5个、子菜单19个</div>
           </el-form-item>
-          <el-form-item label="菜单类型" prop="menuType" :rules="{ required: true, message: '请选择菜单类型' }">
-            <el-radio v-for="menuType in menuTypes" :key="menuType.value" v-model="wxMenu.menuType" :label="menuType.value">{{menuType.label}}</el-radio>
-            <div class="tips">
-              如果有下级菜单请忽略菜单类型、关键词以及菜单链接等参数。
-            </div>
-          </el-form-item>
-          <el-form-item v-if="wxMenu.menuType !== 'view' && wxMenu.menuType !== 'miniprogram' && wxMenu.menuType !== 'media_id' && wxMenu.menuType !== 'view_limited'" label="要触发的关键词" prop="key" :rules="{ required: true, message: '请输入要触发的关键词' }">
-            <el-input v-model="wxMenu.key"></el-input>
-          </el-form-item>
-          <el-form-item v-if="wxMenu.menuType === 'view'" label="菜单链接" prop="url" :rules="{ required: true, message: '请输入菜单链接' }">
-            <el-input v-model="wxMenu.url"></el-input>
-            <div class="tips">必须http(s)://开头，不支持短网址。</div>
-          </el-form-item>
-          <el-form-item v-if="wxMenu.menuType === 'miniprogram'" label="小程序AppId" prop="appId" :rules="{ required: true, message: '请输入小程序AppId' }">
-            <el-input v-model="wxMenu.appId"></el-input>
-          </el-form-item>
-          <el-form-item v-if="wxMenu.menuType === 'miniprogram'" label="小程序PagePath" prop="pagePath" :rules="{ required: true, message: '请输入小程序PagePath' }">
-            <el-input v-model="wxMenu.pagePath"></el-input>
-          </el-form-item>
-          <el-form-item v-if="wxMenu.menuType === 'media_id' || wxMenu.menuType === 'view_limited'" label="MediaId" prop="mediaId" :rules="{ required: true, message: '请输入MediaId' }">
-            <el-input v-model="wxMenu.mediaId"></el-input>
-          </el-form-item>
+          <template v-if="!wxMenu.children || wxMenu.children.length === 0">
+            <el-form-item label="菜单类型" prop="menuType" :rules="{ required: true, message: '请选择菜单类型' }">
+              <el-radio v-for="menuType in menuTypes" :key="menuType.value" v-model="wxMenu.menuType" :label="menuType.value">{{menuType.label}}</el-radio>
+              <div class="tips">
+                如果有下级菜单请忽略菜单类型、关键词以及菜单链接等参数。
+              </div>
+            </el-form-item>
+            <el-form-item v-if="wxMenu.menuType !== 'view' && wxMenu.menuType !== 'miniprogram' && wxMenu.menuType !== 'media_id' && wxMenu.menuType !== 'view_limited'" label="要触发的关键词" prop="key" :rules="{ required: true, message: '请输入要触发的关键词' }">
+              <el-input v-model="wxMenu.key"></el-input>
+            </el-form-item>
+            <el-form-item v-if="wxMenu.menuType === 'view'" label="菜单链接" prop="url" :rules="{ required: true, message: '请输入菜单链接' }">
+              <el-input v-model="wxMenu.url"></el-input>
+              <div class="tips">必须http(s)://开头，不支持短网址。</div>
+            </el-form-item>
+            <el-form-item v-if="wxMenu.menuType === 'miniprogram'" label="小程序AppId" prop="appId" :rules="{ required: true, message: '请输入小程序AppId' }">
+              <el-input v-model="wxMenu.appId"></el-input>
+            </el-form-item>
+            <el-form-item v-if="wxMenu.menuType === 'miniprogram'" label="小程序PagePath" prop="pagePath" :rules="{ required: true, message: '请输入小程序PagePath' }">
+              <el-input v-model="wxMenu.pagePath"></el-input>
+            </el-form-item>
+            <el-form-item v-if="wxMenu.menuType === 'media_id' || wxMenu.menuType === 'view_limited'" label="MediaId" prop="mediaId" :rules="{ required: true, message: '请输入MediaId' }">
+              <el-input v-model="wxMenu.mediaId"></el-input>
+            </el-form-item>
+          </template>
           <el-form-item label="排序" prop="taxis" :rules="[
             { required: true, message: '请输入排序' },
             { validator: utils.validateInt }

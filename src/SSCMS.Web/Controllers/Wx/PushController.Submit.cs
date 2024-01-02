@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils.Wx;
-using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
-
-// https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Receiving_event_pushes.html
 
 namespace SSCMS.Web.Controllers.Wx
 {
@@ -52,6 +49,7 @@ namespace SSCMS.Web.Controllers.Wx
                 toUserName = StringUtils.GetInnerText(root["ToUserName"]);
                 var msgType = StringUtils.GetInnerText(root["MsgType"]);
 
+                // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Receiving_event_pushes.html
                 if (msgType == "event")
                 {
                     var theEvent = StringUtils.GetInnerText(root["Event"]);
@@ -81,6 +79,27 @@ namespace SSCMS.Web.Controllers.Wx
                             replyMessage = await _wxManager.GetMessageAsync(siteId, account.MpReplyBeAddedMessageId);
                         }
                     }
+                }
+                // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Receiving_standard_messages.html
+                else if (msgType == "text")
+                {
+                    var content = StringUtils.GetInnerText(root["Content"]);
+
+                    var isSession = await _wxChatRepository.UserAdd(new WxChat
+                    {
+                        SiteId = siteId,
+                        OpenId = fromUserName,
+                        IsReply = false,
+                        Text = content
+                    });
+
+                    var textMessages = await _wxManager.GetMessagesAsync(siteId, content, isSession ? 0 : account.MpReplyAutoMessageId);
+                    foreach (var textMessage in textMessages)
+                    {
+                        await _wxManager.CustomSendAsync(account.MpAppId, fromUserName, textMessage);
+                    }
+
+                    return "success";
                 }
             }
 
