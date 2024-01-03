@@ -94,11 +94,15 @@ namespace SSCMS.Web.Controllers.Wx
                     });
 
                     var textMessages = await _wxManager.GetMessagesAsync(siteId, content, isSession ? 0 : account.MpReplyAutoMessageId);
-                    foreach (var textMessage in textMessages)
+                    if (textMessages.Count > 0)
                     {
-                        await _wxManager.CustomSendAsync(account.MpAppId, fromUserName, textMessage);
+                        var (_, accessToken, _) = await _wxManager.GetAccessTokenAsync(account);
+                        foreach (var textMessage in textMessages)
+                        {
+                            await _wxManager.CustomSendAsync(accessToken, fromUserName, textMessage);
+                        }
                     }
-
+                    
                     return "success";
                 }
             }

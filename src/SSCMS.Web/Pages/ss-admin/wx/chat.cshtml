@@ -33,10 +33,10 @@
   stripe
   style="width: 100%">
   <el-table-column
-    width="120"
+    width="300"
     label="OpenId">
     <template slot-scope="scope">
-      <el-link :underline="false" type="primary">
+      <el-link :underline="false" type="primary" v-on:click="btnReplyClick(scope.row)">
         {{scope.row.openId}}
       </el-link>
     </template>

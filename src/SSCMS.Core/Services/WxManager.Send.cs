@@ -37,27 +37,27 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task CustomSendAsync(string accessTokenOrAppId, string openId, WxReplyMessage message)
+        public async Task CustomSendAsync(string accessToken, string openId, WxReplyMessage message)
         {
             if (message.MaterialType == MaterialType.Message)
             {
-                await CustomSendMessageAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
+                await CustomSendMessageAsync(accessToken, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
             else if (message.MaterialType == MaterialType.Text)
             {
-                await CustomSendTextAsync(accessTokenOrAppId, openId, message.SiteId, message.Text);
+                await CustomSendTextAsync(accessToken, openId, message.SiteId, message.Text);
             }
             else if (message.MaterialType == MaterialType.Image)
             {
-                await CustomSendImageAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
+                await CustomSendImageAsync(accessToken, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
             else if (message.MaterialType == MaterialType.Audio)
             {
-                await CustomSendAudioAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
+                await CustomSendAudioAsync(accessToken, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
             else if (message.MaterialType == MaterialType.Video)
             {
-                await CustomSendVideoAsync(accessTokenOrAppId, openId, message.SiteId, message.MaterialId, message.MediaId);
+                await CustomSendVideoAsync(accessToken, openId, message.SiteId, message.MaterialId, message.MediaId);
             }
         }
 
@@ -98,7 +98,17 @@ namespace SSCMS.Core.Services
                 Text = MaterialType.Image.GetDisplayName()
             });
 
-            await CustomApi.SendImageAsync(accessTokenOrAppId, openId, mediaId);
+            var body = $@"
+{{
+    ""touser"":""{openId}"",
+    ""msgtype"":""image"",
+    ""image"":
+    {{
+      ""media_id"":""{mediaId}""
+    }}
+}}";
+
+            await CustomSendAsync(accessTokenOrAppId, body);
         }
 
         public async Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
@@ -143,7 +153,7 @@ namespace SSCMS.Core.Services
             await CustomApi.SendVideoAsync(accessTokenOrAppId, openId, mediaId, video.Title, video.Description);
         }
 
-        public async Task CustomSendTextAsync(string accessTokenOrAppId, string openId, int siteId, string text)
+        public async Task CustomSendTextAsync(string accessToken, string openId, int siteId, string text)
         {
             await _wxChatRepository.ReplyAdd(new WxChat
             {
@@ -155,12 +165,6 @@ namespace SSCMS.Core.Services
                 Text = text
             });
 
-            await SendTextAsync(accessTokenOrAppId, openId, text);
-        }
-
-        // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Service_Center_messages.html#%E5%AE%A2%E6%9C%8D%E6%8E%A5%E5%8F%A3-%E5%8F%91%E6%B6%88%E6%81%AF
-        public async Task<(bool success, string errorMessage)> SendTextAsync(string accessToken, string openId, string text)
-        {
             var body = $@"
 {{
     ""touser"":""{openId}"",
@@ -170,6 +174,13 @@ namespace SSCMS.Core.Services
          ""content"":""{text}""
     }}
 }}";
+
+            await CustomSendAsync(accessToken, body);
+        }
+
+        // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Service_Center_messages.html#%E5%AE%A2%E6%9C%8D%E6%8E%A5%E5%8F%A3-%E5%8F%91%E6%B6%88%E6%81%AF
+        public async Task<(bool success, string errorMessage)> CustomSendAsync(string accessToken, string body)
+        {
             var url = $"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={accessToken}";
             var (success, result, errorMessage) = await RestUtils.PostStringAsync(url, body);
 
