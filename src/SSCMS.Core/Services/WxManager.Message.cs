@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Datory;
 using SSCMS.Core.Utils.Wx;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Services;
-using SSCMS.Utils;
 
 // https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Passive_user_reply_message.html#0
 
