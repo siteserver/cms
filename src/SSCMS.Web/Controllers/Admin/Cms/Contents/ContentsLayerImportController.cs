@@ -22,17 +22,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IStorageManager _storageManager;
         private readonly ICreateManager _createManager;
         private readonly IDatabaseManager _databaseManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerImportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository)
+        public ContentsLayerImportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, IStorageManager storageManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
             _pathManager = pathManager;
+            _storageManager = storageManager;
             _createManager = createManager;
             _databaseManager = databaseManager;
             _siteRepository = siteRepository;

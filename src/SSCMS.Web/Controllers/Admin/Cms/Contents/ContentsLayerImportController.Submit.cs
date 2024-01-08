@@ -67,12 +67,23 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
             else if (request.ImportType == "image")
             {
-                for(var i = 0; i < request.FileNames.Count; i++)
+                var isAutoStorage = await _storageManager.IsAutoStorageAsync(request.SiteId, SyncType.Images);
+                for (var i = 0; i < request.FileNames.Count; i++)
                 {
-                  var fileName = request.FileNames[i];
-                  var fileUrl = request.FileUrls[i];
+                    var fileName = request.FileNames[i];
+                    var fileUrl = request.FileUrls[i];
 
-                  var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
+                    if (isAutoStorage)
+                    {
+                        var filePath = await _pathManager.GetSitePathAsync(site, fileUrl);
+                        var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
+                        if (success)
+                        {
+                            fileUrl = url;
+                        }
+                    }
+
+                    var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
                     contentIdList.AddRange(await importObject.ImportContentsByImageFileAsync(channelInfo, fileName, fileUrl, request.IsOverride, isChecked, request.CheckedLevel, adminId, 0, SourceManager.Default));
                 }
             }
@@ -101,7 +112,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             options.ImportType = request.ImportType;
             options.IsOverride = request.IsOverride;
-            
+
             SetOptions(site, options);
             await _siteRepository.UpdateAsync(site);
 

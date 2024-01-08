@@ -19,7 +19,6 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
             }
 
             var fileName = PathUtils.GetFileName(file.FileName);
-            var extName = PathUtils.GetExtension(fileName);
             var filePath = string.Empty;
 
             if (siteId > 0)
