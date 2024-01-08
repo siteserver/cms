@@ -37,10 +37,6 @@ namespace Datory.Utils
             {
                 instance = DmImpl.Instance;
             }
-            else if (databaseType == DatabaseType.Hg)
-            {
-                instance = HgImpl.Instance;
-            }
 
             return instance;
         }

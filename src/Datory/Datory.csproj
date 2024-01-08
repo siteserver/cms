@@ -32,7 +32,6 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="dmdbms.DmProvider" Version="1.1.3" />
     <PackageReference Include="KingbaseES.EntityFrameworkCore" Version="6.0.7" />
-    <PackageReference Include="SqlSugar.Nhgdb" Version="5.1.4.2" />
   </ItemGroup>
 
 </Project>

@@ -89,10 +89,6 @@ namespace Datory
             {
                 conn = DmImpl.Instance.GetConnection(ConnectionString);
             }
-            else if (DatabaseType == DatabaseType.Hg)
-            {
-                conn = HgImpl.Instance.GetConnection(ConnectionString);
-            }
 
             return conn;
         }
@@ -422,10 +418,6 @@ namespace Datory
             {
                 list = await DmImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
-            else if (DatabaseType == DatabaseType.Hg)
-            {
-                list = await HgImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
-            }
 
             return list;
         }
@@ -465,10 +457,6 @@ namespace Datory
             {
                 tableNames = await DmImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
-            else if (DatabaseType == DatabaseType.Hg)
-            {
-                tableNames = await HgImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
-            }
 
             return tableNames;
         }
@@ -501,10 +489,6 @@ namespace Datory
             {
                 exists = await DmImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
-            else if (DatabaseType == DatabaseType.Hg)
-            {
-                exists = await HgImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
-            }
 
             return exists;
         }
@@ -536,10 +520,6 @@ namespace Datory
             else if (DatabaseType == DatabaseType.Dm)
             {
                 tableNames = await DmImpl.Instance.GetTableNamesAsync(ConnectionString);
-            }
-            else if (DatabaseType == DatabaseType.Hg)
-            {
-                tableNames = await HgImpl.Instance.GetTableNamesAsync(ConnectionString);
             }
 
             return tableNames;

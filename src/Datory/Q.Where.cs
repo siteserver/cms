@@ -543,10 +543,6 @@ namespace Datory
             {
                 where = $"INSTR([{columnName}], ?) > 0";
             }
-            else if (databaseType == DatabaseType.Hg)
-            {
-                where = $"POSITION(? IN [{columnName}]) > 0";
-            }
 
             return where;
         }
@@ -601,10 +597,6 @@ namespace Datory
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
             }
-            else if (databaseType == DatabaseType.Hg)
-            {
-                where = $"POSITION([{columnName}] IN ?) > 0";
-            }
 
             return where;
         }
@@ -658,10 +650,6 @@ namespace Datory
             else if (databaseType == DatabaseType.Dm)
             {
                 where = $"INSTR([{columnName}], ?) = 0";
-            }
-            else if (databaseType == DatabaseType.Hg)
-            {
-                where = $"POSITION(? IN [{columnName}]) = 0";
             }
 
             return where;
