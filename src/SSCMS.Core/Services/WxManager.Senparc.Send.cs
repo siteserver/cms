@@ -61,7 +61,7 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
+        public async Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true)
         {
             if (string.IsNullOrEmpty(mediaId))
             {
@@ -83,13 +83,14 @@ namespace SSCMS.Core.Services
 
         public async Task CustomSendImageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true)
         {
+            var image = await _materialImageRepository.GetAsync(materialId);
+
             if (string.IsNullOrEmpty(mediaId))
             {
-                var image = await _materialImageRepository.GetAsync(materialId);
                 var filePath = _pathManager.ParsePath(image.Url);
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    (_, mediaId, _) = await AddMaterialImageAsync(accessTokenOrAppId, filePath);
+                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Image, filePath);
                     if (!string.IsNullOrEmpty(mediaId))
                     {
                         await _materialImageRepository.UpdateMediaIdAsync(materialId, mediaId);
@@ -120,11 +121,10 @@ namespace SSCMS.Core.Services
             var (success, _) = await CustomSendAsync(accessTokenOrAppId, body);
             if (!success && retry)
             {
-                var image = await _materialImageRepository.GetAsync(materialId);
                 var filePath = _pathManager.ParsePath(image.Url);
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    (_, mediaId, _) = await AddMaterialImageAsync(accessTokenOrAppId, filePath);
+                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Image, filePath);
                     if (!string.IsNullOrEmpty(mediaId))
                     {
                         await _materialImageRepository.UpdateMediaIdAsync(materialId, mediaId);
@@ -134,11 +134,21 @@ namespace SSCMS.Core.Services
             }
         }
 
-        public async Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
+        public async Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true)
         {
+            var audio = await _materialAudioRepository.GetAsync(materialId);
+
             if (string.IsNullOrEmpty(mediaId))
             {
-                mediaId = await PushMaterialAsync(accessTokenOrAppId, MaterialType.Audio, materialId);
+                var filePath = _pathManager.ParsePath(audio.Url);
+                if (FileUtils.IsFileExists(filePath))
+                {
+                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
+                    if (!string.IsNullOrEmpty(mediaId))
+                    {
+                        await _materialAudioRepository.UpdateMediaIdAsync(materialId, mediaId);
+                    }
+                }
             }
 
             await _wxChatRepository.ReplyAdd(new WxChat
@@ -151,17 +161,48 @@ namespace SSCMS.Core.Services
                 Text = MaterialType.Audio.GetDisplayName()
             });
 
-            await CustomApi.SendVoiceAsync(accessTokenOrAppId, openId, mediaId);
+            var body = $@"
+{{
+    ""touser"":""{openId}"",
+    ""msgtype"":""voice"",
+    ""voice"":
+    {{
+      ""media_id"":""{mediaId}""
+    }}
+}}";
+
+            var (success, _) = await CustomSendAsync(accessTokenOrAppId, body);
+            if (!success && retry)
+            {
+                var filePath = _pathManager.ParsePath(audio.Url);
+                if (FileUtils.IsFileExists(filePath))
+                {
+                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
+                    if (!string.IsNullOrEmpty(mediaId))
+                    {
+                        await _materialAudioRepository.UpdateMediaIdAsync(materialId, mediaId);
+                        await CustomSendAudioAsync(accessTokenOrAppId, openId, siteId, materialId, mediaId, false);
+                    }
+                }
+            }
         }
 
-        public async Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId)
+        public async Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true)
         {
+            var video = await _materialVideoRepository.GetAsync(materialId);
+
             if (string.IsNullOrEmpty(mediaId))
             {
-                mediaId = await PushMaterialAsync(accessTokenOrAppId, MaterialType.Video, materialId);
+                var filePath = _pathManager.ParsePath(video.Url);
+                if (FileUtils.IsFileExists(filePath))
+                {
+                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Video, filePath);
+                    if (!string.IsNullOrEmpty(mediaId))
+                    {
+                        await _materialVideoRepository.UpdateMediaIdAsync(materialId, mediaId);
+                    }
+                }
             }
-
-            var video = await _materialVideoRepository.GetAsync(materialId);
 
             await _wxChatRepository.ReplyAdd(new WxChat
             {
@@ -173,7 +214,33 @@ namespace SSCMS.Core.Services
                 Text = MaterialType.Video.GetDisplayName()
             });
 
-            await CustomApi.SendVideoAsync(accessTokenOrAppId, openId, mediaId, video.Title, video.Description);
+            var body = $@"
+{{
+    ""touser"":""{openId}"",
+    ""msgtype"":""video"",
+    ""video"":
+    {{
+      ""media_id"":""{mediaId}"",
+      ""thumb_media_id"":"""",
+      ""title"":""{video.Title}"",
+      ""description"":""{video.Description}""
+    }}
+}}";
+
+            var (success, _) = await CustomSendAsync(accessTokenOrAppId, body);
+            if (!success && retry)
+            {
+                var filePath = _pathManager.ParsePath(video.Url);
+                if (FileUtils.IsFileExists(filePath))
+                {
+                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
+                    if (!string.IsNullOrEmpty(mediaId))
+                    {
+                        await _materialVideoRepository.UpdateMediaIdAsync(materialId, mediaId);
+                        await CustomSendVideoAsync(accessTokenOrAppId, openId, siteId, materialId, mediaId, false);
+                    }
+                }
+            }
         }
 
         public async Task CustomSendTextAsync(string accessToken, string openId, int siteId, string text)

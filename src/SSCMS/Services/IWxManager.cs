@@ -18,7 +18,7 @@ namespace SSCMS.Services
 
         Task<bool> IsEnabledAsync(Site site);
 
-        Task<(bool success, string mediaId, string errorMessage)> AddMaterialImageAsync(string accessToken, string filePath);
+        Task<(bool success, string mediaId, string errorMessage)> AddMaterialAsync(string accessToken, WxMaterialType materialType, string filePath);
 
         Task<(bool success, string mediaId, string errorMessage)> DraftAddAsync(string accessToken, int messageId);
 
@@ -42,13 +42,13 @@ namespace SSCMS.Services
 
         Task CustomSendTextAsync(string accessTokenOrAppId, string openId, int siteId, string text);
 
-        Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId);
+        Task CustomSendMessageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true);
 
         Task CustomSendImageAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true);
 
-        Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId);
+        Task CustomSendAudioAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true);
 
-        Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId);
+        Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true);
 
         Task PullMaterialAsync(string accessTokenOrAppId, MaterialType materialType, int groupId);
 
