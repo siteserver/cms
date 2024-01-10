@@ -24,8 +24,12 @@ namespace SSCMS.Core.Services
 
             if (entryAssembly != null)
             {
-                Version = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                    .InformationalVersion;
+                var version = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                if (StringUtils.Contains(version, "+"))
+                {
+                    version = version.Substring(0, version.IndexOf("+"));
+                }
+                Version = version;
                 FrameworkDescription = RuntimeInformation.FrameworkDescription;
                 OSDescription = RuntimeInformation.OSDescription;
                 string os;
