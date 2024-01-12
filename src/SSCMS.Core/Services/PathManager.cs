@@ -70,7 +70,7 @@ namespace SSCMS.Core.Services
         public string GetUploadFileName(string fileName)
         {
             var dt = DateTime.Now;
-            return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{PathUtils.GetExtension(fileName)}";
+            return $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}{StringUtils.GetRandomInt(1, 9999)}{PathUtils.GetExtension(fileName)}";
         }
 
         public async Task<string> GetWebUrlAsync(Site site)
