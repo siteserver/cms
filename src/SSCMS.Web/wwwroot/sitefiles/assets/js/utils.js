@@ -1050,6 +1050,13 @@ var utils = {
       return array;
     }
     return null;
+  },
+
+  scrollToError: function () {
+    setTimeout(function() {
+      var element = $('.el-form-item__error')[0];
+      $(element).parent().parent()[0].scrollIntoView();
+    }, 100);
   }
 };
 

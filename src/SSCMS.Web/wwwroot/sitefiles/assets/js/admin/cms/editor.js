@@ -956,6 +956,8 @@ var methods = {
             $this.apiSave();
           }
         });
+      } else {
+        utils.scrollToError();
       }
     });
   },
