@@ -1,5 +1,15 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <link rel="stylesheet" href="/sitefiles/assets/css/github-markdown.css">
+  <style>
+    .el-upload-list {
+      position: absolute;
+      z-index: 999999999999999999;
+      width: 100%;
+    }
+  </style>
+}
 
 <el-alert type="warning">
   请在此上传zip格式的插件包，系统将自动解压并安装插件。
