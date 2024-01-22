@@ -253,6 +253,8 @@ var methods = {
         } else {
           $this.apiSubmit();
         }
+      } else {
+        utils.scrollToError();
       }
     });
   },

@@ -1008,7 +1008,7 @@ var methods = {
       if (valid) {
         $this.apiPreview();
       } else {
-        utils.error("预览失败，请检查表单值是否正确");
+        utils.scrollToError();
       }
     });
   },
