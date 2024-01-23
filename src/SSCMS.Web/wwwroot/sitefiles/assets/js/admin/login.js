@@ -144,6 +144,7 @@ var methods = {
             type: 'success',
             message: '已取消登录'
           });
+          utils.loading($this, false);
         });
       } else {
         localStorage.setItem('sessionId', res.sessionId);
