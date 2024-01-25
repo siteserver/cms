@@ -227,7 +227,7 @@
               :key="column.attributeName"
               :label="column.displayName"
             >
-              <el-input v-model="column.value" placeholder="请输入搜索关键词">
+              <el-input v-model="column.value" placeholder="请输入搜索关键词" v-on:keyup.enter.native="btnSearchClick">
                 <el-button
                   slot="append"
                   v-on:click="btnSelectColumnClick(column)"
