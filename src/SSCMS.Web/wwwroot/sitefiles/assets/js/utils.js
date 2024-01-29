@@ -702,17 +702,21 @@ var utils = {
       if ((e.ctrlKey && e.key !== "Control" && (e.keyCode || e.which) == 83) ||
           (e.ctrlKey && e.which == 13 || e.which == 10) ||
           (e.shiftKey && e.which == 13 || e.which == 10)) {
-        submitFn && submitFn();
+            e.preventDefault();
+            e.stopPropagation();
+            submitFn && submitFn();
       } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
         cancelFn && cancelFn();
       } else if (e.key === 'F1') {
+        e.preventDefault();
+        e.stopPropagation();
         var url = location.href;
         if (url.indexOf('/ss-admin/') !== -1) {
           url = url.substring(url.indexOf('/ss-admin/'));
         }
         utils.openDocs(url);
-        e.preventDefault();
-        e.stopPropagation();
       }
     });
   },
