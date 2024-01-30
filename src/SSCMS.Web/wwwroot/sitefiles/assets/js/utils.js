@@ -331,6 +331,18 @@ var utils = {
     }
   },
 
+  focusTab: function(name) {
+    if (!name) {
+      name = utils.getTabName();
+    }
+    setTimeout(function() {
+      var ele = top.document.getElementById('frm-' + name);
+      if (ele) {
+        ele.contentWindow.focus();
+      }
+    }, 100);
+  },
+
   addTab: function(title, url) {
     var $this = utils.getRootVue();
     var index = $this.tabs.findIndex(function(tab) {
@@ -345,6 +357,7 @@ var utils = {
         url: url,
       };
       $this.tabs.push(tab);
+      utils.focusTab(tab.name);
     } else {
       tab = $this.tabs[index];
       var iframe = top.document.getElementById('frm-' + tab.name).contentWindow;

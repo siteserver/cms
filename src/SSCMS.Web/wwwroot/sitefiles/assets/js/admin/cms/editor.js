@@ -795,6 +795,7 @@ var methods = {
     }
     this.form[utils.getExtendName(attributeName, no)] = text;
     this.form = _.assign({}, this.form);
+    utils.focusTab();
   },
 
   insertLatestText: function (attributeName, text) {
@@ -811,6 +812,7 @@ var methods = {
     if (!attributeName) attributeName = "Body";
     if (!html) return;
     utils.getEditor(attributeName).execCommand("insertHTML", html);
+    utils.focusTab();
   },
 
   addTranslation: function (targetSiteId, targetChannelId, translateType, summary) {
