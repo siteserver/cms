@@ -14,6 +14,7 @@ var data = utils.init({
   },
   uploadUrl: null,
   uploadList: [],
+  orderedFileNames: [],
   columns: [],
   styles: [],
 });
@@ -44,11 +45,41 @@ var methods = {
     });
   },
 
-  apiSubmit: function (){
+  apiSubmit: function () {
     var $this = this;
 
+    var fileNames = [];
+    var fileUrls = [];
+    for (var i = 0; i < this.orderedFileNames.length; i++) {
+      var fileName = this.orderedFileNames[i];
+      var index = this.form.fileNames.indexOf(fileName);
+      if (index !== -1) {
+        fileNames.push(this.form.fileNames[index]);
+        fileUrls.push(this.form.fileUrls[index]);
+      }
+    }
+    for (var i = 0; i < this.form.fileNames.length; i++) {
+      var fileName = this.form.fileNames[i];
+      var index = this.orderedFileNames.indexOf(fileName);
+      if (index === -1) {
+        fileNames.push(this.form.fileNames[i]);
+        fileUrls.push(this.form.fileUrls[i]);
+      }
+    }
+    fileNames.reverse();
+    fileUrls.reverse();
+
     utils.loading(this, true);
-    $api.post($url, this.form).then(function (response) {
+    $api.post($url, {
+      siteId: this.form.siteId,
+      channelId: this.form.channelId,
+      importType: this.form.importType,
+      checkedLevel: this.form.checkedLevel,
+      isOverride: this.form.isOverride,
+      fileNames: fileNames,
+      fileUrls: fileUrls,
+      attributes: this.form.attributes,
+    }).then(function (response) {
       var res = response.data;
 
       utils.closeLayer();
@@ -77,6 +108,7 @@ var methods = {
   },
 
   uploadBefore(file) {
+    this.orderedFileNames.push(file.name);
     var re = /(\.zip|\.xlsx|\.txt)$/i;
     if (this.form.importType === 'zip') {
       re = /(\.zip)$/i;
@@ -103,6 +135,9 @@ var methods = {
       var index = this.form.fileNames.indexOf(file.response.name);
       this.form.fileNames.splice(index, 1);
       this.form.fileUrls.splice(index, 1);
+
+      var selectedIndex = this.orderedFileNames.indexOf(file.response.name);
+      this.orderedFileNames.splice(selectedIndex, 1);
     }
   },
 
