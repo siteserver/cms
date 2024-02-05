@@ -108,7 +108,6 @@ var methods = {
   },
 
   uploadBefore(file) {
-    this.orderedFileNames.push(file.name);
     var re = /(\.zip|\.xlsx|\.txt)$/i;
     if (this.form.importType === 'zip') {
       re = /(\.zip)$/i;
@@ -123,6 +122,7 @@ var methods = {
       utils.error('请选择有效的文件上传!');
       return false;
     }
+    this.orderedFileNames.push(file.name);
     return true;
   },
 

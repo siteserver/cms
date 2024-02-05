@@ -33,14 +33,19 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var adminId = _authManager.AdminId;
             var contentIdList = new List<int>();
-            foreach (var file in request.Files)
+
+            for (var i = 0; i < request.FileNames.Count; i++)
             {
-                if (string.IsNullOrEmpty(file.FileName) || string.IsNullOrEmpty(file.Title)) continue;
+                var fileName = request.FileNames[i];
+                var fileUrl = request.FileUrls[i];
+                var title = PathUtils.GetFileNameWithoutExtension(fileName);
+
+                if (string.IsNullOrEmpty(fileName)) continue;
 
                 try
                 {
-                    var filePath = _pathManager.GetTemporaryFilesPath(file.FileName);
-                    var wordManager = new WordManager(request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, file.Title);
+                    var filePath = _pathManager.GetTemporaryFilesPath(fileUrl);
+                    var wordManager = new WordManager(request.IsFirstLineTitle, request.IsClearFormat, request.IsFirstLineIndent, request.IsClearFontSize, request.IsClearFontFamily, request.IsClearImages, filePath, title);
                     await wordManager.ParseAsync(_pathManager, site);
 
                     if (string.IsNullOrEmpty(wordManager.Title)) continue;

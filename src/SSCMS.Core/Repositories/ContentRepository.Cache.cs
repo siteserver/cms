@@ -333,7 +333,7 @@ namespace SSCMS.Core.Repositories
             {
                 whereString += $" AND {Quote(nameof(Content.Checked))} = {DbUtils.ToSqlBool(_settingsManager.DatabaseType, true)}";
             }
-            var sqlString = DbUtils.ToTopSqlString(Database, tableName, "Id", whereString, orderByString, 1);
+            var sqlString = DbUtils.ToTopSqlString(Database, tableName, Quote(nameof(Content.Id)), whereString, orderByString, 1);
 
             var repository = await GetRepositoryAsync(tableName);
             using (var connection = repository.Database.GetConnection())

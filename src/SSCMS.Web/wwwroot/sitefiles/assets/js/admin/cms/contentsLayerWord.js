@@ -13,10 +13,12 @@ var data = utils.init({
     isClearFontFamily: true,
     isClearImages: false,
     checkedLevel: null,
-    files: []
+    fileNames: [],
+    fileUrls: [],
   },
   uploadUrl: null,
-  uploadList: []
+  uploadList: [],
+  orderedFileNames: [],
 });
 
 var methods = {
@@ -44,8 +46,32 @@ var methods = {
   apiSubmit: function() {
     var $this = this;
 
+    var fileNames = [];
+    var fileUrls = [];
+    for (var i = 0; i < this.orderedFileNames.length; i++) {
+      var fileName = this.orderedFileNames[i];
+      var index = this.form.fileNames.indexOf(fileName);
+      if (index !== -1) {
+        fileNames.push(this.form.fileNames[index]);
+        fileUrls.push(this.form.fileUrls[index]);
+      }
+    }
+    for (var i = 0; i < this.form.fileNames.length; i++) {
+      var fileName = this.form.fileNames[i];
+      var index = this.orderedFileNames.indexOf(fileName);
+      if (index === -1) {
+        fileNames.push(this.form.fileNames[i]);
+        fileUrls.push(this.form.fileUrls[i]);
+      }
+    }
+    fileNames.reverse();
+    fileUrls.reverse();
+
     utils.loading(this, true);
-    $api.post($url, this.form).then(function(response) {
+    $api.post($url, _.assign({}, this.form, {
+      fileNames: fileNames,
+      fileUrls: fileUrls,
+    })).then(function(response) {
       var res = response.data;
 
       utils.closeLayer();
@@ -58,7 +84,7 @@ var methods = {
   },
 
   btnSubmitClick: function () {
-    if (this.form.files.length === 0) {
+    if (this.form.fileNames.length === 0) {
       return utils.error('请选择需要导入的Word文件！');
     }
 
@@ -71,11 +97,11 @@ var methods = {
 
   uploadBefore(file) {
     var re = /(\.docx)$/i;
-    if(!re.exec(file.name))
-    {
+    if(!re.exec(file.name)) {
       utils.error('文件只能是以.docx结尾的 Word 格式，请选择有效的文件上传!');
       return false;
     }
+    this.orderedFileNames.push(file.name);
     return true;
   },
 
@@ -85,18 +111,18 @@ var methods = {
 
   uploadRemove(file) {
     if (file.response) {
-      var startIndex = this.form.files.findIndex(function(x) {
-        return x.fileName == file.response.name;
-      });
-      this.form.files.splice(startIndex, 1);
+      var index = this.form.fileNames.indexOf(file.response.name);
+      this.form.fileNames.splice(index, 1);
+      this.form.fileUrls.splice(index, 1);
+
+      var selectedIndex = this.orderedFileNames.indexOf(file.response.name);
+      this.orderedFileNames.splice(selectedIndex, 1);
     }
   },
 
   uploadSuccess: function(res) {
-    this.form.files.push({
-      fileName: res.fileName,
-      title: res.title
-    });
+    this.form.fileNames.push(res.fileName);
+    this.form.fileUrls.push(res.fileUrl);
     utils.loading(this, false);
   },
 
