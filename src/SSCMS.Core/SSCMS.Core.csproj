@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <Version>7.2.2</Version>
+    <Version>7.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="SSCMS" Version="7.2.2" /> -->
+    <!-- <PackageReference Include="SSCMS" Version="7.3.0" /> -->
     <ProjectReference Include="..\SSCMS\SSCMS.csproj" />
   </ItemGroup>
 

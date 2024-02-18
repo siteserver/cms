@@ -5,9 +5,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /sscms
-RUN wget https://dl.sscms.com/cms/7.2.2/sscms-7.2.2-linux-x64.tar.gz
-RUN tar -xzf sscms-7.2.2-linux-x64.tar.gz
-RUN rm sscms-7.2.2-linux-x64.tar.gz -f
+RUN wget https://dl.sscms.com/cms/7.3.0/sscms-7.3.0-linux-x64.tar.gz
+RUN tar -xzf sscms-7.3.0-linux-x64.tar.gz
+RUN rm sscms-7.3.0-linux-x64.tar.gz -f
 RUN mv /sscms/wwwroot /sscms/_wwwroot
 RUN echo `date +%Y-%m-%d-%H-%M-%S` > /sscms/_wwwroot/sitefiles/version.txt
 
@@ -16,4 +16,4 @@ WORKDIR /app
 COPY --from=build /sscms .
 ENTRYPOINT ["dotnet", "SSCMS.Web.dll"]
 
-# docker build -f Dockerfile.core --no-cache -t sscms/core:latest -t sscms/core:7.2.2 .
+# docker build -f Dockerfile.core --no-cache -t sscms/core:latest -t sscms/core:7.3.0 .

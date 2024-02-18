@@ -6,9 +6,9 @@
         "type": "coreclr",
         "request": "launch",
         // "preLaunchTask": "npm: dotnet-build",
-        "program": "${workspaceFolder}/src/SSCMS.Web/bin/Debug/net7.0/SSCMS.Web.dll",
+        "program": "${workspaceFolder}/src/SSCMS.Web/bin/Debug/net8.0/SSCMS.Web.dll",
         "args": [],
-        "cwd": "${workspaceFolder}/src/SSCMS.Web/bin/Debug/net7.0/",
+        "cwd": "${workspaceFolder}/src/SSCMS.Web/bin/Debug/net8.0/",
         "stopAtEntry": false,
         "serverReadyAction": {
             "action": "openExternally",

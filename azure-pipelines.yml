@@ -7,10 +7,10 @@ trigger:
 - master
 
 variables:
-  netCoreSdkVersion: '7.0.101'
+  netCoreSdkVersion: '8.0.201'
   buildConfiguration: 'Release'
   imageName: 'sscms/core'
-  productVersion: '7.2.2'
+  productVersion: '7.3.0'
 
 jobs:
 

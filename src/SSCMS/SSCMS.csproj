@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>SSCMS</PackageId>
-    <Version>7.2.2</Version>
+    <Version>7.3.0</Version>
     <Authors>SSCMS</Authors>
     <Company>SSCMS</Company>
     <PackageDescription>SSCMS .NET Core abstractions for developers.</PackageDescription>
@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Datory" Version="7.2.2" /> -->
+    <!-- <PackageReference Include="Datory" Version="7.3.0" /> -->
     <ProjectReference Include="..\Datory\Datory.csproj" />
   </ItemGroup>
 
