@@ -399,10 +399,7 @@ var $vue = new Vue({
     $(document).keydown(function (e) {
       if (!e.ctrlKey || e.key == "Control") return;
       var c = e.keyCode || e.which;
-      if (c == 83) {
-        e.preventDefault();
-        $this.btnSubmitClick();
-      } else if (c == 66) {
+      if (c == 66) {
         e.preventDefault();
         $this.btnCreateClick();
       }
