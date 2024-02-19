@@ -11,6 +11,8 @@ namespace SSCMS.Services
 
         string GetRootPath(params string[] paths);
 
+        bool IsInRootDirectory(string filePath);
+
         string GetTemporaryFilesPath(params string[] paths);
 
         string GetSiteTemplatesUrl(string relatedUrl);

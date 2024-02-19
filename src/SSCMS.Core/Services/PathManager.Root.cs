@@ -131,6 +131,11 @@ namespace SSCMS.Core.Services
             return _settingsManager.WebRootPath;
         }
 
+        public bool IsInRootDirectory(string filePath)
+        {
+            return DirectoryUtils.IsInDirectory(_settingsManager.WebRootPath, filePath);
+        }
+
         public string GetContentRootPath(params string[] paths)
         {
             var path = PathUtils.Combine(_settingsManager.ContentRootPath, PathUtils.Combine(paths));

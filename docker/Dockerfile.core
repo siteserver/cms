@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /sscms
 RUN wget https://dl.sscms.com/cms/7.3.0/sscms-7.3.0-linux-x64.tar.gz
 RUN tar -xzf sscms-7.3.0-linux-x64.tar.gz

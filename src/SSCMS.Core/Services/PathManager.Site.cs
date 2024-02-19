@@ -1589,6 +1589,5 @@ namespace SSCMS.Core.Services
                 // ignored
             }
         }
-
     }
 }

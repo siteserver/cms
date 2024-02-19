@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -86,6 +87,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
             else
             {
                 return this.Error("文件保存失败，必须为Html/Css/Js文件！");
+            }
+
+            var fileInfo = new FileInfo(filePath);
+            if (!_pathManager.IsInRootDirectory(fileInfo.FullName))
+            {
+                return this.Error("文件保存失败，路径不正确！");
             }
 
             var filePathToDelete = string.Empty;

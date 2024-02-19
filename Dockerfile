@@ -1,11 +1,11 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:7.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:8.0-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:7.0-buster AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:8.0-buster AS build
 WORKDIR /src
 COPY ["src/SSCMS.Web/SSCMS.Web.csproj", "src/SSCMS.Web/"]
 COPY ["src/SSCMS.Core/SSCMS.Core.csproj", "src/SSCMS.Core/"]

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -55,7 +56,16 @@ namespace SSCMS.Core.Services
         public async Task<string> GetIncludeContentAsync(Site site, string file)
         {
             var filePath = await ParseSitePathAsync(site, AddVirtualToPath(file));
-            return GetContentByFilePath(filePath);
+
+            var fileInfo = new FileInfo(filePath);
+            if (!fileInfo.Exists) return string.Empty;
+            filePath = fileInfo.FullName;
+
+            if (IsInRootDirectory(filePath))
+            {
+                return GetContentByFilePath(filePath);
+            }
+            return string.Empty;
         }
 
         public async Task WriteContentToIncludeFileAsync(Site site, string file, string content)
