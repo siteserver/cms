@@ -27,8 +27,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
 
             var directoryPath = PathUtils.RemoveParentPath(request.DirectoryPath);
             var fileName = PathUtils.RemoveParentPath(request.FileName);
+            var filePath = await _pathManager.GetSitePathAsync(site, directoryPath, fileName);
+            if (!_pathManager.IsInRootDirectory(filePath))
+            {
+                return this.Error("资源文件路径错误！");
+            }
 
-            FileUtils.DeleteFileIfExists(await _pathManager.GetSitePathAsync(site, directoryPath, fileName));
+            FileUtils.DeleteFileIfExists(filePath);
             await _authManager.AddSiteLogAsync(request.SiteId, "删除资源文件", $"{directoryPath}:{fileName}");
 
             return new BoolResult
