@@ -2,6 +2,7 @@
 var $urlTree = $url + "/actions/tree";
 var $urlList = $url + "/actions/list";
 var $urlColumns = $url + "/actions/columns";
+var $urlSaveIds = $url + "/actions/saveIds";
 
 var $defaultWidth = 160;
 
@@ -89,9 +90,7 @@ var methods = {
     });
   },
 
-  apiList: function(useless, page, message) {
-    var $this = this;
-
+  getSearchQuery: function(page) {
     var channelIds = [];
     for (var i = 0; i < this.searchForm.channelIds.length; i++) {
       var obj = this.searchForm.channelIds[i];
@@ -113,8 +112,7 @@ var methods = {
       }
     }
 
-    utils.loading(this, true);
-    $api.post($urlList, {
+    return {
       siteId: this.siteId,
       searchType: this.searchForm.searchType,
       channelIds: channelIds,
@@ -132,7 +130,15 @@ var methods = {
       isColor: this.searchForm.isColor,
       groupNames: this.searchForm.groupNames,
       tagNames: this.searchForm.tagNames
-    }).then(function(response) {
+    };
+  },
+
+  apiList: function(useless, page, message) {
+    var $this = this;
+
+    var query = this.getSearchQuery(page);
+    utils.loading(this, true);
+    $api.post($urlList, query).then(function(response) {
       var res = response.data;
 
       $this.pageContents = res.pageContents;
@@ -160,6 +166,22 @@ var methods = {
 
     }).catch(function(error) {
       utils.error(error);
+    });
+  },
+
+  apiSaveIds: function(callback) {
+    var $this = this;
+
+    var query = this.getSearchQuery(0);
+    utils.loading(this, true);
+    $api.post($urlSaveIds, query).then(function(response) {
+      var res = response.data;
+
+      callback();
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
+      utils.loading($this, false);
     });
   },
 
@@ -294,7 +316,10 @@ var methods = {
     } else if (command === 'Copy') {
       this.btnLayerClick({title: '批量复制', name: 'Copy', withContents: true});
     } else if (command === 'ExportAll') {
-      this.btnLayerClick({title: '导出全部', name: 'Export', full: true});
+      var $this = this;
+      this.apiSaveIds(function() {
+        $this.btnLayerClick({title: '导出全部', name: 'Export', full: true, fromSearch: true});
+      });
     } else if (command === 'ExportSelected') {
       this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
     } else if (command === 'Arrange') {
@@ -342,6 +367,10 @@ var methods = {
     if (options.withContents) {
       if (!this.isContentChecked) return;
       query.channelContentIds = this.channelContentIdsString;
+    }
+
+    if (options.fromSearch) {
+      query.fromSearch = options.fromSearch;
     }
 
     options.url = utils.getCmsUrl('contentsLayer' + options.name, query);

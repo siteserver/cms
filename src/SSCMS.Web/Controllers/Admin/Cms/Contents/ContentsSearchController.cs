@@ -21,6 +21,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteCreate = "cms/contents/contentsSearch/actions/create";
         private const string RouteColumns = "cms/contents/contentsSearch/actions/columns";
         private const string RouteWidth = "cms/contents/contentsSearch/actions/width";
+        private const string RouteSaveIds = "cms/contents/contentsSearch/actions/saveIds";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;

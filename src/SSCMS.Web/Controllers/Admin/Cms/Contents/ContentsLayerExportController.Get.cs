@@ -24,10 +24,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             if (channel == null) return this.Error("无法确定内容对应的栏目");
 
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
-            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Export);
 
             var (isChecked, checkedLevel) = await CheckManager.GetUserCheckLevelAsync(_authManager, site, request.SiteId);
-            // var checkedLevels = CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true);
             var checkedLevels = ElementUtils.GetCheckBoxes(CheckManager.GetCheckedLevels(site, isChecked, checkedLevel, true));
 
             return new GetResult

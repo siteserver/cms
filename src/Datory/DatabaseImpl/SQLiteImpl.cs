@@ -107,7 +107,8 @@ namespace Datory.DatabaseImpl
 
         public string GetAutoIncrementDataType(bool alterTable = false)
         {
-            return "INTEGER PRIMARY KEY";
+            // return "INTEGER PRIMARY KEY";
+            return "INTEGER PRIMARY KEY AUTOINCREMENT";
         }
 
         public string GetColumnSqlString(TableColumn tableColumn)

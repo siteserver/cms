@@ -31,7 +31,7 @@ namespace SSCMS.Core.Utils.Office
             var rows = new List<List<string>>();
 
             var columnsManager = new ColumnsManager(_databaseManager, _pathManager);
-            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Contents);
+            var columns = await columnsManager.GetContentListColumnsAsync(site, channel, ColumnsManager.PageType.Export);
 
             foreach (var column in columns)
             {

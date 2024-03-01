@@ -337,7 +337,13 @@ namespace SSCMS.Core.Repositories
             }
 
             var total = await repository.CountAsync(query);
-            var pageSummaries = await repository.GetAllAsync<ContentSummary>(query.ForPage(page, site.PageSize));
+
+            if (page > 0)
+            {
+                query.ForPage(page, site.PageSize);
+            }
+
+            var pageSummaries = await repository.GetAllAsync<ContentSummary>(query);
             return (total, pageSummaries);
         }
 

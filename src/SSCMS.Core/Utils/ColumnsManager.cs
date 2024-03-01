@@ -459,7 +459,8 @@ namespace SSCMS.Core.Utils
             Contents,
             SearchContents,
             CheckContents,
-            RecycleContents
+            RecycleContents,
+            Export
         }
 
         public async Task<List<ContentColumn>> GetContentListColumnsAsync(Site site, Channel channel, PageType pageType)
@@ -467,7 +468,7 @@ namespace SSCMS.Core.Utils
             var columns = new List<ContentColumn>();
             var listColumns = new List<string>();
 
-            if (pageType == PageType.Contents)
+            if (pageType == PageType.Contents || pageType == PageType.Export)
             {
                 listColumns = await _databaseManager.ChannelRepository.GetListColumnsRecursiveAsync(channel);
             }
@@ -500,9 +501,6 @@ namespace SSCMS.Core.Utils
                 }
             }
 
-            //var pluginIds = _pluginManager.GetContentPluginIds(channel);
-            //var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
-
             var styles = GetContentListStyles(await _databaseManager.TableStyleRepository.GetContentStylesAsync(site, channel));
 
             styles.Insert(0, new TableStyle
@@ -513,7 +511,8 @@ namespace SSCMS.Core.Utils
 
             foreach (var style in styles)
             {
-                if (string.IsNullOrEmpty(style.DisplayName) || style.InputType == InputType.TextEditor) continue;
+                if (string.IsNullOrEmpty(style.DisplayName)) continue;
+                if (pageType != PageType.Export && style.InputType == InputType.TextEditor) continue;
 
                 var column = new ContentColumn
                 {
@@ -541,33 +540,6 @@ namespace SSCMS.Core.Utils
 
                 columns.Add(column);
             }
-
-            //if (pluginColumns != null)
-            //{
-            //    foreach (var pluginId in pluginColumns.Keys)
-            //    {
-            //        var contentColumns = pluginColumns[pluginId];
-            //        if (contentColumns == null || contentColumns.Count == 0) continue;
-
-            //        foreach (var columnName in contentColumns.Keys)
-            //        {
-            //            var attributeName = $"{pluginId}:{columnName}";
-            //            var column = new ContentColumn
-            //            {
-            //                AttributeName = attributeName,
-            //                DisplayName = $"{columnName}({pluginId})",
-            //                InputType = InputType.Text
-            //            };
-
-            //            if (ListUtils.ContainsIgnoreCase(listColumns, attributeName))
-            //            {
-            //                column.IsList = true;
-            //            }
-
-            //            columns.Add(column);
-            //        }
-            //    }
-            //}
 
             return columns;
         }

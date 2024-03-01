@@ -24,6 +24,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            if (request.FromSearch)
+            {
+                var jsonFilePath = _pathManager.GetTemporaryFilesPath($"{nameof(ContentsLayerExportController)}_{request.SiteId}.json");
+                if (FileUtils.IsFileExists(jsonFilePath))
+                {
+                    var json = await FileUtils.ReadTextAsync(jsonFilePath);
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        summaries = TranslateUtils.JsonDeserialize<List<ContentSummary>>(json);
+                    }
+                }
+            }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
