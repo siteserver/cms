@@ -181,13 +181,6 @@ namespace SSCMS.Core.Services
                     .Where(x => ListUtils.ContainsIgnoreCase(x.Type, Types.PermissionTypes.App))
                     .Select(permission => permission.Id));
             }
-            else if (_databaseManager.RoleRepository.IsSystemAdministrator(roles))
-            {
-                appPermissions = new List<string>
-                {
-                    MenuUtils.AppPermissions.SettingsAdministrators
-                };
-            }
             else
             {
                 appPermissions = await _databaseManager.PermissionsInRolesRepository.GetAppPermissionsAsync(roles);
