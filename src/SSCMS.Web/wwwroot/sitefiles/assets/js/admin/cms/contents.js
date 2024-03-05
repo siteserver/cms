@@ -397,6 +397,9 @@ var methods = {
       if (!this.isContentChecked) return;
       query.channelContentIds = this.channelContentIdsString;
     }
+    if (options.fileName) {
+      query.fileName = options.fileName;
+    }
 
     options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
     utils.openLayer(options);

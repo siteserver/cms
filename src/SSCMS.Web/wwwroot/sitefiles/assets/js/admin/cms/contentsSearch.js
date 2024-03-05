@@ -177,7 +177,7 @@ var methods = {
     $api.post($urlSaveIds, query).then(function(response) {
       var res = response.data;
 
-      callback();
+      callback(res.value);
     }).catch(function(error) {
       utils.error(error);
     }).then(function() {
@@ -317,8 +317,8 @@ var methods = {
       this.btnLayerClick({title: '批量复制', name: 'Copy', withContents: true});
     } else if (command === 'ExportAll') {
       var $this = this;
-      this.apiSaveIds(function() {
-        $this.btnLayerClick({title: '导出全部', name: 'Export', full: true, fromSearch: true});
+      this.apiSaveIds(function(fileName) {
+        $this.btnLayerClick({title: '导出全部', name: 'Export', full: true, fileName: fileName});
       });
     } else if (command === 'ExportSelected') {
       this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
@@ -368,9 +368,8 @@ var methods = {
       if (!this.isContentChecked) return;
       query.channelContentIds = this.channelContentIdsString;
     }
-
-    if (options.fromSearch) {
-      query.fromSearch = options.fromSearch;
+    if (options.fileName) {
+      query.fileName = options.fileName;
     }
 
     options.url = utils.getCmsUrl('contentsLayer' + options.name, query);

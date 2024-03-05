@@ -7,6 +7,7 @@ using NSwag.Annotations;
 using SSCMS.Configuration;
 using SSCMS.Dto;
 using SSCMS.Enums;
+using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -17,8 +18,8 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class IndexController : ControllerBase
     {
         private const string Route = "index";
-        private const string RouteActionsSetLanguage = "index/actions/setLanguage";
-        private const string RouteActionsCache = "index/actions/cache";
+        private const string RouteSetLanguage = "index/actions/setLanguage";
+        private const string RouteCache = "index/actions/cache";
 
         //private readonly IStringLocalizer<IndexController> _local;
         private readonly ISettingsManager _settingsManager;

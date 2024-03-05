@@ -24,9 +24,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
 
             var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
-            if (request.FromSearch)
+            if (!string.IsNullOrEmpty(request.FileName))
             {
-                var jsonFilePath = _pathManager.GetTemporaryFilesPath($"{nameof(ContentsLayerExportController)}_{request.SiteId}.json");
+                var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
                 if (FileUtils.IsFileExists(jsonFilePath))
                 {
                     var json = await FileUtils.ReadTextAsync(jsonFilePath);
@@ -34,6 +34,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     {
                         summaries = TranslateUtils.JsonDeserialize<List<ContentSummary>>(json);
                     }
+
+                    FileUtils.DeleteFileIfExists(jsonFilePath);
                 }
             }
 

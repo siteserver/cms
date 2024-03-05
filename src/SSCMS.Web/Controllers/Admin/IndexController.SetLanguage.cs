@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class IndexController
     {
         [Authorize(Roles = Types.Roles.Administrator)]
-        [HttpPost, Route(RouteActionsSetLanguage)]
+        [HttpPost, Route(RouteSetLanguage)]
         public ActionResult<BoolResult> SetLanguage([FromBody]SetLanguageRequest request)
         {
             Response.Cookies.Append(

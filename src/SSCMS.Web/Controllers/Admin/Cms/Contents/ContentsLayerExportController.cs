@@ -47,7 +47,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class SubmitRequest : ChannelRequest
         {
-            public bool FromSearch { get; set; }
+            public string FileName { get; set; }
             public string ChannelContentIds { get; set; }
             public string ExportType { get; set; }
             public bool IsAllCheckedLevel { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -168,6 +169,15 @@ namespace SSCMS.Core.Services
         {
             var path = GetSiteFilesPath(DirectoryUtils.SiteFiles.TemporaryFiles, PathUtils.Combine(paths));
             return path;
+        }
+
+        public async Task<string> WriteTemporaryTextAsync(string value)
+        {
+            var fileName = $"{StringUtils.Guid()}.json";
+            var jsonFilePath = GetTemporaryFilesPath(fileName);
+            FileUtils.DeleteFileIfExists(jsonFilePath);
+            await FileUtils.WriteTextAsync(jsonFilePath, value);
+            return fileName;
         }
 
         public string GetUserUploadPath(int userId, string relatedPath)

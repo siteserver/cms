@@ -9,7 +9,7 @@ namespace SSCMS.Web.Controllers.Admin
     public partial class IndexController
     {
         [Authorize(Roles = Types.Roles.Administrator)]
-        [HttpPost, Route(RouteActionsCache)]
+        [HttpPost, Route(RouteCache)]
         public async Task<ActionResult<IntResult>> Cache([FromBody] SiteRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);

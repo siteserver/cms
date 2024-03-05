@@ -9,7 +9,7 @@ var data = utils.init({
     siteId: utils.getQueryInt('siteId'),
     channelId: utils.getQueryInt('channelId'),
     channelContentIds: utils.getQueryString('channelContentIds'),
-    fromSearch: utils.getQueryBoolean('fromSearch'),
+    fileName: utils.getQueryString('fileName'),
     exportType: 'zip',
     isAllCheckedLevel: true,
     checkedLevelKeys: [],

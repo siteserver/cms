@@ -13,7 +13,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
     public partial class ContentsSearchController
     {
         [HttpPost, Route(RouteSaveIds)]
-        public async Task<ActionResult<BoolResult>> SaveIds([FromBody] ListRequest request)
+        public async Task<ActionResult<StringResult>> SaveIds([FromBody] ListRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                     MenuUtils.SitePermissions.ContentsSearch))
@@ -47,14 +47,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 var first = await _channelRepository.GetAsync(channelId);
                 summaries = await _contentRepository.GetSummariesAsync(site, first, request.IsAllContents);
             }
-            
-            var jsonFilePath = _pathManager.GetTemporaryFilesPath($"{nameof(ContentsLayerExportController)}_{request.SiteId}.json");
-            FileUtils.DeleteFileIfExists(jsonFilePath);
-            await FileUtils.WriteTextAsync(jsonFilePath, TranslateUtils.JsonSerialize(summaries));
 
-            return new BoolResult
+            var fileName = await _pathManager.WriteTemporaryTextAsync(TranslateUtils.JsonSerialize(summaries));
+            
+            return new StringResult
             {
-                Value = true
+                Value = fileName
             };
         }
     }

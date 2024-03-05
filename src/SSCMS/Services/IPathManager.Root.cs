@@ -15,6 +15,8 @@ namespace SSCMS.Services
 
         string GetTemporaryFilesPath(params string[] paths);
 
+        Task<string> WriteTemporaryTextAsync(string value);
+
         string GetSiteTemplatesUrl(string relatedUrl);
 
         string ParseUrl(string url);
