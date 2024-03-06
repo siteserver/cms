@@ -1,7 +1,8 @@
-﻿var $url = "/cms/contents/contentsCheck";
-var $urlTree = $url + "/actions/tree";
-var $urlList = $url + "/actions/list";
-var $urlColumns = $url + "/actions/columns";
+﻿var $url = '/cms/contents/contentsCheck';
+var $urlTree = $url + '/actions/tree';
+var $urlList = $url + '/actions/list';
+var $urlColumns = $url + '/actions/columns';
+var $urlSaveIds = $url + '/actions/saveIds';
 
 var $defaultWidth = 160;
 
@@ -153,6 +154,24 @@ var methods = {
     });
   },
 
+  apiSaveIds: function(callback) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlSaveIds, {
+      siteId: this.siteId,
+      channelContentIds: this.channelContentIds
+    }).then(function(response) {
+      var res = response.data;
+
+      callback(res.value);
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
+  },
+
   getContentTarget: function (content) {
     if (content.linkType == 'NoLink') {
       return '';
@@ -264,8 +283,17 @@ var methods = {
       query.channelContentIds = this.channelContentIdsString;
     }
 
-    options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
-    utils.openLayer(options);
+    if (options.saveIds) {
+      if (!this.isContentChecked) return;
+      this.apiSaveIds(function (fileName) {
+        query.fileName = fileName;
+        options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+        utils.openLayer(options);
+      });
+    } else {
+      options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+      utils.openLayer(options);
+    }
   },
 
   btnContentStateClick: function(content) {

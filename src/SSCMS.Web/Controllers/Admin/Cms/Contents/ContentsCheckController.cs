@@ -19,6 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteList = "cms/contents/contentsCheck/actions/list";
         private const string RouteTree = "cms/contents/contentsCheck/actions/tree";
         private const string RouteColumns = "cms/contents/contentsCheck/actions/columns";
+        private const string RouteSaveIds = "cms/contents/contentsCheck/actions/saveIds";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -92,6 +93,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public ContentColumn BodyColumn { get; set; }
             public List<ContentColumn> Columns { get; set; }
             public Permissions Permissions { get; set; }
+        }
+
+        public class SaveIdsRequest : SiteRequest
+        {
+            public List<ChannelContentId> ChannelContentIds { get; set; }
         }
     }
 }

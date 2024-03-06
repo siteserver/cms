@@ -1,4 +1,10 @@
-﻿var $url = "/cms/contents/contents";
+﻿var $url = '/cms/contents/contents';
+var $urlTree = $url + '/actions/tree';
+var $urlList = $url + '/actions/list';
+var $urlColumns = $url + '/actions/columns';
+var $urlWidth = $url + '/actions/width';
+var $urlOrder = $url + '/actions/order';
+var $urlSaveIds = $url + '/actions/saveIds';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -50,7 +56,7 @@ var methods = {
   apiTree: function(reload) {
     var $this = this;
 
-    $api.post($url + '/actions/tree', {
+    $api.post($urlTree, {
       siteId: this.siteId,
       reload: reload
     }).then(function(response) {
@@ -89,7 +95,7 @@ var methods = {
       searchText: this.searchForm.searchText,
       isAdvanced: this.isAdvanced
     }, this.advancedForm);
-    $api.post($url + '/actions/list', request).then(function(response) {
+    $api.post($urlList, request).then(function(response) {
       var res = response.data;
 
       $this.pageContents = res.pageContents;
@@ -121,7 +127,7 @@ var methods = {
   },
 
   apiColumns: function(attributeNames) {
-    $api.post($url + '/actions/columns', {
+    $api.post($urlColumns, {
       siteId: this.siteId,
       channelId: this.channelId,
       attributeNames: attributeNames
@@ -134,7 +140,7 @@ var methods = {
   },
 
   apiWidth: function(prevAttributeName, prevWidth, nextAttributeName, nextWidth) {
-    $api.post($url + '/actions/width', {
+    $api.post($urlWidth, {
       siteId: this.siteId,
       channelId: this.channelId,
       prevAttributeName: prevAttributeName || '',
@@ -153,7 +159,7 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url + '/actions/order', {
+    $api.post($urlOrder, {
       siteId: this.siteId,
       channelId: channelId,
       contentId: contentId,
@@ -166,6 +172,24 @@ var methods = {
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  apiSaveIds: function(callback) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlSaveIds, {
+      siteId: this.siteId,
+      channelContentIds: this.channelContentIds
+    }).then(function(response) {
+      var res = response.data;
+
+      callback(res.value);
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
       utils.loading($this, false);
     });
   },
@@ -397,12 +421,18 @@ var methods = {
       if (!this.isContentChecked) return;
       query.channelContentIds = this.channelContentIdsString;
     }
-    if (options.fileName) {
-      query.fileName = options.fileName;
-    }
 
-    options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
-    utils.openLayer(options);
+    if (options.saveIds) {
+      if (!this.isContentChecked) return;
+      this.apiSaveIds(function (fileName) {
+        query.fileName = fileName;
+        options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+        utils.openLayer(options);
+      });
+    } else {
+      options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+      utils.openLayer(options);
+    }
   },
 
   btnContentStateClick: function(content) {

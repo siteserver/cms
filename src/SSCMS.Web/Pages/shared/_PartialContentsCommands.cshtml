@@ -36,7 +36,7 @@
   </el-button>
 
   <el-button size="mini" icon="el-icon-delete" :disabled="total === 0 || !permissions.isDelete || !isContentChecked" 
-    v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true})">
+    v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, saveIds: true})">
     删除
   </el-button>
   <el-button size="mini" icon="el-icon-circle-check" :disabled="total === 0 || !permissions.isCheck || !isContentChecked" 

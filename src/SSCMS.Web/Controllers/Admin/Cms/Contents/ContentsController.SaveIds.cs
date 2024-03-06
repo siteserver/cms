@@ -7,13 +7,12 @@ using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
-    public partial class ContentsSearchController
+    public partial class ContentsController
     {
         [HttpPost, Route(RouteSaveIds)]
         public async Task<ActionResult<StringResult>> SaveIds([FromBody] SaveIdsRequest request)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    MenuUtils.SitePermissions.ContentsSearch))
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Contents))
             {
                 return Unauthorized();
             }

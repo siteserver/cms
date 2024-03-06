@@ -2,6 +2,7 @@
 var $urlTree = $url + "/actions/tree";
 var $urlList = $url + "/actions/list";
 var $urlColumns = $url + "/actions/columns";
+var $urlSaveAllIds = $url + "/actions/saveAllIds";
 var $urlSaveIds = $url + "/actions/saveIds";
 
 var $defaultWidth = 160;
@@ -169,12 +170,30 @@ var methods = {
     });
   },
 
-  apiSaveIds: function(callback) {
+  apiSaveAllIds: function(callback) {
     var $this = this;
 
     var query = this.getSearchQuery(0);
     utils.loading(this, true);
-    $api.post($urlSaveIds, query).then(function(response) {
+    $api.post($urlSaveAllIds, query).then(function(response) {
+      var res = response.data;
+
+      callback(res.value);
+    }).catch(function(error) {
+      utils.error(error);
+    }).then(function() {
+      utils.loading($this, false);
+    });
+  },
+
+  apiSaveIds: function(callback) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlSaveIds, {
+      siteId: this.siteId,
+      channelContentIds: this.channelContentIds,
+    }).then(function(response) {
       var res = response.data;
 
       callback(res.value);
@@ -317,7 +336,7 @@ var methods = {
       this.btnLayerClick({title: '批量复制', name: 'Copy', withContents: true});
     } else if (command === 'ExportAll') {
       var $this = this;
-      this.apiSaveIds(function(fileName) {
+      this.apiSaveAllIds(function(fileName) {
         $this.btnLayerClick({title: '导出全部', name: 'Export', full: true, fileName: fileName});
       });
     } else if (command === 'ExportSelected') {
@@ -372,8 +391,17 @@ var methods = {
       query.fileName = options.fileName;
     }
 
-    options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
-    utils.openLayer(options);
+    if (options.saveIds) {
+      if (!this.isContentChecked) return;
+      this.apiSaveIds(function (fileName) {
+        query.fileName = fileName;
+        options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+        utils.openLayer(options);
+      });
+    } else {
+      options.url = utils.getCmsUrl('contentsLayer' + options.name, query);
+      utils.openLayer(options);
+    }
   },
 
   btnContentStateClick: function(content) {

@@ -19,14 +19,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
+        private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerDeleteController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerDeleteController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
             _createManager = createManager;
+            _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -34,7 +36,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class GetRequest : SiteRequest
         {
-            public string ChannelContentIds { get; set; }
+            public string FileName { get; set; }
         }
 
         public class GetResult
@@ -44,7 +46,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class SubmitRequest : SiteRequest
         {
-            public string ChannelContentIds { get; set; }
+            public string FileName { get; set; }
             public bool IsRetainFiles { get; set; }
         }
     }

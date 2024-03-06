@@ -22,6 +22,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string RouteWidth = "cms/contents/contents/actions/width";
         private const string RouteOrder = "cms/contents/contents/actions/order";
         private const string RouteAll = "cms/contents/contents/actions/all";
+        private const string RouteSaveIds = "cms/contents/contents/actions/saveIds";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -138,6 +139,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             public int ContentId { get; set; }
             public bool IsUp { get; set; }
             public int Rows { get; set; }
+        }
+
+        public class SaveIdsRequest : SiteRequest
+        {
+            public List<ChannelContentId> ChannelContentIds { get; set; }
         }
     }
 }
