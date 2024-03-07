@@ -20,14 +20,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ISettingsManager _settingsManager;
+        private readonly IPathManager _pathManager;
         private readonly ICacheManager _cacheManager;
         private readonly IAuthManager _authManager;
         private readonly IDbCacheRepository _dbCacheRepository;
 
-        public UtilitiesCacheController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
+        public UtilitiesCacheController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, IPathManager pathManager, ICacheManager cacheManager, IAuthManager authManager, IDbCacheRepository dbCacheRepository)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;
+            _pathManager = pathManager;
             _cacheManager = cacheManager;
             _authManager = authManager;
             _dbCacheRepository = dbCacheRepository;

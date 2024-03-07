@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
 using Datory.Caching;
+using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
 {
@@ -15,6 +16,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
             {
                 return Unauthorized();
             }
+
+            var temporaryFilesPath = _pathManager.GetTemporaryFilesPath();
+            DirectoryUtils.DeleteDirectoryIfExists(temporaryFilesPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(temporaryFilesPath);
 
             await _dbCacheRepository.ClearAsync();
             var cacheManager = await CachingUtils.GetCacheManagerAsync(_settingsManager.Redis);
