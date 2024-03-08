@@ -91,6 +91,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
                     var parentId = (int)insertedChannelIdHashtable[count];
 
                     var insertedChannelId = await _channelRepository.InsertAsync(request.SiteId, parentId, channelName, indexName, parent.ContentModelPluginId, channelTemplateId, contentTemplateId);
+                    await _authManager.AddSiteLogAsync(request.SiteId, "添加栏目", $"栏目：{channelName}");
+                    
                     insertedChannelIdHashtable[count + 1] = insertedChannelId;
                     expandedChannelIds.Add(insertedChannelId);
 

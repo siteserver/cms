@@ -141,6 +141,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             channel.Description = request.Description;
 
             await _channelRepository.UpdateAsync(channel);
+            await _authManager.AddSiteLogAsync(request.SiteId, "修改栏目", $"栏目：{channel.ChannelName}");
 
             var expendedChannelIds = new List<int>
             {

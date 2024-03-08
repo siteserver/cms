@@ -17,6 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             await _channelRepository.DropAsync(request.SiteId, request.SourceId, request.TargetId, request.DropType);
+            await _authManager.AddSiteLogAsync(request.SiteId, "对栏目进行排序");
 
             return new BoolResult
             {
