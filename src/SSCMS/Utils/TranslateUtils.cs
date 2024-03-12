@@ -105,6 +105,28 @@ namespace SSCMS.Utils
             return i;
         }
 
+        public static double ToDouble(string intStr, double defaultValue = 0)
+        {
+            if (!double.TryParse(intStr?.Trim(), out var i))
+            {
+                i = defaultValue;
+            }
+            if (i < 0)
+            {
+                i = defaultValue;
+            }
+            return i;
+        }
+
+        public static double ToDoubleWithNegative(string intStr, double defaultValue)
+        {
+            if (!double.TryParse(intStr?.Trim(), out var i))
+            {
+                i = defaultValue;
+            }
+            return i;
+        }
+
         public static float ToFloat(string intStr, float defaultValue = 0)
         {
             if (!float.TryParse(intStr?.Trim(), out var i))

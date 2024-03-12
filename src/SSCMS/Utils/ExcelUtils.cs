@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using ExcelDataReader;
@@ -69,8 +70,6 @@ namespace SSCMS.Utils
 
         public static void Write(string filePath, List<string> head, List<List<string>> rows)
         {
-            var memoryStream = new MemoryStream();
-
             using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 IWorkbook workbook = new XSSFWorkbook();
@@ -105,5 +104,67 @@ namespace SSCMS.Utils
             }
         }
 
+
+        public class TypeValue
+        {
+            public Type TypeOf { get; set; }
+            public object Value { get; set; }
+        }
+
+        public static void Write(string filePath, List<string> head, List<List<TypeValue>> rows)
+        {
+            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet excelSheet = workbook.CreateSheet("Sheet1");
+
+                List<string> columns = new List<string>();
+                IRow row = excelSheet.CreateRow(0);
+                int columnIndex = 0;
+
+                foreach (string column in head)
+                {
+                    columns.Add(column);
+                    row.CreateCell(columnIndex).SetCellValue(column);
+                    columnIndex++;
+                }
+
+                int rowIndex = 1;
+                foreach (List<TypeValue> dsrow in rows)
+                {
+                    row = excelSheet.CreateRow(rowIndex);
+                    int cellIndex = 0;
+                    for (int i = 0; i < head.Count; i++)
+                    {
+                        var typeValue = dsrow[i];
+                        var value = typeValue.Value;
+                        if (value == null)
+                        {
+                            row.CreateCell(cellIndex).SetCellValue(string.Empty);
+                        }
+                        else if (typeValue.TypeOf == typeof(double))
+                        {
+                            row.CreateCell(cellIndex).SetCellValue(TranslateUtils.ToDouble(value.ToString()));
+                        }
+                        else if (typeValue.TypeOf == typeof(bool))
+                        {
+                            row.CreateCell(cellIndex).SetCellValue(TranslateUtils.ToBool(value.ToString()));
+                        }
+                        else if (typeValue.TypeOf == typeof(DateTime))
+                        {
+                            row.CreateCell(cellIndex).SetCellValue(TranslateUtils.ToDateTime(value.ToString()));
+                        }
+                        else
+                        {
+                            row.CreateCell(cellIndex).SetCellValue(value.ToString());
+                        }
+                        cellIndex++;
+                    }
+
+                    rowIndex++;
+                }
+                workbook.Write(fs, false);
+            }
+        }
     }
 }
