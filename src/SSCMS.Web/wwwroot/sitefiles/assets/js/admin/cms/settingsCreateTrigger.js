@@ -1,16 +1,22 @@
 ﻿var $url = "/cms/settings/settingsCreateTrigger"
+var $urlEdit = "/cms/settings/settingsCreateTrigger/actions/edit"
+var $urlEditSelected = "/cms/settings/settingsCreateTrigger/actions/editSelected"
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channels: [],
+  allChannelIds: [],
   filterText: '',
 
+  channelIds: [],
   editPanel: false,
-  editForm: null
+  editForm: null,
+  editSelectedPanel: false,
+  editSelectedForm: null,
 });
 
 var methods = {
-  apiList: function(message) {
+  apiGet: function(message) {
     var $this = this;
 
     utils.loading(this, true);
@@ -22,6 +28,7 @@ var methods = {
       var res = response.data;
 
       $this.channels = [res.channel];
+      $this.allChannelIds = res.allChannelIds;
 
       if (message) {
         utils.success(message);
@@ -33,19 +40,52 @@ var methods = {
     });
   },
 
-  apiSubmit: function () {
+  apiEdit: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, this.editForm).then(function (response) {
+    $api.post($urlEdit, this.editForm).then(function (response) {
       var res = response.data;
 
       $this.editPanel = false;
-      $this.apiList('页面生成触发器设置成功!');
+      $this.apiGet('页面生成触发器设置成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
     });
+  },
+
+  apiEditSelected: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlEditSelected, this.editSelectedForm).then(function (response) {
+      var res = response.data;
+
+      $this.editSelectedPanel = false;
+      $this.apiGet('页面生成触发器设置成功!');
+    }).catch(function (error) {
+      utils.loading($this, false);
+      utils.error(error);
+    });
+  },
+
+  handleCheckChange() {
+    this.channelIds = this.$refs.tree.getCheckedKeys();
+  },
+
+  btnCheckClick: function(row) {
+    if (this.channelIds.indexOf(row.value) !== -1) {
+      this.channelIds.splice(this.channelIds.indexOf(row.value), 1);
+    } else {
+      this.channelIds.push(row.value);
+    }
+    this.$refs.tree.setCheckedKeys(this.channelIds);
+  },
+
+  btnSelectAllClick: function() {
+    this.channelIds = this.allChannelIds;
+    this.$refs.tree.setCheckedKeys(this.channelIds);
   },
 
   getChannelUrl: function(data) {
@@ -62,6 +102,7 @@ var methods = {
 
   btnCancelClick: function() {
     this.editPanel = false;
+    this.editSelectedPanel = false;
   },
 
   btnEditClick: function(data) {
@@ -80,12 +121,29 @@ var methods = {
     }, 100);
   },
 
+  btnEditSelectedClick: function() {
+    this.editSelectedForm = {
+      siteId: this.siteId,
+      channelIds: this.channelIds,
+      createChannelIdsIfContentChanged: [],
+    };
+    this.editSelectedPanel = true;
+  },
+
   handleTreeChanged: function() {
     this.editForm.createChannelIdsIfContentChanged = this.$refs.channelsTree.getCheckedKeys();
   },
 
-  btnSubmitClick: function() {
-    this.apiSubmit();
+  handleTreeSelectedChanged: function() {
+    this.editSelectedForm.createChannelIdsIfContentChanged = this.$refs.channelsTreeSelected.getCheckedKeys();
+  },
+
+  btnEditSubmitClick: function() {
+    this.apiEdit();
+  },
+
+  btnEditSelectedSubmitClick: function() {
+    this.apiEditSelected();
   },
 
   btnCloseClick: function() {
@@ -117,6 +175,6 @@ var $vue = new Vue({
         $this.btnCloseClick();
       }
     });
-    this.apiList();
+    this.apiGet();
   }
 });

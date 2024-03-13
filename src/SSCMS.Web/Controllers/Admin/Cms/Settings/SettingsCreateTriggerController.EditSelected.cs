@@ -8,8 +8,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsCreateTriggerController
     {
-        [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
+        [HttpPost, Route(RouteEditSelected)]
+        public async Task<ActionResult<BoolResult>> EditSelected([FromBody] EditSelectedRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 MenuUtils.SitePermissions.SettingsCreateTrigger))
@@ -20,14 +20,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error("无法确定内容对应的站点");
 
-            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            foreach (var channelId in request.ChannelIds)
+            {
+                var channel = await _channelRepository.GetAsync(channelId);
+                channel.CreateChannelIdsIfContentChanged = ListUtils.ToString(request.CreateChannelIdsIfContentChanged);
+                await _channelRepository.UpdateAsync(channel);
+            }
 
-            channel.IsCreateChannelIfContentChanged = request.IsCreateChannelIfContentChanged;
-            channel.CreateChannelIdsIfContentChanged = ListUtils.ToString(request.CreateChannelIdsIfContentChanged);
-
-            await _channelRepository.UpdateAsync(channel);
-
-            await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置栏目变动生成页面", $"栏目：{channel.ChannelName}");
+            await _authManager.AddSiteLogAsync(request.SiteId, "批量设置栏目变动生成页面");
 
             return new BoolResult
             {

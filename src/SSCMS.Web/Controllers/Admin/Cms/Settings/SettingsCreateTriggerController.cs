@@ -15,6 +15,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsCreateTriggerController : ControllerBase
     {
         private const string Route = "cms/settings/settingsCreateTrigger";
+        private const string RouteEdit = "cms/settings/settingsCreateTrigger/action/edit";
+        private const string RouteEditSelected = "cms/settings/settingsCreateTrigger/actions/editSelected";
 
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
@@ -32,11 +34,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         public class GetResult
         {
             public Cascade<int> Channel { get; set; }
+            public List<int> AllChannelIds { get; set; }
         }
 
-        public class SubmitRequest : ChannelRequest
+        public class EditRequest : ChannelRequest
         {
             public bool IsCreateChannelIfContentChanged { get; set; }
+            public List<int> CreateChannelIdsIfContentChanged { get; set; }
+        }
+
+        public class EditSelectedRequest : SiteRequest
+        {
+            public List<int> ChannelIds { get; set; }
             public List<int> CreateChannelIdsIfContentChanged { get; set; }
         }
     }

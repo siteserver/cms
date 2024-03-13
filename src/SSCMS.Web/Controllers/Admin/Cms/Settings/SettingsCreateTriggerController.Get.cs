@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsCreateTriggerController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResult>> List([FromQuery] SiteRequest request)
+        public async Task<ActionResult<GetResult>> Get([FromQuery] SiteRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 MenuUtils.SitePermissions.SettingsCreateTrigger))
@@ -47,9 +47,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
                 };
             });
 
+            var allChannelIds = await _channelRepository.GetChannelIdsAsync(request.SiteId);
+
             return new GetResult
             {
-                Channel = cascade
+                Channel = cascade,
+                AllChannelIds = allChannelIds
             };
         }
     }

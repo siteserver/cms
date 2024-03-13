@@ -44,18 +44,19 @@
   :data="channels"
   :default-expanded-keys="[siteId]"
   node-key="value"
-  check-on-click-node
+  show-checkbox
   check-strictly
   highlight-current
   class="tree"
   :filter-node-method="filterNode"
+  v-on:check-change="handleCheckChange"
 >
   <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
-    <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+    <table v-on:dblclick="btnEditClick(data)" cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
       <colgroup>
         <col name="el-table_1_column_1">
         <col name="el-table_1_column_2">
-        <col name="el-table_1_column_3" width="80">
+        <col name="el-table_1_column_3" width="120">
       </colgroup>
       <tbody>
         <tr class="el-table__row">
@@ -80,7 +81,7 @@
         <td rowspan="1" colspan="1" class="el-table_1_column_3">
           <div class="cell">
             <el-button type="text" size="mini" style="margin-left: 5px" v-on:click.stop="btnEditClick(data)">
-              触发栏目
+              触发栏目设置
             </el-button>
           </div>
         </td>
@@ -90,7 +91,17 @@
   </div>
 </el-tree>
 
-<el-divider></el-divider>
+<el-row>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+  <el-button size="small" type="primary" plain style="margin-left: 0px;" v-on:click="btnSelectAllClick">
+    全 选
+  </el-button>
+  <el-button size="small" type="primary" plain style="margin-left: 0px;" v-on:click="btnEditSelectedClick" :disabled="channelIds.length === 0">
+    批量设置
+  </el-button>
+  <div style="height: 5px"></div>
+</el-row>
 
 <el-drawer
   id="editForm"
@@ -138,7 +149,51 @@
 
       <el-divider></el-divider>
       <div class="drawer__footer">
-        <el-button type="primary" v-on:click="btnSubmitClick" size="small">确 定</el-button>
+        <el-button type="primary" v-on:click="btnEditSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+<el-drawer
+  id="editSelectedForm"
+  v-if="editSelectedForm"
+  title="栏目变动触发设置"
+  :visible.sync="editSelectedPanel"
+  destroy-on-close
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form v-on:submit.native.prevent size="small" ref="editSelectedForm" :model="editSelectedForm" label-width="220px">
+      <el-form-item label="选择内容变动时需要生成的栏目">
+        <el-tree
+          :data="channels"
+          ref="channelsTreeSelected"
+          show-checkbox
+          check-on-click-node
+          check-strictly
+          node-key="value"
+          :check-on-click-node="true"
+          :default-expanded-keys="[siteId]"
+          :default-checked-keys="editSelectedForm.createChannelIdsIfContentChanged"
+          :expand-on-click-node="true"
+          v-on:check-change="handleTreeSelectedChanged">
+          <span class="custom-tree-node" slot-scope="{ node, data }">
+            <el-link :underline="false" :href="getChannelUrl(data)" v-on:click.stop.native target="_blank">
+              <i class="el-icon-link"></i>
+            </el-link>
+            {{ data.label }} ({{ data.count }})
+            <el-tag size="mini" v-if="data.indexName">
+              {{ data.indexName }}
+            </el-tag>
+          </span>
+        </el-tree>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnEditSelectedSubmitClick" size="small">确 定</el-button>
         <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
       </div>
     </el-form>
