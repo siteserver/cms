@@ -974,8 +974,15 @@ namespace SSCMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testTypeStr, TypeImages))
             {
-                var countName = ColumnsManager.GetCountName(nameof(Channel.ImageUrl));
-                theValue = channel.Get<int>(countName).ToString();
+                if (!string.IsNullOrEmpty(channel.ImageUrl))
+                {
+                    var countName = ColumnsManager.GetCountName(nameof(Channel.ImageUrl));
+                    theValue = (channel.Get<int>(countName) + 1).ToString();
+                }
+                else
+                {
+                    theValue = "0";
+                }
             }
             else
             {
