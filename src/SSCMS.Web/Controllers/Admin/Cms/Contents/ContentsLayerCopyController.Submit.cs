@@ -4,6 +4,8 @@ using SSCMS.Core.Utils;
 using SSCMS.Dto;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using System.Collections.Generic;
+using SSCMS.Models;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -22,7 +24,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            // var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            var summaries = new List<ChannelContentId>();
+            var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+            if (FileUtils.IsFileExists(jsonFilePath))
+            {
+                var json = await FileUtils.ReadTextAsync(jsonFilePath);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+                }
+            }
             summaries.Reverse();
 
             foreach (var transChannelId in request.TransChannelIds)

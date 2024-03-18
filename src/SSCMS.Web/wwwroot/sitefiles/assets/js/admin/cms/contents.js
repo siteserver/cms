@@ -294,8 +294,6 @@ var methods = {
       this.btnLayerClick({title: '批量设置分组', name: 'Group', width: 700, height: 400, withContents: true});
     } else if (command === 'Tag') {
       this.btnLayerClick({title: '批量设置标签', name: 'Tag', width: 700, height: 400, withContents: true});
-    } else if (command === 'Copy') {
-      this.btnLayerClick({title: '批量复制', name: 'Copy', withContents: true});
     } else if (command === 'ExportAll') {
       this.btnLayerClick({title: '导出全部', name: 'Export', full: true});
     } else if (command === 'ExportSelected') {

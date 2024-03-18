@@ -26,7 +26,7 @@
   </el-button>
 
   <el-button size="mini" icon="el-icon-copy-document" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"
-    v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', withContents: true})">
+    v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, saveIds: true})">
     复制
   </el-button>
 

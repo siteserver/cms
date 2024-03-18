@@ -333,7 +333,10 @@ var methods = {
     } else if (command === 'Tag') {
       this.btnLayerClick({title: '批量设置标签', name: 'Tag', width: 700, height: 400, withContents: true});
     } else if (command === 'Copy') {
-      this.btnLayerClick({title: '批量复制', name: 'Copy', withContents: true});
+      var $this = this;
+      this.apiSaveAllIds(function(fileName) {
+        $this.btnLayerClick({title: '批量复制', name: 'Copy', full: true, fileName: fileName});
+      });
     } else if (command === 'ExportAll') {
       var $this = this;
       this.apiSaveAllIds(function(fileName) {

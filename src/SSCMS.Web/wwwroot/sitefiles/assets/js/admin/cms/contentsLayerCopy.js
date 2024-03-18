@@ -4,7 +4,7 @@ var data = utils.init({
   page: utils.getQueryInt('page'),
   siteId: utils.getQueryInt('siteId'),
   channelId: utils.getQueryInt('channelId'),
-  channelContentIds: utils.getQueryString('channelContentIds'),
+  fileName: utils.getQueryString('fileName'),
   contents: null,
   transSites: null,
   transChannels: null,
@@ -24,7 +24,7 @@ var methods = {
       params: {
         siteId: this.siteId,
         channelId: this.channelId,
-        channelContentIds: this.channelContentIds
+        fileName: this.fileName
       }
     }).then(function (response) {
       var res = response.data;
@@ -55,7 +55,7 @@ var methods = {
     $api.post($url, {
       siteId: this.siteId,
       channelId: this.channelId,
-      channelContentIds: this.channelContentIds,
+      fileName: this.fileName,
       transSiteId: transSiteId,
       transChannelIds: transChannelIds,
       copyType: this.form.copyType
