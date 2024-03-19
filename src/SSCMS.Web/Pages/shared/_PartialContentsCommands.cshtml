@@ -16,7 +16,7 @@
   </el-dropdown>
 
   <el-button size="mini" icon="el-icon-star-off" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
-    v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 500, height: 320, withContents: true})">
+    v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 500, height: 320, saveIds: true})">
     属性
   </el-button>
 

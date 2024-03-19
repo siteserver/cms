@@ -16,13 +16,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private const string Route = "cms/contents/contentsLayerAttributes";
 
         private readonly IAuthManager _authManager;
+        private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerAttributesController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerAttributesController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
         {
             _authManager = authManager;
+            _pathManager = pathManager;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _contentRepository = contentRepository;
@@ -30,7 +32,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class SubmitRequest : ChannelRequest
         {
-            public string ChannelContentIds { get; set; }
+            public string FileName { get; set; }
             public bool IsCancel { get; set; }
             public bool IsTop { get; set; }
             public bool IsRecommend { get; set; }
