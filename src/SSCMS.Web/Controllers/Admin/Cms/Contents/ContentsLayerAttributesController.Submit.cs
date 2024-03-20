@@ -34,6 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 {
                     summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
                 }
+                FileUtils.DeleteFileIfExists(jsonFilePath);
             }
 
             foreach (var summary in summaries)

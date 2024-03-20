@@ -41,7 +41,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class GetRequest : ChannelRequest
         {
-            public string ChannelContentIds { get; set; }
+            public string FileName { get; set; }
         }
 
         public class GetResult
@@ -62,7 +62,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class SubmitRequest : ChannelRequest
         {
-            public string ChannelContentIds { get; set; }
+            public string FileName { get; set; }
             public int TransSiteId { get; set; }
             public int TransChannelId { get; set; }
         }

@@ -21,7 +21,7 @@
   </el-button>
 
   <el-button size="mini" icon="el-icon-right" :disabled="total === 0 || !permissions.isTranslate || !isContentChecked"
-    v-on:click="btnLayerClick({title: '批量转移', name: 'Translate', withContents: true})">
+    v-on:click="btnLayerClick({title: '批量转移', name: 'Translate', saveIds: true})">
     转移
   </el-button>
 
