@@ -25,7 +25,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
             var totalCount = 0;
             var channelIds = new List<int>();
-            var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            // var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            var summaries = new List<ChannelContentId>();
+            var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+            if (FileUtils.IsFileExists(jsonFilePath))
+            {
+                var json = await FileUtils.ReadTextAsync(jsonFilePath);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+                }
+            }
 
             var contents = new List<Content>();
             foreach (var summary in summaries)

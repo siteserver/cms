@@ -31,7 +31,7 @@
   </el-button>
 
   <el-button size="mini" icon="el-icon-sort" :disabled="total === 0 || !permissions.isEdit || !isContentChecked"
-    v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', withContents: true})">
+    v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', saveIds: true})">
     排序
   </el-button>
 
