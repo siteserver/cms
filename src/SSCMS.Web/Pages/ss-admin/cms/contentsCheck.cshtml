@@ -279,7 +279,7 @@
           size="mini"
           icon="el-icon-circle-check"
           :disabled="total === 0 || !isContentChecked"
-          v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})"
+          v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, saveIds: true})"
         >
           审核
         </el-button>

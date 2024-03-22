@@ -40,7 +40,7 @@
     删除
   </el-button>
   <el-button size="mini" icon="el-icon-circle-check" :disabled="total === 0 || !permissions.isCheck || !isContentChecked" 
-    v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true})">
+    v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, saveIds: true})">
     审核
   </el-button>
   <el-button size="mini" icon="el-icon-magic-stick" :disabled="total === 0 || !permissions.isCreate || !isContentChecked"
