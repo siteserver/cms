@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
     public partial class SettingsCreateTriggerController : ControllerBase
     {
         private const string Route = "cms/settings/settingsCreateTrigger";
-        private const string RouteEdit = "cms/settings/settingsCreateTrigger/action/edit";
+        private const string RouteEdit = "cms/settings/settingsCreateTrigger/actions/edit";
         private const string RouteEditSelected = "cms/settings/settingsCreateTrigger/actions/editSelected";
 
         private readonly IAuthManager _authManager;
