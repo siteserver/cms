@@ -7,14 +7,14 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt('siteId'),
     channelId: utils.getQueryInt('channelId'),
-    channelContentIds: utils.getQueryString('channelContentIds'),
+    fileName: utils.getQueryString('fileName'),
     isCancel: false,
     groupNames: [],
   },
   addForm: {
     siteId: utils.getQueryInt('siteId'),
     channelId: utils.getQueryInt('channelId'),
-    channelContentIds: utils.getQueryString('channelContentIds'),
+    fileName: utils.getQueryString('fileName'),
     groupName: '',
     description: ''
   }

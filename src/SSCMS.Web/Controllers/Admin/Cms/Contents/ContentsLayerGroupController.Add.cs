@@ -5,6 +5,7 @@ using SSCMS.Dto;
 using SSCMS.Models;
 using SSCMS.Configuration;
 using SSCMS.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -23,7 +24,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            var channelContentIds = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            // var channelContentIds = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            var summaries = new List<ChannelContentId>();
+            var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+            if (FileUtils.IsFileExists(jsonFilePath))
+            {
+                var json = await FileUtils.ReadTextAsync(jsonFilePath);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+                }
+                FileUtils.DeleteFileIfExists(jsonFilePath);
+            }
 
             var group = new ContentGroup
             {
@@ -43,7 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 await _authManager.AddSiteLogAsync(request.SiteId, "添加内容组", $"内容组：{group.GroupName}");
             }
 
-            foreach (var channelContentId in channelContentIds)
+            foreach (var channelContentId in summaries)
             {
                 var channel = await _channelRepository.GetAsync(channelContentId.ChannelId);
                 var content = await _contentRepository.GetAsync(site, channel, channelContentId.Id);
