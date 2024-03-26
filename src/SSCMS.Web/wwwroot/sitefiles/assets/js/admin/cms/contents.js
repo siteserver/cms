@@ -293,7 +293,7 @@ var methods = {
     if (command === 'Group') {
       this.btnLayerClick({title: '批量设置分组', name: 'Group', width: 700, height: 400, saveIds: true});
     } else if (command === 'Tag') {
-      this.btnLayerClick({title: '批量设置标签', name: 'Tag', width: 700, height: 400, withContents: true});
+      this.btnLayerClick({title: '批量设置标签', name: 'Tag', width: 700, height: 400, saveIds: true});
     } else if (command === 'ExportAll') {
       this.btnLayerClick({title: '导出全部', name: 'Export', full: true});
     } else if (command === 'ExportSelected') {
