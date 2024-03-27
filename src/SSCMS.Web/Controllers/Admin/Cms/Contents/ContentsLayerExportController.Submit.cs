@@ -23,7 +23,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 return Unauthorized();
             }
 
-            var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            // var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            var summaries = new List<ChannelContentId>();
             if (!string.IsNullOrEmpty(request.FileName))
             {
                 var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
@@ -32,9 +33,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                     var json = await FileUtils.ReadTextAsync(jsonFilePath);
                     if (!string.IsNullOrEmpty(json))
                     {
-                        summaries = TranslateUtils.JsonDeserialize<List<ContentSummary>>(json);
+                        summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
                     }
-
                     FileUtils.DeleteFileIfExists(jsonFilePath);
                 }
             }

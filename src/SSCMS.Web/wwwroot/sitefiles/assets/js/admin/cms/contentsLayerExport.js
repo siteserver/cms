@@ -8,7 +8,6 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt('siteId'),
     channelId: utils.getQueryInt('channelId'),
-    channelContentIds: utils.getQueryString('channelContentIds'),
     fileName: utils.getQueryString('fileName'),
     exportType: 'zip',
     isAllCheckedLevel: true,

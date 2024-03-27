@@ -343,7 +343,7 @@ var methods = {
         $this.btnLayerClick({title: '导出全部', name: 'Export', full: true, fileName: fileName});
       });
     } else if (command === 'ExportSelected') {
-      this.btnLayerClick({title: '导出选中', name: 'Export', full: true, withContents: true});
+      this.btnLayerClick({title: '导出选中', name: 'Export', full: true, saveIds: true});
     } else if (command === 'Arrange') {
       this.btnLayerClick({title: '整理排序', name: 'Arrange', width: 550, height: 350});
     } else if (command === 'Hits') {
