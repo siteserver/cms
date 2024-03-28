@@ -5,7 +5,7 @@ var data = utils.init({
   form: {
     siteId: utils.getQueryInt('siteId'),
     channelId: utils.getQueryInt('channelId'),
-    channelContentIds: utils.getQueryString('channelContentIds'),
+    fileName: utils.getQueryString('fileName'),
     isAdd: true,
     hits: 1
   }

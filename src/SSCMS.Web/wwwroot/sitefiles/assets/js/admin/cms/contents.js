@@ -301,7 +301,7 @@ var methods = {
     } else if (command === 'Arrange') {
       this.btnLayerClick({title: '整理排序', name: 'Arrange', width: 550, height: 350});
     } else if (command === 'Hits') {
-      this.btnLayerClick({title: '设置点击量', name: 'Hits', width: 450, height: 320, withContents: true});
+      this.btnLayerClick({title: '设置点击量', name: 'Hits', width: 450, height: 320, saveIds: true});
     }
   },
 
