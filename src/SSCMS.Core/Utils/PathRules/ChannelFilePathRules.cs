@@ -195,6 +195,9 @@ namespace SSCMS.Core.Utils.PathRules
                     }
                 }
 
+                value = StringUtils.Replace(value, " ", "-");
+                value = StringUtils.HtmlDecode(value);
+
                 filePath = filePath.Replace(element, value);
             }
 
