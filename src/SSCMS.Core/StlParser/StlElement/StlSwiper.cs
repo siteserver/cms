@@ -110,16 +110,16 @@ namespace SSCMS.Core.StlParser.StlElement
             await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcSwiperJs);
 
             if (string.IsNullOrEmpty(contextInfo.InnerHtml)) return string.Empty;
-            var innerHtml = string.Empty;
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
             await parseManager.ParseInnerContentAsync(innerBuilder);
-            innerHtml = innerBuilder.ToString();
+            var innerHtml = innerBuilder.ToString();
 
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(innerHtml);
             var htmlNodes = htmlDoc.DocumentNode.ChildNodes;
             if (htmlNodes == null || htmlNodes.Count == 0) return string.Empty;
 
+            var elementId = StringUtils.GetElementId();
             var slides = new StringBuilder();
             foreach (var htmlNode in htmlNodes)
             {
@@ -130,7 +130,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var colorCss = !string.IsNullOrEmpty(color) ? $":root {{--swiper-theme-color: {color};}} .swiper-button-prev, .swiper-button-next{{background: none;}}" : string.Empty;
             var widthCss = !string.IsNullOrEmpty(width) ? $"width: {StringUtils.AddUnitIfNotExists(width)};" : string.Empty;
             var heightCss = !string.IsNullOrEmpty(height) ? $"height: {StringUtils.AddUnitIfNotExists(height)};" : string.Empty;
-            var styles = @$"<style>{colorCss} .swiper {{{widthCss}{heightCss}}}</style>";
+            var styles = @$"<style>{colorCss} .{elementId} {{{widthCss}{heightCss}}}</style>";
 
             var paginationJs = isPagination ? @"
   pagination: {
@@ -158,7 +158,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             var scripts = @$"
 <script>
-var swiper = new Swiper('.swiper', {{
+var swiper_{elementId} = new Swiper('.{elementId}', {{
   {parameters}
   direction: '{direction}',
   loop: true,
@@ -178,7 +178,7 @@ var swiper = new Swiper('.swiper', {{
 
             return $@"
 {styles}
-<div class=""swiper"">
+<div class=""swiper {elementId}"">
   <div class=""swiper-wrapper"">
     {slides}
   </div>
