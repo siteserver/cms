@@ -73,15 +73,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 content.CheckedLevel = CheckManager.LevelInt.ScheduledPublish;
             }
 
-            if (content.LinkType == Enums.LinkType.None)
+            if (content.LinkType == LinkType.None)
             {
                 content.LinkUrl = request.Content.LinkUrl;
             }
-            else if (content.LinkType == Enums.LinkType.LinkToChannel)
+            else if (content.LinkType == LinkType.LinkToChannel)
             {
                 content.LinkUrl = ListUtils.ToString(request.LinkTo.ChannelIds);
             }
-            else if (content.LinkType == Enums.LinkType.LinkToContent)
+            else if (content.LinkType == LinkType.LinkToContent)
             {
                 content.LinkUrl = ListUtils.ToString(request.LinkTo.ChannelIds) + "_" + request.LinkTo.ContentId;
             }

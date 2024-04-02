@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -12,7 +14,7 @@ namespace SSCMS.Web.Controllers.V1
     {
         [OpenApiOperation("修改内容 API", "修改内容，使用POST发起请求，请求地址为/api/v1/contents/{siteId}/{channelId}/{id}")]
         [HttpPost, Route(RouteContentUpdate)]
-        public async Task<ActionResult<Content>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id, [FromBody]Content request)
+        public async Task<ActionResult<Content>> Update([FromRoute] int siteId, [FromRoute] int channelId, [FromRoute] int id, [FromBody]Dictionary<string, object> request)
         {
             if (!await _accessTokenRepository.IsScopeAsync(_authManager.ApiToken, Constants.ScopeContents))
             {
@@ -22,10 +24,10 @@ namespace SSCMS.Web.Controllers.V1
             var site = await _siteRepository.GetAsync(siteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            var channelInfo = await _channelRepository.GetAsync(channelId);
-            if (channelInfo == null) return this.Error(Constants.ErrorNotFound);
+            var channel = await _channelRepository.GetAsync(channelId);
+            if (channel == null) return this.Error(Constants.ErrorNotFound);
 
-            var content = await _contentRepository.GetAsync(site, channelInfo, id);
+            var content = await _contentRepository.GetAsync(site, channel, id);
             if (content == null) return this.Error(Constants.ErrorNotFound);
 
             if (!await _authManager.HasContentPermissionsAsync(siteId, channelId, MenuUtils.ContentPermissions.Edit))
@@ -33,12 +35,11 @@ namespace SSCMS.Web.Controllers.V1
                 return Unauthorized();
             }
 
-            content.LoadDict(request.ToDictionary());
+            content.LoadDict(request);
 
             content.SiteId = siteId;
             content.ChannelId = channelId;
             content.LastEditAdminId = _authManager.AdminId;
-            content.SourceId = request.SourceId;
 
             var postCheckedLevel = content.CheckedLevel;
             var isChecked = postCheckedLevel >= site.CheckContentLevel;
@@ -47,7 +48,7 @@ namespace SSCMS.Web.Controllers.V1
             content.Checked = isChecked;
             content.CheckedLevel = checkedLevel;
 
-            await _contentRepository.UpdateAsync(site, channelInfo, content);
+            await _contentRepository.UpdateAsync(site, channel, content);
 
             //foreach (var plugin in _pluginManager.GetPlugins(siteId, channelId))
             //{
