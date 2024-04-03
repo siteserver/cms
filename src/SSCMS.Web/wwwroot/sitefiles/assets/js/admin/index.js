@@ -17,6 +17,7 @@ var data = utils.init({
   adminLogoLinkUrl: null,
   adminTitle: null,
   isAdminUpdateDisabled: null,
+  isAdminTicketsDisabled: null,
   isSuperAdmin: null,
   culture: null,
   plugins: null,
@@ -75,12 +76,14 @@ var methods = {
           adminFaviconUrl = res.adminFaviconUrl;
           $this.adminTitle = res.adminTitle || 'SSCMS 管理后台';
           $this.isAdminUpdateDisabled = res.isAdminUpdateDisabled;
+          $this.isAdminTicketsDisabled = res.isAdminTicketsDisabled;
         } else {
           $this.adminLogoUrl = utils.getAssetsUrl('images/logo.png');
           $this.adminLogoLinkUrl = 'https://sscms.com';
           adminFaviconUrl = utils.getAssetsUrl('images/favicon.png');
           $this.adminTitle = 'SSCMS 管理后台';
           $this.isAdminUpdateDisabled = false;
+          $this.isAdminTicketsDisabled = false;
         }
 
         $this.isSuperAdmin = res.isSuperAdmin;

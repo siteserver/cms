@@ -93,6 +93,12 @@
                 勾选后，系统将不再显示后台右上角系统升级提示
               </div>
             </el-form-item>
+            <el-form-item label="工单中心">
+              <el-switch v-model="form.isAdminTicketsDisabled" active-text="禁用工单中心"></el-switch>
+              <div class="tips">
+                勾选后，系统将不再显示后台右上角工单中心
+              </div>
+            </el-form-item>
           </template>
         </el-form>
 

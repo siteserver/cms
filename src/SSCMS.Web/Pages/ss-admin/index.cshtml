@@ -114,7 +114,7 @@
         </a>
       </div>
 
-      <el-link v-if="cloudType && cloudType != 'Free'" class="nav" :underline="false" icon="el-icon-service" style="float: none; padding: 0 10px;" v-on:click="btnMenuClick({text: '工单技术支持', link: './clouds/tickets/'})">
+      <el-link v-if="!isAdminTicketsDisabled && cloudType && cloudType != 'Free'" class="nav" :underline="false" icon="el-icon-service" style="float: none; padding: 0 10px;" v-on:click="btnMenuClick({text: '工单技术支持', link: './clouds/tickets/'})">
         工单中心
       </el-link>
 

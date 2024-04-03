@@ -23,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             config.AdminLogoLinkUrl = request.AdminLogoLinkUrl;
             config.AdminWelcomeHtml = request.AdminWelcomeHtml;
             config.IsAdminUpdateDisabled = request.IsAdminUpdateDisabled;
+            config.IsAdminTicketsDisabled = request.IsAdminTicketsDisabled;
 
             await _configRepository.UpdateAsync(config);
 

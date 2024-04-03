@@ -23,6 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
                 AdminLogoUrl = config.AdminLogoUrl,
                 AdminWelcomeHtml = config.AdminWelcomeHtml,
                 IsAdminUpdateDisabled = config.IsAdminUpdateDisabled,
+                IsAdminTicketsDisabled = config.IsAdminTicketsDisabled,
             };
         }
     }

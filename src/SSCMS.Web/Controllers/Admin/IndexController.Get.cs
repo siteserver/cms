@@ -297,6 +297,7 @@ namespace SSCMS.Web.Controllers.Admin
                 AdminLogoLinkUrl = config.AdminLogoLinkUrl,
                 AdminTitle = config.AdminTitle,
                 IsAdminUpdateDisabled = config.IsAdminUpdateDisabled,
+                IsAdminTicketsDisabled = config.IsAdminTicketsDisabled,
                 IsSuperAdmin = isSuperAdmin,
                 Culture = culture,
                 Plugins = plugins,
