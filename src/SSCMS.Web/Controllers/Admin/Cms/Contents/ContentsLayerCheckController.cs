@@ -43,6 +43,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class GetRequest : SiteRequest
         {
+            public string ChannelContentIds { get; set; }
             public string FileName { get; set; }
         }
 
@@ -66,6 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
         public class SubmitRequest : SiteRequest
         {
+            public string ChannelContentIds { get; set; }
             public string FileName { get; set; }
             public int CheckedLevel { get; set; }
             public string Reasons { get; set; }

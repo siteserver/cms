@@ -32,17 +32,37 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             }
 
             // var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
+            // var summaries = new List<ChannelContentId>();
+            // var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+            // if (FileUtils.IsFileExists(jsonFilePath))
+            // {
+            //     var json = await FileUtils.ReadTextAsync(jsonFilePath);
+            //     if (!string.IsNullOrEmpty(json))
+            //     {
+            //         summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+            //     }
+            //     FileUtils.DeleteFileIfExists(jsonFilePath);
+            // }
+
             var summaries = new List<ChannelContentId>();
-            var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
-            if (FileUtils.IsFileExists(jsonFilePath))
+            if (!string.IsNullOrEmpty(request.ChannelContentIds))
             {
-                var json = await FileUtils.ReadTextAsync(jsonFilePath);
-                if (!string.IsNullOrEmpty(json))
-                {
-                    summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
-                }
-                FileUtils.DeleteFileIfExists(jsonFilePath);
+                summaries = ContentUtility.ParseChannelContentIds(request.ChannelContentIds);
             }
+            else
+            {
+                var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+                if (FileUtils.IsFileExists(jsonFilePath))
+                {
+                    var json = await FileUtils.ReadTextAsync(jsonFilePath);
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+                    }
+                    FileUtils.DeleteFileIfExists(jsonFilePath);
+                }
+            }
+
             summaries.Reverse();
 
             var adminId = _authManager.AdminId;

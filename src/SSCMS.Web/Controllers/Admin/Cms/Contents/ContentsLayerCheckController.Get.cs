@@ -21,15 +21,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             var site = await _siteRepository.GetAsync(request.SiteId);
             if (site == null) return this.Error(Constants.ErrorNotFound);
 
-            // var summaries = ContentUtility.ParseSummaries(request.ChannelContentIds);
             var summaries = new List<ChannelContentId>();
-            var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
-            if (FileUtils.IsFileExists(jsonFilePath))
+            if (!string.IsNullOrEmpty(request.ChannelContentIds))
             {
-                var json = await FileUtils.ReadTextAsync(jsonFilePath);
-                if (!string.IsNullOrEmpty(json))
+                summaries = ContentUtility.ParseChannelContentIds(request.ChannelContentIds);
+            }
+            else
+            {
+                var jsonFilePath = _pathManager.GetTemporaryFilesPath(request.FileName);
+                if (FileUtils.IsFileExists(jsonFilePath))
                 {
-                    summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+                    var json = await FileUtils.ReadTextAsync(jsonFilePath);
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        summaries = TranslateUtils.JsonDeserialize<List<ChannelContentId>>(json);
+                    }
                 }
             }
 

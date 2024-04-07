@@ -236,5 +236,26 @@ namespace SSCMS.Core.Utils
 
             return channelContentIds;
         }
+
+        public static List<ChannelContentId> ParseChannelContentIds(string summaries)
+        {
+            var channelContentIds = new List<ChannelContentId>();
+            if (string.IsNullOrEmpty(summaries)) return channelContentIds;
+
+            foreach (var channelContentId in ListUtils.GetStringList(summaries))
+            {
+                var summary = ParseSummary(channelContentId);
+                if (summary != null)
+                {
+                    channelContentIds.Add(new ChannelContentId
+                    {
+                        ChannelId = summary.ChannelId,
+                        Id = summary.Id
+                    });
+                }
+            }
+
+            return channelContentIds;
+        }
     }
 }
