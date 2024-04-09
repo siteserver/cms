@@ -1,9 +1,15 @@
 using System;
+using System.IO;
+using System.Numerics;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SSCMS.Utils;
+using Path = SixLabors.ImageSharp.Drawing.Path;
 
 namespace SSCMS.Core.Utils
 {
@@ -338,7 +344,31 @@ namespace SSCMS.Core.Utils
             {
                 FileUtils.CopyFile(originalImagePath, thumbnailPath);
             }
+        }
 
+        public static string GetBackgroundWatermark(string text)
+        {
+            byte[] buffer;
+
+            var r = new Random();
+            using (var image = new Image<Rgba32>(200, 200))
+            {
+                var fontFamily = FontUtils.GetFont("simhei");
+                var font = new Font(fontFamily, 17, FontStyle.Regular);
+
+                image.Mutate(ctx =>
+                {
+                    ctx.Fill(Color.Transparent);
+                    ctx.DrawText(text, font, Color.Black, new PointF(0, 0));
+                    ctx.Rotate(315);
+                });
+
+                using var ms = new MemoryStream();
+                image.Save(ms, PngFormat.Instance);
+                buffer = ms.ToArray();
+            }
+
+            return Convert.ToBase64String(buffer);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
@@ -283,8 +284,12 @@ namespace SSCMS.Web.Controllers.Admin
             var plugins = enabledPlugins.Select(plugin => new GetPlugin { PluginId = plugin.PluginId, DisplayName = plugin.DisplayName, Version = plugin.Version }).ToList();
 
             var cloudType = await _cloudManager.GetCloudTypeAsync();
-
             var (cssUrls, jsUrls) = _pluginManager.GetExternalUrls();
+            var watermark = string.Empty;
+            if (config.IsCloudAdmin && config.IsAdminWatermark)
+            {
+                watermark = ImageUtils.GetBackgroundWatermark(_administratorRepository.GetDisplay(admin));
+            }
 
             return new GetResult
             {
@@ -319,6 +324,7 @@ namespace SSCMS.Web.Controllers.Admin
                 CloudToken = config.CloudToken,
                 CssUrls = cssUrls,
                 JsUrls = jsUrls,
+                Watermark = watermark
             };
         }
     }

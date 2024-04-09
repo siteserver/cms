@@ -30,6 +30,7 @@ var data = utils.init({
   cloudType: null,
   cloudUserName: null,
   cloudToken: null,
+  watermark: null,
   menu: null,
   keyword: null,
   newCms: null,
@@ -98,6 +99,7 @@ var methods = {
         $this.cloudType = res.cloudType;
         $this.cloudUserName = res.cloudUserName;
         $this.cloudToken = res.cloudToken;
+        $this.watermark = res.watermark;
 
         if (!cloud.isAuth()) {
           cloud.login($this.cloudUserName, $this.cloudToken);

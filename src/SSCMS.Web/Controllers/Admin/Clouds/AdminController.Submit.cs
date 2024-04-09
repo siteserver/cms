@@ -24,6 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
             config.AdminWelcomeHtml = request.AdminWelcomeHtml;
             config.IsAdminUpdateDisabled = request.IsAdminUpdateDisabled;
             config.IsAdminTicketsDisabled = request.IsAdminTicketsDisabled;
+            config.IsAdminWatermark = request.IsAdminWatermark;
 
             await _configRepository.UpdateAsync(config);
 

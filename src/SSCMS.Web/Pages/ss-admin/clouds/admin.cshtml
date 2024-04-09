@@ -87,16 +87,22 @@
               <el-input v-model="form.adminWelcomeHtml" type="textarea"></el-input>
               <small class="tips">请填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
             </el-form-item>
+            <el-form-item label="管理后台水印">
+              <el-switch v-model="form.isAdminWatermark" active-text="显示水印"></el-switch>
+              <div class="tips">
+                勾选后，系统将以管理员的名称作为水印显示在管理后台。
+              </div>
+            </el-form-item>
             <el-form-item label="升级提示">
               <el-switch v-model="form.isAdminUpdateDisabled" active-text="禁用升级提示"></el-switch>
               <div class="tips">
-                勾选后，系统将不再显示后台右上角系统升级提示
+                勾选后，系统将不再显示后台右上角系统升级提示。
               </div>
             </el-form-item>
             <el-form-item label="工单中心">
               <el-switch v-model="form.isAdminTicketsDisabled" active-text="禁用工单中心"></el-switch>
               <div class="tips">
-                勾选后，系统将不再显示后台右上角工单中心
+                勾选后，系统将不再显示后台右上角工单中心。
               </div>
             </el-form-item>
           </template>

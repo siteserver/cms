@@ -24,6 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
                 AdminWelcomeHtml = config.AdminWelcomeHtml,
                 IsAdminUpdateDisabled = config.IsAdminUpdateDisabled,
                 IsAdminTicketsDisabled = config.IsAdminTicketsDisabled,
+                IsAdminWatermark = config.IsAdminWatermark
             };
         }
     }

@@ -99,6 +99,7 @@ namespace SSCMS.Web.Controllers.Admin
             public string CloudToken { get; set; }
             public List<string> CssUrls { get; set; }
             public List<string> JsUrls { get; set; }
+            public string Watermark { get; set; }
         }
 
         public class SetLanguageRequest
