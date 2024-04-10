@@ -22,7 +22,11 @@
   <el-form-item label="默认值" v-if="!isSelect">
     <el-input v-model="form.defaultValue" placeholder="请输入默认值"></el-input>
   </el-form-item>
-  <el-form-item label="高度" prop="height" v-if="form.inputType === 'TextArea' || form.inputType === 'TextEditor'" :rules="{ required: true, message: '请输入高度' }">
+  <el-form-item label="输入框行数" prop="height" v-if="form.inputType === 'TextArea'" :rules="{ required: true, message: '请输入输入框行数' }">
+    <el-input v-model="form.height" placeholder="请输入输入框行数"></el-input>
+    <div class="tips">0代表默认</div>
+  </el-form-item>
+  <el-form-item label="高度" prop="height" v-if="form.inputType === 'TextEditor'" :rules="{ required: true, message: '请输入高度' }">
     <el-input v-model="form.height" placeholder="请输入高度"></el-input>
     <div class="tips">单位：px，0代表默认高度</div>
   </el-form-item>

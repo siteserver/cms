@@ -206,7 +206,8 @@
         type="textarea"
         size="small"
         :placeholder="style.helpText"
-        :autosize="{ minRows: 4, maxRows: 10}">
+        :rows="style.height > 0 ? style.height : 4"
+        :autosize="style.height > 0 ? false : { minRows: 4, maxRows: 10}">
       </el-input>
     </el-form-item>
   </template>
