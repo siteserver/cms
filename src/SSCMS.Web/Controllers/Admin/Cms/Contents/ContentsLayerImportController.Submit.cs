@@ -75,7 +75,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
                     if (isAutoStorage)
                     {
-                        var filePath = await _pathManager.GetSitePathAsync(site, fileUrl);
+                        var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
                         var (success, url) = await _storageManager.StorageAsync(request.SiteId, filePath);
                         if (success)
                         {
