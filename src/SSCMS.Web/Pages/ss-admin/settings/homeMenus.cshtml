@@ -91,8 +91,9 @@
           <el-form-item label="菜单链接">
             <el-input v-model="userMenu.link"></el-input>
           </el-form-item>
-          <el-form-item label="图标Css类">
-            <el-input v-model="userMenu.iconClass"></el-input>
+          <el-form-item label="菜单图标">
+            <i v-if="userMenu.iconClass" :class="userMenu.iconClass" style="font-size: 32px;color: #00b19d; margin-right: 10px;"></i>
+            <el-button v-on:click.prevent="btnIconClassSelectClick" style="top: 0;position: absolute;">选择</el-button>
           </el-form-item>
           <el-form-item label="目标窗口">
             <el-select v-model="userMenu.target" class="form-control">

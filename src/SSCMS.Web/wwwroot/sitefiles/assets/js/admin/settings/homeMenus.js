@@ -11,6 +11,10 @@ var data = utils.init({
 });
 
 var methods = {
+  runIconClassSelect: function (iconClass) {
+    this.userMenu.iconClass = iconClass;
+  },
+
   btnSideMenuOpen: function(index) {
     var userMenu = _.find(this.userMenus, function(x){
       return x.id == index;
@@ -128,6 +132,13 @@ var methods = {
       utils.error(error);
     }).then(function () {
       utils.loading($this, false);
+    });
+  },
+
+  btnIconClassSelectClick: function() {
+    utils.openLayer({
+      title: '图标集合',
+      url: utils.getCommonUrl('iconClassLayerSelect'),
     });
   },
 
