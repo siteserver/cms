@@ -129,16 +129,16 @@ var methods = {
       return false;
     }
 
-    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp)$/i;
+    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png|\.webp|\.ico)$/i;
     if(!re.exec(file.name))
     {
-      utils.error('管理后台Logo只能是图片格式，请选择有效的文件上传!');
+      utils.error('上次文件只能是图片格式，请选择有效的文件上传!');
       return false;
     }
 
     var isLt10M = file.size / 1024 / 1024 < 10;
     if (!isLt10M) {
-      utils.error('管理后台Logo图片大小不能超过 10MB!');
+      utils.error('上次文件图片大小不能超过 10MB!');
       return false;
     }
     return true;
