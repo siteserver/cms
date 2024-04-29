@@ -2,7 +2,7 @@
 @{ Layout = "_Layout"; }
 
 <el-table-draggable v-on:sort="onSort">
-  <el-table row-key="id" highlight-current-row :data="groups">
+  <el-table row-key="id" highlight-current-row :data="groups" v-on:row-dblclick="btnEditClick">
     <el-table-column label="栏目组名称" prop="groupName"></el-table-column>
     <el-table-column label="栏目组说明" prop="description"></el-table-column>
     <el-table-column label="操作" width="160">
