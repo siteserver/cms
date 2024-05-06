@@ -7,7 +7,7 @@
 }
 
 <el-table-draggable v-on:sort="onSort">
-  <el-table row-key="id" highlight-current-row :data="forms">
+  <el-table row-key="id" highlight-current-row :data="forms" v-on:row-dblclick="btnEditClick">
     <el-table-column label="表单名称" width="280">
       <template slot-scope="scope">
         <el-link
