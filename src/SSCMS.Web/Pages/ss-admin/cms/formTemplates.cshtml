@@ -20,7 +20,7 @@
 </style>
 }
 
-<el-table :data="templates">
+<el-table :data="templates" v-on:row-dblclick="btnHtmlClick">
   <el-table-column label="模板名称" width="150">
     <template slot-scope="scope">
       {{ scope.row.name }}
@@ -60,6 +60,7 @@
         v-on:click="btnEditClick(scope.row)">
         设 置
       </el-link>
+      
       <el-link type="primary" :underline="false" style="margin-right: 5px;" v-on:click="btnHtmlClick(scope.row)">
         代码编辑
       </el-link>
