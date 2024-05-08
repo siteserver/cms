@@ -13,6 +13,8 @@ var $url = '/v1/forms';
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId') || $formConfigSiteId,
+  channelId: utils.getQueryInt('channelId'),
+  contentId: utils.getQueryInt('contentId'),
   formId: utils.getQueryInt('formId') || $formConfigFormId,
   word: utils.getQueryString('word'),
   pageType: 'loading',
@@ -35,6 +37,8 @@ var methods = {
     $api.get($url, {
       params: {
         siteId: this.siteId,
+        channelId: this.channelId,
+        contentId: this.contentId,
         formId: this.formId,
         page: page,
         word: this.word

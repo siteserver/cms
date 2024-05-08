@@ -59,6 +59,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
             public string ListAttributeNames { get; set; }
             public bool IsCaptcha { get; set; }
             public bool IsSms { get; set; }
+            public bool IsPageOnly { get; set; }
             public int PageSize { get; set; }
             public bool IsTimeout { get; set; }
             public DateTime TimeToStart { get; set; }

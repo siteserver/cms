@@ -43,6 +43,10 @@
           <el-radio v-model="form.isReplyListAll" :label="true">显示所有数据</el-radio>
           <el-radio v-model="form.isReplyListAll" :label="false">仅显示已回复数据</el-radio>
         </el-form-item>
+        <el-form-item label="表单数据前台显示">
+          <el-radio v-model="form.isPageOnly" :label="true">仅显示当前页面的提交数据</el-radio>
+          <el-radio v-model="form.isPageOnly" :label="false">显示所有数据</el-radio>
+        </el-form-item>
         <el-form-item label="表单每页显示数目(条)" prop="pageSize" :rules="{ required: true, message: '请输入表单每页显示数目' }">
           <el-input v-model.number="form.pageSize" placeholder="请输入表单每页显示数目"></el-input>
         </el-form-item>

@@ -123,11 +123,11 @@ var methods = {
     return '';
   },
 
-  btnEditClick: function (dataId) {
+  btnEditClick: function (data) {
     location.href = utils.getCmsUrl('formDataAdd', {
       siteId: this.siteId,
       formId: this.formId,
-      dataId: dataId
+      dataId: data.id
     });
   },
 

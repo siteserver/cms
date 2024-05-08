@@ -101,7 +101,6 @@ namespace SSCMS.Core.StlParser.StlElement
             }
 
             var formRepository = parseManager.DatabaseManager.FormRepository;
-            var siteRepository = parseManager.DatabaseManager.SiteRepository;
             var pathManager = parseManager.PathManager;
             var site = context.Site;
 

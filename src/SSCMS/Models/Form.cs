@@ -42,6 +42,8 @@ namespace SSCMS.Models
         
         public bool IsSms { get; set; }
 
+        public bool IsPageOnly { get; set; }
+
         public int PageSize { get; set; }
 
         public bool IsTimeout { get; set; }

@@ -110,9 +110,19 @@ namespace SSCMS.Core.Repositories
 
         public async Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize)
         {
+            return await GetListAsync(form, isRepliedOnly, null, null, startDate, endDate, word, page, pageSize);
+        }
+
+        public async Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, int? channelId, int? contentId, string word, int page, int pageSize)
+        {
+            return await GetListAsync(form, isRepliedOnly, channelId, contentId, null, null, word, page, pageSize);
+        }
+
+        public async Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, int? channelId, int? contentId, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize)
+        {
             try
             {
-                return await GetListPrivateAsync(form, isRepliedOnly, startDate, endDate, word, page, pageSize);
+                return await GetListPrivateAsync(form, isRepliedOnly, channelId, contentId, startDate, endDate, word, page, pageSize);
             }
             catch
             {
@@ -121,11 +131,11 @@ namespace SSCMS.Core.Repositories
                     await _settingsManager.Database.CreateTableAsync(TableName, TableColumns);
                 }
 
-                return await GetListPrivateAsync(form, isRepliedOnly, startDate, endDate, word, page, pageSize);
+                return await GetListPrivateAsync(form, isRepliedOnly, channelId, contentId, startDate, endDate, word, page, pageSize);
             }
         }
 
-        private async Task<(int Total, List<FormData>)> GetListPrivateAsync(Form form, bool isRepliedOnly, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize)
+        private async Task<(int Total, List<FormData>)> GetListPrivateAsync(Form form, bool isRepliedOnly, int? channelId, int? contentId, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize)
         {
             if (form.TotalCount == 0)
             {
@@ -143,6 +153,15 @@ namespace SSCMS.Core.Repositories
             if (isRepliedOnly)
             {
                 q.Where(nameof(FormData.IsReplied), true);
+            }
+
+            if (channelId.HasValue)
+            {
+                q.Where(nameof(FormData.ChannelId), channelId.Value);
+            }
+            if (contentId.HasValue)
+            {
+                q.Where(nameof(FormData.ContentId), contentId.Value);
             }
 
             if (startDate.HasValue)

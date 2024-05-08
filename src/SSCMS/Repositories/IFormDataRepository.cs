@@ -28,6 +28,8 @@ namespace SSCMS.Repositories
 
         Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, DateTime? startDate, DateTime? endDate, string word, int page, int pageSize);
 
+        Task<(int Total, List<FormData>)> GetListAsync(Form form, bool isRepliedOnly, int? channelId, int? contentId, string word, int page, int pageSize);
+
         Task<IList<FormData>> GetListAsync(Form form);
 
         string GetValue(TableStyle style, FormData data);

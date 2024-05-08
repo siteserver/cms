@@ -92,6 +92,7 @@
         stripe
         style="width: 100%"
         :row-class-name="tableRowClassName"
+        v-on:row-dblclick="btnEditClick"
         v-on:selection-change="handleSelectionChange"
         v-on:row-click="toggleSelection">
         <el-table-column type="selection" width="45" align="center"></el-table-column>
@@ -132,7 +133,7 @@
           width="120">
           <template slot-scope="scope">
             <el-link :underline="false" v-if="isReply" v-on:click="btnReplyClick(scope.row.id)" type="primary">回复</el-link>
-            <el-link :underline="false" v-on:click="btnEditClick(scope.row.id)" type="primary">编辑</el-link>
+            <el-link :underline="false" v-on:click="btnEditClick(scope.row)" type="primary">编辑</el-link>
             <el-link :underline="false" type="danger" v-on:click="btnDeleteClick(scope.row.id)">删除</el-link>
           </template>
         </el-table-column>

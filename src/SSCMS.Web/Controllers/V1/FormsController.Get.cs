@@ -33,7 +33,14 @@ namespace SSCMS.Web.Controllers.V1
             var pageSize = request.PerPage > 0 ? request.PerPage : _formRepository.GetPageSize(form);
 
             var isRepliedOnly = form.IsReply && !form.IsReplyListAll;
-            var (total, items) = await _formDataRepository.GetListAsync(form, isRepliedOnly, null, null, request.Word, request.Page, pageSize);
+            int? channelId = null;
+            int? contentId = null;
+            if (form.IsPageOnly)
+            {
+                channelId = request.ChannelId;
+                contentId = request.ContentId;
+            }
+            var (total, items) = await _formDataRepository.GetListAsync(form, isRepliedOnly, channelId, contentId, request.Word, request.Page, pageSize);
             var columns = _formRepository.GetColumns(listAttributeNames, styles, form.IsReply);
 
             return new GetResult
