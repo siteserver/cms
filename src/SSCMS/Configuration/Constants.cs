@@ -50,12 +50,13 @@ namespace SSCMS.Configuration
         public const string ScopeUsers = "Users";
         public const string ScopeOthers = "Others";
         public const string OfficialHost = "https://sscms.com";
+        public const string SessionIdPrefix = "SESSION-ID-";
 
         public static DateTime SqlMinValue { get; } = new DateTime(1754, 1, 1, 0, 0, 0, 0);
 
         public static string GetSessionIdCacheKey(int userId)
         {
-            return $"SESSION-ID-{userId}";
+            return $"{SessionIdPrefix}{userId}";
         }
 
         public const char Newline = '\n';//换行

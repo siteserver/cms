@@ -12,6 +12,8 @@ namespace SSCMS.Repositories
 
         Task ClearAsync();
 
+        Task ClearAllExceptAdminSessionsAsync();
+
         Task<string> GetValueAndRemoveAsync(string cacheKey);
 
         Task<string> GetValueAsync(string cacheKey);

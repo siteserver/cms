@@ -101,6 +101,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             }
 
             await _channelRepository.RemoveListCacheAsync(request.SiteId);
+            await _dbCacheRepository.ClearAllExceptAdminSessionsAsync();
 
             return expandedChannelIds;
         }

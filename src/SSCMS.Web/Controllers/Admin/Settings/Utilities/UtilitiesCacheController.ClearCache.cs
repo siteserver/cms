@@ -21,10 +21,11 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Utilities
             DirectoryUtils.DeleteDirectoryIfExists(temporaryFilesPath);
             DirectoryUtils.CreateDirectoryIfNotExists(temporaryFilesPath);
 
-            await _dbCacheRepository.ClearAsync();
-            var cacheManager = await CachingUtils.GetCacheManagerAsync(_settingsManager.Redis);
-            cacheManager.Clear();
-            _cacheManager.Clear();
+            // await _dbCacheRepository.ClearAsync();
+            // var cacheManager = await CachingUtils.GetCacheManagerAsync(_settingsManager.Redis);
+            // cacheManager.Clear();
+            // _cacheManager.Clear();
+            await _dbCacheRepository.ClearAllExceptAdminSessionsAsync();
 
             return new BoolResult
             {

@@ -43,8 +43,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ITemplateRepository _templateRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
+        private readonly IDbCacheRepository _dbCacheRepository;
 
-        public ChannelsController(ICacheManager cacheManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository)
+        public ChannelsController(ICacheManager cacheManager, IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IChannelGroupRepository channelGroupRepository, ITemplateRepository templateRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, IDbCacheRepository dbCacheRepository)
         {
             _cacheManager = cacheManager;
             _authManager = authManager;
@@ -60,6 +61,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             _templateRepository = templateRepository;
             _tableStyleRepository = tableStyleRepository;
             _relatedFieldItemRepository = relatedFieldItemRepository;
+            _dbCacheRepository = dbCacheRepository;
         }
 
         public class ChannelColumn

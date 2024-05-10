@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Datory;
+using Datory.Caching;
+using Senparc.NeuChar.Helpers;
+using SSCMS.Configuration;
 using SSCMS.Models;
 using SSCMS.Repositories;
 using SSCMS.Services;
@@ -11,9 +14,13 @@ namespace SSCMS.Core.Repositories
     public class DbCacheRepository : IDbCacheRepository
     {
         private readonly Repository<DbCache> _repository;
+        private readonly ISettingsManager _settingsManager;
+        private readonly ICacheManager _cacheManager;
 
-        public DbCacheRepository(ISettingsManager settingsManager)
+        public DbCacheRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
+            _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
             _repository = new Repository<DbCache>(settingsManager.Database, settingsManager.Redis);
         }
 
@@ -56,6 +63,26 @@ namespace SSCMS.Core.Repositories
             );
             await _repository.RemoveCacheAsync(cacheKeys.ToArray());
             await _repository.DeleteAsync();
+        }
+
+        public async Task ClearAllExceptAdminSessionsAsync()
+        {
+            var dbCaches = await _repository.GetAllAsync(Q
+                .WhereLike(nameof(DbCache.CacheKey), $"{Constants.SessionIdPrefix}%")
+            );
+
+            await ClearAsync();
+            var cacheManager = await CachingUtils.GetCacheManagerAsync(_settingsManager.Redis);
+            cacheManager.Clear();
+            _cacheManager.Clear();
+
+            foreach (var dbCache in dbCaches)
+            {
+                if (!string.IsNullOrEmpty(dbCache.CacheKey) && !string.IsNullOrEmpty(dbCache.CacheValue))
+                {
+                    await RemoveAndInsertAsync(dbCache.CacheKey, dbCache.CacheValue);
+                }
+            }
         }
 
         public async Task<string> GetValueAndRemoveAsync(string cacheKey)
