@@ -2,6 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:8.0-buster-slim AS base
 WORKDIR /app
+EXPOSE 8080
 EXPOSE 80
 EXPOSE 443
 
