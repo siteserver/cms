@@ -21,7 +21,10 @@
 
       <div style="height: 10px"></div>
 
-      <el-table :data="styles" style="width: 100%">
+      <el-table
+        :data="styles"
+        v-on:row-dblclick="btnEditClick"
+        style="width: 100%">
         <el-table-column label="排序" prop="taxis" width="60">
           <template slot-scope="scope">
             {{ scope.row.taxis ? scope.row.taxis : '' }}
@@ -48,7 +51,7 @@
           <template slot-scope="scope">
             <el-link
               :underline="false"
-              v-on:click="btnEditClick(scope.row.attributeName)"
+              v-on:click="btnEditClick(scope.row)"
               type="primary">
               编辑
             </el-link>

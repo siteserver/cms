@@ -97,13 +97,13 @@ var methods = {
     });
   },
 
-  btnEditClick: function (attributeName) {
+  btnEditClick: function (row) {
     utils.openLayer({
       title: '编辑字段',
       url: utils.getCommonUrl('tableStyleLayerEditor', {
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
-        attributeName: attributeName,
+        attributeName: row.attributeName,
         excludes: 'TextEditor,SelectCascading,Customize,Video'
       })
     });
