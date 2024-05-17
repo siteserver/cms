@@ -56,7 +56,7 @@ namespace SSCMS.Core.Plugins
 
             var dllDirectoryPath = Path.GetDirectoryName(assemblyPath);
             var assemblyFiles = Directory.GetFiles(dllDirectoryPath, "*.dll", SearchOption.TopDirectoryOnly);
-            
+
             foreach (var assemblyFile in assemblyFiles)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(assemblyFile);
@@ -129,14 +129,21 @@ namespace SSCMS.Core.Plugins
 
             foreach (var implementation in GetImplementations<T>(plugins.Select(x => x.Assembly), useCaching))
             {
-                //if (implementation.IsAbstract || implementation.GetConstructor(Type.EmptyTypes) == null) continue;
-                //var instance = (T)Activator.CreateInstance(implementation, args);
+                try
+                {
+                    //if (implementation.IsAbstract || implementation.GetConstructor(Type.EmptyTypes) == null) continue;
+                    //var instance = (T)Activator.CreateInstance(implementation, args);
 
-                if (implementation.IsAbstract) continue;
+                    if (implementation.IsAbstract) continue;
 
-                var instance = (T)ActivatorUtilities.CreateInstance(provider, implementation);
+                    var instance = (T)ActivatorUtilities.CreateInstance(provider, implementation);
 
-                instances.Add(instance);
+                    instances.Add(instance);
+                }
+                catch
+                {
+                    
+                }
             }
 
             return instances;
