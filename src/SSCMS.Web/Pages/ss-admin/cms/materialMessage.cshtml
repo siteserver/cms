@@ -293,6 +293,7 @@
   <template v-else>
     <el-table
       :data="messages"
+      v-on:row-dblclick="btnUpdateClick"
       style="width: 100%">
       <el-table-column
         label="封面"
