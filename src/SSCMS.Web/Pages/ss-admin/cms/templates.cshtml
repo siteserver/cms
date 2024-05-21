@@ -49,7 +49,7 @@
         </el-form-item>
       </el-form>
 
-      <el-table :data="templates" style="width: 100%" :row-class-name="tableRowClassName">
+      <el-table :data="templates" style="width: 100%" :row-class-name="tableRowClassName" v-on:row-dblclick="btnEditClick">
         <el-table-column label="模板名称">
           <template slot-scope="scope">
             <el-link

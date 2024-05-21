@@ -166,6 +166,10 @@ var methods = {
     });
   },
 
+  btnEditClick: function(template) {
+    window.open(this.getEditorUrl(template.templateType, template.id));
+  },
+
   getEditorUrl: function(templateType, templateId) {
     return utils.getCmsUrl('templatesEditor', {
       siteId: this.siteId,
