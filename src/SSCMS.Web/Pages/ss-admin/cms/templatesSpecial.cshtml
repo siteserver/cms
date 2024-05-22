@@ -1,7 +1,7 @@
 ﻿@page
 @{ Layout = "_Layout"; }
 
-<el-table :data="specials">
+<el-table :data="specials" v-on:row-dblclick="btnEditClick">
   <el-table-column label="专题名称">
     <template slot-scope="scope">
       <el-link
