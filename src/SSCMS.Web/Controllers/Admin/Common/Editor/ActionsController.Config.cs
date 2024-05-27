@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
+using SSCMS.Models;
 using SSCMS.Utils;
 
 namespace SSCMS.Web.Controllers.Admin.Common.Editor
@@ -11,6 +12,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         public async Task<ActionResult<ConfigResult>> GetConfig([FromQuery]SiteRequest request)
         {
             var site = await _siteRepository.GetAsync(request.SiteId);
+            if (site == null)
+            {
+                site = new Site();
+            }
 
             return new ConfigResult
             {
