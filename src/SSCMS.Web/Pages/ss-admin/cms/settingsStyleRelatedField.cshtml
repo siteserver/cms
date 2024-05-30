@@ -3,7 +3,7 @@
 
 <div style="height: 10px"></div>
 
-<el-table :data="relatedFields" style="width: 100%">
+<el-table v-on:row-dblclick="btnItemsClick" :data="relatedFields" style="width: 100%">
   <el-table-column label="联动字段名称">
     <template slot-scope="scope">
       <el-link
@@ -163,7 +163,7 @@
       class="tree"
     >
       <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
-        <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+        <table v-on:dblclick="btnItemsEditClick(data)" cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
           <colgroup>
             <col name="el-table_1_column_1">
             <col name="el-table_1_column_2">
