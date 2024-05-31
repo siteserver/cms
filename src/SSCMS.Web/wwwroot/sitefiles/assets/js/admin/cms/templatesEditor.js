@@ -28,6 +28,7 @@ var data = utils.init({
     '.htm',
     '.shtml',
     '.xml',
+    '.txt',
     '.json',
     '.js'
   ],
