@@ -55,7 +55,7 @@
   :filter-node-method="filterNode"
 >
   <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ node, data }">
-    <table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+    <table v-on:dblclick="btnEditClick(data)" cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
       <colgroup>
         <col name="el-table_1_column_1">
         <col name="el-table_1_column_2" width="240">
