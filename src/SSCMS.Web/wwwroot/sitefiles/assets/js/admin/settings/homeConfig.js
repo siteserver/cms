@@ -7,11 +7,8 @@ var data = utils.init({
   uploadFileListHomeDefaultAvatarUrl: [],
   uploadType: null,
 
-  homeDirectory: null,
-
   form: {
     uploadLogoUrl: null,
-
     isHomeClosed: null,
     homeTitle: null,
     isHomeLogo: null,
@@ -39,7 +36,6 @@ var methods = {
 
       $this.config = res.config;
 
-      $this.homeDirectory = res.homeDirectory;
       $this.form.isHomeClosed = res.config.isHomeClosed;
       $this.form.homeTitle = res.config.homeTitle;
       $this.form.isHomeLogo = res.config.isHomeLogo;
@@ -52,7 +48,7 @@ var methods = {
       $this.form.isUserRegistrationDisplayName = res.config.isUserRegistrationDisplayName;
       $this.form.isHomeAgreement = res.config.isHomeAgreement;
       $this.form.homeAgreementHtml = res.config.homeAgreementHtml;
-      $this.form.homeWelcomeHtml = res.homeWelcomeHtml || '欢迎使用用户中心';
+      $this.form.homeWelcomeHtml = res.config.homeWelcomeHtml || '欢迎使用用户中心';
       $this.styles = res.styles;
 
       if ($this.form.homeLogoUrl) {
