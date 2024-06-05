@@ -6,7 +6,10 @@
 <template v-if="pageType === 'sites'">
   <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="120px">
     <el-form-item label="插件">
-      {{ pluginId }}
+      <div style="line-height: 50px; font-weight: 600;">
+        <img :src="getIconUrl(plugin)" width="48" height="48" style="float: left">
+        {{ plugin.displayName }}（{{ pluginId }}）
+      </div>
     </el-form-item>
     <el-form-item label="插件排序" prop="taxis" :rules="[
       { required: true, message: '请输入插件排序' },

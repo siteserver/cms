@@ -21,6 +21,10 @@ var data = utils.init({
 });
 
 var methods = {
+  getIconUrl: function (plugin) {
+    return cloud.getPluginIconUrl(plugin);
+  },
+
   apiGet: function () {
     var $this = this;
 

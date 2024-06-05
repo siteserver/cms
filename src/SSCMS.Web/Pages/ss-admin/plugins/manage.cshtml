@@ -74,7 +74,7 @@
     </el-button>
   </div>
 
-  <el-table v-if="pageType == 'enabled' || pageType == 'disabled'" :data="plugins">
+  <el-table v-if="pageType == 'enabled' || pageType == 'disabled'" v-on:row-dblclick="btnConfigClick" :data="plugins">
     <el-table-column label="LOGO" width="80" align="center">
       <template slot-scope="scope">
         <img :src="getIconUrl(scope.row)" width="48" height="48">

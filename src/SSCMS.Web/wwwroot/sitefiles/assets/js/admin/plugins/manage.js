@@ -177,6 +177,10 @@ var methods = {
     });
   },
 
+  btnConfigClick: function(plugin) {
+    utils.addTab('插件配置：' + plugin.pluginId, utils.getPluginsUrl('config', {pluginId: plugin.pluginId}));
+  },
+
   btnMenuClick: function(index) {
     var ids = index.split(':');
     var plugin = this.plugins.find(function (x) { return x.pluginId === ids[0]; });
