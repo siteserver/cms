@@ -7,7 +7,7 @@
   <el-form v-on:submit.native.prevent ref="form" :model="form" size="small" status-icon label-width="120px">
     <el-form-item label="插件">
       <div style="line-height: 50px; font-weight: 600;">
-        <img :src="getIconUrl(plugin)" width="48" height="48" style="float: left">
+        <img :src="getIconUrl(plugin)" width="48" height="48" style="float: left; margin-right: 10px;">
         {{ plugin.displayName }}（{{ pluginId }}）
       </div>
     </el-form-item>
