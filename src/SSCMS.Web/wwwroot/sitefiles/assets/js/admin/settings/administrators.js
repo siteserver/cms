@@ -125,6 +125,8 @@ var methods = {
   },
 
   btnPermissionsClick: function(row) {
+    if(this.adminId == row.id) return;
+
     var $this = this;
 
     utils.loading(this, true);
