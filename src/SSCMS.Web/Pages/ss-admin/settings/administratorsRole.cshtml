@@ -22,6 +22,14 @@
     label="创建时间">
   </el-table-column>
   <el-table-column
+    label="有权管理的站点">
+    <template slot-scope="scope">
+      <el-tag v-for="siteName in scope.row.siteNames" :kye="siteName" style="margin-right: 5px; margin-bottom: 5px; ">
+        {{ siteName }}
+      </el-tag>
+    </template>
+  </el-table-column>
+  <el-table-column
     prop="description"
     label="备注">
   </el-table-column>

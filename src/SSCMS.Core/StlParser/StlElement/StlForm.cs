@@ -70,7 +70,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 {
                     type = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Type))
+                else if (StringUtils.EqualsIgnoreCase(name, Height))
                 {
                     height = value;
                 }

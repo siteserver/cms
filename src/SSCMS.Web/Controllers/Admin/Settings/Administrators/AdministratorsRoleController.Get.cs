@@ -10,7 +10,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
     public partial class AdministratorsRoleController
     {
         [HttpGet, Route(Route)]
-        public async Task<ActionResult<ListRequest>> GetList()
+        public async Task<ActionResult<ListRequest>> Get()
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsAdministratorsRole))
             {
@@ -31,6 +31,19 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
                     role.Set("AdminGuid", admin.Guid);
                     roles.Add(role);
                }
+
+               var siteNames = new List<string>();
+                var sitePermissionsList = await _sitePermissionsRepository.GetAllAsync(role.RoleName);
+                foreach (var sitePermissions in sitePermissionsList)
+                {
+                    if (sitePermissions.SiteId == 0) continue;
+                    var site = await _siteRepository.GetAsync(sitePermissions.SiteId);
+                    if (site != null)
+                    {
+                        siteNames.Add(site.SiteName);
+                    }
+                }
+                role.Set("siteNames", siteNames);
             }
 
             return new ListRequest

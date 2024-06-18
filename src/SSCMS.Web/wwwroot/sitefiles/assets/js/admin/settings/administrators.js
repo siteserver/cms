@@ -226,21 +226,7 @@ var methods = {
   },
 
   btnSearchClick() {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.get($url, {
-      params: this.formInline
-    }).then(function (response) {
-      var res = response.data;
-
-      $this.administrators = res.administrators;
-      $this.count = res.count;
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
+    this.handleCurrentChange(1);
   },
 
   btnExportClick: function() {
@@ -259,10 +245,10 @@ var methods = {
   },
 
   handleCurrentChange: function(val) {
-    this.formInline.currentValue = val;
+    this.formInline.currentPage = val;
     this.formInline.offset = this.formInline.limit * (val - 1);
 
-    this.btnSearchClick();
+    this.apiGet();
   },
 
   btnAddClick: function () {

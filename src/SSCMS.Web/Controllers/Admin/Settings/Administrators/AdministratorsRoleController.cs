@@ -22,14 +22,23 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Administrators
         private readonly ISitePermissionsRepository _sitePermissionsRepository;
         private readonly IPermissionsInRolesRepository _permissionsInRolesRepository;
         private readonly IAdministratorRepository _administratorRepository;
+        private readonly ISiteRepository _siteRepository;
 
-        public AdministratorsRoleController(IAuthManager authManager, IRoleRepository roleRepository, ISitePermissionsRepository sitePermissionsRepository, IPermissionsInRolesRepository permissionsInRolesRepository, IAdministratorRepository administratorRepository)
+        public AdministratorsRoleController(
+            IAuthManager authManager,
+            IRoleRepository roleRepository,
+            ISitePermissionsRepository sitePermissionsRepository,
+            IPermissionsInRolesRepository permissionsInRolesRepository,
+            IAdministratorRepository administratorRepository,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _roleRepository = roleRepository;
             _sitePermissionsRepository = sitePermissionsRepository;
             _permissionsInRolesRepository = permissionsInRolesRepository;
             _administratorRepository = administratorRepository;
+            _siteRepository = siteRepository;
         }
 
         public class ListRequest
