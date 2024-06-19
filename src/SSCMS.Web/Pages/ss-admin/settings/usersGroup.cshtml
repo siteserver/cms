@@ -3,7 +3,7 @@
 
 <el-alert>用户组的投稿范围为关联管理员拥有权限的站点及栏目，如果不设置关联管理员则用户组将被禁止投稿。</el-alert>
 
-<el-table :data="groups" style="width: 100%; margin-top: 10px">
+<el-table :data="groups" v-on:row-dblclick="btnEditClick" style="width: 100%; margin-top: 10px">
   <el-table-column label="用户组" prop="groupName"></el-table-column>
   <el-table-column label="关联管理员">
     <template slot-scope="scope">
