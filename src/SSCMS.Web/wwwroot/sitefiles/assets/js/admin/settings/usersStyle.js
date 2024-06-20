@@ -84,14 +84,14 @@ var methods = {
     }).join(',');
   },
 
-  btnEditClick: function (attributeName) {
+  btnEditClick: function (style) {
     utils.openLayer({
       title: '编辑字段',
       url: utils.getCommonUrl('tableStyleLayerEditor', {
         siteId: 0,
         tableName: this.tableName,
         relatedIdentities: this.relatedIdentities,
-        attributeName: attributeName,
+        attributeName: style.attributeName,
         excludes: 'TextEditor,SelectCascading,Customize'
       })
     });
