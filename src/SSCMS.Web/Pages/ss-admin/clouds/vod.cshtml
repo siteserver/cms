@@ -141,7 +141,7 @@
       </el-col>
     </el-row>
 
-    <el-table :data="videos" style="width: 100%">
+    <el-table :data="videos" v-on:row-dblclick="btnViewClick" style="width: 100%">
       <el-table-column label="云视频">
         <template #default="scope">
           <div class="mod-component-video-item">
