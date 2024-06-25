@@ -11,7 +11,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
     public partial class ChannelsController
     {
         [HttpPost, Route(RouteExport)]
-        public async Task<ActionResult<StringResult>> Export([FromBody] ChannelIdsRequest request)
+        public async Task<ActionResult<StringResult>> Export([FromBody] ExportRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Channels))
             {
@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var caching = new CacheUtils(_cacheManager);
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
-            var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds);
+            var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds, request.IsContents);
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var url = _pathManager.GetDownloadApiUrl(filePath);
 

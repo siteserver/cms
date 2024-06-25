@@ -36,7 +36,7 @@ namespace SSCMS.Web.Controllers.Stl
                         return Redirect(redirectUrl);
                     }
                 }
-                else if (!string.IsNullOrEmpty(request.FilePath))
+                else if (request.SiteId.HasValue && !string.IsNullOrEmpty(request.FilePath))
                 {
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
                     var filePath = _settingsManager.Decrypt(request.FilePath);
@@ -46,6 +46,19 @@ namespace SSCMS.Web.Controllers.Stl
                         {
                             return this.Download(filePath);
                         }
+                    }
+                    else
+                    {
+                        var fileUrl = _pathManager.GetRootUrlByPath(filePath);
+                        return Redirect(_pathManager.ParseUrl(fileUrl));
+                    }
+                }
+                else if (!string.IsNullOrEmpty(request.FilePath))
+                {
+                    var filePath = _settingsManager.Decrypt(request.FilePath);
+                    if (FileUtils.IsFileExists(filePath))
+                    {
+                        return this.Download(filePath);
                     }
                     else
                     {

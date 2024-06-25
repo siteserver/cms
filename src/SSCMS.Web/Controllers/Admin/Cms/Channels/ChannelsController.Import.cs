@@ -30,7 +30,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
                 var importObject = new ImportObject(_pathManager, _databaseManager, caching, site, adminId);
                 await importObject.ImportChannelsAndContentsByZipFileAsync(request.ChannelId, filePath,
-                    request.IsOverride, null);
+                    request.IsOverride, request.IsContents, null);
 
                 await _authManager.AddSiteLogAsync(request.SiteId, "导入栏目");
             }

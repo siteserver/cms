@@ -36,7 +36,9 @@ var data = utils.init({
   deleteForm: null,
   importPanel: false,
   importForm: null,
-  importUploadList: []
+  importUploadList: [],
+  exportPanel: false,
+  exportForm: null,
 });
 
 var methods = {
@@ -186,6 +188,7 @@ var methods = {
       channelId: this.importForm.channelIds[this.importForm.channelIds.length - 1],
       fileName: this.importForm.fileName,
       isOverride: this.importForm.isOverride,
+      isContents: this.importForm.isContents,
     }).then(function (response) {
       var res = response.data;
 
@@ -196,6 +199,25 @@ var methods = {
       utils.loading($this, false);
       utils.error(error);
     })
+  },
+
+  apiExport: function() {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url + '/actions/export', {
+      siteId: this.siteId,
+      channelIds: this.channelIds,
+      isContents: this.exportForm.isContents,
+    }).then(function (response) {
+      var res = response.data;
+
+      window.open(res.value);
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiDrop: function (sourceId, targetId, dropType) {
@@ -476,6 +498,7 @@ var methods = {
     this.appendPanel = false;
     this.deletePanel = false;
     this.importPanel = false;
+    this.exportPanel = false;
     this.editPanel = false;
   },
 
@@ -559,7 +582,8 @@ var methods = {
       siteId: this.siteId,
       channelIds: [this.siteId],
       fileName: null,
-      isOverride: true
+      isOverride: true,
+      isContents: true,
     };
     this.importPanel = true;
   },
@@ -582,20 +606,18 @@ var methods = {
   },
 
   btnExportClick: function() {
+    this.exportForm = {
+      isContents: true
+    };
+    this.exportPanel = true;
+  },
+
+  btnExportSubmitClick: function() {
     var $this = this;
-
-    utils.loading(this, true);
-    $api.post($url + '/actions/export', {
-      siteId: this.siteId,
-      channelIds: this.channelIds
-    }).then(function (response) {
-      var res = response.data;
-
-      window.open(res.value);
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
+    this.$refs.exportForm.validate(function(valid) {
+      if (valid) {
+        $this.apiExport();
+      }
     });
   },
 

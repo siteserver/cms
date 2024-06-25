@@ -124,6 +124,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         {
             public string FileName { get; set; }
             public bool IsOverride { get; set; }
+            public bool IsContents { get; set; }
         }
 
         public class DropRequest : SiteRequest
@@ -133,9 +134,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
             public string DropType { get; set; }
         }
 
-        public class ChannelIdsRequest : SiteRequest
+        public class ExportRequest : SiteRequest
         {
             public List<int> ChannelIds { get; set; }
+            public bool IsContents { get; set; }
         }
 
         public class DeleteRequest : SiteRequest

@@ -136,7 +136,7 @@ namespace SSCMS.Core.Utils.Serialization
             await configIe.ImportAsync(guid);
         }
 
-        public async Task ImportChannelsAndContentsByZipFileAsync(int parentId, string zipFilePath, bool isOverride, string guid)
+        public async Task ImportChannelsAndContentsByZipFileAsync(int parentId, string zipFilePath, bool isOverride, bool isContents, string guid)
         {
             var siteContentDirectoryPath = _pathManager.GetTemporaryFilesPath(BackupType.ChannelsAndContents.GetValue());
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -144,7 +144,7 @@ namespace SSCMS.Core.Utils.Serialization
 
             _pathManager.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            await ImportChannelsAndContentsFromZipAsync(parentId, siteContentDirectoryPath, isOverride, guid);
+            await ImportChannelsAndContentsFromZipAsync(parentId, siteContentDirectoryPath, isOverride, isContents, guid);
 
             var uploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName);
             var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName);
@@ -177,7 +177,7 @@ namespace SSCMS.Core.Utils.Serialization
             }
         }
 
-        private async Task ImportChannelsAndContentsFromZipAsync(int parentId, string siteContentDirectoryPath, bool isOverride, string guid)
+        private async Task ImportChannelsAndContentsFromZipAsync(int parentId, string siteContentDirectoryPath, bool isOverride, bool isContents, string guid)
         {
             var filePathList = GetSiteContentFilePathList(siteContentDirectoryPath);
 
@@ -200,7 +200,7 @@ namespace SSCMS.Core.Utils.Serialization
                     };
                 }
 
-                var insertChannelId = await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, (int)levelHashtable[level], _adminId, guid);
+                var insertChannelId = await siteIe.ImportChannelsAndContentsAsync(filePath, isContents, isOverride, (int)levelHashtable[level], _adminId, guid);
                 levelHashtable[level + 1] = insertChannelId;
             }
         }

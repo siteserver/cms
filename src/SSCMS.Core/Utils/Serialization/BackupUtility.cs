@@ -25,7 +25,7 @@ namespace SSCMS.Core.Utils.Serialization
 
             var channelIdList = await databaseManager.ChannelRepository.GetChannelIdsAsync(site.Id, site.Id, ScopeType.Children);
 
-            await exportObject.ExportChannelsAsync(channelIdList, filePath);  
+            await exportObject.ExportChannelsAsync(channelIdList, filePath, true);  
         }
 
         public static async Task BackupFilesAsync(IPathManager pathManager, IDatabaseManager databaseManager, CacheUtils caching, Site site, string filePath)

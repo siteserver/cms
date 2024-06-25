@@ -400,11 +400,40 @@
 
       <el-form-item>
         <el-checkbox label="覆盖同名栏目" v-model="importForm.isOverride"></el-checkbox>
+        <el-checkbox label="同时导入内容" v-model="importForm.isContents"></el-checkbox>
       </el-form-item>
 
       <el-divider></el-divider>
       <div class="drawer__footer">
         <el-button type="primary" size="small" v-on:click="btnImportSubmitClick">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    
+    </el-form>
+
+  </div>
+</el-drawer>
+
+<el-drawer
+  id="exportForm"
+  v-if="exportForm"
+  title="导出栏目"
+  ref="exportPanel"
+  :visible.sync="exportPanel"
+  destroy-on-close
+  :wrapperClosable="false"
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form v-on:submit.native.prevent ref="exportForm" size="small" :model="exportForm" label-width="160px">
+
+      <el-form-item>
+        <el-checkbox label="同时导出内容" v-model="exportForm.isContents"></el-checkbox>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" size="small" v-on:click="btnExportSubmitClick">确 定</el-button>
         <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
       </div>
     
