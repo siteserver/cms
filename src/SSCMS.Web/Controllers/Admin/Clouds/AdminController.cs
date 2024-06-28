@@ -19,7 +19,11 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
 
-        public AdminController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository)
+        public AdminController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IConfigRepository configRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

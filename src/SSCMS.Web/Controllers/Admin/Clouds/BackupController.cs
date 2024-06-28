@@ -27,7 +27,14 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         private readonly IConfigRepository _configRepository;
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
 
-        public BackupController(IHostApplicationLifetime hostApplicationLifetime, IAuthManager authManager, ICloudManager cloudManager, ITaskManager taskManager, IConfigRepository configRepository, IScheduledTaskRepository scheduledTaskRepository)
+        public BackupController(
+            IHostApplicationLifetime hostApplicationLifetime,
+            IAuthManager authManager,
+            ICloudManager cloudManager,
+            ITaskManager taskManager,
+            IConfigRepository configRepository,
+            IScheduledTaskRepository scheduledTaskRepository
+        )
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _authManager = authManager;
