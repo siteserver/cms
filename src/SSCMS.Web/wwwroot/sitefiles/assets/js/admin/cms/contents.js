@@ -434,7 +434,6 @@ var methods = {
   },
 
   btnContentStateClick: function(content) {
-    if (!this.permissions.isEdit) return;
     utils.openLayer({
       title: "查看审核状态",
       url: utils.getCmsUrl('contentsLayerState', {
