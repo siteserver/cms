@@ -19,6 +19,7 @@ namespace SSCMS.Services
         IContentRepository ContentRepository { get; }
         IContentTagRepository ContentTagRepository { get; }
         IDbCacheRepository DbCacheRepository { get; }
+        IDepartmentRepository DepartmentRepository { get; }
         IErrorLogRepository ErrorLogRepository { get; }
         IFormRepository FormRepository { get; }
         IFormDataRepository FormDataRepository { get; }
