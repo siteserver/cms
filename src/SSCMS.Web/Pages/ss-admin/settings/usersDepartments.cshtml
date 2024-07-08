@@ -1,0 +1,210 @@
+@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    .commands {
+      text-align: right;
+      padding-right: 10px;
+    }
+    .el-button-group .el-dropdown {
+      float: left;
+      margin-top: -1px;
+      margin-right: -1px;
+    }
+  </style>
+}
+
+<el-row>
+  <el-col :span="24">
+    <el-form v-on:submit.native.prevent size="mini" :inline="true">
+      <el-form-item label="关键字">
+        <el-input v-model="filterText" placeholder="请输入部门名称/部门Id"></el-input>
+      </el-form-item>
+    </el-form>
+  </el-col>
+</el-row>
+
+<div class="el-table el-table--fit el-table--enable-row-hover el-table--enable-row-transition" style="width: 100%;">
+  <div class="el-table__header-wrapper">
+    <table cellspacing="0" cellpadding="0" border="0" class="el-table__header" style="width: 100%;">
+      <thead class="has-gutter">
+        <tr class="">
+          <th colspan="1" rowspan="1" class="is-leaf">
+            <div class="cell">部门名称（提示：可以对部门进行拖拽操作）</div>
+          </th>
+          <th colspan="1" rowspan="1" class="is-leaf" width="200">
+            <div class="cell">成员数</div>
+          </th>
+          <th colspan="1" rowspan="1" class="is-leaf" width="200">
+            <div class="cell"></div>
+          </th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div class="el-table__column-resize-proxy" style="display: none;"></div>
+</div>
+
+<el-tree
+  ref="tree"
+  class="tree"
+  node-key="value"
+  draggable
+  show-checkbox
+  check-strictly
+  highlight-current
+  :data="root"
+  :default-expanded-keys="expandedNodeIds"
+  :filter-node-method="filterNode"
+  :allow-drop="allowDrop"
+  :allow-drag="allowDrag"
+  v-on:node-drop="handleDrop"
+  v-on:check-change="handleCheckChange"
+>
+  <div class="el-table__body-wrapper is-scrolling-none" slot-scope="{ department, data }">
+    <table v-on:dblclick="btnEditClick(data)" v-on:click.ctrl.stop="btnCheckClick(data)" cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+      <colgroup>
+        <col>
+        <col width="200">
+        <col width="200">
+      </colgroup>
+      <tbody>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              {{ data.label }}
+              <!-- imageUrl -->
+              <el-popover
+                v-if="data.imageUrl"
+                width="400"
+                trigger="hover">
+                <el-image :src="data.imageUrl"></el-image>
+                <el-link slot="reference" :underline="false">
+                  <i class="el-icon-picture-outline"></i>
+                </el-link>
+              </el-popover>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              {{ data.count }}
+            </div>
+          </td>
+          <td rowspan="1" colspan="1" class="commands">
+            <div class="cell">
+              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnEditClick(data)">
+                编辑
+              </el-link>
+              <el-link :underline="false" type="primary" size="small" style="margin-left: 5px" v-on:click.stop.native="btnDeleteClick(data)">
+                删除
+              </el-link>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</el-tree>
+
+<el-row>
+  <el-divider></el-divider>
+  <div style="height: 10px"></div>
+  <el-button size="small" type="primary" plain style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAppendClick">
+    添 加
+  </el-button>
+
+  <div style="height: 5px"></div>
+</el-row>
+
+<el-drawer
+  id="appendForm"
+  v-if="appendForm"
+  title="添加部门"
+  ref="appendPanel"
+  :visible.sync="appendPanel"
+  destroy-on-close
+  :wrapperClosable="false"
+  direction="rtl"
+  size="90%">
+  <div class="drawer__content">
+    <el-form v-on:submit.native.prevent ref="appendForm" :model="appendForm" size="small" label-width="120px">
+      <el-form-item v-if="root.length > 0" label="父部门" prop="parentIds" :rules="{ required: true, message: '请选择父部门' }">
+        <el-cascader-panel
+          v-model="appendForm.parentIds"
+          :options="root"
+          :props="{ checkStrictly: true }"
+          style="width: 100%;"
+          placeholder="请选择父部门">
+        </el-cascader-panel>
+      </el-form-item>
+      <el-form-item label="部门" prop="departments" :rules="{ required: true, message: '请输入部门名称' }">
+        <el-input v-model="appendForm.departments" type="textarea" rows="10" :autosize="{ minRows: 10, maxRows: 20}" placeholder="部门之间用换行分割，下级部门在部门前添加“-”字符，如：&#10;部门一&#10;-下级部门&#10;--下下级部门"></el-input>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnAppendSubmitClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+<el-drawer
+  id="deleteForm"
+  v-if="deleteForm"
+  title="删除部门"
+  ref="deletePanel"
+  :visible.sync="deletePanel"
+  destroy-on-close
+  :wrapperClosable="false"
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form v-on:submit.native.prevent size="mini" ref="deleteForm" :model="deleteForm" label-width="160px">
+      <el-form-item>
+        请输入以下信息以确认您的操作: <span style="color:#F56C6C">{{ deleteForm.label }}</span>
+      </el-form-item>
+      <el-form-item label="需要删除的部门名称" prop="name" :rules="{ required: true, message: '请输入部门名称' }">
+        <el-input v-model="deleteForm.name" placeholder="请输入需要删除的部门名称"></el-input>
+      </el-form-item>
+
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="danger" size="small" v-on:click="btnDeleteSubmitClick">删 除</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+      
+    </el-form>
+  </div>
+</el-drawer>
+
+<el-drawer
+  id="editForm"
+  v-if="editPanel && form"
+  title="编辑部门"
+  :visible.sync="editPanel"
+  destroy-on-close
+  :wrapperClosable="false"
+  direction="rtl"
+  size="90%">
+  <div class="drawer__content">
+    <el-form v-on:submit.native.prevent size="mini" ref="editForm" :model="form" label-width="200px">
+      <el-form-item label="部门名称" prop="name" :rules="{ required: true, message: '请输入部门名称' }">
+        <el-input v-model="form.name" placeholder="请输入部门名称"></el-input>
+      </el-form-item>
+      <el-form-item label="部门描述">
+        <el-input type="textarea" v-model="form.description" :autosize="{ minRows: 3, maxRows: 10}"></el-input>
+      </el-form-item>
+      <el-divider></el-divider>
+      <div class="drawer__footer">
+        <el-button type="primary" v-on:click="btnSaveClick" size="small">确 定</el-button>
+        <el-button size="small" v-on:click="btnCancelClick">取 消</el-button>
+      </div>
+    </el-form>
+  </div>
+</el-drawer>
+
+@section Scripts{
+  <script src="/sitefiles/assets/js/admin/settings/usersDepartments.js" type="text/javascript"></script>
+}
