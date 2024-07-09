@@ -29,6 +29,7 @@
             public const string SettingsAdministratorsConfig = "app_settings_administratorsConfig";
             public const string SettingsAdministratorsAccessTokens = "app_settings_administratorsAccessTokens";
             public const string SettingsUsers = "app_settings_users";
+            public const string SettingsUsersDepartment = "app_settings_usersDepartment";
             public const string SettingsUsersGroup = "app_settings_usersGroup";
             public const string SettingsUsersStyle = "app_settings_usersStyle";
             public const string SettingsUsersConfig = "app_settings_usersConfig";

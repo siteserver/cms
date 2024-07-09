@@ -1,4 +1,4 @@
-var $url = '/settings/usersDepartments';
+var $url = '/settings/usersDepartment';
 var $urlUpdate = $url + '/actions/update';
 var $urlDelete = $url + '/actions/delete';
 

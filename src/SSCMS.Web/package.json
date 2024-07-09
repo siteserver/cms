@@ -105,89 +105,96 @@
         ],
         "order": 113
       },
+      "app_settings_usersDepartment": {
+        "text": "部门管理",
+        "type": [
+          "app"
+        ],
+        "order": 114
+      },
       "app_settings_usersGroup": {
         "text": "用户组管理",
         "type": [
           "app"
         ],
-        "order": 114
+        "order": 115
       },
       "app_settings_usersStyle": {
         "text": "用户字段",
         "type": [
           "app"
         ],
-        "order": 115
+        "order": 116
       },
       "app_settings_usersConfig": {
         "text": "用户设置",
         "type": [
           "app"
         ],
-        "order": 116
+        "order": 117
       },
       "app_settings_homeConfig": {
         "text": "用户中心设置",
         "type": [
           "app"
         ],
-        "order": 117
+        "order": 118
       },
       "app_settings_homeMenus": {
         "text": "用户中心菜单",
         "type": [
           "app"
         ],
-        "order": 118
+        "order": 119
       },
       "app_settings_cloudsDashboard": {
         "text": "云助手面板",
         "type": [
           "app"
         ],
-        "order": 119
+        "order": 120
       },
       "app_settings_cloudsTickets": {
         "text": "工单技术支持",
         "type": [
           "app"
         ],
-        "order": 120
+        "order": 121
       },
       "app_settings_cloudsCensor": {
         "text": "违规检测设置",
         "type": [
           "app"
         ],
-        "order": 121
+        "order": 122
       },
       "app_settings_cloudsSpell": {
         "text": "文本纠错设置",
         "type": [
           "app"
         ],
-        "order": 122
+        "order": 123
       },
       "app_settings_cloudsBackup": {
         "text": "云备份设置",
         "type": [
           "app"
         ],
-        "order": 123
+        "order": 124
       },
       "app_settings_cloudsCdn": {
         "text": "CDN加速设置",
         "type": [
           "app"
         ],
-        "order": 124
+        "order": 125
       },
       "app_settings_cloudsVod": {
         "text": "云视频设置",
         "type": [
           "app"
         ],
-        "order": 125
+        "order": 126
       },
       "app_settings_cloudsSms": {
         "text": "短信集成设置",
@@ -860,6 +867,7 @@
           "app_settings_administratorsAccessTokens",
           "app_settings_administratorsConfig",
           "app_settings_users",
+          "app_settings_usersDepartment",
           "app_settings_usersGroup",
           "app_settings_usersStyle",
           "app_settings_usersConfig",
@@ -1004,6 +1012,7 @@
             "text": "用户管理",
             "permissions": [
               "app_settings_users",
+              "app_settings_usersDepartment",
               "app_settings_usersGroup",
               "app_settings_usersStyle",
               "app_settings_usersConfig"
@@ -1019,13 +1028,21 @@
                 ],
                 "order": 101
               },
+              "app_settings_usersDepartment": {
+                "text": "部门管理",
+                "link": "./settings/usersDepartment/",
+                "permissions": [
+                  "app_settings_usersDepartment"
+                ],
+                "order": 102
+              },
               "app_settings_usersGroup": {
                 "text": "用户组管理",
                 "link": "./settings/usersGroup/",
                 "permissions": [
                   "app_settings_usersGroup"
                 ],
-                "order": 102
+                "order": 103
               },
               "app_settings_usersStyle": {
                 "text": "用户字段",
@@ -1033,7 +1050,7 @@
                 "permissions": [
                   "app_settings_usersStyle"
                 ],
-                "order": 103
+                "order": 104
               },
               "app_settings_usersConfig": {
                 "text": "用户设置",
@@ -1041,7 +1058,7 @@
                 "permissions": [
                   "app_settings_usersConfig"
                 ],
-                "order": 104
+                "order": 105
               }
             }
           },
