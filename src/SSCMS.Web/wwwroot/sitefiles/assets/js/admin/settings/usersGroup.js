@@ -1,5 +1,6 @@
 ﻿var $url = '/settings/usersGroup';
 var $urlDelete = $url + '/actions/delete';
+var $urlOrder = $url + '/actions/order';
 
 var data = utils.init({
   groups: null,
@@ -10,7 +11,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function (message) {
+  apiGet: function (message) {
     var $this = this;
 
     utils.loading(this, true);
@@ -64,6 +65,27 @@ var methods = {
     });
   },
 
+  apiOrder: function(groupId, isUp, rows) {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($urlOrder, {
+      siteId: this.siteId,
+      groupId: groupId,
+      isUp: isUp,
+      rows: rows,
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.groups = res.groups;
+      utils.success('用户组排序成功！');
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
   btnAdminClick: function(guid) {
     utils.openLayer({
       title: "管理员查看",
@@ -107,6 +129,14 @@ var methods = {
     });
   },
 
+  onSort: function (event) {
+    var group = this.groups[event.oldIndex];
+    var groupId = group.id;
+    var isUp = event.oldIndex > event.newIndex;
+    var rows = Math.abs(event.oldIndex - event.newIndex);
+    this.apiOrder(groupId, isUp, rows);
+  },
+
   btnCancelClick: function () {
     this.panel = false;
   },
@@ -118,6 +148,9 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
+  components: {
+    ElTableDraggable,
+  },
   data: data,
   methods: methods,
   created: function () {
@@ -133,6 +166,6 @@ var $vue = new Vue({
         $this.btnCloseClick();
       }
     });
-    this.apiList();
+    this.apiGet();
   }
 });

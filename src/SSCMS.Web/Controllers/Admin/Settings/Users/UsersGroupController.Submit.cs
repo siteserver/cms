@@ -26,6 +26,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 var groupInfo = new UserGroup
                 {
                     GroupName = request.GroupName,
+                    Description = request.Description,
                     AdminName = request.AdminName
                 };
 
@@ -33,17 +34,17 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
                 await _authManager.AddAdminLogAsync("新增用户组", $"用户组:{groupInfo.GroupName}");
             }
-            else if (request.Id == 0)
-            {
-                var config = await _configRepository.GetAsync();
+            // else if (request.Id == 0)
+            // {
+            //     var config = await _configRepository.GetAsync();
 
-                config.UserDefaultGroupAdminName = request.AdminName;
+            //     config.UserDefaultGroupAdminName = request.AdminName;
 
-                await _configRepository.UpdateAsync(config);
-                await _userGroupRepository.ClearCache();
+            //     await _configRepository.UpdateAsync(config);
+            //     await _userGroupRepository.ClearCache();
 
-                await _authManager.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
-            }
+            //     await _authManager.AddAdminLogAsync("修改用户组", "用户组:默认用户组");
+            // }
             else if (request.Id > 0)
             {
                 var groupInfo = await _userGroupRepository.GetUserGroupAsync(request.Id);
@@ -54,6 +55,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 }
 
                 groupInfo.GroupName = request.GroupName;
+                groupInfo.Description = request.Description;
                 groupInfo.AdminName = request.AdminName;
 
                 await _userGroupRepository.UpdateAsync(groupInfo);
@@ -65,7 +67,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Groups = await _userGroupRepository.GetUserGroupsAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync(true)
             };
         }
     }

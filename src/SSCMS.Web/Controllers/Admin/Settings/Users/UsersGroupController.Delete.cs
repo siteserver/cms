@@ -19,7 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             return new GetResult
             {
-                Groups = await _userGroupRepository.GetUserGroupsAsync()
+                Groups = await _userGroupRepository.GetUserGroupsAsync(true)
             };
         }
     }

@@ -3,36 +3,45 @@
 
 <el-alert>用户组的投稿范围为关联管理员拥有权限的站点及栏目，如果不设置关联管理员则用户组将被禁止投稿。</el-alert>
 
-<el-table :data="groups" v-on:row-dblclick="btnEditClick" style="width: 100%; margin-top: 10px">
-  <el-table-column label="用户组" prop="groupName"></el-table-column>
-  <el-table-column label="关联管理员">
-    <template slot-scope="scope">
-      <el-link
-        :underline="false"
-        v-on:click="btnAdminClick(scope.row.adminGuid)"
-        type="primary">
-        {{ scope.row.adminName }}
-      </el-link>
-    </template>
-  </el-table-column>
-  <el-table-column label="操作" width="130">
-    <template slot-scope="scope">
-      <el-link
-        :underline="false"
-        v-on:click="btnEditClick(scope.row)"
-        type="primary">
-        编辑
-      </el-link>
-      <el-link
-        :underline="false"
-        v-if="scope.row.id > 0"
-        type="danger"
-        v-on:click="btnDeleteClick(scope.row)">
-        删除
-      </el-link>
-    </template>
-  </el-table-column>
-</el-table>
+<el-table-draggable v-on:sort="onSort">
+  <el-table :data="groups" row-key="id" highlight-current-row v-on:row-dblclick="btnEditClick" style="width: 100%; margin-top: 10px">
+    <el-table-column label="用户组名称">
+      <template slot-scope="scope">
+        {{ scope.row.groupName }}
+        <el-tag v-if="scope.row.id < 0" size="mini">系统用户组</el-tag>
+      </template>
+    </el-table-column>
+    <el-table-column label="用户组说明" prop="description"></el-table-column>
+    <el-table-column label="关联管理员">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-on:click="btnAdminClick(scope.row.adminGuid)"
+          type="primary">
+          {{ scope.row.adminName }}
+        </el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="130">
+      <template slot-scope="scope">
+        <el-link
+          :underline="false"
+          v-if="scope.row.id > 0"
+          v-on:click="btnEditClick(scope.row)"
+          type="primary">
+          编辑
+        </el-link>
+        <el-link
+          :underline="false"
+          v-if="scope.row.id > 0"
+          type="danger"
+          v-on:click="btnDeleteClick(scope.row)">
+          删除
+        </el-link>
+      </template>
+    </el-table-column>
+  </el-table>
+</el-table-draggable>
 
 <div style="height: 10px"></div>
 <el-divider></el-divider>
@@ -58,6 +67,9 @@
       }">
       <el-form-item label="用户组名称" prop="groupName">
         <el-input v-model="form.groupName" placeholder="请输入用户组名称"></el-input>
+      </el-form-item>
+      <el-form-item label="用户组说明" prop="description">
+        <el-input type="textarea" rows="5" v-model="form.description" placeholder="请输入用户组说明"></el-input>
       </el-form-item>
       <el-form-item label="关联管理员" prop="adminName">
         <el-select v-model="form.adminName" placeholder="请选择关联管理员">

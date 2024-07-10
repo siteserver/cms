@@ -16,7 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var allGroups = await _userGroupRepository.GetUserGroupsAsync();
+            var allGroups = await _userGroupRepository.GetUserGroupsAsync(true);
             var groups = new List<UserGroup>();
             foreach (var group in allGroups)
             {

@@ -16,6 +16,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     {
         private const string Route = "settings/usersGroup";
         private const string RouteDelete = "settings/usersGroup/actions/delete";
+        private const string RouteOrder = "settings/usersGroup/actions/order";
 
         private readonly IAuthManager _authManager;
         private readonly ICacheManager _cacheManager;
@@ -36,6 +37,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         {
             public IEnumerable<UserGroup> Groups { get; set; }
             public IEnumerable<string> AdminNames { get; set; }
+        }
+
+        public class OrderRequest
+        {
+            public int GroupId { get; set; }
+            public bool IsUp { get; set; }
+            public int Rows { get; set; }
         }
     }
 }
