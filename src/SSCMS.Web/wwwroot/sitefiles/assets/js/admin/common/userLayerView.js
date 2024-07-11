@@ -3,7 +3,8 @@
 var data = utils.init({
   guid: utils.getQueryString('guid'),
   user: null,
-  groupName: null
+  groups: null,
+  departmentFullName: null,
 });
 
 var methods = {
@@ -19,7 +20,8 @@ var methods = {
       var res = response.data;
 
       $this.user = res.user;
-      $this.groupName = res.groupName;
+      $this.groups = res.groups;
+      $this.departmentFullName = res.departmentFullName;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {

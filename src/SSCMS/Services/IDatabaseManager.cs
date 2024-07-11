@@ -49,6 +49,13 @@ namespace SSCMS.Services
         IUserGroupRepository UserGroupRepository { get; }
         IUserMenuRepository UserMenuRepository { get; }
         IUserRepository UserRepository { get; }
+        IUsersInGroupsRepository UsersInGroupsRepository { get; }
+        IWxAccountRepository WxAccountRepository { get; }
+        IWxChatRepository WxChatRepository { get; set; }
+        IWxMenuRepository WxMenuRepository { get; }
+        IWxReplyKeywordRepository WxReplyKeywordRepository { get; }
+        IWxReplyMessageRepository WxReplyMessageRepository { get; }
+        IWxReplyRuleRepository WxReplyRuleRepository { get; }
 
         List<IRepository> GetAllRepositories();
 

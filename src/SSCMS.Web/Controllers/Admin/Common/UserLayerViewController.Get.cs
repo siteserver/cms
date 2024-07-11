@@ -28,12 +28,22 @@ namespace SSCMS.Web.Controllers.Admin.Common
 
             user.Remove("confirmPassword");
 
-            var groupName = await _userGroupRepository.GetUserGroupNameAsync(user.GroupId);
+            // var groupName = await _userGroupRepository.GetUserGroupNameAsync(user.GroupId);
+
+            // return new GetResult
+            // {
+            //     User = user,
+            //     GroupName = groupName
+            // };
+
+            var groups = await _usersInGroupsRepository.GetGroupsAsync(user);
+            var departmentFullName = await _departmentRepository.GetFullNameAsync(user.DepartmentId);
 
             return new GetResult
             {
                 User = user,
-                GroupName = groupName
+                Groups = groups,
+                DepartmentFullName = departmentFullName
             };
         }
     }

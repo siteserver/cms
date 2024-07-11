@@ -45,7 +45,7 @@ namespace SSCMS.Web.Controllers.Home
                 IsHomeAgreement = config.IsHomeAgreement,
                 HomeAgreementHtml = config.HomeAgreementHtml,
                 Styles = styles,
-                Groups = await _userGroupRepository.GetUserGroupsAsync(),
+                Groups = await _userGroupRepository.GetUserGroupsAsync(false),
                 Settings = settings
             };
         }

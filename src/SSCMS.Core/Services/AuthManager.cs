@@ -96,15 +96,15 @@ namespace SSCMS.Core.Services
                 _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(AdminName);
                 await InitAsync(_admin);
             }
-            else if (IsUser)
-            {
-                var user = await GetUserAsync();
-                if (user != null && !user.Locked && user.Checked)
-                {
-                    _userGroup = await _databaseManager.UserGroupRepository.GetUserGroupAsync(user.GroupId);
-                    _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(_userGroup.AdminName);
-                }
-            }
+            // else if (IsUser)
+            // {
+            //     var user = await GetUserAsync();
+            //     if (user != null && !user.Locked && user.Checked)
+            //     {
+            //         _userGroup = await _databaseManager.UserGroupRepository.GetUserGroupAsync(user.GroupId);
+            //         _admin = await _databaseManager.AdministratorRepository.GetByUserNameAsync(_userGroup.AdminName);
+            //     }
+            // }
             else if (IsApi)
             {
                 var tokenInfo = await _databaseManager.AccessTokenRepository.GetByTokenAsync(ApiToken);

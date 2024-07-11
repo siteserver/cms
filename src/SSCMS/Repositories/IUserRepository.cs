@@ -51,8 +51,17 @@ namespace SSCMS.Repositories
 
         Task<int> GetCountAsync(bool? state, int groupId, int dayOfLastActivity, string keyword);
 
-        Task<List<User>> GetUsersAsync(bool? state, int groupId, int dayOfLastActivity, string keyword, string order,
-            int offset, int limit);
+        Task<int> GetCountAsync(bool? state, bool? manager, int departmentId, int groupId, int dayOfLastActivity, string keyword);
+
+        Task<int> GetCountAsync(int departmentId, int groupId, string keyword);
+
+        Task<List<User>> GetUsersAsync(bool? state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit);
+
+        Task<List<User>> GetUsersAsync(bool? state, bool? manager, int departmentId, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit);
+
+        Task<List<User>> GetUsersAsync(int departmentId, int groupId, string keyword, int offset, int limit);
+
+        Task<List<User>> GetUsersAsync(string keyword, bool isManagerOnly);
 
         Task<List<int>> GetUserIdsAsync(string keyword);
 

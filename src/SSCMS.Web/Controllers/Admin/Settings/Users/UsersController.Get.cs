@@ -6,24 +6,32 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
     public partial class UsersController
     {
-        [HttpGet, Route(Route)]
-        public async Task<ActionResult<GetResults>> Get([FromQuery] GetRequest request)
+        [HttpPost, Route(Route)]
+        public async Task<ActionResult<GetResult>> Get([FromBody] GetRequest request)
         {
             if (!await _authManager.HasAppPermissionsAsync(MenuUtils.AppPermissions.SettingsUsers))
             {
                 return Unauthorized();
             }
 
-            var groups = await _userGroupRepository.GetUserGroupsAsync();
+            var allGroups = await _userGroupRepository.GetUserGroupsAsync(true);
 
-            var count = await _userRepository.GetCountAsync(request.State, request.GroupId, request.LastActivityDate, request.Keyword);
-            var users = await _userRepository.GetUsersAsync(request.State, request.GroupId, request.LastActivityDate, request.Keyword, request.Order, request.Offset, request.Limit);
+            var departmentId = request.DepartmentId > 0 ? request.DepartmentId : -1;
+            var count = await _userRepository.GetCountAsync(request.State, null, departmentId, request.GroupId, request.LastActivityDate, request.Keyword);
+            var offset = request.PageSize * (request.Page - 1);
+            var users = await _userRepository.GetUsersAsync(request.State, null, departmentId, request.GroupId, request.LastActivityDate, request.Keyword, request.Order, offset, request.PageSize);
 
-            return new GetResults
+            foreach (var user in users)
+            {
+                var groups = await _usersInGroupsRepository.GetGroupsAsync(user);
+                user.Set("groups", groups);
+            }
+
+            return new GetResult
             {
                 Users = users,
-                Count = count,
-                Groups = groups
+                Total = count,
+                Groups = allGroups,
             };
         }
     }

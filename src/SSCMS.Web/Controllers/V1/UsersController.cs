@@ -29,8 +29,21 @@ namespace SSCMS.Web.Controllers.V1
         private readonly ILogRepository _logRepository;
         private readonly IStatRepository _statRepository;
         private readonly IDbCacheRepository _dbCacheRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IUsersInGroupsRepository _usersInGroupsRepository;
 
-        public UsersController(IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, ILogRepository logRepository, IStatRepository statRepository, IDbCacheRepository dbCacheRepository)
+        public UsersController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IConfigRepository configRepository,
+            IAccessTokenRepository accessTokenRepository,
+            IUserRepository userRepository,
+            ILogRepository logRepository,
+            IStatRepository statRepository,
+            IDbCacheRepository dbCacheRepository,
+            IUserGroupRepository userGroupRepository,
+            IUsersInGroupsRepository usersInGroupsRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;
@@ -40,6 +53,8 @@ namespace SSCMS.Web.Controllers.V1
             _logRepository = logRepository;
             _statRepository = statRepository;
             _dbCacheRepository = dbCacheRepository;
+            _userGroupRepository = userGroupRepository;
+            _usersInGroupsRepository = usersInGroupsRepository;
         }
 
         public class ListRequest
@@ -87,6 +102,12 @@ namespace SSCMS.Web.Controllers.V1
         {
             public string Password { get; set; }
             public string NewPassword { get; set; }
+        }
+
+        public class CreateRequest
+        {
+            public User User { get; set; }
+            public List<string> GroupNames { get; set; }
         }
     }
 }

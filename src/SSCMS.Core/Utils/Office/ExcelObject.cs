@@ -60,7 +60,7 @@ namespace SSCMS.Core.Utils.Office
             ExcelUtils.Write(filePath, head, rows);
         }
 
-        public async Task CreateExcelFileForUsersAsync(string filePath, bool? checkedState)
+        public async Task CreateExcelFileForUsersAsync(string filePath, int departmentId = -1)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -76,16 +76,7 @@ namespace SSCMS.Core.Utils.Office
             };
             var rows = new List<List<string>>();
 
-            List<int> userIdList;
-            if (checkedState.HasValue)
-            {
-                userIdList = (await _databaseManager.UserRepository.GetUserIdsAsync(checkedState.Value)).ToList();
-            }
-            else
-            {
-                userIdList = (await _databaseManager.UserRepository.GetUserIdsAsync(true)).ToList();
-                userIdList.AddRange(await _databaseManager.UserRepository.GetUserIdsAsync(false));
-            }
+            var userIdList = await _databaseManager.UserRepository.GetUserIdsAsync(departmentId);
 
             foreach (var userId in userIdList)
             {

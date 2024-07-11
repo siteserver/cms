@@ -14,13 +14,21 @@ namespace SSCMS.Web.Controllers.Stl
         private readonly IAuthManager _authManager;
         private readonly IParseManager _parseManager;
         private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IUsersInGroupsRepository _usersInGroupsRepository;
 
-        public ActionsIfController(ISettingsManager settingsManager, IAuthManager authManager, IParseManager parseManager, IUserGroupRepository userGroupRepository)
+        public ActionsIfController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IParseManager parseManager,
+            IUserGroupRepository userGroupRepository,
+            IUsersInGroupsRepository usersInGroupsRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
             _parseManager = parseManager;
             _userGroupRepository = userGroupRepository;
+            _usersInGroupsRepository = usersInGroupsRepository;
         }
 
         public class GetRequest

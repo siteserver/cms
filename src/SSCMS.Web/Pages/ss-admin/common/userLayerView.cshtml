@@ -51,11 +51,28 @@
         <tr class="el-table__row">
           <td rowspan="1" colspan="1">
             <div class="cell">
-              <strong>组别</strong>
+              <strong>部门</strong>
             </div>
           </td>
           <td rowspan="1" colspan="1">
-            <div class="cell">{{ groupName }}</div>
+            <div class="cell">
+              {{ departmentFullName }}
+            </div>
+          </td>
+        </tr>
+        <tr class="el-table__row">
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <strong>用户组</strong>
+            </div>
+          </td>
+          <td rowspan="1" colspan="1">
+            <div class="cell">
+              <el-tag v-for="group in groups" :key="group.id" style="margin-right: 5px">
+                {{ group.groupName }}
+                <template v-if="group.id < 0">(系统用户组)</template>
+              </el-tag>
+            </div>
           </td>
         </tr>
         <tr class="el-table__row">

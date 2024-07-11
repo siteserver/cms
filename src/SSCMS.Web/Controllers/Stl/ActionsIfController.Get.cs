@@ -36,11 +36,38 @@ namespace SSCMS.Web.Controllers.Stl
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeUserGroup))
                 {
+                    // if (user != null)
+                    // {
+                    //     var groups = await _userGroupRepository.GetUserGroupsAsync();
+                    //     var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
+                    //     isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
+                    // }
                     if (user != null)
                     {
-                        var groups = await _userGroupRepository.GetUserGroupsAsync();
-                        var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
-                        isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
+                        var groups = await _usersInGroupsRepository.GetGroupsAsync(user);
+                        var groupNames = groups.Select(x => x.GroupName).ToList();
+                        if (string.IsNullOrEmpty(ifInfo.Op))
+                        {
+                            ifInfo.Op = StlIf.OperateEquals;
+                        }
+                        if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateEquals) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateIn) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateContains))
+                        {
+                            isSuccess = ListUtils.ContainsIgnoreCase(groupNames, ifInfo.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotEquals) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotIn) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateContains))
+                        {
+                            isSuccess = !ListUtils.ContainsIgnoreCase(groupNames, ifInfo.Value);
+                        }
+                        // isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, ListUtils.ToString(groupNames));
+                        
+                        // var groups = await _userGroupRepository.GetUserGroupsAsync(true);
+                        // var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
+                        // isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
+                        // if (!isSuccess)
+                        // {
+                        //     group = groups.FirstOrDefault(g => g.Id == user.GroupId2);
+                        //     isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
+                        // }
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))

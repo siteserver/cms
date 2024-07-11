@@ -59,6 +59,7 @@ namespace SSCMS.Core.Services
         public IUserGroupRepository UserGroupRepository { get; }
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
+        public IUsersInGroupsRepository UsersInGroupsRepository { get; }
         public IWxAccountRepository WxAccountRepository { get; }
         public IWxChatRepository WxChatRepository { get; set; }
         public IWxMenuRepository WxMenuRepository { get; }
@@ -111,6 +112,7 @@ namespace SSCMS.Core.Services
             IUserGroupRepository userGroupRepository,
             IUserMenuRepository userMenuRepository,
             IUserRepository userRepository,
+            IUsersInGroupsRepository usersInGroupsRepository,
             IWxAccountRepository wxAccountRepository,
             IWxChatRepository wxChatRepository,
             IWxMenuRepository wxMenuRepository,
@@ -163,6 +165,7 @@ namespace SSCMS.Core.Services
             UserGroupRepository = userGroupRepository;
             UserMenuRepository = userMenuRepository;
             UserRepository = userRepository;
+            UsersInGroupsRepository = usersInGroupsRepository;
             WxAccountRepository = wxAccountRepository;
             WxChatRepository = wxChatRepository;
             WxMenuRepository = wxMenuRepository;
@@ -218,6 +221,7 @@ namespace SSCMS.Core.Services
                 UserGroupRepository,
                 UserMenuRepository,
                 UserRepository,
+                UsersInGroupsRepository,
                 WxAccountRepository,
                 WxChatRepository,
                 WxMenuRepository,

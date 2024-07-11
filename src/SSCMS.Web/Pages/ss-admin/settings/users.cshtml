@@ -1,162 +1,258 @@
 ﻿@page
 @{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    html {
+      height: 100%;
+    }
+    body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+    .el-main {
+      padding: 5px 5px 20px 5px;
+      overflow: hidden;
+    }
+    #search .el-select .el-input {
+      width: 100px;
+    }
+    .table-expand-form .el-form-item__label {
+      width: 120px;
+      color: #909399;
+    }
+    .table-expand-form .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+    }
+    .el-table__body tr.hover-row.current-row>td, .el-table__body tr.hover-row.el-table__row--striped.current-row>td {
+      background: rgb(230, 247, 245) !important;
+    }
+    .input-with-select .el-input-group__prepend {
+      background-color: #fff;
+    }
+    .el-input-group {
+      width: 350px;
+    }
+    .disabled {
+      color: #bcc0c7;
+      cursor: not-allowed;
+    }
+  </style>
+}
 
-<el-form v-on:submit.native.prevent :inline="true" :model="formInline" size="mini">
-  <el-form-item label="状态">
-    <el-select v-model="formInline.state" placeholder="用户组">
-      <el-option label="<全部状态>" value=""></el-option>
-      <el-option label="待审核" value="false"></el-option>
-      <el-option label="已审核" value="true"></el-option>
-    </el-select>
-  </el-form-item>
-  <el-form-item label="用户组">
-    <el-select v-model="formInline.groupId" placeholder="用户组">
-      <el-option label="<全部用户组>" :value="-1"></el-option>
-      <el-option
-        v-for="group in groups"
-        :key="group.id"
-        :label="group.groupName"
-        :value="group.id">
-      </el-option>
-    </el-select>
-  </el-form-item>
-  <el-form-item label="排序">
-    <el-select v-model="formInline.order" placeholder="排序">
-      <el-option label="<默认>" value=""></el-option>
-      <el-option label="登录名称" value="UserName"></el-option>
-      <el-option label="最后登录日期" value="LastActivityDate"></el-option>
-      <el-option label="创建日期" value="CreatedDate"></el-option>
-      <el-option label="登录次数" value="CountOfLogin"></el-option>
-    </el-select>
-  </el-form-item>
-  <el-form-item label="最后登录">
-    <el-select v-model="formInline.lastActivityDate" placeholder="最后登录">
-      <el-option label="<全部时间>" :value="0"></el-option>
-      <el-option label="1天内" :value="1"></el-option>
-      <el-option label="2天内" :value="2"></el-option>
-      <el-option label="3天内" :value="3"></el-option>
-      <el-option label="1周内" :value="7"></el-option>
-      <el-option label="1个月内" :value="30"></el-option>
-      <el-option label="3个月内" :value="90"></el-option>
-      <el-option label="半年内" :value="180"></el-option>
-      <el-option label="1年内" :value="365"></el-option>
-    </el-select>
-  </el-form-item>
-  <el-form-item label="关键字">
-    <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
-  </el-form-item>
+<el-container>
+  <el-scrollbar class="scrollbar" style="padding-top: 5px; padding-left: 5px; width: 260px; min-width: 260px;" :style="{height: asideHeight + 'px'}">
+
+    <el-input
+      placeholder="请输入部门名称/部门Id"
+      size="mini"
+      suffix-icon="el-icon-search"
+      v-model="filterText">
+    </el-input>
+    <div style="height: 10px"></div>
+
+    <el-tree
+      ref="tree"
+      class="leftTree"
+      :data="root"
+      node-key="value"
+      :default-expanded-keys="expendedNodeIds"
+      :highlight-current="true"
+      :filter-node-method="filterNode"
+      :expand-on-click-node="false"
+      v-on:node-click="btnNodeClick">
+      <span slot-scope="{ node, data }" :class="{disabled: node.disabled}">
+        <el-link :underline="false" :type="departmentId === data.value ? 'primary' : 'info'" :href="getNodeUrl(data)" v-on:click.stop.native target="_blank"><i class="el-icon-link"></i></el-link>
+        <span :class="departmentId === data.value ? 'el-link el-link--primary' : ''">{{ node.label }} ({{ data.count }}人)</span>
+      </span>
+    </el-tree>
+
+  </el-scrollbar>
   
-  <el-form-item>
-    <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
-  </el-form-item>
-</el-form>
+  <el-container>
+    <el-main>
+      <div style="height: 10px;"></div>
 
-<el-table
-  :data="items"
-  v-on:row-dblclick="btnEditClick"
-  style="width: 100%">
-  <el-table-column
-    label="头像" width="100">
-    <template slot-scope="scope">
-      <el-link :underline="false" v-on:click="btnViewClick(scope.row)">
-        <el-badge v-if="!scope.row.checked" style="margin-top: 10px;" value="待审核">
-          <el-avatar :size="40" :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
-        </el-badge>
-        <el-badge v-else-if="scope.row.locked" style="margin-top: 10px;" value="锁定">
-          <el-avatar :size="40" :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
-        </el-badge>
-        <el-avatar v-else :size="40" :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
-      </el-link>
-    </template>
-  </el-table-column>
-  <el-table-column
-    label="账号">
-    <template slot-scope="scope">
-      <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{scope.row.userName}}</el-link>
-    </template>
-  </el-table-column>
-  <el-table-column
-    prop="displayName"
-    label="姓名">
-  </el-table-column>
-  <el-table-column label="手机" width="120">
-    <template slot-scope="scope">
-      <div v-if="scope.row.mobile">
-        {{ scope.row.mobile }}
-        <el-tag v-if="scope.row.mobileVerified">已验证</el-tag>
-        <el-tag v-else type="warning">待验证</el-tag>
+      <el-form v-on:submit.native.prevent :inline="true" :model="formInline" size="mini">
+        <el-form-item label="状态">
+          <el-select v-model="formInline.state">
+            <el-option label="<全部状态>" value=""></el-option>
+            <el-option label="待审核" value="false"></el-option>
+            <el-option label="已审核" value="true"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用户组">
+          <el-select v-model="formInline.groupId">
+            <el-option label="<全部用户组>" :value="-1"></el-option>
+            <el-option
+              v-for="group in groups"
+              :key="group.id"
+              :label="group.groupName"
+              :value="group.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-select v-model="formInline.order">
+            <el-option label="<默认>" value=""></el-option>
+            <el-option label="登录名称" value="UserName"></el-option>
+            <el-option label="最后登录日期" value="LastActivityDate"></el-option>
+            <el-option label="创建日期" value="CreatedDate"></el-option>
+            <el-option label="登录次数" value="CountOfLogin"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="最后登录">
+          <el-select v-model="formInline.lastActivityDate">
+            <el-option label="<全部时间>" :value="0"></el-option>
+            <el-option label="1天内" :value="1"></el-option>
+            <el-option label="2天内" :value="2"></el-option>
+            <el-option label="3天内" :value="3"></el-option>
+            <el-option label="1周内" :value="7"></el-option>
+            <el-option label="1个月内" :value="30"></el-option>
+            <el-option label="3个月内" :value="90"></el-option>
+            <el-option label="半年内" :value="180"></el-option>
+            <el-option label="1年内" :value="365"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关键字">
+          <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+        </el-form-item>
+        
+        <el-form-item>
+          <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+        </el-form-item>
+      </el-form>
+
+      <div id="commands">
+        <el-button size="mini" plain type="primary" icon="el-icon-circle-plus-outline" v-on:click="btnAddClick">
+          添加
+        </el-button>
+        <el-button size="mini" plain style="margin-left: 0px;" icon="el-icon-right" :disabled="total === 0 || !isUserCheck"
+          v-on:click="btnLayerClick({title: '批量调整部门', name: 'Departments', withUsers: true})">
+          调整部门
+        </el-button>
+        <el-button v-if="groups.length > 2" size="mini" plain style="margin-left: 0px;" icon="el-icon-files" :disabled="total === 0 || !isUserCheck"
+          v-on:click="btnLayerClick({title: '批量设置用户组', name: 'Groups', withUsers: true})">
+          设置用户组
+        </el-button>
+        <el-button size="mini" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
+          导 入
+        </el-button>
+        <el-button size="mini" plain style="margin-left: 0px;" icon="el-icon-download" v-on:click="btnExportClick">
+          导 出
+        </el-button>
       </div>
-    </template>
-  </el-table-column>
-  <el-table-column
-    width="180"
-    prop="lastActivityDate"
-    label="最后登录">
-  </el-table-column>
-  <el-table-column
-    prop="countOfLogin"
-    label="登录次数">
-  </el-table-column>
-  <el-table-column label="用户组">
-    <template slot-scope="scope">
-      {{ getGroupName(scope.row.groupId) }}
-    </template>
-  </el-table-column>
-  <el-table-column label="操作" width="350">
-    <template slot-scope="scope">
-      <el-button-group>
-        <el-button
-          size="mini"
-          v-on:click="btnEditClick(scope.row)">编辑</el-button>
-        <el-button
-          size="mini"
-          v-on:click="btnPasswordClick(scope.row)">更改密码</el-button>
-        <el-button
-          v-if="!scope.row.checked"
-          size="mini"
-          v-on:click="btnCheckClick(scope.row)">审核</el-button>
-        <el-button
-          v-if="scope.row.locked"
-          size="mini"
-          v-on:click="btnUnLockClick(scope.row)">解锁</el-button>
-        <el-button
-          v-else
-          size="mini"
-          v-on:click="btnLockClick(scope.row)">锁定</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          v-on:click="btnDeleteClick(scope.row)">删除</el-button>
-      </el-button-group>
-    </template>
-  </el-table-column>
-</el-table>
 
-<div style="text-align: center; margin-top: 10px;">
-  <el-pagination
-    v-on:current-change="handleCurrentChange"
-    :current-page="formInline.currentPage"
-    :page-size="formInline.limit"
-    layout="total, prev, pager, next, jumper"
-    :total="count">
-  </el-pagination>
-</div>
+      <div style="height: 10px;"></div>
 
-<div style="height: 10px"></div>
+      <el-table
+        :data="users"
+        border
+        ref="multipleTable"
+        style="width: 100%;"
+        :max-height="tableMaxHeight"
+        size="medium"
+        row-key="id"
+        stripe
+        :row-class-name="tableRowClassName"
+        v-on:row-dblclick="btnEditClick"
+        v-on:selection-change="handleSelectionChange"
+        v-on:row-click="toggleSelection">
+        <el-table-column type="selection" width="45" align="center"></el-table-column>
+        <el-table-column
+          label="头像"
+          align="center"
+          width="100">
+          <template slot-scope="scope">
+            <el-link :underline="false" v-on:click="btnViewClick(scope.row)">
+              <el-badge v-if="scope.row.manager" style="margin-top: 10px;" value="主管">
+                <el-avatar :size="40" :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
+              </el-badge>
+              <el-avatar v-else :size="40" :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
+            </el-link>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="账号">
+          <template slot-scope="scope">
+            <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{scope.row.userName}}</el-link>
+            <el-tag v-if="!scope.row.checked" size="mini" type="danger">待审核</el-tag>
+            <el-tag v-else-if="scope.row.locked" size="mini" type="danger">已锁定</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="bmmc"
+          label="部门">
+        </el-table-column>
+        <el-table-column
+          prop="displayName"
+          label="姓名">
+        </el-table-column>
+        <el-table-column label="手机" width="120">
+          <template slot-scope="scope">
+            <div v-if="scope.row.mobile">
+              {{ scope.row.mobile }}
+              <el-tag v-if="scope.row.mobileVerified" size="mini">已验证</el-tag>
+              <el-tag v-else type="warning" size="mini">待验证</el-tag>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="180"
+          prop="lastActivityDate"
+          label="最后登录">
+        </el-table-column>
+        <el-table-column
+          width="120"
+          prop="countOfLogin"
+          label="登录次数">
+        </el-table-column>
+        <el-table-column label="用户组" width="150">
+          <template slot-scope="scope">
+            <el-tag v-for="group in scope.row.groups" :key="group.id" style="margin-right: 5px; margin-bottom: 5px;">
+              {{ group.groupName }}
+              <template v-if="group.id < 0">(系统用户组)</template>
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="80" align="center">
+          <template slot-scope="scope">
+            
+            <el-dropdown v-on:command="btnMoreClick">
+              <span style="cursor: pointer;" class="el-dropdown-link">
+                更多<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="{user: scope.row, type: 'Edit'}">编辑</el-dropdown-item>
+                <el-dropdown-item :command="{user: scope.row, type: 'Password'}">更改密码</el-dropdown-item>
+                <el-dropdown-item v-if="!scope.row.manager" :command="{user: scope.row, type: 'Manager'}">设置为主管</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.manager" :command="{user: scope.row, type: 'UnManager'}">取消设为主管</el-dropdown-item>
+                <el-dropdown-item v-if="!scope.row.checked" :command="{user: scope.row, type: 'Checked'}">审核</el-dropdown-item>
+                <el-dropdown-item v-if="!scope.row.locked" :command="{user: scope.row, type: 'Locked'}">锁定</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.locked" :command="{user: scope.row, type: 'UnLocked'}">解锁</el-dropdown-item>
+                <el-dropdown-item :command="{user: scope.row, type: 'Delete'}">删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
 
-<el-row>
-  <el-divider></el-divider>
-  <div style="height: 10px"></div>
-  <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-plus" v-on:click="btnAddClick">
-    新 增
-  </el-button>
-  <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
-    导 入
-  </el-button>
-  <el-button size="small" plain type="primary" style="margin-left: 0px;" icon="el-icon-download" v-on:click="btnExportClick">
-    导 出
-  </el-button>
-</el-row>
+          </template>
+        </el-table-column>
+      </el-table>
+      
+      <div style="text-align: center; margin-top: 10px;">
+        <el-pagination
+          v-on:current-change="handleCurrentChange"
+          :current-page="formInline.currentPage"
+          :page-size="formInline.limit"
+          layout="total, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </div>
+      
+    </el-main>
+  </el-container>
+</el-container>
 
 <el-drawer
   title="导入用户"
@@ -171,7 +267,7 @@
       <el-upload
         :drag="true"
         :limit="1"
-        :action="$urlUpload"
+        :action="getUploadUrl()"
         :auto-upload="true"
         :headers="{Authorization: 'Bearer ' + $token}"
         :file-list="uploadList"

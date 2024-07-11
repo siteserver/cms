@@ -20,12 +20,25 @@ namespace SSCMS.Core.Repositories
         private readonly Repository<User> _repository;
         private readonly ICacheManager _cacheManager;
         private readonly IConfigRepository _configRepository;
+        private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IUsersInGroupsRepository _usersInGroupsRepository;
+        private readonly IDepartmentRepository _departmentRepository;
 
-        public UserRepository(ISettingsManager settingsManager, ICacheManager cacheManager, IConfigRepository configRepository)
+        public UserRepository(
+            ISettingsManager settingsManager,
+            ICacheManager cacheManager,
+            IConfigRepository configRepository,
+            IUserGroupRepository userGroupRepository,
+            IUsersInGroupsRepository usersInGroupsRepository,
+            IDepartmentRepository departmentRepository
+        )
         {
             _repository = new Repository<User>(settingsManager.Database, settingsManager.Redis);
             _cacheManager = cacheManager;
             _configRepository = configRepository;
+            _userGroupRepository = userGroupRepository;
+            _usersInGroupsRepository = usersInGroupsRepository;
+            _departmentRepository = departmentRepository;
         }
 
         public IDatabase Database => _repository.Database;
@@ -536,12 +549,7 @@ namespace SSCMS.Core.Repositories
             return (true, null);
         }
 
-        public async Task<int> GetCountAsync()
-        {
-            return await _repository.CountAsync();
-        }
-
-        private Query GetQuery(bool? state, int groupId, int dayOfLastActivity, string keyword, string order)
+        private async Task<Query> GetQueryAsync(bool? state, bool? manager, int departmentId, int groupId, int dayOfLastActivity, string keyword, string order)
         {
             var query = Q.NewQuery();
 
@@ -550,24 +558,49 @@ namespace SSCMS.Core.Repositories
                 query.Where(nameof(User.Checked), state.Value);
             }
 
+            if (manager.HasValue)
+            {
+                query.Where(nameof(User.Manager), manager.Value);
+            }
+
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
                 query.Where(nameof(User.LastActivityDate), ">=", DateUtils.ToString(dateTime));
             }
 
-            if (groupId > -1)
+            if (departmentId != -1)
             {
-                if (groupId > 0)
+                if (departmentId > 0)
                 {
-                    query.Where(nameof(User.GroupId), groupId);
+                    var departmentIds = await _departmentRepository.GetDepartmentIdsAsync(departmentId, ScopeType.All);
+                    query.WhereIn(nameof(User.DepartmentId), departmentIds);
                 }
                 else
                 {
-                    query.Where(q => q
-                        .Where(nameof(User.GroupId), 0)
-                        .OrWhereNull(nameof(User.GroupId))
-                    );
+                    query
+                      .Where(q => q
+                          .Where(nameof(User.DepartmentId), 0)
+                          .OrWhereNull(nameof(User.DepartmentId))
+                      );
+                }
+            }
+
+            if (groupId != -1)
+            {
+                if (groupId == _userGroupRepository.GroupIdOfManager)
+                {
+                    query.Where(nameof(User.Manager), true);
+                }
+                else if (groupId == _userGroupRepository.GroupIdOfDefault)
+                {
+                    var userIds = await _usersInGroupsRepository.GetUserIdsAsync();
+                    query.WhereNotIn(nameof(User.Id), userIds);
+                }
+                else
+                {
+                    var userIds = await _usersInGroupsRepository.GetUserIdsAsync(groupId);
+                    query.WhereIn(nameof(User.Id), userIds);
                 }
             }
 
@@ -601,18 +634,48 @@ namespace SSCMS.Core.Repositories
             return query;
         }
 
+        public async Task<int> GetCountAsync()
+        {
+            return await _repository.CountAsync();
+        }
+
         public async Task<int> GetCountAsync(bool? state, int groupId, int dayOfLastActivity, string keyword)
         {
-            var query = GetQuery(state, groupId, dayOfLastActivity, keyword, string.Empty);
+            return await GetCountAsync(state, null, -1, groupId, dayOfLastActivity, keyword);
+        }
+
+        public async Task<int> GetCountAsync(bool? state, bool? manager, int departmentId, int groupId, int dayOfLastActivity, string keyword)
+        {
+            var query = await GetQueryAsync(state, manager, departmentId, groupId, dayOfLastActivity, keyword, string.Empty);
             return await _repository.CountAsync(query);
+        }
+
+        public async Task<int> GetCountAsync(int departmentId, int groupId, string keyword)
+        {
+            return await GetCountAsync(null, null, departmentId, groupId, 0, keyword);
         }
 
         public async Task<List<User>> GetUsersAsync(bool? state, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
         {
-            var query = GetQuery(state, groupId, dayOfLastActivity, keyword, order);
+            return await GetUsersAsync(state, null, -1, groupId, dayOfLastActivity, keyword, order, offset, limit);
+        }
+
+        public async Task<List<User>> GetUsersAsync(bool? state, bool? manager, int departmentId, int groupId, int dayOfLastActivity, string keyword, string order, int offset, int limit)
+        {
+            var query = await GetQueryAsync(state, manager, departmentId, groupId, dayOfLastActivity, keyword, order);
             query.Offset(offset).Limit(limit);
 
             return await _repository.GetAllAsync(query);
+        }
+
+        public async Task<List<User>> GetUsersAsync(int departmentId, int groupId, string keyword, int offset, int limit)
+        {
+            return await GetUsersAsync(null, null, departmentId, groupId, 0, keyword, null, offset, limit);
+        }
+
+        public async Task<List<User>> GetUsersAsync(string keyword, bool isManagerOnly)
+        {
+            return await GetUsersAsync(true, isManagerOnly ? true : null, -1, -1, 0, keyword, null, 0, 0);
         }
 
         public async Task<List<int>> GetUserIdsAsync(string keyword)

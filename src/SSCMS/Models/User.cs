@@ -31,7 +31,13 @@ namespace SSCMS.Models
         public DateTime? LastActivityDate { get; set; }
 
         [DataColumn]
-        public int GroupId { get; set; }
+        public int DepartmentId { get; set; }
+
+        [DataColumn]
+        public bool Manager { get; set; }
+
+        // [DataColumn]
+        // public int GroupId { get; set; }
 
         [DataColumn]
         public int CountOfLogin { get; set; }
@@ -62,5 +68,7 @@ namespace SSCMS.Models
 
         [DataColumn]
         public string OpenId { get; set; }
+
+        public string DepartmentName { get; set; }
     }
 }

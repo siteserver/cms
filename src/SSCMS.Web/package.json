@@ -1009,7 +1009,7 @@
             }
           },
           "app_settings_users_all": {
-            "text": "用户管理",
+            "text": "通讯录",
             "permissions": [
               "app_settings_users",
               "app_settings_usersDepartment",
@@ -1017,7 +1017,7 @@
               "app_settings_usersStyle",
               "app_settings_usersConfig"
             ],
-            "iconClass": "ion-android-contact",
+            "iconClass": "ion-android-contacts",
             "order": 104,
             "menus": {
               "app_settings_users": {

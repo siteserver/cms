@@ -99,16 +99,16 @@ namespace SSCMS.Core.StlParser.StlElement
         private const string TypeVideos = "Videos";			                                      //视频数目
         private const string TypeFiles = "Files";			                                      //文件数目
 
-        private const string OperateEmpty = "Empty";
-        private const string OperateNotEmpty = "NotEmpty";			                              //值不为空
-        private const string OperateEquals = "Equals";			                                  //值等于
-        private const string OperateNotEquals = "NotEquals";			                          //值不等于
-        private const string OperateGreatThan = "GreatThan";			                          //值大于
-        private const string OperateLessThan = "LessThan";			                              //值小于
-        private const string OperateIn = "In";			                                          //值属于
-        private const string OperateNotIn = "NotIn";                                              //值不属于
-        private const string OperateContains = "Contains";			                              //值包含
-        private const string OperateNotContains = "NotContains";                                  //值不包含
+        public const string OperateEmpty = "Empty";
+        public const string OperateNotEmpty = "NotEmpty";			                              //值不为空
+        public const string OperateEquals = "Equals";			                                  //值等于
+        public const string OperateNotEquals = "NotEquals";			                          //值不等于
+        public const string OperateGreatThan = "GreatThan";			                          //值大于
+        public const string OperateLessThan = "LessThan";			                              //值小于
+        public const string OperateIn = "In";			                                          //值属于
+        public const string OperateNotIn = "NotIn";                                              //值不属于
+        public const string OperateContains = "Contains";			                              //值包含
+        public const string OperateNotContains = "NotContains";                                  //值不包含
 
         internal static async Task<object> ParseAsync(IParseManager parseManager)
         {
