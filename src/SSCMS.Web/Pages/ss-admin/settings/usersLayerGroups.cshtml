@@ -1,7 +1,7 @@
 @page
 @{ Layout = "_Layout"; }
 
-<el-alert type="error">此操作将把以下 <strong> {{ users.length }} </strong> 名成员 {{ form.isCancel ? '设置用户组' : '取消用户组' }}，确定吗？</el-alert>
+<el-alert type="error">此操作将为以下 <strong> {{ users.length }} </strong> 名成员 {{ form.isCancel ? '取消用户组' : '设置用户组' }}，确定吗？</el-alert>
 
 <el-table
   :data="users"
@@ -12,7 +12,7 @@
   <el-table-column
     label="头像" width="100">
     <template slot-scope="scope">
-      <el-link :underline="false" v-on:click="btnViewClick(scope.row.id)">
+      <el-link :underline="false" v-on:click="btnViewClick(scope.row)">
         <el-badge v-if="!scope.row.checked" style="margin-top: 10px;" value="待审核">
           <el-avatar :size="40" :src="scope.row.avatarUrl || utils.getAssetsUrl('images/default_avatar.png')"></el-avatar>
         </el-badge>
@@ -26,7 +26,7 @@
   <el-table-column
     label="账号">
     <template slot-scope="scope">
-      <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row.id)">{{scope.row.userName}}</el-link>
+      <el-link :underline="false" type="primary" v-on:click="btnViewClick(scope.row)">{{scope.row.userName}}</el-link>
     </template>
   </el-table-column>
   <el-table-column
@@ -66,8 +66,8 @@
       <el-radio-button :label="true">取消用户组</el-radio-button>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="用户组" v-if="groups && groups.length > 0">
-    <el-checkbox-group v-model="form.groupIds">
+  <el-form-item label="用户组">
+    <el-checkbox-group v-if="groups && groups.length > 0" v-model="form.groupIds">
       <el-checkbox v-for="group in groups" :key="group.id" :label="group.id" :value="group.id" name="groupIds">
         {{ group.groupName }}
       </el-checkbox>

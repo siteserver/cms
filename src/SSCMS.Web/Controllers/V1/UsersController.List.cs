@@ -26,7 +26,7 @@ namespace SSCMS.Web.Controllers.V1
             {
                 page = 1;
             }
-            var perPage = request.Page;
+            var perPage = request.PerPage;
             if (perPage <= 0)
             {
                 perPage = 20;

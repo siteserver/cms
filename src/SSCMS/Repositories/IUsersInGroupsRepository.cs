@@ -16,7 +16,7 @@ namespace SSCMS.Repositories
 
         Task<int> GetCountAsync(int groupId);
 
-        Task RemoveUserAsync(int userId);
+        Task DeleteAsync(int groupId, int userId);
 
         Task<bool> IsExistsAsync(int groupId, int userId);
 

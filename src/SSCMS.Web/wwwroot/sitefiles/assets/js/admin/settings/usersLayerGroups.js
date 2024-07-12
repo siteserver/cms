@@ -1,4 +1,5 @@
 var $url = '/settings/usersLayerGroups';
+var $urlAdd = $url + '/actions/add';
 
 var data = utils.init({
   page: utils.getQueryInt('page'),
@@ -7,12 +8,10 @@ var data = utils.init({
   groups: null,
   isAddForm: false,
   form: {
-    userIds: utils.getQueryString('userIds'),
     isCancel: false,
     groupIds: [],
   },
   addForm: {
-    userIds: utils.getQueryString('userIds'),
     groupName: '',
     description: ''
   }
@@ -39,13 +38,14 @@ var methods = {
     });
   },
 
-  apiSubmit: function () {
+  apiAdd: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api.post($url, {
+    $api.post($urlAdd, {
       userIds: this.userIds,
-      groupIds: this.form.groupIds,
+      groupName: this.addForm.groupName,
+      description: this.addForm.description,
     }).then(function (response) {
       var res = response.data;
 
@@ -58,20 +58,48 @@ var methods = {
     });
   },
 
-  btnViewClick: function(userId) {
+  apiSubmit: function () {
+    var $this = this;
+
+    utils.loading(this, true);
+    $api.post($url, {
+      userIds: this.userIds,
+      groupIds: this.form.groupIds,
+      isCancel: this.form.isCancel,
+    }).then(function (response) {
+      var res = response.data;
+
+      parent.$vue.runReload('用户组设置成功!');
+      utils.closeLayer();
+    }).catch(function (error) {
+      utils.error(error);
+    }).then(function () {
+      utils.loading($this, false);
+    });
+  },
+
+  btnViewClick: function(user) {
     utils.openLayer({
       title: '查看资料',
-      url: utils.getCommonUrl('userLayerView', {userId: userId})
+      url: utils.getCommonUrl('userLayerView', { guid: user.guid })
     });
   },
 
   btnSubmitClick: function () {
     var $this = this;
+    if (this.isAddForm)  {
+      this.$refs.addForm.validate(function(valid) {
+        if (valid) {
+          $this.apiAdd();
+        }
+      });
+    } else {
       this.$refs.form.validate(function(valid) {
         if (valid) {
           $this.apiSubmit();
         }
       });
+    }
   },
 
   btnCancelClick: function () {

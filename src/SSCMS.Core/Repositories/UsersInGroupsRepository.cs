@@ -61,10 +61,11 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task RemoveUserAsync(int userId)
+        public async Task DeleteAsync(int groupId, int userId)
         {
             await _repository.DeleteAsync(Q
                 .Where(nameof(UsersInGroups.UserId), userId)
+                .Where(nameof(UsersInGroups.GroupId), groupId)
             );
         }
 

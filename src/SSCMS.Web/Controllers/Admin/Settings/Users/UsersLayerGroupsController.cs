@@ -15,6 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
     public partial class UsersLayerGroupsController : ControllerBase
     {
         private const string Route = "settings/usersLayerGroups";
+        private const string RouteAdd = "settings/usersLayerGroups/actions/add";
 
         private readonly IAuthManager _authManager;
         private readonly IUserRepository _userRepository;
@@ -50,8 +51,16 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
         public class SubmitRequest
         {
-            public List<int> UserIds { get; set; }
+            public string UserIds { get; set; }
             public List<int> GroupIds { get; set; }
+            public bool IsCancel { get; set; }
+        }
+
+        public class AddRequest
+        {
+            public string UserIds { get; set; }
+            public string GroupName { get; set; }
+            public string Description { get; set; }
         }
     }
 }
