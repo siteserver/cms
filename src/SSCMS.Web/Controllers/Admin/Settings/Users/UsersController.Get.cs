@@ -24,6 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             foreach (var user in users)
             {
                 var groups = await _usersInGroupsRepository.GetGroupsAsync(user);
+                user.DepartmentName = await _departmentRepository.GetFullNameAsync(user.DepartmentId);
                 user.Set("groups", groups);
             }
 
