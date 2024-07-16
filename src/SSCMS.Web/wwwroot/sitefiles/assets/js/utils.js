@@ -160,6 +160,10 @@ var utils = {
     return [year, month, day].join('-');
   },
 
+  isNullish: function(myVar){
+    return typeof myVar === 'undefined' || myVar === null || myVar === '';
+  },
+
   isNumeric: function(str) {
       return /^\d+$/.test(str);
   },
@@ -751,7 +755,7 @@ var utils = {
   },
 
   validateMobile: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!/^1[3-9]\d{9}$/.test(value)) {
       callback(new Error(rule.message || '字段必须是有效的手机号码'));
@@ -761,7 +765,7 @@ var utils = {
   },
 
   validateDecimal: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!/^-?\d+(\.\d{1,2})?$/.test(value)) {
       callback(new Error(rule.message || '字段必须是数字'));
@@ -771,7 +775,7 @@ var utils = {
   },
 
   validateDigits: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!/^-?\d+$/.test(value)) {
       callback(new Error(rule.message || '字段必须是整数'));
@@ -789,7 +793,7 @@ var utils = {
   },
 
   validateMaxValue: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!/^-?\d+(\.\d{1,2})?$/.test(value)) {
       callback(new Error(rule.message || '字段必须是数值，并且不能大于指定的值'));
@@ -809,7 +813,7 @@ var utils = {
   },
 
   validateMinValue: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!/^-?\d+(\.\d{1,2})?$/.test(value)) {
       callback(new Error(rule.message || '字段必须是数值，并且不能小于指定的值'));
@@ -822,7 +826,7 @@ var utils = {
 
   validateIdCard: function (rule, value, callback) {
     var reg = /(^\d{15}$)|(^\d{17}(\d|X|x)$)/;
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!reg.test(value)) {
       callback(new Error(rule.message || '字段必须是身份证号码'));
@@ -832,7 +836,7 @@ var utils = {
   },
 
   validateChinese: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else {
       var isAll = true;
@@ -851,7 +855,7 @@ var utils = {
   },
 
   validateInt: function (rule, value, callback) {
-    if (!value) {
+    if (utils.isNullish(value)) {
       callback();
     } else if (!/^[-]?\d+$/.test(value)) {
       callback(new Error(rule.message || '字段必须是有效的数字值'));
@@ -933,26 +937,26 @@ var utils = {
   },
 
   getRules: function (rules) {
-    var options = [
-      { required: "字段为必填项" },
-      { email: "字段必须是有效的电子邮件" },
-      { mobile: "字段必须是有效的手机号码" },
-      { url: "字段必须是有效的url" },
-      { alpha: "字段只能包含英文字母" },
-      { alphaDash: "字段只能包含英文字母、数字、破折号或下划线" },
-      { alphaNum: "字段只能包含英文字母或数字" },
-      { alphaSpaces: "字段只能包含英文字母或空格" },
-      { decimal: "字段必须是数字" },
-      { digits: "字段必须是整数" },
-      { max: "字段不能超过指定的长度" },
-      { maxValue: "字段必须是数值，并且不能大于指定的值" },
-      { min: "字段不能低于指定的长度" },
-      { minValue: "字段必须是数值，并且不能小于指定的值" },
-      { regex: "字段必须匹配指定的正则表达式" },
-      { chinese: "字段必须是中文" },
-      { zip: "字段必须是邮政编码" },
-      { idCard: "字段必须是身份证号码" },
-    ];
+    var options = {
+      required: '字段为必填项',
+      email: '字段必须是有效的电子邮件',
+      mobile: '字段必须是有效的手机号码',
+      url: '字段必须是有效的url',
+      alpha: '字段只能包含英文字母',
+      alphaDash: '字段只能包含英文字母、数字、破折号或下划线',
+      alphaNum: '字段只能包含英文字母或数字',
+      alphaSpaces: '字段只能包含英文字母或空格',
+      decimal: '字段必须是数字',
+      digits: '字段必须是整数',
+      max: '字段不能超过指定的长度',
+      maxValue: '字段必须是数值，并且不能大于指定的值',
+      min: '字段不能低于指定的长度',
+      minValue: '字段必须是数值，并且不能小于指定的值',
+      regex: '字段必须匹配指定的正则表达式',
+      chinese: '字段必须是中文',
+      zip: '字段必须是邮政编码',
+      idCard: '字段必须是身份证号码',
+    };
 
     if (rules) {
       var array = [];
@@ -982,25 +986,25 @@ var utils = {
           });
         } else if (ruleType === "alpha") {
           array.push({
-            type: "string",
+            // type: "string",
             pattern: /^[a-zA-Z]+$/,
             message: rule.message || options.alpha
           });
         } else if (ruleType === "alphaDash") {
           array.push({
-            type: "string",
+            // type: "string",
             pattern: /^[a-zA-Z0-9_-]+$/,
             message: rule.message || options.alphaDash,
           });
         } else if (ruleType === "alphaNum") {
           array.push({
-            type: "string",
+            // type: "string",
             pattern: /^[a-zA-Z0-9]+$/,
             message: rule.message || options.alphaNum,
           });
         } else if (ruleType === "alphaSpaces") {
           array.push({
-            type: "string",
+            // type: "string",
             pattern: /^[a-zA-Z\s]+$/,
             message: rule.message || options.alphaSpaces,
           });
@@ -1041,7 +1045,7 @@ var utils = {
         } else if (ruleType === "regex" && rule.value) {
           var re = new RegExp(rule.value, "ig");
           array.push({
-            type: "string",
+            // type: "string",
             pattern: re,
             message: rule.message || options.regex,
           });
@@ -1052,7 +1056,7 @@ var utils = {
           });
         } else if (ruleType === "zip") {
           array.push({
-            type: "string",
+            // type: "string",
             pattern: /^[0-9]{6,6}$/,
             message: rule.message || options.zip,
           });
