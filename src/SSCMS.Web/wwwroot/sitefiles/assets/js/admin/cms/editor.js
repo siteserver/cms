@@ -116,167 +116,165 @@ var methods = {
     };
     window.onresize();
 
-    $api
-      .get($url, {
-        params: {
-          siteId: $this.siteId,
-          channelId: $this.channelId,
-          contentId: $this.contentId,
-        },
-      })
-      .then(function (response) {
-        var res = response.data;
-        if (res.channel.isChangeBanned) {
-          return utils.alertWarning({
-            title: '禁止修改内容',
-            text: '栏目已开启禁止维护内容(添加/修改/删除)功能，修改内容请先在栏目中关闭此功能！',
-            callback: function() {
-              utils.removeTab();
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        contentId: $this.contentId,
+      },
+    })
+    .then(function (response) {
+      var res = response.data;
+      if (res.channel.isChangeBanned) {
+        return utils.alertWarning({
+          title: '禁止修改内容',
+          text: '栏目已开启禁止维护内容(添加/修改/删除)功能，修改内容请先在栏目中关闭此功能！',
+          callback: function() {
+            utils.removeTab();
+          }
+        });
+      }
+
+      $this.csrfToken = res.csrfToken;
+
+      $this.site = res.site;
+      $this.siteUrl = res.siteUrl;
+      $this.channel = res.channel;
+
+      $this.groupNames = res.groupNames;
+      $this.tagNames = res.tagNames;
+      $this.checkedLevels = res.checkedLevels;
+      $this.linkTypes = res.linkTypes;
+      $this.linkTo = res.linkTo;
+      $this.root = [res.root];
+      $this.settings = res.settings;
+      $this.censorSettings = _.assign({}, $this.censorSettings, res.settings.censorSettings, {
+        isCloudCensor: res.settings.isCloudCensor,
+      });
+      $this.spellSettings = _.assign({}, $this.spellSettings, res.settings.spellSettings, {
+        isCloudSpell: res.settings.isCloudSpell,
+      });
+
+      $this.styles = res.styles;
+      $this.relatedFields = res.relatedFields;
+      $this.templates = res.templates;
+      $this.form = _.assign({}, res.content);
+      $this.breadcrumbItems = res.breadcrumbItems;
+
+      $this.scheduledForm.isScheduled = res.isScheduled;
+      $this.scheduledForm.scheduledDate = res.scheduledDate;
+
+      if (!$this.form.addDate) {
+        $this.form.addDate = new Date().Format("yyyy-MM-dd hh:mm:ss");
+      } else {
+        $this.form.addDate = new Date($this.form.addDate).Format("yyyy-MM-dd hh:mm:ss");
+      }
+
+      if ($this.form.checked) {
+        $this.form.checkedLevel = $this.site.checkContentLevel;
+      }
+      var targetCheckedLevel = $this.checkedLevels.find(
+        (x) => x.value === $this.form.checkedLevel
+      );
+      if (!!!targetCheckedLevel) {
+        $this.form.checkedLevel = res.checkedLevel;
+      }
+      if ($this.form.top || $this.form.recommend || $this.form.hot || $this.form.color) {
+        $this.collapseSettings.push("attributes");
+      }
+      if ($this.form.groupNames && $this.form.groupNames.length > 0) {
+        $this.collapseSettings.push("groupNames");
+      } else {
+        $this.form.groupNames = [];
+      }
+      if ($this.form.tagNames && $this.form.tagNames.length > 0) {
+        $this.collapseSettings.push("tagNames");
+      } else {
+        $this.form.tagNames = [];
+      }
+      if (($this.form.linkType && $this.form.linkType != "None") || $this.form.linkUrl) {
+        $this.collapseSettings.push("link");
+      }
+
+      for (var i = 0; i < $this.styles.length; i++) {
+        var style = $this.styles[i];
+        if (style.inputType === "CheckBox" || style.inputType === "SelectMultiple") {
+          var value = $this.form[utils.toCamelCase(style.attributeName)];
+          if (!Array.isArray(value)) {
+            if (!value) {
+              $this.form[utils.toCamelCase(style.attributeName)] = [];
+            } else {
+              $this.form[utils.toCamelCase(style.attributeName)] = utils.toArray(value);
             }
-          });
+          }
+        } else if (
+          style.inputType === "Image" ||
+          style.inputType === "File" ||
+          style.inputType === "Video"
+        ) {
+          $this.form[utils.getCountName(style.attributeName)] = utils.toInt(
+            $this.form[utils.getCountName(style.attributeName)]
+          );
+        } else if (
+          style.inputType === "Text" ||
+          style.inputType === "TextArea" ||
+          style.inputType === "TextEditor"
+        ) {
+          if ($this.contentId === 0) {
+            $this.form[utils.toCamelCase(style.attributeName)] = style.defaultValue;
+          }
         }
+      }
 
-        $this.csrfToken = res.csrfToken;
-
-        $this.site = res.site;
-        $this.siteUrl = res.siteUrl;
-        $this.channel = res.channel;
-
-        $this.groupNames = res.groupNames;
-        $this.tagNames = res.tagNames;
-        $this.checkedLevels = res.checkedLevels;
-        $this.linkTypes = res.linkTypes;
-        $this.linkTo = res.linkTo;
-        $this.root = [res.root];
-        $this.settings = res.settings;
-        $this.censorSettings = _.assign({}, $this.censorSettings, res.settings.censorSettings, {
-          isCloudCensor: res.settings.isCloudCensor,
-        });
-        $this.spellSettings = _.assign({}, $this.spellSettings, res.settings.spellSettings, {
-          isCloudSpell: res.settings.isCloudSpell,
-        });
-
-        $this.styles = res.styles;
-        $this.relatedFields = res.relatedFields;
-        $this.templates = res.templates;
-        $this.form = _.assign({}, res.content);
-        $this.breadcrumbItems = res.breadcrumbItems;
-
-        $this.scheduledForm.isScheduled = res.isScheduled;
-        $this.scheduledForm.scheduledDate = res.scheduledDate;
-
-        if (!$this.form.addDate) {
-          $this.form.addDate = new Date().Format("yyyy-MM-dd hh:mm:ss");
-        } else {
-          $this.form.addDate = new Date($this.form.addDate).Format("yyyy-MM-dd hh:mm:ss");
-        }
-
-        if ($this.form.checked) {
-          $this.form.checkedLevel = $this.site.checkContentLevel;
-        }
-        var targetCheckedLevel = $this.checkedLevels.find(
-          (x) => x.value === $this.form.checkedLevel
-        );
-        if (!!!targetCheckedLevel) {
-          $this.form.checkedLevel = res.checkedLevel;
-        }
-        if ($this.form.top || $this.form.recommend || $this.form.hot || $this.form.color) {
-          $this.collapseSettings.push("attributes");
-        }
-        if ($this.form.groupNames && $this.form.groupNames.length > 0) {
-          $this.collapseSettings.push("groupNames");
-        } else {
-          $this.form.groupNames = [];
-        }
-        if ($this.form.tagNames && $this.form.tagNames.length > 0) {
-          $this.collapseSettings.push("tagNames");
-        } else {
-          $this.form.tagNames = [];
-        }
-        if (($this.form.linkType && $this.form.linkType != "None") || $this.form.linkUrl) {
-          $this.collapseSettings.push("link");
-        }
-
+      setTimeout(function () {
         for (var i = 0; i < $this.styles.length; i++) {
           var style = $this.styles[i];
-          if (style.inputType === "CheckBox" || style.inputType === "SelectMultiple") {
-            var value = $this.form[utils.toCamelCase(style.attributeName)];
-            if (!Array.isArray(value)) {
-              if (!value) {
-                $this.form[utils.toCamelCase(style.attributeName)] = [];
-              } else {
-                $this.form[utils.toCamelCase(style.attributeName)] = utils.toArray(value);
-              }
-            }
-          } else if (
-            style.inputType === "Image" ||
-            style.inputType === "File" ||
-            style.inputType === "Video"
-          ) {
-            $this.form[utils.getCountName(style.attributeName)] = utils.toInt(
-              $this.form[utils.getCountName(style.attributeName)]
-            );
-          } else if (
-            style.inputType === "Text" ||
-            style.inputType === "TextArea" ||
-            style.inputType === "TextEditor"
-          ) {
-            if ($this.contentId === 0) {
-              $this.form[utils.toCamelCase(style.attributeName)] = style.defaultValue;
-            }
+          if (style.inputType === "TextEditor") {
+            var editor = utils.getEditor(style.attributeName, style.height);
+            editor.styleIndex = i;
+            editor.ready(function () {
+              this.addListener("contentChange", function () {
+                var style = $this.styles[this.styleIndex];
+                $this.form[utils.toCamelCase(style.attributeName)] = this.getContent();
+              });
+            });
           }
         }
-
-        setTimeout(function () {
-          for (var i = 0; i < $this.styles.length; i++) {
-            var style = $this.styles[i];
-            if (style.inputType === "TextEditor") {
-              var editor = utils.getEditor(style.attributeName, style.height);
-              editor.styleIndex = i;
-              editor.ready(function () {
-                this.addListener("contentChange", function () {
-                  var style = $this.styles[this.styleIndex];
-                  $this.form[utils.toCamelCase(style.attributeName)] = this.getContent();
-                });
-              });
-            }
-          }
-        }, 100);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+      }, 100);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiInsert: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlInsert, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId,
-        content: this.form,
-        translates: this.translates,
-        linkTo: this.linkTo,
-        isScheduled: this.scheduledForm.isScheduled,
-        scheduledDate: this.scheduledForm.scheduledDate,
-      })
-      .then(function (response) {
-        var res = response.data;
+    $api.csrfPost(this.csrfToken, $urlInsert, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form,
+      translates: this.translates,
+      linkTo: this.linkTo,
+      isScheduled: this.scheduledForm.isScheduled,
+      scheduledDate: this.scheduledForm.scheduledDate,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.closeAndRedirect(false);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+      $this.closeAndRedirect(false);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   getChannelUrl: function(data) {
@@ -425,7 +423,6 @@ var methods = {
       })
       .then(function (response) {
         var res = response.data;
-
         $this.parse('censor_whitelist', word);
       })
       .catch(function (error) {
@@ -437,23 +434,21 @@ var methods = {
         utils.loading($this, false);
       });
     } else {
-      $api
-        .post($urlCensorAddWords, {
-          siteId: this.siteId,
-          channelId: this.channelId,
-          word: word
-        })
-        .then(function (response) {
-          var res = response.data;
-
-          this.parse('censor_whitelist', word);
-        })
-        .catch(function (error) {
-          utils.error(error);
-        })
-        .then(function () {
-          utils.loading($this, false);
-        });
+      $api.csrfPost(this.csrfToken, $urlCensorAddWords, {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        word: word
+      })
+      .then(function (response) {
+        var res = response.data;
+        $this.parse('censor_whitelist', word);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
     }
   },
 
@@ -491,36 +486,35 @@ var methods = {
         $this.censorSettings.isCensorChecking = false;
       });
     } else {
-      $api
-        .csrfPost(this.csrfToken, $urlCensor, {
-          siteId: this.siteId,
-          channelId: this.channelId,
-          text: this.getText(true, false),
-        })
-        .then(function (response) {
-          var res = response.data;
-          $this.censorResults = _.assign({}, res);
-          $this.censorSettings.activeNames = [];
-          for (var badWord of $this.censorResults.badWords) {
-            if (badWord.words.length > 0) {
-              $this.censorSettings.activeNames.push(badWord.type);
-            }
+      $api.csrfPost(this.csrfToken, $urlCensor, {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        text: this.getText(true, false),
+      })
+      .then(function (response) {
+        var res = response.data;
+        $this.censorResults = _.assign({}, res);
+        $this.censorSettings.activeNames = [];
+        for (var badWord of $this.censorResults.badWords) {
+          if (badWord.words.length > 0) {
+            $this.censorSettings.activeNames.push(badWord.type);
           }
-          $this.sideType = "censor";
-          $this.parseText(res);
+        }
+        $this.sideType = "censor";
+        $this.parseText(res);
 
-          if (isSave && !$this.censorResults.isBadWords) {
-            $this.censorSettings.isCensorPassed = true;
-            $this.apiSave();
-          }
-        })
-        .catch(function (error) {
-          utils.error(error);
-          layer.closeAll();
-        })
-        .then(function () {
-          $this.censorSettings.isCensorChecking = false;
-        });
+        if (isSave && !$this.censorResults.isBadWords) {
+          $this.censorSettings.isCensorPassed = true;
+          $this.apiSave();
+        }
+      })
+      .catch(function (error) {
+        utils.error(error);
+        layer.closeAll();
+      })
+      .then(function () {
+        $this.censorSettings.isCensorChecking = false;
+      });
     }
   },
 
@@ -534,7 +528,6 @@ var methods = {
       })
       .then(function (response) {
         var res = response.data;
-
         $this.parse('spell_whitelist', word);
       })
       .catch(function (error) {
@@ -546,23 +539,21 @@ var methods = {
         utils.loading($this, false);
       });
     } else {
-      $api
-        .post($urlSpellAddWords, {
-          siteId: this.siteId,
-          channelId: this.channelId,
-          word: word
-        })
-        .then(function (response) {
-          var res = response.data;
-
-          this.parse('spell_whitelist', word);
-        })
-        .catch(function (error) {
-          utils.error(error);
-        })
-        .then(function () {
-          utils.loading($this, false);
-        });
+      $api.csrfPost(this.csrfToken, $urlSpellAddWords, {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        word: word
+      })
+      .then(function (response) {
+        var res = response.data;
+        $this.parse('spell_whitelist', word);
+      })
+      .catch(function (error) {
+        utils.error(error);
+      })
+      .then(function () {
+        utils.loading($this, false);
+      });
     }
   },
 
@@ -594,30 +585,29 @@ var methods = {
         $this.spellSettings.isSpellChecking = false;
       });
     } else {
-      $api
-        .csrfPost(this.csrfToken, $urlSpell, {
-          siteId: this.siteId,
-          channelId: this.channelId,
-          text: this.getText(false, true),
-        })
-        .then(function (response) {
-          var res = response.data;
-          $this.spellResults = _.assign({}, res);
-          $this.sideType = "spell";
-          $this.parseText(res);
+      $api.csrfPost(this.csrfToken, $urlSpell, {
+        siteId: this.siteId,
+        channelId: this.channelId,
+        text: this.getText(false, true),
+      })
+      .then(function (response) {
+        var res = response.data;
+        $this.spellResults = _.assign({}, res);
+        $this.sideType = "spell";
+        $this.parseText(res);
 
-          if (isSave && !$this.spellResults.isErrorWords) {
-            $this.spellSettings.isSpellPassed = true;
-            $this.apiSave();
-          }
-        })
-        .catch(function (error) {
-          utils.error(error);
-          layer.closeAll();
-        })
-        .then(function () {
-          $this.spellSettings.isSpellChecking = false;
-        });
+        if (isSave && !$this.spellResults.isErrorWords) {
+          $this.spellSettings.isSpellPassed = true;
+          $this.apiSave();
+        }
+      })
+      .catch(function (error) {
+        utils.error(error);
+        layer.closeAll();
+      })
+      .then(function () {
+        $this.spellSettings.isSpellChecking = false;
+      });
     }
   },
 
@@ -625,97 +615,93 @@ var methods = {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlTags, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        content: this.form.body,
-      })
-      .then(function (response) {
-        var res = response.data;
+    $api.csrfPost(this.csrfToken, $urlTags, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      content: this.form.body,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        if (res.tags && res.tags.length > 0) {
-          $this.form.tagNames = _.union($this.form.tagNames, res.tags);
-          utils.success("成功提取标签！");
-        }
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+      if (res.tags && res.tags.length > 0) {
+        $this.form.tagNames = _.union($this.form.tagNames, res.tags);
+        utils.success("成功提取标签！");
+      }
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiPreview: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlPreview, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId,
-        content: this.form,
-      })
-      .then(function (response) {
-        var res = response.data;
+    $api.csrfPost(this.csrfToken, $urlPreview, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.isPreviewSaving = false;
-        window.open(res.url);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+      $this.isPreviewSaving = false;
+      window.open(res.url);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiUpdate: function () {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlUpdate, {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId,
-        content: this.form,
-        translates: this.translates,
-        linkTo: this.linkTo,
-        isScheduled: this.scheduledForm.isScheduled,
-        scheduledDate: this.scheduledForm.scheduledDate,
-      })
-      .then(function (response) {
-        var res = response.data;
+    $api.csrfPost(this.csrfToken, $urlUpdate, {
+      siteId: this.siteId,
+      channelId: this.channelId,
+      contentId: this.contentId,
+      content: this.form,
+      translates: this.translates,
+      linkTo: this.linkTo,
+      isScheduled: this.scheduledForm.isScheduled,
+      scheduledDate: this.scheduledForm.scheduledDate,
+    })
+    .then(function (response) {
+      var res = response.data;
 
-        $this.closeAndRedirect(true);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+      $this.closeAndRedirect(true);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiUpload: function (type, file) {
     var $this = this;
 
     utils.loading(this, true);
-    $api
-      .csrfPost(this.csrfToken, $urlUpload + '?siteId=' + this.siteId + '&type=' + type, file)
-      .then(function (response) {
-        var res = response.data;
-        $this.insertLatestText(type, res.value);
-      })
-      .catch(function (error) {
-        utils.error(error);
-      })
-      .then(function () {
-        utils.loading($this, false);
-      });
+    $api.csrfPost(this.csrfToken, $urlUpload + '?siteId=' + this.siteId + '&type=' + type, file)
+    .then(function (response) {
+      var res = response.data;
+      $this.insertLatestText(type, res.value);
+    })
+    .catch(function (error) {
+      utils.error(error);
+    })
+    .then(function () {
+      utils.loading($this, false);
+    });
   },
 
   apiSave: function () {

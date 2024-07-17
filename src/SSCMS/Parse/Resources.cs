@@ -69,7 +69,7 @@
 
         public static class Components
         {
-            public const string Lodash = "resources/components/lodash-4.17.4.min.js";
+            public const string Lodash = "resources/components/lodash-4.17.21.min.js";
             public const string JsCookie = "resources/components/js.cookie.js";
             public const string StlClient = "resources/components/stlclient.js";
         }
