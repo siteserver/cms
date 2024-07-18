@@ -59,7 +59,7 @@ namespace SSCMS.Web.Controllers.Preview
             return File(bytes, "text/html");
         }
 
-        private async Task<FileResult> GetResponseMessageAsync(VisualInfo visualInfo)
+        private async Task<ActionResult> GetResponseMessageAsync(VisualInfo visualInfo)
         {
             if (visualInfo.Site == null || visualInfo.Template == null) return null;
 
@@ -78,7 +78,7 @@ namespace SSCMS.Web.Controllers.Preview
                 var content = Regex.Replace(contentBuilder.ToString(), @"<!-- #include virtual=""([^""]+)"" -->", @"<stl:include file=""$1""></stl:include>");
                 contentBuilder = new StringBuilder(content);
             }
-            FileResult message = null;
+            ActionResult message = null;
 
             if (template.TemplateType == TemplateType.FileTemplate)           //单页
             {
@@ -96,15 +96,14 @@ namespace SSCMS.Web.Controllers.Preview
             return message;
         }
 
-        private async Task<FileResult> GetContentTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
+        private async Task<ActionResult> GetContentTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
         {
             var content = await _parseManager.GetContentAsync();
             if (content == null) return null;
 
             if (content.LinkType == LinkType.None && !string.IsNullOrEmpty(content.LinkUrl))
             {
-                HttpContext.Response.Redirect(content.LinkUrl);
-                return null;
+                return new RedirectResult(content.LinkUrl);
             }
 
             var stlLabelList = ParseUtils.GetStlLabels(contentBuilder.ToString());
@@ -222,7 +221,7 @@ namespace SSCMS.Web.Controllers.Preview
             return GetResponse(contentBuilder.ToString());
         }
 
-        private async Task<FileResult> GetChannelTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
+        private async Task<ActionResult> GetChannelTemplateAsync(VisualInfo visualInfo, StringBuilder contentBuilder)
         {
             var nodeInfo = await _channelRepository.GetAsync(visualInfo.ChannelId);
             if (nodeInfo == null) return null;
@@ -231,8 +230,7 @@ namespace SSCMS.Web.Controllers.Preview
             {
                 if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
                 {
-                    HttpContext.Response.Redirect(nodeInfo.LinkUrl);
-                    return null;
+                    return new RedirectResult(nodeInfo.LinkUrl);
                 }
             }
 
