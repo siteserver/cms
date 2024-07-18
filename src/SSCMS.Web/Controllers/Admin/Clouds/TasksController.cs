@@ -23,15 +23,18 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
 
         private readonly IAuthManager _authManager;
         private readonly ICloudManager _cloudManager;
-        private readonly IConfigRepository _configRepository;
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public TasksController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository, IScheduledTaskRepository scheduledTaskRepository, ISiteRepository siteRepository)
+        public TasksController(
+            IAuthManager authManager, 
+            ICloudManager cloudManager, 
+            IScheduledTaskRepository scheduledTaskRepository, 
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _cloudManager = cloudManager;
-            _configRepository = configRepository;
             _scheduledTaskRepository = scheduledTaskRepository;
             _siteRepository = siteRepository;
         }

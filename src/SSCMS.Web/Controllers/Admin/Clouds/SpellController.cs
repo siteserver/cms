@@ -15,13 +15,14 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         private const string Route = "clouds/spell";
 
         private readonly IAuthManager _authManager;
-        private readonly ICloudManager _cloudManager;
         private readonly IConfigRepository _configRepository;
 
-        public SpellController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository)
+        public SpellController(
+            IAuthManager authManager, 
+            IConfigRepository configRepository
+        )
         {
             _authManager = authManager;
-            _cloudManager = cloudManager;
             _configRepository = configRepository;
         }
 

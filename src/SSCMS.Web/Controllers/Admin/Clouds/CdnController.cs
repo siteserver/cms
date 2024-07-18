@@ -20,7 +20,12 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         private readonly IConfigRepository _configRepository;
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
 
-        public CdnController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository, IScheduledTaskRepository scheduledTaskRepository)
+        public CdnController(
+            IAuthManager authManager,
+            ICloudManager cloudManager,
+            IConfigRepository configRepository,
+            IScheduledTaskRepository scheduledTaskRepository
+        )
         {
             _authManager = authManager;
             _cloudManager = cloudManager;

@@ -19,13 +19,14 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
 
         private readonly IAuthManager _authManager;
         private readonly ICloudManager _cloudManager;
-        private readonly IConfigRepository _configRepository;
 
-        public DashboardController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository)
+        public DashboardController(
+            IAuthManager authManager, 
+            ICloudManager cloudManager
+        )
         {
             _authManager = authManager;
             _cloudManager = cloudManager;
-            _configRepository = configRepository;
         }
 
         public class SubmitRequest

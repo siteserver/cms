@@ -19,7 +19,11 @@ namespace SSCMS.Web.Controllers.Admin.Clouds
         private readonly ICloudManager _cloudManager;
         private readonly IConfigRepository _configRepository;
 
-        public ImagesController(IAuthManager authManager, ICloudManager cloudManager, IConfigRepository configRepository)
+        public ImagesController(
+            IAuthManager authManager, 
+            ICloudManager cloudManager, 
+            IConfigRepository configRepository
+        )
         {
             _authManager = authManager;
             _cloudManager = cloudManager;
