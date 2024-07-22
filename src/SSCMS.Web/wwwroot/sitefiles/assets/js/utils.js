@@ -478,8 +478,8 @@ var utils = {
     return message;
   },
 
-  uuid: function() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+  uuid: function(short) {
+    var str = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
       /[xy]/g,
       function (c) {
         var r = (Math.random() * 16) | 0,
@@ -487,6 +487,7 @@ var utils = {
         return v.toString(16);
       }
     );
+    return short ? str.split("-")[0] : str;
   },
 
   notifySuccess: function (message, position) {
