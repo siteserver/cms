@@ -44,11 +44,6 @@
             public const string Swf = "resources/flashes/mediaelement/mediaelement-flash-audio.swf";
         }
 
-        public static class AudioJs
-        {
-            public const string Js = "resources/flashes/audiojs/audio.min.js";
-        }
-
         public static class VideoJs
         {
             public const string Css = "resources/videojs/video-js.min.css";
@@ -70,51 +65,7 @@
         public static class Components
         {
             public const string Lodash = "resources/components/lodash-4.17.21.min.js";
-            public const string JsCookie = "resources/components/js.cookie.js";
             public const string StlClient = "resources/components/stlclient.js";
-        }
-
-        public static class JQuery
-        {
-            public class AjaxUpload
-            {
-                public const string Js = "resources/jquery/ajaxupload.js";
-            }
-
-            public class QueryString
-            {
-                public const string Js = "resources/jquery/querystring.js";
-            }
-
-            public class JQueryForm
-            {
-                public const string Js = "resources/jquery/jquery.form.js";
-            }
-
-            public class ShowLoading
-            {
-                public const string Js = "resources/jquery/showloading/js/jquery.showloading.min.js";
-                public const string Css = "resources/jquery/showloading/css/showloading.css";
-                public const string Charset = "utf-8";
-            }
-
-            public class JTemplates
-            {
-                public const string Js = "resources/jquery/jquery-jtemplates.js";
-                public const string Charset = "utf-8";
-            }
-
-            public class ValidateJs
-            {
-                public const string Js = "resources/jquery/validate.js";
-                public const string Charset = "utf-8";
-            }
-
-            public class Bootstrap
-            {
-                public const string Css = "resources/jquery/bootstrap/css/bootstrap.min.css";
-                public const string Js = "resources/jquery/bootstrap/js/bootstrap.min.js";
-            }
         }
 
         public static class DateString
@@ -129,11 +80,6 @@
             public const string FocusViewer = "resources/flashes/focusviewer.swf";
             public const string Bcastr = "resources/flashes/bcastr31.swf";
             public const string Ali = "resources/flashes/focusali.swf";
-        }
-
-        public static class DatePicker
-        {
-            public const string Js = "resources/scripts/datepicker/wdatepicker.js";
         }
 
         public static class Print

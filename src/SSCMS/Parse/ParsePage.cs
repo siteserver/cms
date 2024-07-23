@@ -130,33 +130,16 @@ namespace SSCMS.Parse
         {
             public const string Jquery = "Jquery";
             public const string Axios = "Axios";
-            public const string JsCookie = "JsCookie";
             public const string StlClient = "StlClient";
-
-            public const string BAjaxUpload = "B_AjaxUpload";              //AjaxUpload
-            public const string BQueryString = "B_QueryString";            //QueryString
-            public const string BjQueryForm = "B_JQueryForm";              //JQueryForm
-            public const string BShowLoading = "B_ShowLoading";              //ShowLoading
-            public const string BjTemplates = "B_JTemplates";              //JTemplates
-            public const string BValidate = "B_Validate";                  //Validate
-            public const string BBootstrap = "B_Bootstrap";                  //Bootstrap
-
             public const string JsAcSwfObject = "Js_Ac_SWFObject";                //SWFObject
-
             public const string JsAcJwPlayer6 = "Js_Ac_JWPlayer6";                //JWPlayer6
             public const string JsAcFlowPlayer = "Js_Ac_FlowPlayer";              //flowPlayer
             public const string JsAcMediaElement = "Js_Ac_MediaElement";          //mediaelement
-            public const string JsAcAudioJs = "Js_Ac_AudioJs";                    //audio.js
             public const string JsAcVideoJs = "Js_Ac_VideoJs";                    //video.js
             public const string JsAcSwiperJs = "Js_Ac_SwiperJs";                    //swiper.js
             public const string JsAeStlZoom = "Js_Ae_StlZoom";                    //文字缩放
             public const string JsAfStlPrinter = "Js_Af_StlPrinter";              //打印
             public const string JsAhTranslate = "Js_Ah_Translate";                //繁体/简体转换
-
-            public const string JsPageOpenWindow = "Js_Page_OpenWindow";
-            public const string JsUserScript = "Js_User_Script";
-            public const string JsInnerCalendar = "Js_Inner_Calendar";
-
             public const string Vue = nameof(Vue);
             public const string VueElement = nameof(VueElement);
             public const string Layer = nameof(Layer);
@@ -184,13 +167,6 @@ namespace SSCMS.Parse
                         $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
                 }
             }
-            else if (pageJsName == Const.JsCookie)
-            {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Components.JsCookie);
-
-                retVal =
-                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
-            }
             else if (pageJsName == Const.StlClient)
             {
                 var lodashUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Components.Lodash);
@@ -198,62 +174,6 @@ namespace SSCMS.Parse
 
                 retVal =
                     $@"<script src=""{lodashUrl}"" type=""text/javascript""></script><script src=""{clientUrl}"" type=""text/javascript""></script>";
-            }
-            else if (pageJsName == Const.BAjaxUpload)
-            {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.AjaxUpload.Js);
-
-                retVal =
-                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
-            }
-            else if (pageJsName == Const.BQueryString)
-            {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.QueryString.Js);
-
-                retVal =
-                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
-            }
-            else if (pageJsName == Const.BjQueryForm)
-            {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.JQueryForm.Js);
-
-                retVal =
-                    $@"<script src=""{jsUrl}"" type=""text/javascript""></script>";
-            }
-            else if (pageJsName == Const.BShowLoading)
-            {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.ShowLoading.Css);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.ShowLoading.Js);
-
-                retVal =
-                    $@"<link href=""{cssUrl}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{Resources
-                        .JQuery.ShowLoading.Charset}"" src=""{jsUrl}""></script>";
-            }
-            else if (pageJsName == Const.BjTemplates)
-            {
-                var jsUrl =
-                    _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.JTemplates.Js);
-
-                retVal =
-                    $@"<script type=""text/javascript"" charset=""{Resources.JQuery.JTemplates.Charset}"" src=""{jsUrl}""></script>";
-            }
-            else if (pageJsName == Const.BValidate)
-            {
-                var jsUrl =
-                    _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.ValidateJs.Js);
-
-                retVal =
-                    $@"<script type=""text/javascript"" charset=""{Resources.JQuery.ValidateJs.Charset}"" src=""{jsUrl}""></script>";
-            }
-            else if (pageJsName == Const.BBootstrap)
-            {
-                var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.Bootstrap.Css);
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.JQuery.Bootstrap.Js);
-
-                retVal = $@"
-<link rel=""stylesheet"" type=""text/css"" href=""{cssUrl}"">
-<script language=""javascript"" src=""{jsUrl}""></script>
-";
             }
             else if (pageJsName == Const.JsAcSwfObject)
             {
@@ -284,19 +204,6 @@ namespace SSCMS.Parse
                 retVal =
                     $@"<script type=""text/javascript"" src=""{jsUrl}""></script><link rel=""stylesheet"" href=""{cssUrl}"" />";
             }
-            else if (pageJsName == Const.JsAcAudioJs)
-            {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.AudioJs.Js);
-
-                retVal =
-                    $@"<script type=""text/javascript"" src=""{jsUrl}""></script>
-<script type='text/javascript'>
-audiojs.events.ready(function() {{
-    audiojs.createAll();
-}});
-</script>
-";
-            }
             else if (pageJsName == Const.JsAcVideoJs)
             {
                 var cssUrl = _pathManager.GetSiteFilesUrl(Site, Resources.VideoJs.Css);
@@ -316,40 +223,6 @@ audiojs.events.ready(function() {{
 <link href=""{cssUrl}"" rel=""stylesheet"">
 <script type=""text/javascript"" src=""{jsUrl}""></script>
 ";
-            }
-            else if (pageJsName == Const.JsPageOpenWindow)
-            {
-                retVal = @"
-<div id=""stl_wnd_board"" style=""position:absolute;top:100px;left:0px;width:100%;z-index:65531;height:100%;display:none"" align=""center"">
-    <div id=""stl_wnd_div"" style=""display:none; width:400px; height:330px; padding:0; margin:0px;"" align=""center"">
-    <iframe id=""stl_wnd_frame"" frameborder=""0"" scrolling=""auto"" width=""100%"" height=""100%"" src=""""></iframe>
-    </div>
-</div>
-<script>
-function stlCloseWindow()
-{document.getElementById('stl_wnd_div').style.display='none';document.getElementById('stl_wnd_board').style.display='none';}
-function stlOpenWindow(pageUrl,width,height)
-{var stl_wnd=document.getElementById('stl_wnd_div');var stl_board=document.getElementById('stl_wnd_board');var wnd_frame=document.getElementById('stl_wnd_frame');if(stl_wnd){stl_wnd.style.width=width+'px';stl_wnd.style.height=height+'px';stl_board.style.display='block';stl_board.style.top=(100+document.documentElement.scrollTop)+'px';stl_wnd.style.visible='hidden';stl_wnd.style.display='block';var url;if(pageUrl.indexOf('?')==-1){url=pageUrl+'?_r='+Math.random();}else{url=pageUrl+'&_r='+Math.random();}
-wnd_frame.src=url;}}
-</script>
-";
-            }
-            else if (pageJsName == Const.JsUserScript)
-            {
-                var jsPageScriptUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Stl.JsPageScript);
-                var assetsUrl = _pathManager.GetSiteFilesUrl(Site);
-                var jsUserScriptUrl = _pathManager.GetSiteFilesUrl(Site, Resources.Stl.JsUserScript);
-
-                retVal = $@"
-<script type=""text/javascript"" src=""{jsPageScriptUrl}""></script>
-<script type=""text/javascript"">stlInit('{assetsUrl}', '{Site.Id}', {(await _pathManager.GetWebUrlAsync(Site)).TrimEnd('/')}');</script>
-<script type=""text/javascript"" src=""{jsUserScriptUrl}""></script>";
-            }
-            else if (pageJsName == Const.JsInnerCalendar)
-            {
-                var jsUrl = _pathManager.GetSiteFilesUrl(Site, Resources.DatePicker.Js);
-
-                retVal = $@"<script type=""text/javascript"" src=""{jsUrl}""></script>";
             }
             else if (pageJsName == Const.JsAhTranslate)
             {
