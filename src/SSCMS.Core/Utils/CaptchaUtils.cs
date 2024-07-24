@@ -78,7 +78,9 @@ namespace SSCMS.Core.Utils
                         var y1 = random.Next(height);
                         var y2 = random.Next(height);
 
-                        ctx.DrawLines(new Pen(Colors[r.Next(0, 5)], 1), new PointF(x1, y1), new PointF(x2, y2));
+                        ctx.DrawLine(Colors[r.Next(0, 5)], 1, new PointF(x1, y1), new PointF(x2, y2));
+
+                        // ctx.DrawLines(new Pen(Colors[r.Next(0, 5)], 1), new PointF(x1, y1), new PointF(x2, y2));
                     }
 
                     for (var i = 0; i < 100; i++)
@@ -86,7 +88,9 @@ namespace SSCMS.Core.Utils
                         var x = random.Next(width);
                         var y = random.Next(height);
 
-                        ctx.DrawLines(new Pen(Colors[r.Next(0, 5)], 1), new PointF(x, y), new PointF(x + 1, y + 1));
+                        ctx.DrawLine(Colors[r.Next(0, 5)], 1, new PointF(x, y), new PointF(x + 1, y + 1));
+
+                        // ctx.DrawLines(new Pen(Colors[r.Next(0, 5)], 1), new PointF(x, y), new PointF(x + 1, y + 1));
                     }
                 });
 

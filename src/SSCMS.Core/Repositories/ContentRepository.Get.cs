@@ -103,7 +103,7 @@ namespace SSCMS.Core.Repositories
             return await repository.GetAllAsync<ContentSummary>(query);
         }
 
-        public async Task<Query> GetQueryByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
+        public async Task<Query> GetQueryByStlSearchAsync(IDatabaseManager databaseManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string groups, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
         {
             var query = Q.NewQuery();
 
@@ -171,6 +171,25 @@ namespace SSCMS.Core.Repositories
                 {
                     query.WhereIn(nameof(Content.ChannelId), channelIdList);
                 }
+            }
+
+            if (!string.IsNullOrEmpty(groups))
+            {
+                query.Where(q =>
+                {
+                    foreach (var groupName in ListUtils.GetStringList(groups))
+                    {
+                        if (!string.IsNullOrEmpty(groupName))
+                        {
+                            q
+                                .OrWhere(nameof(Content.GroupNames), groupName)
+                                .OrWhereLike(nameof(Content.GroupNames), $"{groupName},%")
+                                .OrWhereLike(nameof(Content.GroupNames), $"%,{groupName},%")
+                                .OrWhereLike(nameof(Content.GroupNames), $"%,{groupName}");
+                        }
+                    }
+                    return q;
+                });
             }
 
             var typeList = new List<string>();

@@ -12,6 +12,7 @@ namespace SSCMS.Core.StlParser.Models
         public string ChannelIndex { get; set; }
         public string ChannelName { get; set; }
         public string ChannelIds { get; set; }
+        public string Groups { get; set; }
         public string Type { get; set; }
         public string Word { get; set; }
         public string DateAttribute { get; set; }

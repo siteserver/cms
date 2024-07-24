@@ -61,7 +61,7 @@ namespace SSCMS.Web.Controllers.Stl
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var query = await _contentRepository.GetQueryByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, StlSearch.GetSearchExcludeAttributeNames, form);
+                    var query = await _contentRepository.GetQueryByStlSearchAsync(_databaseManager, request.IsAllSites, request.SiteName, request.SiteDir, request.SiteIds, request.ChannelIndex, request.ChannelName, request.ChannelIds, request.Groups, request.Type, request.Word, request.DateAttribute, request.DateFrom, request.DateTo, request.Since, request.SiteId, StlSearch.GetSearchExcludeAttributeNames, form);
 
                     var stlPageContents = await StlPageContents.GetByStlSearchAsync(stlPageContentsElement, _parseManager, request.PageNum, query);
                     var (pageCount, totalNum) = stlPageContents.GetPageCount();

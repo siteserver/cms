@@ -44,6 +44,9 @@ namespace SSCMS.Core.StlParser.StlElement
         [StlAttribute(Title = "栏目Id列表")]
         public const string ChannelIds = nameof(ChannelIds);
 
+        [StlAttribute(Title = "内容组列表")]
+        public const string Groups = nameof(Groups);
+
         [StlAttribute(Title = "搜索类型")]
         public const string Type = nameof(Type);
 
@@ -95,6 +98,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var channelIds = string.Empty;
+            var groups = string.Empty;
             var type = nameof(Content.Title);
             var word = string.Empty;
             var dateAttribute = nameof(Content.AddDate);
@@ -140,6 +144,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelIds))
                 {
                     channelIds = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, Groups))
+                {
+                    groups = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -230,7 +238,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var elementId = StringUtils.GetElementId();
 
             var apiUrl = GetSearchApiUrl(pageInfo.Site, parseManager.PathManager);
-            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, elementId, yes);
+            var apiParameters = GetSearchApiParameters(parseManager.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, groups, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.SiteId, elementId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -304,9 +312,10 @@ jQuery(document).ready(function(){{
 function stlRedirect{elementId}(page)
 {{
     var queryString = document.location.search;
+    var parameters = '';
     if (queryString && queryString.length > 1) {{
         queryString = queryString.substring(1);
-        var parameters = '';
+        
         var arr = queryString.split('&');
         for(var i=0; i < arr.length; i++) {{
             var item = arr[i];
@@ -317,9 +326,9 @@ function stlRedirect{elementId}(page)
                 }}
             }}
         }}
-        parameters += 'page=' + page;
-        location.href = location.protocol + '//' + location.host + location.pathname + '?' + parameters + location.hash;
     }}
+    parameters += 'page=' + page;
+    location.href = location.protocol + '//' + location.host + location.pathname + '?' + parameters + location.hash;
 }}
 </script>
 ");
@@ -332,7 +341,7 @@ function stlRedirect{elementId}(page)
             return pathManager.GetApiHostUrl(site, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsSearch);
         }
 
-        public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, bool isDefaultDisplay, int siteId, string ajaxDivId, string template)
+        public static string GetSearchApiParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string groups, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, bool isDefaultDisplay, int siteId, string ajaxDivId, string template)
         {
             return TranslateUtils.JsonSerialize(new StlSearchRequest
             {
@@ -343,6 +352,7 @@ function stlRedirect{elementId}(page)
                 ChannelIndex = channelIndex,
                 ChannelName = channelName,
                 ChannelIds = channelIds,
+                Groups = groups,
                 Type = type,
                 Word = word,
                 DateAttribute = dateAttribute,
@@ -372,6 +382,7 @@ function stlRedirect{elementId}(page)
             nameof(StlSearchRequest.ChannelIndex),
             nameof(StlSearchRequest.ChannelName),
             nameof(StlSearchRequest.ChannelIds),
+            nameof(StlSearchRequest.Groups),
             nameof(StlSearchRequest.Type),
             nameof(StlSearchRequest.Word),
             nameof(StlSearchRequest.DateAttribute),
