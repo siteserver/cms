@@ -11,6 +11,13 @@
     <el-input v-model:number="form.adminUserNameMinLength"></el-input>
     <small class="tips">0代表不限制管理员用户名长度</small>
   </el-form-item>
+  <el-form-item label="密码最小长度" prop="adminPasswordMinLength" :rules="[
+    { required: true, message: '请输入密码最小长度' },
+    { validator: utils.validateInt }
+  ]">
+    <el-input v-model:number="form.adminPasswordMinLength"></el-input>
+    <small class="tips">0代表不限制密码长度</small>
+  </el-form-item>
   <el-form-item label="密码规则限制">
     <el-select v-model="form.adminPasswordRestriction" class="form-control">
       <el-option :label="getPasswordRestrictionText('LetterAndDigit')" value="LetterAndDigit"></el-option>
