@@ -98,7 +98,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private static async Task<string> ParseAsync(IParseManager parseManager, Site site, string template, bool inline, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
-            await parseManager.PageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
+            parseManager.PageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.StlClient);
 
             var dynamicInfo = new Dynamic
             {

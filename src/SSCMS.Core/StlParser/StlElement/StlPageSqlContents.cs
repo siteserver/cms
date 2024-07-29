@@ -243,7 +243,7 @@ namespace SSCMS.Core.StlParser.StlElement
 </div>";
             }
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
 
             var elementId = StringUtils.GetElementId();
             var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl(pageInfo.Site);

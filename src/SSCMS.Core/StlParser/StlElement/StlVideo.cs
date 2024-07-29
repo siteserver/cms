@@ -199,7 +199,7 @@ namespace SSCMS.Core.StlParser.StlElement
             videoUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, videoUrl, pageInfo.IsLocal);
             imageUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, imageUrl, pageInfo.IsLocal);
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcVideoJs);
+            pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAcVideoJs);
 
             attributes["class"] = "video-js vjs-big-play-centered" + (string.IsNullOrEmpty(attributes["class"]) ? string.Empty : " " + attributes["class"]);
 

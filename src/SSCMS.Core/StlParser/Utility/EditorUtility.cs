@@ -6,13 +6,13 @@ namespace SSCMS.Core.StlParser.Utility
 {
     public static class EditorUtility
     {
-        public static async Task<string> ParseAsync(ParsePage pageInfo, string parsedContent)
+        public static string Parse(ParsePage pageInfo, string parsedContent)
         {
             if (parsedContent.Contains(" data-vue="))
             {
-                await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-                await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Vue);
-                await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.VueElement);
+                pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
+                pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Vue);
+                pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.VueElement);
 
                 var elementId = StringUtils.GetElementId();
                 parsedContent = parsedContent.Replace("<p>", "<div>");

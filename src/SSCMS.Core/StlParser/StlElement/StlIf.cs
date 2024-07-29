@@ -562,8 +562,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 return string.Empty;
             }
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.StlClient);
             var elementId = StringUtils.GetElementId();
 
             var dynamicInfo = new Dynamic

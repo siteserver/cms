@@ -63,7 +63,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
                 {
-                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAhTranslate);
+                    pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAhTranslate);
 
                     var msgToTraditionalChinese = "繁體";
                     var msgToSimplifiedChinese = "简体";

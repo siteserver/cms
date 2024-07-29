@@ -101,8 +101,8 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Layer);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Layer);
 
             var type = 1;
             var content = string.Empty;

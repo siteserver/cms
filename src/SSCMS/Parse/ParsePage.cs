@@ -102,27 +102,27 @@ namespace SSCMS.Parse
             contextInfo.ContentId = pageContentId;
         }
 
-        public async Task AddPageBodyCodeIfNotExistsAsync(string pageJsName)
+        public void AddPageBodyCodeIfNotExists(string pageJsName)
         {
             if (!BodyCodes.ContainsKey(pageJsName))
             {
-                BodyCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
+                BodyCodes.Add(pageJsName, GetJsCode(pageJsName));
             }
         }
 
-        public async Task AddPageAfterHtmlCodeIfNotExistsAsync(string pageJsName)
+        public void AddPageAfterHtmlCodeIfNotExists(string pageJsName)
         {
             if (!FootCodes.ContainsKey(pageJsName))
             {
-                FootCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
+                FootCodes.Add(pageJsName, GetJsCode(pageJsName));
             }
         }
 
-        public async Task AddPageHeadCodeIfNotExistsAsync(string pageJsName)
+        public void AddPageHeadCodeIfNotExists(string pageJsName)
         {
             if (!HeadCodes.ContainsKey(pageJsName))
             {
-                HeadCodes.Add(pageJsName, await GetJsCodeAsync(pageJsName));
+                HeadCodes.Add(pageJsName, GetJsCode(pageJsName));
             }
         }
 
@@ -147,7 +147,7 @@ namespace SSCMS.Parse
             public const string Share = nameof(Share);
         }
 
-        private async Task<string> GetJsCodeAsync(string pageJsName)
+        private string GetJsCode(string pageJsName)
         {
             var retVal = string.Empty;
 

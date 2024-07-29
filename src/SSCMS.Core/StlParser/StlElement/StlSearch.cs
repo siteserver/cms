@@ -233,8 +233,8 @@ namespace SSCMS.Core.StlParser.StlElement
                 no = innerBuilder.ToString();
             }
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.StlClient);
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.StlClient);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
             var elementId = StringUtils.GetElementId();
 
             var apiUrl = GetSearchApiUrl(pageInfo.Site, parseManager.PathManager);

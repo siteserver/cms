@@ -20,7 +20,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ChannelsLayerTaxisController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ChannelsLayerTaxisController(
+            IAuthManager authManager, 
+            ISiteRepository siteRepository, 
+            IChannelRepository channelRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

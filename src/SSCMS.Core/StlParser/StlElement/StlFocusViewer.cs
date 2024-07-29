@@ -218,7 +218,7 @@ namespace SSCMS.Core.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle2))
                 {
-                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcSwfObject);
+                    pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAcSwfObject);
 
                     var imageUrls = new List<string>();
                     var navigationUrls = new List<string>();
@@ -293,7 +293,7 @@ so_{elementId}.write(""flashcontent_{elementId}"");
                 }
                 else if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle3))
                 {
-                    await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcSwfObject);
+                    pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAcSwfObject);
 
                     var imageUrls = new List<string>();
                     var navigationUrls = new List<string>();

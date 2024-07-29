@@ -325,7 +325,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = InputTypeUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
 
-                    parsedContent = await EditorUtility.ParseAsync(pageInfo, parsedContent);
+                    parsedContent = EditorUtility.Parse(pageInfo, parsedContent);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(ColumnsManager.PageContent)))
                 {
@@ -333,7 +333,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                     parsedContent = InputTypeUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, format);
 
-                    parsedContent = await EditorUtility.ParseAsync(pageInfo, parsedContent);
+                    parsedContent = EditorUtility.Parse(pageInfo, parsedContent);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.AddDate)))
                 {
@@ -642,7 +642,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, nameof(Content.Hits)))
                 {
-                    await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                    pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
                     var apiUrl = parseManager.PathManager.GetApiHostUrl(pageInfo.Site, Constants.ApiPrefix, Constants.ApiStlPrefix, Constants.RouteStlActionsHits);
                     var elementId = StringUtils.GetElementId();
                     parsedContent = @$"

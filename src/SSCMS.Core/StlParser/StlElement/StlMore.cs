@@ -54,7 +54,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 no = parseManager.PathManager.GetContentByFilePath(filePath);
             }
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
             var elementId = StringUtils.GetElementId();
 
             var apiUrl = GetMoreApiUrl(pageInfo.Site, parseManager.PathManager);

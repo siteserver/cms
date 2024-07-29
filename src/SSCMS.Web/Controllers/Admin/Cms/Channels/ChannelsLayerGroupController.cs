@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly IChannelRepository _channelRepository;
         private readonly IChannelGroupRepository _channelGroupRepository;
 
-        public ChannelsLayerGroupController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IChannelGroupRepository channelGroupRepository)
+        public ChannelsLayerGroupController(
+            IAuthManager authManager, 
+            ISiteRepository siteRepository, 
+            IChannelRepository channelRepository, 
+            IChannelGroupRepository channelGroupRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

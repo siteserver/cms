@@ -119,7 +119,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var pathManager = parseManager.PathManager;
             var site = await siteRepository.GetAsync(pageInfo.SiteId);
 
-            await pageInfo.AddPageAfterHtmlCodeIfNotExistsAsync(ParsePage.Const.Share);
+            pageInfo.AddPageAfterHtmlCodeIfNotExists(ParsePage.Const.Share);
 
             Content content = null;
             if (contextInfo.ContentId > 0)

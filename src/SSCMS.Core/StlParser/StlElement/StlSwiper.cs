@@ -107,7 +107,7 @@ namespace SSCMS.Core.StlParser.StlElement
             var pageInfo = parseManager.PageInfo;
             var contextInfo = parseManager.ContextInfo;
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcSwiperJs);
+            pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAcSwiperJs);
 
             if (string.IsNullOrEmpty(contextInfo.InnerHtml)) return string.Empty;
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);

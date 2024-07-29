@@ -178,7 +178,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
         private static async Task<object> ParseInnerHtmlAsync(IParseManager parseManager, ParseContext context, ParsePage pageInfo, Site site, Form form, string apiUrl, string submitName, string onBeforeSend, string onSuccess, string onComplete, string onError, NameValueCollection attributes)
         {
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Axios);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Axios);
 
             var htmlId = attributes["id"];
             if (string.IsNullOrEmpty(htmlId))

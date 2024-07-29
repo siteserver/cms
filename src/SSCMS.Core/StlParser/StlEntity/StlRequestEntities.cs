@@ -21,7 +21,7 @@ namespace SSCMS.Core.StlParser.StlEntity
             var parsedContent = string.Empty;
             try
             {
-                await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
 
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var entityValue = StlParserUtility.GetValueFromEntity(stlEntity);

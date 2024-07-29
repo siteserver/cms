@@ -31,7 +31,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ChannelsTranslateController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ChannelsTranslateController(
+            IAuthManager authManager, 
+            IPathManager pathManager, 
+            ICreateManager createManager, 
+            IDatabaseManager databaseManager, 
+            IPluginManager pluginManager, 
+            ISiteRepository siteRepository, 
+            IChannelRepository channelRepository, 
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

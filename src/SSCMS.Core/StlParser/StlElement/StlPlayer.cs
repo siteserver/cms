@@ -179,7 +179,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
             {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcJwPlayer6);
+                pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAcJwPlayer6);
                 return $@"
 <div id='{elementId}'></div>
 <script type='text/javascript'>
@@ -196,7 +196,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
             {
-                await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.JsAcFlowPlayer);
+                pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.JsAcFlowPlayer);
 
                 var imageHtml = string.Empty;
                 if (!string.IsNullOrEmpty(imageUrl))

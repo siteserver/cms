@@ -21,7 +21,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ChannelsLayerCreateController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ChannelsLayerCreateController(
+            IAuthManager authManager, 
+            ICreateManager createManager, 
+            ISiteRepository siteRepository, 
+            IChannelRepository channelRepository
+        )
         {
             _authManager = authManager;
             _createManager = createManager;

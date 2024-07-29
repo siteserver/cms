@@ -158,7 +158,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             {
                                 var keyCode = isNextContent ? 39 : 37;
                                 var scriptContent = new StringBuilder();
-                                await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+                                pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
                                 scriptContent.Append($@"<script language=""javascript"" type=""text/javascript""> 
       $(document).keydown(function(event){{
         if(event.keyCode=={keyCode}){{location = '{url}';}}

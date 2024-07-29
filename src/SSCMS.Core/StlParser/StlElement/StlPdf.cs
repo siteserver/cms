@@ -151,7 +151,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
             fileUrl = await parseManager.PathManager.ParseSiteUrlAsync(pageInfo.Site, fileUrl, false);
 
-            await pageInfo.AddPageBodyCodeIfNotExistsAsync(ParsePage.Const.PdfObject);
+            pageInfo.AddPageBodyCodeIfNotExists(ParsePage.Const.PdfObject);
 
             var options = new Dictionary<string, object>();
             if (!string.IsNullOrEmpty(fallbackLink))

@@ -25,7 +25,7 @@ namespace SSCMS.Core.StlParser.StlElement
         {
             var pageInfo = parseManager.PageInfo;
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
             string parsedContent;
             try
             {

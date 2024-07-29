@@ -123,7 +123,7 @@ namespace SSCMS.Core.StlParser.StlElement
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
-                    return await ParseDynamicAsync(totalNum, currentPageIndex, pageCount);
+                    return ParseDynamic(totalNum, currentPageIndex, pageCount);
                 }
             }
 
@@ -146,7 +146,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
+        private string ParseDynamic(int totalNum, int currentPageIndex, int pageCount)
         {
             var pageInfo = ParseManager.PageInfo;
 
@@ -163,7 +163,7 @@ namespace SSCMS.Core.StlParser.StlElement
 </div>";
             }
 
-            await pageInfo.AddPageHeadCodeIfNotExistsAsync(ParsePage.Const.Jquery);
+            pageInfo.AddPageHeadCodeIfNotExists(ParsePage.Const.Jquery);
 
             var elementId = StringUtils.GetElementId();
             var apiUrl = ParseManager.PathManager.GetPageContentsApiUrl(pageInfo.Site);
