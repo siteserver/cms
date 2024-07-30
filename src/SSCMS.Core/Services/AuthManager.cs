@@ -35,7 +35,6 @@ namespace SSCMS.Core.Services
 
         private Administrator _admin;
         private User _user;
-        private UserGroup _userGroup;
 
         public async Task InitAsync(User user)
         {

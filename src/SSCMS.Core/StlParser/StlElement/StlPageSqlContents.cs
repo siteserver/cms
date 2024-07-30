@@ -226,7 +226,7 @@ namespace SSCMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private async Task<string> ParseDynamicAsync(int totalNum, int currentPageIndex, int pageCount)
+        private string ParseDynamic(int totalNum, int currentPageIndex, int pageCount)
         {
             var pageInfo = ParseManager.PageInfo;
 
