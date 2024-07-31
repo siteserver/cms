@@ -477,10 +477,11 @@ var methods = {
         }
       })
       .catch(function (error) {
-        utils.error(error, {
-          ignoreAuth: true,
-        });
-        layer.closeAll();
+        console.log(error);
+        if (isSave) {
+          $this.censorSettings.isCensorPassed = true;
+          $this.apiSave();
+        }
       })
       .then(function () {
         $this.censorSettings.isCensorChecking = false;
@@ -576,10 +577,11 @@ var methods = {
         }
       })
       .catch(function (error) {
-        utils.error(error, {
-          ignoreAuth: true,
-        });
-        layer.closeAll();
+        console.log(error);
+        if (isSave) {
+          $this.spellSettings.isSpellPassed = true;
+          $this.apiSave();
+        }
       })
       .then(function () {
         $this.spellSettings.isSpellChecking = false;
