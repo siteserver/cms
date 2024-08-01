@@ -328,11 +328,17 @@ namespace SSCMS.Core.Repositories
             if (isDbExists) return;
 
             await _settingsManager.Database.CreateTableAsync(tableName, columnInfoList);
-            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.Taxis)}", $"{nameof(Content.Taxis)} DESC");
-            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.SiteId)}", $"{nameof(Content.SiteId)} DESC");
-            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.ChannelId)}", $"{nameof(Content.ChannelId)} DESC");
-            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.AddDate)}", $"{nameof(Content.AddDate)} DESC");
-            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.SourceId)}", $"{nameof(Content.SourceId)} DESC");
+            // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.Taxis)}", $"{nameof(Content.Taxis)} DESC");
+            // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.SiteId)}", $"{nameof(Content.SiteId)} DESC");
+            // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.ChannelId)}", $"{nameof(Content.ChannelId)} DESC");
+            // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.AddDate)}", $"{nameof(Content.AddDate)} DESC");
+            // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.SourceId)}", $"{nameof(Content.SourceId)} DESC");
+
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.Taxis)}", nameof(Content.Taxis));
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.SiteId)}", nameof(Content.SiteId));
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.ChannelId)}", nameof(Content.ChannelId));
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.AddDate)}", nameof(Content.AddDate));
+            await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_{nameof(Content.SourceId)}", nameof(Content.SourceId));
         }
 
         private async Task QueryWhereAsync(Query query, Site site, int channelId, bool isAllContents)

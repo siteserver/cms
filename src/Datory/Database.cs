@@ -18,7 +18,7 @@ namespace Datory
         {
             if (string.IsNullOrEmpty(connectionString)) return;
 
-            if (databaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql || databaseType == DatabaseType.OceanBase)
             {
                 if (!Utilities.ContainsIgnoreCase(connectionString, "SslMode="))
                 {
@@ -65,7 +65,7 @@ namespace Datory
             if (string.IsNullOrWhiteSpace(ConnectionString)) return null;
 
             DbConnection conn = null;
-            if (DatabaseType == DatabaseType.MySql)
+            if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase)
             {
                 conn = MySqlImpl.Instance.GetConnection(ConnectionString);
             }
@@ -292,7 +292,7 @@ namespace Datory
 
             sqlBuilder.Length--;
 
-            sqlBuilder.AppendLine().Append(DatabaseType == DatabaseType.MySql
+            sqlBuilder.AppendLine().Append(DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase
                 ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
                 : ")");
 
@@ -394,7 +394,7 @@ namespace Datory
         {
             List<TableColumn> list = null;
 
-            if (DatabaseType == DatabaseType.MySql)
+            if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase)
             {
                 list = await MySqlImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
@@ -433,7 +433,7 @@ namespace Datory
         {
             List<string> tableNames = null;
 
-            if (DatabaseType == DatabaseType.MySql)
+            if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase)
             {
                 tableNames = await MySqlImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
@@ -465,7 +465,7 @@ namespace Datory
         {
             var exists = false;
 
-            if (DatabaseType == DatabaseType.MySql)
+            if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase)
             {
                 exists = await MySqlImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
@@ -497,7 +497,7 @@ namespace Datory
         {
             List<string> tableNames = null;
 
-            if (DatabaseType == DatabaseType.MySql)
+            if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase)
             {
                 tableNames = await MySqlImpl.Instance.GetTableNamesAsync(ConnectionString);
             }

@@ -130,7 +130,8 @@ namespace SSCMS.Core.Services
             {
                 try
                 {
-                    await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{nameof(Content.Top)} DESC", $"{nameof(Content.Taxis)} DESC", $"{nameof(Content.Id)} DESC");
+                    // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{nameof(Content.Top)} DESC", $"{nameof(Content.Taxis)} DESC", $"{nameof(Content.Id)} DESC");
+                    await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_General", nameof(Content.Top), nameof(Content.Taxis), nameof(Content.Id));
                 }
                 catch (Exception ex)
                 {
@@ -140,7 +141,8 @@ namespace SSCMS.Core.Services
 
                 try
                 {
-                    await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{nameof(Content.Taxis)} DESC");
+                    // await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{nameof(Content.Taxis)} DESC");
+                    await _settingsManager.Database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", nameof(Content.Taxis));
                 }
                 catch (Exception ex)
                 {

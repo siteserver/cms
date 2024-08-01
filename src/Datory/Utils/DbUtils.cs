@@ -13,7 +13,7 @@ namespace Datory.Utils
         {
             IDatabaseImpl instance = null;
 
-            if (databaseType == DatabaseType.MySql)
+            if (databaseType == DatabaseType.MySql || databaseType == DatabaseType.OceanBase)
             {
                 instance = MySqlImpl.Instance;
             }

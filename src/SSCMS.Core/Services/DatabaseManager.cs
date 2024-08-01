@@ -261,7 +261,7 @@ namespace SSCMS.Core.Services
 
         public async Task DeleteDbLogAsync()
         {
-            if (_settingsManager.Database.DatabaseType == DatabaseType.MySql)
+            if (_settingsManager.Database.DatabaseType == DatabaseType.MySql || _settingsManager.Database.DatabaseType == DatabaseType.OceanBase)
             {
                 using var connection = _settingsManager.Database.GetConnection();
                 await connection.ExecuteAsync("PURGE MASTER LOGS BEFORE DATE_SUB( NOW( ), INTERVAL 3 DAY)");
@@ -546,7 +546,7 @@ SELECT * FROM (
                 return $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
             }
 
-            if (_settingsManager.Database.DatabaseType == DatabaseType.MySql)
+            if (_settingsManager.Database.DatabaseType == DatabaseType.MySql || _settingsManager.Database.DatabaseType == DatabaseType.OceanBase)
             {
                 if (limit == 0)
                 {
