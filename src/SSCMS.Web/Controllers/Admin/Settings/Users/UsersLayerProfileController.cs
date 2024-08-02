@@ -43,7 +43,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
         public class GetResult
         {
             public User User { get; set; }
-            public IEnumerable<UserGroup> Groups { get; set; }
             public IEnumerable<InputStyle> Styles { get; set; }
             public Settings Settings { get; set; }
         }

@@ -175,7 +175,7 @@ var methods = {
   btnAddClick: function() {
     utils.openLayer({
       title: '添加用户',
-      url: utils.getSettingsUrl('usersLayerProfile')
+      url: utils.getSettingsUrl('usersLayerProfile', { departmentId: this.departmentId })
     });
   },
 

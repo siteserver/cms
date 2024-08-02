@@ -3,7 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Datory</PackageId>
-    <Version>7.3.0</Version>
+    <Version>7.3.1</Version>
     <Authors>SSCMS</Authors>
     <Company>SSCMS</Company>
     <Description>基于 Dapper 及 SqlKata 的通用数据库操作库，支持MySQL、SQLServer、PostgreSql、达梦、人大金仓以及 Sqlite 等多种数据库类型。</Description>

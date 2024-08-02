@@ -133,10 +133,11 @@
           v-on:click="btnLayerClick({title: '批量调整部门', name: 'Departments', withUsers: true})">
           调整部门
         </el-button>
-        <el-button v-if="groups.length > 2" size="mini" plain style="margin-left: 0px;" icon="el-icon-files" :disabled="total === 0 || !isUserCheck"
+        <el-button size="mini" plain style="margin-left: 0px;" icon="el-icon-files" :disabled="total === 0 || !isUserCheck"
           v-on:click="btnLayerClick({title: '批量设置用户组', name: 'Groups', withUsers: true})">
           设置用户组
         </el-button>
+
         <el-button size="mini" plain style="margin-left: 0px;" icon="el-icon-upload" v-on:click="btnImportClick">
           导 入
         </el-button>

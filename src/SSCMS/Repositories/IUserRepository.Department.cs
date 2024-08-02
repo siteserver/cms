@@ -9,5 +9,7 @@ namespace SSCMS.Repositories
         Task<List<int>> GetUserIdsAsync(int departmentId);
         
         Task UpdateDepartmentIdAsync(User user, int departmentId);
+
+        Task SyncDepartmentCountAsync(int departmentId);
     }
 }

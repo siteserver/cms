@@ -18,7 +18,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
             var user = await _userRepository.GetByUserIdAsync(userId);
             var userStyles = await _tableStyleRepository.GetUserStylesAsync();
-            var groups = await _userGroupRepository.GetUserGroupsAsync();
             var styles = userStyles.Select(x => new InputStyle(x));
 
             var settings = new Settings
@@ -29,7 +28,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             return new GetResult
             {
                 User = user,
-                Groups = groups,
                 Styles = styles,
                 Settings = settings
             };

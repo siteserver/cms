@@ -30,16 +30,6 @@
   ]">
     <el-input v-model="form.email" placeholder="请输入电子邮箱"></el-input>
   </el-form-item>
-  <el-form-item label="用户组" prop="groupId" :rules="[{ required: true, message: '请选择用户组' }]">
-    <el-select v-model="form.groupId" placeholder="用户组">
-      <el-option
-        v-for="group in groups"
-        :key="group.id"
-        :label="group.groupName"
-        :value="group.id">
-      </el-option>
-    </el-select>
-  </el-form-item>
   <el-form-item v-if="userId === 0" label="密码" prop="password" :rules="[{ required: true, message: '请输入密码' }]">
     <el-input v-model="form.password" type="password" name="password" autocomplete="off"></el-input>
   </el-form-item>

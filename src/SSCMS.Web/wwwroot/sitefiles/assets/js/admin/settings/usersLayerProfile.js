@@ -2,10 +2,10 @@
 
 var data = utils.init({
   userId: utils.getQueryInt('userId'),
+  departmentId: utils.getQueryInt('departmentId'),
   uploadUrl: null,
   uploadFileList: [],
   form: null,
-  groups: null,
   styles: null,
   settings: null,
 });
@@ -39,7 +39,6 @@ var methods = {
       var res = response.data;
 
       $this.form = _.assign({}, res.user);
-      $this.groups = res.groups;
       $this.styles = res.styles;
       $this.settings = res.settings;
       if (this.userId === 0) {
@@ -61,6 +60,10 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
+
+    if (!this.form.id && this.departmentId) {
+      this.form.departmentId = this.departmentId;
+    }
 
     utils.loading(this, true);
     $api.post($url, this.form).then(function (response) {

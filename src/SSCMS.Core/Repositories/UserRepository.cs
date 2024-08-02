@@ -174,6 +174,7 @@ namespace SSCMS.Core.Repositories
             user.Set("ConfirmPassword", string.Empty);
 
             user.Id = await _repository.InsertAsync(user);
+            await SyncDepartmentCountAsync(user.DepartmentId);
 
             return user.Id;
         }
@@ -205,7 +206,15 @@ namespace SSCMS.Core.Repositories
             }
 
             user.Set("ConfirmPassword", string.Empty);
+            var oldUser = await GetByUserIdAsync(user.Id);
             await _repository.UpdateAsync(user, Q.CachingRemove(GetCacheKeysToRemove(entity)));
+
+            if (oldUser.DepartmentId != user.DepartmentId)
+            {
+                await SyncDepartmentCountAsync(oldUser.DepartmentId);
+                await SyncDepartmentCountAsync(user.DepartmentId);
+            }
+
             return (true, string.Empty);
         }
 
@@ -706,6 +715,7 @@ namespace SSCMS.Core.Repositories
             var user = await GetByUserIdAsync(userId);
 
             await _repository.DeleteAsync(userId, Q.CachingRemove(GetCacheKeysToRemove(user)));
+            await SyncDepartmentCountAsync(user.DepartmentId);
 
             return user;
         }
