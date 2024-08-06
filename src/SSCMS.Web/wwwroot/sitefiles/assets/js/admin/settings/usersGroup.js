@@ -70,7 +70,6 @@ var methods = {
 
     utils.loading(this, true);
     $api.post($urlOrder, {
-      siteId: this.siteId,
       groupId: groupId,
       isUp: isUp,
       rows: rows,
