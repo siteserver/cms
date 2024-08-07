@@ -77,6 +77,9 @@ namespace SSCMS.Core.Services
             builder.Replace("@'@", "'@");
             builder.Replace("@\"@", "\"@");
 
+            builder.Replace("&lt;", "&amp;lt;");
+            builder.Replace("&gt;", "&amp;gt;");
+
             return builder.ToString();
         }
 
@@ -148,6 +151,9 @@ namespace SSCMS.Core.Services
             {
                 return StringUtils.FilterXss(builder.ToString());
             }
+
+            builder.Replace("&amp;lt;", "&lt;");
+            builder.Replace("&amp;gt;", "&gt;");
 
             return builder.ToString();
         }
