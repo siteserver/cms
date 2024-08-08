@@ -152,8 +152,8 @@ namespace SSCMS.Core.Services
                 return StringUtils.FilterXss(builder.ToString());
             }
 
-            builder.Replace("&amp;lt;", "&lt;");
-            builder.Replace("&amp;gt;", "&gt;");
+            // builder.Replace("&amp;lt;", "&lt;");
+            // builder.Replace("&amp;gt;", "&gt;");
 
             return builder.ToString();
         }

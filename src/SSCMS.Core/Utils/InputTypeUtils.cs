@@ -37,7 +37,15 @@ namespace SSCMS.Core.Utils
 
         public static string ParseString(InputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isClearBlank, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
-            return IsPureString(inputType) ? StringUtils.ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, formatString) : content;
+            var retVal = IsPureString(inputType) ? StringUtils.ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isClearBlank, isReturnToBr, isLower, isUpper, formatString) : content;
+
+            if (inputType == InputType.TextEditor && !string.IsNullOrEmpty(retVal))
+            {
+                retVal = retVal.Replace("&amp;lt;", "&lt;");
+                retVal = retVal.Replace("&amp;gt;", "&gt;");
+            }
+
+            return retVal;
         }
     }
 }

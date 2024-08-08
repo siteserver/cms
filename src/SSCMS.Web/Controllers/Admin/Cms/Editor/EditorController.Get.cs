@@ -139,11 +139,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
                 ContentId = 0,
                 ContentTitle = string.Empty
             };
-            if (content.LinkType == Enums.LinkType.LinkToChannel)
+            if (content.LinkType == LinkType.LinkToChannel)
             {
                 linkTo.ChannelIds = ListUtils.GetIntList(content.LinkUrl);
             }
-            else if (content.LinkType == Enums.LinkType.LinkToContent)
+            else if (content.LinkType == LinkType.LinkToContent)
             {
                 if (!string.IsNullOrEmpty(content.LinkUrl) && content.LinkUrl.IndexOf('_') != -1)
                 {
