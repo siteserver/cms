@@ -36,12 +36,6 @@ namespace SSCMS.Web.Controllers.Stl
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeUserGroup))
                 {
-                    // if (user != null)
-                    // {
-                    //     var groups = await _userGroupRepository.GetUserGroupsAsync();
-                    //     var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
-                    //     isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
-                    // }
                     if (user != null)
                     {
                         var groups = await _usersInGroupsRepository.GetGroupsAsync(user);
@@ -50,24 +44,60 @@ namespace SSCMS.Web.Controllers.Stl
                         {
                             ifInfo.Op = StlIf.OperateEquals;
                         }
-                        if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateEquals) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateIn) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateContains))
+
+                        if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateEquals) ||
+                            StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateIn))
                         {
-                            isSuccess = ListUtils.ContainsIgnoreCase(groupNames, ifInfo.Value);
+                            var list = ListUtils.GetStringList(ifInfo.Value);
+                            foreach (var item in list)
+                            {
+                                if (ListUtils.ContainsIgnoreCase(groupNames, item))
+                                {
+                                    isSuccess = true;
+                                    break;
+                                }
+                            }
                         }
-                        else if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotEquals) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotIn) || StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateContains))
+                        else if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateContains))
                         {
-                            isSuccess = !ListUtils.ContainsIgnoreCase(groupNames, ifInfo.Value);
+                            isSuccess = true;
+                            var list = ListUtils.GetStringList(ifInfo.Value);
+                            foreach (var item in list)
+                            {
+                                if (!ListUtils.ContainsIgnoreCase(groupNames, item))
+                                {
+                                    isSuccess = false;
+                                    break;
+                                }
+                            }
                         }
-                        // isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, ListUtils.ToString(groupNames));
-                        
-                        // var groups = await _userGroupRepository.GetUserGroupsAsync(true);
-                        // var group = groups.FirstOrDefault(g => g.Id == user.GroupId);
-                        // isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
-                        // if (!isSuccess)
-                        // {
-                        //     group = groups.FirstOrDefault(g => g.Id == user.GroupId2);
-                        //     isSuccess = StlIf.TestTypeValue(ifInfo.Op, ifInfo.Value, group != null ? group.GroupName : string.Empty);
-                        // }
+                        else if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotEquals) || 
+                                 StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotIn))
+                        {
+                            isSuccess = true;
+                            var list = ListUtils.GetStringList(ifInfo.Value);
+                            foreach (var item in list)
+                            {
+                                if (ListUtils.ContainsIgnoreCase(groupNames, item))
+                                {
+                                    isSuccess = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(ifInfo.Op, StlIf.OperateNotContains))
+                        {
+                            isSuccess = false;
+                            var list = ListUtils.GetStringList(ifInfo.Value);
+                            foreach (var item in list)
+                            {
+                                if (ListUtils.ContainsIgnoreCase(groupNames, item))
+                                {
+                                    isSuccess = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(ifInfo.Type, StlIf.TypeIsAdministratorLoggin))
