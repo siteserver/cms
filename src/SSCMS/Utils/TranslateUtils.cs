@@ -9,6 +9,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SSCMS.Configuration;
+using Sw.ChinaEncryptSM;
 
 namespace SSCMS.Utils
 {
@@ -459,7 +460,7 @@ namespace SSCMS.Utils
         public static dynamic JsonDeserialize(string json)
         {
             if (string.IsNullOrEmpty(json)) return null;
-            
+
             return JsonConvert.DeserializeObject<dynamic>(json);
         }
 
@@ -573,6 +574,35 @@ namespace SSCMS.Utils
             }
 
             return string.Empty;
+        }
+
+        public static string GenerateSm4SecretKeyOrIv()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
+
+        public static string EncryptStringByBySm4(string inputString, string secretKey, string iv)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            var sM4Utils = new SM4Utils()
+            {
+                secretKey = secretKey,
+                iv = iv
+            };
+            return sM4Utils.Encrypt_CBC_Base64(inputString);
+        }
+
+        public static string DecryptStringBySm4(string inputString, string secretKey, string iv)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            var sM4Utils = new SM4Utils()
+            {
+                secretKey = secretKey,
+                iv = iv
+            };
+            return sM4Utils.Decrypt_CBC_Base64(inputString);
         }
     }
 }
