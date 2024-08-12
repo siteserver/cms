@@ -1105,7 +1105,17 @@ if (window.swal && swal.mixin) {
 var PER_PAGE = 30;
 var DEFAULT_AVATAR_URL = '/sitefiles/assets/images/default_avatar.png';
 
+var sessionId = utils.getQueryString('sessionId');
+var accessToken = utils.getQueryString('accessToken');
+if (sessionId && accessToken) {
+  localStorage.setItem('sessionId', sessionId);
+  localStorage.removeItem(ACCESS_TOKEN_NAME);
+  sessionStorage.removeItem(ACCESS_TOKEN_NAME);
+  localStorage.setItem(ACCESS_TOKEN_NAME, accessToken);
+}
+
 var $token = sessionStorage.getItem(ACCESS_TOKEN_NAME) || localStorage.getItem(ACCESS_TOKEN_NAME) || utils.getQueryString('accessToken');
+console.log($token);
 var $api = axios.create({
   baseURL: $apiUrl,
   headers: {
