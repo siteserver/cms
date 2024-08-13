@@ -147,7 +147,7 @@ var methods = {
           utils.loading($this, false);
         });
       } else {
-        localStorage.setItem('sessionId', res.sessionId);
+        localStorage.setItem(SESSION_ID_NAME, res.sessionId);
         localStorage.removeItem(ACCESS_TOKEN_NAME);
         sessionStorage.removeItem(ACCESS_TOKEN_NAME);
         if ($this.isPersistent) {

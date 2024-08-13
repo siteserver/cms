@@ -10,7 +10,7 @@ var $collapseWidth = 60;
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
-  sessionId: localStorage.getItem('sessionId'),
+  sessionId: localStorage.getItem(SESSION_ID_NAME),
   cmsVersion: null,
   isCloudAdmin: null,
   adminLogoUrl: null,

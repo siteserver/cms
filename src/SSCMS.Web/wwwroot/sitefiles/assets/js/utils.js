@@ -1108,7 +1108,7 @@ var DEFAULT_AVATAR_URL = '/sitefiles/assets/images/default_avatar.png';
 var sessionId = utils.getQueryString('sessionId');
 var accessToken = utils.getQueryString('accessToken');
 if (sessionId && accessToken) {
-  localStorage.setItem('sessionId', sessionId);
+  localStorage.setItem(SESSION_ID_NAME, sessionId);
   localStorage.removeItem(ACCESS_TOKEN_NAME);
   sessionStorage.removeItem(ACCESS_TOKEN_NAME);
   localStorage.setItem(ACCESS_TOKEN_NAME, accessToken);
