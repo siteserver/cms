@@ -118,8 +118,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                         //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(channelId, insertedTemplateID);
                     }
 
-                    await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
-
+                    var filePath = await _pathManager.GetTemplateFilePathAsync(site, template);
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                    }
                 }
             }
         }
@@ -165,7 +168,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childChannelId, insertedTemplateID);
                 }
 
-                await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                var filePath = await _pathManager.GetTemplateFilePathAsync(site, template);
+                if (!FileUtils.IsFileExists(filePath))
+                {
+                    await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                }
             }
         }
 
@@ -216,7 +223,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     channelInfo.ContentTemplateId = insertedTemplateId;
                     await _channelRepository.UpdateContentTemplateIdAsync(channelInfo);
 
-                    await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                    var filePath = await _pathManager.GetTemplateFilePathAsync(site, template);
+                    if (!FileUtils.IsFileExists(filePath))
+                    {
+                        await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                    }
 
                     //TemplateManager.UpdateContentTemplateId(SiteId, channelId, insertedTemplateId);
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(channelId, insertedTemplateID);
@@ -265,7 +276,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     //DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childChannelId, insertedTemplateID);
                 }
 
-                await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                var filePath = await _pathManager.GetTemplateFilePathAsync(site, template);
+                if (!FileUtils.IsFileExists(filePath))
+                {
+                    await _pathManager.WriteContentToTemplateFileAsync(site, template, Constants.Html5Empty, _authManager.AdminId);
+                }
             }
         }
     }

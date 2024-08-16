@@ -1115,7 +1115,6 @@ if (sessionId && accessToken) {
 }
 
 var $token = sessionStorage.getItem(ACCESS_TOKEN_NAME) || localStorage.getItem(ACCESS_TOKEN_NAME) || utils.getQueryString('accessToken');
-console.log($token);
 var $api = axios.create({
   baseURL: $apiUrl,
   headers: {
