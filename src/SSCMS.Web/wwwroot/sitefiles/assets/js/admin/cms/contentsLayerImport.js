@@ -150,6 +150,15 @@ var methods = {
       this.form.attributes = [];
       for (var i = 0; i < this.columns.length; i++) {
         this.form.attributes[i] = '';
+
+        var column = this.columns[i];
+        for (var j = 0; j < this.styles.length; j++) {
+          var style = this.styles[j];
+          if (style.attributeName == column || style.displayName == column) {
+            this.form.attributes[i] = style.attributeName;
+          }
+        }
+
       }
     }
     this.form.fileNames.push(res.name);
