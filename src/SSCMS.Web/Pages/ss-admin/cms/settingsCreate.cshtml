@@ -40,6 +40,12 @@
       <el-radio :label="false">不包含</el-radio>
     </el-radio-group>
   </el-form-item>
+  <el-form-item label="是否生成页面中加密附件下载地址">
+    <el-radio-group v-model="form.isCreateDisableFileDownloadApi">
+      <el-radio :label="false">加密</el-radio>
+      <el-radio :label="true">不加密</el-radio>
+    </el-radio-group>
+  </el-form-item>
   <el-form-item label="启用网站黑白模式">
     <el-radio-group v-model="form.isCreateFilterGray">
       <el-radio :label="true">启用</el-radio>

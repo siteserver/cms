@@ -517,7 +517,7 @@ namespace SSCMS.Core.StlParser.StlElement
                             var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                             //第一条
-                            sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                            sbParsedContent.Append(await inputParser.GetFileHtmlWithCountAsync(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
 
                             //第n条
                             var countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
@@ -527,7 +527,7 @@ namespace SSCMS.Core.StlParser.StlElement
                                 var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
                                 var extend = content.Get<string>(extendName);
 
-                                sbParsedContent.Append(inputParser.GetFileHtmlWithCount(pageInfo.Site,
+                                sbParsedContent.Append(await inputParser.GetFileHtmlWithCountAsync(pageInfo.Site,
                                     content.ChannelId, content.Id, extend, contextInfo.Attributes,
                                     contextInfo.InnerHtml,
                                     false, isLower, isUpper));
@@ -566,7 +566,7 @@ namespace SSCMS.Core.StlParser.StlElement
 
                             if (num <= 1)
                             {
-                                parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                parsedContent = await inputParser.GetFileHtmlWithCountAsync(pageInfo.Site, content.ChannelId, content.Id, content.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -574,7 +574,7 @@ namespace SSCMS.Core.StlParser.StlElement
                                 var extend = content.Get<string>(extendName);
                                 if (!string.IsNullOrEmpty(extend))
                                 {
-                                    parsedContent = inputParser.GetFileHtmlWithCount(pageInfo.Site,
+                                    parsedContent = await inputParser.GetFileHtmlWithCountAsync(pageInfo.Site,
                                         content.ChannelId, content.Id, extend, contextInfo.Attributes,
                                         contextInfo.InnerHtml, false, isLower, isUpper);
                                 }

@@ -185,8 +185,17 @@ namespace SSCMS.Core.Services
             return GetHomeUploadPath(userId.ToString(), relatedPath);
         }
 
-        public string GetDownloadApiUrl(Site site, int channelId, int contentId, string fileUrl)
+        public async Task<string> GetDownloadApiUrlAsync(Site site, int channelId, int contentId, string fileUrl)
         {
+            if (site.IsCreateDisableFileDownloadApi)
+            {
+                if (!PageUtils.IsProtocolUrl(fileUrl))
+                {
+                    fileUrl = await ParseSiteUrlAsync(site, fileUrl, false);
+                }
+                return fileUrl;
+            }
+
             var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {
@@ -197,8 +206,17 @@ namespace SSCMS.Core.Services
             });
         }
 
-        public string GetDownloadApiUrl(Site site, string fileUrl)
+        public async Task<string> GetDownloadApiUrlAsync(Site site, string fileUrl)
         {
+            if (site.IsCreateDisableFileDownloadApi)
+            {
+                if (!PageUtils.IsProtocolUrl(fileUrl))
+                {
+                    fileUrl = await ParseSiteUrlAsync(site, fileUrl, false);
+                }
+                return fileUrl;
+            }
+
             var apiUrl = GetApiHostUrl(site, Constants.ApiPrefix);
             return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Constants.ApiStlPrefix, Constants.RouteStlActionsDownload), new NameValueCollection
             {

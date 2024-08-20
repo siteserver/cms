@@ -122,6 +122,8 @@ namespace SSCMS.Models
 
         public DateTime CreateStaticContentAddDate { get; set; } = DateTime.MinValue;
 
+        public bool IsCreateDisableFileDownloadApi { get; set; }
+
         public bool IsCrossSiteTransChecked { get; set; }
 
         public List<string> SearchListColumns { get; set; }

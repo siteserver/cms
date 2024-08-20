@@ -96,7 +96,7 @@ namespace SSCMS.Core.Utils
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
+                parsedContent = await GetFileHtmlWithoutCountAsync(site, parsedContent, attributes, innerHtml, isStlEntity, false, false);
             }
 
             return parsedContent;
@@ -187,13 +187,13 @@ namespace SSCMS.Core.Utils
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(site, obj.ToString(), attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = await GetFileHtmlWithoutCountAsync(site, obj.ToString(), attributes, innerHtml, isStlEntity, false, false);
                 }
                 else
                 {
                     var extendName = ColumnsManager.GetExtendName(style.AttributeName, no - 1);
                     var extend = content.Get<string>(extendName);
-                    parsedContent = GetFileHtmlWithoutCount(site, extend, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = await GetFileHtmlWithoutCountAsync(site, extend, attributes, innerHtml, isStlEntity, false, false);
                 }
             }
             else if (inputType == InputType.SelectCascading)
@@ -292,21 +292,21 @@ namespace SSCMS.Core.Utils
             return retVal;
         }
 
-        public string GetFileHtmlWithCount(Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public async Task<string> GetFileHtmlWithCountAsync(Site site, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = _pathManager.GetDownloadApiUrl(site, channelId, contentId,
+                retVal = await _pathManager.GetDownloadApiUrlAsync(site, channelId, contentId,
                     fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(site, channelId,
+                linkAttributes["href"] = await _pathManager.GetDownloadApiUrlAsync(site, channelId,
                     contentId, fileUrl);
 
                 innerHtml = string.IsNullOrEmpty(innerHtml)
@@ -328,20 +328,20 @@ namespace SSCMS.Core.Utils
             return retVal;
         }
 
-        public string GetFileHtmlWithoutCount(Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public async Task<string> GetFileHtmlWithoutCountAsync(Site site, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (site == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = _pathManager.GetDownloadApiUrl(site, fileUrl);
+                retVal = await _pathManager.GetDownloadApiUrlAsync(site, fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = _pathManager.GetDownloadApiUrl(site, fileUrl);
+                linkAttributes["href"] = await _pathManager.GetDownloadApiUrlAsync(site, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

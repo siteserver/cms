@@ -7,7 +7,6 @@ using SSCMS.Core.Utils;
 using SSCMS.Models;
 using SSCMS.Services;
 using SSCMS.Utils;
-using SSCMS.Core.StlParser.Utility;
 
 namespace SSCMS.Core.StlParser.StlElement
 {
@@ -239,10 +238,10 @@ namespace SSCMS.Core.StlParser.StlElement
                 var inputParser = new InputParserManager(parseManager.PathManager, parseManager.DatabaseManager.RelatedFieldItemRepository);
 
                 parsedContent = contentInfo != null
-                    ? inputParser.GetFileHtmlWithCount(pageInfo.Site, contentInfo.ChannelId,
+                    ? await inputParser.GetFileHtmlWithCountAsync(pageInfo.Site, contentInfo.ChannelId,
                         contentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
                         contextInfo.IsStlEntity, isLower, isUpper)
-                    : inputParser.GetFileHtmlWithoutCount(pageInfo.Site, fileUrl, attributes,
+                    : await inputParser.GetFileHtmlWithoutCountAsync(pageInfo.Site, fileUrl, attributes,
                         contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 

@@ -45,9 +45,9 @@ namespace SSCMS.Services
 
         string GetUserAvatarUrl(User user);
 
-        string GetDownloadApiUrl(Site site, int channelId, int contentId, string fileUrl);
+        Task<string> GetDownloadApiUrlAsync(Site site, int channelId, int contentId, string fileUrl);
 
-        string GetDownloadApiUrl(Site site, string fileUrl);
+        Task<string> GetDownloadApiUrlAsync(Site site, string fileUrl);
 
         string GetDownloadApiUrl(string filePath);
 
