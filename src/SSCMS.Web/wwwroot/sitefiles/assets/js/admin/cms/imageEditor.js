@@ -87,7 +87,7 @@ function renderIcon(ctx, left, top, styleOverride, fabricObject) {
   ctx.restore();
 }
 
-var $url = "/cms/imageEditor";
+var $url = "/cms/editor/imageEditor";
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
