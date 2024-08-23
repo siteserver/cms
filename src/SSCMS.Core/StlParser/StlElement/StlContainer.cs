@@ -53,25 +53,30 @@ namespace SSCMS.Core.StlParser.StlElement
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex) || StringUtils.EqualsIgnoreCase(name, Index))
                 {
                     channelIndex = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                    context = ParseType.Channel;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
                     channelName = await parseManager.ReplaceStlEntitiesForAttributeValueAsync(value);
+                    context = ParseType.Channel;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Parent))
                 {
                     if (TranslateUtils.ToBool(value))
                     {
                         upLevel = 1;
+                        context = ParseType.Channel;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
                     upLevel = TranslateUtils.ToInt(value);
+                    context = ParseType.Channel;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, TopLevel))
                 {
                     topLevel = TranslateUtils.ToInt(value);
+                    context = ParseType.Channel;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
