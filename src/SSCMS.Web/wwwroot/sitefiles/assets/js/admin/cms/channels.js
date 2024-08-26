@@ -749,6 +749,18 @@ var methods = {
     this.form = _.assign({}, this.form);
   },
 
+  btnExtendImageEditorClick: function (attributeName, no) {
+    var imageUrl = this.form[utils.getExtendName(attributeName, no)];
+    imageUrl = utils.getUrl(this.siteUrl, imageUrl);
+    utils.addTab('编辑图片', utils.getCmsUrl('imageEditor', {
+      siteId: this.siteId,
+      attributeName: attributeName,
+      no: no,
+      imageUrl: imageUrl,
+      tabName: utils.getTabName()
+    }));
+  },
+
   btnExtendPreviewClick: function(attributeName, no) {
     var count = this.form[utils.getCountName(attributeName)];
     var data = [];

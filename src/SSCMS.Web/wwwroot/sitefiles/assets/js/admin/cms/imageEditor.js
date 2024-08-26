@@ -91,12 +91,11 @@ var $url = "/cms/editor/imageEditor";
 
 var data = utils.init({
   siteId: utils.getQueryInt('siteId'),
-  channelId: utils.getQueryInt('channelId'),
-  contentId: utils.getQueryInt('contentId'),
-  page: utils.getQueryInt('page'),
+  imageUrl: utils.getQueryString('imageUrl'),
+  attributeName: utils.getQueryString('attributeName'),
+  no: utils.getQueryInt('no'),
   tabName: utils.getQueryString('tabName'),
   content: null,
-  canvases: [],
   canvas: null,
   backgroundWidth: null,
   backgroundHeight: null,
@@ -327,7 +326,7 @@ var methods = {
     imgData = imgData.replace('image/png', 'image/octet-stream');
 
     // 下载后的问题名，可自由指定
-    var filename = this.content.title + '.' + 'png';
+    var filename = 'image.png';
     this.saveFile(imgData, filename);
   },
 
@@ -353,38 +352,19 @@ var methods = {
   apiGet: function () {
     var $this = this;
 
-    utils.loading(this, true);
-    $api.get($url, {
-      params: {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId
-      }
-    }).then(function (response) {
-      var res = response.data;
+    setTimeout(function() {
+      utils.loading($this, false);
 
-      $this.content = res.content;
-      $this.canvases = res.canvases;
-      setTimeout(function() {
-        utils.loading($this, false);
+      $this.loadImage($this.imageUrl);
 
-        if ($this.canvases.length > 0) {
-          $this.loadJson($this.canvases[0].json);
-        } else {
-          $this.loadImage($this.content.imageUrl);
+      document.onkeydown = function(e) {
+        if (e.key == 'Backspace') {
+          var activeObject = $this.canvas.getActiveObject();
+          if (activeObject && activeObject.isEditing) return;
+          $this.deleteObj();
         }
-
-        document.onkeydown = function(e) {
-          if (e.key == 'Backspace') {
-            var activeObject = $this.canvas.getActiveObject();
-            if (activeObject && activeObject.isEditing) return;
-            $this.deleteObj();
-          }
-        };
-      }, 100);
-    }).catch(function (error) {
-      utils.error(error);
-    });
+      };
+    }, 100);
   },
 
   canvasModifiedCallback: function() {
@@ -470,6 +450,7 @@ var methods = {
 
   apiSubmit: function () {
     var $this = this;
+    utils.loading(this, true);
 
     var json = JSON.stringify(this.canvas);
 
@@ -477,11 +458,8 @@ var methods = {
     var imgData = canvas.toDataURL('png');
     var base64String = imgData.replace('data:image/png;base64,', '');
 
-    utils.loading(true);
     $api.post($url, {
       siteId: this.siteId,
-      channelId: this.channelId,
-      contentId: this.contentId,
       json: json,
       base64String: base64String,
     }).then(function (response) {
@@ -489,7 +467,10 @@ var methods = {
 
       var tabVue = utils.getTabVue($this.tabName);
       if (tabVue) {
-        tabVue.apiList($this.channelId, $this.page, '图片编辑成功！', false, $this.contentId);
+        if (tabVue.runMaterialLayerImageSelect) {
+          utils.success('图片编辑成功！');
+          tabVue.runMaterialLayerImageSelect($this.attributeName, $this.no, res.value);
+        }
       }
       utils.removeTab();
       utils.openTab($this.tabName);
@@ -659,7 +640,7 @@ var methods = {
         }
       }
 
-      fabric.Image.fromURL('/sitefiles/assets/merge2/' + imageName, function(img) {
+      fabric.Image.fromURL('/sitefiles/assets/images/' + imageName, function(img) {
         img.scale(scale).set({
           left: left,
           top: top,
@@ -866,7 +847,7 @@ var methods = {
 
   btnMosaic3Click: function() {
     var $this = this;
-    fabric.loadSVGFromURL("/sitefiles/assets/merge2/mosaic.svg", function(objects, options) {
+    fabric.loadSVGFromURL("/sitefiles/assets/images/mosaic.svg", function(objects, options) {
       var obj = fabric.util.groupSVGElements(objects, options);
       $this.canvas.add(obj).renderAll();
     });
@@ -874,19 +855,6 @@ var methods = {
 
   btnTestClick: function() {
 
-  },
-
-  btnRestoreClick: function() {
-    if (this.canvases.length === 0) return;
-    utils.openLayer({
-      title: '还原历史版本',
-      url: utilities.getPageUrl('member/imageEditorLayerRestore', {
-        siteId: this.siteId,
-        channelId: this.channelId,
-        contentId: this.contentId
-      }),
-      full: true
-    });
   },
 
   btnDownloadClick: function() {

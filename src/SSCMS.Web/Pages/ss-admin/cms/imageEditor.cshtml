@@ -41,7 +41,7 @@
 
     <canvas id="canvas"></canvas>
 
-    <div v-if="content" style="padding: 14px;">
+    <div style="padding: 14px;">
 
       <el-radio-group size="small" v-model="drawType" v-on:input="drawTypeChange">
         <el-radio-button label="select">
@@ -86,67 +86,10 @@
       </el-radio-group>
 
       <el-button-group>
-        <el-button size="small" type="default" plain icon="el-icon-refresh" v-on:click="btnRestoreClick">
-          还原历史版本
-        </el-button>
         <el-button size="small" type="default" plain icon="el-icon-download" v-on:click="btnDownloadClick">
           下载图片
         </el-button>
       </el-button-group>
-
-      <!-- <div v-if="isDrawingMode" class="bottom clearfix">
-        <el-button size="small" type="primary" v-on:click="btnDoneClick">
-          完 成
-        </el-button>
-      </div>
-      <div v-else class="bottom clearfix">
-        <el-button-group style="margin-bottom: 2px;">
-          <el-button size="mini" type="info" plain v-on:click="btnTextClick">
-            插入文字
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnArrowClick">
-            插入箭头
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnMosaicClick">
-            插入马赛克
-          </el-button>
-          <el-button :disabled="canvases.length == 0" size="mini" type="info" plain v-on:click="btnRestoreClick">
-            还原历史版本
-          </el-button>
-        </el-button-group>
-      </div>
-
-      <div style="display: none" class="bottom clearfix">
-        <el-button-group style="margin-bottom: 2px;">
-          <el-button size="mini" type="info" plain v-on:click="btnText1Click">
-            插入文字1
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnText2Click">
-            插入文字2
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnText3Click">
-            插入文字3
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnText4Click">
-            插入文字4
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnText5Click">
-            插入文字5
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnMosaic1Click">
-            插入马赛克1
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnMosaic2Click">
-            插入马赛克2
-          </el-button>
-          <el-button size="mini" type="info" plain v-on:click="btnMosaic3Click">
-            插入马赛克3
-          </el-button>
-          <el-button :disabled="canvases.length == 0" size="mini" type="info" plain v-on:click="btnRestoreClick">
-            还原历史版本
-          </el-button>
-        </el-button-group>
-      </div> -->
 
     </div>
   </el-card>
@@ -170,19 +113,19 @@
     <el-form-item label="箭头方向">
       <el-radio-group v-model="textForm.arrowType">
         <el-radio-button label="1">
-          <img src="/sitefiles/assets/merge2/arrow1s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
+          <img src="/sitefiles/assets/images/arrow1s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
           左下
         </el-radio-button>
         <el-radio-button label="2">
-          <img src="/sitefiles/assets/merge2/arrow2s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
+          <img src="/sitefiles/assets/images/arrow2s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
           左上
         </el-radio-button>
         <el-radio-button label="3">
-          <img src="/sitefiles/assets/merge2/arrow3s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
+          <img src="/sitefiles/assets/images/arrow3s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
           右下
         </el-radio-button>
         <el-radio-button label="4">
-          <img src="/sitefiles/assets/merge2/arrow4s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
+          <img src="/sitefiles/assets/images/arrow4s.png" style="width: 120px; display: block; margin-bottom: 5px;" />
           右上
         </el-radio-button>
         <!-- <el-radio-button label="">可调整</el-radio-button> -->

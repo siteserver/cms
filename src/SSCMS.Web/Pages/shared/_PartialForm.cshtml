@@ -16,6 +16,9 @@
             <!-- <el-dropdown-item :disabled="typeof settings === 'undefined' || !settings.isCloudImages" :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'cloudImages'}">免版权图库</el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
+        <el-button v-if="typeof btnExtendImageEditorClick !== 'undefined'" size="mini" type="info" icon="el-icon-edit" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendImageEditorClick(style.attributeName, 0)">
+          编辑
+        </el-button>
         <el-button size="mini" type="info" icon="el-icon-view" plain :disabled="form[utils.toCamelCase(style.attributeName)] ? false : true" v-on:click="btnExtendPreviewClick(style.attributeName, 0)">
           预览
         </el-button>
