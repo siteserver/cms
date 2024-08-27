@@ -24,7 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Sites
             }
 
             var site = await _siteRepository.GetAsync(request.SiteId);
-            if (!StringUtils.EqualsIgnoreCase(site.SiteDir, request.SiteDir))
+            if (!StringUtils.EqualsIgnoreCase(site.SiteDir, StringUtils.Trim(request.SiteDir)))
             {
                 return this.Error("删除失败，请输入正确的文件夹名称");
             }
