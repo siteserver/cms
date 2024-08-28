@@ -45,10 +45,6 @@ fabric.LineArrow.fromObject = function(object, callback) {
 
 fabric.LineArrow.async = true;
 
-// http://fabricjs.com/
-// https://github.com/Couy69/vue-fabric-drawingboard/blob/master/src/App.vue
-// http://couy.xyz/fabricDrawingBoard/
-
 var deleteIcon = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' id='Ebene_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='595.275px' height='595.275px' viewBox='200 215 230 470' xml:space='preserve'%3E%3Ccircle style='fill:%23F44336;' cx='299.76' cy='439.067' r='218.516'/%3E%3Cg%3E%3Crect x='267.162' y='307.978' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -222.6202 340.6915)' style='fill:white;' width='65.545' height='262.18'/%3E%3Crect x='266.988' y='308.153' transform='matrix(0.7071 0.7071 -0.7071 0.7071 398.3889 -83.3116)' style='fill:white;' width='65.544' height='262.179'/%3E%3C/g%3E%3C/svg%3E";
 
 var img = document.createElement('img');
@@ -153,10 +149,6 @@ var methods = {
           h1 = (16 * cos) / 4,
           centerx = sh * cos,
           centery = sh * sin;
-        /**
-         * centerx,centery 表示起始点，终点连线与箭头尖端等边三角形交点相对x，y
-         * w1 ，h1用于确定四个点
-         */
 
         var points = [x1, y1, x2, y2];
         canvasObject = new fabric.LineArrow(points, {
@@ -169,20 +161,6 @@ var methods = {
           hasControls: false
         });
 
-        // var path = " M " + x1 + " " + y1;
-        // path += " L " + (x2 - centerx + w1) + " " + (y2 - centery - h1);
-        // path +=
-        //   " L " + (x2 - centerx + w1 * 2) + " " + (y2 - centery - h1 * 2);
-        // path += " L " + x2 + " " + y2;
-        // path +=
-        //   " L " + (x2 - centerx - w1 * 2) + " " + (y2 - centery + h1 * 2);
-        // path += " L " + (x2 - centerx - w1) + " " + (y2 - centery + h1);
-        // path += " Z";
-        // canvasObject = new fabric.Path(path, {
-        //   stroke: this.color,
-        //   fill: this.color,
-        //   strokeWidth: this.drawWidth
-        // });
         break;
       case "ellipse": //椭圆
         // 按shift时画正圆，只有在鼠标移动时才执行这个，所以按了shift但是没有拖动鼠标将不会画圆
@@ -262,7 +240,7 @@ var methods = {
     this.canvas.discardActiveObject().renderAll();
   },
 
-  mousedown: function(e) {
+  mouseDown: function(e) {
     // 记录鼠标按下时的坐标
     var xy = e.pointer || this.transformMouse(e.e.offsetX, e.e.offsetY);
     this.mouseFrom.x = xy.x;
@@ -271,7 +249,7 @@ var methods = {
   },
 
   // 鼠标松开执行
-  mouseup: function(e) {
+  mouseUp: function(e) {
     var xy = e.pointer || this.transformMouse(e.e.offsetX, e.e.offsetY);
     this.mouseTo.x = xy.x;
     this.mouseTo.y = xy.y;
@@ -281,7 +259,7 @@ var methods = {
   },
 
   //鼠标移动过程中已经完成了绘制
-  mousemove: function(e) {
+  mouseMove: function(e) {
     if (this.moveCount % 2 && !this.doDrawing) {
       //减少绘制频率
       return;
@@ -293,7 +271,7 @@ var methods = {
     this.drawing(e);
   },
 
-  mousedblclick: function(e) {
+  mouseDblClick: function(e) {
     var activeObject = this.canvas.getActiveObject();
     if (activeObject && activeObject._objects && activeObject._objects.length == 2) {
       var textObject = activeObject._objects[1];
@@ -338,15 +316,6 @@ var methods = {
     var event = document.createEvent('MouseEvents');
     event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     save_link.dispatchEvent(event);
-  },
-
-  runRestore: function(json, imageUrl) {
-    if (json) {
-      this.loadJson(json);
-    } else {
-      this.loadImage(imageUrl);
-    }
-    this.isChanged = true;
   },
 
   apiGet: function () {
@@ -406,45 +375,11 @@ var methods = {
       $this.canvas.on('object:removed', $this.canvasModifiedCallback);
       $this.canvas.on('object:modified', $this.canvasModifiedCallback);
 
-      $this.canvas.on("mouse:down", $this.mousedown);
-      $this.canvas.on("mouse:move", $this.mousemove);
-      $this.canvas.on("mouse:up", $this.mouseup);
+      $this.canvas.on("mouse:down", $this.mouseDown);
+      $this.canvas.on("mouse:move", $this.mouseMove);
+      $this.canvas.on("mouse:up", $this.mouseUp);
 
-      $this.canvas.on("mouse:dblclick", $this.mousedblclick);
-    };
-  },
-
-  loadJson: function(json) {
-    var $this = this;
-
-    var imageUrl = this.content.imageUrl;
-    var background = new Image();
-    background.src = imageUrl;
-
-    background.onload = function () {
-      var canvas = $this.canvas = new fabric.Canvas("canvas", {
-        hoverCursor: "pointer",
-        selection: true,
-        selectionBorderColor: "green",
-        backgroundColor: null,
-      });
-
-      var width = $('.el-card__body').width() * 0.8;
-      var height = (width / background.width) * background.height;
-      canvas.setDimensions({ width: width, height: height });
-      canvas.loadFromJSON(json, function() {
-        canvas.renderAll();
-
-        canvas.on('object:added', $this.canvasModifiedCallback);
-        canvas.on('object:removed', $this.canvasModifiedCallback);
-        canvas.on('object:modified', $this.canvasModifiedCallback);
-
-        canvas.on("mouse:down", $this.mousedown);
-        canvas.on("mouse:move", $this.mousemove);
-        canvas.on("mouse:up", $this.mouseup);
-
-        canvas.on("mouse:dblclick", $this.mousedblclick);
-      });
+      $this.canvas.on("mouse:dblclick", $this.mouseDblClick);
     };
   },
 
@@ -481,106 +416,6 @@ var methods = {
     });
   },
 
-  btnText1Click: function() {
-    var text = new fabric.IText('hello world', {
-      left: 200,
-      top: 100,
-      backgroundColor: "yellow",
-      borderColor : 'red'
-    })
-    this.canvas.add(text);
-    // this.canvas.getObjects()[0].drawBorders(this.canvas.getContext());
-  },
-
-  btnText2Click: function() {
-    var text = new fabric.IText('hello world', {
-      left: 200,
-      top: 100,
-      backgroundColor: "yellow",
-      stroke: 'red',
-      strokeWidth: 4,
-      paintFirst: 'stroke', // stroke behind fill
-    })
-    this.canvas.add(text);
-    // this.canvas.getObjects()[0].drawBorders(this.canvas.getContext());
-  },
-
-  btnText3Click: function() {
-    var circle = new fabric.Circle({
-      radius: 100,
-      fill: '#eef',
-      scaleY: 0.5,
-      originX: 'center',
-      originY: 'center'
-    });
-
-    var text = new fabric.IText('hello world', {
-      fontSize: 30,
-      originX: 'center',
-      originY: 'center'
-    });
-
-    var group = new fabric.Group([ circle, text ], {
-      left: 150,
-      top: 100,
-    });
-
-    this.canvas.add(group);
-  },
-
-  btnText4Click: function() {
-    var rect = new fabric.Rect({
-      left: 100,
-      top: 50,
-      fill: 'yellow',
-      width: 220,
-      height: 60,
-      objectCaching: false,
-      stroke: 'red',
-      strokeWidth: 4,
-    });
-    this.canvas.add(rect);
-
-    var text = new fabric.IText('hello world', {
-      left: 120,
-      top: 60,
-      backgroundColor: "yellow",
-      originX: 'center',
-      originY: 'center',
-      centeredRotation: true,
-    })
-    this.canvas.add(text);
-    this.canvas.setActiveObject(text);
-  },
-
-  btnArrowClick: function() {
-    let x1 = mouseFrom.x,x2= mouseTo.x,y1 = mouseFrom.y,y2= mouseTo.y;
-    let w = (x2-x1),h = (y2-y1),sh = Math.cos(Math.PI/4)*16
-    let sin = h/Math.sqrt(Math.pow(w,2)+Math.pow(h,2))
-    let cos = w/Math.sqrt(Math.pow(w,2)+Math.pow(h,2))
-    let w1 =((16*sin)/4),h1 = ((16*cos)/4),centerx=sh*cos,centery=sh*sin
-    /**
-     * centerx,centery 表示起始点，终点连线与箭头尖端等边三角形交点相对x，y
-     * w1 ，h1用于确定四个点
-    */
-    let path = " M " + x1 + " " + (y1);
-      path += " L " + (x2-centerx+w1) + " " + (y2-centery-h1);
-      path += " L " + (x2-centerx+w1*2) + " " + (y2-centery-h1*2);
-      path += " L " + (x2) + " " + y2;
-      path += " L " + (x2-centerx-w1*2) + " " + (y2-centery+h1*2);
-      path += " L " + (x2-centerx-w1) + " " + (y2-centery+h1);
-      path += " Z";
-    canvasObject = new fabric.Path(
-      path,
-      {
-        stroke: this.color,
-        fill: this.color,
-        strokeWidth: this.drawWidth
-      }
-    );
-    this.canvas.add(canvasObject);
-  },
-
   btnTextClick: function(text) {
     this.dialogTextVisible = true;
     this.textForm.arrowType = '1';
@@ -593,37 +428,11 @@ var methods = {
     }
   },
 
-  btnTextBoxClick: function(command) {
-    this.dialogTextVisible = true;
-    this.textForm.arrowType = command;
-    // if (text) {
-    //   this.textForm.isEdit = true;
-    //   this.textForm.text = text;
-    // } else {
-    //   this.textForm.isEdit = false;
-    // }
-  },
-
   btnTextSubmitClick: function() {
     var $this = this;
     if (!this.textForm.text) return;
 
     if (this.textForm.arrowType) {
-      // var top = 180;
-      // var left = 200;
-      // if (this.textForm.arrowType == '2' || this.textForm.arrowType == '4') {
-      //   top = 135;
-      // }
-      // var scale = 0.3;
-      // if (this.textForm.isLarge) {
-      //   scale = 0.45;
-      //   left += 70;
-      //   top = 230;
-      //   if (this.textForm.arrowType == '2' || this.textForm.arrowType == '4') {
-      //     top = 143;
-      //   }
-      // }
-
       var imageName = 'arrow' + this.textForm.arrowType + (this.textForm.isLarge ? 'l' : 's') + '.png';
       var top = 200;
       var left = 200;
@@ -733,79 +542,6 @@ var methods = {
     this.textForm.text = '';
   },
 
-  btnText5Click: function() {
-    var text = new fabric.IText("你好，世界", {
-      left: 100,
-      top: 100,
-      fontFamily: "Microsoft YaHei",
-      fontSize: 30,
-      originX: 'center',
-      originY: 'center',
-      centeredRotation: true,
-      fill: "red"
-    });
-
-    // var text = new fabric.IText("你好，世界", {
-    //     originX: "left",
-    //     originY: "top",
-    //     lockMovementX: false,
-    //     lockMovementY: false,
-    //     lockScalingX: false,
-    //     lockScalingY: false,
-    //     lockRotation: false,
-    //     lockUniScaling: false,
-    //     lockScalingFlip: false,
-    //     borderColor: "rgba(102,153,255,0.75)",
-    //     cornerColor: "rgba(102,153,255,0.5)",
-    //     transparentCorners: true,
-    //     padding: 0,
-    //     hasBorders: true,
-    //     hasControls: true,
-    //     cornerSize: 12,
-    //     id: 5,
-    //     nombre: "Objeto_5",
-    //     lnk: "Pantalla_1",
-    //     left: 10,
-    //     top: 50,
-    //     width: 300,
-    //     height: 52,
-    //     fill: "red",
-    //     stroke: null,
-    //     strokeWidth: 1,
-    //     strokeDashArray: null,
-    //     strokeLineCap: "butt",
-    //     strokeLineJoin: "miter",
-    //     strokeMiterLimit: 10,
-    //     scaleX: 1,
-    //     scaleY: 1,
-    //     angle: 0,
-    //     flipX: false,
-    //     flipY: false,
-    //     opacity: 1,
-    //     shadow: null,
-    //     visible: true,
-    //     clipTo: null,
-    //     backgroundColor: "",
-    //     fillRule: "nonzero",
-    //     globalCompositeOperation: "source-over",
-    //     transformMatrix: null,
-    //     fontSize: 40,
-    //     fontWeight: "normal",
-    //     fontStyle: "",
-    //     lineHeight: 1.16,
-    //     textDecoration: "",
-    //     textAlign: "left",
-    //     textBackgroundColor: ""
-    // });
-    this.canvas.add(text);
-    this.canvas.setActiveObject(text);
-  },
-
-  btnDoneClick: function() {
-    this.canvas.isDrawingMode = false;
-    this.isDrawingMode = false;
-  },
-
   btnMosaicClick: function() {
     this.canvas.freeDrawingBrush = new fabric["SprayBrush"](this.canvas);
     var brush = this.canvas.freeDrawingBrush;
@@ -814,47 +550,6 @@ var methods = {
     brush.density = 500;
     this.canvas.isDrawingMode = true;
     this.isDrawingMode = true;
-  },
-
-  btnMosaic1Click: function() {
-    var rect = new fabric.Rect({
-      left: 100,
-      top: 50,
-      fill: 'yellow',
-      width: 220,
-      height: 60,
-      rx: 20, // 圆角半径（x轴方向）
-      ry: 20, // 圆角半径（y轴方向）
-      objectCaching: false,
-      stroke: 'lightgreen',
-      strokeWidth: 4,
-    });
-
-    this.canvas.add(rect);
-    this.canvas.setActiveObject(rect);
-  },
-
-  btnMosaic2Click: function() {
-    var rect = new fabric.Rect({
-      top: 100,
-      left: 100,
-      width: 220,
-      height: 60,
-      fill: 'gray',
-    });
-    this.canvas.add(rect);
-  },
-
-  btnMosaic3Click: function() {
-    var $this = this;
-    fabric.loadSVGFromURL("/sitefiles/assets/images/mosaic.svg", function(objects, options) {
-      var obj = fabric.util.groupSVGElements(objects, options);
-      $this.canvas.add(obj).renderAll();
-    });
-  },
-
-  btnTestClick: function() {
-
   },
 
   btnDownloadClick: function() {
