@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<PackageReference Include="RestSharp" Version="107.3.0" />
+	<PackageReference Include="RestSharp" Version="112.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.0.7" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
