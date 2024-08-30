@@ -268,13 +268,13 @@ namespace SSCMS.Core.Utils.Serialization
             XmlUtils.SaveAsXml(siteTemplate, xmlPath);
         }
 
-        public async Task<string> ExportChannelsAsync(List<int> channelIdList, bool isContents)
+        public async Task<string> ExportChannelsAsync(List<int> channelIdList, bool isContents, bool isFileImages, bool isFileAttaches)
         {
             var filePath = _pathManager.GetTemporaryFilesPath(BackupType.ChannelsAndContents.GetValue() + ".zip");
-            return await ExportChannelsAsync(channelIdList, filePath, isContents);
+            return await ExportChannelsAsync(channelIdList, filePath, isContents, isFileImages, isFileAttaches);
         }
 
-        public async Task<string> ExportChannelsAsync(List<int> channelIdList, string filePath, bool isContents)
+        public async Task<string> ExportChannelsAsync(List<int> channelIdList, string filePath, bool isContents, bool isFileImages, bool isFileAttaches)
         {
             var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
 
@@ -302,17 +302,26 @@ namespace SSCMS.Core.Utils.Serialization
 
             if (isContents)
             {
-                var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.ImageUploadDirectoryName);
-                DirectoryUtils.DeleteDirectoryIfExists(imageUploadDirectoryPath);
-                DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.ImageUploadDirectoryName), imageUploadDirectoryPath);
+                if (isFileImages)
+                {
+                    var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.ImageUploadDirectoryName);
+                    DirectoryUtils.DeleteDirectoryIfExists(imageUploadDirectoryPath);
+                    DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.ImageUploadDirectoryName), imageUploadDirectoryPath);
+                }
+                if (isFileAttaches)
+                {
+                    var audioUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.AudioUploadDirectoryName);
+                    DirectoryUtils.DeleteDirectoryIfExists(audioUploadDirectoryPath);
+                    DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.AudioUploadDirectoryName), audioUploadDirectoryPath);
 
-                var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.VideoUploadDirectoryName);
-                DirectoryUtils.DeleteDirectoryIfExists(videoUploadDirectoryPath);
-                DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.VideoUploadDirectoryName), videoUploadDirectoryPath);
+                    var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.VideoUploadDirectoryName);
+                    DirectoryUtils.DeleteDirectoryIfExists(videoUploadDirectoryPath);
+                    DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.VideoUploadDirectoryName), videoUploadDirectoryPath);
 
-                var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.FileUploadDirectoryName);
-                DirectoryUtils.DeleteDirectoryIfExists(fileUploadDirectoryPath);
-                DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.FileUploadDirectoryName), fileUploadDirectoryPath);
+                    var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _site.FileUploadDirectoryName);
+                    DirectoryUtils.DeleteDirectoryIfExists(fileUploadDirectoryPath);
+                    DirectoryUtils.Copy(PathUtils.Combine(sitePath, _site.FileUploadDirectoryName), fileUploadDirectoryPath);
+                }
             }
 
             AtomFeed feed = AtomUtility.GetEmptyFeed();  

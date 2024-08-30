@@ -154,6 +154,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
         {
             public List<int> ChannelIds { get; set; }
             public bool IsContents { get; set; }
+            public bool IsFileImages { get; set; }
+            public bool IsFileAttaches { get; set; }
         }
 
         public class DeleteRequest : SiteRequest

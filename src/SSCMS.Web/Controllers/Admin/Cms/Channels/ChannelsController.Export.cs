@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Channels
 
             var caching = new CacheUtils(_cacheManager);
             var exportObject = new ExportObject(_pathManager, _databaseManager, caching, site);
-            var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds, request.IsContents);
+            var fileName = await exportObject.ExportChannelsAsync(request.ChannelIds, request.IsContents, request.IsFileImages, request.IsFileAttaches);
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
             var url = _pathManager.GetDownloadApiUrl(filePath);
 

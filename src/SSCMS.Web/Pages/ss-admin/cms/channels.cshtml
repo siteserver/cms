@@ -429,6 +429,8 @@
 
       <el-form-item>
         <el-checkbox label="同时导出内容" v-model="exportForm.isContents"></el-checkbox>
+        <el-checkbox label="同时导出图片文件" v-if="exportForm.isContents" v-model="exportForm.isFileImages"></el-checkbox>
+        <el-checkbox label="同时导出附件文件" v-if="exportForm.isContents" v-model="exportForm.isFileAttaches"></el-checkbox>
       </el-form-item>
 
       <el-divider></el-divider>

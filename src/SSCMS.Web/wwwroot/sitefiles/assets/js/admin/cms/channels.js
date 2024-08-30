@@ -209,6 +209,8 @@ var methods = {
       siteId: this.siteId,
       channelIds: this.channelIds,
       isContents: this.exportForm.isContents,
+      isFileImages: this.exportForm.isFileImages,
+      isFileAttaches: this.exportForm.isFileAttaches,
     }).then(function (response) {
       var res = response.data;
 
@@ -607,7 +609,9 @@ var methods = {
 
   btnExportClick: function() {
     this.exportForm = {
-      isContents: true
+      isContents: true,
+      isFileImages: false,
+      isFileAttaches: false,
     };
     this.exportPanel = true;
   },
