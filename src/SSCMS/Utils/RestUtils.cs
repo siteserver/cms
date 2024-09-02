@@ -22,7 +22,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Get,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -49,7 +50,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Get,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
 
@@ -72,7 +74,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
             request.AddBody(body, "application/json");
@@ -97,7 +100,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -125,7 +129,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -153,7 +158,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -182,7 +188,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -210,7 +217,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             //request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -241,7 +249,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             //request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -272,7 +281,8 @@ namespace SSCMS.Utils
             var request = new RestRequest
             {
                 Method = Method.Post,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
             //request.AddHeader("Content-Type", "application/json");
             if (!string.IsNullOrEmpty(accessToken))
@@ -317,11 +327,12 @@ namespace SSCMS.Utils
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => true;
 
-            var client = new RestClient("https://api.open.21ds.cn/apiv1/iptest?apkey=iptest");
+            var client = new RestClient("https://api.ipify.org/?format=text");
             var request = new RestRequest
             {
                 Method = Method.Get,
-                Timeout = -1,
+                // Timeout = -1,
+                Timeout = System.Threading.Timeout.InfiniteTimeSpan,
             };
 
             var response = await client.ExecuteAsync(request);

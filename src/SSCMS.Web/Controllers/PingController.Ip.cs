@@ -7,7 +7,7 @@ namespace SSCMS.Web.Controllers
     public partial class PingController
     {
         [HttpGet, Route(RouteIp)]
-        public async Task<string> Ip()
+        public async Task<ActionResult<string>> Ip()
         {
             return await RestUtils.GetIpAddressAsync();
         }
