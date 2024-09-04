@@ -1039,71 +1039,12 @@ var methods = {
       }),
     });
   },
-
-  btnExtendAddClick: function (style) {
-    var no = this.form[utils.getCountName(style.attributeName)] + 1;
-    this.form[utils.getCountName(style.attributeName)] = no;
-    this.form[utils.getExtendName(style.attributeName, no)] = "";
-    this.form = _.assign({}, this.form);
-  },
-
-  btnExtendRemoveClick: function (style) {
-    var no = this.form[utils.getCountName(style.attributeName)];
-    this.form[utils.getCountName(style.attributeName)] = no - 1;
-    this.form[utils.getExtendName(style.attributeName, no)] = "";
-    this.form = _.assign({}, this.form);
-  },
-
-  btnExtendImageEditorClick: function (attributeName, no) {
-    var imageUrl = this.form[utils.getExtendName(attributeName, no)];
-    imageUrl = utils.getUrl(this.siteUrl, imageUrl);
-    utils.addTab('编辑图片', utils.getCmsUrl('imageEditor', {
-      siteId: this.siteId,
-      attributeName: attributeName,
-      no: no,
-      imageUrl: imageUrl,
-      tabName: utils.getTabName()
-    }));
-  },
-
-  btnExtendPreviewClick: function (attributeName, no) {
-    var count = this.form[utils.getCountName(attributeName)];
-    var data = [];
-    for (var i = 0; i <= count; i++) {
-      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
-      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
-      data.push({
-        src: imageUrl,
-      });
-    }
-    layer.photos({
-      photos: {
-        start: no,
-        data: data,
-      },
-      anim: 5,
-    });
-  },
-
-  btnExtendPreviewVideoClick: function (videoUrl) {
-    if (videoUrl) {
-      utils.openLayer({
-        title: "预览视频",
-        url: utils.getCommonUrl("editorLayerPreviewVideo", {
-          siteId: this.siteId,
-          videoUrl: videoUrl,
-        }),
-        width: 600,
-        height: 500,
-      });
-    }
-  },
 };
 
 var $vue = new Vue({
   el: "#main",
   data: data,
-  methods: methods,
+  methods: _.assign({}, methods, _partialForm),
   created: function () {
     utils.keyPress(this.btnSaveClick, this.btnCloseClick);
     this.apiGet();

@@ -1,0 +1,81 @@
+﻿@page
+@{ Layout = "_Layout"; }
+@section Styles{
+  <style>
+    body, #main {
+      margin: 0;
+    }
+    .body {
+      text-align: center;
+      padding: 0;
+    }
+    .videojs {
+      width: 100% !important;
+      min-height: 360px;
+    }
+    .audio-js {
+      margin-top: 30px;
+      width: 80%;
+    }
+    .margin-top {
+      margin: 10px;
+    }
+  </style>
+}
+
+<div class="body" :style="{ height: winHeight + 'px' }">
+  <img
+    v-if="isImage"
+    :src="url" />
+  <video
+    v-else-if="isVideo"
+    ref="videoPlayer"
+    class="videojs vjs-default-skin vjs-big-play-centered"
+    width="100%"
+    :style="{ height: winHeight + 'px' }"
+    controls
+    preload="auto"
+    autoplay="autoplay"
+    loop="loop"
+    data-setup="{}">
+    <source :src="url"></source>
+  </video>
+  <audio
+    v-else-if="isAudio"
+    ref="audioPlayer"
+    class="audio-js"
+    width="100%"
+    controls
+    preload="auto"
+    autoplay="autoplay"
+    loop="loop"
+    data-setup="{}">
+    <source :src="url"></source>
+  </audio>
+  <iframe
+    v-else-if="isOffice"
+    :src="url"
+    width="100%"
+    :style="{ height: winHeight + 'px' }"
+    frameborder="0">
+  </iframe>
+  <el-descriptions v-else class="margin-top" title="文件信息" :column="1" border>
+    <el-descriptions-item
+      label="文件名称">
+      <el-link :href="url" target="_blank">{{ file.name }}</el-link>
+    </el-descriptions-item>
+    <el-descriptions-item
+      label="文件大小">
+      {{ file.size }}
+    </el-descriptions-item>
+    <el-descriptions-item
+      label="操作">
+      <el-button type="primary" v-on:click="btnDownloadClick">下载</el-button>
+    </el-descriptions-item>
+  </el-descriptions>
+</div>
+
+@section Scripts{
+  <script src="/sitefiles/assets/lib/pdfobject-2.2.4.min.js" type="text/javascript"></script>
+  <script src="/sitefiles/assets/js/admin/common/formLayerFilePreview.js" type="text/javascript"></script>
+}

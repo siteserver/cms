@@ -197,39 +197,6 @@ var methods = {
     utils.openLayer(args);
   },
 
-  btnExtendAddClick: function(style) {
-    var no = this.form[utils.getCountName(style.attributeName)] + 1;
-    this.form[utils.getCountName(style.attributeName)] = no;
-    this.form[utils.getExtendName(style.attributeName, no)] = '';
-    this.form = _.assign({}, this.form);
-  },
-
-  btnExtendRemoveClick: function(style) {
-    var no = this.form[utils.getCountName(style.attributeName)];
-    this.form[utils.getCountName(style.attributeName)] = no - 1;
-    this.form[utils.getExtendName(style.attributeName, no)] = '';
-    this.form = _.assign({}, this.form);
-  },
-
-  btnExtendPreviewClick: function(attributeName, no) {
-    var count = this.form[utils.getCountName(attributeName)];
-    var data = [];
-    for (var i = 0; i <= count; i++) {
-      var imageUrl = this.form[utils.getExtendName(attributeName, i)];
-      imageUrl = utils.getUrl(this.siteUrl, imageUrl);
-      data.push({
-        "src": imageUrl
-      });
-    }
-    layer.photos({
-      photos: {
-        "start": no,
-        "data": data
-      }
-      ,anim: 5
-    });
-  },
-
   btnSendSmsClick: function () {
     if (this.countdown > 0) return;
     if (!this.form.mobile) {
@@ -299,7 +266,7 @@ var methods = {
 var $vue = new Vue({
   el: '#main',
   data: data,
-  methods: methods,
+  methods: _.assign({}, methods, _partialForm),
   computed: {
     isMobileCode: function () {
       if (this.isUserVerifyMobile) {

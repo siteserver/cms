@@ -259,6 +259,65 @@ namespace SSCMS.Utils
             return fileType == FileType.Jpg || fileType == FileType.Jpeg || fileType == FileType.Gif || fileType == FileType.Png || fileType == FileType.Pneg || fileType == FileType.Bmp || fileType == FileType.Webp || fileType == FileType.Svg || fileType == FileType.Ico || fileType == FileType.Jfif;
         }
 
+        public static bool IsVideo(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".mp4" || fileExtName == ".webm" || fileExtName == ".ogg")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsAudio(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".mp3" || fileExtName == ".wav" || fileExtName == ".ogg")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsOffice(string fileExtName)
+        {
+            var retVal = false;
+            if (!string.IsNullOrEmpty(fileExtName))
+            {
+                fileExtName = StringUtils.TrimAndToLower(fileExtName);
+                if (!fileExtName.StartsWith("."))
+                {
+                    fileExtName = "." + fileExtName;
+                }
+                if (fileExtName == ".doc" || fileExtName == ".docx" || fileExtName == ".xls" || fileExtName == ".xlsx" || fileExtName == ".ppt" || fileExtName == ".pptx" || fileExtName == ".pdf")
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
+        public static bool IsPdf(string typeStr)
+        {
+            return StringUtils.EqualsIgnoreCase(".pdf", typeStr);
+        }
+
         public static bool IsZip(string typeStr)
         {
             return StringUtils.EqualsIgnoreCase(".zip", typeStr);
