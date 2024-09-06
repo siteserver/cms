@@ -43,7 +43,6 @@ namespace SSCMS.Core.Utils.Office.Word2Html
                     PicType = picPackagePart.ContentType
                 };
 
-
                 try
                 {
                     picInfo.Url = OnUploadImgUrl(pData, picInfo.PicType);

@@ -70,6 +70,7 @@ namespace SSCMS.Core.Utils.Office
             try
             {
                 ConvertToHtml();
+
                 if (string.IsNullOrEmpty(Body))
                 {
                     await ConvertToHtmlAsync();
@@ -173,6 +174,7 @@ namespace SSCMS.Core.Utils.Office
 
         private void ConvertToHtml()
         {
+            #pragma warning disable CA1416
             var fi = new FileInfo(DocsFilePath);
 
             var byteArray = File.ReadAllBytes(fi.FullName);
@@ -286,6 +288,7 @@ namespace SSCMS.Core.Utils.Office
                     Body = $"{style}{Environment.NewLine}{body}";
                 }
             }
+            #pragma warning restore CA1416
         }
 
         public static void OpenAndAddTextToWordDocument(string filepath, string txt)
