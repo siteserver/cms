@@ -21,7 +21,18 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
             }
 
             var localDirectoryPath = await _pathManager.GetUploadDirectoryPathAsync(site, UploadType.File);
-            var filePath = PathUtils.Combine(localDirectoryPath, _pathManager.GetUploadFileName(site, materialFilePath));
+
+            string fileName;
+            if (site.IsFileUploadChangeFileName)
+            {
+                fileName = _pathManager.GetUploadFileName(site, materialFilePath);
+            }
+            else
+            {
+                fileName = $"{file.Title}.{StringUtils.ToLower(file.FileType)}";
+            }
+            
+            var filePath = PathUtils.Combine(localDirectoryPath, fileName);
 
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
             FileUtils.CopyFile(materialFilePath, filePath);
