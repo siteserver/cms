@@ -42,12 +42,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             foreach (var style in styles)
             {
                 if (string.IsNullOrEmpty(style.DisplayName)
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.Id))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.LastModifiedDate))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.AdminId))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.UserId))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.SourceId))
-                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(SSCMS.Models.Content.Hits))
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Models.Content.Id))
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Models.Content.LastModifiedDate))
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Models.Content.AdminId))
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Models.Content.UserId))
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Models.Content.SourceId))
+                    || StringUtils.EqualsIgnoreCase(style.AttributeName, nameof(Models.Content.Hits))
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, "CheckUserName")
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, "CheckDate")
                     || StringUtils.EqualsIgnoreCase(style.AttributeName, "CheckReasons")) continue;
@@ -63,6 +63,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 }
                 attributes.Add(listItem);
             }
+
+            attributes.Add(new Option<string>
+            {
+                Value = nameof(Models.Content.TagNames),
+                Label = "标签"
+            });
 
             return new GetResult
             {

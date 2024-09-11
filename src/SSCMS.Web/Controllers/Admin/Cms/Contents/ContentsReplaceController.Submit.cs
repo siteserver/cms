@@ -53,26 +53,53 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 
                     foreach (var attributeName in request.AttributeNames)
                     {
-                        var originalValue = content.Get<string>(attributeName);
-                        if (string.IsNullOrEmpty(originalValue))
+                        if (attributeName == nameof(Models.Content.TagNames))
                         {
-                            originalValue = string.Empty;
-                        }
-
-                        var value = originalValue;
-                        if (request.IsRegex)
-                        {
-                            value = RegexUtils.Replace(request.Replace, originalValue, request.To);
+                            var originalTagNames = content.TagNames;
+                            if (originalTagNames != null && originalTagNames.Count > 0)
+                            {
+                                var tagNames = new List<string>();
+                                foreach (var tagName in originalTagNames)
+                                {
+                                    string value;
+                                    if (request.IsRegex)
+                                    {
+                                        value = RegexUtils.Replace(request.Replace, tagName, request.To);
+                                    }
+                                    else
+                                    {
+                                        value = tagName.Replace(request.Replace, request.To, !request.IsCaseSensitive, null);
+                                    }
+                                    if (tagName != value)
+                                    {
+                                        isReplaced = true;
+                                    }
+                                    tagNames.Add(value);
+                                }
+                                content.TagNames = tagNames;
+                            }
                         }
                         else
                         {
-                            value = originalValue.Replace(request.Replace, request.To, !request.IsCaseSensitive, null);
-                        }
-
-                        if (originalValue != value)
-                        {
-                            isReplaced = true;
-                            content.Set(attributeName, value);
+                            var originalValue = content.Get<string>(attributeName);
+                            if (string.IsNullOrEmpty(originalValue))
+                            {
+                                originalValue = string.Empty;
+                            }
+                            string value;
+                            if (request.IsRegex)
+                            {
+                                value = RegexUtils.Replace(request.Replace, originalValue, request.To);
+                            }
+                            else
+                            {
+                                value = originalValue.Replace(request.Replace, request.To, !request.IsCaseSensitive, null);
+                            }
+                            if (originalValue != value)
+                            {
+                                isReplaced = true;
+                                content.Set(attributeName, value);
+                            }
                         }
                     }
                     if (isReplaced)

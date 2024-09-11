@@ -305,7 +305,39 @@ namespace SSCMS.Utils
                 {
                     fileExtName = "." + fileExtName;
                 }
-                if (fileExtName == ".doc" || fileExtName == ".docx" || fileExtName == ".xls" || fileExtName == ".xlsx" || fileExtName == ".ppt" || fileExtName == ".pptx" || fileExtName == ".pdf")
+                if (fileExtName == ".doc" ||
+                    fileExtName == ".docx" ||
+                    fileExtName == ".wps" ||
+                    fileExtName == ".wpss" ||
+                    fileExtName == ".docm" ||
+                    fileExtName == ".dotm" ||
+                    fileExtName == ".dot" ||
+                    fileExtName == ".dotx" ||
+                    fileExtName == ".html" ||
+                    fileExtName == ".pptx" ||
+                    fileExtName == ".ppt" ||
+                    fileExtName == ".pot" ||
+                    fileExtName == ".potx" ||
+                    fileExtName == ".pps" ||
+                    fileExtName == ".ppsx" ||
+                    fileExtName == ".dps" ||
+                    fileExtName == ".dpt" ||
+                    fileExtName == ".pptm" ||
+                    fileExtName == ".potm" ||
+                    fileExtName == ".ppsm" ||
+                    fileExtName == ".dpss" ||
+                    fileExtName == ".xls" ||
+                    fileExtName == ".xlt" ||
+                    fileExtName == ".et" ||
+                    fileExtName == ".ett" ||
+                    fileExtName == ".xlsx" ||
+                    fileExtName == ".xltx" ||
+                    fileExtName == ".csv" ||
+                    fileExtName == ".xlsb" ||
+                    fileExtName == ".xlsm" ||
+                    fileExtName == ".xltm" ||
+                    fileExtName == ".ets" ||
+                    fileExtName == ".pdf")
                 {
                     retVal = true;
                 }
