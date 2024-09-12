@@ -103,7 +103,12 @@ var methods = {
       return false;
     }
 
-    this.apiSubmit();
+    var $this = this;
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
+      }
+    });
   },
 
   btnCancelClick: function () {

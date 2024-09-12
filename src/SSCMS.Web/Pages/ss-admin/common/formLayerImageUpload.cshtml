@@ -34,11 +34,17 @@
     <el-checkbox label="添加至图片素材库" v-model="form.isMaterial"></el-checkbox>
     <el-checkbox v-if="editorAttributeName" label="生成缩略图" v-model="form.isThumb"></el-checkbox>
   </el-form-item>
-  <el-form-item v-if="form.isThumb" label="缩略图最大宽度">
-    <el-input  v-model="form.thumbWidth"></el-input>
+  <el-form-item v-if="form.isThumb" label="缩略图最大宽度" prop="thumbWidth" :rules="[
+    { required: true, message: '请输入缩略图最大宽度' },
+    { validator: utils.validateInt }
+  ]">
+    <el-input v-model.number="form.thumbWidth"></el-input>
   </el-form-item>
-  <el-form-item v-if="form.isThumb" label="缩略图最大高度">
-    <el-input  v-model="form.thumbHeight"></el-input>
+  <el-form-item v-if="form.isThumb" label="缩略图最大高度" prop="thumbHeight" :rules="[
+    { required: true, message: '请输入缩略图最大高度' },
+    { validator: utils.validateInt }
+  ]">
+    <el-input v-model.number="form.thumbHeight"></el-input>
   </el-form-item>
   <el-form-item v-if="editorAttributeName && form.isThumb">
     <el-checkbox label="点击缩略图显示原图" v-model="form.isLinkToOriginal"></el-checkbox>

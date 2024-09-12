@@ -46,7 +46,7 @@ namespace SSCMS.Core.Services
             using var image = Image.Load(originalFilePath);
             var (width, height) = (image.Width, image.Height);
 
-            if (width > maxWidth && height > maxHeight)
+            if (maxWidth > 0 && width > maxWidth && maxHeight > 0 && height > maxHeight)
             {
                 int resizeWidth;
                 int resizeHeight;
@@ -70,7 +70,7 @@ namespace SSCMS.Core.Services
                 image.Mutate(x => x.Resize(resizeWidth, resizeHeight));
                 image.Save(resizeFilePath);
             }
-            else if (width > maxWidth)
+            else if (maxWidth > 0 && width > maxWidth)
             {
                 var resizeWidth = maxWidth;
                 var resizeHeight = (int)(height * (maxWidth / (double)width));
@@ -78,7 +78,7 @@ namespace SSCMS.Core.Services
                 image.Mutate(x => x.Resize(resizeWidth, resizeHeight));
                 image.Save(resizeFilePath);
             }
-            else if (height > maxHeight)
+            else if (maxHeight > 0 && height > maxHeight)
             {
                 var resizeHeight = maxHeight;
                 var resizeWidth = (int)(width * (maxHeight / (double)height));
