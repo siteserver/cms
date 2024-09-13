@@ -58,13 +58,13 @@ var methods = {
       mobile: this.form.mobile,
       email: this.form.email
     }).then(function (response) {
-      if ($this.userName) {
-        utils.success('管理员编辑成功！');
-      } else {
-        utils.success('管理员新增成功！');
-      }
-
-      utils.closeLayer(true);
+      utils.alertSuccess({
+        title: $this.userName ? '管理员编辑成功！' : '管理员新增成功！',
+        text: '',
+        callback: function() {
+          utils.closeLayer(true);
+        }
+      });
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
