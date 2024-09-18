@@ -16,13 +16,8 @@ var data = utils.init({
 });
 
 var methods = {
-  btnSubmitClick: function () {
+  apiSubmit: function () {
     var $this = this;
-
-    if (this.form.filePaths.length === 0) {
-      utils.error('请选择需要插入的图片文件！');
-      return false;
-    }
 
     utils.loading(this, true);
     $api.post($url, this.form).then(function(response) {
@@ -46,6 +41,21 @@ var methods = {
     })
     .then(function() {
       utils.loading($this, false);
+    });
+  },
+
+  btnSubmitClick: function () {
+    var $this = this;
+
+    if (this.form.filePaths.length === 0) {
+      utils.error('请选择需要插入的图片文件！');
+      return false;
+    }
+
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
+      }
     });
   },
 

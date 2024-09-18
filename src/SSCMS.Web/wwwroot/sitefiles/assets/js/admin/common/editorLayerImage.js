@@ -79,12 +79,18 @@ var methods = {
   },
 
   btnSubmitClick: function () {
+    var $this = this;
+
     if (this.form.filePaths.length === 0) {
       utils.error('请选择需要插入的图片文件！');
       return false;
     }
 
-    this.apiSubmit();
+    this.$refs.form.validate(function(valid) {
+      if (valid) {
+        $this.apiSubmit();
+      }
+    });
   },
 
   btnCancelClick: function () {
