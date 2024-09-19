@@ -399,7 +399,7 @@ namespace SSCMS.Core.Repositories
 
             if (adminEntityToUpdate.Mobile != null && adminEntityToUpdate.Mobile != mobile)
             {
-                if (!string.IsNullOrEmpty(adminEntityToUpdate.Mobile) && await IsMobileExistsAsync(adminEntityToUpdate.Mobile))
+                if (!string.IsNullOrEmpty(adminEntityToUpdate.Mobile) && await IsMobileExistsAsync(mobile))
                 {
                     return (false, "手机号码已被注册，请更换手机号码");
                 }
@@ -407,7 +407,7 @@ namespace SSCMS.Core.Repositories
 
             if (adminEntityToUpdate.Email != null && adminEntityToUpdate.Email != email)
             {
-                if (!string.IsNullOrEmpty(adminEntityToUpdate.Email) && await IsEmailExistsAsync(adminEntityToUpdate.Email))
+                if (!string.IsNullOrEmpty(adminEntityToUpdate.Email) && await IsEmailExistsAsync(email))
                 {
                     return (false, "电子邮件地址已被注册，请更换邮箱");
                 }
