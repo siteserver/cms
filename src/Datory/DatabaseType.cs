@@ -8,6 +8,7 @@ namespace Datory
     public enum DatabaseType
     {
         [DataEnum(DisplayName = "MySql")] MySql,
+        // [DataEnum(DisplayName = "MariaDB")] MariaDB,
         [DataEnum(DisplayName = "SqlServer")] SqlServer,
         [DataEnum(DisplayName = "PostgreSql")] PostgreSql,
         [DataEnum(DisplayName = "SQLite")] SQLite,
