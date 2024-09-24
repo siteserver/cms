@@ -18,7 +18,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 return Unauthorized();
             }
 
+            var url = PathUtils.RemoveParentPath(request.Url);
+            if (!StringUtils.StartsWith(url, "/"))
+            {
+                url = $"/{url}";
+            }
             var site = await _siteRepository.GetAsync(request.SiteId);
+            var siteDirectoryPath = await _pathManager.GetSitePathAsync(site);
             var specialId = request.Id;
 
             if (specialId > 0 && request.IsEditOnly)
@@ -31,19 +37,28 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 {
                     return this.Error("专题修改失败，专题名称已存在！");
                 }
-                if (specialInfo.Url != request.Url)
+                if (specialInfo.Url != url)
                 {
-                    if (await _specialRepository.IsUrlExistsAsync(request.SiteId, request.Url))
+                    if (await _specialRepository.IsUrlExistsAsync(request.SiteId, url))
                     {
                         return this.Error("专题修改失败，专题访问地址已存在！");
                     }
 
                     oldDirectoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
-                    newDirectoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, request.Url);
+                    newDirectoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, url);
+
+                    if (!DirectoryUtils.IsInDirectory(siteDirectoryPath, oldDirectoryPath))
+                    {
+                        return this.Error("专题访问地址必须在站点访问地址内部！");
+                    }
+                    if (!DirectoryUtils.IsInDirectory(siteDirectoryPath, newDirectoryPath))
+                    {
+                        return this.Error("专题访问地址必须在站点访问地址内部！");
+                    }
                 }
 
                 specialInfo.Title = request.Title;
-                specialInfo.Url = request.Url;
+                specialInfo.Url = url;
                 await _specialRepository.UpdateAsync(specialInfo);
 
                 if (oldDirectoryPath != newDirectoryPath)
@@ -56,6 +71,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 var specialInfo = await _specialRepository.GetSpecialAsync(request.SiteId, specialId);
 
                 var directoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, specialInfo.Url);
+                if (!DirectoryUtils.IsInDirectory(siteDirectoryPath, directoryPath))
+                {
+                    return this.Error("专题访问地址必须在站点访问地址内部！");
+                }
+                
                 var srcDirectoryPath = _pathManager.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
@@ -83,12 +103,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                 {
                     return this.Error("专题添加失败，专题名称已存在！");
                 }
-                if (await _specialRepository.IsUrlExistsAsync(request.SiteId, request.Url))
+                if (await _specialRepository.IsUrlExistsAsync(request.SiteId, url))
                 {
                     return this.Error("专题添加失败，专题访问地址已存在！");
                 }
 
-                var directoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, request.Url);
+                var directoryPath = await _pathManager.GetSpecialDirectoryPathAsync(site, url);
+                if (!DirectoryUtils.IsInDirectory(siteDirectoryPath, directoryPath))
+                {
+                    return this.Error("专题访问地址必须在站点访问地址内部！");
+                }
+                
                 var srcDirectoryPath = _pathManager.GetSpecialSrcDirectoryPath(directoryPath);
                 DirectoryUtils.CreateDirectoryIfNotExists(srcDirectoryPath);
 
@@ -115,7 +140,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
                     Id = 0,
                     SiteId = request.SiteId,
                     Title = request.Title,
-                    Url = request.Url,
+                    Url = url,
                     AddDate = DateTime.Now
                 });
 

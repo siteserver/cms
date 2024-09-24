@@ -23,6 +23,7 @@ namespace SSCMS.Core.Services
         public async Task<string> GetSpecialDirectoryPathAsync(Site site, string url)
         {
             var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
+            virtualPath = PathUtils.RemoveParentPath(virtualPath);
             return await ParseSitePathAsync(site, virtualPath);
         }
 
