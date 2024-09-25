@@ -69,6 +69,10 @@ namespace Datory
             {
                 conn = MySqlImpl.Instance.GetConnection(ConnectionString);
             }
+            else if (DatabaseType == DatabaseType.MariaDB)
+            {
+                conn = MariaDBImpl.Instance.GetConnection(ConnectionString);
+            }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
                 conn = SqlServerImpl.Instance.GetConnection(ConnectionString);
@@ -398,6 +402,10 @@ namespace Datory
             {
                 list = await MySqlImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
+            else if (DatabaseType == DatabaseType.MariaDB)
+            {
+                list = await MariaDBImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
+            }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
                 list = await SqlServerImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
@@ -437,6 +445,10 @@ namespace Datory
             {
                 tableNames = await MySqlImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
+            else if (DatabaseType == DatabaseType.MariaDB)
+            {
+                tableNames = await MariaDBImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
+            }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
                 tableNames = await SqlServerImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
@@ -469,6 +481,10 @@ namespace Datory
             {
                 exists = await MySqlImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
             }
+            else if (DatabaseType == DatabaseType.MariaDB)
+            {
+                exists = await MariaDBImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
+            }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
                 exists = await SqlServerImpl.Instance.IsTableExistsAsync(ConnectionString, tableName);
@@ -500,6 +516,10 @@ namespace Datory
             if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.OceanBase)
             {
                 tableNames = await MySqlImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.MariaDB)
+            {
+                tableNames = await MariaDBImpl.Instance.GetTableNamesAsync(ConnectionString);
             }
             else if (DatabaseType == DatabaseType.SqlServer)
             {

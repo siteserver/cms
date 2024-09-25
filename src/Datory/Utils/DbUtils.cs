@@ -17,6 +17,10 @@ namespace Datory.Utils
             {
                 instance = MySqlImpl.Instance;
             }
+            else if (databaseType == DatabaseType.MariaDB)
+            {
+                instance = MariaDBImpl.Instance;
+            }
             else if (databaseType == DatabaseType.SqlServer)
             {
                 instance = SqlServerImpl.Instance;

@@ -21,7 +21,7 @@ namespace Datory.DatabaseImpl
             get
             {
                 if (_instance != null) return _instance;
-                _instance = new MySqlImpl();
+                _instance = new MariaDBImpl();
                 return _instance;
             }
         }
