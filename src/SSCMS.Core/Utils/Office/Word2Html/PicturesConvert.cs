@@ -35,8 +35,11 @@ namespace SSCMS.Core.Utils.Office.Word2Html
             {
                 var pData = pictures.Data;
                 var picPackagePart = pictures.GetPackagePart();
+                
+                #pragma warning disable
                 var picPackageRelationship = pictures.GetPackageRelationship();
-
+                #pragma warning restore
+                
                 var picInfo = new PicInfo
                 {
                     Id = picPackageRelationship.Id,

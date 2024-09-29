@@ -27,7 +27,11 @@ namespace SSCMS.Core.Services
             fs.Read(fileByte, 0, fileByte.Length);
             fs.Close();
             // 設置參數
+            
+            #pragma warning disable
             var request = (HttpWebRequest)WebRequest.Create(url);
+            #pragma warning restore
+            
             var cookieContainer = new CookieContainer();
             request.CookieContainer = cookieContainer;
             request.AllowAutoRedirect = true;
