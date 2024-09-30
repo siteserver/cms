@@ -38,10 +38,10 @@
     <div v-else-if="form.importType === 'txt'" class="tips">请选择以.txt结尾的纯文本文件（可多选），文件名将作为内容标题，文件内容将作为正文导入。</div>
   </el-form-item>
   <el-form-item v-if="form.importType === 'excel' && columns && columns.length > 0" label="字段设置">
-    <template v-for="column in columns" :key="column">
+    <template v-for="column in columns" v-if="excelExcludes.indexOf(column) == -1" :key="column">
       <el-row style="margin: 5px 0">
         <el-col :span="4">
-          {{ columns.indexOf(column) + 1 }}，{{ column }}：
+          {{ column }}：
         </el-col>
         <el-col :span="20">
           <el-select v-model="form.attributes[columns.indexOf(column)]" placeholder="请选择内容字段">

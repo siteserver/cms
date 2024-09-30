@@ -9,6 +9,7 @@ using SSCMS.Enums;
 using System.Collections.Generic;
 using SSCMS.Models;
 using SSCMS.Core.Utils.Office;
+using SSCMS.Core.Utils.Serialization;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Contents
 {
@@ -18,8 +19,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         [HttpPost, Route(RouteUpload)]
         public async Task<ActionResult<UploadResult>> Upload([FromQuery] UploadRequest request, [FromForm] IFormFile file)
         {
-            if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
-                    MenuUtils.SitePermissions.Contents) ||
+            if (!await _authManager.HasSitePermissionsAsync(request.SiteId, MenuUtils.SitePermissions.Contents) ||
                 !await _authManager.HasContentPermissionsAsync(request.SiteId, request.ChannelId, MenuUtils.ContentPermissions.Add))
             {
                 return Unauthorized();
@@ -42,21 +42,21 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             {
                 if (!FileUtils.IsFileType(FileType.Zip, PathUtils.GetExtension(fileName)))
                 {
-                  return this.Error(Constants.ErrorUpload);
+                    return this.Error(Constants.ErrorUpload);
                 }
             }
             else if (request.ImportType == "excel")
             {
                 if (!FileUtils.IsFileType(FileType.Xlsx, PathUtils.GetExtension(fileName)))
                 {
-                  return this.Error(Constants.ErrorUpload);
+                    return this.Error(Constants.ErrorUpload);
                 }
             }
             else if (request.ImportType == "image")
             {
                 if (!FileUtils.IsImage(PathUtils.GetExtension(fileName)))
                 {
-                  return this.Error(Constants.ErrorUpload);
+                    return this.Error(Constants.ErrorUpload);
                 }
 
                 (_, filePath, _) = await _pathManager.UploadImageAsync(site, file);
@@ -66,17 +66,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
             {
                 if (!FileUtils.IsFileType(FileType.Txt, PathUtils.GetExtension(fileName)))
                 {
-                  return this.Error(Constants.ErrorUpload);
+                    return this.Error(Constants.ErrorUpload);
                 }
             }
-            
+
             await _pathManager.UploadAsync(file, filePath);
 
             if (request.ImportType == "excel")
             {
                 var sheet = ExcelUtils.Read(filePath);
                 (columns, _) = ExcelUtils.GetColumns(sheet);
-                
+
                 var channel = await _channelRepository.GetAsync(request.ChannelId);
                 var tableName = _channelRepository.GetTableName(site, channel);
                 var relatedIdentities = _tableStyleRepository.GetRelatedIdentities(channel);
@@ -96,6 +96,22 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
                 {
                     AttributeName = "",
                     DisplayName = "<不导入>"
+                });
+
+                styles.Add(new TableStyle
+                {
+                    AttributeName = nameof(Models.Content.AddDate),
+                    DisplayName = "添加时间"
+                });
+                styles.Add(new TableStyle
+                {
+                    AttributeName = nameof(Models.Content.LinkType),
+                    DisplayName = "链接类型"
+                });
+                styles.Add(new TableStyle
+                {
+                    AttributeName = nameof(Models.Content.LinkUrl),
+                    DisplayName = "外部链接"
                 });
             }
 

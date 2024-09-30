@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -244,6 +245,31 @@ namespace SSCMS.Core.Utils.Serialization
             return await ImportContentsAsync(channel, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
 
+        public static (List<string> columns, int rowIndex) GetXlsxFileColumns(DataTable sheet)
+        {
+            var (columns, rowIndex) = ExcelUtils.GetColumns(sheet);
+            columns.Remove("序号");
+            columns.Remove("内容Id");
+            columns.Remove("识别码");
+            columns.Remove("最后修改时间");
+            columns.Remove("内容组");
+            columns.Remove("标签");
+            columns.Remove("添加人");
+            columns.Remove("最后修改人");
+            columns.Remove("投稿用户");
+            columns.Remove("来源标识");
+            columns.Remove("内容模板");
+            columns.Remove("点击量");
+            columns.Remove("下载量");
+            columns.Remove("审核人");
+            columns.Remove("审核时间");
+            columns.Remove("审核意见");
+            columns.Remove("所属栏目");
+            columns.Insert(0, "所属栏目");
+
+            return (columns, rowIndex);
+        }
+
         public async Task<List<int>> ImportContentsByXlsxFileAsync(Channel channel, string filePath, List<string> attributes, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var excelObject = new ExcelObject(_databaseManager, _pathManager);
@@ -263,12 +289,15 @@ namespace SSCMS.Core.Utils.Serialization
                     var dict = new Dictionary<string, object>();
                     var channel1Title = string.Empty;
                     var channel2Title = string.Empty;
+                    var addDate = string.Empty;
+                    var linkType = string.Empty;
+                    var linkUrl = string.Empty;
 
                     for (var j = 0; j < columns.Count; j++)
                     {
                         var columnName = columns[j];
                         var value = row[j].ToString().Trim();
-
+                        
                         var attributeName = attributes[j];
 
                         if (StringUtils.EqualsIgnoreCase(ExcelObject.BelongsChannel1, attributeName))
@@ -279,6 +308,21 @@ namespace SSCMS.Core.Utils.Serialization
                         else if (StringUtils.EqualsIgnoreCase(ExcelObject.BelongsChannel2, attributeName))
                         {
                             channel2Title = value;
+                            continue;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(nameof(Content.AddDate), attributeName))
+                        {
+                            addDate = value;
+                            continue;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(nameof(Content.LinkType), attributeName))
+                        {
+                            linkType = value;
+                            continue;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(nameof(Content.LinkUrl), attributeName))
+                        {
+                            linkUrl = value;
                             continue;
                         }
 
@@ -295,6 +339,18 @@ namespace SSCMS.Core.Utils.Serialization
 
                     var content = new Content();
                     content.LoadDict(dict);
+                    if (!string.IsNullOrEmpty(addDate))
+                    {
+                        content.AddDate = TranslateUtils.ToDateTime(addDate);
+                    }
+                    if (!string.IsNullOrEmpty(linkType))
+                    {
+                        content.LinkType = TranslateUtils.ToEnum(linkType, LinkType.None);
+                    }
+                    if (!string.IsNullOrEmpty(linkUrl))
+                    {
+                        content.LinkUrl = linkUrl;
+                    }
 
                     if (!string.IsNullOrEmpty(content.Title))
                     {
