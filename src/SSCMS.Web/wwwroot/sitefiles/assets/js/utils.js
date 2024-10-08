@@ -231,10 +231,14 @@ var utils = {
     }
     if (query) {
       url += "?";
-      _.forOwn(query, function (value, key) {
-        url += key + "=" + encodeURIComponent(value) + "&";
-      });
-      url = url.substr(0, url.length - 1);
+      if (typeof query == 'string') {
+        url += query;
+      } else {
+        _.forOwn(query, function (value, key) {
+          url += key + "=" + encodeURIComponent(value) + "&";
+        });
+        url = url.substr(0, url.length - 1);
+      }
     }
     return url;
   },
