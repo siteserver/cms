@@ -29,7 +29,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IChannelRepository _channelRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerImportController(ICacheManager cacheManager, IAuthManager authManager, IPathManager pathManager, IStorageManager storageManager, ICreateManager createManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository)
+        public ContentsLayerImportController(
+            ICacheManager cacheManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IStorageManager storageManager,
+            ICreateManager createManager,
+            IDatabaseManager databaseManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            ITableStyleRepository tableStyleRepository
+        )
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

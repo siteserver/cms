@@ -22,7 +22,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public ContentsLayerReferenceController(IAuthManager authManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public ContentsLayerReferenceController(
+            IAuthManager authManager,
+            IDatabaseManager databaseManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _databaseManager = databaseManager;

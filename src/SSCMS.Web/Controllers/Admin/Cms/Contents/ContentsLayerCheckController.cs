@@ -28,7 +28,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentRepository _contentRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
 
-        public ContentsLayerCheckController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentCheckRepository contentCheckRepository)
+        public ContentsLayerCheckController(
+            IAuthManager authManager, 
+            IPathManager pathManager, 
+            ICreateManager createManager, 
+            IDatabaseManager databaseManager, 
+            IPluginManager pluginManager, 
+            ISiteRepository siteRepository, 
+            IChannelRepository channelRepository, 
+            IContentRepository contentRepository, 
+            IContentCheckRepository contentCheckRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

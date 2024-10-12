@@ -35,7 +35,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
 
-        public ContentsController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository)
+        public ContentsController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ICreateManager createManager,
+            IDatabaseManager databaseManager,
+            IPluginManager pluginManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentGroupRepository contentGroupRepository,
+            IContentTagRepository contentTagRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

@@ -24,7 +24,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentRepository _contentRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
 
-        public ContentsLayerGroupController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository)
+        public ContentsLayerGroupController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentGroupRepository contentGroupRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;
