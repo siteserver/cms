@@ -25,7 +25,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentRepository _contentRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public ContentsLayerWordController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IErrorLogRepository errorLogRepository)
+        public ContentsLayerWordController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ICreateManager createManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IErrorLogRepository errorLogRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

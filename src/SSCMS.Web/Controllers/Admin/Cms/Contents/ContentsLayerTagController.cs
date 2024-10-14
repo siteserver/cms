@@ -23,7 +23,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentRepository _contentRepository;
         private readonly IContentTagRepository _contentTagRepository;
 
-        public ContentsLayerTagController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentTagRepository contentTagRepository)
+        public ContentsLayerTagController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentTagRepository contentTagRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

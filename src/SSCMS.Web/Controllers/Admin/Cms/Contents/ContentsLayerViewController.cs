@@ -28,7 +28,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentTagRepository _contentTagRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsLayerViewController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository)
+        public ContentsLayerViewController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IDatabaseManager databaseManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentGroupRepository contentGroupRepository,
+            IContentTagRepository contentTagRepository,
+            ITableStyleRepository tableStyleRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

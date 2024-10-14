@@ -32,7 +32,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly IContentTagRepository _contentTagRepository;
 
-        public ContentsRecycleController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository)
+        public ContentsRecycleController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IDatabaseManager databaseManager,
+            IPluginManager pluginManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentGroupRepository contentGroupRepository,
+            IContentTagRepository contentTagRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

@@ -22,7 +22,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentRepository _contentRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public ContentsReplaceController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITableStyleRepository tableStyleRepository)
+        public ContentsReplaceController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            ITableStyleRepository tableStyleRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

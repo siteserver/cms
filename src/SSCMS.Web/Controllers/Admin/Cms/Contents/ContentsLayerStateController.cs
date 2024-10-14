@@ -24,7 +24,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Contents
         private readonly IContentCheckRepository _contentCheckRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public ContentsLayerStateController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentCheckRepository contentCheckRepository, IAdministratorRepository administratorRepository)
+        public ContentsLayerStateController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentCheckRepository contentCheckRepository,
+            IAdministratorRepository administratorRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;
