@@ -28,7 +28,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         private readonly IContentRepository _contentRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public CreatePageController(IAuthManager authManager, ICreateManager createManager, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
+        public CreatePageController(
+            IAuthManager authManager,
+            ICreateManager createManager,
+            IPathManager pathManager,
+            IConfigRepository configRepository,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            ITemplateRepository templateRepository
+        )
         {
             _authManager = authManager;
             _createManager = createManager;

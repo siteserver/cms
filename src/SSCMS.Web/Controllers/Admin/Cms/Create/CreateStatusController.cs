@@ -17,7 +17,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         private readonly IAuthManager _authManager;
         private readonly ICreateManager _createManager;
 
-        public CreateStatusController(IAuthManager authManager, ICreateManager createManager)
+        public CreateStatusController(
+            IAuthManager authManager,
+            ICreateManager createManager
+        )
         {
             _authManager = authManager;
             _createManager = createManager;

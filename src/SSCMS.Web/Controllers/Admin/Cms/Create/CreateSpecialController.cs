@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Create
         private readonly ISiteRepository _siteRepository;
         private readonly ISpecialRepository _specialRepository;
 
-        public CreateSpecialController(IAuthManager authManager, ICreateManager createManager, ISiteRepository siteRepository, ISpecialRepository specialRepository)
+        public CreateSpecialController(
+            IAuthManager authManager,
+            ICreateManager createManager,
+            ISiteRepository siteRepository,
+            ISpecialRepository specialRepository
+        )
         {
             _authManager = authManager;
             _createManager = createManager;
