@@ -168,6 +168,10 @@ var utils = {
       return /^\d+$/.test(str);
   },
 
+  isMobile: function() {
+    return window.top.innerWidth < 800;
+  },
+
   getQueryIntList: function (name) {
     var value = utils.getQueryString(name);
     if (value) {
