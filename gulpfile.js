@@ -46,6 +46,8 @@ function transform(file, html) {
     content = content.replace(matches[0][0], '');
     styles = matches[0][1] + styles;
   }
+  styles = styles.replace('@@media ', '@media ');
+
   let scripts = '';
   matches = [...content.matchAll(/@section Scripts{([\s\S]+?)}/gi)];
   if (matches && matches[0]){
