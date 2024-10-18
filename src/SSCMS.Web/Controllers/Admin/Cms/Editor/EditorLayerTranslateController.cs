@@ -23,7 +23,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public EditorLayerTranslateController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public EditorLayerTranslateController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

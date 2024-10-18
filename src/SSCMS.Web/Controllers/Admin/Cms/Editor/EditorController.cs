@@ -53,7 +53,31 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IScheduledTaskRepository _scheduledTaskRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public EditorController(ISettingsManager settingsManager, IAuthManager authManager, ICloudManager cloudManager, ICreateManager createManager, IPathManager pathManager, IDatabaseManager databaseManager, IPluginManager pluginManager, ICensorManager censorManager, ISpellManager spellManager, IMailManager mailManager, IStorageManager storageManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, IContentGroupRepository contentGroupRepository, IContentTagRepository contentTagRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository, ITemplateRepository templateRepository, IContentCheckRepository contentCheckRepository, ITranslateRepository translateRepository, IScheduledTaskRepository scheduledTaskRepository, IErrorLogRepository errorLogRepository)
+        public EditorController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            ICloudManager cloudManager,
+            ICreateManager createManager,
+            IPathManager pathManager,
+            IDatabaseManager databaseManager,
+            IPluginManager pluginManager,
+            ICensorManager censorManager,
+            ISpellManager spellManager,
+            IMailManager mailManager,
+            IStorageManager storageManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IContentGroupRepository contentGroupRepository,
+            IContentTagRepository contentTagRepository,
+            ITableStyleRepository tableStyleRepository,
+            IRelatedFieldItemRepository relatedFieldItemRepository,
+            ITemplateRepository templateRepository,
+            IContentCheckRepository contentCheckRepository,
+            ITranslateRepository translateRepository,
+            IScheduledTaskRepository scheduledTaskRepository,
+            IErrorLogRepository errorLogRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
