@@ -44,6 +44,7 @@ var methods = {
       var res = response.data;
 
       $this.items = [];
+      $this.count = 0;
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
