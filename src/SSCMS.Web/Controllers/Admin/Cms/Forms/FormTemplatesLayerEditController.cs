@@ -13,21 +13,23 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
     [Route(Constants.ApiAdminPrefix)]
     public partial class FormTemplatesLayerEditController : ControllerBase
     {
-        private const string Route = "cms/forms/formTemplatesLayerEdit";
         private const string RouteUpdate = "cms/forms/formTemplatesLayerEdit/actions/update";
         private const string RouteClone = "cms/forms/formTemplatesLayerEdit/actions/clone";
 
         private readonly IAuthManager _authManager;
         private readonly IFormManager _formManager;
         private readonly ISiteRepository _siteRepository;
-        private readonly IFormRepository _formRepository;
 
-        public FormTemplatesLayerEditController(IAuthManager authManager, IFormManager formManager, ISiteRepository siteRepository, IFormRepository formRepository)
+
+        public FormTemplatesLayerEditController(
+            IAuthManager authManager,
+            IFormManager formManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _formManager = formManager;
             _siteRepository = siteRepository;
-            _formRepository = formRepository;
         }
 
         public class GetRequest : SiteRequest

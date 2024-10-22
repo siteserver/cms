@@ -24,7 +24,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private readonly IPathManager _pathManager;
         private readonly IFormRepository _formRepository;
 
-        public FormStylesController(IAuthManager authManager, IPathManager pathManager, IFormRepository formRepository)
+        public FormStylesController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IFormRepository formRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

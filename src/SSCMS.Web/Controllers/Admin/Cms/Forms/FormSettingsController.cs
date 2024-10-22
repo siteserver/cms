@@ -23,7 +23,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private readonly IMailManager _mailManager;
         private readonly IFormRepository _formRepository;
 
-        public FormSettingsController(IAuthManager authManager, ISmsManager smsManager, IMailManager mailManager, IFormRepository formRepository)
+        public FormSettingsController(
+            IAuthManager authManager,
+            ISmsManager smsManager,
+            IMailManager mailManager,
+            IFormRepository formRepository
+        )
         {
             _authManager = authManager;
             _smsManager = smsManager;

@@ -29,7 +29,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private const string RouteSpellAddWords = "cms/editor/actions/spellAddWords";
         private const string RouteTags = "cms/editor/actions/tags";
 
-        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly ICloudManager _cloudManager;
         private readonly ICreateManager _createManager;
@@ -54,7 +53,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
         private readonly IErrorLogRepository _errorLogRepository;
 
         public EditorController(
-            ISettingsManager settingsManager,
             IAuthManager authManager,
             ICloudManager cloudManager,
             ICreateManager createManager,
@@ -79,7 +77,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Editor
             IErrorLogRepository errorLogRepository
         )
         {
-            _settingsManager = settingsManager;
             _authManager = authManager;
             _cloudManager = cloudManager;
             _createManager = createManager;

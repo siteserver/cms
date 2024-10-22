@@ -16,16 +16,18 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private const string Route = "cms/forms/formTemplateHtml";
 
         private readonly IAuthManager _authManager;
-        private readonly ISiteRepository _siteRepository;
         private readonly IFormManager _formManager;
-        private readonly IFormRepository _formRepository;
+        private readonly ISiteRepository _siteRepository;
 
-        public FormTemplateHtmlController(IAuthManager authManager, ISiteRepository siteRepository, IFormManager formManager, IFormRepository formRepository)
+        public FormTemplateHtmlController(
+            IAuthManager authManager,
+            IFormManager formManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
-            _siteRepository = siteRepository;
             _formManager = formManager;
-            _formRepository = formRepository;
+            _siteRepository = siteRepository;
         }
 
         public class GetRequest : SiteRequest

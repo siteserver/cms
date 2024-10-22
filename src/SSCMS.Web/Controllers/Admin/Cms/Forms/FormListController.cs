@@ -21,22 +21,25 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private const string RouteImport = "cms/forms/formList/actions/import";
         private const string RouteDelete = "cms/forms/formList/actions/delete";
 
-        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
         private readonly IFormManager _formManager;
-        private readonly ISiteRepository _siteRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
 
-        public FormListController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IFormManager formManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormListController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IFormManager formManager,
+            ITableStyleRepository tableStyleRepository,
+            IFormRepository formRepository,
+            IFormDataRepository formDataRepository
+        )
         {
-            _settingsManager = settingsManager;
             _authManager = authManager;
             _pathManager = pathManager;
             _formManager = formManager;
-            _siteRepository = siteRepository;
             _tableStyleRepository = tableStyleRepository;
             _formRepository = formRepository;
             _formDataRepository = formDataRepository;

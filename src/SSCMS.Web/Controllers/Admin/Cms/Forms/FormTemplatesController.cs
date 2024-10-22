@@ -26,7 +26,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private readonly ISiteRepository _siteRepository;
         private readonly IFormRepository _formRepository;
 
-        public FormTemplatesController(IAuthManager authManager, IPathManager pathManager, IFormManager formManager, ISiteRepository siteRepository, IFormRepository formRepository)
+        public FormTemplatesController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IFormManager formManager,
+            ISiteRepository siteRepository,
+            IFormRepository formRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

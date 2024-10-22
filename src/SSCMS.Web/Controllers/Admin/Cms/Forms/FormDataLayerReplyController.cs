@@ -23,7 +23,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private readonly IFormRepository _formRepository;
         private readonly IFormDataRepository _formDataRepository;
 
-        public FormDataLayerReplyController(IAuthManager authManager, IChannelRepository channelRepository, IContentRepository contentRepository, IFormRepository formRepository, IFormDataRepository formDataRepository)
+        public FormDataLayerReplyController(
+            IAuthManager authManager,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            IFormRepository formRepository,
+            IFormDataRepository formDataRepository
+        )
         {
             _authManager = authManager;
             _channelRepository = channelRepository;

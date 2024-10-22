@@ -20,7 +20,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Forms
         private readonly IAuthManager _authManager;
         private readonly IFormRepository _formRepository;
 
-        public FormListLayerAddController(IAuthManager authManager, IFormRepository formRepository)
+        public FormListLayerAddController(
+            IAuthManager authManager,
+            IFormRepository formRepository
+        )
         {
             _authManager = authManager;
             _formRepository = formRepository;
