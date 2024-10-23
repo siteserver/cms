@@ -14,10 +14,13 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Home
                 return Unauthorized();
             }
 
+            var userMenus = await _userMenuRepository.GetUserMenusAsync();
+            var groups = await _userGroupRepository.GetUserGroupsAsync(true);
+            
             return new GetResult
             {
-                UserMenus = await _userMenuRepository.GetUserMenusAsync(),
-                Groups = await _userGroupRepository.GetUserGroupsAsync()
+                UserMenus = userMenus,
+                Groups = groups
             };
         }
     }

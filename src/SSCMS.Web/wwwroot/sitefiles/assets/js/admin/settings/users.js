@@ -131,6 +131,8 @@ var methods = {
       value: value
     }).then(function (response) {
       var res = response.data;
+
+      utils.success('操作成功！');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
@@ -237,6 +239,16 @@ var methods = {
         callback: function () {
           args.user.manager = false;
           $this.apiSet(args.user.id, 'Manager', false);
+        }
+      });
+    } else if (args.type === 'Checked') {
+      utils.alertDelete({
+        title: '审核用户',
+        text: '此操作将审核用户 ' + args.user.userName + '，确定吗？',
+        button: '确 定',
+        callback: function () {
+          args.user.checked = true;
+          $this.apiSet(args.user.id, 'Checked', true);
         }
       });
     } else if (args.type === 'Delete') {
