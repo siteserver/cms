@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Layer
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public LayerContentSelectController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public LayerContentSelectController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;
