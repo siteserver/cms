@@ -29,7 +29,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public MessageController(IAuthManager authManager, IPathManager pathManager, IWxManager wxManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialMessageRepository materialMessageRepository)
+        public MessageController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IWxManager wxManager,
+            IConfigRepository configRepository,
+            ISiteRepository siteRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialMessageRepository materialMessageRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

@@ -29,7 +29,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialFileRepository _materialFileRepository;
 
-        public FileController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialFileRepository materialFileRepository)
+        public FileController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IConfigRepository configRepository,
+            ISiteRepository siteRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialFileRepository materialFileRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

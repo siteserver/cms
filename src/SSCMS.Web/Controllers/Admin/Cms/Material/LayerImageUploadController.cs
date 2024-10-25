@@ -20,7 +20,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
 
-        public LayerImageUploadController(IPathManager pathManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
+        public LayerImageUploadController(
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            IMaterialImageRepository materialImageRepository
+        )
         {
             _pathManager = pathManager;
             _siteRepository = siteRepository;

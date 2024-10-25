@@ -31,7 +31,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
 
-        public ImageController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager wxManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository)
+        public ImageController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IWxManager wxManager,
+            IConfigRepository configRepository,
+            ISiteRepository siteRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialImageRepository materialImageRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

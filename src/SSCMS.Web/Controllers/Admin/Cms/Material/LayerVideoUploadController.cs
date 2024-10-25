@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
@@ -22,7 +21,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public LayerVideoUploadController(ISettingsManager settingsManager, IPathManager pathManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
+        public LayerVideoUploadController(
+            ISettingsManager settingsManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            IMaterialVideoRepository materialVideoRepository
+        )
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;

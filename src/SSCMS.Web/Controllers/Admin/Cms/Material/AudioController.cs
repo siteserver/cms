@@ -30,9 +30,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialAudioRepository _materialAudioRepository;
-        private readonly IWxAccountRepository _wxAccountRepository;
 
-        public AudioController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IWxManager wxManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialAudioRepository materialAudioRepository, IWxAccountRepository wxAccountRepository)
+        public AudioController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IWxManager wxManager,
+            IConfigRepository configRepository,
+            ISiteRepository siteRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialAudioRepository materialAudioRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
@@ -42,7 +50,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
             _materialAudioRepository = materialAudioRepository;
-            _wxAccountRepository = wxAccountRepository;
         }
 
         public class QueryRequest

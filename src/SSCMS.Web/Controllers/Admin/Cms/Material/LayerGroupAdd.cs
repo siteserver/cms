@@ -22,7 +22,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly IAuthManager _authManager;
         private readonly IMaterialGroupRepository _materialGroupRepository;
 
-        public LayerGroupAddController(IAuthManager authManager, IMaterialGroupRepository materialGroupRepository)
+        public LayerGroupAddController(
+            IAuthManager authManager,
+            IMaterialGroupRepository materialGroupRepository
+        )
         {
             _authManager = authManager;
             _materialGroupRepository = materialGroupRepository;

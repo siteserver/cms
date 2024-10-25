@@ -24,7 +24,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialMessageRepository _materialMessageRepository;
 
-        public EditorController(IAuthManager authManager, IWxManager wxManager, ISiteRepository siteRepository, IMaterialMessageRepository materialMessageRepository)
+        public EditorController(
+            IAuthManager authManager,
+            IWxManager wxManager,
+            ISiteRepository siteRepository,
+            IMaterialMessageRepository materialMessageRepository
+        )
         {
             _authManager = authManager;
             _wxManager = wxManager;
