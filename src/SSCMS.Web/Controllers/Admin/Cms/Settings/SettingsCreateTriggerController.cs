@@ -23,7 +23,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SettingsCreateTriggerController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public SettingsCreateTriggerController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

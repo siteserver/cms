@@ -27,7 +27,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
-        public SettingsSiteController(IAuthManager authManager, ICloudManager cloudManager, IPathManager pathManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository, IRelatedFieldItemRepository relatedFieldItemRepository)
+        public SettingsSiteController(
+            IAuthManager authManager,
+            ICloudManager cloudManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            ITableStyleRepository tableStyleRepository,
+            IRelatedFieldItemRepository relatedFieldItemRepository
+        )
         {
             _authManager = authManager;
             _cloudManager = cloudManager;

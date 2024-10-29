@@ -26,7 +26,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SettingsCreateRuleController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public SettingsCreateRuleController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ICreateManager createManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

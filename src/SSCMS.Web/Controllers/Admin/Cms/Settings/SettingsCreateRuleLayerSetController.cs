@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IDatabaseManager _databaseManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SettingsCreateRuleLayerSetController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository)
+        public SettingsCreateRuleLayerSetController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IDatabaseManager databaseManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

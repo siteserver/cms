@@ -22,7 +22,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SettingsWaterMarkController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public SettingsWaterMarkController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

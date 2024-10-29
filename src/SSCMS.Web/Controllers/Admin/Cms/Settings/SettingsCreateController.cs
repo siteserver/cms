@@ -19,7 +19,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SettingsCreateController(IAuthManager authManager, ISiteRepository siteRepository)
+        public SettingsCreateController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

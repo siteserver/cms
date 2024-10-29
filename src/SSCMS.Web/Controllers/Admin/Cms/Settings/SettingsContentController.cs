@@ -22,7 +22,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly ISiteRepository _siteRepository;
         private readonly IContentRepository _contentRepository;
 
-        public SettingsContentController(IAuthManager authManager, ISiteRepository siteRepository, IContentRepository contentRepository)
+        public SettingsContentController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IContentRepository contentRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

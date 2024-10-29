@@ -21,7 +21,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly ISiteRepository _siteRepository;
         private readonly IContentTagRepository _contentTagRepository;
 
-        public SettingsContentTagController(IAuthManager authManager, ISiteRepository siteRepository, IContentTagRepository contentTagRepository)
+        public SettingsContentTagController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IContentTagRepository contentTagRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;

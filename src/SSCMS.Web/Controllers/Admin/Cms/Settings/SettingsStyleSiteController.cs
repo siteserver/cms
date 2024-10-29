@@ -26,7 +26,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly ISiteRepository _siteRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public SettingsStyleSiteController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository)
+        public SettingsStyleSiteController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IDatabaseManager databaseManager,
+            ISiteRepository siteRepository,
+            ITableStyleRepository tableStyleRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

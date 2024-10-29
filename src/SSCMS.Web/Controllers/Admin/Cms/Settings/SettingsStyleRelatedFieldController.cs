@@ -31,7 +31,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IRelatedFieldRepository _relatedFieldRepository;
         private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
-        public SettingsStyleRelatedFieldController(IAuthManager authManager, IPathManager pathManager, IDatabaseManager databaseManager, ISiteRepository siteRepository, IRelatedFieldRepository relatedFieldRepository, IRelatedFieldItemRepository relatedFieldItemRepository)
+        public SettingsStyleRelatedFieldController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IDatabaseManager databaseManager,
+            ISiteRepository siteRepository,
+            IRelatedFieldRepository relatedFieldRepository,
+            IRelatedFieldItemRepository relatedFieldItemRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

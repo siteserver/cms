@@ -23,7 +23,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IAuthManager _authManager;
         private readonly IContentGroupRepository _contentGroupRepository;
 
-        public SettingsContentGroupController(IAuthManager authManager, IContentGroupRepository contentGroupRepository)
+        public SettingsContentGroupController(
+            IAuthManager authManager,
+            IContentGroupRepository contentGroupRepository
+        )
         {
             _authManager = authManager;
             _contentGroupRepository = contentGroupRepository;

@@ -21,7 +21,11 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IAuthManager _authManager;
         private readonly ISiteRepository _siteRepository;
 
-        public SettingsUploadFileController(ISettingsManager settingsManager, IAuthManager authManager, ISiteRepository siteRepository)
+        public SettingsUploadFileController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            ISiteRepository siteRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

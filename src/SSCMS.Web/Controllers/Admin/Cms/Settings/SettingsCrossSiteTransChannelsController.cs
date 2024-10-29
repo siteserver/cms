@@ -23,7 +23,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IContentRepository _contentRepository;
         private readonly ITranslateRepository _translateRepository;
 
-        public SettingsCrossSiteTransChannelsController(IAuthManager authManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITranslateRepository translateRepository)
+        public SettingsCrossSiteTransChannelsController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            ITranslateRepository translateRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;
