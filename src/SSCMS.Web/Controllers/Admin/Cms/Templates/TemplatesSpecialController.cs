@@ -28,7 +28,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly ISiteRepository _siteRepository;
         private readonly ISpecialRepository _specialRepository;
 
-        public TemplatesSpecialController(IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, ISpecialRepository specialRepository)
+        public TemplatesSpecialController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ICreateManager createManager,
+            ISiteRepository siteRepository,
+            ISpecialRepository specialRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

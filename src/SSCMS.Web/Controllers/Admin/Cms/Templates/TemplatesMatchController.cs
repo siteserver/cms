@@ -28,7 +28,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly IContentRepository _contentRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesMatchController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository, ITemplateRepository templateRepository)
+        public TemplatesMatchController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository,
+            ITemplateRepository templateRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

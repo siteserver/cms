@@ -27,7 +27,14 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly IChannelRepository _channelRepository;
         private readonly IContentRepository _contentRepository;
 
-        public TemplatesPreviewController(ICacheManager cacheManager, IAuthManager authManager, IParseManager parseManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IContentRepository contentRepository)
+        public TemplatesPreviewController(
+            ICacheManager cacheManager,
+            IAuthManager authManager,
+            IParseManager parseManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            IContentRepository contentRepository
+        )
         {
             _cacheManager = cacheManager;
             _authManager = authManager;

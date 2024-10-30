@@ -22,7 +22,13 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly ITemplateRepository _templateRepository;
         private readonly ITemplateLogRepository _templateLogRepository;
 
-        public TemplatesEditorLayerRestoreController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository, ITemplateRepository templateRepository, ITemplateLogRepository templateLogRepository)
+        public TemplatesEditorLayerRestoreController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository,
+            ITemplateRepository templateRepository,
+            ITemplateLogRepository templateLogRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;

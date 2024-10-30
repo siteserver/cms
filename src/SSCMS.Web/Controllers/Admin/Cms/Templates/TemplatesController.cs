@@ -33,7 +33,15 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly IChannelRepository _channelRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public TemplatesController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ICreateManager createManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
+        public TemplatesController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ICreateManager createManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository,
+            ITemplateRepository templateRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

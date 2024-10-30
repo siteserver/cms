@@ -31,7 +31,12 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Templates
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public TemplatesAssetsController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public TemplatesAssetsController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;
