@@ -659,9 +659,10 @@ var utils = {
 
   openLayer: function (config) {
     if (!config || !config.url) return false;
+    var margin = utils.isMobile() ? 0 :50;
 
     if (!config.width) {
-      config.width = ($(window).width() - 50) + 'px';
+      config.width = ($(window).width() - margin) + 'px';
     } else {
       var width = config.width + '';
       if (width.indexOf('%') == -1 && width.indexOf('px') == -1) {
@@ -669,7 +670,7 @@ var utils = {
       }
     }
     if (!config.height) {
-      config.height = ($(window).height() - 50) + 'px';
+      config.height = ($(window).height() - margin) + 'px';
     } else {
       var height = config.height + '';
       if (height.indexOf('%') == -1 && height.indexOf('px') == -1) {
