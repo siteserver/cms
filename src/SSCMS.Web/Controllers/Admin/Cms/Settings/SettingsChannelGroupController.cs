@@ -22,7 +22,10 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
         private readonly IAuthManager _authManager;
         private readonly IChannelGroupRepository _channelGroupRepository;
 
-        public SettingsChannelGroupController(IAuthManager authManager, IChannelGroupRepository channelGroupRepository)
+        public SettingsChannelGroupController(
+            IAuthManager authManager,
+            IChannelGroupRepository channelGroupRepository
+        )
         {
             _authManager = authManager;
             _channelGroupRepository = channelGroupRepository;

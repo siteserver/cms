@@ -27,7 +27,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly IVodManager _vodManager;
         private readonly ISiteRepository _siteRepository;
 
-        public ActionsController(IPathManager pathManager, IStorageManager storageManager, IVodManager vodManager, ISiteRepository siteRepository)
+        public ActionsController(
+            IPathManager pathManager,
+            IStorageManager storageManager,
+            IVodManager vodManager,
+            ISiteRepository siteRepository
+        )
         {
             _pathManager = pathManager;
             _storageManager = storageManager;
