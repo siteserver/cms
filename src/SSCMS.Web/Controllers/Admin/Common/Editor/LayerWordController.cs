@@ -20,7 +20,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerWordController(IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerWordController(
+            IPathManager pathManager,
+            ISiteRepository siteRepository
+        )
         {
             _pathManager = pathManager;
             _siteRepository = siteRepository;

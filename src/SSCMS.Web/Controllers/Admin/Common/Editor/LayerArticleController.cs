@@ -21,7 +21,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialArticleRepository _materialArticleRepository;
 
-        public LayerArticleController(IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialArticleRepository materialArticleRepository)
+        public LayerArticleController(
+            IConfigRepository configRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialArticleRepository materialArticleRepository
+        )
         {
             _configRepository = configRepository;
             _materialGroupRepository = materialGroupRepository;

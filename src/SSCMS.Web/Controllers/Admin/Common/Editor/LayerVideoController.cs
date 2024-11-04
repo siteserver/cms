@@ -23,7 +23,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public LayerVideoController(IPathManager pathManager, IVodManager vodManager, IStorageManager storageManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
+        public LayerVideoController(
+            IPathManager pathManager,
+            IVodManager vodManager,
+            IStorageManager storageManager,
+            ISiteRepository siteRepository,
+            IMaterialVideoRepository materialVideoRepository
+        )
         {
             _pathManager = pathManager;
             _vodManager = vodManager;

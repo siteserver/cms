@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Editor
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialImageRepository _materialImageRepository;
 
-        public LayerImageController(IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository, IMaterialImageRepository materialImageRepository)
+        public LayerImageController(
+            IPathManager pathManager,
+            IStorageManager storageManager,
+            ISiteRepository siteRepository,
+            IMaterialImageRepository materialImageRepository
+        )
         {
             _pathManager = pathManager;
             _storageManager = storageManager;
