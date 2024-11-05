@@ -372,8 +372,11 @@ var utils = {
       utils.focusTab(tab.name);
     } else {
       tab = $this.tabs[index];
-      var iframe = top.document.getElementById('frm-' + tab.name).contentWindow;
-      iframe.location.href = url;
+      var iframe = top.document.getElementById('frm-' + tab.name);
+      if (iframe) {
+        var iframeWindow = iframe.contentWindow;
+        iframeWindow.location.href = url;
+      }
     }
     $this.tabName = tab.name;
   },
