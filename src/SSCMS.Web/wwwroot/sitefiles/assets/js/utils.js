@@ -606,9 +606,11 @@ var utils = {
           return;
         }
 
-        top.utils.openLayer({
-          url: utils.getRootUrl("error", { uuid: uuid }),
-        });
+        if (top.utils) {
+          top.utils.openLayer({
+            url: utils.getRootUrl("error", { uuid: uuid }),
+          });
+        }
         return;
       } else if (error.response && error.response.status === 400) {
         if (options && options.redirect) {
