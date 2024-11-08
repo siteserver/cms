@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using SSCMS.Configuration;
-using SSCMS.Dto;
 using SSCMS.Repositories;
 using SSCMS.Services;
 
@@ -21,7 +20,13 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialVideoRepository _materialVideoRepository;
 
-        public LayerVideoUploadController(IPathManager pathManager, IVodManager vodManager, IStorageManager storageManager, ISiteRepository siteRepository, IMaterialVideoRepository materialVideoRepository)
+        public LayerVideoUploadController(
+            IPathManager pathManager,
+            IVodManager vodManager,
+            IStorageManager storageManager,
+            ISiteRepository siteRepository,
+            IMaterialVideoRepository materialVideoRepository
+        )
         {
             _pathManager = pathManager;
             _vodManager = vodManager;

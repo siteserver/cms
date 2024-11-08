@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Form
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialFileRepository _materialFileRepository;
 
-        public LayerFileUploadController(IPathManager pathManager, IStorageManager storageManager, ISiteRepository siteRepository, IMaterialFileRepository materialFileRepository)
+        public LayerFileUploadController(
+            IPathManager pathManager,
+            IStorageManager storageManager,
+            ISiteRepository siteRepository,
+            IMaterialFileRepository materialFileRepository
+        )
         {
             _pathManager = pathManager;
             _storageManager = storageManager;
