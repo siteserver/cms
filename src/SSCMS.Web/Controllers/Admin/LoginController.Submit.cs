@@ -46,12 +46,10 @@ namespace SSCMS.Web.Controllers.Admin
                 if (!request.IsForceLogoutAndLogin && !config.IsAdminCaptchaDisabled)
                 {
                     var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
-
                     if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
                     {
                         return this.Error("验证码已超时，请点击刷新验证码！");
                     }
-
                     if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value) || CaptchaUtils.IsAlreadyUsed(captcha, _cacheManager))
                     {
                         return this.Error("验证码不正确，请重新输入！");

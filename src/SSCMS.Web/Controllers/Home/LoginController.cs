@@ -14,7 +14,6 @@ namespace SSCMS.Web.Controllers.Home
     {
         private const string Route = "login";
         private const string RouteCaptcha = "login/captcha";
-        private const string RouteCheckCaptcha = "login/captcha/actions/check";
         private const string RouteSendSms = "login/actions/sendSms";
 
         private readonly ISettingsManager _settingsManager;
@@ -45,13 +44,7 @@ namespace SSCMS.Web.Controllers.Home
             public bool IsUserCaptchaDisabled { get; set; }
             public bool IsUserRegistrationAllowed { get; set; }
         }
-
-        public class CheckRequest
-        {
-            public string Token { get; set; }
-            public string Value { get; set; }
-        }
-
+        
         public class SubmitRequest
         {
             public bool IsSmsLogin { get; set; }
@@ -60,6 +53,8 @@ namespace SSCMS.Web.Controllers.Home
             public string Mobile { get; set; }
             public string Code { get; set; }
             public bool IsPersistent { get; set; }
+            public string Token { get; set; }
+            public string Value { get; set; }
         }
 
         public class SubmitResult

@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SSCMS.Configuration;
+using SSCMS.Core.Utils;
 using SSCMS.Enums;
 using SSCMS.Models;
 using SSCMS.Utils;
@@ -13,6 +15,7 @@ namespace SSCMS.Web.Controllers.Home
         public async Task<ActionResult<SubmitResult>> Submit([FromBody] SubmitRequest request)
         {
             User user;
+            var config = await _configRepository.GetAsync();
             var ipAddress = PageUtils.GetIpAddress(Request);
             if (request.IsSmsLogin)
             {
@@ -38,6 +41,19 @@ namespace SSCMS.Web.Controllers.Home
             }
             else
             {
+                if (!config.IsUserCaptchaDisabled)
+                {
+                    var captcha = TranslateUtils.JsonDeserialize<CaptchaUtils.Captcha>(_settingsManager.Decrypt(request.Token));
+                    if (captcha == null || string.IsNullOrEmpty(captcha.Value) || captcha.ExpireAt < DateTime.Now)
+                    {
+                        return this.Error("验证码已超时，请点击刷新验证码！");
+                    }
+                    if (!StringUtils.EqualsIgnoreCase(captcha.Value, request.Value) || CaptchaUtils.IsAlreadyUsed(captcha, _cacheManager))
+                    {
+                        return this.Error("验证码不正确，请重新输入！");
+                    }
+                }
+                
                 string userName;
                 string errorMessage;
                 (user, userName, errorMessage) = await _userRepository.ValidateAsync(request.Account, request.Password, true);
@@ -64,7 +80,6 @@ namespace SSCMS.Web.Controllers.Home
             var redirectToVerifyMobile = false;
             if (!user.MobileVerified)
             {
-                var config = await _configRepository.GetAsync();
                 var smsSettings = await _smsManager.GetSmsSettingsAsync();
                 var isSmsEnabled = smsSettings.IsSms && smsSettings.IsSmsUser;
                 if (isSmsEnabled && config.IsUserForceVerifyMobile)

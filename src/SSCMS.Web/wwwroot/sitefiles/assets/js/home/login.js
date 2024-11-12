@@ -1,6 +1,5 @@
 var $url = '/login';
 var $urlCaptcha = '/login/captcha';
-var $urlCaptchaCheck = '/login/captcha/actions/check';
 var $urlSendSms = '/login/actions/sendSms';
 
 var data = utils.init({
@@ -76,25 +75,6 @@ var methods = {
     });
   },
 
-  apiCaptchaCheck: function () {
-    var $this = this;
-    if (this.isUserCaptchaDisabled) {
-      $this.apiSubmit();
-    } else {
-      utils.loading(this, true);
-      $api.post($urlCaptchaCheck, {
-        token: this.captchaToken,
-        value: this.form.captchaValue
-      }).then(function (response) {
-        $this.apiSubmit();
-      }).catch(function (error) {
-        $this.apiCaptcha();
-        utils.loading($this, false);
-        utils.notifyError(error);
-      });
-    }
-  },
-
   apiSendSms: function () {
     var $this = this;
 
@@ -129,7 +109,9 @@ var methods = {
       password: this.form.password ? md5(this.form.password) : '',
       mobile: this.form.mobile,
       code: this.form.code,
-      isPersistent: this.form.isPersistent
+      isPersistent: this.form.isPersistent,
+      token: this.captchaToken,
+      value: this.form.captchaValue
     }).then(function (response) {
       var res = response.data;
 
@@ -203,7 +185,7 @@ var methods = {
     if (this.form.type == 'account') {
       this.$refs.formAccount.validate(function(valid) {
         if (valid) {
-          $this.apiCaptchaCheck();
+          $this.apiSubmit();
         }
       });
     } else {
