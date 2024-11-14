@@ -69,6 +69,20 @@ namespace SSCMS.Core.Repositories
             );
         }
 
+        public async Task DeleteAllByGroupIdAsync(int groupId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(UsersInGroups.GroupId), groupId)
+            );
+        }
+
+        public async Task DeleteAllByUserIdAsync(int userId)
+        {
+            await _repository.DeleteAsync(Q
+                .Where(nameof(UsersInGroups.UserId), userId)
+            );
+        }
+
         public async Task<bool> IsExistsAsync(int groupId, int userId)
         {
             return await _repository.ExistsAsync(Q

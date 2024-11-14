@@ -716,6 +716,7 @@ namespace SSCMS.Core.Repositories
 
             await _repository.DeleteAsync(userId, Q.CachingRemove(GetCacheKeysToRemove(user)));
             await SyncDepartmentCountAsync(user.DepartmentId);
+            await _usersInGroupsRepository.DeleteAllByUserIdAsync(userId);
 
             return user;
         }

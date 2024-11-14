@@ -16,7 +16,6 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
             }
 
             var user = await _userRepository.DeleteAsync(request.Id);
-
             await _authManager.AddAdminLogAsync("删除用户", $"用户:{user.UserName}");
 
             return new BoolResult

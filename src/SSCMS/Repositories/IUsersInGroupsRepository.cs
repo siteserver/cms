@@ -18,6 +18,10 @@ namespace SSCMS.Repositories
 
         Task DeleteAsync(int groupId, int userId);
 
+        Task DeleteAllByGroupIdAsync(int groupId);
+
+        Task DeleteAllByUserIdAsync(int userId);
+
         Task<bool> IsExistsAsync(int groupId, int userId);
 
         Task InsertIfNotExistsAsync(int groupId, int userId);

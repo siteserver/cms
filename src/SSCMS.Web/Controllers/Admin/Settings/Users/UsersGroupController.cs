@@ -20,17 +20,23 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
 
         private readonly IAuthManager _authManager;
         private readonly ICacheManager _cacheManager;
-        private readonly IConfigRepository _configRepository;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IUsersInGroupsRepository _usersInGroupsRepository;
 
-        public UsersGroupController(IAuthManager authManager, ICacheManager cacheManager, IConfigRepository configRepository, IAdministratorRepository administratorRepository, IUserGroupRepository userGroupRepository)
+        public UsersGroupController(
+            IAuthManager authManager,
+            ICacheManager cacheManager,
+            IAdministratorRepository administratorRepository,
+            IUserGroupRepository userGroupRepository,
+            IUsersInGroupsRepository usersInGroupsRepository
+        )
         {
             _authManager = authManager;
             _cacheManager = cacheManager;
-            _configRepository = configRepository;
             _administratorRepository = administratorRepository;
             _userGroupRepository = userGroupRepository;
+            _usersInGroupsRepository = usersInGroupsRepository;
         }
 
         public class GetResult
