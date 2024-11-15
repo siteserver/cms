@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            var groupName = await _userGroupRepository.GetUserGroupNameAsync(request.Id); 
+            var groupName = await _userGroupRepository.GetUserGroupNameAsync(request.Id);
             await _userGroupRepository.DeleteAsync(request.Id);
             await _usersInGroupsRepository.DeleteAllByGroupIdAsync(request.Id);
             await _authManager.AddAdminLogAsync("删除用户组", $"用户组:{groupName}");
