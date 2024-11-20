@@ -25,7 +25,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialFileRepository _materialFileRepository;
 
-        public LayerFileSelectController(ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, ISiteRepository siteRepository, IMaterialGroupRepository materialGroupRepository, IMaterialFileRepository materialFileRepository)
+        public LayerFileSelectController(
+            ISettingsManager settingsManager,
+            IPathManager pathManager,
+            IConfigRepository configRepository,
+            ISiteRepository siteRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialFileRepository materialFileRepository
+        )
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;

@@ -21,7 +21,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerImageController(ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerImageController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

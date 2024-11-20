@@ -26,7 +26,15 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         private readonly IMaterialVideoRepository _materialVideoRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoSelectController(ISettingsManager settingsManager, IPathManager pathManager, IVodManager vodManager, IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialVideoRepository materialVideoRepository, ISiteRepository siteRepository)
+        public LayerVideoSelectController(
+            ISettingsManager settingsManager,
+            IPathManager pathManager,
+            IVodManager vodManager,
+            IConfigRepository configRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialVideoRepository materialVideoRepository,
+            ISiteRepository siteRepository
+        )
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;

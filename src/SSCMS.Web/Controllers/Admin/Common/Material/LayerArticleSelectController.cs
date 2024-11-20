@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         private readonly IMaterialGroupRepository _materialGroupRepository;
         private readonly IMaterialArticleRepository _materialArticleRepository;
 
-        public LayerArticleSelectController(IAuthManager authManager, IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialArticleRepository materialArticleRepository)
+        public LayerArticleSelectController(
+            IAuthManager authManager,
+            IConfigRepository configRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialArticleRepository materialArticleRepository
+        )
         {
             _authManager = authManager;
             _configRepository = configRepository;

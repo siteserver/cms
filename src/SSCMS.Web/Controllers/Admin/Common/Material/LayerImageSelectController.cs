@@ -25,7 +25,14 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         private readonly IMaterialImageRepository _materialImageRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerImageSelectController(ISettingsManager settingsManager, IPathManager pathManager, IConfigRepository configRepository, IMaterialGroupRepository materialGroupRepository, IMaterialImageRepository materialImageRepository, ISiteRepository siteRepository)
+        public LayerImageSelectController(
+            ISettingsManager settingsManager,
+            IPathManager pathManager,
+            IConfigRepository configRepository,
+            IMaterialGroupRepository materialGroupRepository,
+            IMaterialImageRepository materialImageRepository,
+            ISiteRepository siteRepository
+        )
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;

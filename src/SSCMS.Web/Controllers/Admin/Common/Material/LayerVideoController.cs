@@ -19,7 +19,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.Material
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerVideoController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;
