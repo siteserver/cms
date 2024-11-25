@@ -4,6 +4,7 @@ using System.Linq;
 using Dapper;
 using Datory.Annotations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Datory.Utils;
 
 namespace Datory
@@ -204,6 +205,15 @@ namespace Datory
             if (ContainsIgnoreCase(_propertyNames, name, out var realName))
             {
                 ValueUtils.SetValue(this, realName, value);
+            }
+            else if (value is JArray)
+            {
+                var jArray = (JArray)value;
+                if (jArray != null)
+                {
+                    var list = Utilities.GetStringList(jArray);
+                    _extendDictionary[name] = list;
+                }
             }
             else
             {

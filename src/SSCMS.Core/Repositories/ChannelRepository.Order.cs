@@ -28,55 +28,12 @@ namespace SSCMS.Core.Repositories
 
         private async Task<int> GetMaxTaxisAsync(int siteId, int parentId)
         {
-            // var summaries = await GetSummariesAsync(siteId);
-            // return summaries
-            //     .Where(x => x.ParentId == parentId)
-            //     .Select(x => x.Taxis)
-            //     .DefaultIfEmpty()
-            //     .Max();
-
             var maxTaxis = await _repository.MaxAsync(nameof(Channel.Taxis), Q
                 .Where(nameof(Channel.SiteId), siteId)
                 .Where(nameof(Channel.ParentId), parentId)
             );
             return maxTaxis ?? 0;
         }
-
-        //public async Task UpdateTaxisDownAsync(int siteId, int channelId, int parentId, int taxis)
-        //{
-        //    var summaries = await GetSummariesAsync(siteId);
-        //    var higher = summaries
-        //        .Where(x => x.ParentId == parentId && x.Taxis > taxis && x.Id != channelId)
-        //        .OrderBy(x => x.Taxis)
-        //        .FirstOrDefault();
-
-        //    if (higher != null)
-        //    {
-        //        await SetTaxisAsync(siteId, channelId, higher.Taxis);
-        //        await SetTaxisAsync(siteId, higher.Id, taxis);
-        //    }
-        //}
-
-        //public async Task UpdateTaxisUpAsync(int siteId, int channelId, int parentId, int taxis)
-        //{
-        //    var summaries = await GetSummariesAsync(siteId);
-
-        //    var lower = summaries
-        //        .Where(x => x.ParentId == parentId && x.Taxis < taxis && x.Id != channelId)
-        //        .OrderByDescending(x => x.Taxis)
-        //        .FirstOrDefault();
-
-        //    if (lower != null)
-        //    {
-        //        await SetTaxisAsync(siteId, channelId, lower.Taxis);
-        //        await SetTaxisAsync(siteId, lower.Id, taxis);
-        //    }
-        //}
-
-        //public int ParentId { get; set; }
-        //public List<int> ParentsPath { get; set; }
-        //public int ParentsCount { get; set; }
-        //public int ChildrenCount { get; set; }
 
         public async Task DropAsync(int siteId, int sourceId, int targetId, string dropType)
         {

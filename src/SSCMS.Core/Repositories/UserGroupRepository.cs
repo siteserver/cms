@@ -88,6 +88,7 @@ namespace SSCMS.Core.Repositories
         public async Task UpdateTaxisDownAsync(int groupId, int taxis)
         {
             var higherGroup = await _repository.GetAsync<UserGroup>(Q
+                .Select(nameof(UserGroup.Id), nameof(UserGroup.Taxis))
                 .Where(nameof(UserGroup.Taxis), ">", taxis)
                 .WhereNot(nameof(UserGroup.Id), groupId)
                 .OrderBy(nameof(UserGroup.Taxis)));
@@ -102,6 +103,7 @@ namespace SSCMS.Core.Repositories
         public async Task UpdateTaxisUpAsync(int groupId, int taxis)
         {
             var lowerGroup = await _repository.GetAsync<UserGroup>(Q
+                .Select(nameof(UserGroup.Id), nameof(UserGroup.Taxis))
                 .Where(nameof(UserGroup.Taxis), "<", taxis)
                 .WhereNot(nameof(UserGroup.Id), groupId)
                 .OrderByDesc(nameof(UserGroup.Taxis)));
