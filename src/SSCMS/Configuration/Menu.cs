@@ -45,6 +45,8 @@ namespace SSCMS.Configuration
 
         public IList<string> Permissions { get; set; }
 
+        public bool Selected { get; set; }
+
         /// <summary>
         /// 获取或设置菜单的排序。
         /// </summary>

@@ -253,6 +253,7 @@ namespace SSCMS.Web.Controllers.Admin
                             IconClass = "ion-clock",
                             //Text = _local["Recently site"],
                             Text = "最近访问",
+                            Selected = true,
                             Children = allSiteMenus.ToArray()
                         });
 
