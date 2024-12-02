@@ -25,7 +25,15 @@ namespace SSCMS.Web.Controllers.Admin.Common
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
 
-        public AdminLayerViewController(IHttpContextAccessor context, IAntiforgery antiforgery, ICacheManager cacheManager, ISettingsManager settingsManager, IDatabaseManager databaseManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public AdminLayerViewController(
+            IHttpContextAccessor context,
+            IAntiforgery antiforgery,
+            ICacheManager cacheManager,
+            ISettingsManager settingsManager,
+            IDatabaseManager databaseManager,
+            IAdministratorRepository administratorRepository,
+            ISiteRepository siteRepository
+        )
         {
             _context = context;
             _antiforgery = antiforgery;

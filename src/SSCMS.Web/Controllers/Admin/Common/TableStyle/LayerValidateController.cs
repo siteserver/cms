@@ -19,7 +19,10 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
         private readonly IAuthManager _authManager;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public LayerValidateController(IAuthManager authManager, ITableStyleRepository tableStyleRepository)
+        public LayerValidateController(
+            IAuthManager authManager,
+            ITableStyleRepository tableStyleRepository
+        )
         {
             _authManager = authManager;
             _tableStyleRepository = tableStyleRepository;

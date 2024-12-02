@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IRelatedFieldRepository _relatedFieldRepository;
 
-        public LayerEditorController(IAuthManager authManager, IDatabaseManager databaseManager, ITableStyleRepository tableStyleRepository, IRelatedFieldRepository relatedFieldRepository)
+        public LayerEditorController(
+            IAuthManager authManager,
+            IDatabaseManager databaseManager,
+            ITableStyleRepository tableStyleRepository,
+            IRelatedFieldRepository relatedFieldRepository
+        )
         {
             _authManager = authManager;
             _databaseManager = databaseManager;

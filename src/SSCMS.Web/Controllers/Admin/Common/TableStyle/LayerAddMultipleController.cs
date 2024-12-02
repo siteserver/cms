@@ -20,7 +20,11 @@ namespace SSCMS.Web.Controllers.Admin.Common.TableStyle
         private readonly IDatabaseManager _databaseManager;
         private readonly ITableStyleRepository _tableStyleRepository;
 
-        public LayerAddMultipleController(IAuthManager authManager, IDatabaseManager databaseManager, ITableStyleRepository tableStyleRepository)
+        public LayerAddMultipleController(
+            IAuthManager authManager,
+            IDatabaseManager databaseManager,
+            ITableStyleRepository tableStyleRepository
+        )
         {
             _authManager = authManager;
             _databaseManager = databaseManager;
