@@ -21,7 +21,10 @@ namespace SSCMS.Web.Controllers.Admin.Common
         private readonly IAuthManager _authManager;
         private readonly IContentGroupRepository _contentGroupRepository;
 
-        public GroupContentLayerAddController(IAuthManager authManager, IContentGroupRepository contentGroupRepository)
+        public GroupContentLayerAddController(
+            IAuthManager authManager,
+            IContentGroupRepository contentGroupRepository
+        )
         {
             _authManager = authManager;
             _contentGroupRepository = contentGroupRepository;

@@ -18,7 +18,11 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
 
-        public AddController(ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager)
+        public AddController(
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPluginManager pluginManager
+        )
         {
             _settingsManager = settingsManager;
             _authManager = authManager;

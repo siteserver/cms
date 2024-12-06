@@ -23,7 +23,12 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly IAuthManager _authManager;
         private readonly IPluginManager _pluginManager;
 
-        public ViewController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, IAuthManager authManager, IPluginManager pluginManager)
+        public ViewController(
+            IHostApplicationLifetime hostApplicationLifetime,
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPluginManager pluginManager
+        )
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;

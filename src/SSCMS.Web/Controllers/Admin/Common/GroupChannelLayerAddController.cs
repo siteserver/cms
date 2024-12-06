@@ -21,7 +21,10 @@ namespace SSCMS.Web.Controllers.Admin.Common
         private readonly IAuthManager _authManager;
         private readonly IChannelGroupRepository _channelGroupRepository;
 
-        public GroupChannelLayerAddController(IAuthManager authManager, IChannelGroupRepository channelGroupRepository)
+        public GroupChannelLayerAddController(
+            IAuthManager authManager,
+            IChannelGroupRepository channelGroupRepository
+        )
         {
             _authManager = authManager;
             _channelGroupRepository = channelGroupRepository;

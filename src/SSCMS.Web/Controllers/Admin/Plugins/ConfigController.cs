@@ -28,7 +28,13 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public ConfigController(IHostApplicationLifetime hostApplicationLifetime, IAuthManager authManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
+        public ConfigController(
+            IHostApplicationLifetime hostApplicationLifetime,
+            IAuthManager authManager,
+            IPluginManager pluginManager,
+            ISiteRepository siteRepository,
+            IChannelRepository channelRepository
+        )
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _authManager = authManager;

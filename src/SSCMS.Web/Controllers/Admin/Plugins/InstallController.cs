@@ -25,8 +25,13 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly IPluginManager _pluginManager;
         private readonly ICloudManager _cloudManager;
 
-        public InstallController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager,
-            IAuthManager authManager, IPluginManager pluginManager, ICloudManager cloudManager)
+        public InstallController(
+            IHostApplicationLifetime hostApplicationLifetime,
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPluginManager pluginManager,
+            ICloudManager cloudManager
+        )
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;

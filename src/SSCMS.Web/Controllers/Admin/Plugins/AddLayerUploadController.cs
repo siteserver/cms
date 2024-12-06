@@ -23,7 +23,13 @@ namespace SSCMS.Web.Controllers.Admin.Plugins
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
 
-        public AddLayerUploadController(IHostApplicationLifetime hostApplicationLifetime, ISettingsManager settingsManager, IAuthManager authManager, IPathManager pathManager, IPluginManager pluginManager)
+        public AddLayerUploadController(
+            IHostApplicationLifetime hostApplicationLifetime,
+            ISettingsManager settingsManager,
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IPluginManager pluginManager
+        )
         {
             _hostApplicationLifetime = hostApplicationLifetime;
             _settingsManager = settingsManager;
