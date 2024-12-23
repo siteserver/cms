@@ -61,7 +61,12 @@ namespace Datory
 
         public virtual async Task<int> SumAsync(string columnName, Query query = null)
         {
-            return await RepositoryUtils.SumAsync(Database, TableName, Redis, columnName, query);
+            return await RepositoryUtils.SumValueAsync<int>(Database, TableName, Redis, columnName, query);
+        }
+
+        public virtual async Task<TValue> SumAsync<TValue>(string columnName, Query query = null)
+        {
+            return await RepositoryUtils.SumValueAsync<TValue>(Database, TableName, Redis, columnName, query);
         }
 
         public virtual async Task<int?> MaxAsync(string columnName, Query query = null)

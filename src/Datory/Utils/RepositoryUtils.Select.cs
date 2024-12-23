@@ -60,7 +60,7 @@ namespace Datory.Utils
             return await connection.ExecuteScalarAsync<int>(compileInfo.Sql, compileInfo.NamedBindings);
         }
 
-        public static async Task<int> SumAsync(IDatabase database, string tableName, IRedis redis, string columnName, Query query = null)
+        public static async Task<TValue> SumValueAsync<TValue>(IDatabase database, string tableName, IRedis redis, string columnName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.AsSum(columnName);
@@ -70,17 +70,17 @@ namespace Datory.Utils
             {
                 var cacheManager = await CachingUtils.GetCacheManagerAsync(redis);
                 return await cacheManager.GetOrCreateAsync(compileInfo.Caching.CacheKey,
-                    async () => await _SumAsync(database, compileInfo)
+                    async () => await _SumValueAsync<TValue>(database, compileInfo)
                 );
             }
 
-            return await _SumAsync(database, compileInfo);
+            return await _SumValueAsync<TValue>(database, compileInfo);
         }
 
-        private static async Task<int> _SumAsync(IDatabase database, CompileInfo compileInfo)
+        private static async Task<TValue> _SumValueAsync<TValue>(IDatabase database, CompileInfo compileInfo)
         {
             using var connection = database.GetConnection();
-            return await connection.ExecuteScalarAsync<int>(compileInfo.Sql, compileInfo.NamedBindings);
+            return await connection.ExecuteScalarAsync<TValue>(compileInfo.Sql, compileInfo.NamedBindings);
         }
 
         public static async Task<TValue> GetValueAsync<TValue>(IDatabase database, string tableName, IRedis redis, Query query)
