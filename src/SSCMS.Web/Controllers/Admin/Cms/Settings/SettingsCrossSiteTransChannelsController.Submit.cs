@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsCrossSiteTransChannelsController
     {
         [HttpPost, Route(Route)]
-        public async Task<ActionResult<BoolResult>> Submit([FromBody] SubmitRequest request)
+        public async Task<ActionResult<List<int>>> Submit([FromBody] SubmitRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 MenuUtils.SitePermissions.SettingsCrossSiteTransChannels))
@@ -32,10 +33,17 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _authManager.AddSiteLogAsync(request.SiteId, "修改跨站转发设置");
 
-            return new BoolResult
+            var channel = await _channelRepository.GetAsync(request.ChannelId);
+            var expendedChannelIds = new List<int>
             {
-                Value = true
+                request.SiteId
             };
+            if (!expendedChannelIds.Contains(channel.ParentId))
+            {
+                expendedChannelIds.Add(channel.ParentId);
+            }
+
+            return expendedChannelIds;
         }
     }
 }

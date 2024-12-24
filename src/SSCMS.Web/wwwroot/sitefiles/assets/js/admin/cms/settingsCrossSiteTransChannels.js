@@ -4,6 +4,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channels: [],
   filterText: '',
+  expandedChannelIds: [],
 
   editPanel: false,
   channelId: null,
@@ -12,7 +13,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiList: function(message) {
+  apiList: function(expandedChannelIds, message) {
     var $this = this;
 
     utils.loading(this, true);
@@ -24,7 +25,7 @@ var methods = {
       var res = response.data;
 
       $this.channels = [res.channels];
-
+      $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
       if (message) {
         utils.success(message);
       }
@@ -47,7 +48,7 @@ var methods = {
       var res = response.data;
 
       $this.editPanel = false;
-      $this.apiList('跨站转发栏目设置成功!');
+      $this.apiList(res, '跨站转发栏目设置成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
