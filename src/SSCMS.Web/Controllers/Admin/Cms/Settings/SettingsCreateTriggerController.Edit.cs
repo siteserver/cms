@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Dto;
 using SSCMS.Utils;
 using SSCMS.Core.Utils;
+using System.Collections.Generic;
 
 namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 {
     public partial class SettingsCreateTriggerController
     {
         [HttpPost, Route(RouteEdit)]
-        public async Task<ActionResult<BoolResult>> Edit([FromBody] EditRequest request)
+        public async Task<ActionResult<List<int>>> Edit([FromBody] EditRequest request)
         {
             if (!await _authManager.HasSitePermissionsAsync(request.SiteId,
                 MenuUtils.SitePermissions.SettingsCreateTrigger))
@@ -29,10 +30,16 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Settings
 
             await _authManager.AddSiteLogAsync(request.SiteId, request.ChannelId, 0, "设置栏目变动生成页面", $"栏目：{channel.ChannelName}");
 
-            return new BoolResult
+            var expendedChannelIds = new List<int>
             {
-                Value = true
+                request.SiteId
             };
+            if (!expendedChannelIds.Contains(channel.ParentId))
+            {
+                expendedChannelIds.Add(channel.ParentId);
+            }
+
+            return expendedChannelIds;
         }
     }
 }

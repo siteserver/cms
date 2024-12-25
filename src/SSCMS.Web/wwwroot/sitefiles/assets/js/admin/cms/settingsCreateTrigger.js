@@ -7,6 +7,7 @@ var data = utils.init({
   channels: [],
   allChannelIds: [],
   filterText: '',
+  expandedChannelIds: [],
 
   channelIds: [],
   editPanel: false,
@@ -16,7 +17,7 @@ var data = utils.init({
 });
 
 var methods = {
-  apiGet: function(message) {
+  apiGet: function(expandedChannelIds, message) {
     var $this = this;
 
     utils.loading(this, true);
@@ -29,6 +30,7 @@ var methods = {
 
       $this.channels = [res.channel];
       $this.allChannelIds = res.allChannelIds;
+      $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
 
       if (message) {
         utils.success(message);
@@ -48,7 +50,7 @@ var methods = {
       var res = response.data;
 
       $this.editPanel = false;
-      $this.apiGet('页面生成触发器设置成功!');
+      $this.apiGet(res, '页面生成触发器设置成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);
@@ -63,7 +65,7 @@ var methods = {
       var res = response.data;
 
       $this.editSelectedPanel = false;
-      $this.apiGet('页面生成触发器设置成功!');
+      $this.apiGet(null, '页面生成触发器设置成功!');
     }).catch(function (error) {
       utils.loading($this, false);
       utils.error(error);

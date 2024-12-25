@@ -4,6 +4,7 @@ var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
   channels: [],
   filterText: '',
+  expandedChannelIds: [],
 
   editPanel: false,
   editForm: null,
@@ -21,7 +22,7 @@ var methods = {
     }
   },
 
-  apiList: function(message) {
+  apiList: function(expandedChannelIds, message) {
     var $this = this;
 
     utils.loading(this, true);
@@ -33,6 +34,7 @@ var methods = {
       var res = response.data;
 
       $this.channels = [res.channel];
+      $this.expandedChannelIds = expandedChannelIds ? expandedChannelIds : [$this.siteId];
       if (message) {
         utils.success(message);
       }
@@ -73,7 +75,7 @@ var methods = {
       var res = response.data;
 
       $this.editPanel = false;
-      $this.apiList('页面路径设置成功!');
+      $this.apiList(res, '页面路径设置成功!');
     }).catch(function (error) {
       utils.error(error);
     }).then(function () {
