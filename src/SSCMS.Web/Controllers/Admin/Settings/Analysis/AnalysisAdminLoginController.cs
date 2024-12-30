@@ -18,7 +18,10 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         private readonly IAuthManager _authManager;
         private readonly IStatRepository _statRepository;
 
-        public AnalysisAdminLoginController(IAuthManager authManager, IStatRepository statRepository)
+        public AnalysisAdminLoginController(
+            IAuthManager authManager,
+            IStatRepository statRepository
+        )
         {
             _authManager = authManager;
             _statRepository = statRepository;

@@ -22,7 +22,12 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Analysis
         private readonly IStatRepository _statRepository;
         private readonly IAdministratorRepository _administratorRepository;
 
-        public AnalysisSiteContentController(IAuthManager authManager, ISiteRepository siteRepository, IStatRepository statRepository, IAdministratorRepository administratorRepository)
+        public AnalysisSiteContentController(
+            IAuthManager authManager,
+            ISiteRepository siteRepository,
+            IStatRepository statRepository,
+            IAdministratorRepository administratorRepository
+        )
         {
             _authManager = authManager;
             _siteRepository = siteRepository;
