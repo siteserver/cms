@@ -33,7 +33,7 @@ namespace SSCMS.Core.Plugins
 
             var assemblyNames = AssemblyLoadContext.Default.Assemblies.Select(x => x.GetName().Name).ToList();
 
-            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            var assembly = LoadFromPath(AssemblyLoadContext.Default, assemblyPath);
 
             var isValidAssembly = false;
             var extensionType = typeof(IPluginExtension);
@@ -60,15 +60,26 @@ namespace SSCMS.Core.Plugins
             foreach (var assemblyFile in assemblyFiles)
             {
                 var assemblyName = Path.GetFileNameWithoutExtension(assemblyFile);
-
                 if (assemblyNames.Any(x => StringUtils.EqualsIgnoreCase(x, assemblyName))) continue;
 
-                AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
-
-                assemblyNames.Add(assemblyName);
+                if (LoadFromPath(AssemblyLoadContext.Default, assemblyFile) != null)
+                {
+                    assemblyNames.Add(assemblyName);
+                }
             }
 
             return assembly;
+        }
+
+        public static Assembly LoadFromPath(AssemblyLoadContext context, string assemblyPath)
+        {
+            try
+            {
+                var assembly = context.LoadFromAssemblyPath(assemblyPath);
+                return assembly;
+            }
+            catch { }
+            return null;
         }
 
         /// <summary>

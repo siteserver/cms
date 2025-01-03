@@ -56,12 +56,20 @@ namespace SSCMS.Core.Services
                     var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, $"{name.Name}.dll");
                     if (FileUtils.IsFileExists(filePath))
                     {
-                        return context.LoadFromAssemblyPath(filePath);
+                        var assembly = PluginUtils.LoadFromPath(context, filePath);
+                        if (assembly != null)
+                        {
+                            return assembly;
+                        }
                     }
                     var files = Directory.GetFiles(DirectoryPath, $"{name.Name}.dll", SearchOption.AllDirectories);
                     if (files != null && files.Length > 0)
                     {
-                        return context.LoadFromAssemblyPath(files[0]);
+                        var assembly = PluginUtils.LoadFromPath(context, files[0]);
+                        if (assembly != null)
+                        {
+                            return assembly;
+                        }
                     }
                     return null;
                 };

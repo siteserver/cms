@@ -21,7 +21,7 @@ namespace SSCMS.Core.Plugins
         protected override Assembly Load(AssemblyName assemblyName)
         {
             var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            return assemblyPath != null ? LoadFromAssemblyPath(assemblyPath) : null;
+            return assemblyPath != null ? PluginUtils.LoadFromPath(this, assemblyPath) : null;
         }
 
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
