@@ -17,12 +17,22 @@ namespace SSCMS.Web.Controllers.Home.Common.Editor
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
+        private readonly IVodManager _vodManager;
+        private readonly IStorageManager _storageManager;
         private readonly ISiteRepository _siteRepository;
 
-        public LayerVideoController(IAuthManager authManager, IPathManager pathManager, ISiteRepository siteRepository)
+        public LayerVideoController(
+            IAuthManager authManager,
+            IPathManager pathManager,
+            IVodManager vodManager,
+            IStorageManager storageManager,
+            ISiteRepository siteRepository
+        )
         {
             _authManager = authManager;
             _pathManager = pathManager;
+            _vodManager = vodManager;
+            _storageManager = storageManager;
             _siteRepository = siteRepository;
         }
 

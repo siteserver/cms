@@ -59,11 +59,11 @@ var methods = {
       return false;
     }
 
-    var isLt10M = file.size / 1024 / 1024 < 10;
-    if (!isLt10M) {
-      utils.error('上传图片大小不能超过 10MB!');
-      return false;
-    }
+    // var isLt10M = file.size / 1024 / 1024 < 10;
+    // if (!isLt10M) {
+    //   utils.error('上传图片大小不能超过 10MB!');
+    //   return false;
+    // }
     return true;
   },
 
