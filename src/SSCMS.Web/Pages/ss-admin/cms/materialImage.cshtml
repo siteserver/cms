@@ -46,11 +46,6 @@
       </el-button>
     </el-upload>
 
-    <el-button v-if="siteType === 'wx'" v-on:click="btnPullClick" size="small" plain type="primary">
-      <i class="el-icon-download"></i>
-      拉 取
-    </el-button>
-
     <el-button v-if="showType !== 'card'" size="small" plain type="primary" icon="el-icon-delete" :disabled="!isChecked" 
       v-on:click="btnDeleteSelectedClick">
       删除

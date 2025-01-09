@@ -15,7 +15,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
                 return Unauthorized();
             }
 
-            var messageId = await _materialMessageRepository.InsertAsync(request.GroupId, string.Empty, request.Items);
+            var messageId = await _materialMessageRepository.InsertAsync(request.GroupId, request.Items);
 
             return new CreateResult
             {

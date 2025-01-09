@@ -44,15 +44,6 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task UpdateMediaIdAsync(int id, string mediaId)
-        {
-            await _repository.UpdateAsync(Q
-                .Set(nameof(MaterialAudio.MediaId), mediaId)
-                .Where(nameof(MaterialAudio.Id), id)
-                .CachingRemove(CacheKey)
-            );
-        }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var audio = await GetAsync(id);
@@ -126,14 +117,6 @@ namespace SSCMS.Core.Repositories
             var audios = await GetAllAsync();
             var audio = audios.FirstOrDefault(x => x.Title == title);
             return audio?.Url;
-        }
-
-        public async Task<bool> IsExistsAsync(string mediaId)
-        {
-            if (string.IsNullOrEmpty(mediaId)) return false;
-
-            var audios = await GetAllAsync();
-            return audios.Exists(x => x.MediaId == mediaId);
         }
     }
 }

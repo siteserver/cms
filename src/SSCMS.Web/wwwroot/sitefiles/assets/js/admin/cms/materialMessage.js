@@ -2,7 +2,6 @@
 var $urlUpdate = $url + '/actions/update';
 var $urlDelete = $url + '/actions/delete';
 var $urlDeleteGroup = $url + '/actions/deleteGroup';
-var $urlPull = $url + '/actions/pull';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
@@ -91,26 +90,7 @@ var methods = {
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('图文消息素材删除成功!');
-      $this.apiGet(1);
-    }).catch(function (error) {
-      utils.error(error);
-    }).then(function () {
-      utils.loading($this, false);
-    });
-  },
-
-  apiPull: function () {
-    var $this = this;
-
-    utils.loading(this, true);
-    $api.post($urlPull, {
-      siteId: this.siteId,
-      groupId: this.form.groupId
-    }).then(function (response) {
-      var res = response.data;
-
-      utils.success('公众号图文消息素材拉取成功！');
+      utils.success('图文素材删除成功!');
       $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
@@ -142,11 +122,11 @@ var methods = {
   },
 
   btnCreateClick: function() {
-    utils.addTab('创建图文消息', this.getEditorUrl());
+    utils.addTab('创建图文', this.getEditorUrl());
   },
 
   btnUpdateClick: function(message) {
-    utils.addTab('修改图文消息', this.getEditorUrl() + '&messageId=' + message.id);
+    utils.addTab('修改图文', this.getEditorUrl() + '&messageId=' + message.id);
   },
 
   btnSelectGroupClick: function (groupId) {
@@ -234,19 +214,6 @@ var methods = {
     });
   },
 
-  btnPullClick: function() {
-    var $this = this;
-
-    utils.alertDelete({
-      title: '拉取公众号图文消息素材',
-      text: '此操作将拉取公众号图文消息素材，确定吗？',
-      button: '确 定',
-      callback: function () {
-        $this.apiPull();
-      }
-    });
-  },
-
   btnGroupAddClick: function() {
     utils.openLayer({
       title: '新建分组',
@@ -277,7 +244,7 @@ var methods = {
 
     utils.alertDelete({
       title: '删除分组',
-      text: '仅删除分组，不删除图文消息，组内图文消息将自动归入未分组',
+      text: '仅删除分组，不删除图文，组内图文将自动归入未分组',
       callback: function () {
         $this.apiDeleteGroup();
       }

@@ -381,7 +381,7 @@
         "order": 109
       },
       "site_materialMessage": {
-        "text": "图文消息素材管理",
+        "text": "图文素材管理",
         "type": [
           "web",
           "wx"
@@ -420,13 +420,21 @@
         ],
         "order": 114
       },
+      "site_materialComponent": {
+        "text": "组件素材管理",
+        "type": [
+          "web",
+          "wx"
+        ],
+        "order": 115
+      },
       "site_templates": {
         "text": "模板管理",
         "type": [
           "web",
           "wx"
         ],
-        "order": 115
+        "order": 116
       },
       "site_specials": {
         "text": "专题管理",
@@ -434,7 +442,7 @@
           "web",
           "wx"
         ],
-        "order": 116
+        "order": 117
       },
       "site_templatesMatch": {
         "text": "匹配模板",
@@ -442,7 +450,7 @@
           "web",
           "wx"
         ],
-        "order": 117
+        "order": 118
       },
       "site_templatesIncludes": {
         "text": "包含文件管理",
@@ -450,7 +458,7 @@
           "web",
           "wx"
         ],
-        "order": 118
+        "order": 119
       },
       "site_templatesAssets": {
         "text": "资源文件管理",
@@ -458,7 +466,7 @@
           "web",
           "wx"
         ],
-        "order": 119
+        "order": 120
       },
       "site_templatesPreview": {
         "text": "模板在线解析",
@@ -466,7 +474,7 @@
           "web",
           "wx"
         ],
-        "order": 120
+        "order": 121
       },
       "site_templatesReference": {
         "text": "模板语言参考",
@@ -474,7 +482,7 @@
           "web",
           "wx"
         ],
-        "order": 121
+        "order": 122
       },
       "site_settingsSite": {
         "text": "站点设置",
@@ -482,7 +490,7 @@
           "web",
           "wx"
         ],
-        "order": 122
+        "order": 123
       },
       "site_settingsContent": {
         "text": "内容设置",
@@ -490,7 +498,7 @@
           "web",
           "wx"
         ],
-        "order": 123
+        "order": 124
       },
       "site_settingsChannelGroup": {
         "text": "栏目组管理",
@@ -498,7 +506,7 @@
           "web",
           "wx"
         ],
-        "order": 124
+        "order": 125
       },
       "site_settingsContentGroup": {
         "text": "内容组管理",
@@ -506,7 +514,7 @@
           "web",
           "wx"
         ],
-        "order": 125
+        "order": 126
       },
       "site_settingsContentTag": {
         "text": "内容标签管理",
@@ -514,7 +522,7 @@
           "web",
           "wx"
         ],
-        "order": 126
+        "order": 127
       },
       "site_settingsStyleContent": {
         "text": "内容字段设置",
@@ -522,7 +530,7 @@
           "web",
           "wx"
         ],
-        "order": 127
+        "order": 128
       },
       "site_settingsStyleChannel": {
         "text": "栏目字段设置",
@@ -530,7 +538,7 @@
           "web",
           "wx"
         ],
-        "order": 128
+        "order": 129
       },
       "site_settingsStyleSite": {
         "text": "站点字段设置",
@@ -538,7 +546,7 @@
           "web",
           "wx"
         ],
-        "order": 129
+        "order": 130
       },
       "site_settingsStyleRelatedField": {
         "text": "联动字段设置",
@@ -546,7 +554,7 @@
           "web",
           "wx"
         ],
-        "order": 130
+        "order": 131
       },
       "site_settingsCrossSiteTransChannels": {
         "text": "跨站转发栏目设置",
@@ -554,7 +562,7 @@
           "web",
           "wx"
         ],
-        "order": 131
+        "order": 132
       },
       "site_settingsCrossSiteTrans": {
         "text": "跨站转发审核设置",
@@ -562,7 +570,7 @@
           "web",
           "wx"
         ],
-        "order": 132
+        "order": 133
       },
       "site_settingsCreateRule": {
         "text": "页面命名规则",
@@ -570,7 +578,7 @@
           "web",
           "wx"
         ],
-        "order": 133
+        "order": 134
       },
       "site_settingsCreate": {
         "text": "页面生成设置",
@@ -578,7 +586,7 @@
           "web",
           "wx"
         ],
-        "order": 134
+        "order": 135
       },
       "site_settingsCreateTrigger": {
         "text": "页面生成触发器",
@@ -586,7 +594,7 @@
           "web",
           "wx"
         ],
-        "order": 135
+        "order": 136
       },
       "site_settingsUploadImage": {
         "text": "图片上传设置",
@@ -594,7 +602,7 @@
           "web",
           "wx"
         ],
-        "order": 136
+        "order": 137
       },
       "site_settingsUploadVideo": {
         "text": "视频上传设置",
@@ -602,7 +610,7 @@
           "web",
           "wx"
         ],
-        "order": 137
+        "order": 138
       },
       "site_settingsUploadAudio": {
         "text": "音频上传设置",
@@ -610,7 +618,7 @@
           "web",
           "wx"
         ],
-        "order": 138
+        "order": 139
       },
       "site_settingsUploadFile": {
         "text": "附件上传设置",
@@ -618,7 +626,7 @@
           "web",
           "wx"
         ],
-        "order": 139
+        "order": 140
       },
       "site_settingsWaterMark": {
         "text": "图片水印设置",
@@ -626,7 +634,7 @@
           "web",
           "wx"
         ],
-        "order": 140
+        "order": 141
       },
       "site_createIndex": {
         "text": "生成首页",
@@ -634,7 +642,7 @@
           "web",
           "wx"
         ],
-        "order": 141
+        "order": 142
       },
       "site_createChannels": {
         "text": "生成栏目页",
@@ -642,7 +650,7 @@
           "web",
           "wx"
         ],
-        "order": 142
+        "order": 143
       },
       "site_createContents": {
         "text": "生成内容页",
@@ -650,7 +658,7 @@
           "web",
           "wx"
         ],
-        "order": 143
+        "order": 144
       },
       "site_createFiles": {
         "text": "生成文件页",
@@ -658,7 +666,7 @@
           "web",
           "wx"
         ],
-        "order": 144
+        "order": 145
       },
       "site_createSpecials": {
         "text": "生成专题",
@@ -666,7 +674,7 @@
           "web",
           "wx"
         ],
-        "order": 145
+        "order": 146
       },
       "site_createAll": {
         "text": "一键生成",
@@ -674,7 +682,7 @@
           "web",
           "wx"
         ],
-        "order": 146
+        "order": 147
       },
       "site_createStatus": {
         "text": "生成进度查看",
@@ -682,56 +690,56 @@
           "web",
           "wx"
         ],
-        "order": 147
+        "order": 148
       },
       "site_wxAccount": {
         "text": "平台账号配置",
         "type": [
           "wx"
         ],
-        "order": 148
+        "order": 149
       },
       "site_wxReply": {
         "text": "关键词回复",
         "type": [
           "wx"
         ],
-        "order": 149
+        "order": 150
       },
       "site_wxReplyAuto": {
         "text": "收到消息回复",
         "type": [
           "wx"
         ],
-        "order": 150
+        "order": 151
       },
       "site_wxReplyBeAdded": {
         "text": "被关注回复",
         "type": [
           "wx"
         ],
-        "order": 151
+        "order": 152
       },
       "site_wxMenus": {
         "text": "自定义菜单",
         "type": [
           "wx"
         ],
-        "order": 152
+        "order": 153
       },
       "site_wxChat": {
         "text": "消息管理",
         "type": [
           "wx"
         ],
-        "order": 153
+        "order": 154
       },
       "site_wxSend": {
         "text": "群发消息",
         "type": [
           "wx"
         ],
-        "order": 154
+        "order": 155
       },
       "content_view": {
         "text": "浏览内容",
@@ -1369,6 +1377,7 @@
           "site_materialVideo",
           "site_materialAudio",
           "site_materialFile",
+          "site_materialComponent",
           "site_channelsTranslate",
           "site_contentsReplace",
           "site_contentsRecycle"
@@ -1450,12 +1459,13 @@
               "site_materialImage",
               "site_materialVideo",
               "site_materialAudio",
-              "site_materialFile"
+              "site_materialFile",
+              "site_materialComponent"
             ],
             "order": 105,
             "menus": {
               "site_materialMessage": {
-                "text": "图文消息管理",
+                "text": "图文管理",
                 "link": "./cms/materialMessage/",
                 "permissions": [
                   "site_materialMessage"
@@ -1493,6 +1503,14 @@
                   "site_materialFile"
                 ],
                 "order": 105
+              },
+              "site_materialComponent": {
+                "text": "组件管理",
+                "link": "./cms/materialComponent/",
+                "permissions": [
+                  "site_materialComponent"
+                ],
+                "order": 106
               }
             }
           },

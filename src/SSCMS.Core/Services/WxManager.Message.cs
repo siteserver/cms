@@ -39,42 +39,6 @@ namespace SSCMS.Core.Services
     <Content><![CDATA[{replyMessage.Text}]]></Content>
 ";
             }
-            else if (replyMessage.MaterialType == MaterialType.Image)
-            {
-                
-                material = $@"
-  <MsgType><![CDATA[image]]></MsgType>
-  <Image>
-    <MediaId><![CDATA[{replyMessage.Image.MediaId}]]></MediaId>
-  </Image>
-";
-            }
-            else if (replyMessage.MaterialType == MaterialType.Video)
-            {
-                material = $@"
-  <MsgType><![CDATA[video]]></MsgType>
-  <Video>
-    <MediaId><![CDATA[{replyMessage.Video.MediaId}]]></MediaId>
-    <Title><![CDATA[{replyMessage.Video.Title}]]></Title>
-    <Description><![CDATA[{replyMessage.Video.Description}]]></Description>
-  </Video>
-";
-            }
-            else if (replyMessage.MaterialType == MaterialType.Audio)
-            {
-                material = $@"
-  <MsgType><![CDATA[voice]]></MsgType>
-  <Voice>
-    <MediaId><![CDATA[{replyMessage.Audio.MediaId}]]></MediaId>
-  </Voice>
-";
-            }
-            else if (replyMessage.MaterialType == MaterialType.File)
-            {
-                material = $@"
-
-";
-            }
 
             var sRespData = $@"
 <xml>

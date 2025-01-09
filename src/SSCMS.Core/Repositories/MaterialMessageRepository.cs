@@ -69,13 +69,12 @@ namespace SSCMS.Core.Repositories
             await _materialMessageItemRepository.InsertAsync(item);
         }
 
-        public async Task<int> InsertAsync(int groupId, string mediaId, List<MaterialMessageItem> items)
+        public async Task<int> InsertAsync(int groupId, List<MaterialMessageItem> items)
         {
             var messageId = await _repository.InsertAsync(
                 new MaterialMessage
                 {
-                    GroupId = groupId,
-                    MediaId = mediaId
+                    GroupId = groupId
                 },
                 Q.CachingRemove(CacheKey)
             );
@@ -196,15 +195,6 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        public async Task UpdateMediaIdAsync(int id, string mediaId)
-        {
-            await _repository.UpdateAsync(Q
-                .Set(nameof(MaterialMessage.MediaId), mediaId)
-                .Where(nameof(MaterialMessage.Id), id)
-                .CachingRemove(CacheKey)
-            );
-        }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var message = await GetAsync(id);
@@ -294,14 +284,6 @@ namespace SSCMS.Core.Repositories
             if (id == 0) return null;
             var messages = await GetAllAsync();
             return messages.FirstOrDefault(x => x.Id == id);
-        }
-
-        public async Task<bool> IsExistsAsync(string mediaId)
-        {
-            if (string.IsNullOrEmpty(mediaId)) return false;
-
-            var messages = await GetAllAsync();
-            return messages.Exists(x => x.MediaId == mediaId);
         }
     }
 }

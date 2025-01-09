@@ -50,8 +50,6 @@ namespace SSCMS.Services
 
         Task CustomSendVideoAsync(string accessTokenOrAppId, string openId, int siteId, int materialId, string mediaId, bool retry = true);
 
-        Task PullMaterialAsync(string accessTokenOrAppId, MaterialType materialType, int groupId);
-
         Task<string> PushMaterialAsync(string accessTokenOrAppId, MaterialType materialType, int materialId);
 
         Task PullMenuAsync(string accessTokenOrAppId, int siteId);

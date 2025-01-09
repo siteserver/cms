@@ -34,6 +34,7 @@ namespace SSCMS.Core.Services
         public ILogRepository LogRepository { get; }
         public IMaterialArticleRepository MaterialArticleRepository { get; }
         public IMaterialAudioRepository MaterialAudioRepository { get; }
+        public IMaterialComponentRepository MaterialComponentRepository { get; }
         public IMaterialFileRepository MaterialFileRepository { get; }
         public IMaterialGroupRepository MaterialGroupRepository { get; }
         public IMaterialImageRepository MaterialImageRepository { get; }
@@ -87,6 +88,7 @@ namespace SSCMS.Core.Services
             ILogRepository logRepository,
             IMaterialArticleRepository materialArticleRepository,
             IMaterialAudioRepository materialAudioRepository,
+            IMaterialComponentRepository materialComponentRepository,
             IMaterialFileRepository materialFileRepository,
             IMaterialGroupRepository materialGroupRepository,
             IMaterialImageRepository materialImageRepository,
@@ -140,6 +142,7 @@ namespace SSCMS.Core.Services
             LogRepository = logRepository;
             MaterialArticleRepository = materialArticleRepository;
             MaterialAudioRepository = materialAudioRepository;
+            MaterialComponentRepository = materialComponentRepository;
             MaterialFileRepository = materialFileRepository;
             MaterialGroupRepository = materialGroupRepository;
             MaterialImageRepository = materialImageRepository;
@@ -196,6 +199,7 @@ namespace SSCMS.Core.Services
                 LogRepository,
                 MaterialArticleRepository,
                 MaterialAudioRepository,
+                MaterialComponentRepository,
                 MaterialFileRepository,
                 MaterialGroupRepository,
                 MaterialImageRepository,

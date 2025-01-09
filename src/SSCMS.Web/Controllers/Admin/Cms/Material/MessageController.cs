@@ -19,7 +19,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private const string RouteUpdate = "cms/material/message/actions/update";
         private const string RouteDelete = "cms/material/message/actions/delete";
         private const string RouteDeleteGroup = "cms/material/message/actions/deleteGroup";
-        private const string RoutePull = "cms/material/message/actions/pull";
 
         private readonly IAuthManager _authManager;
         private readonly IPathManager _pathManager;
@@ -84,17 +83,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public class DeleteGroupRequest : SiteRequest
         {
             public int Id { get; set; }
-        }
-
-        public class PullRequest : SiteRequest
-        {
-            public int GroupId { get; set; }
-        }
-
-        public class PullResult
-        {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
         }
     }
 }

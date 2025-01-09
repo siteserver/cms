@@ -95,7 +95,6 @@ namespace SSCMS.Core.Services
                 var material = await _materialMessageRepository.GetAsync(message.MaterialId);
                 if (material != null)
                 {
-                    message.MediaId = material.MediaId;
                     message.Items = material.Items;
                     return message;
                 }
@@ -105,7 +104,6 @@ namespace SSCMS.Core.Services
                 var material = await _materialImageRepository.GetAsync(message.MaterialId);
                 if (material != null)
                 {
-                    message.MediaId = material.MediaId;
                     message.Image = material;
                     return message;
                 }
@@ -115,7 +113,6 @@ namespace SSCMS.Core.Services
                 var material = await _materialAudioRepository.GetAsync(message.MaterialId);
                 if (material != null)
                 {
-                    message.MediaId = material.MediaId;
                     message.Audio = material;
                     return message;
                 }
@@ -125,7 +122,6 @@ namespace SSCMS.Core.Services
                 var material = await _materialVideoRepository.GetAsync(message.MaterialId);
                 if (material != null)
                 {
-                    message.MediaId = material.MediaId;
                     message.Video = material;
                     return message;
                 }

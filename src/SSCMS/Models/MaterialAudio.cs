@@ -7,9 +7,6 @@ namespace SSCMS.Models
     public class MaterialAudio : Entity
     {
         [DataColumn]
-        public string MediaId { get; set; }
-
-        [DataColumn]
         public int GroupId { get; set; }
 
         [DataColumn]

@@ -32,22 +32,6 @@ namespace SSCMS.Core.Services
                 articles.Add(article);
             }
 
-            // var mediaId = message.MediaId;
-            // if (string.IsNullOrEmpty(mediaId))
-            // {
-            //     var result = await MediaApi.UploadNewsAsync(accessTokenOrAppId, 10000, newsList.ToArray());
-            //     mediaId = result.media_id;
-            //     await _materialMessageRepository.UpdateMediaIdAsync(materialId, mediaId);
-            // }
-            // else
-            // {
-            //     var index = 0;
-            //     foreach (var news in newsList)
-            //     {
-            //         await MediaApi.UpdateForeverNewsAsync(accessTokenOrAppId, message.MediaId, index++, news);
-            //     }
-            // }
-
             var mediaId = string.Empty;
             var url = $"https://api.weixin.qq.com/cgi-bin/draft/add?access_token={accessToken}";
             var (success, result, errorMessage) = await RestUtils.PostStringAsync(url, TranslateUtils.JsonSerialize(articles));

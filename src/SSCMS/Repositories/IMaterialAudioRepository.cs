@@ -11,8 +11,6 @@ namespace SSCMS.Repositories
 
         Task<bool> UpdateAsync(MaterialAudio audio);
 
-        Task UpdateMediaIdAsync(int id, string mediaId);
-
         Task<bool> DeleteAsync(int id);
 
         Task<int> GetCountAsync(int groupId, string keyword);
@@ -24,7 +22,5 @@ namespace SSCMS.Repositories
         Task<string> GetUrlByIdAsync(int id);
 
         Task<string> GetUrlByTitleAsync(string title);
-
-        Task<bool> IsExistsAsync(string mediaId);
     }
 }

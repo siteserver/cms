@@ -19,7 +19,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private const string RouteUpdate = "cms/material/audio/actions/update";
         private const string RouteDelete = "cms/material/audio/actions/delete";
         private const string RouteDeleteGroup = "cms/material/audio/actions/deleteGroup";
-        private const string RoutePull = "cms/material/audio/actions/pull";
         private const string RouteDownload = "cms/material/audio/actions/download";
 
         private readonly ISettingsManager _settingsManager;
@@ -97,17 +96,6 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public class DeleteGroupRequest : SiteRequest
         {
             public int Id { get; set; }
-        }
-
-        public class PullRequest : SiteRequest
-        {
-            public int GroupId { get; set; }
-        }
-
-        public class PullResult
-        {
-            public bool Success { get; set; }
-            public string ErrorMessage { get; set; }
         }
     }
 }

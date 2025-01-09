@@ -13,42 +13,32 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
     [OpenApiIgnore]
     [Authorize(Roles = Types.Roles.Administrator)]
     [Route(Constants.ApiAdminPrefix)]
-    public partial class ImageController : ControllerBase
+    public partial class ComponentController : ControllerBase
     {
-        private const string Route = "cms/material/image";
-        private const string RouteUpdate = "cms/material/image/actions/update";
-        private const string RouteDelete = "cms/material/image/actions/delete";
-        private const string RouteDeleteGroup = "cms/material/image/actions/deleteGroup";
-        private const string RouteDownload = "cms/material/image/actions/download";
+        private const string Route = "cms/material/component";
+        private const string RouteUpdate = "cms/material/component/actions/update";
+        private const string RouteDelete = "cms/material/component/actions/delete";
+        private const string RouteDeleteGroup = "cms/material/component/actions/deleteGroup";
 
-        private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
-        private readonly IPathManager _pathManager;
-        private readonly IWxManager _wxManager;
         private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
-        private readonly IMaterialImageRepository _materialImageRepository;
+        private readonly IMaterialComponentRepository _materialComponentRepository;
 
-        public ImageController(
-            ISettingsManager settingsManager,
+        public ComponentController(
             IAuthManager authManager,
-            IPathManager pathManager,
-            IWxManager wxManager,
             IConfigRepository configRepository,
             ISiteRepository siteRepository,
             IMaterialGroupRepository materialGroupRepository,
-            IMaterialImageRepository materialImageRepository
+            IMaterialComponentRepository materialComponentRepository
         )
         {
-            _settingsManager = settingsManager;
             _authManager = authManager;
-            _pathManager = pathManager;
-            _wxManager = wxManager;
             _configRepository = configRepository;
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
-            _materialImageRepository = materialImageRepository;
+            _materialComponentRepository = materialComponentRepository;
         }
 
         public class QueryRequest
@@ -65,13 +55,8 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             public bool IsSiteOnly { get; set; }
             public IEnumerable<MaterialGroup> Groups { get; set; }
             public int Count { get; set; }
-            public IEnumerable<MaterialImage> Items { get; set; }
+            public IEnumerable<MaterialComponent> Items { get; set; }
             public string SiteType { get; set; }
-        }
-
-        public class CreateRequest : SiteRequest
-        {
-            public int GroupId { get; set; }
         }
 
         public class UpdateRequest : SiteRequest
@@ -84,15 +69,9 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         public class DeleteRequest : SiteRequest
         {
             public int Id { get; set; }
-            public List<int> DataIds { get; set; }
         }
 
         public class DeleteGroupRequest : SiteRequest
-        {
-            public int Id { get; set; }
-        }
-
-        public class DownloadRequest : SiteRequest
         {
             public int Id { get; set; }
         }

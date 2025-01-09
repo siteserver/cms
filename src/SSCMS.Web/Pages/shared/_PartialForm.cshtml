@@ -170,7 +170,6 @@
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '导入Word', name: 'editorLayerWord', inputType: style.inputType, attributeName: style.attributeName})">
           导入Word
         </el-button>
-
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传图片', name: 'formLayerImageUpload', inputType: style.inputType, attributeName: style.attributeName})">
           上传图片
         </el-button>
@@ -183,14 +182,12 @@
             <el-dropdown-item :command="{inputType: style.inputType, attributeName: style.attributeName, no: 0, type: 'materialImages'}">素材库图片</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '上传视频', name: 'editorLayerVideo', inputType: style.inputType, attributeName: style.attributeName, no: 0, width: 800, height: 600})">
           上传视频
         </el-button>
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '选择视频素材', name: 'materialLayerVideoSelect', inputType: style.inputType, attributeName: style.attributeName, no: 0, full: true})">
           选择视频
         </el-button>
-
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入音频', name: 'editorLayerAudio', inputType: style.inputType, attributeName: style.attributeName})">
           插入音频
         </el-button>
@@ -199,6 +196,9 @@
         </el-button>
         <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入图文', name: 'editorLayerArticle', inputType: style.inputType, attributeName: style.attributeName, full: true})">
           插入图文
+        </el-button>
+        <el-button size="mini" type="info" plain v-on:click="btnLayerClick({title: '插入组件', name: 'editorLayerComponent', inputType: style.inputType, attributeName: style.attributeName, full: true})">
+          插入组件
         </el-button>
       </el-button-group>
       <textarea

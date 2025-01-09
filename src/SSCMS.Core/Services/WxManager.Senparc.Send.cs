@@ -90,11 +90,7 @@ namespace SSCMS.Core.Services
                 var filePath = _pathManager.ParsePath(image.Url);
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Image, filePath);
-                    if (!string.IsNullOrEmpty(mediaId))
-                    {
-                        await _materialImageRepository.UpdateMediaIdAsync(materialId, mediaId);
-                    }
+                    await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Image, filePath);
                 }
             }
 
@@ -127,7 +123,6 @@ namespace SSCMS.Core.Services
                     (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Image, filePath);
                     if (!string.IsNullOrEmpty(mediaId))
                     {
-                        await _materialImageRepository.UpdateMediaIdAsync(materialId, mediaId);
                         await CustomSendImageAsync(accessTokenOrAppId, openId, siteId, materialId, mediaId, false);
                     }
                 }
@@ -143,11 +138,7 @@ namespace SSCMS.Core.Services
                 var filePath = _pathManager.ParsePath(audio.Url);
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
-                    if (!string.IsNullOrEmpty(mediaId))
-                    {
-                        await _materialAudioRepository.UpdateMediaIdAsync(materialId, mediaId);
-                    }
+                    await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
                 }
             }
 
@@ -180,7 +171,6 @@ namespace SSCMS.Core.Services
                     (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
                     if (!string.IsNullOrEmpty(mediaId))
                     {
-                        await _materialAudioRepository.UpdateMediaIdAsync(materialId, mediaId);
                         await CustomSendAudioAsync(accessTokenOrAppId, openId, siteId, materialId, mediaId, false);
                     }
                 }
@@ -196,11 +186,7 @@ namespace SSCMS.Core.Services
                 var filePath = _pathManager.ParsePath(video.Url);
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Video, filePath);
-                    if (!string.IsNullOrEmpty(mediaId))
-                    {
-                        await _materialVideoRepository.UpdateMediaIdAsync(materialId, mediaId);
-                    }
+                    await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Video, filePath);
                 }
             }
 
@@ -236,7 +222,6 @@ namespace SSCMS.Core.Services
                     (_, mediaId, _) = await AddMaterialAsync(accessTokenOrAppId, WxMaterialType.Voice, filePath);
                     if (!string.IsNullOrEmpty(mediaId))
                     {
-                        await _materialVideoRepository.UpdateMediaIdAsync(materialId, mediaId);
                         await CustomSendVideoAsync(accessTokenOrAppId, openId, siteId, materialId, mediaId, false);
                     }
                 }

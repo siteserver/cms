@@ -26,6 +26,7 @@ namespace SSCMS.Services
         ILogRepository LogRepository { get; }
         IMaterialAudioRepository MaterialAudioRepository { get; }
         IMaterialArticleRepository MaterialArticleRepository { get; }
+        IMaterialComponentRepository MaterialComponentRepository { get; }
         IMaterialFileRepository MaterialFileRepository { get; }
         IMaterialGroupRepository MaterialGroupRepository { get; }
         IMaterialImageRepository MaterialImageRepository { get; }

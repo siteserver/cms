@@ -93,11 +93,6 @@
       新建图文
     </el-button>
 
-    <el-button v-if="isWxEnabled" v-on:click="btnPullClick" size="small" plain type="primary" style="margin-left: 0px;">
-      <i class="el-icon-download"></i>
-      拉 取
-    </el-button>
-
     <el-radio-group v-model="showType" plain size="small">
       <el-radio-button label="card">卡片视图</el-radio-button>
       <el-radio-button label="list">列表视图</el-radio-button>

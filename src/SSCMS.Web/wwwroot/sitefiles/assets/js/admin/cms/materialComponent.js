@@ -1,4 +1,4 @@
-﻿var $url = '/cms/material/image';
+﻿var $url = '/cms/material/component';
 var $urlUpdate = $url + '/actions/update';
 var $urlDelete = $url + '/actions/delete';
 var $urlDeleteGroup = $url + '/actions/deleteGroup';
@@ -6,7 +6,6 @@ var $urlDownload = $url + '/actions/download';
 
 var data = utils.init({
   siteId: utils.getQueryInt("siteId"),
-  showType: 'card',
   isSiteOnly: false,
   groups: null,
   count: null,
@@ -17,7 +16,7 @@ var data = utils.init({
   renameTitle: '',
   deleteId: 0,
   selectedGroupId: 0,
-  multipleSelection: [],
+
   form: {
     siteId: utils.getQueryInt("siteId"),
     keyword: '',
@@ -46,6 +45,7 @@ var methods = {
       if ($this.isSiteOnly) {
         $this.form.groupId = -$this.siteId;
       }
+
       $this.groups = res.groups;
       $this.count = res.count;
       $this.items = [];
@@ -80,18 +80,17 @@ var methods = {
     });
   },
 
-  apiDelete: function (material, dataIds) {
+  apiDelete: function (material) {
     var $this = this;
 
     utils.loading(this, true);
     $api.post($urlDelete, {
       siteId: this.siteId,
-      id: (material ? material.id : 0),
-      dataIds: dataIds
+      id: material.id
     }).then(function (response) {
       var res = response.data;
 
-      utils.success('图片素材删除成功！');
+      utils.success('视频素材删除成功！');
       $this.apiGet(1);
     }).catch(function (error) {
       utils.error(error);
@@ -102,19 +101,6 @@ var methods = {
 
   getLinkUrl: function(materialType) {
     return utils.getCmsUrl('material' + materialType, {siteId: this.siteId})
-  },
-
-  getUploadUrl: function() {
-    return $apiUrl + $url + '?siteId=' + this.siteId + '&groupId=' + this.form.groupId
-  },
-
-  getPreviewSrcList: function(url) {
-    var list = _.map(this.items, function (item) {
-      return item.url;
-    });
-    list.splice(list.indexOf(url), 1);
-    list.splice(0, 0, url);
-    return list;
   },
 
   btnTitleClick: function(material) {
@@ -221,7 +207,7 @@ var methods = {
       title: '新建分组',
       url: utils.getCmsUrl('materialLayerGroupAdd', {
         siteId: this.siteId,
-        materialType: 'Image'
+        materialType: 'Video'
       }),
       width: 400,
       height: 260
@@ -234,15 +220,11 @@ var methods = {
       url: utils.getCmsUrl('materialLayerGroupAdd', {
         siteId: this.siteId,
         groupId: this.form.groupId,
-        materialType: 'Image'
+        materialType: 'Video'
       }),
       width: 400,
       height: 260
     });
-  },
-
-  btnDownloadClick: function(material) {
-    window.open($apiUrl + $urlDownload + '?siteId=' + this.siteId + '&id=' + material.id + '&access_token=' + $token);
   },
 
   btnGroupDeleteClick: function () {
@@ -250,7 +232,7 @@ var methods = {
 
     utils.alertDelete({
       title: '删除分组',
-      text: '仅删除分组，不删除图片，组内图片将自动归入未分组',
+      text: '仅删除分组，不删除视频，组内视频将自动归入未分组',
       callback: function () {
         $this.apiDeleteGroup();
       }
@@ -264,7 +246,7 @@ var methods = {
       title: '删除素材',
       text: '确定删除此素材吗？',
       callback: function () {
-        $this.apiDelete(material, []);
+        $this.apiDelete(material);
       }
     });
   },
@@ -279,63 +261,35 @@ var methods = {
     this.apiGet(val);
   },
 
-  uploadBefore(file) {
-    var re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.svg|\.png|\.webp|\.jfif)$/i;
-    if(!re.exec(file.name))
-    {
-      utils.error('文件只能是图片格式，请选择有效的文件上传!');
-      return false;
-    }
-
-    var isLt10M = file.size / 1024 / 1024 < 10;
-    if (!isLt10M) {
-      utils.error('上传图片大小不能超过 10MB!');
-      return false;
-    }
-    return true;
+  btnCreateClick: function() {
+    utils.addTab('创建组件', this.getEditorUrl());
   },
 
-  uploadProgress: function() {
-    utils.loading(this, true);
+  btnUpdateClick: function(component) {
+    utils.addTab('修改组件', this.getEditorUrl() + '&componentId=' + component.id);
   },
 
-  uploadSuccess: function(res) {
-    this.items.splice(0, 0, res);
-    this.count++;
-    utils.loading(this, false);
-  },
-
-  uploadError: function(err) {
-    utils.loading(this, false);
-    var error = JSON.parse(err.message);
-    utils.error(error.message);
-  },
-
-  handleSelectionChange: function(val) {
-    this.multipleSelection = val;
-  },
-
-  toggleSelection: function(row) {
-    this.$refs.multipleTable.toggleRowSelection(row);
-  },
-
-  tableRowClassName: function(scope) {
-    if (this.multipleSelection.indexOf(scope.row) !== -1) {
-      return 'current-row';
-    }
-    return '';
-  },
-
-  btnDeleteSelectedClick: function () {
-    var $this = this;
-
-    utils.alertDelete({
-      title: '删除所选图片',
-      text: '此操作将删除所选图片，确定吗？',
-      callback: function () {
-        $this.apiDelete(null, $this.dataIds);
-      }
+  getEditorUrl: function() {
+    return utils.getCmsUrl('materialComponentEditor', {
+      siteId: this.siteId,
+      groupId: this.form.groupId,
+      page: this.form.page,
+      tabName: utils.getTabName()
     });
+  },
+
+  btnPreviewVideoClick: function (componentUrl) {
+    if (componentUrl) {
+      utils.openLayer({
+        title: "预览视频",
+        url: utils.getCommonUrl("editorLayerPreviewVideo", {
+          siteId: this.siteId,
+          componentUrl: componentUrl,
+        }),
+        width: 600,
+        height: 500,
+      });
+    }
   },
 
   btnCloseClick: function() {
@@ -347,20 +301,6 @@ var $vue = new Vue({
   el: '#main',
   data: data,
   methods: methods,
-  computed: {
-    isChecked: function() {
-      return this.multipleSelection.length > 0;
-    },
-
-    dataIds: function() {
-      var retVal = [];
-      for (var i = 0; i < this.multipleSelection.length; i++) {
-        var item = this.multipleSelection[i];
-        retVal.push(item.id);
-      }
-      return retVal;
-    },
-  },
   created: function () {
     utils.keyPress(this.btnSearchClick, this.btnCloseClick);
     this.apiGet(1);

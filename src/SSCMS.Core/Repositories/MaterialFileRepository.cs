@@ -118,13 +118,5 @@ namespace SSCMS.Core.Repositories
             var file = files.FirstOrDefault(x => x.Title == title);
             return file?.Url;
         }
-
-        public async Task<bool> IsExistsAsync(string mediaId)
-        {
-            if (string.IsNullOrEmpty(mediaId)) return false;
-
-            var files = await GetAllAsync();
-            return files.Exists(x => x.MediaId == mediaId);
-        }
     }
 }

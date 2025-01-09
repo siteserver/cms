@@ -7,9 +7,6 @@ namespace SSCMS.Models
     public class MaterialVideo : Entity
     {
         [DataColumn]
-        public string MediaId { get; set; }
-
-        [DataColumn]
         public int GroupId { get; set; }
 
         [DataColumn]
