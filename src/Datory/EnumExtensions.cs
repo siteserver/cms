@@ -24,6 +24,6 @@ namespace Datory
 
         private static TAttribute GetEnumMemberAttribute<TAttribute>(this Type enumType, string enumMemberName)
             where TAttribute : Attribute =>
-            enumType.GetMember(enumMemberName).Single().GetCustomAttribute<TAttribute>();
+            enumType.GetMember(enumMemberName).FirstOrDefault().GetCustomAttribute<TAttribute>();
     }
 }
