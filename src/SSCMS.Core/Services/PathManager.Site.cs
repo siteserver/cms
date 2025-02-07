@@ -1452,48 +1452,79 @@ namespace SSCMS.Core.Services
 
             try
             {
-                var fileUrls = new List<string>
+                var attributeNames = new List<string>
                 {
-                    content.ImageUrl,
-                    content.VideoUrl,
-                    content.FileUrl
+                    nameof(Content.ImageUrl),
+                    nameof(Content.VideoUrl),
+                    nameof(Content.FileUrl),
                 };
-
-                var countName = ColumnsManager.GetCountName(nameof(Content.ImageUrl));
-                var count = content.Get<int>(countName);
-                for (var i = 1; i <= count; i++)
+                var channel = await _channelRepository.GetAsync(content.ChannelId);
+                var styles = await _tableStyleRepository.GetContentStylesAsync(sourceSite, channel);
+                foreach(var style in styles)
                 {
-                    var extendName = ColumnsManager.GetExtendName(nameof(Content.ImageUrl), i);
-                    var extend = content.Get<string>(extendName);
-                    if (!fileUrls.Contains(extend))
+                    if (style.InputType == InputType.Image || style.InputType == InputType.Video || style.InputType == InputType.File)
                     {
-                        fileUrls.Add(extend);
+                        if (!attributeNames.Contains(style.AttributeName))
+                        {
+                            attributeNames.Add(style.AttributeName);
+                        }
                     }
                 }
 
-                countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
-                count = content.Get<int>(countName);
-                for (var i = 1; i <= count; i++)
+                // var fileUrls = new List<string>
+                // {
+                //     content.ImageUrl,
+                //     content.VideoUrl,
+                //     content.FileUrl
+                // };
+
+                var fileUrls = new List<string>();
+
+                foreach (var attributeName in attributeNames)
                 {
-                    var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
-                    var extend = content.Get<string>(extendName);
-                    if (!fileUrls.Contains(extend))
+                    var url = content.Get<string>(attributeName);
+                    if (!string.IsNullOrEmpty(url) && !fileUrls.Contains(url))
                     {
-                        fileUrls.Add(extend);
+                        fileUrls.Add(url);
+                    }
+                    var countName = ColumnsManager.GetCountName(attributeName);
+                    var count = content.Get<int>(countName);
+                    for (var i = 1; i <= count; i++)
+                    {
+                        var extendName = ColumnsManager.GetExtendName(attributeName, i);
+                        var extend = content.Get<string>(extendName);
+                        if (!string.IsNullOrEmpty(extend) && !fileUrls.Contains(extend))
+                        {
+                            fileUrls.Add(extend);
+                        }
                     }
                 }
 
-                countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
-                count = content.Get<int>(countName);
-                for (var i = 1; i <= count; i++)
-                {
-                    var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
-                    var extend = content.Get<string>(extendName);
-                    if (!fileUrls.Contains(extend))
-                    {
-                        fileUrls.Add(extend);
-                    }
-                }
+                
+
+                // countName = ColumnsManager.GetCountName(nameof(Content.VideoUrl));
+                // count = content.Get<int>(countName);
+                // for (var i = 1; i <= count; i++)
+                // {
+                //     var extendName = ColumnsManager.GetExtendName(nameof(Content.VideoUrl), i);
+                //     var extend = content.Get<string>(extendName);
+                //     if (!fileUrls.Contains(extend))
+                //     {
+                //         fileUrls.Add(extend);
+                //     }
+                // }
+
+                // countName = ColumnsManager.GetCountName(nameof(Content.FileUrl));
+                // count = content.Get<int>(countName);
+                // for (var i = 1; i <= count; i++)
+                // {
+                //     var extendName = ColumnsManager.GetExtendName(nameof(Content.FileUrl), i);
+                //     var extend = content.Get<string>(extendName);
+                //     if (!fileUrls.Contains(extend))
+                //     {
+                //         fileUrls.Add(extend);
+                //     }
+                // }
 
                 foreach (var url in RegexUtils.GetOriginalImageSrcs(content.Body))
                 {
