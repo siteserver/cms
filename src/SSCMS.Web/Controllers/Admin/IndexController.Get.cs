@@ -199,7 +199,7 @@ namespace SSCMS.Web.Controllers.Admin
                     var siteMenu = new Menu
                     {
                         Id = MenuUtils.IdSite,
-                        Text = site.SiteName,
+                        Text = StringUtils.MaxLengthText(site.SiteName, 30),
                         Type = new List<string>
                         {
                             siteType.Id
@@ -234,7 +234,7 @@ namespace SSCMS.Web.Controllers.Admin
                                 IconClass = theSiteType.IconClass,
                                 Link = $"{_pathManager.GetAdminUrl()}?siteId={theSite.Id}",
                                 Target = "_top",
-                                Text = theSite.SiteName
+                                Text = StringUtils.MaxLengthText(theSite.SiteName, 30)
                             });
                         }
 
