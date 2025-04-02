@@ -324,11 +324,11 @@ namespace SSCMS.Utils
                 result = request.Headers["HTTP_X_FORWARDED_FOR"];
                 if (string.IsNullOrEmpty(result))
                 {
-                  result = request.Headers["X-Real-IP"];
+                    result = request.Headers["X-Real-IP"];
                 }
                 if (string.IsNullOrEmpty(result))
                 {
-                  result = request.Headers["X-Forwarded-For"];
+                    result = request.Headers["X-Forwarded-For"];
                 }
                 if (string.IsNullOrEmpty(result))
                 {

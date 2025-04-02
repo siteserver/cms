@@ -36,7 +36,9 @@ namespace SSCMS.Utils
 
         public static bool ContainsIgnoreCase(IEnumerable<string> list, string target)
         {
-            return list != null && list.ToList().Any(element => StringUtils.EqualsIgnoreCase(element, target));
+            if (list == null) return false;
+            var listArray = list.ToArray();
+            return listArray.Any(element => StringUtils.EqualsIgnoreCase(element, target));
         }
 
         public static bool Contains<T>(IEnumerable<T> list, T value)
