@@ -72,7 +72,8 @@ namespace SSCMS.Core.Services
                         port == 0, port,
                         TranslateUtils.ToBool(envRedisSsl), envRedisPassword);
                 }
-                MaxSites = envMaxSites;
+                // MaxSites = envMaxSites;
+                MaxSites = 100;
             }
             else
             {
