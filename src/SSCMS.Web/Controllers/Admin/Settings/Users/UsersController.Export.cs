@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSCMS.Core.Utils.Office;
 using SSCMS.Dto;
 using SSCMS.Core.Utils;
+using System;
 
 namespace SSCMS.Web.Controllers.Admin.Settings.Users
 {
@@ -16,7 +17,7 @@ namespace SSCMS.Web.Controllers.Admin.Settings.Users
                 return Unauthorized();
             }
 
-            const string fileName = "用户.xlsx";
+            var fileName = $"用户_{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.xlsx";
             var filePath = _pathManager.GetTemporaryFilesPath(fileName);
 
             var excelObject = new ExcelObject(_databaseManager, _pathManager);
