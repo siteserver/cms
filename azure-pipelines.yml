@@ -79,7 +79,7 @@ jobs:
       
 - job: Linux
   pool:
-    vmImage: 'Ubuntu 20.04'
+    vmImage: 'ubuntu-latest'
   steps:
   - task: UseDotNet@2
     inputs:
