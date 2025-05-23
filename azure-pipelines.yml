@@ -89,7 +89,7 @@ jobs:
       versionSpec: '12.x'
   - script: npm install
   - script: npm run build-linux-x64
-  - task: NuGetCommand@2
+  - task: NuGetAuthenticate@1
     inputs:
       command: 'restore'
       restoreSolution: './build-linux-x64/build.sln'
@@ -99,7 +99,7 @@ jobs:
   - script: dotnet publish ./build-linux-x64/src/SSCMS.Web/SSCMS.Web.csproj -c $(buildConfiguration) -o ./publish/sscms-$(productVersion)-linux-x64
   - script: npm run copy-linux-x64
   - script: npm run build-linux-arm64
-  - task: NuGetCommand@2
+  - task: NuGetAuthenticate@1
     inputs:
       command: 'restore'
       restoreSolution: './build-linux-arm64/build.sln'
