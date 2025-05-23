@@ -22,7 +22,13 @@ namespace SSCMS.Web.Controllers.Stl
                     }
 
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
+                    var sitePath = await _pathManager.GetSitePathAsync(site);
                     var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
+                    if (!DirectoryUtils.IsInDirectory(sitePath, filePath))
+                    {
+                        return this.Error("下载失败，不存在此文件！");
+                    }
+
                     if (_pathManager.IsFileDownload(site, PathUtils.GetExtension(filePath)))
                     {
                         if (FileUtils.IsFileExists(filePath))
@@ -39,7 +45,13 @@ namespace SSCMS.Web.Controllers.Stl
                 else if (request.SiteId.HasValue && !string.IsNullOrEmpty(request.FilePath))
                 {
                     var site = await _siteRepository.GetAsync(request.SiteId.Value);
+                    var sitePath = await _pathManager.GetSitePathAsync(site);
                     var filePath = _settingsManager.Decrypt(request.FilePath);
+                    if (!DirectoryUtils.IsInDirectory(sitePath, filePath))
+                    {
+                        return this.Error("下载失败，不存在此文件！");
+                    }
+                    
                     if (_pathManager.IsFileDownload(site, PathUtils.GetExtension(filePath)))
                     {
                         if (FileUtils.IsFileExists(filePath))
@@ -55,7 +67,13 @@ namespace SSCMS.Web.Controllers.Stl
                 }
                 else if (!string.IsNullOrEmpty(request.FilePath))
                 {
+                    var rootPath = _settingsManager.WebRootPath;
                     var filePath = _settingsManager.Decrypt(request.FilePath);
+                    if (!DirectoryUtils.IsInDirectory(rootPath, filePath))
+                    {
+                        return this.Error("下载失败，不存在此文件！");
+                    }
+
                     if (FileUtils.IsFileExists(filePath))
                     {
                         return this.Download(filePath);
@@ -79,7 +97,13 @@ namespace SSCMS.Web.Controllers.Stl
                         return Redirect(fileUrl);
                     }
 
+                    var sitePath = await _pathManager.GetSitePathAsync(site);
                     var filePath = await _pathManager.ParseSitePathAsync(site, fileUrl);
+                    if (!DirectoryUtils.IsInDirectory(sitePath, filePath))
+                    {
+                        return this.Error("下载失败，不存在此文件！");
+                    }
+                    
                     if (_pathManager.IsFileDownload(site, PathUtils.GetExtension(filePath)))
                     {
                         if (FileUtils.IsFileExists(filePath))

@@ -12,6 +12,10 @@ namespace SSCMS.Core.StlParser.StlElement
         public static Dynamic GetDynamicInfo(ISettingsManager settingsManager, string value, int page, User user, string pathAndQuery)
         {
             var dynamicInfo = TranslateUtils.JsonDeserialize<Dynamic>(settingsManager.Decrypt(value));
+            if (dynamicInfo == null)
+            {
+                dynamicInfo = new Dynamic();
+            }
             if (dynamicInfo.ChannelId == 0)
             {
                 dynamicInfo.ChannelId = dynamicInfo.SiteId;

@@ -24,6 +24,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
         private readonly ISettingsManager _settingsManager;
         private readonly IAuthManager _authManager;
         private readonly IWxManager _wxManager;
+        private readonly IPathManager _pathManager;
         private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IMaterialGroupRepository _materialGroupRepository;
@@ -33,6 +34,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             ISettingsManager settingsManager,
             IAuthManager authManager,
             IWxManager wxManager,
+            IPathManager pathManager,
             IConfigRepository configRepository,
             ISiteRepository siteRepository,
             IMaterialGroupRepository materialGroupRepository,
@@ -42,6 +44,7 @@ namespace SSCMS.Web.Controllers.Admin.Cms.Material
             _settingsManager = settingsManager;
             _authManager = authManager;
             _wxManager = wxManager;
+            _pathManager = pathManager;
             _configRepository = configRepository;
             _siteRepository = siteRepository;
             _materialGroupRepository = materialGroupRepository;
