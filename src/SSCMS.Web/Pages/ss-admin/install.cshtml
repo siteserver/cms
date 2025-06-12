@@ -201,6 +201,10 @@
           <el-input v-model="redisForm.redisPassword" type="password" placeholder="连接Redis的密码"></el-input>
           <small class="tips">连接Redis的密码，可以为空</small>
         </el-form-item>
+        <el-form-item label="Redis数据库">
+          <el-input v-model="redisForm.redisDatabase" placeholder="连接Redis的指定数据库"></el-input>
+          <small class="tips">连接Redis的指定数据库，可以为空</small>
+        </el-form-item>
 
       </template>
       

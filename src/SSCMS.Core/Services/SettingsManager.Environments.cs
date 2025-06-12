@@ -22,6 +22,7 @@ namespace SSCMS.Core.Services
         public const string EnvRedisPort = "REDIS_PORT";
         public const string EnvRedisSsl = "REDIS_SSL";
         public const string EnvRedisPassword = "REDIS_PASSWORD";
+        public const string EnvRedisDatabase = "REDIS_DATABASE";
         public const string EnvRedisConnectionString = "REDIS_CONNECTION_STRING";
         public const string EnvMaxSites = "MAX_SITES";
 
@@ -41,6 +42,7 @@ namespace SSCMS.Core.Services
             var envRedisPort = GetEnvironmentVariable(EnvRedisPort);
             var envRedisSsl = GetEnvironmentVariable(EnvRedisSsl);
             var envRedisPassword = GetEnvironmentVariable(EnvRedisPassword);
+            var envRedisDatabase = GetEnvironmentVariable(EnvRedisDatabase);
             var envRedisConnectionString = GetEnvironmentVariable(EnvRedisConnectionString);
 
             var envMaxSites = TranslateUtils.ToInt(GetEnvironmentVariable(EnvMaxSites));
@@ -70,7 +72,7 @@ namespace SSCMS.Core.Services
                     var port = TranslateUtils.ToInt(envRedisPort);
                     RedisConnectionString = InstallUtils.GetRedisConnectionString(envRedisHost, 
                         port == 0, port,
-                        TranslateUtils.ToBool(envRedisSsl), envRedisPassword);
+                        TranslateUtils.ToBool(envRedisSsl), envRedisPassword, envRedisDatabase);
                 }
                 MaxSites = envMaxSites;
             }

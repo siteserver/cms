@@ -76,6 +76,7 @@ namespace SSCMS.Web.Controllers.Admin
             public int RedisPort { get; set; }
             public bool IsSsl { get; set; }
             public string RedisPassword { get; set; }
+            public string RedisDatabase { get; set; }
         }
 
         public class PrepareRequest : RedisConnectRequest

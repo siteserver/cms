@@ -138,7 +138,7 @@ namespace SSCMS.Core.Utils
             }
         }
 
-        public static string GetRedisConnectionString(string redisHost, bool isRedisDefaultPort, int redisPort, bool isSsl, string redisPassword)
+        public static string GetRedisConnectionString(string redisHost, bool isRedisDefaultPort, int redisPort, bool isSsl, string redisPassword, string redisDatabase)
         {
             var connectionString = string.Empty;
             if (!string.IsNullOrEmpty(redisHost))
@@ -156,6 +156,10 @@ namespace SSCMS.Core.Utils
                 if (!string.IsNullOrEmpty(redisPassword))
                 {
                     connectionString += $",password={redisPassword}";
+                }
+                if (!string.IsNullOrEmpty(redisDatabase))
+                {
+                    connectionString += $",database={redisDatabase}";
                 }
             }
 

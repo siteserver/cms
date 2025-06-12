@@ -51,7 +51,7 @@ namespace SSCMS.Web.Controllers.Admin
                 var redisConnectionString = string.Empty;
                 if (request.IsRedis)
                 {
-                    redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+                    redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword, request.RedisDatabase);
                 }
 
                 _settingsManager.SaveSettings(request.IsProtectData, false, false, request.DatabaseType, databaseConnectionString,

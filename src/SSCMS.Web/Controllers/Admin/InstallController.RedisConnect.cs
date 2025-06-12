@@ -23,7 +23,7 @@ namespace SSCMS.Web.Controllers.Admin
             {
                 if (request.IsRedis)
                 {
-                    redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword);
+                    redisConnectionString = InstallUtils.GetRedisConnectionString(request.RedisHost, request.IsRedisDefaultPort, request.RedisPort, request.IsSsl, request.RedisPassword, request.RedisDatabase);
                 }
             }
 

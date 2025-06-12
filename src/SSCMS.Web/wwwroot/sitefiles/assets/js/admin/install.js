@@ -43,7 +43,8 @@ var data = utils.init({
     isRedisDefaultPort: true,
     redisPort: 6379,
     isSsl: false,
-    redisPassword: null
+    redisPassword: null,
+    redisDatabase: null
   },
 
   adminForm: {
