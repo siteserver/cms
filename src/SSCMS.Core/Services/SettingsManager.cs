@@ -141,9 +141,13 @@ namespace SSCMS.Core.Services
             var databaseConnectionString = isProtectData
                         ? Decrypt(config.GetValue<string>("Database:ConnectionString"), securityKey)
                         : config.GetValue<string>("Database:ConnectionString");
+            var redisConnectionString = isProtectData
+                        ? Decrypt(config.GetValue<string>("Redis:ConnectionString"), securityKey)
+                        : config.GetValue<string>("Redis:ConnectionString");
 
             DatabaseType = databaseType;
             DatabaseConnectionString = databaseConnectionString;
+            RedisConnectionString = redisConnectionString;
         }
     }
 }
