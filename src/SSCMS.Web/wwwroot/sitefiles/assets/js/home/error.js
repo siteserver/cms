@@ -39,10 +39,17 @@ var $vue = new Vue({
     if (this.logId > 0) {
       this.apiGet();
     } else if (this.uuid) {
-      var error = JSON.parse(sessionStorage.getItem(this.uuid));
-      this.message = error.message;
-      this.stackTrace = error.stackTrace;
-      this.createdDate = error.createdDate;
+      const value = sessionStorage.getItem(this.uuid);
+      if (value && typeof value === "string") {
+        try {
+          var error = JSON.parse(value);
+          this.message = error.message;
+          this.stackTrace = error.stackTrace;
+          this.createdDate = error.createdDate;
+        } catch (e) {
+          this.message = value;
+        }
+      }
       utils.loading(this, false);
     }
   },
