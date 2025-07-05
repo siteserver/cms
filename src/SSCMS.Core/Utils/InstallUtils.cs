@@ -159,7 +159,7 @@ namespace SSCMS.Core.Utils
                 }
                 if (!string.IsNullOrEmpty(redisDatabase))
                 {
-                    connectionString += $",database={redisDatabase}";
+                    connectionString += $",defaultDatabase={redisDatabase}";
                 }
             }
 
