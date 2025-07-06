@@ -137,11 +137,11 @@ namespace SSCMS.Core.Repositories
             }
 
             var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
+            password = EncodePassword(password, PasswordFormat.SM4, passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.Encrypted, passwordSalt);
+            user.Id = await InsertWithoutValidationAsync(user, password, PasswordFormat.SM4, passwordSalt);
 
             await CacheIpAddressAsync(ipAddress);
 
@@ -156,11 +156,11 @@ namespace SSCMS.Core.Repositories
             }
 
             var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
+            password = EncodePassword(password, PasswordFormat.SM4, passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
-            return await InsertWithoutValidationAsync(user, password, PasswordFormat.Encrypted, passwordSalt);
+            return await InsertWithoutValidationAsync(user, password, PasswordFormat.SM4, passwordSalt);
         }
 
         private async Task<int> InsertWithoutValidationAsync(User user, string password, PasswordFormat passwordFormat, string passwordSalt)
@@ -286,16 +286,13 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                retVal = TranslateUtils.EncryptStringBySecretKey(password, passwordSalt);
-
-                //var des = new DesEncryptor
-                //{
-                //    InputString = password,
-                //    EncryptKey = passwordSalt
-                //};
-                //des.DesEncrypt();
-
-                //retVal = des.OutString;
+                passwordSalt = GenerateSalt();
+                retVal = DesEncryptor.EncryptStringBySecretKey(password, passwordSalt);
+            }
+            else if (passwordFormat == PasswordFormat.SM4)
+            {
+                passwordSalt = EncryptUtils.GenerateSecurityKey();
+                retVal = EncryptUtils.Encrypt(password, passwordSalt);
             }
             return retVal;
         }
@@ -313,16 +310,11 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                retVal = TranslateUtils.DecryptStringBySecretKey(password, passwordSalt);
-
-                //var des = new DesEncryptor
-                //{
-                //    InputString = password,
-                //    DecryptKey = passwordSalt
-                //};
-                //des.DesDecrypt();
-
-                //retVal = des.OutString;
+                retVal = DesEncryptor.DecryptStringBySecretKey(password, passwordSalt);
+            }
+            else if (passwordFormat == PasswordFormat.SM4)
+            {
+                retVal = EncryptUtils.Decrypt(password, passwordSalt);
             }
             return retVal;
         }
@@ -350,8 +342,8 @@ namespace SSCMS.Core.Repositories
             }
 
             var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, PasswordFormat.Encrypted, passwordSalt);
-            await ChangePasswordAsync(userId, PasswordFormat.Encrypted, passwordSalt, password);
+            password = EncodePassword(password, PasswordFormat.SM4, passwordSalt);
+            await ChangePasswordAsync(userId, PasswordFormat.SM4, passwordSalt, password);
             return (true, string.Empty);
         }
 
@@ -470,6 +462,7 @@ namespace SSCMS.Core.Repositories
         public async Task<List<int>> GetUserIdsAsync(bool isChecked)
         {
             return await _repository.GetAllAsync<int>(Q
+                .Select(nameof(User.Id))
                 .Where(nameof(User.Checked), isChecked)
                 .OrderByDesc(nameof(User.Id))
             );

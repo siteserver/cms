@@ -353,17 +353,12 @@ namespace SSCMS.Core.Repositories
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
                 passwordSalt = GenerateSalt();
-
-                retVal = TranslateUtils.EncryptStringBySecretKey(password, passwordSalt);
-
-                //var des = new DesEncryptor
-                //{
-                //    InputString = password,
-                //    EncryptKey = passwordSalt
-                //};
-                //des.DesEncrypt();
-
-                //retVal = des.OutString;
+                retVal = DesEncryptor.EncryptStringBySecretKey(password, passwordSalt);
+            }
+            else if (passwordFormat == PasswordFormat.SM4)
+            {
+                passwordSalt = EncryptUtils.GenerateSecurityKey();
+                retVal = EncryptUtils.Encrypt(password, passwordSalt);
             }
             return retVal;
         }
@@ -468,7 +463,7 @@ namespace SSCMS.Core.Repositories
             {
                 administrator.LastActivityDate = DateTime.Now;
                 administrator.LastChangePasswordDate = DateTime.Now;
-                administrator.PasswordFormat = PasswordFormat.Encrypted;
+                administrator.PasswordFormat = PasswordFormat.SM4;
                 administrator.Password = EncodePassword(password, administrator.PasswordFormat, out var passwordSalt);
                 administrator.PasswordSalt = passwordSalt;
                 administrator.Set("ConfirmPassword", string.Empty);
@@ -533,8 +528,8 @@ namespace SSCMS.Core.Repositories
                 return (false, $"密码不符合规则，请包含{config.AdminPasswordRestriction.GetDisplayName()}");
             }
 
-            password = EncodePassword(password, PasswordFormat.Encrypted, out var passwordSalt);
-            await ChangePasswordAsync(adminEntity, PasswordFormat.Encrypted, passwordSalt, password);
+            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
+            await ChangePasswordAsync(adminEntity, PasswordFormat.SM4, passwordSalt, password);
             return (true, string.Empty);
         }
 
@@ -617,17 +612,13 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Encrypted)
             {
-                retVal = TranslateUtils.DecryptStringBySecretKey(password, passwordSalt);
-
-                //var des = new DesEncryptor
-                //{
-                //    InputString = password,
-                //    DecryptKey = passwordSalt
-                //};
-                //des.DesDecrypt();
-
-                //retVal = des.OutString;
+                retVal = DesEncryptor.DecryptStringBySecretKey(password, passwordSalt);
             }
+            else if (passwordFormat == PasswordFormat.SM4)
+            {
+                retVal = EncryptUtils.Decrypt(password, passwordSalt);
+            }
+
             return retVal;
         }
 

@@ -21,9 +21,6 @@ namespace SSCMS.Repositories
 
         Task<int> GetCountOfCheckedImagesAsync(Site site, IChannelSummary channel);
 
-        Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope,
-            DateTime begin, DateTime end, int adminId);
-
         Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, ScopeType scope,
             DateTime begin, DateTime end, int adminId, bool? checkedState);
         

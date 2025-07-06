@@ -391,12 +391,12 @@ namespace SSCMS.Core.Utils.Serialization.Components
 
         private string Encrypt(string inputString)
         {
-            return TranslateUtils.EncryptStringBySecretKey(inputString, "TgQQk42O");
+            return DesEncryptor.EncryptStringBySecretKey(inputString, "TgQQk42O");
         }
 
         private string Decrypt(string inputString)
         {
-            return TranslateUtils.DecryptStringBySecretKey(inputString, "TgQQk42O");
+            return DesEncryptor.DecryptStringBySecretKey(inputString, "TgQQk42O");
         }
     }
 }

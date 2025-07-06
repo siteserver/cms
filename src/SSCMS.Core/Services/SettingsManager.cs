@@ -104,12 +104,12 @@ namespace SSCMS.Core.Services
 
         public string Encrypt(string inputString, string securityKey = null)
         {
-            return TranslateUtils.EncryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
+            return EncryptUtils.Encrypt(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
         public string Decrypt(string inputString, string securityKey = null)
         {
-            return TranslateUtils.DecryptStringBySecretKey(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
+            return EncryptUtils.Decrypt(inputString, !string.IsNullOrEmpty(securityKey) ? securityKey : SecurityKey);
         }
 
         public void SaveSettings(bool isProtectData, bool isSafeMode, bool isDisablePlugins, DatabaseType databaseType, string databaseConnectionString, string redisConnectionString, string adminRestrictionHost, string[] adminRestrictionAllowList, string[] adminRestrictionBlockList, bool corsIsOrigins, string[] corsOrigins)

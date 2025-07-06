@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using SSCMS.Configuration;
 
 namespace SSCMS.Utils
 {
@@ -244,6 +245,63 @@ namespace SSCMS.Utils
             _outString = Encoding.Default.GetString(result);
         }
         #endregion
+
+        public static string EncryptStringBySecretKey(string inputString, string secretKey)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            try
+            {
+                var encryptor = new DesEncryptor
+                {
+                    InputString = inputString,
+                    EncryptKey = secretKey
+                };
+                encryptor.DesEncrypt();
+
+                var retVal = encryptor.OutString;
+                retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+
+                return retVal + Constants.EncryptStingIndicator;
+
+                // return AesGcmUtils.Encrypt(inputString, secretKey);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return string.Empty;
+        }
+
+        public static string DecryptStringBySecretKey(string inputString, string secretKey)
+        {
+            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+
+            try
+            {
+                inputString = inputString.Replace(Constants.EncryptStingIndicator, string.Empty).Replace("0add0", "+")
+                    .Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'")
+                    .Replace("0slash0", "/");
+
+                var encryptor = new DesEncryptor
+                {
+                    InputString = inputString,
+                    DecryptKey = secretKey
+                };
+                encryptor.DesDecrypt();
+
+                return encryptor.OutString;
+
+                // return AesGcmUtils.Decrypt(inputString, secretKey);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return string.Empty;
+        }
     }
 }
 

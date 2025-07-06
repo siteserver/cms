@@ -56,27 +56,6 @@ namespace SSCMS.Core.Repositories
             return await repository.CountAsync(query);
         }
 
-        public async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int adminId)
-        {
-            var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId, channelId, scope);
-            return await GetCountOfContentUpdateAsync(tableName, siteId, channelIdList, begin, end, adminId);
-        }
-
-        private async Task<int> GetCountOfContentUpdateAsync(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, int adminId)
-        {
-            var repository = await GetRepositoryAsync(tableName);
-            var query = Q.Where(nameof(Content.SiteId), siteId);
-            query.WhereIn(nameof(Content.ChannelId), channelIdList);
-            query.WhereBetween(nameof(Content.LastModifiedDate), begin, end.AddDays(1));
-            query.WhereRaw($"{nameof(Content.LastModifiedDate)} != {nameof(Content.AddDate)}");
-            if (adminId > 0)
-            {
-                query.Where(nameof(Content.AdminId), adminId);
-            }
-
-            return await repository.CountAsync(query);
-        }
-
         public async Task<int> GetCountOfContentAddAsync(string tableName, int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int adminId, bool? checkedState)
         {
             var channelIdList = await _channelRepository.GetChannelIdsAsync(siteId, channelId, scope);

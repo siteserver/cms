@@ -37,7 +37,7 @@ namespace SSCMS.Core.Services
         public string AuthenticateAdministrator(Administrator administrator, bool isPersistent)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey);
+            var key = EncryptUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey);
             SecurityTokenDescriptor tokenDescriptor;
             var identity = GetAdministratorIdentity(administrator, isPersistent);
 
@@ -80,7 +80,7 @@ namespace SSCMS.Core.Services
                 new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(EncryptUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 }, out var validatedToken);
@@ -110,7 +110,7 @@ namespace SSCMS.Core.Services
         public string AuthenticateUser(User user, bool isPersistent)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey);
+            var key = EncryptUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey);
             SecurityTokenDescriptor tokenDescriptor;
             var identity = GetUserIdentity(user, isPersistent);
 
@@ -153,7 +153,7 @@ namespace SSCMS.Core.Services
                 new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(EncryptUtils.GetSecurityKeyBytes(_settingsManager.SecurityKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 }, out var validatedToken);

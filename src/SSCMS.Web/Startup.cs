@@ -100,7 +100,7 @@ namespace SSCMS.Web
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(StringUtils.GetSecurityKeyBytes(settingsManager.SecurityKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(EncryptUtils.GetSecurityKeyBytes(settingsManager.SecurityKey)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
