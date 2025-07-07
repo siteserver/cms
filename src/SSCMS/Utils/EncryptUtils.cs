@@ -32,11 +32,6 @@ namespace SSCMS.Utils
 
         public static byte[] GetSecurityKeyBytes(string securityKey)
         {
-            var (isValid, _, _) = IsValidSecurityKey(securityKey);
-            if (!isValid)
-            {
-                securityKey = GenerateSecurityKey();
-            }
             return Encoding.UTF8.GetBytes(securityKey);
         }
 
