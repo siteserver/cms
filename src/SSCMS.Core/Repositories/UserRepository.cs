@@ -136,8 +136,7 @@ namespace SSCMS.Core.Repositories
                 return (null, errorMessage);
             }
 
-            var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, PasswordFormat.SM4, passwordSalt);
+            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
@@ -155,8 +154,7 @@ namespace SSCMS.Core.Repositories
                 user.Mobile = user.UserName;
             }
 
-            var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, PasswordFormat.SM4, passwordSalt);
+            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
             user.LastActivityDate = DateTime.Now;
             user.LastResetPasswordDate = DateTime.Now;
 
@@ -263,9 +261,10 @@ namespace SSCMS.Core.Repositories
             );
         }
 
-        private static string EncodePassword(string password, PasswordFormat passwordFormat, string passwordSalt)
+        private static string EncodePassword(string password, PasswordFormat passwordFormat, out string passwordSalt)
         {
             var retVal = string.Empty;
+            passwordSalt = string.Empty;
 
             if (passwordFormat == PasswordFormat.Clear)
             {
@@ -273,6 +272,8 @@ namespace SSCMS.Core.Repositories
             }
             else if (passwordFormat == PasswordFormat.Hashed)
             {
+                passwordSalt = GenerateSalt();
+
                 var src = Encoding.Unicode.GetBytes(password);
                 var buffer2 = Convert.FromBase64String(passwordSalt);
                 var dst = new byte[buffer2.Length + src.Length];
@@ -341,8 +342,7 @@ namespace SSCMS.Core.Repositories
                 return (false, $"密码不符合规则，请包含{config.UserPasswordRestriction.GetDisplayName()}");
             }
 
-            var passwordSalt = GenerateSalt();
-            password = EncodePassword(password, PasswordFormat.SM4, passwordSalt);
+            password = EncodePassword(password, PasswordFormat.SM4, out var passwordSalt);
             await ChangePasswordAsync(userId, PasswordFormat.SM4, passwordSalt, password);
             return (true, string.Empty);
         }
