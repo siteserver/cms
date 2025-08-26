@@ -21,7 +21,7 @@ var methods = {
       var res = response.data;
 
       $this.message = res.summary + ' ' + res.message;
-      $this.stackTrace = res.stackTrace;
+      $this.stackTrace = res.stackTrace ? res.stackTrace.replace(/\n/g, "<br>") : "";
       $this.createdDate = res.createdDate;
     }).catch(function (error) {
       utils.error(error);

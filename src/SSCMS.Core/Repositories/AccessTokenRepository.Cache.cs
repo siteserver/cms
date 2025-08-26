@@ -21,17 +21,6 @@ namespace SSCMS.Core.Repositories
                     _settingsManager.Encrypt(token))
                 .CachingGet(cacheKey)
             );
-
-            //var cacheKey = GetCacheKeyByToken(token);
-            //return await
-            //    _cache.GetOrCreateAsync(cacheKey, async entry =>
-            //    {
-            //        var accessToken = await _repository.GetAsync(Q
-            //            .Where(nameof(AccessToken.Token), WebConfigUtils.EncryptStringBySecretKey(token)) 
-            //        );
-
-            //        return accessToken;
-            //    });
         }
     }
 }
