@@ -148,4 +148,4 @@ SSCMS 项目已加入 [dotNET China](https://gitee.com/dotnetchina)  组织。<b
 
 [GNU Affero General Public License v3.0](LICENSE)
 
-Copyright (C) 2003-2023 SSCMS
+Copyright (C) 2003-2025 SSCMS

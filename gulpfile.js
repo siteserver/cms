@@ -11,7 +11,7 @@ const runSequence = require('gulp4-run-sequence');
 const ALY = require('aliyun-sdk');
 
 let os = '';
-const version = process.env.PRODUCTVERSION || '7.3.1';
+const version = process.env.PRODUCTVERSION || '7.4.0';
 const timestamp = (new Date()).getTime();
 let publishDir = '';
 let htmlDict = {};
