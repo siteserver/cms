@@ -75,7 +75,8 @@ namespace SSCMS.Core.Services
 
         public async Task<string> GetWebUrlAsync(Site site)
         {
-            return site.IsSeparatedWeb ? site.SeparatedWebUrl : await GetLocalSiteUrlAsync(site);
+            var webUrl = site.IsSeparatedWeb ? site.SeparatedWebUrl : await GetLocalSiteUrlAsync(site);
+            return StringUtils.TrimEnd(webUrl, "/");
         }
 
         public async Task<string> GetAssetsUrlAsync(Site site)

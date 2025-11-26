@@ -486,7 +486,7 @@ namespace SSCMS.Core.Services
 
             try
             {
-                // await ReplaceCDNAsync(contentBuilder);
+                await ReplaceCDNAsync(contentBuilder);
                 await FileUtils.WriteTextAsync(filePath, contentBuilder.ToString());
             }
             catch

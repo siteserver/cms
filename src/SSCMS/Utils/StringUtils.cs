@@ -65,6 +65,25 @@ namespace SSCMS.Utils
             return EndsWithIgnoreCase(text, end) ? text.Substring(0, text.Length - end.Length) : text;
         }
 
+        public static string TrimStart(string text, string start)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+            
+            if (string.IsNullOrEmpty(start))
+            {
+                return text;
+            }
+
+            if (!StartsWithIgnoreCase(text, start))
+            {
+                return text;
+            }
+            return text.Substring(start.Length);
+        }
+
         public static string TrimAndToLower(string text)
         {
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower().Trim();
