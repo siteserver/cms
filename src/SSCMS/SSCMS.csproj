@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <!-- <PackageReference Include="Datory" Version="7.4.0" /> -->
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
     <ProjectReference Include="..\Datory\Datory.csproj" />
   </ItemGroup>
 
