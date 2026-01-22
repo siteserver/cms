@@ -50,8 +50,30 @@ namespace SSCMS.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var directory = new DirectoryInfo(_env.ContentRootPath);
-            services.AddDataProtection().PersistKeysToFileSystem(directory);
+            // 创建专门的密钥目录，避免非密钥文件干扰
+            var keysDirectory = Path.Combine(_env.ContentRootPath, "keys");
+            Directory.CreateDirectory(keysDirectory);
+
+            var entryAssembly = Assembly.GetExecutingAssembly();
+
+            var dataProtectionBuilder = services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory))
+                .SetApplicationName(entryAssembly.GetName().Name)
+                .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+
+            // 配置XML加密器，根据不同平台选择合适的密钥保护方式
+            // 仅在Windows平台上使用DPAPI/DPAPI-NG，其他平台使用默认保护（文件系统）
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+            {
+                try
+                {
+                    dataProtectionBuilder.ProtectKeysWithDpapi();
+                }
+                catch
+                {
+                    dataProtectionBuilder.ProtectKeysWithDpapiNG();
+                }
+            }
 
             var entryAssembly = Assembly.GetExecutingAssembly();
             var assemblies = new List<Assembly> { entryAssembly }.Concat(entryAssembly.GetReferencedAssemblies().Select(Assembly.Load));
