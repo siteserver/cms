@@ -31,7 +31,7 @@
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
     <PackageReference Include="NPOI" Version="2.6.0" />
-    <PackageReference Include="HtmlSanitizer" Version="8.0.723" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
     <PackageReference Include="Sw.ChinaEncryptSM" Version="1.0.1" />
   </ItemGroup>
